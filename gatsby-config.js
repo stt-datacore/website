@@ -6,6 +6,7 @@ module.exports = {
 		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
 		`gatsby-plugin-typescript`,
+		`gatsby-plugin-netlify-cms`,
 		{
 			resolve: 'gatsby-source-filesystem',
 			options: {

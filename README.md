@@ -1,5 +1,7 @@
 # Star Trek Timelines Data Core
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/529e5477-c407-4fcd-b879-a7925d426fd1/deploy-status)](https://app.netlify.com/sites/datacore/deploys)
+
 This project is built with [Gatsby](https://www.gatsbyjs.org/), [Netlify CMS](https://www.netlifycms.org) and a lot of hard work.
 
 It follows the [JAMstack architecture](https://jamstack.org) by using Git as a single source of truth, and [Netlify](https://www.netlify.com) for continuous deployment, and CDN distribution.

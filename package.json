@@ -15,11 +15,13 @@
   },
   "dependencies": {
     "gatsby": "^2.1.31",
+    "gatsby-plugin-netlify-cms": "^3.0.14",
     "gatsby-plugin-typescript": "^2.0.11",
     "gatsby-source-filesystem": "^2.0.24",
     "gatsby-transformer-json": "^2.1.10",
     "gatsby-transformer-remark": "^2.3.2",
     "graphql-typescript-definitions": "^0.16.1",
+    "netlify-cms": "^2.6.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "request-promise": "^4.2.4",
