@@ -1,0 +1,42 @@
+{
+  "name": "stt-data-core",
+  "private": true,
+  "description": "STT DataCore",
+  "author": "TemporalAgent7",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --write src/**/*.{js,jsx}",
+    "start": "npm run develop",
+    "serve": "gatsby serve",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+  },
+  "dependencies": {
+    "gatsby": "^2.1.31",
+    "gatsby-plugin-typescript": "^2.0.11",
+    "gatsby-source-filesystem": "^2.0.24",
+    "gatsby-transformer-json": "^2.1.10",
+    "gatsby-transformer-remark": "^2.3.2",
+    "graphql-typescript-definitions": "^0.16.1",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "request-promise": "^4.2.4",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.85.0",
+    "write": "^1.0.3"
+  },
+  "devDependencies": {
+    "dotenv": "^6.2.0",
+    "prettier": "^1.16.4",
+    "request": "^2.88.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TemporalAgent7/datacore"
+  },
+  "bugs": {
+    "url": "https://github.com/TemporalAgent7/datacore/issues"
+  }
+}
