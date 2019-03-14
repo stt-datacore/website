@@ -20,7 +20,7 @@ class ItemSources extends Component<ItemSourcesProps> {
 				<p key={'disputeMissions'}>
 					<b>Missions: </b>
 					{disputeMissions
-						.map((entry, idx) => <MissionCost key={idx} mission={entry.id || {name: entry.name}} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
+						.map((entry, idx) => <MissionCost key={idx} mission={entry.id} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
 						.reduce((prev, curr) => [prev, ', ', curr])}
 				</p>
 			);
@@ -31,7 +31,7 @@ class ItemSources extends Component<ItemSourcesProps> {
 				<p key={'shipBattles'}>
 					<b>Ship battles: </b>
 					{shipBattles
-						.map((entry, idx) => <MissionCost key={idx} mission={entry.id || {name: entry.name}} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
+						.map((entry, idx) => <MissionCost key={idx} mission={entry.id} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
 						.reduce((prev, curr) => [prev, ', ', curr])}
 				</p>
 			);
@@ -60,15 +60,8 @@ export const query = graphql`
 				...MissionsFragment
 			}
 			name
-			energy_quotient
 			chance_grade
-			place
-			mission
-			dispute
 			mastery
-			challenge_id
-			challenge_skill
-			challenge_difficulty
 		}
 	}
 `;
