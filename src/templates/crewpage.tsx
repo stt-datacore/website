@@ -54,7 +54,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		return (
 			<Layout>
 				<CrewFullEquipTree visible={this.state.modalVisible} crew={crew} onClosed={() => this.setState({ modalVisible: false })} />
-				<Container text style={{ marginTop: '7em' }}>
+				<Container text style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Grid columns={2}>
 						<Grid.Row stretched>
 							<Grid.Column width={16}>

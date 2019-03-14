@@ -88,11 +88,8 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 
 		return (
 			<Layout>
-				<Container style={{ marginTop: '7em' }}>
+				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h2'>Crew stats</Header>
-					<p>
-						<i>Hint</i> Click on a row to get more details on specific crew
-					</p>
 
 					<Input
 						icon='search'
@@ -252,7 +249,9 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							</Table.Row>
 						</Table.Footer>
 					</Table>
-					<p>I'm a footer. Beep boop!</p>
+					<p>
+						<i>Hint</i> Click on a row to get details on that specific crew
+					</p>
 				</Container>
 			</Layout>
 		);

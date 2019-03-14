@@ -55,7 +55,7 @@ exports.createPages = ({ graphql, actions }) => {
 					}
 				}
 			}
-			allCrewJson(limit:1000) {
+			allCrewJson(limit:${process.env.NODE_ENV === 'development' ? 1000 : 1000}) {
 				edges {
 					node {
 						fields {

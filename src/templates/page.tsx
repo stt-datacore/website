@@ -24,7 +24,7 @@ class StaticPage extends Component<StaticPageProps> {
 		const { markdownRemark } = this.props.data;
 		return (
 			<Layout>
-				<Container text style={{ marginTop: '7em' }}>
+				<Container text style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header>{markdownRemark.frontmatter.title}</Header>
 					<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
 				</Container>

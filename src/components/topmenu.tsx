@@ -43,7 +43,7 @@ class TopMenu extends Component {
 					<Menu fixed='top' inverted>
 						<Container>
 							<Menu.Header onClick={() => navigate('/')}>
-							<Image size='mini' src='/media/logo.png' style={{ marginTop: '0.3em', marginRight: '1.5em' }} />
+								<Image size='mini' src='/media/logo.png' style={{ marginTop: '0.3em', marginRight: '1.5em' }} />
 							</Menu.Header>
 							<Menu.Item onClick={() => navigate('/')}>Crew stats</Menu.Item>
 							<Menu.Item onClick={() => navigate('/about')}>About</Menu.Item>
@@ -51,6 +51,7 @@ class TopMenu extends Component {
 
 							<Dropdown item simple text='Pages'>
 								<Dropdown.Menu>
+									<Dropdown.Item onClick={() => window.open('/admin')}>Add or edit pages</Dropdown.Item>
 									<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
 									<Dropdown.Item disabled>Missions</Dropdown.Item>
 									<Dropdown.Item disabled>Ships</Dropdown.Item>
@@ -66,6 +67,9 @@ class TopMenu extends Component {
 						</Container>
 
 						<Menu.Menu position='right'>
+							<Menu.Item as='a' onClick={() => window.open('https://github.com/TemporalAgent7/datacore', '_blank')}>
+								<Icon name='github' />
+							</Menu.Item>
 							<Menu.Item as='a' onClick={() => (window as any).swapThemeCss()}>
 								<Icon name='adjust' />
 							</Menu.Item>

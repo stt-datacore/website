@@ -23,7 +23,7 @@ class CollectionsPage extends Component<CollectionsPageProps> {
 
 		return (
 			<Layout>
-				<Container style={{ marginTop: '7em', marginBottom: '2em' }}>
+				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						{allCollectionsJson.edges.map(edge => {
 							const collection = edge.node;

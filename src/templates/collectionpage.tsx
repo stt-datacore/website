@@ -24,7 +24,7 @@ class StaticCollectionPage extends Component<StaticCollectionPageProps> {
 		const collection = allCollectionsJson.edges[0].node;
 		return (
 			<Layout>
-				<Container text style={{ marginTop: '7em', marginBottom: '2em' }}>
+				<Container text style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>
 							<Item.Image size='medium' src={`/media/assets/${collection.image}`} />
