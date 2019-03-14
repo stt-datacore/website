@@ -1,16 +1,25 @@
 backend:
-  name: test-repo
+  name: github
+  repo: TemporalAgent7/datacore
+  squash_merges: true
 
-media_folder: static/media/assets
-public_folder: assets
+publish_mode: editorial_workflow
+media_folder: "static/media/uploads"
+public_folder: "/media/uploads"
+site_url: https://datacore.netlify.com
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "_"
 
 collections:
   - name: page
     label: Page
-    folder: pages
+    folder: "static/pages"
     create: true
     fields:
-      - { name: path, label: Path }
-      - { name: date, label: Date, widget: date }
+      - { name: path, label: Path, required: false }
+      - { name: date, label: Date, required: false, widget: date }
       - { name: title, label: Title }
       - { name: body, label: Body, widget: markdown }
