@@ -37,14 +37,14 @@ export default class CONFIG {
 		medicine_skill: 'Medicine'
 	};
 
-	static readonly SKILLS_SHORT: { [index: string]: string } = {
-		command_skill: 'CMD',
-		science_skill: 'SCI',
-		security_skill: 'SEC',
-		engineering_skill: 'ENG',
-		diplomacy_skill: 'DIP',
-		medicine_skill: 'MED'
-	};
+	static readonly SKILLS_SHORT = [
+		{name: 'command_skill', short: 'CMD'},
+		{name: 'science_skill', short: 'SCI'},
+		{name: 'security_skill', short: 'SEC'},
+		{name: 'engineering_skill', short: 'ENG'},
+		{name: 'diplomacy_skill', short: 'DIP'},
+		{name: 'medicine_skill', short: 'MED'}
+	];
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
 		0: 'Attack',

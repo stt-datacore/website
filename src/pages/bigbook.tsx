@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Container, Header, Image, Divider, Grid, Segment, Rating, Label, Statistic } from 'semantic-ui-react';
+import { Container, Header, Image, Divider, Grid, Rating } from 'semantic-ui-react';
 import { graphql, Link } from 'gatsby';
 
 import Layout from '../components/layout';
-import CrewStat from '../components/crewstat';
+
+import CommonCrewData from '../components/commoncrewdata';
 
 type BigBookCrewProps = {
 	markdownRemark: any;
@@ -32,55 +33,7 @@ class BigBookCrew extends Component<BigBookCrewProps> {
 							</Link>
 						</Grid.Column>
 						<Grid.Column width={12}>
-							<Segment>
-								<CrewStat skill_name='security_skill' data={crew.base_skills.security_skill} />
-								<CrewStat skill_name='command_skill' data={crew.base_skills.command_skill} />
-								<CrewStat skill_name='diplomacy_skill' data={crew.base_skills.diplomacy_skill} />
-								<CrewStat skill_name='science_skill' data={crew.base_skills.science_skill} />
-								<CrewStat skill_name='medicine_skill' data={crew.base_skills.medicine_skill} />
-								<CrewStat skill_name='engineering_skill' data={crew.base_skills.engineering_skill} />
-							</Segment>
-
-							{crew.flavor && <p>{crew.flavor}</p>}
-
-							<Statistic.Group style={{ paddingBottom: '2em' }}>
-								{markdownRemark.frontmatter.events !== undefined && (
-									<Statistic>
-										<Statistic.Label>Events</Statistic.Label>
-										<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
-									</Statistic>
-								)}
-								{markdownRemark.frontmatter.bigbook_tier !== undefined && (
-									<Statistic>
-										<Statistic.Label>Tier</Statistic.Label>
-										<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
-									</Statistic>
-								)}
-								{markdownRemark.frontmatter.in_portal !== undefined && (
-									<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
-										<Statistic.Label>Portal</Statistic.Label>
-										<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
-									</Statistic>
-								)}
-							</Statistic.Group>
-
-							<p>
-								<b>Traits: </b>
-								{crew.traits_named.join(', ')}
-								<span style={{ color: 'lightgray' }}>, {crew.traits_hidden.join(', ')}</span>
-							</p>
-							{crew.collections.length > 0 && (
-								<p>
-									<b>Collections: </b>
-									{crew.collections
-										.map(col => (
-											<Link key={col} to={`/collection/${col}/`}>
-												{col}
-											</Link>
-										))
-										.reduce((prev, curr) => [prev, ', ', curr])}
-								</p>
-							)}
+							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
 							<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
 						</Grid.Column>
@@ -98,24 +51,33 @@ type BigBookPageProps = {
 	};
 };
 
-class BigBook extends Component<BigBookPageProps> {
-	constructor(props) {
-		super(props);
-	}
+const fieldSorter = (fields) => (a, b) => fields.map(o => {
+    let dir = 1;
+    if (o[0] === '-') { dir = -1; o=o.substring(1); }
+    return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
+}).reduce((p, n) => p ? p : n, 0);
 
+class BigBook extends Component<BigBookPageProps> {
 	render() {
 		let res = [];
 		this.props.data.allMarkdownRemark.edges.forEach((element, idx) => {
 			let crewEntry = this.props.data.allCrewJson.edges.find(e => e.node.symbol === element.node.fields.slug.replace(/\//g, ''));
 
-			res.push(<BigBookCrew key={idx} markdownRemark={element.node} crew={crewEntry.node} />);
+			res.push({
+				name: crewEntry.node.name,
+				tier: element.node.frontmatter.bigbook_tier,
+				rarity: crewEntry.node.max_rarity,
+				elem: <BigBookCrew key={idx} markdownRemark={element.node} crew={crewEntry.node} />
+			});
 		});
+
+		res = res.sort(fieldSorter(['-rarity', 'tier', 'name']));
 
 		return (
 			<Layout>
 				<Container text style={{ paddingTop: '6em', paddingBottom: '3em' }}>
 					<Header as='h1'>Big Book</Header>
-					{res}
+					{res.map(e => e.elem)}
 				</Container>
 			</Layout>
 		);
@@ -159,6 +121,7 @@ export const query = graphql`
 					traits_hidden
 					collections
 					flavor
+					...RanksFragment
 					base_skills {
 						security_skill {
 							core

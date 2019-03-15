@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Container, Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button } from 'semantic-ui-react';
-import { graphql, Link } from 'gatsby';
+import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
-import CrewStat from '../components/crewstat';
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 import CrewFullEquipTree from '../components/crewfullequiptree';
+import CommonCrewData from '../components/commoncrewdata';
 
 import CONFIG from '../components/CONFIG';
 
@@ -69,33 +69,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								<Image src={`/media/assets/${crew.imageUrlFullBody}`} size='small' />
 							</Grid.Column>
 							<Grid.Column width={12}>
-								<Segment>
-									<CrewStat skill_name='security_skill' data={crew.base_skills.security_skill} />
-									<CrewStat skill_name='command_skill' data={crew.base_skills.command_skill} />
-									<CrewStat skill_name='diplomacy_skill' data={crew.base_skills.diplomacy_skill} />
-									<CrewStat skill_name='science_skill' data={crew.base_skills.science_skill} />
-									<CrewStat skill_name='medicine_skill' data={crew.base_skills.medicine_skill} />
-									<CrewStat skill_name='engineering_skill' data={crew.base_skills.engineering_skill} />
-								</Segment>
-
-								{crew.flavor && <p>{crew.flavor}</p>}
-								<p>
-									<b>Traits: </b>
-									{crew.traits_named.join(', ')}
-									<span style={{ color: 'lightgray' }}>, {crew.traits_hidden.join(', ')}</span>
-								</p>
-								{crew.collections.length > 0 && (
-									<p>
-										<b>Collections: </b>
-										{crew.collections
-											.map(col => (
-												<Link key={col} to={`/collection/${col}/`}>
-													{col}
-												</Link>
-											))
-											.reduce((prev, curr) => [prev, ', ', curr])}
-									</p>
-								)}
+								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
 								{this.renderEquipment(crew)}
 								{this.renderEquipmentDetails(crew)}
@@ -291,6 +265,7 @@ export const query = graphql`
 					collections
 					max_rarity
 					imageUrlFullBody
+					...RanksFragment
 					base_skills {
 						security_skill {
 							core
