@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const STATIC_PATH = `${__dirname}/../static/structured/`;
 
-let allcrew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json'));
+let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json'));
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -17,12 +17,12 @@ const STARBASE_BONUS_CORE = 1.15;
 const STARBASE_BONUS_RANGE = 1.13;
 const THIRD_SKILL_MULTIPLIER = 0.25;
 
-for (let crew of allcrew) {
+for (let crew of crewlist) {
 	crew.ranks = {};
 }
 
 function calcRank(scoring, field) {
-	allcrew
+	crewlist
 		.map(crew => ({ crew, score: scoring(crew) }))
 		.sort((a, b) => b.score - a.score)
 		.forEach((entry, idx) => {
@@ -114,4 +114,15 @@ for (let i = 0; i < skillNames.length - 1; i++) {
 	}
 }
 
-fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(allcrew));
+fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
+
+// Filter out item sources that are thresholds (one time only)
+let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json'));
+
+for(let item of items) {
+	if (item.item_sources.length > 0) {
+		item.item_sources = item.item_sources.filter((i) => i.type !==3);
+	}
+}
+
+fs.writeFileSync(STATIC_PATH + 'items.json', JSON.stringify(items));

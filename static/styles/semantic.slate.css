@@ -651,12 +651,12 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #fff;
+  color: #4183C4;
   text-decoration: none;
 }
 
 a:hover {
-  color: #fff;
+  color: #1e70bf;
   text-decoration: none;
 }
 
