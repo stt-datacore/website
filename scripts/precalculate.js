@@ -140,3 +140,54 @@ for (let crew of crewlist) {
 let sortedSkillSets = Object.keys(counts).map(k => ({ name: k, value: counts[k] })).sort((a,b) => a.value - b.value);
 
 fs.writeFileSync(STATIC_PATH + 'sortedSkillSets.json', JSON.stringify(sortedSkillSets));
+
+// Static outputs (TODO: maybe these should be JSON too?)
+
+let csvOutput = 'crew,';
+
+for (let skill in SKILLS) {
+	csvOutput += `${SKILLS[skill]}_core,${SKILLS[skill]}_min,${SKILLS[skill]}_max,`;
+}
+
+for (let i = 0; i < skillNames.length - 1; i++) {
+	for (let j = i + 1; j < skillNames.length; j++) {
+		csvOutput += `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]},`
+	}
+}
+
+for (let i = 0; i < skillNames.length - 1; i++) {
+	for (let j = i + 1; j < skillNames.length; j++) {
+		csvOutput += `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]},`
+	}
+}
+
+csvOutput += 'sn\r\n';
+
+for (let crew of crewlist) {
+	csvOutput += `"${crew.name.replace(/"/g, '')}",`;
+
+	for (let skill in SKILLS) {
+		if (crew.base_skills[skill]) {
+		csvOutput += `${crew.base_skills[skill].core},${crew.base_skills[skill].range_min},${crew.base_skills[skill].range_max},`;
+		}
+		else {
+			csvOutput += '0,0,0,';
+		}
+	}
+	
+	for (let i = 0; i < skillNames.length - 1; i++) {
+		for (let j = i + 1; j < skillNames.length; j++) {
+			csvOutput += crew.ranks[`V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
+		}
+	}
+	
+	for (let i = 0; i < skillNames.length - 1; i++) {
+		for (let j = i + 1; j < skillNames.length; j++) {
+			csvOutput += crew.ranks[`G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
+		}
+	}
+
+	csvOutput += `"${crew.short_name}"\r\n`;
+}
+
+fs.writeFileSync(STATIC_PATH + 'crew.csv', csvOutput);
