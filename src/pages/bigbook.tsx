@@ -50,6 +50,7 @@ type BigBookPageProps = {
 		crewpages: any;
 		sections: any;
 		allCrewJson: any;
+		allSortedSkillSetsJson: any[];
 	};
 };
 
@@ -85,7 +86,9 @@ class BigBook extends Component<BigBookPageProps> {
 				bigbook_section: element.node.frontmatter.bigbook_section,
 				elem: (
 					<div key={idx}>
-						<Header as='h2' style={{ paddingTop: '1em' }}>{element.node.frontmatter.title}</Header>
+						<Header as='h2' style={{ paddingTop: '1em' }}>
+							{element.node.frontmatter.title}
+						</Header>
 						<div dangerouslySetInnerHTML={{ __html: element.node.html }} />
 					</div>
 				)
@@ -96,6 +99,8 @@ class BigBook extends Component<BigBookPageProps> {
 
 		res = res.sort(fieldSorter(['-rarity', 'tier', 'name']));
 
+		let chartData = this.props.data.allSortedSkillSetsJson.edges.map(e => ({name: e.node.name.replace(/\./g,'/'), value: e.node.value}));
+
 		return (
 			<Layout>
 				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
@@ -104,8 +109,7 @@ class BigBook extends Component<BigBookPageProps> {
 					{sections[1].elem}
 					{res.filter(e => e.rarity === 4).map(e => e.elem)}
 					{sections.slice(2).map(e => e.elem)}
-					<SimpleBarChart title={'TODO: implement me - in preprocessing!'} data={[{ name: 'CMD/ENG/MED', value: 20 },
-      { name: 'CMD/DIP/MED', value: 40 }]} />
+					<SimpleBarChart title={'Rarest skill sets 4* and 5*'} data={chartData} />
 				</Container>
 			</Layout>
 		);
@@ -146,6 +150,14 @@ export const query = graphql`
 						title
 						bigbook_section
 					}
+				}
+			}
+		}
+		allSortedSkillSetsJson(limit: 15) {
+			edges {
+				node {
+					name
+					value
 				}
 			}
 		}

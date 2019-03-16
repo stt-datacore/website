@@ -12,7 +12,7 @@ type SimpleBarChartProps = {
 function BarGroup(props) {
 	let barPadding = 2;
 	let barColour = '#348AA7';
-	let widthScale = d => d * 10;
+	let widthScale = d => d * 20;
 
 	let width = widthScale(props.d.value);
 	let yMid = props.barHeight * 0.5;
@@ -32,7 +32,7 @@ function BarGroup(props) {
 
 class SimpleBarChart extends Component<SimpleBarChartProps> {
 	render() {
-		let barHeight = 30;
+		let barHeight = 24;
 
 		let barGroups = this.props.data.map((d, i) => (
 			<g key={i} transform={`translate(0, ${i * barHeight})`}>
@@ -41,7 +41,7 @@ class SimpleBarChart extends Component<SimpleBarChartProps> {
 		));
 
 		return (
-			<svg width='800' height='300'>
+			<svg viewBox="0 0 800 300">
 				<g className={containerStyles.container}>
 					<text className='title' x='10' y='30'>
 						{this.props.title}

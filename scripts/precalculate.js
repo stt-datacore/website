@@ -126,3 +126,17 @@ for(let item of items) {
 }
 
 fs.writeFileSync(STATIC_PATH + 'items.json', JSON.stringify(items));
+
+// Calculate some skill set stats for the BigBook
+let counts = {};
+for (let crew of crewlist) {
+	if (((crew.max_rarity === 4) || (crew.max_rarity === 5)) && (Object.getOwnPropertyNames(crew.base_skills).length === 3)) {
+		let combo = Object.getOwnPropertyNames(crew.base_skills).map(s => SKILLS[s]).sort().join('.');
+
+		counts[combo] = 1 + (counts[combo] || 0);
+	}
+}
+
+let sortedSkillSets = Object.keys(counts).map(k => ({ name: k, value: counts[k] })).sort((a,b) => a.value - b.value);
+
+fs.writeFileSync(STATIC_PATH + 'sortedSkillSets.json', JSON.stringify(sortedSkillSets));
