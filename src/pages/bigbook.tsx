@@ -5,6 +5,7 @@ import { graphql, Link } from 'gatsby';
 import Layout from '../components/layout';
 
 import CommonCrewData from '../components/commoncrewdata';
+import SimpleBarChart from '../components/simplebarchart';
 
 type BigBookCrewProps = {
 	markdownRemark: any;
@@ -46,21 +47,28 @@ class BigBookCrew extends Component<BigBookCrewProps> {
 
 type BigBookPageProps = {
 	data: {
-		allMarkdownRemark: any;
+		crewpages: any;
+		sections: any;
 		allCrewJson: any;
 	};
 };
 
-const fieldSorter = (fields) => (a, b) => fields.map(o => {
-    let dir = 1;
-    if (o[0] === '-') { dir = -1; o=o.substring(1); }
-    return a[o] > b[o] ? dir : a[o] < b[o] ? -(dir) : 0;
-}).reduce((p, n) => p ? p : n, 0);
+const fieldSorter = fields => (a, b) =>
+	fields
+		.map(o => {
+			let dir = 1;
+			if (o[0] === '-') {
+				dir = -1;
+				o = o.substring(1);
+			}
+			return a[o] > b[o] ? dir : a[o] < b[o] ? -dir : 0;
+		})
+		.reduce((p, n) => (p ? p : n), 0);
 
 class BigBook extends Component<BigBookPageProps> {
 	render() {
 		let res = [];
-		this.props.data.allMarkdownRemark.edges.forEach((element, idx) => {
+		this.props.data.crewpages.edges.forEach((element, idx) => {
 			let crewEntry = this.props.data.allCrewJson.edges.find(e => e.node.symbol === element.node.fields.slug.replace(/\//g, ''));
 
 			res.push({
@@ -71,13 +79,33 @@ class BigBook extends Component<BigBookPageProps> {
 			});
 		});
 
+		let sections = [];
+		this.props.data.sections.edges.forEach((element, idx) => {
+			sections.push({
+				bigbook_section: element.node.frontmatter.bigbook_section,
+				elem: (
+					<div key={idx}>
+						<Header as='h2' style={{ paddingTop: '1em' }}>{element.node.frontmatter.title}</Header>
+						<div dangerouslySetInnerHTML={{ __html: element.node.html }} />
+					</div>
+				)
+			});
+		});
+
+		sections = sections.sort(fieldSorter(['bigbook_section']));
+
 		res = res.sort(fieldSorter(['-rarity', 'tier', 'name']));
 
 		return (
 			<Layout>
-				<Container text style={{ paddingTop: '6em', paddingBottom: '3em' }}>
-					<Header as='h1'>Big Book</Header>
-					{res.map(e => e.elem)}
+				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
+					{sections[0].elem}
+					{res.filter(e => e.rarity === 5).map(e => e.elem)}
+					{sections[1].elem}
+					{res.filter(e => e.rarity === 4).map(e => e.elem)}
+					{sections.slice(2).map(e => e.elem)}
+					<SimpleBarChart title={'TODO: implement me - in preprocessing!'} data={[{ name: 'CMD/ENG/MED', value: 20 },
+      { name: 'CMD/DIP/MED', value: 40 }]} />
 				</Container>
 			</Layout>
 		);
@@ -88,7 +116,7 @@ export default BigBook;
 
 export const query = graphql`
 	query {
-		allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/crew)/.*\\.md$/"}, frontmatter: {published: {eq: true}}}) {
+		crewpages: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/crew)/.*\\.md$/"}, frontmatter: {published: {eq: true}}}) {
 			totalCount
 			edges {
 				node {
@@ -104,6 +132,19 @@ export const query = graphql`
 					}
 					fields {
 						slug
+					}
+				}
+			}
+		}
+		sections: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {ne: null}}}) {
+			totalCount
+			edges {
+				node {
+					id
+					html
+					frontmatter {
+						title
+						bigbook_section
 					}
 				}
 			}

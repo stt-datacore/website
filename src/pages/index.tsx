@@ -98,7 +98,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						onChange={(e, { value }) => this._onChangeFilter(value)}
 					/>
 
-					<Table sortable celled selectable striped collapsing compact='very'>
+					<Table sortable celled selectable striped collapsing unstackable compact='very'>
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell width={3} sorted={column === 'name' ? direction : null} onClick={() => this.handleSort('name', false)}>

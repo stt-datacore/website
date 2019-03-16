@@ -12,31 +12,26 @@ class TopMenu extends Component {
 			<StaticQuery
 				query={graphql`
 					query {
-						allMarkdownRemark(
-							filter: {
-							  fileAbsolutePath: {
-								  regex: "/(\/static\/pages)/.*\\.md$/"
-							  }
-							}
-						  ) {
+						allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {eq: null}}}) {
 							totalCount
 							edges {
-								node {
-									id
-									frontmatter {
-										title
-									}
-									fields {
-										slug
-									}
+							  node {
+								id
+								frontmatter {
+								  title
+								  bigbook_section
 								}
+								fields {
+								  slug
+								}
+							  }
 							}
-						}
-						site {
+						  }
+						  site {
 							siteMetadata {
-								title
+							  title
 							}
-						}
+						  }
 					}
 				`}
 				render={data => (
