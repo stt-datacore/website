@@ -298,6 +298,10 @@ export const query = graphql`
 							range_max
 						}
 					}
+					cross_fuse_targets {
+						symbol
+						name
+					}
 					action {
 						name
 						bonus_type

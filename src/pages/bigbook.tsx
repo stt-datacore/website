@@ -175,6 +175,10 @@ export const query = graphql`
 					collections
 					flavor
 					...RanksFragment
+					cross_fuse_targets {
+						symbol
+						name
+					}
 					base_skills {
 						security_skill {
 							core
