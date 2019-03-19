@@ -3,8 +3,10 @@ name: "Nyota Uhura"
 rarity: 5
 series: "tos"
 memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+bigbook_tier: 14
+events: 6
+in_portal: false
+published: true
 ---
+
+She's a shuttle body for two events per year. You won't be (shouldn't be) using her otherwise.

@@ -3,8 +3,10 @@ name: "Satin Dress Lily Sloane"
 rarity: 5
 series: "tng"
 memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+bigbook_tier: 8
+events: 1
+in_portal: false
+published: true
 ---
+
+Miss Lily does have "variants" and an "event count", but with neither being impressive, you'll most often be leveraging her bases for some part time lovin' daily shuttle work. A tertiary ENG has saved many a voyage crew and that's the case here where it meets a top 1/3rd stat total for favorable results. I won't oversell her gauntlet ability to you, but being one of a handful of crew who can 2-for-1 The Caretaker is worth at least something, especially to new players. She displays some of the hallmarks of aging poorly (DIP primary, no events), but if you're a collection fiend, you could certainly do worse for a vanity crew.

@@ -3,8 +3,10 @@ name: "Minuet"
 rarity: 5
 series: "tng"
 memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+bigbook_tier: 14
+events: 6
+in_portal: false
+published: true
 ---
+
+Nearly indistinguishable from Changeling Founder, and thus ranked alongside her. If you covered up the name plates, it would hard to tell the difference. Even in the arena, she's similarly useable as a quick defensive option. If you've heard good things about her anywhere but the gauntlet before, it's only because she was performing with a star advantage over other crew thanks to her Mega event.
