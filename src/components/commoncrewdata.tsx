@@ -75,7 +75,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<span style={{ color: 'lightgray' }}>, {crew.traits_hidden.join(', ')}</span>
 				</p>
 
-				{crew.cross_fuse_targets && <p>
+				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && <p>
 					Can cross-fuse with <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
 				</p>}
 
