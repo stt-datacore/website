@@ -14,6 +14,9 @@ The wiki is entirely user-generated, which means it is susceptible to human erro
 
 ### Known issues
 
+* The "in portal" field is not set yet and will say **NO** for every crew
+* The big book text doesn't include formatting (links, bold, etc.)
+
 A note about mission data for equipment sources: the source data was collected from a handful of volunteering accounts, but it's missing the details from certain end-of-episode missions (depending on the choices the respective user made). This currently only affects the "estimated chroniton cost" value for crew. These are the missions whose data we're missing:
 * By Hook Or By Crook [E1-M14B]
 * The Toss [E2-M19A]
