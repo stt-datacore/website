@@ -1,8 +1,8 @@
 ---
-name: "Arachnia Janeway"
+name: Arachnia Janeway
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 11
 events: 12
 in_portal: false

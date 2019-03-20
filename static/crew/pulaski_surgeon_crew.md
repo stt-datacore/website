@@ -1,8 +1,8 @@
 ---
-name: "Surgeon Pulaski"
+name: Surgeon Pulaski
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 7
 events: 2
 in_portal: false

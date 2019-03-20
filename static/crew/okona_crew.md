@@ -1,8 +1,8 @@
 ---
-name: "Captain Thadiun Okona"
+name: Captain Thadiun Okona
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 5
 events: 0
 in_portal: false

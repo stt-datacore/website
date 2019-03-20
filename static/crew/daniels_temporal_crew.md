@@ -1,8 +1,8 @@
 ---
-name: "Temporal Agent Daniels"
+name: Temporal Agent Daniels
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 7
 events: 1
 in_portal: false

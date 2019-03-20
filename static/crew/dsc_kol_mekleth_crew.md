@@ -1,8 +1,8 @@
 ---
-name: "Kol of House Kor"
+name: Kol of House Kor
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 5
 events: 20
 in_portal: false

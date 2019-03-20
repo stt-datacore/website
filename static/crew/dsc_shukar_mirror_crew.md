@@ -1,8 +1,8 @@
 ---
-name: "Mirror Shukar"
+name: Mirror Shukar
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 8
 events: 18
 in_portal: false

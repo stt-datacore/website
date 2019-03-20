@@ -1,8 +1,8 @@
 ---
-name: "23rd Century Martok"
+name: 23rd Century Martok
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 10
 events: 10
 in_portal: false

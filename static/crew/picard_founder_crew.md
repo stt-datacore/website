@@ -1,8 +1,8 @@
 ---
-name: "C.O.P. Founder Picard"
+name: C.O.P. Founder Picard
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 9
 events: 10
 in_portal: false

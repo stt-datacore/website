@@ -1,8 +1,8 @@
 ---
-name: "Captain Rachel Garrett"
+name: Captain Rachel Garrett
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 11
 events: 6
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Judge Q"
+name: Judge Q
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 14
 events: 7
 in_portal: false

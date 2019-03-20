@@ -1,8 +1,8 @@
 ---
-name: "Defensive Phlox"
+name: Defensive Phlox
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 4
 events: 4
 in_portal: false

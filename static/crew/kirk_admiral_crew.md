@@ -1,9 +1,9 @@
 ---
-name: "Admiral Kirk"
+name: Admiral Kirk
 rarity: 5
-series: "tos"
-memory_alpha: ""
-bigbook_tier: 7
+series: tos
+memory_alpha: tos
+bigbook_tier: 6
 events: 10
 in_portal: false
 published: true

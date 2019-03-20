@@ -1,8 +1,8 @@
 ---
-name: "Navigator Stamets"
+name: Navigator Stamets
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 3
 events: 16
 in_portal: false

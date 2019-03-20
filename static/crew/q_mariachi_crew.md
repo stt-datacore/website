@@ -1,8 +1,8 @@
 ---
-name: "Mariachi Q"
+name: Mariachi Q
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 12
 events: 6
 in_portal: false

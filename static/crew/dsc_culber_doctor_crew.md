@@ -1,11 +1,11 @@
 ---
-name: "Dr. Hugh Culber"
+name: Dr. Hugh Culber
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 3
 events: 12
-in_portal: true
+in_portal: false
 published: true
 ---
 

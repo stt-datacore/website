@@ -1,8 +1,8 @@
 ---
-name: "Ahdar Ru'afo"
+name: Ahdar Ru'afo
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 6
 events: 5
 in_portal: false

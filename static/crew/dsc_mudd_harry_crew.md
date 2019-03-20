@@ -1,8 +1,8 @@
 ---
-name: "Harcourt Fenton Mudd"
+name: Harcourt Fenton Mudd
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 7
 events: 12
 in_portal: false

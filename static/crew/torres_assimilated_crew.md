@@ -1,8 +1,8 @@
 ---
-name: "Assimilated Torres"
+name: Assimilated Torres
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 9
 events: 15
 in_portal: false

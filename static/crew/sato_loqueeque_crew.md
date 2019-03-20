@@ -1,8 +1,8 @@
 ---
-name: "Loque'eque Sato"
+name: Loque'eque Sato
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 13
 events: 3
 in_portal: false

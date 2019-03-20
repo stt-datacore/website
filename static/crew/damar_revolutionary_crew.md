@@ -1,8 +1,8 @@
 ---
-name: "Revolutionary Damar"
+name: Revolutionary Damar
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 11
 events: 1
 in_portal: false

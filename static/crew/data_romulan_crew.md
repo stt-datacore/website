@@ -1,8 +1,8 @@
 ---
-name: "Romulan Data"
+name: Romulan Data
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 4
 events: 21
 in_portal: false

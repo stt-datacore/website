@@ -1,8 +1,8 @@
 ---
-name: "Phlox, Au Naturel"
+name: Phlox, Au Naturel
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 3
 events: 4
 in_portal: false

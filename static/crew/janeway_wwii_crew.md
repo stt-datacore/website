@@ -1,8 +1,8 @@
 ---
-name: "Agent Janeway"
+name: Agent Janeway
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 9
 events: 12
 in_portal: false

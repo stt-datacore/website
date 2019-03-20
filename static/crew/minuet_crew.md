@@ -1,8 +1,8 @@
 ---
-name: "Minuet"
+name: Minuet
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 14
 events: 6
 in_portal: false

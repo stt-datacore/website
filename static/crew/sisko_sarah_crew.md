@@ -1,11 +1,11 @@
 ---
-name: "Prophet Sarah Sisko"
+name: Prophet Sarah Sisko
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 3
 events: 0
-in_portal: true
+in_portal: false
 published: true
 ---
 

@@ -1,8 +1,8 @@
 ---
-name: "Suliban Reed"
+name: Suliban Reed
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 13
 events: 5
 in_portal: false

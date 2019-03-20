@@ -1,8 +1,8 @@
 ---
-name: "Kolinahr Spock"
+name: Kolinahr Spock
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 8
 events: 18
 in_portal: false

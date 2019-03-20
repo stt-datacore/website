@@ -1,8 +1,8 @@
 ---
-name: "Maquis Tuvok"
+name: Maquis Tuvok
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 7
 events: 11
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Shinzon"
+name: Shinzon
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 15
 events: 0
 in_portal: false

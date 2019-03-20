@@ -1,8 +1,8 @@
 ---
-name: "Bartender Guinan"
+name: Bartender Guinan
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 4
 events: 1
 in_portal: false

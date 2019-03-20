@@ -1,11 +1,11 @@
 ---
-name: "Mirror Data"
+name: Mirror Data
 rarity: 5
-series: ""
-memory_alpha: ""
+series: ''
+memory_alpha: ''
 bigbook_tier: 3
 events: 21
-in_portal: true
+in_portal: false
 published: true
 ---
 

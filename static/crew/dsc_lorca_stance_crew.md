@@ -1,8 +1,8 @@
 ---
-name: "Captain Lorca"
+name: Captain Lorca
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 4
 events: 19
 in_portal: false

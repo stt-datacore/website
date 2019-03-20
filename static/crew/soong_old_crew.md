@@ -1,8 +1,8 @@
 ---
-name: "Dr. Soong"
+name: Dr. Soong
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 15
 events: 2
 in_portal: false

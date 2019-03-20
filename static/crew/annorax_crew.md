@@ -1,14 +1,12 @@
 ---
-name: "Annorax"
+name: Annorax
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 6
 events: 1
 in_portal: false
 published: true
 ---
 
-Red Forman is one of the better non-event crew. He was only recently dethroned as the best SCI/CMD voyager and for a comparison to a more common crew, he's similar to Armus there, but with better SCI and overall numbers.
-
-The top of the SCI base charts have historically been light on event crew so if you're looking for shuttle help who can pitch in elsewhere, he's not a bad investment despite the lack of events.
+Red Forman is one of the better non-event crew. He was only recently dethroned as the best SCI/CMD voyager and for a comparison to a more common crew, he's similar to Armus there, but with better SCI and overall numbers. The top of the SCI base charts have historically been light on event crew so if you're looking for shuttle help who can pitch in elsewhere, he's not a bad investment despite the lack of events.

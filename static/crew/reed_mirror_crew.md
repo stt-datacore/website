@@ -1,8 +1,8 @@
 ---
-name: "Mirror Reed"
+name: Mirror Reed
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 9
 events: 12
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Lt Commander La Forge"
+name: Lt Commander La Forge
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 11
 events: 8
 in_portal: false

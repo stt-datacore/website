@@ -1,8 +1,8 @@
 ---
-name: "Seven in Silver"
+name: Seven in Silver
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 7
 events: 10
 in_portal: false

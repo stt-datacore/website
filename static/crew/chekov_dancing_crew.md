@@ -1,8 +1,8 @@
 ---
-name: "Dancing Chekov"
+name: Dancing Chekov
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 7
 events: 4
 in_portal: false

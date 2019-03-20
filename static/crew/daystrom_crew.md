@@ -1,8 +1,8 @@
 ---
-name: "Dr. Richard Daystrom"
+name: Dr. Richard Daystrom
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 14
 events: 0
 in_portal: false

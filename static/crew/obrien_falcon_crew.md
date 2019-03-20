@@ -1,8 +1,8 @@
 ---
-name: "Falcon O'Brien"
+name: Falcon O'Brien
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 5
 events: 13
 in_portal: false

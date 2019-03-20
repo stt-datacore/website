@@ -1,8 +1,8 @@
 ---
-name: "Rain Robinson"
+name: Rain Robinson
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 7
 events: 0
 in_portal: false

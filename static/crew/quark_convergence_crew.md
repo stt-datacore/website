@@ -1,8 +1,8 @@
 ---
-name: "Convergence Day Quark"
+name: Convergence Day Quark
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 11
 events: 10
 in_portal: false

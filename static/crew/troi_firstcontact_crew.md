@@ -1,10 +1,10 @@
 ---
-name: "Commander Troi"
+name: Commander Troi
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 12
-events: 0
+events: 10
 in_portal: false
 published: true
 ---

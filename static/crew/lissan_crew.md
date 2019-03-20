@@ -1,8 +1,8 @@
 ---
-name: "Lissan"
+name: Lissan
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 14
 events: 5
 in_portal: false

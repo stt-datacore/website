@@ -1,8 +1,8 @@
 ---
-name: "Nyota Uhura"
+name: Nyota Uhura
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 14
 events: 6
 in_portal: false

@@ -1,10 +1,12 @@
 ---
-name: "Lon Suder"
+name: Lon Suder
 rarity: 4
-series: "voy"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: voy
+memory_alpha: voy
+bigbook_tier: 13
+events: 1
+in_portal: false
+published: true
 ---
+
+Too poor in too many areas to justify a more expensive than average build cost. A zero in the areas that provide long term value. His most beneficial attribute is merely his skill set.

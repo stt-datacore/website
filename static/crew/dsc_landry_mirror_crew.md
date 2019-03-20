@@ -1,8 +1,8 @@
 ---
-name: "Mirror Ellen Landry"
+name: Mirror Ellen Landry
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 8
 events: 20
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Emperor Philippa Georgiou"
+name: Emperor Philippa Georgiou
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 5
 events: 21
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Gladiator McCoy"
+name: Gladiator McCoy
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 7
 events: 9
 in_portal: false

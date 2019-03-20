@@ -1,8 +1,8 @@
 ---
-name: "Bell Riots Jadzia Dax"
+name: Bell Riots Jadzia Dax
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 7
 events: 12
 in_portal: false

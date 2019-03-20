@@ -1,8 +1,8 @@
 ---
-name: "Duelist Torres"
+name: Duelist Torres
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 10
 events: 11
 in_portal: false

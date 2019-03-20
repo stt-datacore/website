@@ -1,10 +1,12 @@
 ---
-name: "Augment Riker"
+name: Augment Riker
 rarity: 4
-series: "ent"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: ent
+memory_alpha: ent
+bigbook_tier: 6
+events: 11
+in_portal: false
+published: true
 ---
+
+Early game performer thanks to strong ENG proficiency, and for later on, a spot in three collections with a two event per year (Augment mega notwithstanding).

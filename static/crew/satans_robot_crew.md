@@ -1,8 +1,8 @@
 ---
-name: "Satan's Robot"
+name: Satan's Robot
 rarity: 5
-series: ""
-memory_alpha: ""
+series: ''
+memory_alpha: ''
 bigbook_tier: 9
 events: 6
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Protomorphosis Worf"
+name: Protomorphosis Worf
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 7
 events: 16
 in_portal: false

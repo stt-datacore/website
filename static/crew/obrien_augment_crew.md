@@ -1,8 +1,8 @@
 ---
-name: "Augment Commander O'Brien"
+name: Augment Commander O'Brien
 rarity: 5
-series: ""
-memory_alpha: ""
+series: ''
+memory_alpha: ''
 bigbook_tier: 8
 events: 11
 in_portal: false

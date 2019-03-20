@@ -1,10 +1,12 @@
 ---
-name: "Kurros"
+name: Kurros
 rarity: 4
-series: "voy"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: voy
+memory_alpha: voy
+bigbook_tier: 12
+events: 1
+in_portal: false
+published: true
 ---
+
+Usable arena +EV, but you won't have to look far to find better. +1 Innovator. Great episode.

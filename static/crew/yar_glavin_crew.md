@@ -1,10 +1,12 @@
 ---
-name: "Duelist Yar"
+name: Duelist Yar
 rarity: 4
-series: "tng"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: tng
+memory_alpha: tng
+bigbook_tier: 10
+events: 5
+in_portal: false
+published: true
 ---
+
+Strong voyage and gauntlet SEC numbers, but won't age gracefully - her skill set makes her replaceable earlier than others. A usable-when-bonus SEC base for her five previous Faction events.

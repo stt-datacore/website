@@ -1,8 +1,8 @@
 ---
-name: "Lonzak"
+name: Lonzak
 rarity: 5
-series: ""
-memory_alpha: ""
+series: ''
+memory_alpha: ''
 bigbook_tier: 3
 events: 7
 in_portal: false

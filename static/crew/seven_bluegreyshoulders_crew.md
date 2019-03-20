@@ -1,8 +1,8 @@
 ---
-name: "Seven of Nine"
+name: Seven of Nine
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 8
 events: 10
 in_portal: false

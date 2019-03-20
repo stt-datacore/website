@@ -1,8 +1,8 @@
 ---
-name: "Ripper"
+name: Ripper
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 7
 events: 13
 in_portal: false

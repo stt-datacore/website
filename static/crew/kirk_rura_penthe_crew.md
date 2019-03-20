@@ -1,11 +1,11 @@
 ---
-name: "Rura Penthe Kirk"
+name: Rura Penthe Kirk
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 3
 events: 12
-in_portal: true
+in_portal: false
 published: true
 ---
 

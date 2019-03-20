@@ -1,8 +1,8 @@
 ---
-name: "Age of Sail Crusher"
+name: Age of Sail Crusher
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 8
 events: 4
 in_portal: false

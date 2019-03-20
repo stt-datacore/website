@@ -1,8 +1,8 @@
 ---
-name: "Timicin"
+name: Timicin
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 7
 events: 0
 in_portal: false

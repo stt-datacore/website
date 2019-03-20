@@ -1,8 +1,8 @@
 ---
-name: "Klingon Bride Jadzia"
+name: Klingon Bride Jadzia
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 6
 events: 23
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Mobile Doctor"
+name: Mobile Doctor
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 8
 events: 11
 in_portal: false

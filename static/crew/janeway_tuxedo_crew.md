@@ -1,8 +1,8 @@
 ---
-name: "Katrine"
+name: Katrine
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 8
 events: 12
 in_portal: false

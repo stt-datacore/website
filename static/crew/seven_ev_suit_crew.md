@@ -1,8 +1,8 @@
 ---
-name: "EV Suit Seven of Nine"
+name: EV Suit Seven of Nine
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 9
 events: 10
 in_portal: false

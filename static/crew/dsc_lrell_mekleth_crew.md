@@ -1,8 +1,8 @@
 ---
-name: "Vengeful L'Rell"
+name: Vengeful L'Rell
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 9
 events: 20
 in_portal: false

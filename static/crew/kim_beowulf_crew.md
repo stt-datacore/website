@@ -1,8 +1,8 @@
 ---
-name: "Beowulf Kim"
+name: Beowulf Kim
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 11
 events: 7
 in_portal: false

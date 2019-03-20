@@ -1,8 +1,8 @@
 ---
-name: "Undercover Sulu"
+name: Undercover Sulu
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 13
 events: 5
 in_portal: false

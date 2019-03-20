@@ -1,8 +1,8 @@
 ---
-name: "Rogue Kai Winn"
+name: Rogue Kai Winn
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 14
 events: 4
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Crell Moset"
+name: Crell Moset
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 8
 events: 9
 in_portal: false

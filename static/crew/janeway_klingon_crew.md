@@ -1,11 +1,11 @@
 ---
-name: "Klingon Janeway"
+name: Klingon Janeway
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 3
 events: 17
-in_portal: true
+in_portal: false
 published: true
 ---
 

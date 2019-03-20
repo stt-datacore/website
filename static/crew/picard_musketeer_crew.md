@@ -1,8 +1,8 @@
 ---
-name: "Musketeer Picard"
+name: Musketeer Picard
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 9
 events: 12
 in_portal: false

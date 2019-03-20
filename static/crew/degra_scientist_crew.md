@@ -1,8 +1,8 @@
 ---
-name: "Scientist Degra"
+name: Scientist Degra
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 8
 events: 1
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Laborer Spock"
+name: Laborer Spock
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 5
 events: 17
 in_portal: false

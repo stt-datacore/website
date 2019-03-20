@@ -1,8 +1,8 @@
 ---
-name: "Commander Kira Nerys"
+name: Commander Kira Nerys
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 4
 events: 9
 in_portal: false

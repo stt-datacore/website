@@ -1,8 +1,8 @@
 ---
-name: "Christopher Pike"
+name: Christopher Pike
 rarity: 5
-series: "dsc"
-memory_alpha: ""
+series: dsc
+memory_alpha: dsc
 bigbook_tier: 5
 events: 13
 in_portal: false

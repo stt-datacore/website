@@ -1,8 +1,8 @@
 ---
-name: "Martian Quark"
+name: Martian Quark
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 8
 events: 10
 in_portal: false

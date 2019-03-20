@@ -1,8 +1,8 @@
 ---
-name: "Mirror Regent Worf"
+name: Mirror Regent Worf
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 11
 events: 22
 in_portal: false

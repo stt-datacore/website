@@ -1,8 +1,8 @@
 ---
-name: "Gloria"
+name: Gloria
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 7
 events: 1
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Mintakan Riker"
+name: Mintakan Riker
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 10
 events: 14
 in_portal: false

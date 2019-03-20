@@ -1,10 +1,12 @@
 ---
-name: "Bridge Officer Troi"
+name: Bridge Officer Troi
 rarity: 4
-series: "tng"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: tng
+memory_alpha: tng
+bigbook_tier: 9
+events: 10
+in_portal: false
+published: true
 ---
+
+Notably strong MED/CMD stack for voyages with a rising event tally and a little play as an early game gauntleteer, but not a strong long term contributor. Narrow window as quick EV crew in arena.

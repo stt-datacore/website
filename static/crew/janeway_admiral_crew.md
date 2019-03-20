@@ -1,8 +1,8 @@
 ---
-name: "Admiral Janeway"
+name: Admiral Janeway
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 10
 events: 10
 in_portal: false

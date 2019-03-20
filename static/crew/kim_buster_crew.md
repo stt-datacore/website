@@ -1,10 +1,12 @@
 ---
-name: "Buster Kincaid Kim"
+name: Buster Kincaid Kim
 rarity: 4
-series: "voy"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: voy
+memory_alpha: voy
+bigbook_tier: 9
+events: 5
+in_portal: false
+published: true
 ---
+
+Top 1/3rd voyager with a reasonable base SEC for his half dozen events. More useful on active roster for early/mid-game players than as long term contributor.

@@ -1,8 +1,8 @@
 ---
-name: "Grand Nagus Zek"
+name: Grand Nagus Zek
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 13
 events: 6
 in_portal: false

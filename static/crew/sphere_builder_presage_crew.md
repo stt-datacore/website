@@ -1,8 +1,8 @@
 ---
-name: "Sphere-Builder Presage"
+name: Sphere-Builder Presage
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 3
 events: 1
 in_portal: false

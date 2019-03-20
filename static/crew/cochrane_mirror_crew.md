@@ -1,8 +1,8 @@
 ---
-name: "Mirror Zefram Cochrane"
+name: Mirror Zefram Cochrane
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 6
 events: 12
 in_portal: false

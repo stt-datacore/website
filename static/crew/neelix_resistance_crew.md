@@ -1,8 +1,8 @@
 ---
-name: "Resistance Neelix"
+name: Resistance Neelix
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 11
 events: 4
 in_portal: false

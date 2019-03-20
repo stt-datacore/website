@@ -1,8 +1,8 @@
 ---
-name: "Joachim"
+name: Joachim
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 11
 events: 9
 in_portal: false

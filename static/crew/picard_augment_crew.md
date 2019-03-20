@@ -1,8 +1,8 @@
 ---
-name: "Augment Picard"
+name: Augment Picard
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 9
 events: 13
 in_portal: false

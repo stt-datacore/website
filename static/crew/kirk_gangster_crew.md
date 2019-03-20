@@ -1,8 +1,8 @@
 ---
-name: "Gangster Kirk"
+name: Gangster Kirk
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 5
 events: 12
 in_portal: false

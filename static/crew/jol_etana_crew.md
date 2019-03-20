@@ -1,8 +1,8 @@
 ---
-name: "Etana Jol"
+name: Etana Jol
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 5
 events: 4
 in_portal: false

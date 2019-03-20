@@ -1,10 +1,12 @@
 ---
-name: "Martia"
+name: Martia
 rarity: 4
-series: "tos"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: tos
+memory_alpha: tos
+bigbook_tier: 14
+events: 1
+in_portal: false
+published: true
 ---
+
+Filler 2-skiller. The build cost to get her to the chiller is killer. Looks like Michael Jackson in Thriller.

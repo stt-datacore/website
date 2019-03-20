@@ -1,8 +1,8 @@
 ---
-name: "Mademoiselle de Neuf"
+name: Mademoiselle de Neuf
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 8
 events: 11
 in_portal: false

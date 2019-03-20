@@ -1,8 +1,8 @@
 ---
-name: "Ambassador Soval"
+name: Ambassador Soval
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 14
 events: 7
 in_portal: false

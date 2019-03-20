@@ -1,8 +1,8 @@
 ---
-name: "Pah-wraith Keiko"
+name: Pah-wraith Keiko
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 4
 events: 2
 in_portal: false

@@ -1,10 +1,12 @@
 ---
-name: "Captain Proton Paris"
+name: Captain Proton Paris
 rarity: 4
-series: "voy"
-memory_alpha: ""
-bigbook_tier:
-events:
-in_portal:
-published: false
+series: voy
+memory_alpha: voy
+bigbook_tier: 11
+events: 13
+in_portal: false
+published: true
 ---
+
+He's been featured event crew four times and is over double-digit events, but outside of that he offers nothing aside from an extremely torturous and expensive build. 132 0* holoprograms are needed and you'll likely be replicating multiple 5* items just to shunt him off to stasis.

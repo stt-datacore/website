@@ -1,8 +1,8 @@
 ---
-name: "Away Team Number One"
+name: Away Team Number One
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 4
 events: 1
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "Gangster Spock"
+name: Gangster Spock
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 8
 events: 16
 in_portal: false

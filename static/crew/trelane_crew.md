@@ -1,8 +1,8 @@
 ---
-name: "Trelane"
+name: Trelane
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 9
 events: 1
 in_portal: false

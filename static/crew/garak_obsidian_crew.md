@@ -1,8 +1,8 @@
 ---
-name: "Obsidian Order Garak"
+name: Obsidian Order Garak
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 8
 events: 9
 in_portal: false

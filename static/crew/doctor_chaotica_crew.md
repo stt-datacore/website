@@ -1,8 +1,8 @@
 ---
-name: "Doctor Chaotica"
+name: Doctor Chaotica
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 12
 events: 9
 in_portal: false

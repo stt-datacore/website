@@ -1,8 +1,8 @@
 ---
-name: "Jazz Musician Odo"
+name: Jazz Musician Odo
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: ds9
 bigbook_tier: 13
 events: 7
 in_portal: false

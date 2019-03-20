@@ -1,11 +1,11 @@
 ---
-name: "Temporal Prisoner Chakotay"
+name: Temporal Prisoner Chakotay
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 3
 events: 4
-in_portal: true
+in_portal: false
 published: true
 ---
 

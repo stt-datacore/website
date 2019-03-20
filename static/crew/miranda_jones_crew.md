@@ -1,8 +1,8 @@
 ---
-name: "Miranda Jones"
+name: Miranda Jones
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 10
 events: 7
 in_portal: false

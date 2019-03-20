@@ -1,8 +1,8 @@
 ---
-name: "Mirror Spock"
+name: Mirror Spock
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha: tos
 bigbook_tier: 9
 events: 23
 in_portal: false

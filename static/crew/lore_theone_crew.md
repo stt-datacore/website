@@ -1,8 +1,8 @@
 ---
-name: "The One, Lore"
+name: The One, Lore
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 13
 events: 9
 in_portal: false

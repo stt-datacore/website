@@ -1,8 +1,8 @@
 ---
-name: "Maid Marian"
+name: Maid Marian
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 15
 events: 1
 in_portal: false

@@ -1,8 +1,8 @@
 ---
-name: "One"
+name: One
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 14
 events: 5
 in_portal: false

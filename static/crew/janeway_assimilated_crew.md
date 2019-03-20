@@ -1,8 +1,8 @@
 ---
-name: "Assimilated Janeway"
+name: Assimilated Janeway
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 4
 events: 16
 in_portal: false

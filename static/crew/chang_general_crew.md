@@ -1,8 +1,8 @@
 ---
-name: "General Chang"
+name: General Chang
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 13
 events: 7
 in_portal: false

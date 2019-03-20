@@ -1,11 +1,11 @@
 ---
-name: "Captain Lorian"
+name: Captain Lorian
 rarity: 5
-series: "ent"
-memory_alpha: ""
+series: ent
+memory_alpha: ent
 bigbook_tier: 3
 events: 7
-in_portal: true
+in_portal: false
 published: true
 ---
 

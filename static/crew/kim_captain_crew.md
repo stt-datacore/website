@@ -1,8 +1,8 @@
 ---
-name: "Captain Harry Kim"
+name: Captain Harry Kim
 rarity: 5
-series: "voy"
-memory_alpha: ""
+series: voy
+memory_alpha: voy
 bigbook_tier: 5
 events: 8
 in_portal: false

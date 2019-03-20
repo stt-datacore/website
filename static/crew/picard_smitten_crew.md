@@ -1,8 +1,8 @@
 ---
-name: "Smitten Jean-Luc Picard"
+name: Smitten Jean-Luc Picard
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 9
 events: 10
 in_portal: false

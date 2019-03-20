@@ -1,8 +1,8 @@
 ---
-name: "First Officer Riker"
+name: First Officer Riker
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 10
 events: 7
 in_portal: false

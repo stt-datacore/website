@@ -1,8 +1,8 @@
 ---
-name: "Age of Sail Riker"
+name: Age of Sail Riker
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha: tng
 bigbook_tier: 6
 events: 7
 in_portal: false
