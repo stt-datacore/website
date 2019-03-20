@@ -20,7 +20,7 @@ class ItemSources extends Component<ItemSourcesProps> {
 				<p key={'disputeMissions'}>
 					<b>Missions: </b>
 					{disputeMissions
-						.map((entry, idx) => <MissionCost key={idx} mission={entry.id} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
+						.map((entry, idx) => <MissionCost key={idx} mission_symbol={entry.mission_symbol} cost={entry.cost} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
 						.reduce((prev, curr) => [prev, ', ', curr])}
 				</p>
 			);
@@ -31,7 +31,7 @@ class ItemSources extends Component<ItemSourcesProps> {
 				<p key={'shipBattles'}>
 					<b>Ship battles: </b>
 					{shipBattles
-						.map((entry, idx) => <MissionCost key={idx} mission={entry.id} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
+						.map((entry, idx) => <MissionCost key={idx} mission_symbol={entry.mission_symbol} cost={entry.cost} name={entry.name} chance_grade={entry.chance_grade} mastery={entry.mastery} />)
 						.reduce((prev, curr) => [prev, ', ', curr])}
 				</p>
 			);
@@ -56,9 +56,8 @@ export const query = graphql`
 	fragment ItemSourcesFragment on ItemsJson {
 		item_sources {
 			type
-			id {
-				...MissionsFragment
-			}
+			mission_symbol
+			cost
 			name
 			chance_grade
 			mastery

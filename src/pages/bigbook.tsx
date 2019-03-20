@@ -50,7 +50,7 @@ type BigBookPageProps = {
 		crewpages: any;
 		sections: any;
 		allCrewJson: any;
-		allSortedSkillSetsJson: any[];
+		allSortedSkillSetsJson: any;
 	};
 };
 

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
-import { graphql } from 'gatsby';
-
 import CONFIG from './CONFIG';
 
 type MissionCostProps = {
-	mission?: any;
+	mission_symbol?: string;
+	cost: number;
 	mastery: number;
 	chance_grade: number;
 	name: string;
@@ -13,8 +12,9 @@ type MissionCostProps = {
 
 class MissionCost extends Component<MissionCostProps> {
 	render() {
-		const is_known = this.props.mission;
+		const is_known = this.props.cost > 0;
 
+		// TODO: name should be a Link to /missions/${mission_symbol}/
 		return (
 			<span>
 				<span style={{ color: is_known ? 'inherit': 'red' }}>{this.props.name}</span>
@@ -28,26 +28,16 @@ class MissionCost extends Component<MissionCostProps> {
 	}
 
 	renderCost() {
-		let cost = this.props.mission.mastery_levels[this.props.mastery].energy_cost;
-
 		return (
 			<span>
 				{' ('}
 				<span style={{ display: 'inline-block' }}>
 					<img src={`/media/icons/energy_icon.png`} height={14} />
 				</span>
-				{` ${cost})`}
+				{` ${this.props.cost})`}
 			</span>
 		);
 	}
 }
 
 export default MissionCost;
-
-export const query = graphql`
-	fragment MissionsFragment on QuestsJson {
-		mastery_levels {
-			energy_cost
-		}
-	}
-`;

@@ -116,17 +116,6 @@ for (let i = 0; i < skillNames.length - 1; i++) {
 
 fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
 
-// Filter out item sources that are thresholds (one time only)
-let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json'));
-
-for(let item of items) {
-	if (item.item_sources.length > 0) {
-		item.item_sources = item.item_sources.filter((i) => i.type !==3);
-	}
-}
-
-fs.writeFileSync(STATIC_PATH + 'items.json', JSON.stringify(items));
-
 // Calculate some skill set stats for the BigBook
 let counts = {};
 for (let crew of crewlist) {
