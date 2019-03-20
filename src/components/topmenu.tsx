@@ -43,6 +43,7 @@ class TopMenu extends Component {
 							<Menu.Item onClick={() => navigate('/')}>Crew stats</Menu.Item>
 							<Menu.Item onClick={() => navigate('/about')}>About</Menu.Item>
 							<Menu.Item onClick={() => navigate('/bigbook')}>Big book</Menu.Item>
+							<Menu.Item onClick={() => navigate('/voyage')}>Voyage</Menu.Item>
 
 							<Dropdown item simple text='Pages'>
 								<Dropdown.Menu>
