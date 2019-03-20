@@ -76,7 +76,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				</p>
 
 				{crew.cross_fuse_targets && <p>
-					Can cross-fuse with <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>${crew.cross_fuse_targets.name}</Link>.
+					Can cross-fuse with <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
 				</p>}
 
 				{crew.collections.length > 0 && (
