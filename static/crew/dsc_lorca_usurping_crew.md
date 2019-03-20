@@ -4,7 +4,8 @@ series: dsc
 memory_alpha: ''
 bigbook_tier: 8
 events: 20
-published: false
+published: true
+date: 2019-03-20T02:07:52.179Z
 name: Usurper Lorca
 ---
 Rather milquetoast numbers for 'Leather Daddy Lorca' (not my moniker). Like all Discovery crew, he comes out of the box with a huge event tally, further boosted by the Mirror trait. But that’s where the appeal ends.
