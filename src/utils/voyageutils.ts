@@ -51,6 +51,50 @@ export function applyBuffConfig(buffConfig: { [index: string]: IBuffStat }, crew
 	}
 }
 
+export function formatCrewStats(crew: any): string {
+	let result = '';
+	for (let skillName in CONFIG.SKILLS) {
+		let skill = crew.skills[skillName];
+		
+		if (skill && skill.core && (skill.core > 0)) {
+			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
+		}
+	}
+	return result;
+}
+
+export function formatTimeSeconds(seconds: number, showSeconds: boolean = false): string {
+    let h = Math.floor(seconds / 3600);
+    let d = Math.floor(h / 24);
+    h = h - d*24;
+    let m = Math.floor(seconds % 3600 / 60);
+    let s = Math.floor(seconds % 3600 % 60);
+
+    let parts = [];
+
+    if (d > 0) {
+        parts.push(d + 'D');
+    }
+
+    if (h > 0) {
+        parts.push(h + 'H');
+    }
+
+    if (m > 0) {
+        parts.push(m + 'M');
+    }
+
+    if ((s > 0) && (showSeconds || (seconds < 60))) {
+        parts.push(s + 'S');
+    }
+
+    if (parts.length === 0) {
+        return '0S';
+    } else {
+        return parts.join(' ');
+    }
+}
+
 export class BonusCrew {
 	eventName: string = '';
 	eventCrew: { [index: string]: any } = {};
@@ -210,7 +254,7 @@ export function exportVoyageData(options) {
 
 	options.roster.forEach(crew => {
 		let traitIds = [];
-		crew.rawTraits.forEach(trait => {
+		crew.traits.forEach(trait => {
 			if (arrTraits.indexOf(trait) >= 0) {
 				traitIds.push(arrTraits.indexOf(trait));
 			}
@@ -228,9 +272,16 @@ export function exportVoyageData(options) {
 		let buffer = new ArrayBuffer(6 /*number of skills */ * 3 /*values per skill*/ * 2 /*we need 2 bytes per value*/);
 		let skillData = new Uint16Array(buffer);
 		for (let i = 0; i < skills.length; i++) {
-			skillData[i * 3] = crew[skills[i]].core;
-			skillData[i * 3 + 1] = crew[skills[i]].min;
-			skillData[i * 3 + 2] = crew[skills[i]].max;
+			if (!crew.skills[skills[i]]) {
+				skillData[i * 3] = 0;
+				skillData[i * 3 + 1] = 0;
+				skillData[i * 3 + 2] = 0;
+			} else {
+				let skill = crew.skills[skills[i]];
+				skillData[i * 3] = skill.core;
+				skillData[i * 3 + 1] = skill.range_min;
+				skillData[i * 3 + 2] = skill.range_max;
+			}
 		}
 
 		// This won't be necessary once we switch away from Json to pure binary for native invocation

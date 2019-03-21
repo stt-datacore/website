@@ -123,17 +123,21 @@ exports.onPostBootstrap = async ({ store }) => {
 	}
 };
 
-exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
-	if (stage === "build-html") {
-	  actions.setWebpackConfig({
-		module: {
-		  rules: [
-			{
-			  test: /wasmWorker/,
-			  use: loaders.null(),
-			},
-		  ],
-		},
-	  })
+exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
+	if (stage === 'build-html') {
+		actions.setWebpackConfig({
+			module: {
+				rules: [
+					{
+						test: /wasmWorker\.js$/,
+						use: { loader: 'worker-loader' }
+					}
+				]
+			}
+		});
 	}
-  }
+
+	const config = getConfig();
+	config.output.globalObject = 'this';
+	actions.replaceWebpackConfig(config);
+};

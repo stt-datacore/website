@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 import { Header, Button } from 'semantic-ui-react';
-import { StaticQuery, graphql } from 'gatsby';
 
-import { calculateBuffConfig, bonusCrewForCurrentEvent, bestVoyageShip, calculateVoyage } from '../utils/voyageutils';
+import {
+	calculateBuffConfig,
+	bonusCrewForCurrentEvent,
+	bestVoyageShip,
+	ICalcResult,
+	calculateVoyage,
+	formatTimeSeconds
+} from '../utils/voyageutils';
+
+import CrewPopup from '../components/crewpopup';
 
 import CONFIG from './CONFIG';
 
@@ -10,26 +18,44 @@ type VoyageCalculatorProps = {
 	playerData: any;
 };
 
-class VoyageCalculator extends Component<VoyageCalculatorProps> {
+enum CalculatorState {
+	NotStarted,
+	InProgress,
+	Done
+}
+
+type VoyageCalculatorState = {
+	bestShip: any;
+	calcState: CalculatorState;
+	result?: ICalcResult;
+};
+
+class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
 	constructor(props) {
 		super(props);
+
+		const { playerData } = props;
+
+		let buffConfig = calculateBuffConfig(playerData.player);
+		console.log(buffConfig);
+
+		let eventBonus = bonusCrewForCurrentEvent(playerData.player);
+		console.log(eventBonus);
+
+		let bestShips = bestVoyageShip(playerData.player);
+
+		this.state = {
+			bestShip: bestShips[0],
+			calcState: CalculatorState.NotStarted,
+			result: undefined
+		};
 	}
 
 	render() {
-        const { playerData } = this.props;
-        
-        let buffConfig = calculateBuffConfig(playerData.player);
-        console.log(buffConfig);
+		const { playerData } = this.props;
+		const { bestShip, calcState } = this.state;
 
-        let eventBonus = bonusCrewForCurrentEvent(playerData.player);
-        console.log(eventBonus);
-
-        let bestShips = bestVoyageShip(playerData.player);
-        console.log(bestShips);
-
-        let bestShip = bestShips[0];
-
-        let curVoy = '';
+		let curVoy = '';
 		if (playerData.player.character.voyage_descriptions && playerData.player.character.voyage_descriptions.length > 0) {
 			curVoy = `${CONFIG.SKILLS[playerData.player.character.voyage_descriptions[0].skills.primary_skill]} primary / ${
 				CONFIG.SKILLS[playerData.player.character.voyage_descriptions[0].skills.secondary_skill]
@@ -39,39 +65,49 @@ class VoyageCalculator extends Component<VoyageCalculatorProps> {
 			curVoy = `${CONFIG.SKILLS[playerData.player.character.voyage[0].skills.primary_skill]} primary / ${
 				CONFIG.SKILLS[playerData.player.character.voyage[0].skills.secondary_skill]
 			} secondary`;
-        }
-        
-        //let allcrew = data.allCrewJson.edges.map(({ node }, index) => node);
+		}
+
+		let stillLoading = calcState === CalculatorState.InProgress;
 
 		return (
-			<StaticQuery
-				query={graphql`
-					query {
-						allCrewJson {
-							edges {
-								node {
-									name
-									archetype_id
-								}
-							}
-						}
-					}
-				`}
-				render={data => (
-					<div>
-						<Header as='h4'>Hello, {playerData.player.display_name}</Header>
-                        <p>Current voyage is {curVoy}</p>
-                        <p>Best ship: <b>{bestShip.ship.name} ({bestShip.score} Antimatter)</b></p>
+			<div>
+				<Header as='h4'>Hello, {playerData.player.display_name}</Header>
+				<p>Current voyage is {curVoy}</p>
+				<p>
+					Best ship:{' '}
+					<b>
+						{bestShip.ship.name} ({bestShip.score} Antimatter)
+					</b>
+				</p>
 
-                        <Button onClick={() => this._calcVoyageData(bestShip.score)} primary content='Calculate' />
-					</div>
+				<Button style={{ marginBottom: '1em' }} onClick={() => this._calcVoyageData(bestShip.score)} primary content='Calculate' />
+
+				{this.state.result && (
+					<React.Fragment>
+						<p>
+							Estimated duration: <b>{formatTimeSeconds(this.state.result.score * 60 * 60)}</b>
+						</p>
+						<ul>
+							{this.state.result.entries.map((entry, idx) => {
+                                let crew = playerData.player.character.crew.find(c => c.id === entry.choice);
+								return <li key={idx}>
+									{playerData.player.character.voyage_descriptions[0].crew_slots[entry.slotId].name}
+                                    {'  :  '}
+                                    <CrewPopup crew={crew} />
+                                </li>;
+                            }
+							)}
+						</ul>
+					</React.Fragment>
 				)}
-			/>
+
+				{stillLoading && <div className='ui medium centered text active inline loader'>Calculating...</div>}
+			</div>
 		);
-    }
-    
-    _packVoyageOptions(shipAM: number) {
-        const { playerData } = this.props;
+	}
+
+	_packVoyageOptions(shipAM: number) {
+		const { playerData } = this.props;
 
 		let filteredRoster = playerData.player.character.crew.filter(crew => {
 			// Filter out buy-back crew
@@ -111,28 +147,27 @@ class VoyageCalculator extends Component<VoyageCalculatorProps> {
 		};
 	}
 
-    _calcVoyageData(shipAM: number) {
-        let options = this._packVoyageOptions(shipAM);
-        console.log(options);
+	_calcVoyageData(shipAM: number) {
+		let options = this._packVoyageOptions(shipAM);
 
 		calculateVoyage(
 			options,
-			({entries, score}) => {
-				console.log({
-					crewSelection: entries,
-					estimatedDuration: score,
-					state: 'inprogress'
+			calcResult => {
+				console.log(calcResult);
+				this.setState({
+					result: calcResult,
+					calcState: CalculatorState.InProgress
 				});
 			},
-			({entries, score}) => {
-				console.log({
-					crewSelection: entries,
-					estimatedDuration: score,
-					state: 'done'
+			calcResult => {
+				console.log(calcResult);
+				this.setState({
+					result: calcResult,
+					calcState: CalculatorState.Done
 				});
 			}
 		);
-    }
+	}
 }
 
 export default VoyageCalculator;

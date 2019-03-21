@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import wasm from './voymod.js';
 
 self.addEventListener('message', message => {
