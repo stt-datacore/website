@@ -14,7 +14,7 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
-    "gatsby": "^2.2.1",
+    "gatsby": "^2.2.3",
     "gatsby-plugin-google-analytics": "^2.0.17",
     "gatsby-plugin-manifest": "^2.0.24",
     "gatsby-plugin-netlify": "^2.0.13",
@@ -31,6 +31,7 @@
     "request-promise": "^4.2.4",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.85.0",
+    "worker-loader": "^2.0.0",
     "write": "^1.0.3"
   },
   "devDependencies": {
