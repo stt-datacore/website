@@ -122,17 +122,15 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						</Grid.Row>
 					</Grid>
 					<Divider horizontal hidden />
-					{hasBigBookEntry && (
-						<React.Fragment>
-							<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
-							<Button floated='right' style={{ marginTop: '1em' }}
-								onClick={() => window.open(`/admin/#/collections/crew/entries/${crew.symbol}`)}
-								content='Edit big book content'
-								icon='edit'
-								labelPosition='right'
-							/>
-						</React.Fragment>
-					)}
+					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
+					<Button
+						floated='right'
+						style={{ marginTop: '1em' }}
+						onClick={() => window.open(`/admin/#/collections/crew/entries/${crew.symbol}`)}
+						content='Edit big book content'
+						icon='edit'
+						labelPosition='right'
+					/>
 				</Container>
 			</Layout>
 		);
