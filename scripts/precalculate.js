@@ -109,7 +109,8 @@ for (let i = 0; i < skillNames.length - 1; i++) {
 				}
 			}
 
-			return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
+			//return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
+			return Math.ceil(vTotal);
 		}, `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
 	}
 }
