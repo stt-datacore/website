@@ -3,10 +3,10 @@ name: "Krenim Guest Paris"
 rarity: 5
 series: "voy"
 memory_alpha: ""
-bigbook_tier:
-events:
+bigbook_tier: 4
+events: 14
 in_portal:
-published: false
+published: true
 ---
 
 One of the most warm and empathetic ambassadors in Trek history, this Paris card surely deserves such a diplomatic bent… “I'd rather spend a year in solitary confinement than listen to any of this.” ... perhaps not. Regardless, this ‘intransigent young man’ is a fine pickup for daily and event work. Between double 1k bases and the lack of competition among variants, this would seem to be the Paris to own for events. His primary is 400 points above everybody’s favorite lizard food Mutated Paris and his event count is not only healthy, but also heavily skewed toward Factions which all but guarantees future weekend work at any star level.
