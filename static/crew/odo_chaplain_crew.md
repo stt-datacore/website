@@ -4,7 +4,7 @@ series: ds9
 memory_alpha: ds9
 bigbook_tier: 9
 events: 9
-in_portal: false
+in_portal:
 published: true
 date: 2019-03-23T00:49:22.419Z
 name: Army Chaplain Odo

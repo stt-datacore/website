@@ -5,7 +5,7 @@ series: voy
 memory_alpha: voy
 bigbook_tier: 3
 events: 11
-in_portal: false
+in_portal:
 published: true
 ---
 

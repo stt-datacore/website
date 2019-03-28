@@ -5,7 +5,7 @@ series: ds9
 memory_alpha: ds9
 bigbook_tier: 11
 events: 9
-in_portal: false
+in_portal:
 published: true
 ---
 

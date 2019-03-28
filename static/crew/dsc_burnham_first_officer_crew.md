@@ -5,7 +5,7 @@ series: dsc
 memory_alpha: dsc
 bigbook_tier: 1
 events: 15
-in_portal: false
+in_portal: true
 published: true
 ---
 
