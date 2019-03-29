@@ -51,8 +51,6 @@ module.exports = {
 		`gatsby-plugin-netlify`
 	],
 	mapping: {
-		'CollectionsJson.crew': `CrewJson.symbol`,
-		'CrewJson.equipment_slots.symbol': `ItemsJson.symbol`,
-		'ItemsJson.recipe.list.symbol': `ItemsJson.symbol`
+		'CollectionsJson.crew': `CrewJson.symbol`
 	}
 };
