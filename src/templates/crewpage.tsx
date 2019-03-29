@@ -7,6 +7,7 @@ import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 import CrewFullEquipTree from '../components/crewfullequiptree';
 import CommonCrewData from '../components/commoncrewdata';
+import CrewVariants from '../components/crewvariants';
 
 import CONFIG from '../components/CONFIG';
 
@@ -23,7 +24,7 @@ type StaticCrewPageProps = {
 				published: boolean;
 			};
 		};
-		allCrewJson: any;
+		crewJson: any;
 	};
 };
 
@@ -51,14 +52,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	}
 
 	render() {
-		const { markdownRemark, allCrewJson } = this.props.data;
-		if (allCrewJson.edges.length === 0) {
+		const { markdownRemark, crewJson } = this.props.data;
+		if (crewJson.edges.length === 0) {
 			return <span>Crew not found!</span>;
 		}
 
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
-		const crew = allCrewJson.edges[0].node;
+		const crew = crewJson.edges[0].node;
 		return (
 			<Layout>
 				<CrewFullEquipTree
@@ -150,6 +151,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						icon='edit'
 						labelPosition='right'
 					/>
+					<Divider horizontal hidden style={{ marginTop: '4em' }} />
+					<CrewVariants short_name={crew.short_name} />
 				</Container>
 			</Layout>
 		);
@@ -288,10 +291,11 @@ export const query = graphql`
 				published
 			}
 		}
-		allCrewJson(filter: { symbol: { eq: $symbol } }) {
+		crewJson: allCrewJson(filter: { symbol: { eq: $symbol } }) {
 			edges {
 				node {
 					name
+					short_name
 					flavor
 					series
 					symbol
