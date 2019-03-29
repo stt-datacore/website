@@ -24,7 +24,7 @@ type BeholdsPageState = {
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	constructor(props) {
-        super(props);
+		super(props);
 
 		this.state = {
 			peopleList: [],
@@ -46,21 +46,31 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	}
 
 	async componentDidMount() {
-        let response = await fetch('/structured/crew.json');
-        const allcrew = await response.json();
+		let response = await fetch('/structured/crew.json');
+		const allcrew = await response.json();
 
-        response = await fetch('/structured/items.json');
-        const items = await response.json();
+		response = await fetch('/structured/items.json');
+		const items = await response.json();
 
-        this.setState({ allcrew, items }, () => {
-            let urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('crew')) {
-                this._selectionChanged(urlParams.getAll('crew'));
-            }
-        });
+		this.setState({ allcrew, items }, () => {
+			let urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('crew')) {
+				this._selectionChanged(urlParams.getAll('crew'));
+			}
+		});
 	}
 
 	render() {
+		if (this.state.allcrew.length === 0) {
+			return (
+				<Layout>
+					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
+						<div className='ui medium centered text active inline loader'>Loading data...</div>
+					</Container>
+				</Layout>
+			);
+		}
+
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
@@ -85,12 +95,17 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 						{this.state.entries.map((entry, idx) => (
 							<Grid.Column key={idx}>
 								<Header as='h5'>
-                                    <Link to={`/crew${entry.markdown.node.fields.slug}`}>
-									    {entry.crew.name}{' '}
-									    <Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
-                                    </Link>
+									<Link to={`/crew${entry.markdown.node.fields.slug}`}>
+										{entry.crew.name}{' '}
+										<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
+									</Link>
 								</Header>
-								<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdown ? entry.markdown.node : undefined} />
+								<CommonCrewData
+									compact={true}
+									crewDemands={entry.crewDemands}
+									crew={entry.crew}
+									markdownRemark={entry.markdown ? entry.markdown.node : undefined}
+								/>
 								{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown.node.html }} />}
 							</Grid.Column>
 						))}
@@ -103,26 +118,26 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	_selectionChanged(value: any) {
 		this.setState({ currentSelectedItems: value });
 
-        let params = new URLSearchParams();
+		let params = new URLSearchParams();
 		let entries = [];
 		for (let symbol of value) {
 			let entry = {
 				markdown: this.props.data.crewpages.edges.find(e => e.node.fields.slug === `/${symbol}/`),
-                crew: this.state.allcrew.find(c => c.symbol === symbol),
-                crewDemands: undefined
-            };
+				crew: this.state.allcrew.find(c => c.symbol === symbol),
+				crewDemands: undefined
+			};
 
-            entry.crewDemands = calculateCrewDemands(entry.crew, this.state.items);
+			entry.crewDemands = calculateCrewDemands(entry.crew, this.state.items);
 
-            entries.push(entry);
+			entries.push(entry);
 
-            params.append('crew', symbol);
-        }
+			params.append('crew', symbol);
+		}
 
-        this.setState({ entries });
+		this.setState({ entries });
 
-        let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
-        window.history.pushState({path:newurl},'',newurl);
+		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
+		window.history.pushState({ path: newurl }, '', newurl);
 	}
 }
 
