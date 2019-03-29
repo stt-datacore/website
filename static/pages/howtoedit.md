@@ -26,6 +26,6 @@ Make the changes you want, then click on the **Save** button at the top of the p
 
 Then on the **Set** drodown, switch from *Draft* to *Ready*. If you want to update multiple pages, you can go back and open a different crew page. Once you accumulated all the changes you want, click on the **Publish** button.
 
-If you are on the collaborators list, this will immediately start a build of the website and it will be live in ~20 minutes. If you're not in the collaborators list, this will publish a PR on GitHub and once approved by a collaborator, it will be built and live in ~20 minutes.
+If you are on the collaborators list, this will immediately start a build of the website and it will be live in under 10 minutes. If you're not in the collaborators list, this will publish a PR on GitHub and once approved by a collaborator, it will be built and live in under 10 minutes.
 
 ###Thank you!
