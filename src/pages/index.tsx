@@ -33,17 +33,23 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	constructor(props) {
 		super(props);
 
-		let urlParams = new URLSearchParams(window.location.search);
 		this.state = {
 			column: null,
 			direction: null,
-			searchFilter: urlParams.has('search') ? urlParams.get('search') : '',
+			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
 			data: this.props.data.allCrewJson.edges.map(n => n.node)
 		};
+	}
 
-		if (!urlParams.has('search')) {
+	componentDidMount() {
+		let urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('search')) {
+			// Push the search string to localstorage for back button to behave as expected
+			localForage.setItem<string>('searchFilter', urlParams.get('search'));
+			this.setState({ searchFilter: urlParams.get('search') });
+		} else {
 			localForage.getItem<string>('searchFilter', (err, value) => {
 				if (err) {
 					console.error(err);
@@ -51,9 +57,6 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					this.setState({ searchFilter: value });
 				}
 			});
-		} else {
-			// Push the search string to localstorage for back button to behave as expected
-			localForage.setItem<string>('searchFilter', this.state.searchFilter);
 		}
 	}
 
