@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { Container, Header, Table, Input, Rating, Pagination, Dropdown } from 'semantic-ui-react';
+import { Container, Header, Table, Input, Rating, Pagination, Dropdown, Popup, Icon, Grid } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
+
+import * as SearchString from 'search-string';
+import * as localForage from 'localforage';
 
 import Layout from '../components/layout';
 
@@ -38,6 +41,14 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			pagination_page: 1,
 			data: this.props.data.allCrewJson.edges.map(n => n.node)
 		};
+
+		localForage.getItem<string>('searchFilter', (err, value) => {
+			if (err) {
+				console.error(err);
+			} else {
+				this.setState({ searchFilter: value });
+			}
+		});
 	}
 
 	handleSort(clickedColumn, isSkill) {
@@ -77,8 +88,58 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
+		const matchesFilter = (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
+
 		if (this.state.searchFilter) {
-			data = data.filter(crew => crew.name.toLowerCase().indexOf(this.state.searchFilter.toLowerCase()) >= 0);
+			let filter = SearchString.parse(this.state.searchFilter);
+			data = data.filter(crew => {
+				let matches = true;
+
+				if (filter.conditionArray.length === 0) {
+					// text search only
+					for (let segment of filter.textSegments) {
+						let segmentResult =
+							matchesFilter(crew.name, segment.text) ||
+							crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
+							crew.traits_hidden.some(t => matchesFilter(t, segment.text));
+						matches = matches && (segment.negated ? !segmentResult : segmentResult);
+					}
+				} else {
+					let rarities = [];
+					for (let condition of filter.conditionArray) {
+						let conditionResult = true;
+						if (condition.keyword === 'name') {
+							conditionResult = matchesFilter(crew.name, condition.value);
+						} else if (condition.keyword === 'trait') {
+							conditionResult =
+								crew.traits_named.some(t => matchesFilter(t, condition.value)) ||
+								crew.traits_hidden.some(t => matchesFilter(t, condition.value));
+						} else if (condition.keyword === 'rarity') {
+							if (!condition.negated) {
+								rarities.push(Number.parseInt(condition.value));
+								continue;
+							}
+
+							conditionResult = crew.max_rarity === Number.parseInt(condition.value);
+						}
+						matches = matches && (condition.negated ? !conditionResult : conditionResult);
+					}
+
+					if (rarities.length > 0) {
+						matches = matches && rarities.includes(crew.max_rarity);
+					}
+
+					for (let segment of filter.textSegments) {
+						let segmentResult =
+							matchesFilter(crew.name, segment.text) ||
+							crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
+							crew.traits_hidden.some(t => matchesFilter(t, segment.text));
+						matches = matches && (segment.negated ? !segmentResult : segmentResult);
+					}
+				}
+
+				return matches;
+			});
 		}
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -91,11 +152,33 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h2'>Crew stats</Header>
 
+
 					<Input
+						style={{width:'50%'}}
 						icon='search'
 						placeholder='Search...'
 						value={this.state.searchFilter}
 						onChange={(e, { value }) => this._onChangeFilter(value)}
+					/>
+
+					<Popup
+						wide
+						trigger={<Icon name='help' />}
+						header={'Advanced search'}
+						content={
+							<div>
+								<p>Do simple text search in the name and traits (with optional '-' for exclusion). For example, this will return all Rikers that are not romantic:</p>
+								<p>
+									<code>riker -romantic</code>
+								</p>
+
+								<p>You can also use advanced search to look through the <b>name</b>, <b>trait</b> or <b>rarity</b> fields. For example, this returns all crew with the 'Cultural Figure' trait of rarity 4 and 5 which are not alien and are from DS9:</p>
+								<p>
+									<code>trait:cultu rarity:4,5 -trait:nonhum ds9</code>
+								</p>
+								<p>Feedback is welcome!</p>
+							</div>
+						}
 					/>
 
 					<Table sortable celled selectable striped collapsing unstackable compact='very'>
@@ -262,6 +345,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	}
 
 	_onChangeFilter(value) {
+		localForage.setItem<string>('searchFilter', value);
 		this.setState({ searchFilter: value, pagination_page: 1 });
 	}
 }
@@ -277,6 +361,8 @@ export const query = graphql`
 					symbol
 					max_rarity
 					imageUrlPortrait
+					traits_named
+					traits_hidden
 					base_skills {
 						security_skill {
 							core
