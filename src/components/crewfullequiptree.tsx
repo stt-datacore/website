@@ -10,11 +10,12 @@ type CrewFullEquipTreeProps = {
 	visible: boolean;
 	crew: any;
 	onClosed: any;
+	items: any[];
 };
 
 class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 	render() {
-		const { crew } = this.props;
+		const { crew, items } = this.props;
 
 		if (!crew || !this.props.visible) {
 			return <span />;
@@ -24,35 +25,38 @@ class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 		let demands = [];
 		let dupeChecker = new Set();
 		crew.equipment_slots.forEach(es => {
-			if (!es.symbol.recipe) {
+			let equipment = items.find(item => item.symbol === es.symbol);
+			if (!equipment.recipe) {
 				return;
 			}
 
-			for (let iter of es.symbol.recipe.list) {
-				if (dupeChecker.has(iter.symbol.symbol)) {
-					demands.find(d => d.symbol.symbol === iter.symbol.symbol).count += iter.count;
+			for (let iter of equipment.recipe.list) {
+				let recipeEquipment = items.find(item => item.symbol === iter.symbol);
+				if (dupeChecker.has(iter.symbol)) {
+					demands.find(d => d.symbol === iter.symbol).count += iter.count;
 					continue;
 				}
 
-				if (iter.symbol.item_sources.length === 0) {
-					console.error(`Oops: equipment with no recipe and no sources: `, iter.symbol);
+				if (recipeEquipment.item_sources.length === 0) {
+					console.error(`Oops: equipment with no recipe and no sources: `, recipeEquipment);
 				}
 
-				dupeChecker.add(iter.symbol.symbol);
+				dupeChecker.add(iter.symbol);
 
 				demands.push({
 					count: iter.count,
 					symbol: iter.symbol,
+					equipment: recipeEquipment,
 					factionOnly: iter.factionOnly
 				});
 			}
 
-			craftCost += es.symbol.recipe.craftCost;
+			craftCost += equipment.recipe.craftCost;
 		});
 
 		const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
 		let factionOnlyTotal = demands.filter(d => d.factionOnly).reduce(reducer, 0);
-		let totalChronCost = Math.floor(demands.reduce((a, c) => a + this._estimateChronitonCost(c.symbol), 0));
+		let totalChronCost = Math.floor(demands.reduce((a, c) => a + this._estimateChronitonCost(c.equipment), 0));
 
 		return (
 			<Modal open={this.props.visible} onClose={() => this.props.onClosed()}>
@@ -101,18 +105,18 @@ class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
-													src={`/media/assets/${entry.symbol.imageUrl}`}
+													src={`/media/assets/${entry.equipment.imageUrl}`}
 													size={48}
-													maxRarity={entry.symbol.rarity}
-													rarity={entry.symbol.rarity}
+													maxRarity={entry.equipment.rarity}
+													rarity={entry.equipment.rarity}
 												/>
 											}
-											content={entry.symbol.name}
+											content={entry.equipment.name}
 											subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
 										/>
 									}
-									header={CONFIG.RARITIES[entry.symbol.rarity].name + ' ' + entry.symbol.name}
-									content={<ItemSources item_sources={entry.symbol.item_sources} />}
+									header={CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+									content={<ItemSources item_sources={entry.equipment.item_sources} />}
 									on='click'
 									wide
 								/>

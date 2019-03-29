@@ -30,6 +30,7 @@ type StaticCrewPageProps = {
 type StaticCrewPageState = {
 	selectedEquipment?: number;
 	modalVisible: boolean;
+	items: any[];
 };
 
 class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {
@@ -38,8 +39,15 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		this.state = {
 			selectedEquipment: undefined,
-			modalVisible: false
+			modalVisible: false,
+			items: []
 		};
+	}
+
+	componentDidMount() {
+		fetch('/structured/items.json')
+			.then(response => response.json())
+			.then(items => this.setState({ items }));
 	}
 
 	render() {
@@ -53,7 +61,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		const crew = allCrewJson.edges[0].node;
 		return (
 			<Layout>
-				<CrewFullEquipTree visible={this.state.modalVisible} crew={crew} onClosed={() => this.setState({ modalVisible: false })} />
+				<CrewFullEquipTree
+					visible={this.state.modalVisible}
+					items={this.state.items}
+					crew={crew}
+					onClosed={() => this.setState({ modalVisible: false })}
+				/>
 				<Container text style={{ paddingTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>
 					<Grid columns={2}>
 						<Grid.Row stretched>
@@ -71,15 +84,21 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							<Grid.Column width={12}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
-								{this.renderEquipment(crew)}
-								{this.renderEquipmentDetails(crew)}
-								<Button
-									onClick={() => this.setState({ modalVisible: true })}
-									style={{ marginTop: '1em' }}
-									content='Full equipment tree'
-									icon='right arrow'
-									labelPosition='right'
-								/>
+								{this.state.items.length > 0 ? (
+									<React.Fragment>
+										{this.renderEquipment(crew)}
+										{this.renderEquipmentDetails(crew)}
+										<Button
+											onClick={() => this.setState({ modalVisible: true })}
+											style={{ marginTop: '1em' }}
+											content='Full equipment tree'
+											icon='right arrow'
+											labelPosition='right'
+										/>
+									</React.Fragment>
+								) : (
+									<div className='ui medium centered text active inline loader'>Loading items...</div>
+								)}
 
 								<Segment>
 									<Header as='h4'>{crew.action.name}</Header>
@@ -139,7 +158,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	renderEquipment(crew) {
 		let options = [];
 		crew.equipment_slots.forEach(es => {
-			let equipment = es.symbol;
+			let equipment = this.state.items.find(item => item.symbol === es.symbol);
 
 			options.push({
 				key: es.archetype + '_' + es.level,
@@ -173,7 +192,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			return <span />;
 		}
 
-		let equipment = crew.equipment_slots.find(es => es.archetype === this.state.selectedEquipment).symbol;
+		let es = crew.equipment_slots.find(es => es.archetype === this.state.selectedEquipment)
+		let equipment = this.state.items.find(item => item.symbol === es.symbol);
+		if (!equipment) {
+			console.error('Could not find equipment for slot', es);
+			return <span />;
+		}
 
 		if (!equipment.recipe) {
 			return (
@@ -188,20 +212,23 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		return (
 			<div>
 				<Grid columns={4} centered padded>
-					{equipment.recipe.list.map(entry => (
-						<Grid.Column key={entry.symbol.name + entry.symbol.rarity} textAlign='center'>
-							<Popup
-								trigger={
-									<Label as='a' style={{ background: CONFIG.RARITIES[entry.symbol.rarity].color }} image size='big'>
-										<img src={`/media/assets/${entry.symbol.imageUrl}`} />x{entry.count}
-									</Label>
-								}
-								header={CONFIG.RARITIES[entry.symbol.rarity].name + ' ' + entry.symbol.name}
-								content={<ItemSources item_sources={entry.symbol.item_sources} />}
-								wide
-							/>
-						</Grid.Column>
-					))}
+					{equipment.recipe.list.map(entry => {
+						let recipeEntry = this.state.items.find(item => item.symbol === entry.symbol);
+						return (
+							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
+								<Popup
+									trigger={
+										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
+											<img src={`/media/assets/${recipeEntry.imageUrl}`} />x{entry.count}
+										</Label>
+									}
+									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}
+									content={<ItemSources item_sources={recipeEntry.item_sources} />}
+									wide
+								/>
+							</Grid.Column>
+						);
+					})}
 				</Grid>
 			</div>
 		);
@@ -338,27 +365,7 @@ export const query = graphql`
 					equipment_slots {
 						level
 						archetype
-						symbol {
-							name
-							rarity
-							imageUrl
-							...ItemSourcesFragment
-							recipe {
-								incomplete
-								craftCost
-								list {
-									symbol {
-										name
-										symbol
-										rarity
-										imageUrl
-										...ItemSourcesFragment
-									}
-									count
-									factionOnly
-								}
-							}
-						}
+						symbol
 					}
 					ship_battle {
 						accuracy
