@@ -71,13 +71,28 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 				<p>
 					<b>Traits: </b>
-					{crew.traits_named.join(', ')}
-					<span style={{ color: 'lightgray' }}>, {crew.traits_hidden.join(', ')}</span>
+					{crew.traits_named
+						.map(trait => (
+							<a key={trait} href={`/?search=trait:${trait}`}>
+								{trait}
+							</a>
+						))
+						.reduce((prev, curr) => [prev, ', ', curr])}
+					{', '}
+					{crew.traits_hidden
+						.map(trait => (
+							<a style={{ color: 'lightgray' }} key={trait} href={`/?search=trait:${trait}`}>
+								{trait}
+							</a>
+						))
+						.reduce((prev, curr) => [prev, ', ', curr])}
 				</p>
 
-				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && <p>
-					Can cross-fuse with <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
-				</p>}
+				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
+					<p>
+						Can cross-fuse with <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
+					</p>
+				)}
 
 				{crew.collections.length > 0 && (
 					<p>
@@ -179,45 +194,44 @@ export default CommonCrewData;
 export const query = graphql`
 	fragment RanksFragment on CrewJson {
 		ranks {
-            voyRank
-            gauntletRank
-            V_CMD_SCI
-            V_CMD_SEC
-            V_CMD_ENG
-            V_CMD_DIP
-            V_CMD_MED
-            V_SCI_SEC
-            V_SCI_ENG
-            V_SCI_DIP
-            V_SCI_MED
-            V_SEC_ENG
-            V_SEC_DIP
-            V_SEC_MED
-            V_ENG_DIP
-            V_ENG_MED
-            V_DIP_MED
-            G_CMD_SCI
-            G_CMD_SEC
-            G_CMD_ENG
-            G_CMD_DIP
-            G_CMD_MED
-            G_SCI_SEC
-            G_SCI_ENG
-            G_SCI_DIP
-            G_SCI_MED
-            G_SEC_ENG
-            G_SEC_DIP
-            G_SEC_MED
-            G_ENG_DIP
-            G_ENG_MED
-            G_DIP_MED
-            B_SCI
-            B_SEC
-            B_ENG
-            B_DIP
-            B_CMD
-            B_MED
-        }
+			voyRank
+			gauntletRank
+			V_CMD_SCI
+			V_CMD_SEC
+			V_CMD_ENG
+			V_CMD_DIP
+			V_CMD_MED
+			V_SCI_SEC
+			V_SCI_ENG
+			V_SCI_DIP
+			V_SCI_MED
+			V_SEC_ENG
+			V_SEC_DIP
+			V_SEC_MED
+			V_ENG_DIP
+			V_ENG_MED
+			V_DIP_MED
+			G_CMD_SCI
+			G_CMD_SEC
+			G_CMD_ENG
+			G_CMD_DIP
+			G_CMD_MED
+			G_SCI_SEC
+			G_SCI_ENG
+			G_SCI_DIP
+			G_SCI_MED
+			G_SEC_ENG
+			G_SEC_DIP
+			G_SEC_MED
+			G_ENG_DIP
+			G_ENG_MED
+			G_DIP_MED
+			B_SCI
+			B_SEC
+			B_ENG
+			B_DIP
+			B_CMD
+			B_MED
+		}
 	}
 `;
-
