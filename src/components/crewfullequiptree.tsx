@@ -4,6 +4,7 @@ import { Header, Popup, Modal, Grid, Icon } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 
+import { calculateCrewDemands } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
 
 type CrewFullEquipTreeProps = {
@@ -21,42 +22,7 @@ class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 			return <span />;
 		}
 
-		let craftCost = 0;
-		let demands = [];
-		let dupeChecker = new Set();
-		crew.equipment_slots.forEach(es => {
-			let equipment = items.find(item => item.symbol === es.symbol);
-			if (!equipment.recipe) {
-				return;
-			}
-
-			for (let iter of equipment.recipe.list) {
-				let recipeEquipment = items.find(item => item.symbol === iter.symbol);
-				if (dupeChecker.has(iter.symbol)) {
-					demands.find(d => d.symbol === iter.symbol).count += iter.count;
-					continue;
-				}
-
-				if (recipeEquipment.item_sources.length === 0) {
-					console.error(`Oops: equipment with no recipe and no sources: `, recipeEquipment);
-				}
-
-				dupeChecker.add(iter.symbol);
-
-				demands.push({
-					count: iter.count,
-					symbol: iter.symbol,
-					equipment: recipeEquipment,
-					factionOnly: iter.factionOnly
-				});
-			}
-
-			craftCost += equipment.recipe.craftCost;
-		});
-
-		const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
-		let factionOnlyTotal = demands.filter(d => d.factionOnly).reduce(reducer, 0);
-		let totalChronCost = Math.floor(demands.reduce((a, c) => a + this._estimateChronitonCost(c.equipment), 0));
+		let {craftCost, demands, factionOnlyTotal, totalChronCost} = calculateCrewDemands(crew, items);
 
 		return (
 			<Modal open={this.props.visible} onClose={() => this.props.onClosed()}>
@@ -126,35 +92,6 @@ class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 				</Modal.Content>
 			</Modal>
 		);
-	}
-
-	_estimateChronitonCost(equipment) {
-		let sources = equipment.item_sources.filter(e => e.type === 0 || e.type === 2);
-
-		// If faction only
-		if (sources.length === 0) {
-			return 0;
-		}
-
-		// TODO: figure out a better way to calculate these
-		const RNGESUS = 1.8;
-
-		let costCalc = [];
-		for (let source of sources) {
-			if (!source.cost) {
-				//console.log("Mission information not available!", source);
-				continue;
-			}
-
-			costCalc.push((6 - source.chance_grade) * RNGESUS * source.cost);
-		}
-
-		if (costCalc.length === 0) {
-			console.warn('Couldnt calculate cost for equipment', equipment);
-			return 0;
-		}
-
-		return costCalc.sort()[0];
 	}
 }
 

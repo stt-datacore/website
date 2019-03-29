@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Segment, Accordion, Statistic } from 'semantic-ui-react';
+import { Header, Segment, Accordion, Statistic, Grid, Image } from 'semantic-ui-react';
 
 import { graphql, Link } from 'gatsby';
 
@@ -9,27 +9,47 @@ import CONFIG from '../components/CONFIG';
 type CommonCrewDataProps = {
 	crew: any;
 	markdownRemark: any;
+	compact?: boolean;
+	crewDemands?: any;
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
 	render() {
-		const { markdownRemark, crew } = this.props;
+		const { markdownRemark, crew, compact, crewDemands } = this.props;
 
 		return (
 			<React.Fragment>
-				<Segment>
-					<CrewStat skill_name='security_skill' data={crew.base_skills.security_skill} />
-					<CrewStat skill_name='command_skill' data={crew.base_skills.command_skill} />
-					<CrewStat skill_name='diplomacy_skill' data={crew.base_skills.diplomacy_skill} />
-					<CrewStat skill_name='science_skill' data={crew.base_skills.science_skill} />
-					<CrewStat skill_name='medicine_skill' data={crew.base_skills.medicine_skill} />
-					<CrewStat skill_name='engineering_skill' data={crew.base_skills.engineering_skill} />
-				</Segment>
+				{compact ? (
+					<Segment>
+						<Grid columns={2}>
+							<Grid.Column width={4}>
+								<Image src={`/media/assets/${crew.imageUrlFullBody}`} size='tiny' />
+							</Grid.Column>
+							<Grid.Column width={12}>
+								<CrewStat skill_name='security_skill' data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat skill_name='command_skill' data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat skill_name='diplomacy_skill' data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat skill_name='science_skill' data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat skill_name='medicine_skill' data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat skill_name='engineering_skill' data={crew.base_skills.engineering_skill} scale={compact ? 0.75 : 1} />
+							</Grid.Column>
+						</Grid>
+					</Segment>
+				) : (
+					<Segment>
+						<CrewStat skill_name='security_skill' data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
+						<CrewStat skill_name='command_skill' data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+						<CrewStat skill_name='diplomacy_skill' data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
+						<CrewStat skill_name='science_skill' data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+						<CrewStat skill_name='medicine_skill' data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
+						<CrewStat skill_name='engineering_skill' data={crew.base_skills.engineering_skill} scale={compact ? 0.75 : 1} />
+					</Segment>
+				)}
 
-				{crew.flavor && <p>{crew.flavor}</p>}
+				{crew.flavor && !compact && <p>{crew.flavor}</p>}
 
-				<Statistic.Group style={{ paddingBottom: '2em' }} size={'tiny'}>
-					{markdownRemark.frontmatter.events !== null && (
+				<Statistic.Group style={{ paddingBottom: '2em' }} size={compact ? 'mini' : 'tiny'}>
+					{!compact && markdownRemark.frontmatter.events !== null && (
 						<Statistic>
 							<Statistic.Label>Events</Statistic.Label>
 							<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
@@ -41,21 +61,35 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
 						</Statistic>
 					)}
-					{markdownRemark.frontmatter.in_portal !== null && (
+					{!compact && markdownRemark.frontmatter.in_portal !== null && (
 						<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
 							<Statistic.Label>Portal</Statistic.Label>
 							<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
 						</Statistic>
 					)}
 					<Statistic>
-						<Statistic.Label>Voyage Rank</Statistic.Label>
+						<Statistic.Label>Voyage{!compact && ' Rank'}</Statistic.Label>
 						<Statistic.Value>{crew.ranks.voyRank}</Statistic.Value>
 					</Statistic>
 					<Statistic>
-						<Statistic.Label>Gauntlet Rank</Statistic.Label>
+						<Statistic.Label>Gauntlet{!compact && ' Rank'}</Statistic.Label>
 						<Statistic.Value>{crew.ranks.gauntletRank}</Statistic.Value>
 					</Statistic>
 				</Statistic.Group>
+
+				{crewDemands && (
+					<p>
+						<b>{crewDemands.factionOnlyTotal}</b>{' faction items, '}
+						<span style={{ display: 'inline-block' }}>
+							<img src={`/media/icons/energy_icon.png`} height={14} />
+						</span>{' '}
+						<b>{crewDemands.totalChronCost}</b>{', '}
+						<span style={{ display: 'inline-block' }}>
+							<img src={`/media/icons/images_currency_sc_currency_0.png`} height={16} />
+						</span>{' '}
+						<b>{crewDemands.craftCost}</b>
+					</p>
+				)}
 
 				<Accordion
 					defaultActiveIndex={-1}
