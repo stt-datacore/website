@@ -116,8 +116,6 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	}
 
 	_selectionChanged(value: any) {
-		this.setState({ currentSelectedItems: value });
-
 		let params = new URLSearchParams();
 		let entries = [];
 		for (let symbol of value) {
@@ -134,7 +132,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			params.append('crew', symbol);
 		}
 
-		this.setState({ entries });
+		this.setState({ entries, currentSelectedItems: value });
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);

@@ -161,7 +161,7 @@ export const query = graphql`
 				}
 			}
 		}
-		allCrewJson {
+		allCrewJson(filter: {max_rarity: {gt: 3}}) {
 			edges {
 				node {
 					name
