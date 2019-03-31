@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Header, Popup, Modal, Grid, Icon } from 'semantic-ui-react';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -14,7 +14,7 @@ type CrewFullEquipTreeProps = {
 	items: any[];
 };
 
-class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
+class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 	render() {
 		const { crew, items } = this.props;
 
@@ -22,7 +22,7 @@ class CrewFullEquipTree extends Component<CrewFullEquipTreeProps> {
 			return <span />;
 		}
 
-		let {craftCost, demands, factionOnlyTotal, totalChronCost} = calculateCrewDemands(crew, items);
+		let { craftCost, demands, factionOnlyTotal, totalChronCost } = calculateCrewDemands(crew, items);
 
 		return (
 			<Modal open={this.props.visible} onClose={() => this.props.onClosed()}>

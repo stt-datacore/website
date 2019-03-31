@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
 
@@ -10,31 +10,26 @@ type MissionCostProps = {
 	name: string;
 };
 
-class MissionCost extends Component<MissionCostProps> {
+class MissionCost extends PureComponent<MissionCostProps> {
 	render() {
 		const is_known = this.props.cost > 0;
 
 		// TODO: name should be a Link to /missions/${mission_symbol}/
 		return (
 			<span>
-				<span style={{ color: is_known ? 'inherit': 'red' }}>{this.props.name}</span>
-				{' '}
+				<span style={{ color: is_known ? 'inherit' : 'red' }}>{this.props.name}</span>{' '}
 				<span style={{ display: 'inline-block' }}>
 					<img src={`/media/icons/${CONFIG.MASTERY_LEVELS[this.props.mastery].imageUrl}.png`} height={14} />
 				</span>
-				{is_known && this.renderCost()}
-			</span>
-		);
-	}
-
-	renderCost() {
-		return (
-			<span>
-				{' ('}
-				<span style={{ display: 'inline-block' }}>
-					<img src={`/media/icons/energy_icon.png`} height={14} />
-				</span>
-				{` ${this.props.cost})`}
+				{is_known && (
+					<span>
+						{' ('}
+						<span style={{ display: 'inline-block' }}>
+							<img src={`/media/icons/energy_icon.png`} height={14} />
+						</span>
+						{` ${this.props.cost})`}
+					</span>
+				)}
 			</span>
 		);
 	}

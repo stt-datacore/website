@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Container, Header, Image, Divider, Grid, Rating } from 'semantic-ui-react';
 import { graphql, Link } from 'gatsby';
 
@@ -12,7 +12,7 @@ type BigBookCrewProps = {
 	crew: any;
 };
 
-class BigBookCrew extends Component<BigBookCrewProps> {
+class BigBookCrew extends PureComponent<BigBookCrewProps> {
 	render() {
 		const { crew, markdownRemark } = this.props;
 
@@ -66,7 +66,7 @@ const fieldSorter = fields => (a, b) =>
 		})
 		.reduce((p, n) => (p ? p : n), 0);
 
-class BigBook extends Component<BigBookPageProps> {
+class BigBook extends PureComponent<BigBookPageProps> {
 	render() {
 		let res = [];
 		this.props.data.crewpages.edges.forEach((element, idx) => {

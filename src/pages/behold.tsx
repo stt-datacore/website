@@ -9,7 +9,6 @@ import { calculateCrewDemands } from '../utils/equipment';
 
 type BeholdsPageProps = {
 	data: {
-		allCrewJson: any;
 		crewpages: any;
 	};
 };
@@ -23,27 +22,13 @@ type BeholdsPageState = {
 };
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			peopleList: [],
-			currentSelectedItems: [],
-			allcrew: [],
-			entries: [],
-			items: []
-		};
-
-		this.props.data.allCrewJson.edges.forEach(edge => {
-			let crew = edge.node;
-			this.state.peopleList.push({
-				key: crew.symbol,
-				value: crew.symbol,
-				image: { avatar: true, src: `/media/assets/${crew.imageUrlPortrait}` },
-				text: crew.name
-			});
-		});
-	}
+	state = {
+		peopleList: [],
+		currentSelectedItems: [],
+		allcrew: [],
+		entries: [],
+		items: []
+	};
 
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
@@ -52,7 +37,17 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		response = await fetch('/structured/items.json');
 		const items = await response.json();
 
-		this.setState({ allcrew, items }, () => {
+		let peopleList = [];
+		allcrew.forEach(crew => {
+			peopleList.push({
+				key: crew.symbol,
+				value: crew.symbol,
+				image: { avatar: true, src: `/media/assets/${crew.imageUrlPortrait}` },
+				text: `${crew.short_name} (${crew.name})`
+			});
+		});
+
+		this.setState({ allcrew, items, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));
@@ -143,15 +138,6 @@ export default BeholdsPage;
 
 export const query = graphql`
 	query {
-		allCrewJson {
-			edges {
-				node {
-					name
-					symbol
-					imageUrlPortrait
-				}
-			}
-        }
         crewpages: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/crew)/.*\\.md$/"}}) {
 			totalCount
 			edges {

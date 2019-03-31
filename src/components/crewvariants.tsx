@@ -12,13 +12,9 @@ type CrewVariantsState = {
 };
 
 class CrewVariants extends Component<CrewVariantsProps, CrewVariantsState> {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			variants: []
-		};
-	}
+	state = {
+		variants: []
+	};
 
 	componentDidMount() {
 		fetch('/structured/crew.json')

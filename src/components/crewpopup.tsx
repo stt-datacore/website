@@ -8,10 +8,6 @@ type CrewPopupProps = {
 };
 
 class CrewPopup extends Component<CrewPopupProps> {
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
 		return (
 			<StaticQuery

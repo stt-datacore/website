@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import containerStyles from "./simplebarchart.module.css";
+import React, { PureComponent } from 'react';
+import containerStyles from './simplebarchart.module.css';
 
 type SimpleBarChartProps = {
-    title: string,
+	title: string;
 	data: {
 		name: string;
 		value: number;
@@ -30,7 +30,7 @@ function BarGroup(props) {
 	);
 }
 
-class SimpleBarChart extends Component<SimpleBarChartProps> {
+class SimpleBarChart extends PureComponent<SimpleBarChartProps> {
 	render() {
 		let barHeight = 24;
 
@@ -41,7 +41,7 @@ class SimpleBarChart extends Component<SimpleBarChartProps> {
 		));
 
 		return (
-			<svg viewBox="0 0 800 300">
+			<svg viewBox='0 0 800 300'>
 				<g className={containerStyles.container}>
 					<text className='title' x='10' y='30'>
 						{this.props.title}

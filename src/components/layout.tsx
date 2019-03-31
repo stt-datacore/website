@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import TopMenu from './topmenu';
 
-class Layout extends Component {
-	constructor(props: any) {
-		super(props);
-	}
-
+class Layout extends PureComponent {
 	render() {
-		return <div>
-            <TopMenu />
-            {this.props.children}
-        </div>;
+		return (
+			<div>
+				<TopMenu />
+				{this.props.children}
+			</div>
+		);
 	}
 }
 

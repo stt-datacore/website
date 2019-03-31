@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Container, Item } from 'semantic-ui-react';
-import { graphql } from 'gatsby';
+import { graphql, Link } from 'gatsby';
 
 import Layout from '../components/layout';
 
@@ -10,11 +10,7 @@ type CollectionsPageProps = {
 	};
 };
 
-class CollectionsPage extends Component<CollectionsPageProps> {
-	constructor(props) {
-		super(props);
-	}
-
+class CollectionsPage extends PureComponent<CollectionsPageProps> {
 	render() {
 		const { allCollectionsJson } = this.props.data;
 		if (allCollectionsJson.edges.length === 0) {
@@ -33,10 +29,18 @@ class CollectionsPage extends Component<CollectionsPageProps> {
 
 									<Item.Content>
 										<Item.Header>{collection.name}</Item.Header>
-                                        <Item.Meta><span dangerouslySetInnerHTML={{ __html: collection.description }} /></Item.Meta>
+										<Item.Meta>
+											<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+										</Item.Meta>
 										<Item.Description>
-												<b>Crew: </b>
-												{collection.crew ? collection.crew.map(c => c.name).join(', ') : 'ERROR'}
+											<b>Crew: </b>
+											{collection.crew
+												.map(crew => (
+													<Link key={crew.symbol} to={`/crew/${crew.symbol}/`}>
+														{crew.name}
+													</Link>
+												))
+												.reduce((prev, curr) => [prev, ', ', curr])}
 										</Item.Description>
 									</Item.Content>
 								</Item>
@@ -59,6 +63,7 @@ export const query = graphql`
 					name
 					crew {
 						name
+						symbol
 					}
 					description
 					image

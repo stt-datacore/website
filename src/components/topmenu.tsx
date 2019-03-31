@@ -1,12 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Container, Dropdown, Image, Menu, Icon } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql } from 'gatsby';
 
-class TopMenu extends Component {
-	constructor(props: any) {
-		super(props);
-	}
-
+class TopMenu extends PureComponent {
 	render() {
 		return (
 			<StaticQuery

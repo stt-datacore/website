@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Container, Header } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
@@ -15,11 +15,7 @@ type StaticPageProps = {
 	};
 };
 
-class StaticPage extends Component<StaticPageProps> {
-	constructor(props) {
-		super(props);
-	}
-
+class StaticPage extends PureComponent<StaticPageProps> {
 	render() {
 		const { markdownRemark } = this.props.data;
 		return (
