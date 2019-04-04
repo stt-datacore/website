@@ -1,11 +1,11 @@
 ---
-name: "Thrax"
+name: Thrax
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha: 
 bigbook_tier: 11
 events: 5
-in_portal: No
+in_portal: false
 published: true
 ---
 
