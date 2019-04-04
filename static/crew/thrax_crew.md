@@ -6,7 +6,7 @@ memory_alpha: ""
 bigbook_tier: 11
 events: 5
 in_portal: No
-published: false
+published: true
 ---
 
 Poised to bring in the new meh-ga with a whimper, Thrax has exceeded all expectations...in the opposite direction. With desolate future event chances and the worst possible skill set, players were hoping Thrax would lower the boom with his stats. It didn’t happen. His bases are roughly similar to previous megas Kortar and Kol of House Kor (worse primary, better secondary), which is to say easily replaceable and several months behind the times. With every SEC crew above his base offering better power or utility, it would seem that the best case scenario for Thrax in the future would be a Cardassian mega event.
