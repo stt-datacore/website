@@ -11,30 +11,29 @@ function parseCrew(lines) {
 	let crew = [];
 	let curcrew = undefined;
 	for (let line of lines) {
-		let ft = /^\((\d+)\)$/g.exec(line);
+		let ft = /^\t\((\d+)\)/g.exec(line);
 		if (ft) {
 			tier = Number.parseInt(ft[1]);
-			curcrew = undefined;
-		}
-
-		if (line.startsWith('*')) {
 			if (curcrew) {
 				crew.push(curcrew);
 			}
 
-			curcrew = { tier, name: line.substr(2, line.indexOf(' -') - 2).trim() };
+			let nameStart = line.indexOf(')') + 1;
+			curcrew = { tier, descr: [], name: line.substr(nameStart, line.indexOf(' -') - nameStart).trim() };
 
 			let evr = /(\d+) events/g.exec(line);
 			if (evr) {
 				curcrew.events = Number.parseInt(evr[1]);
-				curcrew.descr = line.substr(evr.index + 10).trim();
-				if (curcrew.descr.startsWith('-')) {
-					curcrew.descr = curcrew.descr.substr(1).trim();
-				}
 			}
 		} else {
 			if (curcrew) {
-				curcrew.descr += '\r\n' + line;
+				if (line.trim().length !== 0)
+				{
+					if (!/^Tier (\d+)/g.exec(line.trim()))
+					{
+						curcrew.descr.push(line.trim());
+					}
+				}
 			}
 		}
 	}
@@ -89,6 +88,11 @@ async function getData() {
 
 // TODO: talk with Automaton_2000 about fixing these in the doc
 const fixMisspell = bbname => {
+	if (bbname.endsWith(')'))
+	{
+		bbname = bbname.substr(0, bbname.indexOf('(')).trim();
+	}
+
 	if (bbname === 'Duras Sisters') {
 		return 'The Duras Sisters';
 	} else if (bbname === 'Section 31 Phillipa Georgiou') {
@@ -106,6 +110,7 @@ async function main() {
 	let crewData = await getData();
 
 	for (let crew of crewData) {
+		crew.descr = crew.descr.join('\r\n');
 		crew.name = fixMisspell(crew.name);
 	}
 
@@ -125,12 +130,13 @@ async function main() {
                 if (!crewjson) {
                     console.log(`Not found in json: ${name}`);
                     return;
-                }
+				}
 
 				mapCrew.set(name, {
 					rarity: meta.rarity.replace(/&quot;/g, '').replace(/'/g, ''),
                     series: crewjson.series,
-                    memory_alpha: meta.series.replace(/&quot;/g, '').replace(/'/g, ''),
+					memory_alpha: meta.memory_alpha ? meta.memory_alpha.replace(/&quot;/g, '').replace(/'/g, '') : undefined,
+					in_portal: (meta.in_portal === "true") || (meta.in_portal === true),
 					file
 				});
 			}
@@ -147,10 +153,10 @@ async function main() {
 name: ${crew.name.replace(/\\/g, '\\"')}
 rarity: ${meta.rarity}
 series: ${meta.series || "''"}
-memory_alpha: ${meta.memory_alpha || "''"}
+memory_alpha:${meta.memory_alpha ? (" " + meta.memory_alpha) : ""}
 bigbook_tier: ${crew.tier}
 events: ${crew.events || 0}
-in_portal: false
+in_portal:${meta.in_portal ? " true" : ""}
 published: true
 ---
 
