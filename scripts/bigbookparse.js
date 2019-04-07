@@ -101,6 +101,8 @@ const fixMisspell = bbname => {
 		return 'Armed Philippa Georgiou';
 	} else if (bbname === "Ba'Ku Worf") {
 		return "Ba'ku Worf";
+	} else if (bbname === "\"Dark Ages\" McCoy") {
+		return "\\Dark Ages\\ McCoy";
 	} else {
 		return bbname.replace(/"/g, '\\');
 	}
@@ -126,7 +128,7 @@ async function main() {
 			if (meta && meta.name) {
                 let name = meta.name.replace(/&quot;/g, '');
                 
-                let crewjson = crewlist.find(c => c.name === name);
+                let crewjson = crewlist.find(c => c.symbol === file.replace(".md", ""));
                 if (!crewjson) {
                     console.log(`Not found in json: ${name}`);
                     return;

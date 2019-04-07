@@ -1,8 +1,8 @@
 ---
-name: "\"Dark Ages\" McCoy"
+name: "Dark Ages" McCoy
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha:
 bigbook_tier: 5
 events: 8
 in_portal: true
