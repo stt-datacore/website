@@ -2,7 +2,7 @@
 name: Formal Dress Wesley Crusher
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 11
 events: 3
 in_portal: true

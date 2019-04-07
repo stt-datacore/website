@@ -2,8 +2,8 @@
 name: Conflicted Sisko
 rarity: 5
 series: ds9
-memory_alpha: ds9
-bigbook_tier: 8
+memory_alpha:
+bigbook_tier: 9
 events: 9
 in_portal:
 published: true

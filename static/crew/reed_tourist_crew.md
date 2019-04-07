@@ -2,7 +2,7 @@
 name: Tourist Reed
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 11
 events: 5
 in_portal:

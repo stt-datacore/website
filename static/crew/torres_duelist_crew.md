@@ -2,7 +2,7 @@
 name: Duelist Torres
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 10
 events: 11
 in_portal:

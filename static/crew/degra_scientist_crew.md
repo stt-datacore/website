@@ -2,9 +2,9 @@
 name: Scientist Degra
 rarity: 5
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 8
-events: 1
+events: 0
 in_portal:
 published: true
 ---

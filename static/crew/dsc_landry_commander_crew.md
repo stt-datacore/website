@@ -2,7 +2,7 @@
 name: Commander Ellen Landry
 rarity: 4
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 6
 events: 14
 in_portal: true

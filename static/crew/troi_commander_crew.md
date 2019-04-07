@@ -2,7 +2,7 @@
 name: Bridge Officer Troi
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 9
 events: 10
 in_portal: true

@@ -2,8 +2,8 @@
 name: Mirror Kirk
 rarity: 5
 series: tos
-memory_alpha: tos
-bigbook_tier: 12
+memory_alpha:
+bigbook_tier: 11
 events: 20
 in_portal:
 published: true

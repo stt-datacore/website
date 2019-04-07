@@ -2,7 +2,7 @@
 name: Profitable Ishka
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 5
 events: 4
 in_portal: true

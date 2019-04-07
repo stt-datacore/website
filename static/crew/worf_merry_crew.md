@@ -1,8 +1,8 @@
 ---
-name: "Will Scarlett"
+name: Will Scarlett
 rarity: 5
-series: "tng"
-memory_alpha: ""
+series: tng
+memory_alpha:
 bigbook_tier: 13
 events: 15
 in_portal:

@@ -1,8 +1,8 @@
 ---
-name: "Tuxedo Nog"
+name: Tuxedo Nog
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha:
 bigbook_tier: 7
 events: 5
 in_portal:

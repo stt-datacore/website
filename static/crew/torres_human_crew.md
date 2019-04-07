@@ -2,8 +2,8 @@
 name: Human Torres
 rarity: 5
 series: voy
-memory_alpha: voy
-bigbook_tier: 9
+memory_alpha:
+bigbook_tier: 8
 events: 5
 in_portal:
 published: true

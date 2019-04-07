@@ -2,7 +2,7 @@
 name: Assimilated Tuvok
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 2
 events: 16
 in_portal: true

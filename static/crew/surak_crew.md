@@ -2,7 +2,7 @@
 name: Surak
 rarity: 5
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 2
 events: 7
 in_portal:

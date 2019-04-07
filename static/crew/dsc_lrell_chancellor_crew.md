@@ -2,7 +2,7 @@
 name: Chancellor L'Rell
 rarity: 5
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 3
 events: 20
 in_portal:

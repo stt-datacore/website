@@ -2,7 +2,7 @@
 name: Mirror Sisko
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 13
 events: 14
 in_portal: true

@@ -2,9 +2,9 @@
 name: Prisoner Katrina Cornwell
 rarity: 5
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 2
-events: 12
+events: 16
 in_portal:
 published: true
 ---

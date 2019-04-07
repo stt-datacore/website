@@ -2,9 +2,9 @@
 name: Captain Killy
 rarity: 5
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 2
-events: 20
+events: 22
 in_portal: true
 published: true
 ---

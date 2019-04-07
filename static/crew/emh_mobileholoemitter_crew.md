@@ -2,7 +2,7 @@
 name: Mobile Doctor
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 8
 events: 11
 in_portal:

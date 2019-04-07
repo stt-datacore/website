@@ -2,9 +2,9 @@
 name: Kurros
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 12
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

@@ -2,7 +2,7 @@
 name: Colonel Karr
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 12
 events: 0
 in_portal: true

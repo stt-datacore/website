@@ -2,8 +2,8 @@
 name: Bestselling Author Jake Sisko
 rarity: 4
 series: ds9
-memory_alpha: ds9
-bigbook_tier: 11
+memory_alpha:
+bigbook_tier: 12
 events: 4
 in_portal: true
 published: true

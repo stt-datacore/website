@@ -2,7 +2,7 @@
 name: Dr. Toby Russell
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 11
 events: 0
 in_portal: true

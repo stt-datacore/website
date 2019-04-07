@@ -2,7 +2,7 @@
 name: General Chang
 rarity: 5
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 13
 events: 7
 in_portal: true

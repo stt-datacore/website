@@ -2,7 +2,7 @@
 name: Holonovel Doctor
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 7
 events: 11
 in_portal: true

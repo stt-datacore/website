@@ -2,8 +2,8 @@
 name: Emotion Chip Data
 rarity: 5
 series: tng
-memory_alpha: tng
-bigbook_tier: 6
+memory_alpha:
+bigbook_tier: 7
 events: 16
 in_portal:
 published: true

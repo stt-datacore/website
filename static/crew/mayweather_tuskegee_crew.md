@@ -2,7 +2,7 @@
 name: Tuskegee Mayweather
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 11
 events: 7
 in_portal: true

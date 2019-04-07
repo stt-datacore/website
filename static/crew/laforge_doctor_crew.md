@@ -2,7 +2,7 @@
 name: Doctor La Forge
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 4
 events: 9
 in_portal: true

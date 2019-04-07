@@ -2,9 +2,9 @@
 name: Forra Gegen
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 11
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

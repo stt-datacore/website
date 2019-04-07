@@ -2,7 +2,7 @@
 name: Trader Odo
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 10
 events: 8
 in_portal: true

@@ -2,7 +2,7 @@
 name: Michael Sullivan
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 14
 events: 6
 in_portal:

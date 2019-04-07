@@ -2,9 +2,9 @@
 name: Sulan
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 8
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

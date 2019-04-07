@@ -2,7 +2,7 @@
 name: Bridge Officer Number One
 rarity: 5
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 2
 events: 12
 in_portal:

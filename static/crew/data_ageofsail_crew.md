@@ -2,7 +2,7 @@
 name: Age of Sail Data
 rarity: 5
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 6
 events: 16
 in_portal:

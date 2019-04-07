@@ -2,7 +2,7 @@
 name: K'mtar
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 3
 events: 9
 in_portal:

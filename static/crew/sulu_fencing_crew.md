@@ -2,7 +2,7 @@
 name: Fencing Sulu
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 13
 events: 5
 in_portal: true

@@ -2,7 +2,7 @@
 name: Incognito Kirk
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 4
 events: 12
 in_portal:

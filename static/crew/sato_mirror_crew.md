@@ -2,7 +2,7 @@
 name: Mirror Empress Sato
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 13
 events: 8
 in_portal: true

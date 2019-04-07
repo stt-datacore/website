@@ -2,7 +2,7 @@
 name: Mirror Janeway
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 7
 events: 17
 in_portal: true

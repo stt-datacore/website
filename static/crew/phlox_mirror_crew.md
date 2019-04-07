@@ -2,7 +2,7 @@
 name: Mirror Phlox
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 1
 events: 11
 in_portal: true

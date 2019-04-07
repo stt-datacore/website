@@ -2,7 +2,7 @@
 name: Klingon Quark
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 11
 events: 17
 in_portal: true

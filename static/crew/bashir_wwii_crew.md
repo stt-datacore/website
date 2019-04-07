@@ -2,7 +2,7 @@
 name: RAF Julian Bashir
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 3
 events: 15
 in_portal: true

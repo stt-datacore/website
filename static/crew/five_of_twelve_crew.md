@@ -2,7 +2,7 @@
 name: Five of Twelve
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 3
 events: 5
 in_portal:

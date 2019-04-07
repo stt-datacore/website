@@ -2,7 +2,7 @@
 name: Kazon Seska
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 10
 events: 2
 in_portal: true

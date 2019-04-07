@@ -2,7 +2,7 @@
 name: Virtuoso Doctor
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 6
 events: 11
 in_portal:

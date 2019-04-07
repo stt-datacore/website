@@ -2,9 +2,9 @@
 name: Admiral Kirk
 rarity: 5
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 6
-events: 10
+events: 12
 in_portal: true
 published: true
 ---

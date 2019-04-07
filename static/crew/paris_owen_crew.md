@@ -2,7 +2,7 @@
 name: Admiral Owen Paris
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 6
 events: 4
 in_portal:

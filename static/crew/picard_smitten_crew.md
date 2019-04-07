@@ -2,8 +2,8 @@
 name: Smitten Jean-Luc Picard
 rarity: 5
 series: tng
-memory_alpha: tng
-bigbook_tier: 9
+memory_alpha:
+bigbook_tier: 10
 events: 10
 in_portal: true
 published: true

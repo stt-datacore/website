@@ -2,7 +2,7 @@
 name: Seven in Silver
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 7
 events: 10
 in_portal:

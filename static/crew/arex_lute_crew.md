@@ -2,7 +2,7 @@
 name: Lieutenant Arex Na Eth
 rarity: 4
 series: tas
-memory_alpha: tas
+memory_alpha:
 bigbook_tier: 13
 events: 5
 in_portal: true

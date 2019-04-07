@@ -1,8 +1,8 @@
 ---
-name: "Weyoun Clone 5"
+name: Weyoun Clone 5
 rarity: 5
-series: "ds9"
-memory_alpha: ""
+series: ds9
+memory_alpha:
 bigbook_tier: 9
 events: 7
 in_portal:

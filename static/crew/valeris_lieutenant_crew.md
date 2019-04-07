@@ -2,7 +2,7 @@
 name: Lieutenant Valeris
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 7
 events: 9
 in_portal: true

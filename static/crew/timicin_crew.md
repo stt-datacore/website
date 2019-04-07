@@ -2,7 +2,7 @@
 name: Timicin
 rarity: 5
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 7
 events: 0
 in_portal:

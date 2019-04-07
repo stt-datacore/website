@@ -2,9 +2,9 @@
 name: Kai Opaka
 rarity: 5
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 14
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

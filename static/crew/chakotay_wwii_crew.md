@@ -2,7 +2,7 @@
 name: GI Chakotay
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 14
 events: 4
 in_portal: true

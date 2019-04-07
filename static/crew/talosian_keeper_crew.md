@@ -1,10 +1,10 @@
 ---
-name: "The Keeper"
+name: The Keeper
 rarity: 5
-series: "tos"
-memory_alpha: ""
+series: tos
+memory_alpha:
 bigbook_tier: 5
-events: 1
+events: 0
 in_portal:
 published: true
 ---

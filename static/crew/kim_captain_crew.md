@@ -2,9 +2,9 @@
 name: Captain Harry Kim
 rarity: 5
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 5
-events: 8
+events: 9
 in_portal:
 published: true
 ---

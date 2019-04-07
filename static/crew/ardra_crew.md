@@ -2,9 +2,9 @@
 name: Ardra
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 10
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

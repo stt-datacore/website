@@ -2,7 +2,7 @@
 name: C.O.P. Founder Picard
 rarity: 5
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 9
 events: 10
 in_portal: true

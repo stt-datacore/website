@@ -2,9 +2,9 @@
 name: Mugato
 rarity: 5
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 15
-events: 1
+events: 0
 in_portal:
 published: true
 ---

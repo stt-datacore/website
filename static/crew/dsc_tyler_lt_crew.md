@@ -2,7 +2,7 @@
 name: Lt. Ash Tyler
 rarity: 4
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 8
 events: 17
 in_portal:

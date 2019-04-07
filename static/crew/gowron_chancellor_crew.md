@@ -2,7 +2,7 @@
 name: Chancellor Gowron
 rarity: 5
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 9
 events: 8
 in_portal: true

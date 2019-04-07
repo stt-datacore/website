@@ -2,7 +2,7 @@
 name: Feezal Phlox
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 13
 events: 0
 in_portal: true

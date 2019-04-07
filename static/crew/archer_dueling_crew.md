@@ -2,7 +2,7 @@
 name: Ushaan Archer
 rarity: 5
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 13
 events: 7
 in_portal:

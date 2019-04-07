@@ -2,7 +2,7 @@
 name: Pah-wraith Cult Dukat
 rarity: 5
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 12
 events: 5
 in_portal: true

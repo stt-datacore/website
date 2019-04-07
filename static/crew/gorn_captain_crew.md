@@ -2,7 +2,7 @@
 name: Gorn Captain
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 12
 events: 1
 in_portal: true

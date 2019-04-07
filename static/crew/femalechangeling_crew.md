@@ -2,7 +2,7 @@
 name: Changeling Founder
 rarity: 5
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 14
 events: 9
 in_portal:

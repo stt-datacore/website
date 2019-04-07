@@ -2,9 +2,9 @@
 name: Admiral Ross
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 8
-events: 1
+events: 0
 in_portal:
 published: true
 ---

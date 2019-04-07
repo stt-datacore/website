@@ -2,7 +2,7 @@
 name: Marshal of France Q
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 3
 events: 7
 in_portal: true

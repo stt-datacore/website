@@ -2,7 +2,7 @@
 name: Mirror Tucker
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 6
 events: 12
 in_portal: true

@@ -2,9 +2,9 @@
 name: Enabran Tain
 rarity: 5
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 12
-events: 1
+events: 0
 in_portal:
 published: true
 ---

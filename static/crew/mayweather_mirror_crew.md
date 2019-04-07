@@ -2,7 +2,7 @@
 name: Mirror Mayweather
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 2
 events: 10
 in_portal: true

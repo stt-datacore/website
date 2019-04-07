@@ -2,9 +2,9 @@
 name: Lewis Zimmerman
 rarity: 4
 series: voy
-memory_alpha: voy
+memory_alpha:
 bigbook_tier: 4
-events: 1
+events: 0
 in_portal:
 published: true
 ---

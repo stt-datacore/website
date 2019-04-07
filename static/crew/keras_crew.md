@@ -2,7 +2,7 @@
 name: Commander Keras
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 6
 events: 5
 in_portal: true

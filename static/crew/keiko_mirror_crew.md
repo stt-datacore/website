@@ -2,7 +2,7 @@
 name: Mirror Keiko
 rarity: 4
 series: ds9
-memory_alpha: ds9
+memory_alpha:
 bigbook_tier: 10
 events: 6
 in_portal:

@@ -2,7 +2,7 @@
 name: Doctor Chapel
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 14
 events: 2
 in_portal: true

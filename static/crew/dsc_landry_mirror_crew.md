@@ -2,8 +2,8 @@
 name: Mirror Ellen Landry
 rarity: 5
 series: dsc
-memory_alpha: dsc
-bigbook_tier: 8
+memory_alpha:
+bigbook_tier: 9
 events: 20
 in_portal:
 published: true

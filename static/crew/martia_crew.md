@@ -2,9 +2,9 @@
 name: Martia
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 14
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

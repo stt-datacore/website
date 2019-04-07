@@ -2,7 +2,7 @@
 name: Friar Tuck Data
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 2
 events: 16
 in_portal: true

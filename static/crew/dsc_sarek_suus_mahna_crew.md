@@ -2,7 +2,7 @@
 name: Suus Mahna Sarek
 rarity: 5
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 7
 events: 22
 in_portal:

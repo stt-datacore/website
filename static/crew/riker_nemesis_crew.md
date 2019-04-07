@@ -2,8 +2,8 @@
 name: First Officer Riker
 rarity: 5
 series: tng
-memory_alpha: tng
-bigbook_tier: 10
+memory_alpha:
+bigbook_tier: 11
 events: 7
 in_portal:
 published: true

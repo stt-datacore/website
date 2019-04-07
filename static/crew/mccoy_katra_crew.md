@@ -2,7 +2,7 @@
 name: Katra McCoy
 rarity: 4
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 3
 events: 14
 in_portal: true

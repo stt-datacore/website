@@ -2,7 +2,7 @@
 name: C.O.P. Founder Archer
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 12
 events: 4
 in_portal: true

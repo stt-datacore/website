@@ -2,7 +2,7 @@
 name: Fugitive Spock
 rarity: 4
 series: dsc
-memory_alpha: dsc
+memory_alpha:
 bigbook_tier: 1
 events: 22
 in_portal:

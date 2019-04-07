@@ -2,7 +2,7 @@
 name: Fesek
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 12
 events: 0
 in_portal: true

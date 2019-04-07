@@ -2,7 +2,7 @@
 name: Dr. Tolian Soran
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 12
 events: 2
 in_portal: true

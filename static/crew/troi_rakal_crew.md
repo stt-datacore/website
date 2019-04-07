@@ -2,7 +2,7 @@
 name: Rakal Troi
 rarity: 4
 series: tng
-memory_alpha: tng
+memory_alpha:
 bigbook_tier: 5
 events: 14
 in_portal: true

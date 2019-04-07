@@ -2,9 +2,9 @@
 name: Dress Uniform Scotty
 rarity: 5
 series: tos
-memory_alpha: tos
+memory_alpha:
 bigbook_tier: 9
-events: 1
+events: 0
 in_portal: true
 published: true
 ---

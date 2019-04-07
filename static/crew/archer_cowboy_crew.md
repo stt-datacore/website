@@ -2,7 +2,7 @@
 name: North Star Archer
 rarity: 4
 series: ent
-memory_alpha: ent
+memory_alpha:
 bigbook_tier: 4
 events: 4
 in_portal: true
