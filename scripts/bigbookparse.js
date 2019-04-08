@@ -112,7 +112,7 @@ async function main() {
 	let crewData = await getData();
 
 	for (let crew of crewData) {
-		crew.descr = crew.descr.join('\r\n');
+		crew.descr = crew.descr.join('\r\n\r\n');
 		crew.name = fixMisspell(crew.name);
 	}
 
