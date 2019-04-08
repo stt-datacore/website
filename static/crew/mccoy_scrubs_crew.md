@@ -1,5 +1,5 @@
 ---
-name: "Dark Ages" McCoy
+name: '"Dark Ages" McCoy'
 rarity: 5
 series: tos
 memory_alpha:
