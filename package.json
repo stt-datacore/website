@@ -21,7 +21,7 @@
     "gatsby-plugin-netlify-cache": "^1.1.0",
     "gatsby-plugin-netlify-cms": "^3.0.17",
     "gatsby-plugin-typescript": "^2.0.12",
-    "gatsby-source-filesystem": "^2.0.28",
+    "gatsby-source-filesystem": "^2.0.29",
     "gatsby-transformer-json": "^2.1.11",
     "gatsby-transformer-remark": "^2.3.8",
     "graphql-typescript-definitions": "^0.16.1",

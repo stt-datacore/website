@@ -6,6 +6,8 @@ import { graphql, Link } from 'gatsby';
 import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
+import { getCoolStats } from '../utils/misc';
+
 type CommonCrewDataProps = {
 	crew: any;
 	markdownRemark: any;
@@ -79,11 +81,13 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 				{crewDemands && (
 					<p>
-						<b>{crewDemands.factionOnlyTotal}</b>{' faction items, '}
+						<b>{crewDemands.factionOnlyTotal}</b>
+						{' faction items, '}
 						<span style={{ display: 'inline-block' }}>
 							<img src={`/media/icons/energy_icon.png`} height={14} />
 						</span>{' '}
-						<b>{crewDemands.totalChronCost}</b>{', '}
+						<b>{crewDemands.totalChronCost}</b>
+						{', '}
 						<span style={{ display: 'inline-block' }}>
 							<img src={`/media/icons/images_currency_sc_currency_0.png`} height={16} />
 						</span>{' '}
@@ -97,7 +101,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						{
 							index: 0,
 							key: 0,
-							title: this.getCoolStats(crew),
+							title: getCoolStats(crew, false),
 							content: { content: <div style={{ paddingBottom: '1em' }}>{this.renderOtherRanks(crew)}</div> }
 						}
 					]}
@@ -142,28 +146,6 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 			</React.Fragment>
 		);
-	}
-
-	getCoolStats(crew) {
-		let stats = [];
-
-		const rankType = rank => {
-			return rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
-		};
-
-		for (let rank in crew.ranks) {
-			if (rank.startsWith('V_') || rank.startsWith('B_') || rank.startsWith('G_')) {
-				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
-					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.substr(2).replace('_', ' / ')}`);
-				}
-			}
-		}
-
-		if (stats.length === 0) {
-			return 'More stats...';
-		} else {
-			return stats.join(', ') + ', more stats...';
-		}
 	}
 
 	renderOtherRanks(crew) {
