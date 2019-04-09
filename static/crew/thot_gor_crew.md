@@ -3,7 +3,7 @@ name: Thot Gor
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 6
 in_portal:
 published: true
