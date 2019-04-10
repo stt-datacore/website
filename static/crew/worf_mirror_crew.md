@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 10
-events: 22
+events: 23
 in_portal: true
 published: true
 ---

@@ -3,7 +3,7 @@ name: Stranded Odo
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 12
 events: 8
 in_portal: true
 published: true
