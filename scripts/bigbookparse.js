@@ -18,6 +18,9 @@ function parseCrew(lines) {
 				crew.push(curcrew);
 			}
 
+			// Hack (fix up the doc)
+			line = line.replace("First Officer Saru SCI #", "First Officer Saru - SCI #");
+
 			let nameStart = line.indexOf(')') + 1;
 			curcrew = { tier, descr: [], name: line.substr(nameStart, line.indexOf(' -') - nameStart).trim() };
 
@@ -27,12 +30,10 @@ function parseCrew(lines) {
 			}
 		} else {
 			if (curcrew) {
-				if (line.trim().length !== 0)
+				line = line.trim();
+				if ((line.length > 1) && (!/^Tier (\d+)/g.exec(line)))
 				{
-					if (!/^Tier (\d+)/g.exec(line.trim()))
-					{
-						curcrew.descr.push(line.trim());
-					}
+					curcrew.descr.push(line);
 				}
 			}
 		}
