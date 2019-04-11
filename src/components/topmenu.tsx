@@ -15,7 +15,8 @@ class TopMenu extends PureComponent {
 					</Menu.Header>
 					<Menu.Item onClick={() => navigate('/')}>Crew stats</Menu.Item>
 					<Menu.Item onClick={() => navigate('/about')}>About</Menu.Item>
-					<Menu.Item onClick={() => navigate('/bigbook')}>Big book</Menu.Item>
+					{!isMobile && <Menu.Item onClick={() => navigate('/bigbook')}>Big book</Menu.Item>}
+					{isMobile && <Menu.Item onClick={() => navigate('/bb')}>Big book</Menu.Item>}
 					{!isMobile && <Menu.Item onClick={() => navigate('/voyage')}>Voyage</Menu.Item>}
 					<Menu.Item onClick={() => navigate('/behold')}>Behold</Menu.Item>
 

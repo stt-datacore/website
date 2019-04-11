@@ -14,9 +14,9 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
-    "gatsby": "^2.3.14",
+    "gatsby": "^2.3.19",
     "gatsby-plugin-google-analytics": "^2.0.18",
-    "gatsby-plugin-manifest": "^2.0.26",
+    "gatsby-plugin-manifest": "^2.0.29",
     "gatsby-plugin-netlify": "^2.0.13",
     "gatsby-plugin-netlify-cache": "^1.1.0",
     "gatsby-plugin-netlify-cms": "^3.0.17",
@@ -26,7 +26,7 @@
     "gatsby-transformer-remark": "^2.3.8",
     "graphql-typescript-definitions": "^0.16.1",
     "localforage": "^1.7.3",
-    "netlify-cms": "^2.9.0",
+    "netlify-cms": "^2.9.1",
     "react": "^16.8.6",
     "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.6",
