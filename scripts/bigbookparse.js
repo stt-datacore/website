@@ -11,7 +11,7 @@ function parseCrew(lines) {
 	let crew = [];
 	let curcrew = undefined;
 	for (let line of lines) {
-		let ft = /^\t\((\d+)\)/g.exec(line);
+		let ft = /^\t\(([\d ]+)\)/g.exec(line);
 		if (ft) {
 			tier = Number.parseInt(ft[1]);
 			if (curcrew) {
@@ -31,7 +31,7 @@ function parseCrew(lines) {
 		} else {
 			if (curcrew) {
 				line = line.trim();
-				if ((line.length > 1) && (!/^Tier (\d+)/g.exec(line)))
+				if ((line.length > 1) && (!/^Tier (\d+)/g.exec(line)) && !line.startsWith("______"))
 				{
 					curcrew.descr.push(line);
 				}
@@ -94,9 +94,7 @@ const fixMisspell = bbname => {
 		bbname = bbname.substr(0, bbname.indexOf('(')).trim();
 	}
 
-	if (bbname === 'Duras Sisters') {
-		return 'The Duras Sisters';
-	} else if (bbname === 'Section 31 Phillipa Georgiou') {
+	if (bbname === 'Section 31 Phillipa Georgiou') {
 		return 'Section 31 Philippa Georgiou';
 	} else if (bbname === 'Armed Phillipa Georgiou') {
 		return 'Armed Philippa Georgiou';
