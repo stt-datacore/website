@@ -1,7 +1,7 @@
 ---
 name: Satan's Robot
 rarity: 5
-series: ''
+series:
 memory_alpha:
 bigbook_tier: 8
 events: 6

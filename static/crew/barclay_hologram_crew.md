@@ -3,7 +3,7 @@ name: Hologram Barclay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 12
 events: 8
 in_portal: true
 published: true

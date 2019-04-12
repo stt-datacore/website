@@ -18,9 +18,6 @@ function parseCrew(lines) {
 				crew.push(curcrew);
 			}
 
-			// Hack (fix up the doc)
-			line = line.replace("First Officer Saru SCI #", "First Officer Saru - SCI #");
-
 			let nameStart = line.indexOf(')') + 1;
 			curcrew = { tier, descr: [], name: line.substr(nameStart, line.indexOf(' -') - nameStart).trim() };
 
@@ -94,17 +91,7 @@ const fixMisspell = bbname => {
 		bbname = bbname.substr(0, bbname.indexOf('(')).trim();
 	}
 
-	if (bbname === 'Section 31 Phillipa Georgiou') {
-		return 'Section 31 Philippa Georgiou';
-	} else if (bbname === 'Armed Phillipa Georgiou') {
-		return 'Armed Philippa Georgiou';
-	} else if (bbname === "Ba'Ku Worf") {
-		return "Ba'ku Worf";
-	} else if (bbname === "\"Dark Ages\" McCoy") {
-		return "\\Dark Ages\\ McCoy";
-	} else {
-		return bbname.replace(/"/g, '\\');
-	}
+	return bbname;
 };
 
 async function main() {
@@ -125,15 +112,27 @@ async function main() {
 			converter.makeHtml(fs.readFileSync(`${STATIC_PATH}/crew/${file}`, 'utf8'));
 			let meta = converter.getMetadata();
 			if (meta && meta.name) {
-                let name = meta.name.replace(/&quot;/g, '');
-                
+				let name = meta.name;
+
+				if (name.startsWith('\'') && name.endsWith('\''))
+				{
+					name = name.substr(1, name.length - 2);
+				}
+
+				if (name.startsWith('&quot;') && name.endsWith('&quot;'))
+				{
+					name = name.substr(6, name.length - 12);
+				}
+
+				name = name.replace(/&quot;/g, '"');
+
                 let crewjson = crewlist.find(c => c.symbol === file.replace(".md", ""));
                 if (!crewjson) {
                     console.log(`Not found in json: ${name}`);
                     return;
 				}
 
-				mapCrew.set(name, {
+				mapCrew.set(name.replace(/\"/g, ''), {
 					rarity: meta.rarity.replace(/&quot;/g, '').replace(/'/g, ''),
                     series: crewjson.series,
 					memory_alpha: meta.memory_alpha ? meta.memory_alpha.replace(/&quot;/g, '').replace(/'/g, '') : undefined,
@@ -145,15 +144,15 @@ async function main() {
 	});
 
 	for (let crew of crewData) {
-		if (mapCrew.has(crew.name)) {
-            let meta = mapCrew.get(crew.name);
+		if (mapCrew.has(crew.name.replace(/\"/g, ''))) {
+            let meta = mapCrew.get(crew.name.replace(/\"/g, ''));
 
 			fs.writeFileSync(
 				`${STATIC_PATH}/crew/${meta.file}`,
 				`---
-name: ${crew.name.replace(/\\/g, '\\"')}
+name: ${(crew.name.indexOf('"') >= 0) ? `'${crew.name}'` : crew.name}
 rarity: ${meta.rarity}
-series: ${meta.series || "''"}
+series:${meta.series ? ` ${meta.series}` : ""}
 memory_alpha:${meta.memory_alpha ? (" " + meta.memory_alpha) : ""}
 bigbook_tier: ${crew.tier}
 events: ${crew.events || 0}
@@ -165,7 +164,7 @@ ${crew.descr}
 `
 			);
 		} else {
-			console.log(`!!!!!!!!!${crew.name} not found!`);
+			console.log(`'${crew.name}' not found!`);
 		}
 	}
 }

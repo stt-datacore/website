@@ -1,7 +1,7 @@
 ---
 name: Abraham Lincoln
 rarity: 5
-series: ''
+series:
 memory_alpha:
 bigbook_tier: 13
 events: 0

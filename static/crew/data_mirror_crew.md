@@ -1,7 +1,7 @@
 ---
 name: Mirror Data
 rarity: 5
-series: ''
+series:
 memory_alpha:
 bigbook_tier: 3
 events: 21
