@@ -3,7 +3,7 @@ name: Maquis Ro Laren
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 12
 events: 2
 in_portal: true
 published: true

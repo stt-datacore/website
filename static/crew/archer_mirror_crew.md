@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Poor stats in every area; he's usually a "cut" candidate for players strapped for roster spots. His saving grace is a handful of events, mostly Mirror bonuses.
+Poor stats in every area; he's usually a "cut" candidate for players strapped for roster spots. His saving grace is a healthy handful of events, mostly Mirror bonuses.

@@ -3,7 +3,7 @@ name: M-113 Creature
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 11
 events: 0
 in_portal: true
 published: true

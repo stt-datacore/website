@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Craptain Sulu somehow managed to be featured crew without his variants being bonus. The Captain's Oath re-run tried to fix that, but Sulu's event count still sits at two.
+Craptain Sulu somehow managed to be featured crew twice without his variants being bonus. The Captain's Oath re-run tried to fix that, but Sulu's event count still sits at two.
