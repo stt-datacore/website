@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-His strong voyage MED is paired with two trickier skill combos to give him 8+ hour staying power. Eight of ten Paris events have had a Faction component and he has two features in Galaxy events (10x bonus) - great news for the owner of the #1 MED base. All-star for the less represented MED skill.
+Ever wonder what she's carrying in her basket?. The answer is all her freaking traits. Thirteen (!!!) to help trigger voyage and event bonuses when you least expect them. She's well into double-digit events and sports the #2 DIP base to go with it. Her voyage DIP is nearly 100 points better than the next 3-skiller and because of how voyage totals tend to curve at the top and bottom, her top 5 overall voyage total is almost 100 points better than #15.

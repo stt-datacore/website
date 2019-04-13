@@ -50,7 +50,7 @@ async function getData() {
 
 	// Make parsing easier, and replace unicode chars with normal ascii ones
 	data = data
-		.replace(/ 1 event /g, ' 1 events ')
+		.replace(/ 1 event/g, ' 1 events')
 		.replace(/’/g, "'")
 		.replace(/‘/g, "'")
 		.replace(/“/g, '"')
