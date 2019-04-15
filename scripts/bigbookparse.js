@@ -21,7 +21,7 @@ function parseCrew(lines) {
 			let nameStart = line.indexOf(')') + 1;
 			curcrew = { tier, descr: [], name: line.substr(nameStart, line.indexOf(' -') - nameStart).trim() };
 
-			let evr = /(\d+) events/g.exec(line);
+			let evr = /(\d+) event/g.exec(line);
 			if (evr) {
 				curcrew.events = Number.parseInt(evr[1]);
 			}
@@ -50,7 +50,6 @@ async function getData() {
 
 	// Make parsing easier, and replace unicode chars with normal ascii ones
 	data = data
-		.replace(/ 1 event/g, ' 1 events')
 		.replace(/’/g, "'")
 		.replace(/‘/g, "'")
 		.replace(/“/g, '"')
