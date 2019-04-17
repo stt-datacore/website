@@ -3,7 +3,7 @@ name: UFP President Ra-ghoratreii
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 10
 events: 0
 in_portal:
 published: true
