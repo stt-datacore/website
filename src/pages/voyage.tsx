@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Button, Message } from 'semantic-ui-react';
+import { Container, Header, Button, Message, Form, TextArea } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import VoyageCalculator from '../components/voyagecalculator';
@@ -9,6 +9,7 @@ type VoyagePageProps = {};
 type VoyagePageState = {
 	playerData?: any;
 	errorMessage?: string;
+	pastedContent: string | number;
 };
 
 class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
@@ -17,7 +18,8 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 
 		this.state = {
 			playerData: undefined,
-			errorMessage: undefined
+			errorMessage: undefined,
+			pastedContent: ''
 		};
 	}
 
@@ -35,24 +37,32 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						</p>
 						<ul>
 							<li>
-								In the frame below, make sure you are logged in and your player data is loaded; it should look like a bunch of gibberish
-								starting with <span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+								Open this page in your browser:{' '}
+								<a href='https://stt.disruptorbeam.com/player' target='_blank'>
+									https://stt.disruptorbeam.com/player
+								</a>
+								, make sure you are logged in and your player data is loaded; it should look like a bunch of gibberish starting with{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
 							</li>
-							<li>Select everything in the frame (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>
-								After you copied the contents, click the 'Read data' button below, and allow it to read the clipboard content if prompted
-							</li>
+							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
+							<li>Paste the contents in the text box below, then click the 'Read data' button below</li>
 						</ul>
 
+						<Form>
+							<TextArea
+								placeholder='Paste the content here'
+								value={this.state.pastedContent}
+								onChange={(e, { value }) => this.setState({ pastedContent: value })}
+							/>
+						</Form>
+
 						<Button
-							onClick={() => this.parseFromClipboard()}
-							style={{ marginBottom: '1em' }}
+							onClick={() => this._parseFromTextbox()}
+							style={{ marginBottom: '1em', marginTop: '1em' }}
 							content='Read data'
 							icon='paste'
 							labelPosition='right'
 						/>
-
-						<iframe src='https://stt.disruptorbeam.com/player' style={{ width: '100%', height: '10em', border: '1px solid black' }} />
 
 						{errorMessage && (
 							<Message negative>
@@ -74,26 +84,23 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		}
 	}
 
-	parseFromClipboard() {
-		(navigator as any).clipboard
-			.readText()
-			.then(text => {
-				let playerData = JSON.parse(text);
+	_parseFromTextbox() {
+		try {
+			let playerData = JSON.parse(this.state.pastedContent as string);
 
-				if (playerData && playerData.player && playerData.player.display_name) {
-					this.setState({ playerData: playerData, errorMessage: undefined });
-				} else {
-					this.setState({
-						errorMessage:
-							'Failed to parse player data from the text you pasted. Make sure the frame is loaded correctly and you copied the entire contents!'
-					});
-				}
-			})
-			.catch(() => {
+			if (playerData && playerData.player && playerData.player.display_name) {
+				this.setState({ playerData: playerData, errorMessage: undefined });
+			} else {
 				this.setState({
-					errorMessage: 'Failed to read from clipboard. Make sure the frame is loaded correctly and you copied the entire contents!'
+					errorMessage:
+						'Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!'
 				});
+			}
+		} catch {
+			this.setState({
+				errorMessage: 'Failed to read the data. Make sure the page is loaded correctly and you copied the entire contents!'
 			});
+		}
 	}
 }
 

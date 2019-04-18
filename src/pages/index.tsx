@@ -161,7 +161,6 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h2'>Crew stats</Header>
 
-
 					<Input
 						style={{width:'50%'}}
 						icon='search'
