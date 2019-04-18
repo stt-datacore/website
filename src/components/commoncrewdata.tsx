@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Segment, Accordion, Statistic, Grid, Image } from 'semantic-ui-react';
+import { Header, Segment, Accordion, Statistic, Grid, Image, Label } from 'semantic-ui-react';
 
 import { graphql, Link } from 'gatsby';
 
@@ -7,6 +7,24 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
+
+type StatLabelProps = {
+	title: string;
+	value: string;
+};
+
+class StatLabel extends Component<StatLabelProps> {
+	render() {
+		const { title, value } = this.props;
+
+		return (
+			<Label size='large' style={{marginBottom: '0.5em'}}>
+				{title}
+				<Label.Detail>{value}</Label.Detail>
+			</Label>
+		);
+	}
+}
 
 type CommonCrewDataProps = {
 	crew: any;
@@ -50,34 +68,49 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 				{crew.flavor && !compact && <p>{crew.flavor}</p>}
 
-				<Statistic.Group style={{ paddingBottom: '2em' }} size={compact ? 'mini' : 'tiny'}>
-					{!compact && markdownRemark.frontmatter.events !== null && (
+				{compact && (
+					<div style={{textAlign: 'center'}}>
+						<StatLabel title='Voyage rank' value={crew.ranks.voyRank} />
+						<StatLabel title='Gauntlet rank' value={crew.ranks.gauntletRank} />
+						{markdownRemark.frontmatter.bigbook_tier !== null && (
+							<StatLabel title='Big book tier' value={markdownRemark.frontmatter.bigbook_tier} />
+						)}
+						{markdownRemark.frontmatter.events !== null && (
+							<StatLabel title='Events' value={markdownRemark.frontmatter.events} />
+						)}
+					</div>
+				)}
+
+				{!compact && (
+					<Statistic.Group style={{ paddingBottom: '2em' }} size='tiny'>
+						{markdownRemark.frontmatter.events !== null && (
+							<Statistic>
+								<Statistic.Label>Events</Statistic.Label>
+								<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+							</Statistic>
+						)}
+						{markdownRemark.frontmatter.bigbook_tier !== null && (
+							<Statistic>
+								<Statistic.Label>Tier</Statistic.Label>
+								<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
+							</Statistic>
+						)}
+						{!compact && markdownRemark.frontmatter.in_portal !== null && (
+							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
+								<Statistic.Label>Portal</Statistic.Label>
+								<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
+							</Statistic>
+						)}
 						<Statistic>
-							<Statistic.Label>Events</Statistic.Label>
-							<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+							<Statistic.Label>Voyage Rank</Statistic.Label>
+							<Statistic.Value>{crew.ranks.voyRank}</Statistic.Value>
 						</Statistic>
-					)}
-					{markdownRemark.frontmatter.bigbook_tier !== null && (
 						<Statistic>
-							<Statistic.Label>Tier</Statistic.Label>
-							<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
+							<Statistic.Label>Gauntlet Rank</Statistic.Label>
+							<Statistic.Value>{crew.ranks.gauntletRank}</Statistic.Value>
 						</Statistic>
-					)}
-					{!compact && markdownRemark.frontmatter.in_portal !== null && (
-						<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
-							<Statistic.Label>Portal</Statistic.Label>
-							<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
-						</Statistic>
-					)}
-					<Statistic>
-						<Statistic.Label>Voyage{!compact && ' Rank'}</Statistic.Label>
-						<Statistic.Value>{crew.ranks.voyRank}</Statistic.Value>
-					</Statistic>
-					<Statistic>
-						<Statistic.Label>Gauntlet{!compact && ' Rank'}</Statistic.Label>
-						<Statistic.Value>{crew.ranks.gauntletRank}</Statistic.Value>
-					</Statistic>
-				</Statistic.Group>
+					</Statistic.Group>
+				)}
 
 				{crewDemands && (
 					<p>
