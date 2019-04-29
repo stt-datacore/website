@@ -29,7 +29,7 @@ A note about mission data for equipment sources: the source data was collected f
 
 ### Contact
 
-Once we grow the team of contributors and volunteers we may set up a Discord or some other means of communication. But for now, the easiest way to get in touch is by opening [issues on GitHub](https://github.com/TemporalAgent7/datacore/issues/new).
+Once we grow the team of contributors and volunteers we may set up a Discord or some other means of communication. But for now, the easiest way to get in touch is by opening [issues on GitHub](https://github.com/TemporalAgent7/datacore/issues/new); you can also find me on the [STT Discord server](https://discord.gg/8Du7ZtJ) as TemporalAgent7#3792, and on reddit as [u/TemporalAgent7](https://www.reddit.com/user/TemporalAgent7).
 
 ### Licensing
 
