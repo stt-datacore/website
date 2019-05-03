@@ -3,7 +3,7 @@ name: Away Team Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 13
 in_portal:
 published: true

@@ -3,7 +3,7 @@ name: Klingon Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 18
 in_portal: true
 published: true
