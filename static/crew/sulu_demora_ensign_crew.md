@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 12
 events: 4
-in_portal: false
+in_portal:
 published: true
 ---
 

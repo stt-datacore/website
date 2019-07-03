@@ -5,7 +5,7 @@ series: ent
 memory_alpha:
 bigbook_tier: 2
 events: 3
-in_portal: false
+in_portal:
 published: true
 ---
 
