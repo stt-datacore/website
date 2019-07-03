@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 1
 events: 15
-in_portal:
+in_portal: false
 published: true
 ---
 

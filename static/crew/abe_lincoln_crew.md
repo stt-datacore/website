@@ -5,7 +5,7 @@ series:
 memory_alpha:
 bigbook_tier: 13
 events: 0
-in_portal:
+in_portal: true
 published: true
 ---
 
