@@ -4,9 +4,9 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 4
-events: 11
+events: 12
 in_portal: true
 published: true
 ---
 
-You'll hear superhero stories about him from those who got him at 5/5 out of the box, but Bashir really is great crew. His MED base is holding strong and is generally the low water mark for the majority of your event competition due to his availability as a previous mega reward. Despite merely average voyage numbers, only five crew above his voyage total can claim better MED. Some of the peripheral cracks are beginning to show for Bashir due in part to a long event drought, but In an option-deficient MED skill, BR Bashir remains a standout.
+You'll hear superhero stories about him from those who got him at 5/5 out of the box, but Bashir really is good crew. His MED base is holding strong and is generally the low water mark for the majority of your event competition due to his availability as a previous mega reward. Despite merely average voyage numbers, only a handful crew above his voyage total can claim better MED. His numbers may be sinking and his events are sporadic, but In an option-deficient MED skill, BR Bashir remains a standout.

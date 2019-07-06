@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 3
-events: 10
+events: 11
 in_portal:
 published: true
 ---
@@ -13,4 +13,4 @@ A slightly goofy, endearing, dancing Jean-Luc was certainly feeling his oats aft
 
 His voyage number pops, but Mambo's number one, two, three-four-five in the DIP/SCI ranks which is curiously quite common at the top of the charts. That's not to say he's redundant, in fact if anything his utility over cards like Xindi Insectoid or Sarah Sisko make him the more useful piece most of the time.
 
-Benjamin Button made his way into everybody's mailbox and in the process shook up his value. Arrow down for gauntlet use; his big DIP roll (and 1/5 usability) may cause his owners to face more mirror matchups than before which is especially problematic for his #1 DIP/CMD pair. Arrow up for event use thanks to a future Picard television series which DB appears to already be gearing up for.
+Benjamin Button made his way into everybody's mailbox and in the process shook up his value. Arrow down for gauntlet use; a big DIP roll (and 1/5 usability) may cause his owners to face more mirror matchups than before which is especially problematic for his #1 DIP/CMD pair. Arrow up for event use thanks to a future Picard television series which DB appears to already be gearing up for.

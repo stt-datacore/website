@@ -4,7 +4,7 @@ rarity: 5
 series:
 memory_alpha:
 bigbook_tier: 4
-events: 7
+events: 8
 in_portal:
 published: true
 ---

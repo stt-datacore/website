@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 11
+events: 12
 in_portal: true
 published: true
 ---
 
-Janeway's right hand man will be equally reliable for you. As I parrot for every SEC/SCI crew, there just aren't many options for that skill set and so the voyage numbers can be tossed out the window, or at least gently set outside. As of now, there are only five SEC/SCI crew rated better for voyages. Considering his solid base and a couple events per year to pair with it, he may not be a superstar, but you won't go too long without calling his number.
+Janeway's right hand man has been equally reliable to players for years. He's slipping down the stat ranks through no fault of his own, but despite a never-ending crop of better statistical looking cards, Tuvok holds his own with a strong voyage skill set and regular events. He may not be a superstar, but you won't go too long without calling his number.

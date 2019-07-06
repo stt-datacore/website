@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 4
-events: 15
+events: 16
 in_portal: true
 published: true
 ---
 
-You have to think that at some point his sagging rankings will catch up to Paris. He's dodged them expertly so far with what is in my opinion the most useful skill set in the game. There's almost no competition for ENG/MED or CMD/MED and you'll hardly notice lower overall totals when you send him on voyages as the superior option in many cases. In fact, he's the only crew in the game with his skill set. Paris' variants recently joined the ten event club, but his traits have pushed that number up even further and in combination with two variant-best bases and 80% of his events having included a Faction component, that means as much work as he can handle, both daily and on the weekends.
+Paris' sagging rankings are beginning to catch up to him, even if he's dodged them expertly so far with what is in my opinion the most useful skill set in the game. There's almost no competition for ENG/MED or CMD/MED and you'll hardly notice lower overall totals when you send him on voyages as the superior option in many cases. In fact, only one other crew in the game shares his skill set. Paris variants joined the ten event club back in 2018, but his traits have pushed that number up even further and in combination with two variant-best bases and 75% of his events having included a Faction component, that means as much work as he can handle, both daily and on the weekends.
