@@ -11,7 +11,7 @@ function parseCrew(lines) {
 	let crew = [];
 	let curcrew = undefined;
 	for (let line of lines) {
-		let ft = /^\t\(([\d ]+)\)/g.exec(line);
+		let ft = /^\t?\* \(?([\d ]+)\)/g.exec(line);
 		if (ft) {
 			tier = Number.parseInt(ft[1]);
 			if (curcrew) {
@@ -25,10 +25,13 @@ function parseCrew(lines) {
 			if (evr) {
 				curcrew.events = Number.parseInt(evr[1]);
 			}
+
+			line = line.substr(line.indexOf('-', line.indexOf('event') + 1) + 1).trim();
+			curcrew.descr.push(line);
 		} else {
 			if (curcrew) {
 				line = line.trim();
-				if ((line.length > 1) && (!/^Tier (\d+)/g.exec(line)) && !line.startsWith("______"))
+				if ((line.length > 1) && (!/^Tier( +)(\d+)/g.exec(line)) && !line.startsWith("______"))
 				{
 					curcrew.descr.push(line);
 				}
