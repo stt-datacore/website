@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Most of us loathe the thought of collecting another DIP/CMD 2-skiller, but Uhura's dual 1k bases are good enough for daily use starting at 3/5 and she's picked up a half dozen events including two features. With no DIP crew in the top 40 able to match her CMD base, she may be worth consideration as a 2-for-1 that will allow you to freeze an extra CMD crew and free up a slot.
+Most of us loathe the thought of collecting another DIP/CMD 2-skiller, but at least Uhura will shine in spots. For a time, she was among the best shuttle crew in the game, but now crowded out of that honor by handfuls of new crew, she waits for events which have crawled to a halt. One variant event in a year and a half won't pay the bills, which I guess is why she's resorted to dancing.

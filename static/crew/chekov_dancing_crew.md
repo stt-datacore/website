@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-If you kept a copy of the Russian jester in your inbox due to lack of space, here's your chance to double him up and help him earn his keep. He's good-not-great in a couple areas and even though he's rarely a standout, natural stat creep has given him just enough value relative to the field.
+If you kept a copy of the Russian jester in your inbox due to lack of space, here's your chance to double him up and help him earn his keep. He's fine for most rosters, but offers almost nothing that can't be found elsewhere. You're mainly looking at his yearly Chekov ewent with just enough stat value relative to the field.

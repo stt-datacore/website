@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-With DIP worthy of daily use and a 1k SECondary, Kang ranks nicely for a few different shuttle seats. If he had the regular events of a main cast character, he'd skyrocket up the ranks, but Klingon and a couple other traits present a chance for bonuses every so often. Double collections deserve consideration at the behold screen as his bases are squarely above average for a 2-skill crew.
+With DIP useful for daily shuttles and a 1k SECondary, Kang ranks nicely for a few different shuttle seats. If he had the regular events of a main cast character, he'd jump up the ranks, but Klingon and a couple other traits present a chance for bonuses every so often. Double collections deserve consideration at the behold screen as his bases are squarely above average for a 2-skill crew.

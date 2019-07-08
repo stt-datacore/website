@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Crusher has a couple glaring weaknesses like event chances and raw voyage numbers, but those can be excused because MED primaries are simply more rare than other skills. MED/CMD in particular will welcome her aboard their voyage runs. Her strong proficiency total may be spread a bit too thin for our liking, but two ranked gauntlet pairs are good enough for work on young rosters.
+Crusher has a couple glaring weaknesses like event chances and raw voyage numbers, but those can be overlooked on most rosters because MED primaries are simply more rare than other skills. MED/CMD in particular will welcome her aboard their voyage runs. Her strong proficiency total may be spread a bit too thin for our liking, but two ranked gauntlet pairs are good enough for work on young rosters.

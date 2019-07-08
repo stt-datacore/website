@@ -3,10 +3,10 @@ name: Timicin
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 0
 in_portal: true
 published: true
 ---
 
-His voyage numbers aren't what they used to be almost a year after his release, but are still within 100 points of the top 40 and his skill set is plenty useful. Timicin's SCI base is as sturdy as he is and built to carry the load for shuttle runs, even without an event. If you snag this guy in a behold, do yourself a favor and go watch his tragic episode.
+Timicin's voyage numbers aren't what they used to be almost a year after his release and his ENG/SCI skill pairing is not hard up for representation. But his SCI base is as sturdy as he is and built to carry the load for daily shuttle runs, even though he'll need to get lucky with traits to make a difference on the weekends. If you snag this guy in a behold, do yourself a favor and go watch his tragic episode.

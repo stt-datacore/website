@@ -3,10 +3,10 @@ name: Cadet Sylvia Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 13
 in_portal: true
 published: true
 ---
 
-More variants are undoubtedly coming, but for now the Cadet owns two variant-best bases and one of the best Disco ENG stats. A new Stamets pipped her ENG base and stole the thunder of a massive Disco monopoly, but she can wipe those tears with another fistful of back to back to back to back event bonuses. Even if the Disco megas stop, her popularity and event count are unlikely to.
+More variants are undoubtedly coming, but for now the Cadet owns two variant-best bases and one of the best Disco ENG stats. Unfortunately, variant events simply aren't happening and we've just received our third ENG primary mega crew. Still a useful event piece for as long as Disco mega months continue, but she's beginning to slip for daily use.

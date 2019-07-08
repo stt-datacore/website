@@ -4,9 +4,9 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 10
-events: 15
+events: 19
 in_portal: true
 published: true
 ---
 
-His event contributions look usable on paper - the #1 Riker DIP with SEC just a few points off of FO Riker for #1 in that skill too. His Vulcan trait (#5 SEC) along with several others offer additional future chances for him to showcase his talents on the weekend. Considering his dreary voyage, gauntlet, and arena power, he's best thought of as a luxury 2-skill event choice.
+His event contributions look quite good on paper - the #2 Riker DIP and SEC with a fistufl of eventable traits and a steady two+ Riker bonuses in each calendar year. Considering his dreary voyage, gauntlet, and arena power, he's best thought of as a luxury 2-skill event choice with more gas in the tank for weekends.

@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Just a half dozen events in which to utilize an ordinary CMD base is all he offers. Maybe gets unfrozen once per year.
+Steady Eddy has had at least two variant events each calendar year and triple features. Worth owning, but no daily contributions.
