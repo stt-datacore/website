@@ -3,10 +3,10 @@ name: The Professor
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 10
-events: 6
+bigbook_tier: 11
+events: 8
 in_portal: true
 published: true
 ---
 
-The Hologram mega was the first foray into odd trait megas and made several old crew notes of mine look foolish. Other such out-of-left-field mega events have me wildly speculating about potential future traits that may bring crew into relevance. A villain mega may make The Professor a fearsome shuttle DIP, or perhaps he never snags another event bonus. Regardless, his voyage power/skill set combo remains usable enough to merit consideration in a behold against poor cards or luxury event 2-skillers.
+Voyage power around the top 50 at the time of the first Big Book has dropped tremendously since then as has the ranks of his now embarrassing bases. Moriarty is still close to average for voyages, but the only thing he really offers most rosters is unrealized event potential via a handful of traits. Not the worst crew statistically, but someone you can easily do without.

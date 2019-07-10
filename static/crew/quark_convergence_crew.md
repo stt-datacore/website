@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-2018 was the summer of Quark, granting him six events in a calendar year. Whether he can maintain anything close to that pace remains to be seen. He's merely a good 4/4 crew until FF, but a burgeoning event count has provided value. Although Quark doesn't own a top 15 gauntlet pair, he shows up with 65% crit on occasion which can make even average gauntleteers relevant.
+The Great Material Continuum giveth and taketh away. 2018 was great to Quark, giving him six events in the calendar year, but since then his name hasn't been called. Will he get a little love down the line in a costumed or romantic mega? Sure. But until then, he's merely a poor-for-legendary, good-for-super-rare type of shuttle pilot. Although Quark doesn't own a top 15 gauntlet pair, he shows up with 65% crit on occasion which can make even average gauntleteers relevant.
