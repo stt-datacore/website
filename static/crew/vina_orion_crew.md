@@ -3,7 +3,7 @@ name: Orion Vina
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 15
+bigbook_tier: 14
 events: 1
 in_portal: true
 published: true

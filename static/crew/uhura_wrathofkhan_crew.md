@@ -3,7 +3,7 @@ name: Commander Uhura
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 14
 events: 6
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Martian Quark
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 10
 in_portal: true
 published: true

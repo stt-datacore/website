@@ -3,7 +3,7 @@ name: Captain Silva La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 15
 events: 2
 in_portal:
 published: true

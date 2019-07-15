@@ -3,7 +3,7 @@ name: Lieutenant Tarah
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 13
 events: 6
 in_portal: true
 published: true

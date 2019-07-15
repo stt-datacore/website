@@ -3,7 +3,7 @@ name: Mirror Sulu
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 10
 in_portal:
 published: true
