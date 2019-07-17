@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Great in nearly every area of the game. Double collections, an 800+ base, plenty of events between Sarek, Vulcan, and Disco weekends, and strong voyage numbers. Even a helpful +9 attack in the arena.
+Great in nearly every area of the game. Double collections, an 800+ base, plenty of events between Sarek, Vulcan, and Disco weekends, and strong voyage numbers. Even a helpful +9 attack in the arena that's fast enough to supplement almost any crew.

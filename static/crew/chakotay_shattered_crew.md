@@ -3,7 +3,7 @@ name: Temporal Prisoner Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 9
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Reverend Phlox
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 4
 in_portal:
 published: true
