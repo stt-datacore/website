@@ -3,7 +3,7 @@ name: Tactical Officer Neelix
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 8
 in_portal:
 published: true
