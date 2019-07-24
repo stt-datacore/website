@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Another crew notes update without competition for the Queen's throne. Some say her power is unnatural and her three category domination (Base/Voyages/Events) may only be matched by Gary Seven. If she graces your behold, take her and cite her - no questions asked. As Billy Ocean said, "She's simply awesome."
+Another crew notes update without competition for the Queen's throne. Some say her power is unnatural and her three category domination (Base/Voyages/Events) may only be matched by Gary Seven. If she graces your behold, take her and cite her - no questions asked. [_As Billy Ocean said, "She's simply awesome."_](https://www.youtube.com/watch?v=9f16Fw_K45s&t=10)

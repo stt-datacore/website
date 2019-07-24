@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Ugly middle ground between sparse events and stats not suitable for daily use. Collection spot comprises the bulk of his value.
+ Ugly middle ground between sparse events and stats not suitable for daily use. Collection spot comprises the bulk of his value.

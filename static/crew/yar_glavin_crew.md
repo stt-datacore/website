@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Strong voyage and gauntlet SEC numbers, but won't age gracefully - her skill set makes her replaceable earlier than others. A usable-when-bonus SEC base for her five previous Faction events.
+ Strong voyage and gauntlet SEC numbers, but won't age gracefully - her skill set makes her replaceable earlier than others. A usable-when-bonus SEC base for her five previous Faction events.

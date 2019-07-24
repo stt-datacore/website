@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Bottom barrel voyager, skill set notwithstanding. +1 Vulcan and solid event count, though SCI is her only usable base. Considering the ease of completing the Vulcan collection and her overall stats, she offers very little past the early/mid game.
+ Bottom barrel voyager, skill set notwithstanding. +1 Vulcan and solid event count, though SCI is her only usable base. Considering the ease of completing the Vulcan collection and her overall stats, she offers very little past the early/mid game.

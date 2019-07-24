@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Craptain Sulu somehow managed to be featured crew twice without his variants being bonus. The Captain's Oath re-run tried to fix that, but Sulu's event count still sits at two.
+Craptain Sulu somehow managed to be featured crew twice without his variants being bonus. The Captain's Oath re-run [_tried to fix that_](https://forum.disruptorbeam.com/stt/discussion/11943/compensation-rewards-for-captain-s-oath-event-11-5), but Sulu's event count still sits at two.

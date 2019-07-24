@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Senator Vreenak is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his two 1k bases, he's a great shuttle pilot for events with passable daily work. Although you're not going to want to drop any honor on a crew this nondescript, Founder's Inspiring collection isn't the easiest to complete and his good bases and second exclusive collection may make him an attractive option to help finish it.
+[_Senator Vreenak_](https://www.youtube.com/watch?v=nufIt9lfpTY) is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his two 1k bases, he's a great shuttle pilot for events with passable daily work. Although you're not going to want to drop any honor on a crew this nondescript, Founder's Inspiring collection isn't the easiest to complete and his good bases and second exclusive collection may make him an attractive option to help finish it.

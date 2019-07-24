@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-The anti-Swiss army knife. She's known for her node unlock and can then be frozen for a few future Dominion/racial events.
+The anti-Swiss army knife. She's known for her [_node unlock_](https://stt.wiki/wiki/Feed_A_Fever) and can then be frozen for a few future Dominion/racial events.

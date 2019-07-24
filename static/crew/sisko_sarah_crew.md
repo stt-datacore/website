@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Voyages, voyages, voyages. She's one of a few DIP/SCI powerhouses in the top ten, but holds her own alongside them. If you're looking to finish up your Inspiring collection, she's a fine citation magnet with a massive pay off for one of the most important areas of the game.
+Voyages, voyages, voyages. She's one of a few DIP/SCI powerhouses in the top ten, but holds her own alongside them. If you're looking to finish up your Inspiring collection, she's a fine citation magnet with a massive pay off for one of the most important areas of the game. 

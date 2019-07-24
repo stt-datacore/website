@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-An event count we can work with, but freezer bound after he unlocks a node for you. Big chunk of value is his spot in the Diplomat collection.
+An event count we can work with, but freezer bound after he [_unlocks a node_](https://stt.wiki/wiki/Feed_A_Fever) for you. Big chunk of value is his spot in the Diplomat collection.

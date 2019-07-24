@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Winn has surprisingly picked up a few events; two of them features for this variant, and an optimist might have an eye toward Bajoran or Villain megas down the line. If you're thinking of using her more than once a year, go read Lissan's strikingly similar profile for daily use. She can handle a little gauntlet work in a super competitive pair, but very little beyond that.
+Winn has surprisingly picked up a few events; two of them features for this variant, and an optimist might have an eye toward Bajoran or Villain megas down the line. If you're thinking of using her more than once a year, go read Lissan's strikingly similar profile for daily use. She can handle a little gauntlet work in a super competitive pair, but very little beyond that. 

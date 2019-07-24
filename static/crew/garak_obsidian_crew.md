@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Shockingly, there isn't more to this simple tailor than meets the eye. Average numbers across the board with a skill set described the same. His best offering is a Garak event tally that nears double digits. None of his numbers are particularly appealing besides his steady event work, but he still has a cult following on forums as a solid crew. Who am I to argue?
+Shockingly, there _isn't _more to this simple tailor than meets the eye. Average numbers across the board with a skill set described the same. His best offering is a Garak event tally that nears double digits. None of his numbers are particularly appealing besides his steady event work, but he still has a cult following on forums as a solid crew. [_Who am I to argue?_](https://www.youtube.com/watch?v=PMFAOvzkcEs&t=222)

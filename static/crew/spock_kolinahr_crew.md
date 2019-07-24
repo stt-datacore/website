@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Kolinahr's wheelhouse is events. His DIP base nearly doubles the next closest variant and Spock's event count includes character-wide traits like Vulcan, Musician, and Exobiology to provide a good deal of weekend work. Unfortunately, his daily usage will not match his weekend effectiveness; he's merely average for shuttles, voyages, and gauntlet.
+Kolinahr's wheelhouse is events. His DIP base nearly doubles the next closest variant and Spock's event count includes character-wide traits like Vulcan, Musician, and Exobiology to provide a good deal of weekend work. Unfortunately, his daily usage will not match his weekend effectiveness; he's merely average for shuttles, voyages, and gauntlet. 
