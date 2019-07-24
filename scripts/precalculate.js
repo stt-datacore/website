@@ -277,8 +277,11 @@ function updateBotStats() {
         if (!fs.existsSync(`${STATIC_PATH}/../crew/${crew.symbol}.md`)) {
             console.log(`Crew ${crew.name} not found!`);
         } else {
-            converter.makeHtml(fs.readFileSync(`${STATIC_PATH}/../crew/${crew.symbol}.md`, 'utf8'));
-            let meta = converter.getMetadata();
+			let markdownContent = fs.readFileSync(`${STATIC_PATH}/../crew/${crew.symbol}.md`, 'utf8');
+            converter.makeHtml(markdownContent);
+			let meta = converter.getMetadata();
+			
+			markdownContent = markdownContent.substr(markdownContent.indexOf('---', 4) + 4).trim();
 
             let botCrew = {
                 name: crew.name,
@@ -295,7 +298,8 @@ function updateBotStats() {
                 bigbook_tier: meta.bigbook_tier,
                 events: meta.events,
                 ranks: crew.ranks,
-                base_skills: crew.base_skills
+				base_skills: crew.base_skills,
+				markdownContent
             };
 
             botData.push(botCrew);
