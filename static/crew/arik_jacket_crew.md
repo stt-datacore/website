@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
- Nearly zero long-term usefulness outside of two event features. Some early game voyage work available due to skill set.
+Nearly zero long-term usefulness outside of two event features. Some early game voyage work available due to skill set.

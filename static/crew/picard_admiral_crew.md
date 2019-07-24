@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
- No individual stats are particularly noteworthy, but they add up to a usable voyage total and his handful of events should warrant the occasional thaw. May pitch in early on in the gauntlet with several crit-catching traits.
+No individual stats are particularly noteworthy, but they add up to a usable voyage total and his handful of events should warrant the occasional thaw. May pitch in early on in the gauntlet with several crit-catching traits.

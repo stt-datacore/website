@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
- She's a shuttle body for two events per year. You won't be (shouldn't be) using her otherwise.
+She's a shuttle body for two events per year. You won't be (shouldn't be) using her otherwise.

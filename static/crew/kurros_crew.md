@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
- Usable arena +EV, but you won't have to look far to find better. +1 Innovator. Great episode.
+Usable arena +EV, but you won't have to look far to find better. +1 Innovator. Great episode.

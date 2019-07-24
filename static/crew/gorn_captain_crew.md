@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
- A middling gauntlet pair among super rare crew will be stomped at every turn by superior legendary options. Vast majority of his value lies in the Veteran collection.
+A middling gauntlet pair among super rare crew will be stomped at every turn by superior legendary options. Vast majority of his value lies in the Veteran collection.

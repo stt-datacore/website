@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
- A bit of an odd duck, quite frankly. Two skill crew are destined for shuttle work for most of their life, but while this studly Southern sawbones may sport a top 10 base MED and +1 Physician, only two of McCoy's seven events have been Faction based (+1 Physician brings that up to 3), meaning he's only going to see irregular use at best.
+A bit of an odd duck, quite frankly. Two skill crew are destined for shuttle work for most of their life, but while this studly Southern sawbones may sport a top 10 base MED and +1 Physician, only two of McCoy's seven events have been Faction based (+1 Physician brings that up to 3), meaning he's only going to see irregular use at best.

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
- Double collections make up the majority of his value, but he also sports a usable SEC base for his variant and Klingon events. No daily work, but value is unlocked after immortalizing.
+Double collections make up the majority of his value, but he also sports a usable SEC base for his variant and Klingon events. No daily work, but value is unlocked after immortalizing.

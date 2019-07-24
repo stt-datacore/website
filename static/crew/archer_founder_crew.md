@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
- Nobody's idea of a powerhouse, but +1 Inspiring and an event bonus per year is worth taking over plenty of other super rare choices.
+Nobody's idea of a powerhouse, but +1 Inspiring and an event bonus per year is worth taking over plenty of other super rare choices.
