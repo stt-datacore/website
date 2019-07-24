@@ -13,4 +13,4 @@ If you're here, it's either because you're wondering if Lucy is worth immortaliz
 
 Is she worth the collection effort? If your focus is performance, then no. Odo and Kim are rarely crew you want to take a star of in any circumstance, let alone being worth citations. The other four crew are solid-to-great and so if you're sitting with a 3/5 Lucy and she pops in an Elusive Treasures pack, then that may save you a huge chunk of honor if you desire her.
 
-New build-a-bear Evolved Janeway has pipped Lucy for the #1 Janeway DIP. With Holodeck Enthusiasts being a much higher asking price than fusing some unwanted spare crew, it's best to think of Lucy as a nice collection bonus rather than someone to focus on acquiring or spending honor on.
+> New build-a-bear Evolved Janeway has pipped Lucy for the #1 Janeway DIP. With Holodeck Enthusiasts being a much higher asking price than fusing some unwanted spare crew, it's best to think of Lucy as a nice collection bonus rather than someone to focus on acquiring or spending honor on.
