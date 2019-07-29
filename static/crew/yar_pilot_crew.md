@@ -3,8 +3,8 @@ name: Aviator Yar
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 13
+bigbook_tier: 5
+events: 14
 in_portal: true
 published: true
 ---

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-A big, fat gauntlet MED roll is her most noteworthy attribute. Five ranked gauntlet pairs among _all_ crew is something that only Caretaker and Nurse Garland can claim and is absolutely deadly when she hits 65% crit. Voyage MED in the amount she provides can be hard to acquire, especially in the early game.
+A big, fat gauntlet MED roll is her most noteworthy attribute. Five ranked gauntlet pairs among _all_ crew is something that only Caretaker and Nurse Garland can claim and is absolutely deadly when she hits 65% crit. Voyage MED in the amount she provides can be hard to acquire, especially in the early game. Never likely to blossom into an event player, especially with repugnant bases, but if gauntlet luck be a lady, her name is Doc Crusher.
