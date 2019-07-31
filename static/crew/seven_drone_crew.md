@@ -3,8 +3,8 @@ name: Drone Seven of Nine
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 11
+bigbook_tier: 5
+events: 12
 in_portal:
 published: true
 ---

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Purely a voyager, but with a long window of relevance, despite what the voyage total says. Few crew in the game have ENG + MED together and her accompanying DIP gives her a totally unique skill set among super rares. She'll have no trouble manning that voyage combo for you past 8 hours. The Jury Rigger collection still requires several legendary crew to complete and so is more than just a throw in perk for super rares.
+Purely a voyager, but with a long window of relevance, despite what the voyage total says. MED/ENG is not particularly common and her accompanying DIP gives her a totally unique skill set among super rares. She'll have no trouble manning that voyage combo for you through eight hours. The Jury Rigger collection still requires several legendary crew to complete and so is more than just a throw in perk for super rares.
