@@ -4,9 +4,9 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 7
-events: 11
+events: 16
 in_portal:
 published: true
 ---
 
-Owner of a top five MED base and approaching double-digit events; he's the quintessential 4* faction contributor. Now watch this drive.
+Owner of a top five MED base and cruising past double-digit events; he's the quintessential super rare faction contributor. Now watch this drive.

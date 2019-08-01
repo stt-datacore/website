@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-A true dichotomy; double collections (including the tough Jury Rigger), a handful of events with passable arena work, but the dead last voyage total for 3-skillers (#177) and bad bases. Best to think of him as a popsicle stick with collections attached.
+A true dichotomy; double collections (including the tough Jury Rigger), a handful of events, and passable arena work, but the dead last voyage total for 3-skillers and bad bases. Best to think of him as a popsicle stick with collections attached.

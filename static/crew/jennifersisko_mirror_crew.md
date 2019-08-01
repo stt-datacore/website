@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Great marriage of skill set and voyage power. Bases just good enough to be relevant for a handful of Mirror events. Even some hard-to-acquire arena crit rating on a short initialization. Good value for a crew who's only had one variant event.
+A good marriage of skill set and voyage power with bases just high enough to be relevant for a handful of Mirror events. Even some hard-to-acquire arena crit rating on a short initialization. Good value for a crew who's only had one variant event, but she's nearly useless to established rosters.
