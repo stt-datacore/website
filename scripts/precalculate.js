@@ -299,6 +299,7 @@ function updateBotStats() {
                 events: meta.events,
                 ranks: crew.ranks,
 				base_skills: crew.base_skills,
+				skill_data: crew.skill_data,
 				markdownContent
             };
 
