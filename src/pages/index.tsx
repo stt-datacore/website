@@ -10,6 +10,7 @@ import Layout from '../components/layout';
 type IndexPageProps = {
 	data: {
 		allCrewJson: any;
+		crewpages: any;
 	};
 };
 
@@ -90,6 +91,15 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				pagination_page: 1,
 				data: data.reverse()
 			});
+		}
+	}
+
+	_descriptionLabel(symbol: string): string {
+		let crewData = this.props.data.crewpages.edges.find((element: any) => element.node.fields.slug.replace(/\//g, '') === symbol);
+		if (!crewData) {
+			return '';
+		} else {
+			return `Tier ${crewData.node.frontmatter.bigbook_tier}, ${crewData.node.frontmatter.events} events`;
 		}
 	}
 
@@ -256,7 +266,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 											<div style={{ gridArea: 'stats' }}>
 												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 											</div>
-											<div style={{ gridArea: 'description' }}>{crew.short_name}</div>
+											<div style={{ gridArea: 'description' }}>{this._descriptionLabel(crew.symbol)}</div>
 										</div>
 									</Table.Cell>
 									<Table.Cell>
@@ -402,6 +412,21 @@ export const query = graphql`
 							range_min
 							range_max
 						}
+					}
+				}
+			}
+		}
+		crewpages: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/crew)/.*\\.md$/"}, frontmatter: {published: {eq: true}}}) {
+			totalCount
+			edges {
+				node {
+					id
+					frontmatter {
+						bigbook_tier
+						events
+					}					
+					fields {
+						slug
 					}
 				}
 			}
