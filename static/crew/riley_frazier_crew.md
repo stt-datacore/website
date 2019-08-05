@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Minor voyage opportunities early on. Necessary for a collection that still requires a legendary to complete.
+Minor voyage opportunities early on and the best Borg super rare DIP, but for most rosters she's just a stepping stone for another stat-boosting collection.

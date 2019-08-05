@@ -4,9 +4,9 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 9
-events: 10
+events: 11
 in_portal:
 published: true
 ---
 
-One of the few skill sets (MED/CMD) capable of redeeming poor voyage numbers. Laps his competition for the variant-best CMD base, but not in a high enough amount to be a real difference maker and recent Hologram mega inflated a bonus count which includes only five variant events. Best suited to early-mid game voyage work.
+One of the few skill sets (MED/CMD) capable of redeeming poor voyage numbers, though likely only with several early stars. He laps his competition for the best Doc CMD base which may come into increased use in the coming year(s), but if you're hoping his MED symbol on the behold screen will significantly bolster your daily roster, then they won't get what they're after. [_I mean _](https://www.youtube.com/watch?v=nTljcAdC82Y)[__you __](https://www.youtube.com/watch?v=nTljcAdC82Y)[_won't get what _](https://www.youtube.com/watch?v=nTljcAdC82Y)[__you're __](https://www.youtube.com/watch?v=nTljcAdC82Y)[_after!_](https://www.youtube.com/watch?v=nTljcAdC82Y)

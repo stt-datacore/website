@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Great skill set, but flaccid stats render him average or worse for daily play. No long term benefits, but his one outstanding offering is a strong +9 arena EV at 4 seconds.
+Slim daily value and long term benefits, but he can unlock a handful of nodes and his one outstanding offering is a strong +9 arena EV at 4 seconds.

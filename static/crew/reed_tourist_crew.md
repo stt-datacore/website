@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Perhaps the epitome of genericness. Sporting no collections, a bland ship ability, uninspiring bases, only serviceable gauntlet pairs, and a voyage total that doesn't even try to impress, Reed's goofy art is about all that's notable about this filler fella. 5 events don't impress, either, when they're tied to the least popular Trek series. Perhaps I'll eat my words if we ever get that Romantic mega, but don't count on it.
+Perhaps the epitome of genericness. Sporting no collections, a bland ship ability, uninspiring bases, and a voyage total that doesn't even try to impress, Reed's goofy art is about all that's notable about this filler fella. His event count doesn't impress, either, when it's tied to the least popular Trek series. He'll pop for a romantic mega down the line, but that's likely to be his last multi-week help to your roster.

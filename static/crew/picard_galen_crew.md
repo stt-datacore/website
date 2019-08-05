@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-We'd like better voyage numbers to pair with his SCI/SEC skill set. Bulk of his value lies in a less common Picard SCI base for events. A good thaw candidate a couple times per year.
+We'd like better voyage numbers to pair with his SCI/SEC skill set and his bases aren't standalone good either. The bulk of his value lies in a less common Picard SCI base for events which should see an upswing soonTM.

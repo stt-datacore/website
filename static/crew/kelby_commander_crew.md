@@ -3,10 +3,10 @@ name: Commander Kelby
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 11
 events: 0
 in_portal: true
 published: true
 ---
 
-Non-event shuttle crew (shields up, red alert!), but very good base ENG and +1 Jury Rigger. Most roads to that collection completion flow through him and he offers a rare 1 second arena initialization for tinkerers to play around with.
+Non-event shuttle crew (shields up, red alert!), but a good base ENG and +1 Jury Rigger. Most roads to that collection completion flow through him and he offers a rare 1 second arena initialization for tinkerers to play around with.

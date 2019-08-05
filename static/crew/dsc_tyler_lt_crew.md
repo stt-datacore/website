@@ -4,9 +4,9 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 8
-events: 17
+events: 28
 in_portal: true
 published: true
 ---
 
-His 800+ SEC base may earn some shuttle play on the average roster, but it's in combination with his events where it shines. Disco and Klingon (spoiler alert) trait events in addition to any variant bonuses give him the potential to make a splash for several weeks in a row. One of only a few crew to offer the [_Pilot/SEC node unlock_](https://stt.wiki/wiki/Serious_Business).
+[_The megas just keep on comin'_](https://www.youtube.com/watch?v=WQZqJ_-WAO8) - [_it seems that everything is coming up Tyler_](https://www.youtube.com/watch?v=M67E9mpwBpM). Rocket fueled by _six_ (!!!) previous megas, Tyler has fast become one of the most important event super rares the game has ever seen. While I wouldn't bet on a Marksman or Tactician mega, I would have said the same for Pilot so, really, who knows? Beyond the clumps of Tyler/Disco events, he's also one of only a few crew to offer the [_Pilot/SEC node unlock_](https://stt.wiki/wiki/Serious_Business).

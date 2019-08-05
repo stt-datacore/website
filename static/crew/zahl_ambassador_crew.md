@@ -3,7 +3,7 @@ name: Zahl Ambassador
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 11
 events: 4
 in_portal:
 published: true

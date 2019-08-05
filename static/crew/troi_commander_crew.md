@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Notably strong MED/CMD stack for voyages with a rising event tally and a little play as an early game gauntleteer, but not a strong long term contributor. Narrow window as quick EV crew in arena.
+Her MED/CMD stack for voyages is notable, if not powerful, and she offers a little play as an early game gauntleteer, but numbers on the weak side necessitate niche work. Her arena page reads like the diet version of the evasion elite like Laborer Spock or Minuet, but will be okay as a stopgap. A #2 variant CMD base and usable-when-bonus MED are her only long term assets.

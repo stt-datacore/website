@@ -4,9 +4,9 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 9
-events: 0
+events: 1
 in_portal: true
 published: true
 ---
 
-A usable SCI base may offer a bit of early game utility for new players, but the overwhelming majority of his value comes from double collections including the difficult Jury Rigger.
+Even in the age of wacky trait megas, David's only real shot may be Gambler. Kirk's [_son is fortunate_](https://www.youtube.com/watch?v=ec0XKhAHR5I) to escape the drawing board with two collections, including the still-tough Jury Rigger, which comprise 99% of his value.
