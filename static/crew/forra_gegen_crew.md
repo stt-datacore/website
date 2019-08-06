@@ -3,10 +3,10 @@ name: Forra Gegen
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 12
-events: 1
+bigbook_tier: 13
+events: 2
 in_portal: true
 published: true
 ---
 
-Useful skill set goes to waste with less useful stats and no events or collections. A chunk of crit rating at 3 seconds in arena can be hard to find. Early game use crew only.
+His skill set will look juicy at the behold screen, but his usefulness is swirling the drain. The most notable attribute here is a chunk of arena crit rating at three seconds, but you can and will find better shipboard options before too long.

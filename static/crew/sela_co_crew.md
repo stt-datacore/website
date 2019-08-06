@@ -4,9 +4,9 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 12
-events: 6
+events: 7
 in_portal: true
 published: true
 ---
 
-Bases too low even when bonus. New players may glean some early gauntlet use out of her, but realistically just two event features and +1 Romulan collection are her upper limit.
+The third event feature is when we start to take notice, but abysmal bases may be outclassed by small bonus crew in her events. Outside of new player only gauntlet numbers supported by only three traits, she offers help completing the Romulan collection.

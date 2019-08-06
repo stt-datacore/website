@@ -4,9 +4,9 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 12
-events: 2
+events: 3
 in_portal: true
 published: true
 ---
 
-See Marcus, Dr. David. A fun skill set in lowly amounts with a collection attached. Super early game use only, but worth snagging for the +1 Innovator.
+A great performance by 	Malcolm McDowell wasn't quite matched in game. Most of his traits are not particularly eventable, leaving his spot in the innovator collection as his likeliest path to relevance. Worth noting are his two features in two separate events. It's unfortunate that one was an expedition and one during a mega event, but he may pop in that role again in the future.

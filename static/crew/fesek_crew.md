@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Arena ability could have been useful without the -2 attack handicap. Collection fodder, but a category that you'll likely need him to help complete.
+One Ron Canada (what a name) brought to life a loveable/hateable Malon from _Voyager _who unfortunately is only +1 to a collection. The lure of otherwise useful arena evasion is shot down by an attack handicap leaving his best chance at usability residing in the bowels of a Romantic mega where he's the top super rare ENG for that trait.

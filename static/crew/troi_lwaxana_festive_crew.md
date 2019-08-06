@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Not nearly as fabulous as her dress sense implies. +1 Diplomat and a miniscule 2 events are all she has to recommend her. Freeze and forget.
+Not nearly as fabulous as her dress sense implies. The Diplomat collection and a miniscule event count are all she has to her name. If, like Odo, you're a secret admirer of hers, pray for that Romantic mega to pop where she'll contribute two usable-when-bonus bases.

@@ -4,9 +4,9 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 12
-events: 8
+events: 10
 in_portal: true
 published: true
 ---
 
-Ugly middle ground between sparse events and stats not suitable for daily use. Collection spot comprises the bulk of his value.
+Holo-barc lives in the ugly middle ground between inconsistent events and stats not suitable for daily use. His collection spot comprises the bulk of his value and you're waiting for either Barclay or Hologram trait events to squeeze some value out of two usable-when-bonus bases.

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Merely a filler crew whose value stems from the Romulan collection. Her first star offers some arena damage off cloak, but is replaceable without too much effort.
+Merely a filler crew whose value stems from the Romulan collection and inconsistent event work. Her first star offers some arena damage off cloak, but is replaceable without too much effort.

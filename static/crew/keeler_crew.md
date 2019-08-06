@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Stats tailor-made for your gag reflex. If you can't use her in the gauntlet, then she's simply +1 Inspiring.
+Whodathunk Kirk would fall for a 453 DIP base? Her current role is (very) early game gauntlet throw-in and collection fuel, but a couple eventable traits may allow her to bolster your requisition shuttles for a few weeks down the line.
