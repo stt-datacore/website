@@ -4,9 +4,9 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 12
-events: 10
+events: 14
 in_portal: true
 published: true
 ---
 
-Just a half dozen events in which to utilize an ordinary SEC base is all he offers aside from a [_tricky node unlock_](https://stt.wiki/wiki/Serious_Business). Maybe gets unfrozen once per year.
+Riker's event rate has picked up a bit and the era of trait megas could give him usefulness in bursts, but without daily work, he's an insta-freeze after he helps with a [_tricky node unlock_](https://stt.wiki/wiki/Serious_Business).

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Freeze and forget for the Inspiring collection. Pray that his event gets another replay if you expect to ever use him.
+Freeze and forget for the Inspiring collection. A few traits should trigger mega bonuses down the line, but his bases are best suited to requisition shuttles.
