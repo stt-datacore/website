@@ -3,12 +3,10 @@ name: Dr. Hugh Culber
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 13
 in_portal: true
 published: true
 ---
 
-In the case of Disco crew embodying power creep, Culber is Exhibit A. His MED base is ~13% better than the next widely available option; former mega Bashir. For a skill like MED which has a fraction of the options that other skills do, that's a big difference. And just for good measure, he's a great Disco SCI shuttler too. The Discovery megas [_just don't stop coming_](https://www.youtube.com/watch?v=0K4oym9Pw48) and with them, Culber enjoys a huge jump in power as one of the most important crew in the game during those periods.
-
-While we don't give much credit to 2-skill voyagers (for good reason), he  _is_  the #1 voyage MED, #1 voyage SCI+MED total and the #2 voyage total among 2-skill crew. In an ideal world, he doesn't make too many voyages, but this is a game of opportunity and chances are that if you FF Culber for his exemplary event bases, he will shove off on voyages considering the thin options elsewhere for voyage medics.
+You may be scrolling down the doc a bit further these days to find ol' Hugh. That sterling MED still looks pretty damn good for a nearly two year old crew, doesn't it? But the cracks are beginning to show, at least in an all-crew ranking. The voyage skill combo has gotten a handful of options recently; everything from event crew (Pulaski), to a 4-peat 6-pack offer (Tainer), to a highly sought after powerhouse (Cheesecake Seven), to a MED/SCI mega crew who comes out of the box at 4/5 (Qod). And speaking of [_His Omnipotence_](https://www.youtube.com/watch?v=TCls-lezNWg&t=75), the player base at large now has a fused crew who does a pretty good impersonation of Culber about 95 weeks out of 100. Between a MEDaissance, his event uncertainty, and a Faction event change which limits the variety of shuttle seats across factions, Culber is hurtin' for certain, even if what he excels at is still unquestionably elite.
