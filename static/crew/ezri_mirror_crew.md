@@ -4,9 +4,9 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 12
-events: 17
+events: 21
 in_portal: true
 published: true
 ---
 
-A Dax + Mirror event tally is quite a bounty, but she's ineffective outside of those weekends. Even then, a 591 DIP base as the high water mark is not very impressive and will stop helping your event shuttles at some point. Small chance for early game gauntlet work at 1/4.
+There was a time when [_the joining_](https://www.youtube.com/watch?v=RB368EgyOpI) of Dax and Mirror events would have made us weak in the knees, but time has not been kind to Ezri's bases. Even now, in the midst of what is likely her last chance for a multi-week impact in the Scoundrel mega, her upper limit is probably requisition shuttle for many rosters.

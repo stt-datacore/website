@@ -3,7 +3,7 @@ name: Automated Unit 3947
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 14
 events: 0
 in_portal: true
 published: true

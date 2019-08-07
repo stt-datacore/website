@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-This Kirk is a [_Ron Popeil special_](https://www.youtube.com/watch?v=tLq27iOW0R0) - just freeze and forget. You shouldn't have any need for him during the week, but Kirk event bonuses will always be in fashion and a Villain mega should surprise no one. [_They didn't even use the right picture for his art_](http://tos.trekcore.com/hd/albums/1x05hd/theenemywithinhd410.jpg), but maybe they'll make it up to us with a fusion version down the line.
+He might live in cryo while we're all Pine-ing away for another Kirk variant fusion crew to Humpty Dumpty James Tiberius back together again, but Kirk event bonuses will always be in fashion and a Villain mega should surprise no one. He's a useful, if unessential shuttle piece for a character with plenty of events and great Faction rate. [_But they didn't even use the right picture for his art_](http://tos.trekcore.com/hd/albums/1x05hd/theenemywithinhd410.jpg)!

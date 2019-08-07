@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-Filler card. By the time you collect 4 copies of him, he will be replaceable. If you manage to star him up early, his CMD/SCI skill set doesn't have much voyage competition, so he may pitch in there. No long term benefits.
+His only daily value is good arena evasion with fine passive stats, but it comes online about four seconds too late. With poor numbers everywhere else, you'll be hoping for a continuation of the trait event train to tap into one of a couple options he has remaining.

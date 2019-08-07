@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Her strong DIP/MED gauntlet pair is available at one star and she offers arena EV at 5 seconds to help newer players counter the instant damage onslaught. Some work available on new rosters, but she rapidly descends to worthless as your roster matures.
+Welcome to the Romantic mega waiting room. Help yourself to a bagel and please note that, yes, time does indeed move more slowly here. While you're waiting, Anij's gauntlet pair (top ten among all crew) or arena evasion at five seconds may help out newer rosters, but her value falls off a cliff as you leave the early game.

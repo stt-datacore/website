@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-A Captain Klaa knock-off. Minor event chances if his Klingon number is drawn, but his most notable offering is an uncommon Accuracy/instant damage pairing on short(er) initialization with good passive stats in the arena.
+Jellico Jr. comes from a great episode, but is really only notable for his arena boop stick. Great offensive passive stats and one of few fast damage crew to boost your accuracy, Kurn may function as a modified Ardra for those who don't have her yet. He should see perhaps one event per year, but may not make the thaw list with the Klingon bonus pool being as large as it is.

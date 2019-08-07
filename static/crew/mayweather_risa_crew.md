@@ -3,7 +3,7 @@ name: Mountain Climber Mayweather
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 8
 in_portal:
 published: true
