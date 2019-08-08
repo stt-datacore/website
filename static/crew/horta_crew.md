@@ -9,4 +9,4 @@ in_portal:
 published: true
 ---
 
-With very limited event/shuttle/voyage opportunities, you're really just looking at a good-not-great SEC proficiency for the gauntlet and a far more useful 8 second instant damage in the arena. Very sweet that she has the Caregiver trait...D'awww.
+With extremely limited event/shuttle/voyage opportunities, you're really just looking at a good-not-great SEC proficiency for the gauntlet and a far more useful eight second instant damage in the arena. Very sweet that she has the Caregiver trait...D'awww.

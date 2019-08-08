@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-His best stat across all metrics is a #50 DIP base. 1 event feature, though traits have provided a few more weekend chances. Only keep this fella if you're swimming in crew slots and like playing Pokémon.
+Now in the era of trait megas, Sloan is looking a bit better than he had previously. Still not a daily use option, he'll be banking on one of a few traits to trigger another chunk of event bonuses. Half of his current event total comes from Section 31, which has had an event in each calendar year and may provide more thawpertunities down the line.

@@ -153,6 +153,14 @@ function main() {
 
 			return 0;
 		}, `B_${SKILLS[skill]}`);
+
+		calcRank(crew => {
+			if (crew.base_skills[skill]) {
+				return Math.ceil(crew.base_skills[skill].core * STARBASE_BONUS_CORE + ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) * STARBASE_BONUS_RANGE) / 2);
+			}
+
+			return 0;
+		}, `A_${SKILLS[skill]}`);
 	}
 
 	for (let i = 0; i < skillNames.length - 1; i++) {

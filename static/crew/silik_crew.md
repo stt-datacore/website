@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Non-event 2-skiller in the truest sense of the phrase. Hard to squeeze any value out of him unless you've just started playing and collect 4 copies of him in a future event.
+Event chances shouldn't be taken for granted in the era of the trait mega events and Silik's CMD base would be fine to thaw for event shuttles. But with zero usefulness in other areas of the game, his value floor is so low that he may not even be worth the cost to freeze for many players.

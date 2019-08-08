@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Sliver of early game use on voyages due to skill set, but not powerful there while being useless elsewhere. Will almost never earn his crew slot.
+He's one of about 40 crew who can unlock a few Science nodes, but realistically has no business being on a roster unless you're a collector escorting him to cryostasis.
