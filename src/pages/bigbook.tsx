@@ -72,7 +72,7 @@ class BigBook extends PureComponent<BigBookPageProps> {
 		this.props.data.crewpages.edges.forEach((element, idx) => {
 			let crewEntry = this.props.data.allCrewJson.edges.find(e => e.node.symbol === element.node.fields.slug.replace(/\//g, ''));
 
-			if (crewEntry.node.max_rarity > 3)
+			if (crewEntry && crewEntry.node.max_rarity > 3)
 			{
 				res.push({
 					name: crewEntry.node.name,
