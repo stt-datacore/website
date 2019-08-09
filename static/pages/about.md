@@ -41,4 +41,6 @@ Assets and some textual elements like names and descriptions are owned by Disrup
 
 Some code used to build this site was originally authored by IAmPicard (c) 2017 - 2018 and released under GPL-V3.
 
+Some crew notes are imported from [u/Automaton_2000](https://reddit.com/user/Automaton_2000)'s [Big Book](https://docs.google.com/document/d/1vvl3wS1cY29ScQwWcTA6tJgcXvbdadY6vgPpn0swzbs/edit#) and [u/idoliside](https://reddit.com/user/idoliside)'s [Little Book](https://docs.google.com/document/d/1RKdRtJcePeey-921OCVKcU41YZTmFpVThXE10Uff-aA/edit#). Content used with their permission.
+
 This project is licensed under MIT, and if you choose to contribute code or other media you agree that your contributions will be licensed under its [MIT license](https://github.com/TemporalAgent7/datacore/blob/master/LICENSE).

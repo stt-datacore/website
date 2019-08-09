@@ -1,10 +1,12 @@
 ---
-name: "Prisoner Michael Burnham"
+name: Prisoner Michael Burnham
 rarity: 2
-series: "dsc"
-memory_alpha: ""
-bigbook_tier:
-events:
+series: dsc
+memory_alpha:
+bigbook_tier: 8
+events: 0
 in_portal: true
-published: false
+published: true
 ---
+
+A fairly unremarkable card statistics-wise but has enough range to be useful on Voyages. Use as a boost for other crew but don't rely on her to score any major victories.
