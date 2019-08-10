@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-You'll hear superhero stories about him from those who got him at 5/5 out of the box, but Bashir really is good crew. His MED base is holding strong and is generally the low water mark for the majority of your event competition due to his availability as a previous mega reward. Despite merely average voyage numbers, only a handful crew above his voyage total can claim better MED. His numbers may be sinking and his events are sporadic, but In an option-deficient MED skill, BR Bashir remains a standout.
+Finally, in 2019, MED crew are beginning to take their place among other skills in terms of power and availability to the detriment of this Bashir variant. Like rings on a tree, he marks the 2018 era of power creep; he's hundreds of points better on voyages than older MED options, but hundreds below new ones. Similarly for base, he's no longer the low water mark for event competition thanks to recent mega Qod who he sits 100 points behind, along with a few other names. Whether this relative MED explosion will sustain has yet to be seen, but BR Bashir has drifted out of the powerful set and landed in the 'merely' good group.
