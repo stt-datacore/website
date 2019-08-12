@@ -3,7 +3,7 @@ name: Musketeer La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 16
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Captain Lorian
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 9
 in_portal: true
 published: true

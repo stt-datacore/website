@@ -55,40 +55,40 @@ function calculateCrewDemands(crew, items) {
 		craftCost += equipment.recipe.craftCost;
 	});
 
-    const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
-    
-    const estimateChronitonCost = (equipment) => {
-        let sources = equipment.item_sources.filter(e => e.type === 0 || e.type === 2);
-    
-        // If faction only
-        if (sources.length === 0) {
-            return 0;
-        }
-    
-        let costCalc = [];
-        for (let source of sources) {
-            if (!source.cost) {
-                //console.log("Mission information not available!", source);
-                continue;
-            }
-    
-            costCalc.push((6 - source.chance_grade) * RNGESUS * source.cost);
-        }
-    
-        if (costCalc.length === 0) {
-            console.warn('Couldnt calculate cost for equipment', equipment);
-            return 0;
-        }
-    
-        return costCalc.sort()[0];
-    }
+	const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
 
-    return {
-        craftCost,
-        demands,
-        factionOnlyTotal: demands.filter(d => d.factionOnly).reduce(reducer, 0),
-        totalChronCost: Math.floor(demands.reduce((a, c) => a + estimateChronitonCost(c.equipment), 0)),
-    };
+	const estimateChronitonCost = equipment => {
+		let sources = equipment.item_sources.filter(e => e.type === 0 || e.type === 2);
+
+		// If faction only
+		if (sources.length === 0) {
+			return 0;
+		}
+
+		let costCalc = [];
+		for (let source of sources) {
+			if (!source.cost) {
+				//console.log("Mission information not available!", source);
+				continue;
+			}
+
+			costCalc.push((6 - source.chance_grade) * RNGESUS * source.cost);
+		}
+
+		if (costCalc.length === 0) {
+			console.warn('Couldnt calculate cost for equipment', equipment);
+			return 0;
+		}
+
+		return costCalc.sort()[0];
+	};
+
+	return {
+		craftCost,
+		demands,
+		factionOnlyTotal: demands.filter(d => d.factionOnly).reduce(reducer, 0),
+		totalChronCost: Math.floor(demands.reduce((a, c) => a + estimateChronitonCost(c.equipment), 0))
+	};
 }
 
 function calcRank(scoring, field) {
@@ -96,10 +96,26 @@ function calcRank(scoring, field) {
 		.map(crew => ({ crew, score: scoring(crew) }))
 		.sort((a, b) => b.score - a.score)
 		.forEach((entry, idx) => {
-            if (entry.score && entry.score > 0) {
-                entry.crew.ranks[field] = idx + 1;
-            }
-        });
+			if (entry.score && entry.score > 0) {
+				entry.crew.ranks[field] = idx + 1;
+			}
+		});
+}
+
+function getCrewMarkDown(crewSymbol) {
+	if (!fs.existsSync(`${STATIC_PATH}/../crew/${crewSymbol}.md`)) {
+		console.log(`Crew ${crew.name} not found!`);
+		return undefined;
+	} else {
+		const converter = new showdown.Converter({ metadata: true });
+		let markdownContent = fs.readFileSync(`${STATIC_PATH}/../crew/${crewSymbol}.md`, 'utf8');
+		converter.makeHtml(markdownContent);
+		let meta = converter.getMetadata();
+
+		markdownContent = markdownContent.substr(markdownContent.indexOf('---', 4) + 4).trim();
+
+		return {meta, markdownContent};
+	}
 }
 
 function main() {
@@ -156,7 +172,10 @@ function main() {
 
 		calcRank(crew => {
 			if (crew.base_skills[skill]) {
-				return Math.ceil(crew.base_skills[skill].core * STARBASE_BONUS_CORE + ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) * STARBASE_BONUS_RANGE) / 2);
+				return Math.ceil(
+					crew.base_skills[skill].core * STARBASE_BONUS_CORE +
+						((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) * STARBASE_BONUS_RANGE) / 2
+				);
 			}
 
 			return 0;
@@ -184,14 +203,13 @@ function main() {
 
 				return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
 			}, `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
-			
+
 			calcRank(crew => {
 				let vTotal = 0;
 				let vTertiary = 0;
 				for (let skill in SKILLS) {
 					if (crew.base_skills[skill]) {
-						let vScore =
-							((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE;
+						let vScore = ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE;
 
 						if (skill === skillNames[i] || skill === skillNames[j]) {
 							vTotal += vScore;
@@ -212,114 +230,122 @@ function main() {
 	// Calculate some skill set stats for the BigBook
 	let counts = {};
 	for (let crew of crewlist) {
-		if (((crew.max_rarity === 4) || (crew.max_rarity === 5)) && (Object.getOwnPropertyNames(crew.base_skills).length === 3)) {
-			let combo = Object.getOwnPropertyNames(crew.base_skills).map(s => SKILLS[s]).sort().join('.');
+		if ((crew.max_rarity === 4 || crew.max_rarity === 5) && Object.getOwnPropertyNames(crew.base_skills).length === 3) {
+			let combo = Object.getOwnPropertyNames(crew.base_skills)
+				.map(s => SKILLS[s])
+				.sort()
+				.join('.');
 
 			counts[combo] = 1 + (counts[combo] || 0);
 		}
 	}
 
-	let sortedSkillSets = Object.keys(counts).map(k => ({ name: k, value: counts[k] })).sort((a,b) => a.value - b.value);
+	let sortedSkillSets = Object.keys(counts)
+		.map(k => ({ name: k, value: counts[k] }))
+		.sort((a, b) => a.value - b.value);
 
 	fs.writeFileSync(STATIC_PATH + 'sortedSkillSets.json', JSON.stringify(sortedSkillSets));
 
 	// Static outputs (TODO: maybe these should be JSON too?)
 
-	let csvOutput = 'crew,';
+	let csvOutput = 'crew, tier,';
 
 	for (let skill in SKILLS) {
-		csvOutput += `${SKILLS[skill]}_core,${SKILLS[skill]}_min,${SKILLS[skill]}_max,`;
+		csvOutput += `${SKILLS[skill]}_core, ${SKILLS[skill]}_min, ${SKILLS[skill]}_max, `;
 	}
 
 	for (let i = 0; i < skillNames.length - 1; i++) {
 		for (let j = i + 1; j < skillNames.length; j++) {
-			csvOutput += `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]},`
+			csvOutput += `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}, `;
 		}
 	}
 
 	for (let i = 0; i < skillNames.length - 1; i++) {
 		for (let j = i + 1; j < skillNames.length; j++) {
-			csvOutput += `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]},`
+			csvOutput += `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}, `;
 		}
 	}
 
-	csvOutput += 'sn\r\n';
+	csvOutput += 'short_name\r\n';
 
 	for (let crew of crewlist) {
-		csvOutput += `"${crew.name.replace(/"/g, '')}",`;
+		let crewLine = `"${crew.name.replace(/"/g, '')}",`;
+
+		let mdData = getCrewMarkDown(crew.symbol);
+		if (mdData && mdData.meta && mdData.meta.bigbook_tier && (mdData.meta.bigbook_tier < 20)) {
+			crewLine += `${mdData.meta.bigbook_tier},`;
+		} else {
+			crewLine += '0,';
+		}
 
 		for (let skill in SKILLS) {
 			if (crew.base_skills[skill]) {
-			csvOutput += `${crew.base_skills[skill].core},${crew.base_skills[skill].range_min},${crew.base_skills[skill].range_max},`;
-			}
-			else {
-				csvOutput += '0,0,0,';
-			}
-		}
-		
-		for (let i = 0; i < skillNames.length - 1; i++) {
-			for (let j = i + 1; j < skillNames.length; j++) {
-				csvOutput += crew.ranks[`V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
-			}
-		}
-		
-		for (let i = 0; i < skillNames.length - 1; i++) {
-			for (let j = i + 1; j < skillNames.length; j++) {
-				csvOutput += crew.ranks[`G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
+				crewLine += `${crew.base_skills[skill].core},${crew.base_skills[skill].range_min},${crew.base_skills[skill].range_max},`;
+			} else {
+				crewLine += '0,0,0,';
 			}
 		}
 
-		csvOutput += `"${crew.short_name}"\r\n`;
+		for (let i = 0; i < skillNames.length - 1; i++) {
+			for (let j = i + 1; j < skillNames.length; j++) {
+				crewLine += crew.ranks[`V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
+			}
+		}
+
+		for (let i = 0; i < skillNames.length - 1; i++) {
+			for (let j = i + 1; j < skillNames.length; j++) {
+				crewLine += crew.ranks[`G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`] + ',';
+			}
+		}
+
+		crewLine += `"${crew.short_name}"`;
+
+		crewLine = crewLine.replace(/undefined/g, '0');
+
+		csvOutput += `${crewLine}\r\n`;
 	}
 
 	fs.writeFileSync(STATIC_PATH + 'crew.csv', csvOutput);
 }
 
 function updateBotStats() {
-    const converter = new showdown.Converter({ metadata: true });
+	let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf8'));
 
-    let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf8'));
-
-    let botData = [];
-    for (let crew of crewlist) {
-        if (!fs.existsSync(`${STATIC_PATH}/../crew/${crew.symbol}.md`)) {
-            console.log(`Crew ${crew.name} not found!`);
-        } else {
-			let markdownContent = fs.readFileSync(`${STATIC_PATH}/../crew/${crew.symbol}.md`, 'utf8');
-            converter.makeHtml(markdownContent);
-			let meta = converter.getMetadata();
-			
-			markdownContent = markdownContent.substr(markdownContent.indexOf('---', 4) + 4).trim();
-
-            let botCrew = {
-                name: crew.name,
-                short_name: crew.short_name,
-                traits_named: crew.traits_named,
-                traits_hidden: crew.traits_hidden,
-                imageUrlPortrait: crew.imageUrlPortrait,
-                collections: crew.collections,
-                totalChronCost: crew.totalChronCost,
-                factionOnlyTotal: crew.factionOnlyTotal,
-                craftCost: crew.craftCost,
-                symbol: crew.symbol,
-                max_rarity: crew.max_rarity,
-                bigbook_tier: meta.bigbook_tier,
-                events: meta.events,
-                ranks: crew.ranks,
+	let botData = [];
+	for (let crew of crewlist) {
+		let mdData = getCrewMarkDown(crew.symbol);
+		if (!mdData) {
+			console.log(`Crew ${crew.name} not found!`);
+		} else {
+			let botCrew = {
+				name: crew.name,
+				short_name: crew.short_name,
+				traits_named: crew.traits_named,
+				traits_hidden: crew.traits_hidden,
+				imageUrlPortrait: crew.imageUrlPortrait,
+				collections: crew.collections,
+				totalChronCost: crew.totalChronCost,
+				factionOnlyTotal: crew.factionOnlyTotal,
+				craftCost: crew.craftCost,
+				symbol: crew.symbol,
+				max_rarity: crew.max_rarity,
+				bigbook_tier: mdData.meta.bigbook_tier,
+				events: mdData.meta.events,
+				ranks: crew.ranks,
 				base_skills: crew.base_skills,
 				skill_data: crew.skill_data,
-				markdownContent
-            };
+				markdownContent: mdData.markdownContent
+			};
 
-            botData.push(botCrew);
-        }
-    }
+			botData.push(botCrew);
+		}
+	}
 
 	fs.writeFileSync(STATIC_PATH + 'botcrew.json', JSON.stringify(botData));
 
-    if (fs.existsSync(`${__dirname}/../../datacore-behold/botcrew.json`)) {
-        fs.writeFileSync(`${__dirname}/../../datacore-behold/botcrew.json`, JSON.stringify(botData));
-    }
+	if (fs.existsSync(`${__dirname}/../../datacore-behold/botcrew.json`)) {
+		fs.writeFileSync(`${__dirname}/../../datacore-behold/botcrew.json`, JSON.stringify(botData));
+	}
 }
 
 main();
