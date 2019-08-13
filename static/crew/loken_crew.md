@@ -3,7 +3,7 @@ name: Loken
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 1
 in_portal:
 published: true

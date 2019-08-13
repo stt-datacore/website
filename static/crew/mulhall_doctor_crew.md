@@ -3,7 +3,7 @@ name: Doctor Ann Mulhall
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 2
 in_portal:
 published: true
