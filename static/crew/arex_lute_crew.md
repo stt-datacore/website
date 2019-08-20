@@ -5,7 +5,7 @@ series: tas
 memory_alpha:
 bigbook_tier: 13
 events: 5
-in_portal:
+in_portal: true
 published: true
 ---
 
