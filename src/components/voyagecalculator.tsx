@@ -225,8 +225,30 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			}
 		}
 
-		let text = exportCrew(this.state.crew);
-		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`);
+		fetch('/structured/botcrew.json')
+			.then(response => response.json())
+			.then(botcrew => {
+				const { crew } = this.state;
+
+				for(let c of crew)
+				{
+					let bc = botcrew.find(cr => c.symbol === cr.symbol);
+					if (bc) {
+						c.tier = bc.bigbook_tier;
+						c.voyRank = bc.ranks.voyRank;
+						c.gauntletRank = bc.ranks.gauntletRank;
+						c.in_portal = bc.in_portal;
+					} else {
+						c.tier = 0;
+						c.voyRank = 0;
+						c.gauntletRank = 0;
+						c.in_portal = undefined;
+					}
+				}
+
+				let text = exportCrew(crew);
+				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`);
+			});
 	}
 
 	_packVoyageOptions(shipAM: number) {

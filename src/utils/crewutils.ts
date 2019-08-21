@@ -31,6 +31,22 @@ export function exportCrew(crew): string {
 			value: (row: any) => row.immortal
 		},
 		{
+			label: 'Tier',
+			value: (row: any) => row.tier
+		},
+		{
+			label: 'In portal',
+			value: (row: any) => (row.in_portal === undefined) ? 'N/A' : row.in_portal
+		},
+		{
+			label: 'Voyage rank',
+			value: (row: any) => row.voyRank
+		},
+		{
+			label: 'Gauntlet rank',
+			value: (row: any) => row.gauntletRank
+		},
+		{
 			label: 'Command core',
 			value: (row: any) => row.command_skill.core
 		},

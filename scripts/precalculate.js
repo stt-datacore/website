@@ -334,6 +334,7 @@ function updateBotStats() {
 				ranks: crew.ranks,
 				base_skills: crew.base_skills,
 				skill_data: crew.skill_data,
+				in_portal: !!mdData.meta.in_portal,
 				markdownContent: mdData.markdownContent
 			};
 
