@@ -3,7 +3,7 @@ name: Temporal Agent Daniels
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 1
 in_portal: true
 published: true

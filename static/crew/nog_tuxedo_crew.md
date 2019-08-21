@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-If you've ever wondered why they called it spiced Nog, look no further. Tuxedo has a dash of everything and comes out smelling pretty good. A half dozen events with a base nearing 1100 is a useful enough duo. Dependable voyage work with a convenient ENG tertiary. And rounded out by triple collections and passable, if a hair slow, arena EV. Tux will rarely generate buzz, but is useful enough to be a complementary piece on a well-rounded roster.
+One of the best global gift crew to date, Nog's numbers are starting to show their age, but his well-roundedness buoys his desirability as a behold pick. Triple collections of varying exclusivity are the lede for most players, though he also offers an uncommon skill set for voyages and minor event work. Tux will rarely generate buzz, but is useful enough to be a complementary piece on a well-rounded roster.

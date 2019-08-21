@@ -3,7 +3,7 @@ name: Rain Robinson
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 0
 in_portal: true
 published: true

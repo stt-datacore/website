@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Another incarnation of the "daily use" crew. If we're steering clear of mega trait brainstorming then you're looking at a fantastic base ENG whose event ceiling is as non-bonus Faction crew most often providing only a couple percent advantage over lesser small bonus options. If you have Ru'afo in tow, she may not have a chance to be utilized there at all. Which means that Presage is a rare case of a crew making a bigger impact on daily shuttles where she, along with other high base crew, can sustain an 80%+ shuttle success rate. We won't look a gift horse in the mouth on voyages either where her ENG and total power is robust enough to make more than a few runs for you, despite a common ENG/SCI grouping.
+Another incarnation of the "daily use" crew. Following a 2019 ENG avalanche, Presage is more of a strong voyager with an interesting collection set and a base which will make multi-week splashes as her traits allow. As a crew in a vacuum, she's good-not-great as a package, but is one of the more daily-useful vanity crew out there whose voyage power is comparable to a da Vinci or Honey Bare.

@@ -3,7 +3,7 @@ name: EV Suit Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 16
 in_portal: true
 published: true
