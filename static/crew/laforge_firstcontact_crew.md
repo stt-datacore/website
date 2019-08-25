@@ -1,5 +1,5 @@
 ---
-name: Lt Commander La Forge
+name: Lt. Commander La Forge
 rarity: 5
 series: tng
 memory_alpha:

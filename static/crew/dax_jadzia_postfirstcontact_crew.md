@@ -1,5 +1,5 @@
 ---
-name: Lt Commander Jadzia Dax
+name: Lt. Commander Jadzia Dax
 rarity: 5
 series: ds9
 memory_alpha:

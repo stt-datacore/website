@@ -1,5 +1,5 @@
 ---
-name: Lt Commander Airiam
+name: Lt. Commander Airiam
 rarity: 4
 series: dsc
 memory_alpha:
