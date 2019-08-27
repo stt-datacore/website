@@ -164,9 +164,9 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			let equipment = this.state.items.find(item => item.symbol === es.symbol);
 
 			options.push({
-				key: es.archetype + '_' + es.level,
+				key: es.symbol + '_' + es.level,
 				text: `${equipment.name} (level ${es.level})`,
-				value: es.archetype,
+				value: es.symbol,
 				content: (
 					<Header
 						icon={
@@ -195,7 +195,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			return <span />;
 		}
 
-		let es = crew.equipment_slots.find(es => es.archetype === this.state.selectedEquipment)
+		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment)
 		let equipment = this.state.items.find(item => item.symbol === es.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
@@ -368,7 +368,6 @@ export const query = graphql`
 					}
 					equipment_slots {
 						level
-						archetype
 						symbol
 					}
 					ship_battle {

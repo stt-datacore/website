@@ -194,7 +194,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 						crew.equipment_slots.forEach(equipment => {
 							if (equipment.level <= lastEquipmentLevel) {
-								equipmentAlreadyOnCrew.add(equipment.archetype);
+								equipmentAlreadyOnCrew.add(equipment.symbol);
 							}
 						});
 					}
