@@ -143,14 +143,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					</Grid>
 					<Divider horizontal hidden />
 					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
-					<Button
-						floated='right'
-						style={{ marginTop: '1em' }}
-						onClick={() => window.open(`/admin/#/collections/crew/entries/${crew.symbol}`)}
-						content='Edit big book content'
-						icon='edit'
-						labelPosition='right'
-					/>
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
 					<CrewVariants short_name={crew.short_name} />
 				</Container>

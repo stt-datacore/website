@@ -22,7 +22,6 @@ class TopMenu extends PureComponent {
 
 					<Dropdown item simple text='Pages'>
 						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => window.open('/admin')}>Add or edit pages</Dropdown.Item>
 							<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
 							<Dropdown.Item disabled>Missions</Dropdown.Item>
 							<Dropdown.Item disabled>Ships</Dropdown.Item>
