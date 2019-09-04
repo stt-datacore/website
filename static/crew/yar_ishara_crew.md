@@ -3,7 +3,7 @@ name: Ishara Yar
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 0
 in_portal:
 published: true
