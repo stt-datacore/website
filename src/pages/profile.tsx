@@ -32,8 +32,14 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			let dbid = urlParams.get('dbid');
 			this.setState({ dbid });
 
+			let lastModified = undefined;
+
 			fetch('https://datacore9545.blob.core.windows.net/player-data/' + dbid)
-				.then(response => response.json())
+				.then(response => {
+					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
+
+					return response.json();
+				})
 				.then(playerData => {
 					fetch('/structured/crew.json')
 						.then(response => response.json())
@@ -50,7 +56,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							});
 
 							playerData.calc = {
-								numImmortals: numImmortals.size
+								numImmortals: numImmortals.size,
+								lastModified
 							};
 
 							let buffConfig = calculateBuffConfig(playerData.player);
@@ -423,6 +430,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							</Item.Content>
 						</Item>
 					</Item.Group>
+					{playerData.calc.lastModified ? <Label size='tiny'>Last updated: {playerData.calc.lastModified.toLocaleString()}</Label> : <span/>}
 					<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 				</Container>
 			</Layout>
