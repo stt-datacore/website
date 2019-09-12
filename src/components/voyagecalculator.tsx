@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Header, Button, Message, Grid } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 import ItemDisplay from '../components/itemdisplay';
 import { calculateBuffConfig, bestVoyageShip, ICalcResult, calculateVoyage, formatTimeSeconds } from '../utils/voyageutils';
 import { exportCrew } from '../utils/crewutils';
@@ -68,6 +69,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		return (
 			<div>
 				<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
+				<p>NEW! Share your profile (crew, ships) with fleetmates: <Link to={`/profile?dbid=${playerData.player.dbid}`}>send them this link</Link></p>
 				<p>Current voyage is {curVoy}</p>
 				<p>
 					Best ship:{' '}

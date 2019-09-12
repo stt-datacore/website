@@ -3,6 +3,7 @@ import { Container, Header, Button, Message, Form, TextArea } from 'semantic-ui-
 
 import Layout from '../components/layout';
 import VoyageCalculator from '../components/voyagecalculator';
+import { stripPlayerData } from '../utils/playerutils';
 
 type VoyagePageProps = {};
 
@@ -89,6 +90,16 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 			let playerData = JSON.parse(this.state.pastedContent as string);
 
 			if (playerData && playerData.player && playerData.player.display_name) {
+				let jsonBody = JSON.stringify({
+					dbid: playerData.player.dbid,
+					player_data: stripPlayerData(JSON.parse(JSON.stringify(playerData)))
+				});
+
+				fetch('https://datacore.azurewebsites.net/api/player_data', {
+					method: 'post',
+					body: jsonBody
+				});
+
 				this.setState({ playerData: playerData, errorMessage: undefined });
 			} else {
 				this.setState({
@@ -96,9 +107,9 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						'Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!'
 				});
 			}
-		} catch {
+		} catch (err) {
 			this.setState({
-				errorMessage: 'Failed to read the data. Make sure the page is loaded correctly and you copied the entire contents!'
+				errorMessage: `Failed to read the data. Make sure the page is loaded correctly and you copied the entire contents! (${err})`
 			});
 		}
 	}
