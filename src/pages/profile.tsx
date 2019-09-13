@@ -5,6 +5,8 @@ import { Link, navigate } from 'gatsby';
 import Layout from '../components/layout';
 
 import { calculateBuffConfig } from '../utils/voyageutils';
+import { mergeShips } from '../utils/shiputils';
+
 import CONFIG from '../components/CONFIG';
 
 type ProfilePageProps = {};
@@ -13,6 +15,7 @@ type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
 	playerData?: any;
+	ship_schematics?: any;
 };
 
 class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
@@ -22,7 +25,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		this.state = {
 			dbid: undefined,
 			errorMessage: undefined,
-			playerData: undefined
+			playerData: undefined,
+			ship_schematics: undefined
 		};
 	}
 
@@ -31,6 +35,12 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		if (urlParams.has('dbid')) {
 			let dbid = urlParams.get('dbid');
 			this.setState({ dbid });
+
+			fetch('/structured/ship_schematics.json')
+				.then(response => response.json())
+				.then(ship_schematics => {
+					this.setState({ ship_schematics });
+				});
 
 			let lastModified = undefined;
 
@@ -127,13 +137,13 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		if (crew.immortal) {
 			return (
 				<div>
-					<Icon name='snowflake' /> <span>{crew.immortal} frozen</span>
+					<Icon name="snowflake" /> <span>{crew.immortal} frozen</span>
 				</div>
 			);
 		} else {
 			return (
 				<div>
-					{crew.favorite && <Icon name='heart' />}
+					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}</span>
 				</div>
 			);
@@ -143,7 +153,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	renderCrew() {
 		const { playerData } = this.state;
 		return (
-			<Table sortable celled selectable striped collapsing unstackable compact='very'>
+			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell width={3}>Crew</Table.HeaderCell>
@@ -166,7 +176,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 										gridTemplateColumns: '60px auto',
 										gridTemplateAreas: `'icon stats' 'icon description'`,
 										gridGap: '1px'
-									}}>
+									}}
+								>
 									<div style={{ gridArea: 'icon' }}>
 										<img width={48} src={`/media/assets/${crew.imageUrlPortrait}`} />
 									</div>
@@ -177,10 +188,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								</div>
 							</Table.Cell>
 							<Table.Cell>
-								<Rating defaultRating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
+								<Rating defaultRating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
 							</Table.Cell>
 							{crew.base_skills.command_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.command_skill.core}</b>
 									<br />
 									+({crew.base_skills.command_skill.range_min}-{crew.base_skills.command_skill.range_max})
@@ -189,7 +200,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Table.Cell />
 							)}
 							{crew.base_skills.diplomacy_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.diplomacy_skill.core}</b>
 									<br />
 									+({crew.base_skills.diplomacy_skill.range_min}-{crew.base_skills.diplomacy_skill.range_max})
@@ -198,7 +209,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Table.Cell />
 							)}
 							{crew.base_skills.engineering_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.engineering_skill.core}</b>
 									<br />
 									+({crew.base_skills.engineering_skill.range_min}-{crew.base_skills.engineering_skill.range_max})
@@ -207,7 +218,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Table.Cell />
 							)}
 							{crew.base_skills.medicine_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.medicine_skill.core}</b>
 									<br />
 									+({crew.base_skills.medicine_skill.range_min}-{crew.base_skills.medicine_skill.range_max})
@@ -216,7 +227,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Table.Cell />
 							)}
 							{crew.base_skills.science_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.science_skill.core}</b>
 									<br />
 									+({crew.base_skills.science_skill.range_min}-{crew.base_skills.science_skill.range_max})
@@ -225,7 +236,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Table.Cell />
 							)}
 							{crew.base_skills.security_skill ? (
-								<Table.Cell textAlign='center'>
+								<Table.Cell textAlign="center">
 									<b>{crew.base_skills.security_skill.core}</b>
 									<br />
 									+({crew.base_skills.security_skill.range_min}-{crew.base_skills.security_skill.range_max})
@@ -241,29 +252,53 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	renderShips() {
-		const { playerData } = this.state;
+		const { playerData, ship_schematics } = this.state;
+
+		let ships = mergeShips(ship_schematics, playerData.player.character.ships);
+		console.log(ships);
 		return (
 			<div>
 				<Message icon warning>
-					<Icon name='exclamation triangle' />
+					<Icon name="exclamation triangle" />
 					<Message.Content>
 						<Message.Header>Work in progress!</Message.Header>
 						This section is under development and not fully functional yet.
 					</Message.Content>
 				</Message>
-				<Table sortable celled selectable striped collapsing unstackable compact='very'>
+				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={3}>Ship</Table.HeaderCell>
+							<Table.HeaderCell width={1}>Antimatter</Table.HeaderCell>
 							<Table.HeaderCell width={1}>Level</Table.HeaderCell>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{playerData.player.character.ships.map((ship, idx) => (
+						{ships.map((ship, idx) => (
 							<Table.Row key={idx}>
-								<Table.Cell>{ship.symbol}</Table.Cell>
 								<Table.Cell>
-									<Rating defaultRating={ship.level} maxRating={ship.level} size='large' disabled />
+									<div
+										style={{
+											display: 'grid',
+											gridTemplateColumns: '60px auto',
+											gridTemplateAreas: `'icon stats' 'icon description'`,
+											gridGap: '1px'
+										}}
+									>
+										<div style={{ gridArea: 'icon' }}>
+											<img width={48} src={`/media/assets/${ship.icon.file.substr(1).replace('/', '_')}.png`} />
+										</div>
+										<div style={{ gridArea: 'stats' }}>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
+										</div>
+										<div style={{ gridArea: 'description' }}>{ship.traits_named.join(', ')}</div>
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									{ship.antimatter}
+								</Table.Cell>
+								<Table.Cell>
+									<Rating defaultRating={ship.level} maxRating={ship.max_level} size="small" disabled />
 								</Table.Cell>
 							</Table.Row>
 						))}
@@ -278,7 +313,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		return (
 			<div>
 				<Message icon warning>
-					<Icon name='exclamation triangle' />
+					<Icon name="exclamation triangle" />
 					<Message.Content>
 						<Message.Header>Work in progress!</Message.Header>
 						This section is under development and not fully functional yet.
@@ -303,7 +338,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					)}
 				</Item.Group>
 
-				<Table sortable celled selectable striped collapsing unstackable compact='very'>
+				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={3}>Mission</Table.HeaderCell>
@@ -311,14 +346,16 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{playerData.player.character.accepted_missions.concat(playerData.player.character.dispute_histories).map((mission, idx) => (
-							<Table.Row key={idx}>
-								<Table.Cell>{mission.symbol}</Table.Cell>
-								<Table.Cell>
-									Completed {mission.stars_earned} of {mission.total_stars} missions
-								</Table.Cell>
-							</Table.Row>
-						))}
+						{playerData.player.character.accepted_missions
+							.concat(playerData.player.character.dispute_histories)
+							.map((mission, idx) => (
+								<Table.Row key={idx}>
+									<Table.Cell>{mission.symbol}</Table.Cell>
+									<Table.Cell>
+										Completed {mission.stars_earned} of {mission.total_stars} missions
+									</Table.Cell>
+								</Table.Row>
+							))}
 					</Table.Body>
 				</Table>
 			</div>
@@ -330,13 +367,13 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		return (
 			<div>
 				<Message icon warning>
-					<Icon name='exclamation triangle' />
+					<Icon name="exclamation triangle" />
 					<Message.Content>
 						<Message.Header>Work in progress!</Message.Header>
 						This section is under development and not fully functional yet.
 					</Message.Content>
 				</Message>
-				<Table sortable celled selectable striped collapsing unstackable compact='very'>
+				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={3}>Item</Table.HeaderCell>
@@ -363,20 +400,20 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			return (
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as='h4'>Player profile</Header>
+						<Header as="h4">Player profile</Header>
 						{errorMessage && (
 							<Message negative>
 								<Message.Header>Unable to load profile</Message.Header>
 								<p>
-									Failed to find the player profile you were searching. Make sure you have the right URL, or contact the player and ask them
-									to reupload their profile.
+									Failed to find the player profile you were searching. Make sure you have the right URL, or contact the
+									player and ask them to reupload their profile.
 								</p>
 								<pre>{errorMessage.toString()}</pre>
 							</Message>
 						)}
 						<p>
-							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to upload your
-							player.json and access other useful player tools.
+							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
+							upload your player.json and access other useful player tools.
 						</p>
 					</Container>
 				</Layout>
@@ -409,7 +446,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>
-							<Item.Image size='tiny' src={`/media/assets/${playerData.player.character.crew_avatar.portrait}`} />
+							<Item.Image size="tiny" src={`/media/assets/${playerData.player.character.crew_avatar.portrait}`} />
 
 							<Item.Content>
 								<Item.Header>{playerData.player.character.display_name}</Item.Header>
@@ -430,7 +467,11 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							</Item.Content>
 						</Item>
 					</Item.Group>
-					{playerData.calc.lastModified ? <Label size='tiny'>Last updated: {playerData.calc.lastModified.toLocaleString()}</Label> : <span/>}
+					{playerData.calc.lastModified ? (
+						<Label size="tiny">Last updated: {playerData.calc.lastModified.toLocaleString()}</Label>
+					) : (
+						<span />
+					)}
 					<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 				</Container>
 			</Layout>
