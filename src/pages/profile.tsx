@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Header, Label, Message, Item, Tab, Table, Rating, Icon } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
+import ProfileCrew from '../components/profile_crew';
 
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { mergeShips } from '../utils/shiputils';
@@ -138,124 +139,6 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					this.setState({ errorMessage: err });
 				});
 		}
-	}
-
-	_descriptionLabel(crew: any) {
-		if (crew.immortal) {
-			return (
-				<div>
-					<Icon name="snowflake" /> <span>{crew.immortal} frozen</span>
-				</div>
-			);
-		} else {
-			return (
-				<div>
-					{crew.favorite && <Icon name="heart" />}
-					<span>Level {crew.level}</span>
-				</div>
-			);
-		}
-	}
-
-	renderCrew() {
-		const { playerData } = this.state;
-		return (
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell width={3}>Crew</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Rarity</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Command</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Diplomacy</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Engineering</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Medicine</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Science</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Security</Table.HeaderCell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{playerData.player.character.crew.map((crew, idx) => (
-						<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
-							<Table.Cell>
-								<div
-									style={{
-										display: 'grid',
-										gridTemplateColumns: '60px auto',
-										gridTemplateAreas: `'icon stats' 'icon description'`,
-										gridGap: '1px'
-									}}
-								>
-									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`/media/assets/${crew.imageUrlPortrait}`} />
-									</div>
-									<div style={{ gridArea: 'stats' }}>
-										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-									</div>
-									<div style={{ gridArea: 'description' }}>{this._descriptionLabel(crew)}</div>
-								</div>
-							</Table.Cell>
-							<Table.Cell>
-								<Rating defaultRating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
-							</Table.Cell>
-							{crew.base_skills.command_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.command_skill.core}</b>
-									<br />
-									+({crew.base_skills.command_skill.range_min}-{crew.base_skills.command_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-							{crew.base_skills.diplomacy_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.diplomacy_skill.core}</b>
-									<br />
-									+({crew.base_skills.diplomacy_skill.range_min}-{crew.base_skills.diplomacy_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-							{crew.base_skills.engineering_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.engineering_skill.core}</b>
-									<br />
-									+({crew.base_skills.engineering_skill.range_min}-{crew.base_skills.engineering_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-							{crew.base_skills.medicine_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.medicine_skill.core}</b>
-									<br />
-									+({crew.base_skills.medicine_skill.range_min}-{crew.base_skills.medicine_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-							{crew.base_skills.science_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.science_skill.core}</b>
-									<br />
-									+({crew.base_skills.science_skill.range_min}-{crew.base_skills.science_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-							{crew.base_skills.security_skill ? (
-								<Table.Cell textAlign="center">
-									<b>{crew.base_skills.security_skill.core}</b>
-									<br />
-									+({crew.base_skills.security_skill.range_min}-{crew.base_skills.security_skill.range_max})
-								</Table.Cell>
-							) : (
-								<Table.Cell />
-							)}
-						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
-		);
 	}
 
 	renderShips() {
@@ -482,7 +365,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => <Tab.Pane attached={false}>{this.renderCrew()}</Tab.Pane>
+				render: () => <Tab.Pane attached={false}><ProfileCrew playerData={this.state.playerData} /></Tab.Pane>
 			},
 			{
 				menuItem: 'Ships',
