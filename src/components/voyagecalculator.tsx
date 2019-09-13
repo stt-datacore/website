@@ -203,7 +203,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				}
 
 				let fuellist = playerData.player.character.items.filter(
-					item => equipmentAlreadyOnCrew.has(item.archetype_id) && item.quantity === 1 && item.rarity > 1
+					item => (equipmentAlreadyOnCrew.has(item.symbol) && item.quantity === 1 && item.rarity > 1) || (item.name.indexOf("'s ") > 0) || (item.name.indexOf("s' ") > 0)
 				);
 
 				this.setState({ fuellist, crew: allcrew });
