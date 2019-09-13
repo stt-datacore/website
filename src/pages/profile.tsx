@@ -16,6 +16,7 @@ type ProfilePageState = {
 	errorMessage?: string;
 	playerData?: any;
 	ship_schematics?: any;
+	items?: any;
 };
 
 class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
@@ -40,6 +41,12 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				.then(response => response.json())
 				.then(ship_schematics => {
 					this.setState({ ship_schematics });
+				});
+
+			fetch('/structured/items.json')
+				.then(response => response.json())
+				.then(items => {
+					this.setState({ items });
 				});
 
 			let lastModified = undefined;
@@ -255,7 +262,6 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const { playerData, ship_schematics } = this.state;
 
 		let ships = mergeShips(ship_schematics, playerData.player.character.ships);
-		console.log(ships);
 		return (
 			<div>
 				<Message icon warning>
@@ -294,9 +300,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 										<div style={{ gridArea: 'description' }}>{ship.traits_named.join(', ')}</div>
 									</div>
 								</Table.Cell>
-								<Table.Cell>
-									{ship.antimatter}
-								</Table.Cell>
+								<Table.Cell>{ship.antimatter}</Table.Cell>
 								<Table.Cell>
 									<Rating defaultRating={ship.level} maxRating={ship.max_level} size="small" disabled />
 								</Table.Cell>
@@ -363,7 +367,37 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	renderItems() {
-		const { playerData } = this.state;
+		const { playerData, items } = this.state;
+		if (!items) {
+			return <span>Loading...</span>;
+		}
+		let mergedItems = [];
+		playerData.player.character.items.forEach(item => {
+			let itemEntry = items.find(i => i.symbol === item.symbol);
+			if (itemEntry) {
+				mergedItems.push({
+					name: itemEntry.name,
+					type: itemEntry.type,
+					rarity: itemEntry.rarity,
+					flavor: itemEntry.flavor,
+					bonuses: itemEntry.bonuses,
+					imageUrl: itemEntry.imageUrl,
+					symbol: itemEntry.symbol,
+					quantity: item.quantity
+				});
+			} else {
+				mergedItems.push({
+					name: item.symbol,
+					type: 0,
+					rarity: 0,
+					flavor: 'UNKNOWN',
+					bonuses: undefined,
+					imageUrl: 'items_equipment_box02_icon.png',
+					symbol: item.symbol,
+					quantity: item.quantity
+				});
+			}
+		});
 		return (
 			<div>
 				<Message icon warning>
@@ -381,9 +415,33 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{playerData.player.character.items.map((item, idx) => (
+						{mergedItems.map((item, idx) => (
 							<Table.Row key={idx}>
-								<Table.Cell>{item.symbol}</Table.Cell>
+								<Table.Cell>
+									<div
+										style={{
+											display: 'grid',
+											gridTemplateColumns: '60px auto',
+											gridTemplateAreas: `'icon stats' 'icon description'`,
+											gridGap: '1px'
+										}}
+									>
+										<div style={{ gridArea: 'icon' }}>
+											<img width={48} src={`/media/assets/${item.imageUrl}`} />
+										</div>
+										<div style={{ gridArea: 'stats' }}>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
+												{item.rarity > 0 && (
+													<span>
+														{item.rarity} <Icon name="star" />{' '}
+													</span>
+												)}
+												{item.name}
+											</span>
+										</div>
+										<div style={{ gridArea: 'description' }}>{item.flavor}</div>
+									</div>
+								</Table.Cell>
 								<Table.Cell>{item.quantity}</Table.Cell>
 							</Table.Row>
 						))}
@@ -459,8 +517,11 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								<Item.Description>
 									{playerData.player.fleet && (
 										<p>
-											Fleet <b>{playerData.player.fleet.slabel}</b> ({playerData.player.fleet.rank}) Starbase level{' '}
-											{playerData.player.fleet.nstarbase_level}{' '}
+											Fleet{' '}
+											<Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
+												<b>{playerData.player.fleet.slabel}</b>
+											</Link>{' '}
+											({playerData.player.fleet.rank}) Starbase level {playerData.player.fleet.nstarbase_level}{' '}
 										</p>
 									)}
 								</Item.Description>
