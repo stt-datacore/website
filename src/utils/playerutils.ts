@@ -1,5 +1,5 @@
 // Remove any unnecessary fields from the player data
-export function stripPlayerData(p: any): any {
+export function stripPlayerData(items: any[], p: any): any {
 	delete p.item_archetype_cache;
 
 	delete p.player.entitlements;
@@ -101,12 +101,32 @@ export function stripPlayerData(p: any): any {
 		status: da.status
 	}));
 
-	p.player.character.items = p.player.character.items.map(item => ({
-		symbol: item.symbol,
-		archetype_id: item.archetype_id,
-		rarity: item.rarity,
-		quantity: item.quantity
-	}));
+	let newItems = [];
+	p.player.character.items.forEach(item => {
+		let itemEntry = items.find(i => i.symbol === item.symbol);
+		if (itemEntry) {
+			newItems.push({
+				symbol: item.symbol,
+				archetype_id: item.archetype_id,
+				rarity: item.rarity,
+				quantity: item.quantity
+			});
+		} else {
+			// This item is not in the cache, push its details as well
+			newItems.push({
+				symbol: item.symbol,
+				archetype_id: item.archetype_id,
+				rarity: item.rarity,
+				quantity: item.quantity,
+				type: item.type,
+				name: item.name,
+				flavor: item.flavor,
+				imageUrl: item.icon.file.substr(1).replace(/\//g, '_') + '.png'
+			});
+		}
+	});
+	p.player.character.items = newItems;
+
 	p.player.character.factions = p.player.character.factions.map(faction => ({
 		name: faction.name,
 		id: faction.id,

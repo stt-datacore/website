@@ -382,17 +382,17 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					flavor: itemEntry.flavor,
 					bonuses: itemEntry.bonuses,
 					imageUrl: itemEntry.imageUrl,
-					symbol: itemEntry.symbol,
+					symbol: item.symbol,
 					quantity: item.quantity
 				});
 			} else {
 				mergedItems.push({
-					name: item.symbol,
-					type: 0,
-					rarity: 0,
-					flavor: 'UNKNOWN',
+					name: item.name,
+					type: item.type,
+					rarity: item.rarity,
+					flavor: item.flavor,
 					bonuses: undefined,
-					imageUrl: 'items_equipment_box02_icon.png',
+					imageUrl: item.imageUrl,
 					symbol: item.symbol,
 					quantity: item.quantity
 				});

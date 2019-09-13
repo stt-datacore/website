@@ -59,21 +59,25 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_shareProfile() {
-		this.setState({uploading: true});
+		this.setState({ uploading: true });
 		const { originalPlayerData } = this.state;
 
-		let jsonBody = JSON.stringify({
-			dbid: originalPlayerData.player.dbid,
-			player_data: stripPlayerData(JSON.parse(JSON.stringify(originalPlayerData)))
-		});
+		fetch('/structured/items.json')
+			.then(response => response.json())
+			.then(items => {
+				let jsonBody = JSON.stringify({
+					dbid: originalPlayerData.player.dbid,
+					player_data: stripPlayerData(items, JSON.parse(JSON.stringify(originalPlayerData)))
+				});
 
-		fetch('https://datacore.azurewebsites.net/api/player_data', {
-			method: 'post',
-			body: jsonBody
-		}).then(() => {
-			window.open(`https://datacore.netlify.com/profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
-			  this.setState({uploading: false, uploaded: true});
-		});
+				fetch('https://datacore.azurewebsites.net/api/player_data', {
+					method: 'post',
+					body: jsonBody
+				}).then(() => {
+					window.open(`https://datacore.netlify.com/profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
+					this.setState({ uploading: false, uploaded: true });
+				});
+			});
 	}
 
 	render() {
@@ -105,27 +109,39 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					<Icon name="bell" />
 					<Message.Content>
 						<Message.Header>NEW! Share your player profile!</Message.Header>
-						{!this.state.uploaded && <p>
-							If you want to share your profile with the world{' '}
-							<Button size="small" color="green" onClick={() => this._shareProfile()}>
-								{this.state.uploading && <Icon loading name='spinner' />} click here
-							</Button>{' '}
-							More details:
-						</p>}
-						{!this.state.uploaded && <Message.List>
-							<Message.Item>
-								Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
-							</Message.Item>
-							<Message.Item>
-								There is no private information being leaked through the player profile; information being shared is
-								limited to:{' '}
-								<b>
-									captain name, level, vip level, fleet name and role, achievements, completed missions, your crew,
-									items and ships.
-								</b>
-							</Message.Item>
-						</Message.List>}
-						{this.state.uploaded && <p>Your profile was uploaded. Here's the link: <a href={`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`} target='_blank'>{`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`}</a></p>}
+						{!this.state.uploaded && (
+							<p>
+								If you want to share your profile with the world{' '}
+								<Button size="small" color="green" onClick={() => this._shareProfile()}>
+									{this.state.uploading && <Icon loading name="spinner" />} click here
+								</Button>{' '}
+								More details:
+							</p>
+						)}
+						{!this.state.uploaded && (
+							<Message.List>
+								<Message.Item>
+									Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
+								</Message.Item>
+								<Message.Item>
+									There is no private information being leaked through the player profile; information being shared is
+									limited to:{' '}
+									<b>
+										captain name, level, vip level, fleet name and role, achievements, completed missions, your crew,
+										items and ships.
+									</b>
+								</Message.Item>
+							</Message.List>
+						)}
+						{this.state.uploaded && (
+							<p>
+								Your profile was uploaded. Here's the link:{' '}
+								<a
+									href={`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`}
+									target="_blank"
+								>{`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`}</a>
+							</p>
+						)}
 					</Message.Content>
 				</Message>
 				<p>Current voyage is {curVoy}</p>
