@@ -473,12 +473,11 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
 							upload your player.json and access other useful player tools.
 						</p>
+						{!errorMessage && <div><Icon loading name="spinner" /> Loading...</div>}
 					</Container>
 				</Layout>
 			);
 		}
-
-		//console.log(playerData);
 
 		const panes = [
 			{

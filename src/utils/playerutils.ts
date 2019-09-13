@@ -130,6 +130,7 @@ export function stripPlayerData(items: any[], p: any): any {
 	p.player.character.factions = p.player.character.factions.map(faction => ({
 		name: faction.name,
 		id: faction.id,
+		completed_shuttle_adventures: faction.completed_shuttle_adventures,
 		reputation: faction.reputation
 	}));
 

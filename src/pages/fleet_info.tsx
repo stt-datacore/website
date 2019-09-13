@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Image, Table } from 'semantic-ui-react';
+import { Container, Header, Label, Message, Icon, Table, Item } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -10,6 +10,7 @@ type FleetInfoPageState = {
 	fleet_id?: string;
 	fleet_data?: any;
 	errorMessage?: string;
+	factions?: any;
 };
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
@@ -23,6 +24,12 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	componentDidMount() {
+		fetch('/structured/factions.json')
+			.then(response => response.json())
+			.then(factions => {
+				this.setState({ factions });
+			});
+
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('fleetid')) {
 			let fleet_id = urlParams.get('fleetid');
@@ -40,7 +47,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	render() {
-		const { fleet_id, errorMessage, fleet_data } = this.state;
+		const { fleet_id, errorMessage, fleet_data, factions } = this.state;
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
@@ -53,6 +60,11 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 								<pre>{errorMessage.toString()}</pre>
 							</Message>
 						)}
+						{!errorMessage && (
+							<div>
+								<Icon loading name="spinner" /> Loading...
+							</div>
+						)}
 						<p>
 							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
 							upload your player.json and access other useful player tools.
@@ -62,25 +74,37 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			);
 		}
 
-		// sinsignia "badge1", nicon_index: 4
+		let imageUrl = 'icons_icon_faction_starfleet.png';
+		if (factions && factions[fleet_data.nicon_index]) {
+			imageUrl = factions[fleet_data.nicon_index].icon;
+		}
 
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as="h3">
-						Fleet <i>{fleet_data.name}</i>
-					</Header>
-					<p>{fleet_data.description}</p>
-					<Label size="tiny">Created: {new Date(fleet_data.created).toLocaleDateString()}</Label>
-					<Label size="tiny">
-						Size: {fleet_data.cursize} / {fleet_data.maxsize}
-					</Label>
-					<Label size="tiny">Starbase: {fleet_data.nstarbase_level}</Label>
-					<Label size="tiny">
-						Enrollment: {fleet_data.enrollment} (min level: {fleet_data.nmin_level})
-					</Label>
-                    <br/><br/>
-					<p><b>Admiral's MOTD:</b> {fleet_data.motd}</p>
+					<Item.Group>
+						<Item>
+							<Item.Image size="tiny" src={`/media/assets/${imageUrl}`} />
+
+							<Item.Content>
+								<Item.Header>{fleet_data.name}</Item.Header>
+								<Item.Meta>
+									<Label>Starbase level: {fleet_data.nstarbase_level}</Label>
+									<Label>
+										Size: {fleet_data.cursize} / {fleet_data.maxsize}
+									</Label>
+									<Label>Created: {new Date(fleet_data.created).toLocaleDateString()}</Label>
+									<Label>
+										Enrollment {fleet_data.enrollment} (min level: {fleet_data.nmin_level})
+									</Label>
+								</Item.Meta>
+								<Item.Description>
+									<b>Admiral's MOTD:</b> {fleet_data.motd}
+								</Item.Description>
+							</Item.Content>
+						</Item>
+					</Item.Group>
+
 					<Header as="h4">Members</Header>
 
 					<Table celled selectable striped collapsing unstackable compact="very">
