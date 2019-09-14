@@ -46,6 +46,23 @@ export default class CONFIG {
 		{name: 'medicine_skill', short: 'MED'}
 	];
 
+	static readonly REWARDS_ITEM_TYPE: { [index: number]: string } = {
+		0: 'None',
+		1: 'Crew',
+		2: 'Equipment',
+		3: 'Component',
+		4: 'Shuttle consumable',
+		5: 'Ship part',
+		6: 'Shuttle token',
+		7: 'Crew experience training',
+		8: 'Ship schematic',
+		9: 'Replicator ration',
+		10: 'Honorable citation',
+		11: 'Buff',
+		12: 'Starbase component',
+		13: 'Voyage consumable'
+	};
+
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
 		0: 'Attack',
 		1: 'Evasion',

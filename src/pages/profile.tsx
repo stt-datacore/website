@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Item, Tab, Table, Rating, Icon } from 'semantic-ui-react';
+import { Container, Header, Label, Message, Item, Tab, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
+import ProfileShips from '../components/profile_ships';
+import ProfileItems from '../components/profile_items';
+import ProfileOther from '../components/profile_other';
 
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { mergeShips } from '../utils/shiputils';
 
 import CONFIG from '../components/CONFIG';
 
@@ -16,8 +18,6 @@ type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
 	playerData?: any;
-	ship_schematics?: any;
-	items?: any;
 };
 
 class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
@@ -27,8 +27,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		this.state = {
 			dbid: undefined,
 			errorMessage: undefined,
-			playerData: undefined,
-			ship_schematics: undefined
+			playerData: undefined
 		};
 	}
 
@@ -37,18 +36,6 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		if (urlParams.has('dbid')) {
 			let dbid = urlParams.get('dbid');
 			this.setState({ dbid });
-
-			fetch('/structured/ship_schematics.json')
-				.then(response => response.json())
-				.then(ship_schematics => {
-					this.setState({ ship_schematics });
-				});
-
-			fetch('/structured/items.json')
-				.then(response => response.json())
-				.then(items => {
-					this.setState({ items });
-				});
 
 			let lastModified = undefined;
 
@@ -141,199 +128,6 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		}
 	}
 
-	renderShips() {
-		const { playerData, ship_schematics } = this.state;
-
-		let ships = mergeShips(ship_schematics, playerData.player.character.ships);
-		return (
-			<div>
-				<Message icon warning>
-					<Icon name="exclamation triangle" />
-					<Message.Content>
-						<Message.Header>Work in progress!</Message.Header>
-						This section is under development and not fully functional yet.
-					</Message.Content>
-				</Message>
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell width={3}>Ship</Table.HeaderCell>
-							<Table.HeaderCell width={1}>Antimatter</Table.HeaderCell>
-							<Table.HeaderCell width={1}>Level</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{ships.map((ship, idx) => (
-							<Table.Row key={idx}>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}
-									>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`/media/assets/${ship.icon.file.substr(1).replace('/', '_')}.png`} />
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
-										</div>
-										<div style={{ gridArea: 'description' }}>{ship.traits_named.join(', ')}</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>{ship.antimatter}</Table.Cell>
-								<Table.Cell>
-									<Rating defaultRating={ship.level} maxRating={ship.max_level} size="small" disabled />
-								</Table.Cell>
-							</Table.Row>
-						))}
-					</Table.Body>
-				</Table>
-			</div>
-		);
-	}
-
-	renderOther() {
-		const { playerData } = this.state;
-		return (
-			<div>
-				<Message icon warning>
-					<Icon name="exclamation triangle" />
-					<Message.Content>
-						<Message.Header>Work in progress!</Message.Header>
-						This section is under development and not fully functional yet.
-					</Message.Content>
-				</Message>
-
-				<Item.Group>
-					{playerData.player.character.daily_activities.map(da =>
-						da.status ? (
-							<Item>
-								<Item.Content>
-									<Item.Header>{da.name}</Item.Header>
-									<Item.Meta>
-										<Label>{da.status}</Label>
-									</Item.Meta>
-									<Item.Description>{da.description}</Item.Description>
-								</Item.Content>
-							</Item>
-						) : (
-							<span />
-						)
-					)}
-				</Item.Group>
-
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell width={3}>Mission</Table.HeaderCell>
-							<Table.HeaderCell width={3}>Status</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{playerData.player.character.accepted_missions
-							.concat(playerData.player.character.dispute_histories)
-							.map((mission, idx) => (
-								<Table.Row key={idx}>
-									<Table.Cell>{mission.symbol}</Table.Cell>
-									<Table.Cell>
-										Completed {mission.stars_earned} of {mission.total_stars} missions
-									</Table.Cell>
-								</Table.Row>
-							))}
-					</Table.Body>
-				</Table>
-			</div>
-		);
-	}
-
-	renderItems() {
-		const { playerData, items } = this.state;
-		if (!items) {
-			return <span>Loading...</span>;
-		}
-		let mergedItems = [];
-		playerData.player.character.items.forEach(item => {
-			let itemEntry = items.find(i => i.symbol === item.symbol);
-			if (itemEntry) {
-				mergedItems.push({
-					name: itemEntry.name,
-					type: itemEntry.type,
-					rarity: itemEntry.rarity,
-					flavor: itemEntry.flavor,
-					bonuses: itemEntry.bonuses,
-					imageUrl: itemEntry.imageUrl,
-					symbol: item.symbol,
-					quantity: item.quantity
-				});
-			} else {
-				mergedItems.push({
-					name: item.name,
-					type: item.type,
-					rarity: item.rarity,
-					flavor: item.flavor,
-					bonuses: undefined,
-					imageUrl: item.imageUrl,
-					symbol: item.symbol,
-					quantity: item.quantity
-				});
-			}
-		});
-		return (
-			<div>
-				<Message icon warning>
-					<Icon name="exclamation triangle" />
-					<Message.Content>
-						<Message.Header>Work in progress!</Message.Header>
-						This section is under development and not fully functional yet.
-					</Message.Content>
-				</Message>
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell width={3}>Item</Table.HeaderCell>
-							<Table.HeaderCell width={1}>Quantity</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{mergedItems.map((item, idx) => (
-							<Table.Row key={idx}>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}
-									>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`/media/assets/${item.imageUrl}`} />
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-												{item.rarity > 0 && (
-													<span>
-														{item.rarity} <Icon name="star" />{' '}
-													</span>
-												)}
-												{item.name}
-											</span>
-										</div>
-										<div style={{ gridArea: 'description' }}>{item.flavor}</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>{item.quantity}</Table.Cell>
-							</Table.Row>
-						))}
-					</Table.Body>
-				</Table>
-			</div>
-		);
-	}
-
 	render() {
 		const { dbid, errorMessage, playerData } = this.state;
 
@@ -356,7 +150,11 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
 							upload your player.json and access other useful player tools.
 						</p>
-						{!errorMessage && <div><Icon loading name="spinner" /> Loading...</div>}
+						{!errorMessage && (
+							<div>
+								<Icon loading name="spinner" /> Loading...
+							</div>
+						)}
 					</Container>
 				</Layout>
 			);
@@ -365,19 +163,19 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => <Tab.Pane attached={false}><ProfileCrew playerData={this.state.playerData} /></Tab.Pane>
+				render: () => <ProfileCrew playerData={this.state.playerData} />
 			},
 			{
 				menuItem: 'Ships',
-				render: () => <Tab.Pane attached={false}>{this.renderShips()}</Tab.Pane>
+				render: () => <ProfileShips playerData={this.state.playerData} />
 			},
 			{
 				menuItem: 'Items',
-				render: () => <Tab.Pane attached={false}>{this.renderItems()}</Tab.Pane>
+				render: () => <ProfileItems playerData={this.state.playerData} />
 			},
 			{
 				menuItem: 'Other',
-				render: () => <Tab.Pane attached={false}>{this.renderOther()}</Tab.Pane>
+				render: () => <ProfileOther playerData={this.state.playerData} />
 			}
 		];
 

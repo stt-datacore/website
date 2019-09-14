@@ -36,7 +36,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 		};
 	}
 
-    _onChangePage(activePage) {
+	_onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
 
@@ -243,26 +243,28 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 						</Table.Row>
 					))}
 				</Table.Body>
-                <Table.Footer>
-							<Table.Row>
-								<Table.HeaderCell colSpan='8'>
-									<Pagination
-										totalPages={totalPages}
-										activePage={pagination_page}
-										onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
-									/>
-									<span style={{ paddingLeft: '2em' }}>
-										Crew per page:{' '}
-										<Dropdown
-											inline
-											options={pagingOptions}
-											value={pagination_rows}
-											onChange={(event, { value }) => this.setState({ pagination_page: 1, pagination_rows: value as number })}
-										/>
-									</span>
-								</Table.HeaderCell>
-							</Table.Row>
-						</Table.Footer>
+				<Table.Footer>
+					<Table.Row>
+						<Table.HeaderCell colSpan="8">
+							<Pagination
+								totalPages={totalPages}
+								activePage={pagination_page}
+								onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
+							/>
+							<span style={{ paddingLeft: '2em' }}>
+								Crew per page:{' '}
+								<Dropdown
+									inline
+									options={pagingOptions}
+									value={pagination_rows}
+									onChange={(event, { value }) =>
+										this.setState({ pagination_page: 1, pagination_rows: value as number })
+									}
+								/>
+							</span>
+						</Table.HeaderCell>
+					</Table.Row>
+				</Table.Footer>
 			</Table>
 		);
 	}
