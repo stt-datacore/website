@@ -184,7 +184,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 								</div>
 							</Table.Cell>
 							<Table.Cell>
-								<Rating defaultRating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+								<Rating defaultRating={crew.rarity} rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
 							</Table.Cell>
 							{crew.base_skills.command_skill ? (
 								<Table.Cell textAlign="center">
