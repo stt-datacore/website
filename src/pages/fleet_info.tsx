@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Icon, Table, Item } from 'semantic-ui-react';
+import { Container, Header, Label, Message, Icon, Table, Item, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -11,6 +11,7 @@ type FleetInfoPageState = {
 	fleet_data?: any;
 	errorMessage?: string;
 	factions?: any;
+	events?: any;
 };
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
@@ -30,6 +31,12 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				this.setState({ factions });
 			});
 
+		fetch('/structured/event_instances.json')
+			.then(response => response.json())
+			.then(events => {
+				this.setState({ events });
+			});
+
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('fleetid')) {
 			let fleet_id = urlParams.get('fleetid');
@@ -47,7 +54,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	render() {
-		const { fleet_id, errorMessage, fleet_data, factions } = this.state;
+		const { fleet_id, errorMessage, fleet_data, factions, events } = this.state;
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
@@ -79,6 +86,10 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			imageUrl = factions[fleet_data.nicon_index].icon;
 		}
 
+		let event1 = events.find(ev => ev.event_name === fleet_data.leaderboard[0].event_name);
+		let event2 = events.find(ev => ev.event_name === fleet_data.leaderboard[1].event_name);
+		let event3 = events.find(ev => ev.event_name === fleet_data.leaderboard[2].event_name);
+
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
@@ -104,6 +115,26 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 							</Item.Content>
 						</Item>
 					</Item.Group>
+
+					<table>
+						<tbody>
+							<tr>
+								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[0].event_name}`}>{fleet_data.leaderboard[0].event_name}</Link></th>
+								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[1].event_name}`}>{fleet_data.leaderboard[1].event_name}</Link></th>
+								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[2].event_name}`}>{fleet_data.leaderboard[2].event_name}</Link></th>
+							</tr>
+							<tr>
+								<td>{event1 && <Image size="medium" src={`/media/assets/${event1.image}`} />}</td>
+								<td>{event1 && <Image size="medium" src={`/media/assets/${event2.image}`} />}</td>
+								<td>{event1 && <Image size="medium" src={`/media/assets/${event3.image}`} />}</td>
+							</tr>
+							<tr>
+								<td align='center'>Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
+								<td align='center'>Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
+								<td align='center'>Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
+							</tr>
+						</tbody>
+					</table>
 
 					<Header as="h4">Members</Header>
 
