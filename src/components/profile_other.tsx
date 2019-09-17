@@ -26,23 +26,23 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 				this.props.playerData.player.character.accepted_missions
 					.concat(this.props.playerData.player.character.dispute_histories)
 					.forEach(mission => {
-                        let quest = missionData.find(m => (m.symbol === mission.symbol));
-                        if (quest && quest.episode_title) {
-						    mission.episode = quest.episode;
-						    mission.episode_title = quest.episode_title;
-                            mission.cadet = quest.cadet;
+						let quest = missionData.find(m => m.symbol === mission.symbol);
+						if (quest && quest.episode_title) {
+							mission.episode = quest.episode;
+							mission.episode_title = quest.episode_title;
+							mission.cadet = quest.cadet;
 
-                            if (mission.episode > 0) {
-                                mission.name = `Episode ${mission.episode} : ${mission.episode_title}`;
-                            } else {
-                                mission.name = mission.episode_title;
-                            }
+							if (mission.episode > 0) {
+								mission.name = `Episode ${mission.episode} : ${mission.episode_title}`;
+							} else {
+								mission.name = mission.episode_title;
+							}
 
-                            missions.push(mission);
-                        }
-                    });
-                    
-                missions = missions.sort((a,b) => (a.episode > b.episode ? 1 : b.episode > a.episode ? -1 : 0));
+							missions.push(mission);
+						}
+					});
+
+				missions = missions.sort((a, b) => (a.episode > b.episode ? 1 : b.episode > a.episode ? -1 : 0));
 
 				this.setState({ missions });
 			});
@@ -64,7 +64,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 					</Table.Header>
 					<Table.Body>
 						{playerData.player.character.daily_activities.map((da, idx) =>
-							da.status ? (
+							(da.status && da.lifetime !== 0) ? (
 								<Table.Row key={idx}>
 									<Table.Cell>{da.name}</Table.Cell>
 									<Table.Cell>{da.status}</Table.Cell>

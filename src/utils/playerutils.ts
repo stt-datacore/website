@@ -98,7 +98,9 @@ export function stripPlayerData(items: any[], p: any): any {
 	p.player.character.daily_activities = p.player.character.daily_activities.map(da => ({
 		name: da.name,
 		description: da.description,
-		status: da.status
+		status: da.status,
+		lifetime: da.lifetime,
+		icon: da.icon
 	}));
 
 	let newItems = [];
