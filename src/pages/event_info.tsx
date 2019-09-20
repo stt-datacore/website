@@ -40,7 +40,15 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							if (ev_inst === undefined || ev_lead === undefined) {
 								this.setState({ errorMessage: 'Invalid event name, or data not yet available for this event.' });
 							} else {
-								this.setState({ event_data: { ev_inst, ev_lead } });
+								if (ev_inst.event_details) {
+									fetch(`/structured/events/${ev_inst.instance_id}.json`)
+										.then(response => response.json())
+										.then(event_details => {
+											this.setState({ event_data: { ev_inst, ev_lead, event_details } });
+										});
+								} else {
+									this.setState({ event_data: { ev_inst, ev_lead } });
+								}
 							}
 						});
 				})
@@ -48,6 +56,102 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					this.setState({ errorMessage: err });
 				});
 		}
+	}
+
+	renderEventDetails() {
+		const { event_data } = this.state;
+
+		if (event_data === undefined || event_data.event_details === undefined) {
+			return <span />;
+		}
+
+		let event = event_data.event_details;
+
+		let crew_bonuses = undefined;
+		if (event.content.shuttles) {
+			crew_bonuses = event.content.shuttles[0].crew_bonuses;
+		}
+
+		return (
+			<div>
+				<Message icon warning>
+					<Icon name="exclamation triangle" />
+					<Message.Content>
+						<Message.Header>Work in progress!</Message.Header>
+						This section is under development and not fully functional yet.
+					</Message.Content>
+				</Message>
+				<p>{event.description}</p>
+
+				<Label>{event.bonus_text}</Label>
+				<Label>Type: {event.content.content_type}</Label>
+
+				<Header as="h4">Bonus crew</Header>
+				{crew_bonuses && <p>{Object.entries(crew_bonuses).map(([bonus, val], idx) => <span key={idx}>
+					{bonus} ({val}), 
+				</span>)}</p>}
+
+				<Header as="h4">Threshold rewards</Header>
+				<Table celled selectable striped collapsing unstackable compact="very">
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell width={2}>Points</Table.HeaderCell>
+							<Table.HeaderCell width={4}>Reward</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{event.threshold_rewards.map((reward, idx) => (
+							<Table.Row key={idx}>
+								<Table.Cell>{reward.points}</Table.Cell>
+								<Table.Cell>
+									{reward.rewards[0].quantity} {reward.rewards[0].full_name}
+								</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+
+				<Header as="h4">Ranked rewards</Header>
+				<Table celled selectable striped collapsing unstackable compact="very">
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell width={2}>Ranks</Table.HeaderCell>
+							<Table.HeaderCell width={4}>Rewards</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{event.ranked_brackets.map((bracket, idx) => (
+							<Table.Row key={idx}>
+								<Table.Cell>
+									{bracket.first} - {bracket.last}
+								</Table.Cell>
+								<Table.Cell>
+									{bracket.rewards.map((reward, idx) => (
+										<span key={idx}>
+											{reward.quantity} {reward.full_name}, 
+										</span>
+									))}
+								</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+
+				<Header as="h4">Quest</Header>
+				{event.quest.screens.map((screen, idx) => (
+					<p key={idx}>
+						<b>{screen.speaker_name}: </b>
+						{screen.text}
+					</p>
+				))}
+
+				<Message>
+					<Message.Header>TODO: Leaderboard out of date</Message.Header>
+					If this event is currently active, the leaderboard below is out of date (updated only a couple of times a
+					week).
+				</Message>
+			</div>
+		);
 	}
 
 	render() {
@@ -82,7 +186,9 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					<Header as="h3">{event_data.ev_inst.event_name}</Header>
 					<Image size="large" src={`/media/assets/${event_data.ev_inst.image}`} />
 
-                    <Header as="h4">Leaderboard</Header>
+					{this.renderEventDetails()}
+
+					<Header as="h4">Leaderboard</Header>
 					<Table celled selectable striped collapsing unstackable compact="very">
 						<Table.Header>
 							<Table.Row>
