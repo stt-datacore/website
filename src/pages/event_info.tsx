@@ -67,15 +67,10 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		let event = event_data.event_details;
 
-		let crew_bonuses = undefined;
-		if (event.content.shuttles) {
-			crew_bonuses = event.content.shuttles[0].crew_bonuses;
-		}
-
 		return (
 			<div>
 				<Message icon warning>
-					<Icon name="exclamation triangle" />
+					<Icon name='exclamation triangle' />
 					<Message.Content>
 						<Message.Header>Work in progress!</Message.Header>
 						This section is under development and not fully functional yet.
@@ -84,15 +79,34 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 				<p>{event.description}</p>
 
 				<Label>{event.bonus_text}</Label>
-				<Label>Type: {event.content.content_type}</Label>
 
-				<Header as="h4">Bonus crew</Header>
-				{crew_bonuses && <p>{Object.entries(crew_bonuses).map(([bonus, val], idx) => <span key={idx}>
-					{bonus} ({val}), 
-				</span>)}</p>}
+				{event.content.map((cnt, idx) => {
+					let crew_bonuses = undefined;
+					if (cnt.shuttles) {
+						crew_bonuses = cnt.shuttles[0].crew_bonuses;
+					} else if (cnt.crew_bonuses) {
+						crew_bonuses = cnt.crew_bonuses;
+					}
+					return (
+						<div key={idx}>
+							<Header as='h5'>Phase {idx + 1}</Header>
+							<Label>Type: {cnt.content_type}</Label>
+							<Header as='h6'>Bonus crew</Header>
+							{crew_bonuses && (
+								<p>
+									{Object.entries(crew_bonuses).map(([bonus, val], idx) => (
+										<span key={idx}>
+											{bonus} ({val}),
+										</span>
+									))}
+								</p>
+							)}
+						</div>
+					);
+				})}
 
-				<Header as="h4">Threshold rewards</Header>
-				<Table celled selectable striped collapsing unstackable compact="very">
+				<Header as='h4'>Threshold rewards</Header>
+				<Table celled selectable striped collapsing unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={2}>Points</Table.HeaderCell>
@@ -111,8 +125,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					</Table.Body>
 				</Table>
 
-				<Header as="h4">Ranked rewards</Header>
-				<Table celled selectable striped collapsing unstackable compact="very">
+				<Header as='h4'>Ranked rewards</Header>
+				<Table celled selectable striped collapsing unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={2}>Ranks</Table.HeaderCell>
@@ -128,7 +142,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 								<Table.Cell>
 									{bracket.rewards.map((reward, idx) => (
 										<span key={idx}>
-											{reward.quantity} {reward.full_name}, 
+											{reward.quantity} {reward.full_name},
 										</span>
 									))}
 								</Table.Cell>
@@ -137,18 +151,22 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					</Table.Body>
 				</Table>
 
-				<Header as="h4">Quest</Header>
-				{event.quest.screens.map((screen, idx) => (
-					<p key={idx}>
-						<b>{screen.speaker_name}: </b>
-						{screen.text}
-					</p>
+				<Header as='h4'>Quest</Header>
+
+				{event.quest.map((quest, idx) => (
+					<div key={idx}>
+						{quest.screens.map((screen, idx) => (
+							<p key={idx}>
+								<b>{screen.speaker_name}: </b>
+								{screen.text}
+							</p>
+						))}
+					</div>
 				))}
 
 				<Message>
 					<Message.Header>TODO: Leaderboard out of date</Message.Header>
-					If this event is currently active, the leaderboard below is out of date (updated only a couple of times a
-					week).
+					If this event is currently active, the leaderboard below is out of date (updated only a couple of times a week).
 				</Message>
 			</div>
 		);
@@ -161,7 +179,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 			return (
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as="h4">Event information</Header>
+						<Header as='h4'>Event information</Header>
 						{errorMessage && (
 							<Message negative>
 								<Message.Header>Unable to load event information</Message.Header>
@@ -170,7 +188,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 						)}
 						{!errorMessage && (
 							<div>
-								<Icon loading name="spinner" /> Loading...
+								<Icon loading name='spinner' /> Loading...
 							</div>
 						)}
 					</Container>
@@ -178,18 +196,16 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 			);
 		}
 
-		console.log(event_data);
-
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as="h3">{event_data.ev_inst.event_name}</Header>
-					<Image size="large" src={`/media/assets/${event_data.ev_inst.image}`} />
+					<Header as='h3'>{event_data.ev_inst.event_name}</Header>
+					<Image size='large' src={`/media/assets/${event_data.ev_inst.image}`} />
 
 					{this.renderEventDetails()}
 
-					<Header as="h4">Leaderboard</Header>
-					<Table celled selectable striped collapsing unstackable compact="very">
+					<Header as='h4'>Leaderboard</Header>
+					<Table celled selectable striped collapsing unstackable compact='very'>
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
@@ -207,15 +223,12 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 												gridTemplateColumns: '60px auto',
 												gridTemplateAreas: `'icon stats' 'icon description'`,
 												gridGap: '1px'
-											}}
-										>
+											}}>
 											<div style={{ gridArea: 'icon' }}>
 												<img
 													width={48}
 													src={`/media/assets/${
-														member.avatar
-															? member.avatar.file.substr(1).replace(/\//g, '_') + '.png'
-															: 'crew_portraits_cm_empty_sm.png'
+														member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 												/>
 											</div>
@@ -231,9 +244,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 											<div style={{ gridArea: 'description' }}>
 												Level {member.level}
 												{member.last_update && (
-													<Label size="tiny">
-														Last profile upload: {new Date(Date.parse(member.last_update)).toLocaleDateString()}
-													</Label>
+													<Label size='tiny'>Last profile upload: {new Date(Date.parse(member.last_update)).toLocaleDateString()}</Label>
 												)}
 											</div>
 										</div>
