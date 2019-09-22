@@ -20,13 +20,14 @@ steps:
     npm run build
   displayName: 'npm install and build'
 
-- task: CopyFiles@2
+- task: ArchiveFiles@2
+  displayName: 'Archive the public folder'
   inputs:
-    sourceFolder: 'public'
-    contents: '**' 
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    cleanTargetFolder: true 
-  displayName: 'copy built site'
+    rootFolderOrFile: 'public'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/public.zip'
+    replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   inputs:
