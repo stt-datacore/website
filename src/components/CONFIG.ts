@@ -38,12 +38,12 @@ export default class CONFIG {
 	};
 
 	static readonly SKILLS_SHORT = [
-		{name: 'command_skill', short: 'CMD'},
-		{name: 'science_skill', short: 'SCI'},
-		{name: 'security_skill', short: 'SEC'},
-		{name: 'engineering_skill', short: 'ENG'},
-		{name: 'diplomacy_skill', short: 'DIP'},
-		{name: 'medicine_skill', short: 'MED'}
+		{ name: 'command_skill', short: 'CMD' },
+		{ name: 'science_skill', short: 'SCI' },
+		{ name: 'security_skill', short: 'SEC' },
+		{ name: 'engineering_skill', short: 'ENG' },
+		{ name: 'diplomacy_skill', short: 'DIP' },
+		{ name: 'medicine_skill', short: 'MED' }
 	];
 
 	static readonly REWARDS_ITEM_TYPE: { [index: number]: string } = {
@@ -88,5 +88,26 @@ export default class CONFIG {
 		6: 'Shield regeneration +%VAL%',
 		7: '+%VAL%% to Attack Speed',
 		8: 'Increase boarding damage by %VAL%%'
+	};
+
+	static readonly STATS_CONFIG: { [index: number]: any } = {
+		2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
+		3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },
+		4: { symbol: 'engineering_skill_range_max', skill: 'engineering_skill', stat: 'range_max' },
+		6: { symbol: 'command_skill_core', skill: 'command_skill', stat: 'core' },
+		7: { symbol: 'command_skill_range_min', skill: 'command_skill', stat: 'range_min' },
+		8: { symbol: 'command_skill_range_max', skill: 'command_skill', stat: 'range_max' },
+		14: { symbol: 'science_skill_core', skill: 'science_skill', stat: 'core' },
+		15: { symbol: 'science_skill_range_min', skill: 'science_skill', stat: 'range_min' },
+		16: { symbol: 'science_skill_range_max', skill: 'science_skill', stat: 'range_max' },
+		18: { symbol: 'diplomacy_skill_core', skill: 'diplomacy_skill', stat: 'core' },
+		19: { symbol: 'diplomacy_skill_range_min', skill: 'diplomacy_skill', stat: 'range_min' },
+		20: { symbol: 'diplomacy_skill_range_max', skill: 'diplomacy_skill', stat: 'range_max' },
+		22: { symbol: 'security_skill_core', skill: 'security_skill', stat: 'core' },
+		23: { symbol: 'security_skill_range_min', skill: 'security_skill', stat: 'range_min' },
+		24: { symbol: 'security_skill_range_max', skill: 'security_skill', stat: 'range_max' },
+		26: { symbol: 'medicine_skill_core', skill: 'medicine_skill', stat: 'core' },
+		27: { symbol: 'medicine_skill_range_min', skill: 'medicine_skill', stat: 'range_min' },
+		28: { symbol: 'medicine_skill_range_max', skill: 'medicine_skill', stat: 'range_max' }
 	};
 }

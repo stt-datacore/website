@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 
 import CONFIG from '../components/CONFIG';
 
@@ -126,7 +127,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Quantity
 						</Table.HeaderCell>
-                        <Table.HeaderCell
+						<Table.HeaderCell
 							width={1}
 							sorted={column === 'type' ? direction : null}
 							onClick={() => this._handleSort('type')}
@@ -158,20 +159,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										<img width={48} src={`/media/assets/${item.imageUrl}`} />
 									</div>
 									<div style={{ gridArea: 'stats' }}>
-										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-											{item.rarity > 0 && (
-												<span>
-													{item.rarity} <Icon name="star" />{' '}
-												</span>
-											)}
-											{item.name}
-										</span>
+										<Link to={`/item_info?symbol=${item.symbol}`}>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
+												{item.rarity > 0 && (
+													<span>
+														{item.rarity} <Icon name="star" />{' '}
+													</span>
+												)}
+												{item.name}
+											</span>
+										</Link>
 									</div>
 									<div style={{ gridArea: 'description' }}>{item.flavor}</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{item.quantity}</Table.Cell>
-                            <Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
+							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 						</Table.Row>
 					))}
