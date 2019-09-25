@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Container, Header, Table, Message, Icon, Rating, Image } from 'semantic-ui-react';
+import { Container, Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
-
+import ItemSources from '../components/itemsources';
+import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
 
 type ItemInfoPageProps = {};
@@ -11,6 +12,7 @@ type ItemInfoPageProps = {};
 type ItemInfoPageState = {
 	item_data?: any;
 	errorMessage?: string;
+	items?: any;
 };
 
 class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
@@ -31,6 +33,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 			fetch('/structured/items.json')
 				.then(response => response.json())
 				.then(items => {
+					this.setState({ items });
 					fetch('/structured/crew.json')
 						.then(response => response.json())
 						.then(allcrew => {
@@ -41,7 +44,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 								crew.equipment_slots.forEach(es => {
 									if (es.symbol === item_symbol) {
 										crew_levels.push({
-											crew: crew.symbol,
+											crew: crew,
 											level: es.level
 										});
 									}
@@ -62,7 +65,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 	}
 
 	render() {
-		const { errorMessage, item_data } = this.state;
+		const { errorMessage, item_data, items } = this.state;
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
@@ -99,6 +102,20 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 			}
 		}
 
+		// TODO: share this code with equipment.ts
+		let demands = [];
+		if (item_data.item.recipe) {
+			for (let iter of item_data.item.recipe.list) {
+				let recipeEquipment = items.find(item => item.symbol === iter.symbol);
+				demands.push({
+					count: iter.count,
+					symbol: iter.symbol,
+					equipment: recipeEquipment,
+					factionOnly: iter.factionOnly
+				});
+			}
+		}
+
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
@@ -124,72 +141,73 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 						</div>
 					)}
 
-					{item_data.item.recipe && (
+					{item_data.item.recipe && item_data.item.recipe.list && (
 						<div>
 							<Header as="h4">Craft it for {item_data.item.recipe.craftCost} chrons using this recipe:</Header>
-							<Table celled selectable striped collapsing unstackable compact="very">
-								<Table.Header>
-									<Table.Row>
-										<Table.HeaderCell width={2}>Item</Table.HeaderCell>
-										<Table.HeaderCell width={2}>Quantity</Table.HeaderCell>
-									</Table.Row>
-								</Table.Header>
-								<Table.Body>
-									{item_data.item.recipe.list.map((recipeItem, idx) => (
-										<Table.Row key={idx}>
-											<Table.Cell>
-												<Link to={`/item_info?symbol=${recipeItem.symbol}`}>{recipeItem.symbol}</Link>
-											</Table.Cell>
-											<Table.Cell>{recipeItem.count}</Table.Cell>
-										</Table.Row>
-									))}
-								</Table.Body>
-							</Table>
-							<br />
+							<Grid columns={3} padded>
+								{demands.map((entry, idx) => (
+									<Grid.Column key={idx}>
+										<Popup
+											trigger={
+												<Header
+													style={{ display: 'flex', cursor: 'zoom-in' }}
+													icon={
+														<ItemDisplay
+															src={`/media/assets/${entry.equipment.imageUrl}`}
+															size={48}
+															maxRarity={entry.equipment.rarity}
+															rarity={entry.equipment.rarity}
+														/>
+													}
+													content={entry.equipment.name}
+													subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+												/>
+											}
+											header={
+												<Link to={`/item_info?symbol=${entry.symbol}`}>
+													{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+												</Link>
+											}
+											content={<ItemSources item_sources={entry.equipment.item_sources} />}
+											on="click"
+											wide
+										/>
+									</Grid.Column>
+								))}
+							</Grid>
 						</div>
 					)}
 
 					{item_data.item.item_sources.length > 0 && (
 						<div>
-							<Header as="h4">Item sources:</Header>
-							<Table celled selectable striped collapsing unstackable compact="very">
-								<Table.Header>
-									<Table.Row>
-										<Table.HeaderCell width={2}>Source</Table.HeaderCell>
-										<Table.HeaderCell width={2}>Chance</Table.HeaderCell>
-									</Table.Row>
-								</Table.Header>
-								<Table.Body>
-									{item_data.item.item_sources.map((source, idx) => (
-										<Table.Row key={idx}>
-											<Table.Cell>{source.name}</Table.Cell>
-											<Table.Cell>{source.chance_grade}</Table.Cell>
-										</Table.Row>
-									))}
-								</Table.Body>
-							</Table>
+							<Header as="h4">Item sources</Header>
+							<ItemSources item_sources={item_data.item.item_sources} />
+							<br />
 						</div>
 					)}
 
 					{item_data.crew_levels.length > 0 && (
 						<div>
 							<Header as="h4">Equippable by this crew:</Header>
-							<Table celled selectable striped collapsing unstackable compact="very">
-								<Table.Header>
-									<Table.Row>
-										<Table.HeaderCell width={2}>Crew</Table.HeaderCell>
-										<Table.HeaderCell width={2}>Level</Table.HeaderCell>
-									</Table.Row>
-								</Table.Header>
-								<Table.Body>
-									{item_data.crew_levels.map((cl, idx) => (
-										<Table.Row key={idx}>
-											<Table.Cell>{cl.crew}</Table.Cell>
-											<Table.Cell>{cl.level}</Table.Cell>
-										</Table.Row>
-									))}
-								</Table.Body>
-							</Table>
+							<Grid columns={3} padded>
+								{item_data.crew_levels.map((entry, idx) => (
+									<Grid.Column key={idx}>
+										<Header
+											style={{ display: 'flex' }}
+											icon={
+												<ItemDisplay
+													src={`/media/assets/${entry.crew.imageUrlPortrait}`}
+													size={60}
+													maxRarity={entry.crew.max_rarity}
+													rarity={entry.crew.max_rarity}
+												/>
+											}
+											content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
+											subheader={`Level ${entry.level}`}
+										/>
+									</Grid.Column>
+								))}
+							</Grid>
 						</div>
 					)}
 				</Container>
