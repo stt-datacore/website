@@ -3,7 +3,7 @@ name: Leonardo da Vinci
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 8
 in_portal: true
 published: true
