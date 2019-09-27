@@ -86,6 +86,14 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 						crew_bonuses = cnt.shuttles[0].crew_bonuses;
 					} else if (cnt.crew_bonuses) {
 						crew_bonuses = cnt.crew_bonuses;
+					} else if (cnt.bonus_crew && cnt.bonus_traits) {
+						// Skirmishes
+						crew_bonuses = {};
+						cnt.bonus_crew.forEach(element => {
+							crew_bonuses[element] = 10;
+						});
+
+						// TODO: crew from traits
 					}
 					return (
 						<div key={idx}>
