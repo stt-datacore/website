@@ -8,7 +8,7 @@ type EventInfoPageProps = {};
 
 type EventInfoPageState = {
 	event_data?: any;
-	event_name?: string;
+	event_instace?: string;
 	errorMessage?: string;
 };
 
@@ -17,16 +17,16 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		super(props);
 
 		this.state = {
-			event_name: undefined,
+			event_instace: undefined,
 			event_data: undefined
 		};
 	}
 
 	componentDidMount() {
 		let urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('eventname')) {
-			let event_name = urlParams.get('eventname');
-			this.setState({ event_name });
+		if (urlParams.has('instance_id')) {
+			let event_instace = urlParams.get('instance_id');
+			this.setState({ event_instace });
 
 			fetch('/structured/event_instances.json')
 				.then(response => response.json())
@@ -34,7 +34,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					fetch('/structured/event_leaderboards.json')
 						.then(response => response.json())
 						.then(event_leaderboards => {
-							let ev_inst = event_instances.find(ev => ev.event_name === event_name);
+							let ev_inst = event_instances.find(ev => ev.instance_id === Number.parseInt(event_instace));
 							let ev_lead = ev_inst ? event_leaderboards.find(ev => ev.instance_id === ev_inst.instance_id) : undefined;
 
 							if (ev_inst === undefined || ev_lead === undefined) {
@@ -181,9 +181,9 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 	}
 
 	render() {
-		const { event_name, errorMessage, event_data } = this.state;
+		const { event_instace, errorMessage, event_data } = this.state;
 
-		if (event_name === undefined || event_data === undefined || errorMessage !== undefined) {
+		if (event_instace === undefined || event_data === undefined || errorMessage !== undefined) {
 			return (
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>

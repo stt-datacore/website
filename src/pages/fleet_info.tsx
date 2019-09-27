@@ -34,7 +34,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		fetch('/structured/event_instances.json')
 			.then(response => response.json())
 			.then(events => {
-				this.setState({ events });
+				this.setState({ events: events.sort((a, b) => (a.instance_id > b.instance_id ? -1 : 1)) });
 			});
 
 		let urlParams = new URLSearchParams(window.location.search);
@@ -86,9 +86,19 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			imageUrl = factions[fleet_data.nicon_index].icon;
 		}
 
-		let event1 = events.find(ev => ev.event_name === fleet_data.leaderboard[0].event_name);
-		let event2 = events.find(ev => ev.event_name === fleet_data.leaderboard[1].event_name);
-		let event3 = events.find(ev => ev.event_name === fleet_data.leaderboard[2].event_name);
+		let event1;
+		let event2;
+		let event3;
+
+		if (events[0].event_name === fleet_data.leaderboard[0].event_name) {
+			event1 = events[0];
+			event2 = events[1];
+			event3 = events[2];
+		} else {
+			event1 = events.find(ev => ev.event_name === fleet_data.leaderboard[0].event_name);
+			event2 = events.find(ev => ev.event_name === fleet_data.leaderboard[1].event_name);
+			event3 = events.find(ev => ev.event_name === fleet_data.leaderboard[2].event_name);
+		}
 
 		return (
 			<Layout>
@@ -116,25 +126,40 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						</Item>
 					</Item.Group>
 
-					<table>
+					{event1 && <table>
 						<tbody>
 							<tr>
-								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[0].event_name}`}>{fleet_data.leaderboard[0].event_name}</Link></th>
-								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[1].event_name}`}>{fleet_data.leaderboard[1].event_name}</Link></th>
-								<th> <Link to={`/event_info?eventname=${fleet_data.leaderboard[2].event_name}`}>{fleet_data.leaderboard[2].event_name}</Link></th>
+								<th>
+									{' '}
+									<Link to={`/event_info?instance_id=${event1.instance_id}`}>
+										{fleet_data.leaderboard[0].event_name}
+									</Link>
+								</th>
+								<th>
+									{' '}
+									<Link to={`/event_info?instance_id=${event2.instance_id}`}>
+										{fleet_data.leaderboard[1].event_name}
+									</Link>
+								</th>
+								<th>
+									{' '}
+									<Link to={`/event_info?instance_id=${event3.instance_id}`}>
+										{fleet_data.leaderboard[2].event_name}
+									</Link>
+								</th>
 							</tr>
 							<tr>
-								<td>{event1 && <Image size="medium" src={`/media/assets/${event1.image}`} />}</td>
-								<td>{event1 && <Image size="medium" src={`/media/assets/${event2.image}`} />}</td>
-								<td>{event1 && <Image size="medium" src={`/media/assets/${event3.image}`} />}</td>
+								<td><Image size="medium" src={`/media/assets/${event1.image}`} /></td>
+								<td><Image size="medium" src={`/media/assets/${event2.image}`} /></td>
+								<td><Image size="medium" src={`/media/assets/${event3.image}`} /></td>
 							</tr>
 							<tr>
-								<td align='center'>Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
-								<td align='center'>Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
-								<td align='center'>Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
+								<td align="center">Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
+								<td align="center">Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
+								<td align="center">Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
 							</tr>
 						</tbody>
-					</table>
+					</table>}
 
 					<Header as="h4">Members</Header>
 
