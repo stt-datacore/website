@@ -1,7 +1,7 @@
 ---
 name: Frederick La Rouque
 rarity: 5
-series: dsc
+series: tng
 memory_alpha:
 bigbook_tier: 14
 events: 1

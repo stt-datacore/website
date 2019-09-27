@@ -344,8 +344,8 @@ function updateBotStats() {
 
 	fs.writeFileSync(STATIC_PATH + 'botcrew.json', JSON.stringify(botData));
 
-	if (fs.existsSync(`${__dirname}/../../datacore-behold/data/botcrew.json`)) {
-		fs.writeFileSync(`${__dirname}/../../datacore-behold/data/botcrew.json`, JSON.stringify(botData));
+	if (fs.existsSync(`${__dirname}/../../datacore-bot/data/botcrew.json`)) {
+		fs.writeFileSync(`${__dirname}/../../datacore-bot/data/botcrew.json`, JSON.stringify(botData));
 	}
 }
 
