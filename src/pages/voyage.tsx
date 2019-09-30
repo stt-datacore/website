@@ -90,7 +90,11 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 			let playerData = JSON.parse(this.state.pastedContent as string);
 
 			if (playerData && playerData.player && playerData.player.display_name) {
-				this.setState({ playerData: playerData, errorMessage: undefined });
+				if (playerData.player.character && playerData.player.character.crew && (playerData.player.character.crew.length > 0)) {
+					this.setState({ playerData: playerData, errorMessage: undefined });
+				} else {
+					this.setState({ errorMessage: 'Failed to parse player data from the text you pasted. Make sure you are logged in with the correct account.' });
+				}
 			} else {
 				this.setState({
 					errorMessage:

@@ -26,8 +26,12 @@ class CrewPopup extends Component<CrewPopupProps> {
 				`}
 				render={data => {
 					const { crew } = this.props;
-					let crewStatic = data.allCrewJson.edges.find(({ node }) => node.symbol === crew.symbol).node;
+					if (!crew || !crew.symbol) {
+						console.warn(crew);
+						return <span>ERROR!</span>
+					}
 
+					let crewStatic = data.allCrewJson.edges.find(({ node }) => node.symbol === crew.symbol).node;
 					let content = <span style={{ cursor: 'help', fontWeight: 'bolder' }}>{crew.name}</span>;
 
 					return (
