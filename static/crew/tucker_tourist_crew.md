@@ -1,9 +1,9 @@
 ---
-name: Tourist Trip
+name: Tourist Tucker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 7
 in_portal:
 published: true

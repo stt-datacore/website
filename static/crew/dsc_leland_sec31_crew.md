@@ -3,7 +3,7 @@ name: Covert Operative Leland
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 16
 in_portal: true
 published: true
