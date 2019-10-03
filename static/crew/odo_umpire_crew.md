@@ -3,7 +3,7 @@ name: Umpire Odo
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 7
 events: 10
 in_portal: true
 published: true

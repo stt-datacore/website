@@ -3,7 +3,7 @@ name: Captain Pike
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 9
 events: 4
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Kolinahr Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 19
 in_portal: true
 published: true

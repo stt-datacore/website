@@ -3,7 +3,7 @@ name: Judge Q
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 9
 events: 11
 in_portal: true
 published: true

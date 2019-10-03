@@ -3,7 +3,7 @@ name: Mirror Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 21
 in_portal: true
 published: true

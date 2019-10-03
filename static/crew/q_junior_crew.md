@@ -3,7 +3,7 @@ name: Q Junior
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 4
 in_portal:
 published: true

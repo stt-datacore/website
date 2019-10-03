@@ -3,7 +3,7 @@ name: Detective Dixon Hill
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 11
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Lt. Commander Airiam
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 17
 in_portal: true
 published: true

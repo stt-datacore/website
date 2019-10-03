@@ -3,7 +3,7 @@ name: Resistance Neelix
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 4
 in_portal: true
 published: true

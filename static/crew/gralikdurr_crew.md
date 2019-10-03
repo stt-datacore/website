@@ -3,7 +3,7 @@ name: Gralik Durr
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 3
 in_portal: true
 published: true

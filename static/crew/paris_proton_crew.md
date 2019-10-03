@@ -3,7 +3,7 @@ name: Captain Proton Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 15
 in_portal: true
 published: true

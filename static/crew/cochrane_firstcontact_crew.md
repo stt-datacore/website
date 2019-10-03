@@ -3,7 +3,7 @@ name: Phoenix Cochrane
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 4
 in_portal: true
 published: true

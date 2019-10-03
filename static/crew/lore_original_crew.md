@@ -3,7 +3,7 @@ name: Lore
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 4
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: First Officer Saru
 rarity: 4
 series: dsc
 memory_alpha: dsc
-bigbook_tier: 8
+bigbook_tier: 7
 events: 18
 in_portal: true
 published: true

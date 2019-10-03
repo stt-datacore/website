@@ -3,7 +3,7 @@ name: B-4
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 3
 in_portal: true
 published: true

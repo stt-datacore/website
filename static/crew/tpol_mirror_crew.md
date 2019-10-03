@@ -3,7 +3,7 @@ name: Mirror T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 19
 in_portal: true
 published: true

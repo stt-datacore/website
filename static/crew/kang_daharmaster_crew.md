@@ -3,10 +3,10 @@ name: Dahar Master Kang
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 8
 in_portal: true
 published: true
 ---
 
-With DIP useful for daily shuttles and a 1k SECondary, Kang ranks nicely for a few different shuttle seats. If he had the regular events of a main cast character, he'd jump up the ranks, but Klingon and a couple other traits present a chance for bonuses every so often. Double collections deserve consideration at the behold screen as his bases are squarely above average for a 2-skill crew.
+Double 1k bases and double collections are generally attributes to target, but Kang is more of an empty calories crew. He's a trait-relevance-only shuttler who's already had Klingon tapped for their mega and his proficiencies are too poor to benefit from the exclusive Dahar Master gauntlet trait set. He'll perform above average when his number is called, but that happens far too infrequently to merit taking him over most other behold choices.

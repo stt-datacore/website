@@ -3,7 +3,7 @@ name: Cadet Wesley Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 10
 events: 3
 in_portal: true
 published: true

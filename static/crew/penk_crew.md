@@ -3,7 +3,7 @@ name: Penk
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 6
 in_portal: true
 published: true

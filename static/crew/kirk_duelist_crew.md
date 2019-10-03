@@ -3,7 +3,7 @@ name: Kal-if-fee Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 8
 events: 14
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Musketeer Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 6
 events: 15
 in_portal: true
 published: true

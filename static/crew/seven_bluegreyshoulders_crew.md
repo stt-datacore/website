@@ -3,7 +3,7 @@ name: Seven of Nine
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 11
 in_portal: true
 published: true

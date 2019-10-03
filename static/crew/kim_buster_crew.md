@@ -3,7 +3,7 @@ name: Buster Kincaid Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 7
 in_portal: true
 published: true

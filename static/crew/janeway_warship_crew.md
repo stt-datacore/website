@@ -3,7 +3,7 @@ name: Warship Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 21
 in_portal: true
 published: true

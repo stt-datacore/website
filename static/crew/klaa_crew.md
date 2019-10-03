@@ -3,7 +3,7 @@ name: Captain Klaa
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 9
 in_portal: true
 published: true

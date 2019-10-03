@@ -3,7 +3,7 @@ name: Mirror Intendant Kira
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 27
 in_portal: true
 published: true

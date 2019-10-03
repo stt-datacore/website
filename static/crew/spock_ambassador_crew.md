@@ -3,7 +3,7 @@ name: Ambassador Spock
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 21
 in_portal: true
 published: true

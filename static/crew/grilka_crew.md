@@ -3,7 +3,7 @@ name: Grilka
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 10
 events: 7
 in_portal: true
 published: true

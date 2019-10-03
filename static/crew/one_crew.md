@@ -3,7 +3,7 @@ name: One
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 9
 events: 5
 in_portal: true
 published: true

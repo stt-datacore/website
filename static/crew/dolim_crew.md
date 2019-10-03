@@ -3,7 +3,7 @@ name: Commander Dolim
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 9
 events: 7
 in_portal: true
 published: true

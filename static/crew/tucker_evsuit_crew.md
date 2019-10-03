@@ -3,7 +3,7 @@ name: EV Suit Tucker
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 11
 in_portal: true
 published: true

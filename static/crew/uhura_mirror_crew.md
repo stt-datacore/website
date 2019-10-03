@@ -3,7 +3,7 @@ name: Mirror Uhura
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 13
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Resolute Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 8
 in_portal:
 published: true

@@ -3,7 +3,7 @@ name: Agent Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 13
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Doctor Chaotica
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 8
 events: 9
 in_portal: true
 published: true

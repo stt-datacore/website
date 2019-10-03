@@ -3,7 +3,7 @@ name: Ensign Picard
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 9
 in_portal:
 published: true

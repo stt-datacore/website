@@ -3,7 +3,7 @@ name: Angel I Riker
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 14
 in_portal: true
 published: true

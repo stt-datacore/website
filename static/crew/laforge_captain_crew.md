@@ -3,7 +3,7 @@ name: Captain La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 8
 events: 11
 in_portal: true
 published: true

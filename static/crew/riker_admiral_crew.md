@@ -3,7 +3,7 @@ name: Admiral Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 8
 events: 12
 in_portal: true
 published: true

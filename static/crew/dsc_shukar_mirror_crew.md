@@ -3,7 +3,7 @@ name: Mirror Shukar
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 18
 in_portal: true
 published: true

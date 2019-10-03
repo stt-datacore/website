@@ -3,7 +3,7 @@ name: KDF Gowron
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 8
 in_portal: true
 published: true

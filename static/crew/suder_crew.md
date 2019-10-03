@@ -3,7 +3,7 @@ name: Lon Suder
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 10
 events: 1
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Species 8472 Invader
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 6
 events: 2
 in_portal: true
 published: true

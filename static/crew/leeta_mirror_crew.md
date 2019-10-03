@@ -3,7 +3,7 @@ name: Mirror Leeta
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 9
 in_portal: true
 published: true

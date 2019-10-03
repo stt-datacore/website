@@ -3,7 +3,7 @@ name: Demora Sulu
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 10
 events: 4
 in_portal: true
 published: true

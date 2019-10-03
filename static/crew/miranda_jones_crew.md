@@ -3,7 +3,7 @@ name: Miranda Jones
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 7
 in_portal: true
 published: true

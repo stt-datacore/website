@@ -3,7 +3,7 @@ name: Fungal Entity May
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 17
 in_portal:
 published: true

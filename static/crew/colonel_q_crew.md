@@ -3,7 +3,7 @@ name: Colonel Q
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 8
 events: 5
 in_portal:
 published: true

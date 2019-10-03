@@ -3,7 +3,7 @@ name: Dancing Chekov
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 6
 events: 4
 in_portal: true
 published: true

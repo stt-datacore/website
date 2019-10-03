@@ -3,7 +3,7 @@ name: 23rd Century Martok
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 7
 events: 11
 in_portal: true
 published: true

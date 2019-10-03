@@ -3,7 +3,7 @@ name: Dr. David Marcus
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 1
 in_portal: true
 published: true

@@ -3,7 +3,7 @@ name: Navaar
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 5
 events: 5
 in_portal:
 published: true

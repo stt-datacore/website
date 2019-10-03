@@ -3,7 +3,7 @@ name: Tourist Reed
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 5
 in_portal: true
 published: true

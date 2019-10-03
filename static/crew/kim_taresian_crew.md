@@ -3,7 +3,7 @@ name: Taresian Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 11
 in_portal:
 published: true

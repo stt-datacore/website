@@ -3,7 +3,7 @@ name: Mariachi Q
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 8
 events: 7
 in_portal: true
 published: true

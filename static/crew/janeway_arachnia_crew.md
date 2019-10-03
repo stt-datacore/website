@@ -3,7 +3,7 @@ name: Arachnia Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 8
 events: 13
 in_portal: true
 published: true

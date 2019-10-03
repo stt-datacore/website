@@ -3,7 +3,7 @@ name: Commander Kelby
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 11
+bigbook_tier: 9
 events: 0
 in_portal: true
 published: true

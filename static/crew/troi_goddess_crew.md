@@ -3,7 +3,7 @@ name: Goddess of Empathy Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 17
 in_portal: true
 published: true

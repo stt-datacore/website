@@ -3,7 +3,7 @@ name: Ruk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 2
 in_portal: true
 published: true

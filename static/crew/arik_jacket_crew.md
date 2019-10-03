@@ -3,7 +3,7 @@ name: Arik Soong
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 12
+bigbook_tier: 9
 events: 2
 in_portal: true
 published: true

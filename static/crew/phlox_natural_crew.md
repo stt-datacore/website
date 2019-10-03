@@ -3,7 +3,7 @@ name: Phlox, Au Naturel
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 events: 4
 in_portal: true
 published: true

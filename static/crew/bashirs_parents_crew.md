@@ -3,7 +3,7 @@ name: The Bashirs
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 6
 events: 0
 in_portal:
 published: true

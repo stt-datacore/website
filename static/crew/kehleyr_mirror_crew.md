@@ -3,7 +3,7 @@ name: Mirror K'Ehleyr
 rarity: 4
 series:
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 14
 in_portal: true
 published: true

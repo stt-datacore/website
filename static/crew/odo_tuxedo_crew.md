@@ -3,7 +3,7 @@ name: Jazz Musician Odo
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 13
+bigbook_tier: 9
 events: 11
 in_portal: true
 published: true

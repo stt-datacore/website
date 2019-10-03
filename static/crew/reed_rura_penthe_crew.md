@@ -3,7 +3,7 @@ name: Rura Penthe Reed
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 9
 in_portal: true
 published: true

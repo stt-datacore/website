@@ -3,7 +3,7 @@ name: One Zero
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 14
+bigbook_tier: 10
 events: 0
 in_portal:
 published: true

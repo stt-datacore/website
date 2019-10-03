@@ -3,7 +3,7 @@ name: Vengeful L'Rell
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 7
 events: 24
 in_portal: true
 published: true

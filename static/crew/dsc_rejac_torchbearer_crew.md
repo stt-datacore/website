@@ -3,7 +3,7 @@ name: Torchbearer Rejac
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 21
 in_portal: true
 published: true
