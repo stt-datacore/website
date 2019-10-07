@@ -3,7 +3,7 @@ name: The President of Earth
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 12
 in_portal: true
 published: true
