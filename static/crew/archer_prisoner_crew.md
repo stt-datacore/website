@@ -3,7 +3,7 @@ name: Xindi 'Prisoner' Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 10
 in_portal: true
 published: true
