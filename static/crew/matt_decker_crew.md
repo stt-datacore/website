@@ -3,7 +3,7 @@ name: Commodore Matt Decker
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 0
 in_portal:
 published: true
