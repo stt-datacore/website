@@ -3,7 +3,7 @@ name: Commander Barclay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 4
 in_portal: true
 published: true
