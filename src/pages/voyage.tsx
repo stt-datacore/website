@@ -31,7 +31,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as='h4'>Player tools</Header>
-						<p>You can load your player information from the game's website and get rich insights from it, including calcualting optimal voyage lineup, unnecessary items, exporting your crew list as a CSV or sharing your profile with other players.</p>
+						<p>You can load your player information from the game's website and get rich insights from it, including calculating optimal voyage lineup, unnecessary items, exporting your crew list as a CSV or sharing your profile with other players.</p>
 						<p>
 							This website cannot make requests directly to DB's servers (due to security configurations as well as unclear communication
 							from them about ToS interpretation), so there are a few manual steps required to import your data:

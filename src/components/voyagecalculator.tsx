@@ -230,25 +230,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 				};
 
-				let equipmentAlreadyOnCrew = new Set();
-
-				// Merge with player crew
-				for (let crew of allcrew) {
-					crew.rarity = crew.max_rarity;
-					crew.level = 100;
-
-					let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-					crew.immortal = immortal ? immortal.quantity : 0;
-					crew.have = crew.immortal > 0;
-
-					let owned = playerData.player.character.crew.find(c => c.archetype_id === crew.archetype_id);
-					if (owned) {
-						crew.rarity = owned.rarity;
-						crew.base_skills = owned.base_skills;
-						crew.level = owned.level;
-						crew.have = true;
-					}
-
+				const fixUpSkills = (crew: any) => {
 					for (let skill in CONFIG.SKILLS) {
 						crew[skill] = { core: 0, min: 0, max: 0 };
 					}
@@ -261,24 +243,56 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
 						};
 					}
+				};
+
+				let equipmentAlreadyOnCrew = new Set();
+
+				// Merge with player crew
+				let crewlist = [];
+				for (let crew of allcrew) {
+					crew.rarity = crew.max_rarity;
+					crew.level = 100;
+					crew.have = false;
+					crew.equipment = [0,1,2,3];
+
+					let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
+					crew.immortal = immortal ? immortal.quantity : 0;
+					if (crew.immortal > 0) {
+						crew.have = true;
+						fixUpSkills(crew);
+
+						// Add a copy to the list
+						crewlist.push(JSON.parse(JSON.stringify(crew)));
+						crew.immortal = 0;
+					}
+
+					let inRoster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+					inRoster.forEach(owned =>
+					{
+						if (!owned.in_buy_back_state) {
+							crew.rarity = owned.rarity;
+							crew.base_skills = owned.base_skills;
+							crew.level = owned.level;
+							crew.have = true;
+
+							crew.equipment = owned.equipment.map(e => e[0]);
+
+							fixUpSkills(crew);
+							// Add a copy to the list
+							crewlist.push(JSON.parse(JSON.stringify(crew)));
+						}
+					});
 
 					// Calculate replicator fodder
-					if (crew.immortal > 0 || (owned && owned.level === 100)) {
-						let lastEquipmentLevel = 100;
-						if (owned) {
-							lastEquipmentLevel = owned.level;
-							for (let equipment of owned.equipment_slots) {
-								if (!equipment.have) {
-									lastEquipmentLevel = equipment.level - 1;
-								}
-							}
-						}
-
+					if (crew.have) {
 						crew.equipment_slots.forEach(equipment => {
-							if (equipment.level <= lastEquipmentLevel) {
-								equipmentAlreadyOnCrew.add(equipment.symbol);
-							}
+							equipmentAlreadyOnCrew.add(equipment.symbol);
 						});
+					} else {
+						// Crew is not immortal or in the active roster
+						fixUpSkills(crew);
+						// Add a copy to the list
+						crewlist.push(JSON.parse(JSON.stringify(crew)));
 					}
 				}
 
@@ -289,7 +303,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 						item.name.indexOf("s' ") > 0
 				);
 
-				this.setState({ fuellist, crew: allcrew });
+				this.setState({ fuellist, crew: crewlist });
 			});
 	}
 

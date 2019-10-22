@@ -1,5 +1,29 @@
 import { simplejson2csv } from './misc';
 
+import CONFIG from '../components/CONFIG';
+
+function formatChargePhases(crew): string {
+	let totalTime = 0;
+	let result = [];
+	crew.action.charge_phases.forEach(phase => {
+		totalTime += phase.charge_time;
+		let ps = `After ${totalTime}s `;
+
+		if (crew.action.ability) {
+			ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
+		} else {
+			ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+		}
+
+		if (phase.cooldown) {
+			ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
+		}
+		result.push(ps);
+	});
+
+	return result.join('; ');
+}
+
 export function exportCrew(crew): string {
 	let fields = [
 		{
@@ -31,12 +55,20 @@ export function exportCrew(crew): string {
 			value: (row: any) => row.immortal
 		},
 		{
+			label: 'Equipment',
+			value: (row: any) => row.equipment.join(' ')
+		},
+		{
 			label: 'Tier',
 			value: (row: any) => row.tier
 		},
 		{
 			label: 'In portal',
 			value: (row: any) => (row.in_portal === undefined) ? 'N/A' : row.in_portal
+		},
+		{
+			label: 'Collections',
+			value: (row: any) => row.collections.join(', ')
 		},
 		{
 			label: 'Voyage rank',
@@ -121,6 +153,70 @@ export function exportCrew(crew): string {
         {
 			label: 'Traits',
 			value: (row: any) => row.traits_named.concat(row.traits_hidden)
+		},
+		{
+			label: 'Action name',
+			value: (row: any) => row.action.name
+		},
+		{
+			label: 'Boosts',
+			value: (row: any) => CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.bonus_type]
+		},
+		{
+			label: 'Amount',
+			value: (row: any) => row.action.bonus_amount
+		},
+		{
+			label: 'Initialize',
+			value: (row: any) => row.action.initial_cooldown
+		},
+		{
+			label: 'Duration',
+			value: (row: any) => row.action.duration
+		},
+		{
+			label: 'Cooldown',
+			value: (row: any) => row.action.cooldown
+		},
+		{
+			label: 'Bonus Ability',
+			value: (row: any) => row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+		},
+		{
+			label: 'Trigger',
+			value: (row: any) => row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : ''
+		},
+		{
+			label: 'Uses per Battle',
+			value: (row: any) => row.action.limit || ''
+		},
+		{
+			label: 'Handicap Type',
+			value: (row: any) => row.action.penalty ? CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.penalty.type] : ''
+		},
+		{
+			label: 'Handicap Amount',
+			value: (row: any) => row.action.penalty ? row.action.penalty.amount : ''
+		},
+		{
+			label: 'Accuracy',
+			value: (row: any) => row.ship_battle.accuracy || ''
+		},
+		{
+			label: 'Crit Bonus',
+			value: (row: any) => row.ship_battle.crit_bonus || ''
+		},
+		{
+			label: 'Crit Rating',
+			value: (row: any) => row.ship_battle.crit_chance || ''
+		},
+		{
+			label: 'Evasion',
+			value: (row: any) => row.ship_battle.evasion || ''
+		},
+		{
+			label: 'Charge Phases',
+			value: (row: any) => row.action.charge_phases ? formatChargePhases(row) : ''
 		},
 	];
 

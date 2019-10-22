@@ -40,7 +40,12 @@ export function simplejson2csv(data, fields) {
     for(let row of data) {
         let rowData = [];
         for(let field of fields) {
-            rowData.push(escape(field.value(row)));
+			try {
+				rowData.push(escape(field.value(row)));
+			} catch(er) {
+				console.error(er);
+				console.log(row);
+			}
         }
 
         csv += '\r\n' + rowData.join(',');
