@@ -12,18 +12,6 @@ The website pages are assembled using the [Gatsby](https://www.gatsbyjs.org/) st
 
 The wiki is entirely user-generated, which means it is susceptible to human error. This website is a "structured CMS"; some of the data is fully structured and exported from the game (meaning it's trusted to be complete and accurate), while other data (such as help pages, BigBook entries, etc.) are edited and contributed by users. This structure allows easy, partially automated updates, and opens the door for more consumption scenarios (style the data into any format we want, such as spreadsheets, documents, Discord bot-consumable endpoints, etc.)
 
-### Known issues
-
-A note about mission data for equipment sources: the source data was collected from a handful of volunteering accounts, but it's missing the details from certain end-of-episode missions (depending on the choices the respective user made). This currently only affects the "estimated chroniton cost" value for crew. These are the missions whose data we're missing:
-* By Hook Or By Crook [E1-M14B]
-* The Toss [E2-M19A]
-* A New Recruit [E2-M19C]
-* Smiles and Knives [E4-M14B]
-* Thy Enemy's Secrets [E5-M18A]
-* Garak's Gamble [E7-M13A]
-* Proven Toxicity [E8-M14A]
-* Bearing Up [E9-M4A]
-
 ### Contact
 
 Once we grow the team of contributors and volunteers we may set up a Discord or some other means of communication. But for now, the easiest way to get in touch is by opening [issues on GitHub](https://github.com/TemporalAgent7/datacore/issues/new); you can also find me on the [STT Discord server](https://discord.gg/8Du7ZtJ) as TemporalAgent7#3792, and on reddit as [u/TemporalAgent7](https://www.reddit.com/user/TemporalAgent7).
