@@ -23,6 +23,7 @@ class TopMenu extends PureComponent {
 					<Dropdown item simple text='Pages'>
 						<Dropdown.Menu>
 							<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
+							<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
 							<Dropdown.Item disabled>Missions</Dropdown.Item>
 							<Dropdown.Item disabled>Ships</Dropdown.Item>
 							<Dropdown.Divider />
