@@ -78,7 +78,8 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 	}
 
 	_filterItem(item: any, filter: any): boolean {
-		const matchesFilter = (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
+		const matchesFilter = (input: string, searchString: string) =>
+			input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
 		let matches = true;
 
@@ -103,7 +104,8 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 							gridTemplateColumns: '60px auto',
 							gridTemplateAreas: `'icon stats' 'icon description'`,
 							gridGap: '1px'
-						}}>
+						}}
+					>
 						<div style={{ gridArea: 'icon' }}>
 							<img width={48} src={`/media/assets/${item.imageUrl}`} />
 						</div>
@@ -112,7 +114,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 								<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 									{item.rarity > 0 && (
 										<span>
-											{item.rarity} <Icon name='star' />{' '}
+											{item.rarity} <Icon name="star" />{' '}
 										</span>
 									)}
 									{item.name}
@@ -133,11 +135,11 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 		return (
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h2'>Items</Header>
+					<Header as="h2">Items</Header>
 
 					{!this.state.items && (
 						<div>
-							<Icon loading name='spinner' /> Loading...
+							<Icon loading name="spinner" /> Loading...
 						</div>
 					)}
 					{this.state.items && (

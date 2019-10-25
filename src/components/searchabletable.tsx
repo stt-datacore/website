@@ -101,8 +101,9 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 	renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
 		return (
 			<Table.Row>
-				{this.props.config.map(cell => (
+				{this.props.config.map((cell, idx) => (
 					<Table.HeaderCell
+						key={idx}
 						width={cell.width as any}
 						sorted={column === cell.column ? direction : null}
 						onClick={() => this._handleSort(cell.column)}
