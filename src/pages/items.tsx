@@ -69,6 +69,8 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 							}
 						});
 
+						items = items.filter(item => (item.type !== 2) || item.flavor);
+
 						this.setState({ items });
 					})
 					.catch(err => {

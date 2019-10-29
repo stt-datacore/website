@@ -248,7 +248,7 @@ function main() {
 
 	// Static outputs (TODO: maybe these should be JSON too?)
 
-	let csvOutput = 'crew, tier,';
+	let csvOutput = 'crew, tier, rarity, ';
 
 	for (let skill in SKILLS) {
 		csvOutput += `${SKILLS[skill]}_core, ${SKILLS[skill]}_min, ${SKILLS[skill]}_max, `;
@@ -266,7 +266,7 @@ function main() {
 		}
 	}
 
-	csvOutput += 'short_name\r\n';
+	csvOutput += 'traits, hidden_traits, action_name, action_bonus_type, action_bonus_amount, action_initial_cooldown, action_duration, action_cooldown, bonus_ability, trigger, uses_per_battle, penalty_type, penalty_amount, accuracy, crit_bonus, crit_chance, evasion, charge_phases, short_name\r\n';
 
 	for (let crew of crewlist) {
 		let crewLine = `"${crew.name.replace(/"/g, '')}",`;
@@ -277,6 +277,8 @@ function main() {
 		} else {
 			crewLine += '0,';
 		}
+
+		crewLine += `${crew.max_rarity}, `;
 
 		for (let skill in SKILLS) {
 			if (crew.base_skills[skill]) {
@@ -298,6 +300,11 @@ function main() {
 			}
 		}
 
+		crewLine += `"${crew.traits_named.join(', ').replace(/"/g, '')}", "${crew.traits_hidden.join(', ').replace(/"/g, '')}", `;
+		crewLine += `"${crew.action.name}", ${crew.action.bonus_type}, ${crew.action.bonus_amount}, ${crew.action.initial_cooldown}, ${crew.action.duration}, ${crew.action.cooldown}, `;
+		crewLine += `${crew.action.ability ? crew.action.ability.type : ''}, ${crew.action.ability ? crew.action.ability.condition : ''}, `;
+		crewLine += `${crew.action.limit || ''}, ${crew.action.penalty ? crew.action.penalty.type : ''}, ${crew.action.penalty ? crew.action.penalty.amount : ''}, `;
+		crewLine += `${crew.ship_battle.accuracy || ''}, ${crew.ship_battle.crit_bonus || ''}, ${crew.ship_battle.crit_chance || ''}, ${crew.ship_battle.evasion || ''}, ${!!crew.action.charge_phases}, `;
 		crewLine += `"${crew.short_name}"`;
 
 		crewLine = crewLine.replace(/undefined/g, '0');

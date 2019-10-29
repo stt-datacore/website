@@ -3,7 +3,7 @@ name: Zora
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 events: 19
 in_portal:
 published: true
