@@ -1,5 +1,5 @@
 ---
-name: Vina
+name: Pining Vina
 rarity: 5
 series: dsc
 memory_alpha:
