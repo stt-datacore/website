@@ -39,14 +39,14 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
-								<a href='https://stt.disruptorbeam.com/player' target='_blank'>
+								<a href='https://stt.disruptorbeam.com/player?client_api=12' target='_blank'>
 									https://stt.disruptorbeam.com/player
 								</a>
 								, make sure you are logged in and your player data is loaded; it should look like a bunch of gibberish starting with{' '}
 								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
 							</li>
 							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>Paste the contents in the text box below, then click the 'Read data' button below</li>
+							<li>Paste the contents in the text box, then click the 'Read data' button below</li>
 						</ul>
 
 						<Form>

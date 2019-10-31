@@ -205,7 +205,7 @@ export function exportVoyageData(options) {
 		for (let nFlag = 0; nFlag < SLOT_COUNT; traitBitMask |= (traitIds.indexOf(slotTraitIds[nFlag]) !== -1 ? 1 : 0) << nFlag++);
 
 		// We store traits in the first 12 bits, using the next few for flags
-		traitBitMask |= (crew.frozen > 0 ? 1 : 0) << SLOT_COUNT;
+		traitBitMask |= (crew.immortal > 0 ? 1 : 0) << SLOT_COUNT;
 		traitBitMask |= (crew.active_id && crew.active_id > 0 ? 1 : 0) << (SLOT_COUNT + 1);
 		traitBitMask |= (crew.level == 100 && crew.rarity == crew.max_rarity ? 1 : 0) << (SLOT_COUNT + 2); // ff100
 
@@ -257,4 +257,61 @@ export function calculateVoyage(options, progressCallback: (result: ICalcResult)
 	});
 
 	worker.postMessage(dataToExport);
+}
+
+export class BonusCrew {
+    eventName: string = '';
+    crewIds: number[] = [];
+};
+
+export function bonusCrewForCurrentEvent(playerData: any, crewlist: any[]): BonusCrew | undefined {
+    let result = new BonusCrew();
+
+    if (playerData.character.events && playerData.character.events.length > 0) {
+		let activeEvent = playerData.character.events[0];
+        result.eventName = activeEvent.name;
+
+        let eventCrew: { [index: string]: any } = {};
+        if (activeEvent.content) {
+            if (activeEvent.content.crew_bonuses) {
+                for (let symbol in activeEvent.content.crew_bonuses) {
+                    eventCrew[symbol] = activeEvent.content.crew_bonuses[symbol];
+                }
+            }
+
+            // For skirmish events
+            if (activeEvent.content.bonus_crew) {
+                for (let symbol in activeEvent.content.bonus_crew) {
+                    eventCrew[symbol] = activeEvent.content.bonus_crew[symbol];
+                }
+            }
+
+            // For expedition events
+            if (activeEvent.content.special_crew) {
+                activeEvent.content.special_crew.forEach((symbol: string) => {
+                    eventCrew[symbol] = symbol;
+                });
+            }
+
+            // TODO: there's also bonus_traits; should we bother selecting crew with those? It looks like you can use voyage crew in skirmish events, so it probably doesn't matter
+            if (activeEvent.content.shuttles) {
+                activeEvent.content.shuttles.forEach((shuttle: any) => {
+                    for (let symbol in shuttle.crew_bonuses) {
+                        eventCrew[symbol] = shuttle.crew_bonuses[symbol];
+                    }
+                });
+            }
+        }
+
+        for (let symbol in eventCrew) {
+            let foundCrew = crewlist.find((crew: any) => crew.have && (crew.symbol === symbol));
+            if (foundCrew) {
+                result.crewIds.push(foundCrew.crew_id || foundCrew.id);
+            }
+        }
+
+        return result;
+    }
+
+    return undefined;
 }
