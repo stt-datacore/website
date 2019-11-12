@@ -90,7 +90,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					method: 'post',
 					body: jsonBody
 				}).then(() => {
-					window.open(`https://datacore.netlify.com/profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
+					window.open(`https://datacore.app/profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
 					this.setState({ uploading: false, uploaded: true });
 				});
 			});
@@ -263,9 +263,9 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							<p>
 								Your profile was uploaded. Here's the link:{' '}
 								<a
-									href={`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`}
+									href={`https://datacore.app/profile/?dbid=${playerData.player.dbid}`}
 									target="_blank"
-								>{`https://datacore.netlify.com/profile/?dbid=${playerData.player.dbid}`}</a>
+								>{`https://datacore.app/profile/?dbid=${playerData.player.dbid}`}</a>
 							</p>
 						)}
 					</Message.Content>

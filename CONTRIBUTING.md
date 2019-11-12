@@ -76,7 +76,7 @@ We actively welcome your pull requests!
 
 If you need help with Git or our workflow, please ask us. We want your contributions even if you're just learning Git. Our maintainers are happy to help!
 
-Netlify CMS uses the [Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow) + [Feature Branches](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow). Additionally, PR's should be [rebased](https://www.atlassian.com/git/tutorials/merging-vs-rebasing) on master when opened, and again before merging.
+PR's should be [rebased](https://www.atlassian.com/git/tutorials/merging-vs-rebasing) on master when opened, and again before merging.
 
 1. Fork the repo.
 2. Create a branch from `master`. If you're addressing a specific issue, prefix your branch name with the issue number.

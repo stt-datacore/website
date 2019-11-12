@@ -18,9 +18,9 @@ Once we grow the team of contributors and volunteers we may set up a Discord or 
 
 ### Licensing
 
-This project is built with [Gatsby](https://www.gatsbyjs.org/), [Netlify CMS](https://www.netlifycms.org) and a lot of hard work.
+This project is built with [Gatsby](https://www.gatsbyjs.org/), [React](https://reactjs.org/) and a lot of hard work.
 
-It follows the [JAMstack architecture](https://jamstack.org) by using Git as a single source of truth, and [Netlify](https://www.netlify.com) for continuous deployment, and CDN distribution.
+It follows the [JAMstack architecture](https://jamstack.org) by using Git as a single source of truth.
 
 Assets and some textual elements like names and descriptions are owned by Disruptor Beam or their licensors. This project is not associated with nor endorsed by Disruptor Beam.
 
