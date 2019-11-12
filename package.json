@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
+    "buildci": "gatsby build && rimraf ./public/media/assets",
     "develop": "gatsby develop",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
     "start": "npm run develop",
@@ -14,21 +15,21 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
-    "gatsby": "^2.17.1",
-    "gatsby-plugin-google-analytics": "^2.1.23",
-    "gatsby-plugin-manifest": "^2.2.23",
-    "gatsby-plugin-netlify": "^2.1.22",
+    "gatsby": "^2.17.11",
+    "gatsby-plugin-google-analytics": "^2.1.25",
+    "gatsby-plugin-manifest": "^2.2.27",
+    "gatsby-plugin-netlify": "^2.1.24",
     "gatsby-plugin-netlify-cache": "^1.2.0",
-    "gatsby-plugin-typescript": "^2.1.15",
-    "gatsby-source-filesystem": "^2.1.33",
-    "gatsby-transformer-json": "^2.2.15",
-    "gatsby-transformer-remark": "^2.6.30",
+    "gatsby-plugin-typescript": "^2.1.16",
+    "gatsby-source-filesystem": "^2.1.36",
+    "gatsby-transformer-json": "^2.2.17",
+    "gatsby-transformer-remark": "^2.6.33",
     "graphql-typescript-definitions": "^0.17.3",
     "localforage": "^1.7.3",
-    "react": "^16.10.2",
+    "react": "^16.11.0",
     "react-device-detect": "^1.9.10",
-    "react-dom": "^16.10.2",
-    "request-promise": "^4.2.4",
+    "react-dom": "^16.11.0",
+    "request-promise": "^4.2.5",
     "search-string": "^3.1.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.3",
@@ -38,7 +39,8 @@
   "devDependencies": {
     "dotenv": "^8.2.0",
     "request": "^2.88.0",
-    "showdown": "^1.9.0"
+    "rimraf": "^3.0.0",
+    "showdown": "^1.9.1"
   },
   "repository": {
     "type": "git",
