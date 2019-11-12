@@ -2,14 +2,30 @@ import React, { PureComponent } from "react";
 import { Message } from "semantic-ui-react";
 import TopMenu from "./topmenu";
 
-class Layout extends PureComponent {
+type LayoutProps = {};
+
+type LayoutState = {
+  showRedirectMessage: boolean;
+};
+
+class Layout extends PureComponent<LayoutProps, LayoutState> {
+  state = {
+    showRedirectMessage: false
+  };
+
+  componentDidMount() {
+    this.setState({
+      showRedirectMessage: window.location.hostname.indexOf("netlify") > 0
+    });
+  }
+
   render() {
-    let redirectMessage = window.location.hostname.indexOf("netlify") > 0;
+    const { showRedirectMessage } = this.state;
     return (
       <React.StrictMode>
         <div>
           <TopMenu />
-          {redirectMessage && (
+          {showRedirectMessage && (
             <Message warning style={{ marginTop: "3.5em" }}>
               <Message.Header>New website address!</Message.Header>
               <p>
