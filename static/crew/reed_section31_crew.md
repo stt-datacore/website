@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Another SEC/CMD crewmember with some an average SEC stat and very limited usefulness. His CMD stat is one of the worst in the game but has a few useful early game traits. Security Chief Worf is a better SEC alternative or replace with the superior Sniper Reed.
+Another SEC/CMD crewmember with an average SEC stat and very limited usefulness. His CMD stat is one of the worst in the game but has a few useful early game traits. Security Chief Worf is a better SEC alternative or replace with the superior Sniper Reed.
