@@ -4,6 +4,7 @@ import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
+import ProfileCrewMobile from '../components/profile_crew2';
 import ProfileShips from '../components/profile_ships';
 import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
@@ -164,6 +165,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			{
 				menuItem: 'Crew',
 				render: () => <ProfileCrew playerData={this.state.playerData} />
+			},
+			{
+				menuItem: 'Crew (mobile)',
+				render: () => <ProfileCrewMobile playerData={this.state.playerData} />
 			},
 			{
 				menuItem: 'Ships',
