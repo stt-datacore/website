@@ -77,6 +77,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
+		const zoomFactor = 0.85;
+
 		return (
 			<div>
 				<Message warning>
@@ -84,9 +86,9 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 					<p>This section is under construction; coming soon!</p>
 				</Message>
 
-				<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2em' }}>
+				<div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${(zoomFactor * 22).toFixed(2)}em, 1fr))`, gap: '1em' }}>
 					{data.map((crew, idx) => (
-						<VaultCrew key={idx} crew={crew} size={1} />
+						<VaultCrew key={idx} crew={crew} size={zoomFactor} />
 					))}
 				</div>
 			</div>

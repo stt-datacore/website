@@ -12,8 +12,9 @@ type VaultCrewProps = {
 
 class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
+		const { crew } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
-		let borderColor = new TinyColor(CONFIG.RARITIES[this.props.crew.max_rarity].color);
+		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
 		let star_reward = `/media/icons/star_reward.png`;
 		let star_reward_inactive = `/media/icons/star_reward_inactive.png`;
@@ -26,19 +27,19 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		};
 
 		let rarity = [];
-		for (let i = 0; i < this.props.crew.rarity; i++) {
+		for (let i = 0; i < crew.rarity; i++) {
 			rarity.push(<img key={i} src={star_reward} style={iconStyle} />);
 		}
-		for (let i = this.props.crew.rarity; i < this.props.crew.max_rarity; i++) {
+		for (let i = crew.rarity; i < crew.max_rarity; i++) {
 			rarity.push(<img key={i} src={star_reward_inactive} style={iconStyle} />);
 		}
 
 		let skillicons = [];
 		for (let skillName in CONFIG.SKILLS) {
-			let skill = this.props.crew.base_skills[skillName];
+			let skill = crew.base_skills[skillName];
 
 			if (skill && skill.core && skill.core > 0) {
-				skillicons.push(<img key={skillName} src={`media/assets/atlas/icon_${skillName}.png`} style={iconStyle} />);
+				skillicons.push(<img key={skillName} src={`/media/assets/atlas/icon_${skillName}.png`} style={iconStyle} />);
 			}
 		}
 
@@ -109,33 +110,38 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			display: 'flex'
 		};
 
-		let startlevel = this.props.crew.level === 100 ? 36 : Math.ceil(this.props.crew.level / 10) * 4;
+		let startlevel = crew.level === 100 ? 36 : Math.ceil(crew.level / 10) * 4;
 
 		let eqimgs = [
-			this.props.crew.equipment_slots[startlevel].imageUrl,
-			this.props.crew.equipment_slots[startlevel + 1].imageUrl,
-			this.props.crew.equipment_slots[startlevel + 2].imageUrl,
-			this.props.crew.equipment_slots[startlevel + 3].imageUrl
+			crew.equipment_slots[startlevel].imageUrl,
+			crew.equipment_slots[startlevel + 1].imageUrl,
+			crew.equipment_slots[startlevel + 2].imageUrl,
+			crew.equipment_slots[startlevel + 3].imageUrl
 		];
 
-		if (this.props.crew.equipment) {
+		if (crew.equipment) {
 			[0, 1, 2, 3].forEach(idx => {
-				if (this.props.crew.equipment.indexOf(idx) < 0) {
+				if (crew.equipment.indexOf(idx) < 0) {
 					eqimgs[idx] = 'items_equipment_box02_icon.png';
 				}
 			});
 		}
 
+		let portraitDivStyle: React.CSSProperties = {
+			gridArea: 'portrait',
+			position: 'relative'
+		};
+
+		if (crew.immortal > 0 || (crew.rarity === crew.max_rarity && crew.level === 100 && crew.equipment.length === 4)) {
+			// For immortalized crew only
+			portraitDivStyle.backgroundSize = 'cover';
+			portraitDivStyle.backgroundImage = 'url("/media/assets/collection_vault_vault_item_bg_immortalized_256.png")';
+		}
+
 		return (
 			<div style={divStyle}>
-				<div
-					style={{
-						gridArea: 'portrait',
-						position: 'relative',
-						backgroundSize: 'cover',
-						backgroundImage: 'url("media/assets/collection_vault_vault_item_bg_immortalized_256.png")'
-					}}>
-					<img src={`/media/assets/${this.props.crew.imageUrlPortrait}`} style={{ width: '100%' }} />
+				<div style={portraitDivStyle}>
+					<img src={`/media/assets/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />
 					<div
 						style={{
 							position: 'absolute',
@@ -143,34 +149,38 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 							width: '100%',
 							textAlign: 'initial',
 							backgroundColor: 'rgba(0, 0, 0, 0.5)'
-						}}>
+						}}
+					>
 						{rarity}
 					</div>
-                    {(this.props.crew.immortal > 0) && <div
-						style={{
-							position: 'absolute',
-							top: '0px',
-							width: '100%',
-							textAlign: 'initial',
-                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                            fontSize: SZ(1.2) + 'em'
-						}}>
-						Frozen: {this.props.crew.immortal} in vault
-					</div>}
+					{crew.immortal > 0 && (
+						<div
+							style={{
+								position: 'absolute',
+								top: '0px',
+								width: '100%',
+								textAlign: 'initial',
+								backgroundColor: 'rgba(0, 0, 0, 0.5)',
+								fontSize: SZ(1.2) + 'em'
+							}}
+						>
+							Frozen: {crew.immortal} in vault
+						</div>
+					)}
 				</div>
 
 				<div style={equipmentColumnStyle}>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`media/assets/${eqimgs[0]}`} />
+						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[0]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`media/assets/${eqimgs[1]}`} />
+						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[1]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`media/assets/${eqimgs[2]}`} />
+						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[2]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`media/assets/${eqimgs[3]}`} />
+						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[3]}`} />
 					</div>
 				</div>
 
@@ -180,7 +190,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 					</div>
 
 					<div style={cardFooterLevel}>
-						<span style={{ margin: 'auto' }}>{this.props.crew.level}</span>
+						<span style={{ margin: 'auto' }}>{crew.level}</span>
 					</div>
 				</div>
 			</div>
