@@ -51,10 +51,18 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 								});
 							});
 
+							// Find other items' whose recipes use this one
+							let builds = [];
+							items.forEach(it => {
+								if (it.recipe && it.recipe.list && it.recipe.list.find(entry => entry.symbol === item_symbol)) {
+									builds.push(it);
+								}
+							});
+
 							if (item === undefined) {
 								this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
 							} else {
-								this.setState({ item_data: { item, crew_levels } });
+								this.setState({ item_data: { item, crew_levels, builds } });
 							}
 						});
 				})
@@ -204,6 +212,34 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 											}
 											content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
 											subheader={`Level ${entry.level}`}
+										/>
+									</Grid.Column>
+								))}
+							</Grid>
+						</div>
+					)}
+
+					{item_data.builds.length > 0 && (
+						<div>
+							<Header as="h4">Is used to build these</Header>
+							<Grid columns={3} padded>
+								{item_data.builds.map((entry, idx) => (
+									<Grid.Column key={idx}>
+										<Header
+											style={{ display: 'flex', cursor: 'zoom-in' }}
+											icon={
+												<ItemDisplay
+													src={`/media/assets/${entry.equipment.imageUrl}`}
+													size={48}
+													maxRarity={entry.equipment.rarity}
+													rarity={entry.equipment.rarity}
+												/>
+											}
+											content={
+												<Link to={`/item_info?symbol=${entry.equipment.symbol}`}>
+													{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+												</Link>
+											}
 										/>
 									</Grid.Column>
 								))}
