@@ -25,6 +25,7 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 								key={idx}
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost}
+								avg_cost={entry.avg_cost}
 								name={entry.name}
 								chance_grade={entry.chance_grade}
 								mastery={entry.mastery}
@@ -45,6 +46,7 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 								key={idx}
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost}
+								avg_cost={entry.avg_cost}
 								name={entry.name}
 								chance_grade={entry.chance_grade}
 								mastery={entry.mastery}

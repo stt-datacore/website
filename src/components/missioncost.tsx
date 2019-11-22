@@ -5,6 +5,7 @@ import CONFIG from './CONFIG';
 type MissionCostProps = {
 	mission_symbol?: string;
 	cost: number;
+	avg_cost?: number;
 	mastery: number;
 	chance_grade: number;
 	name: string;
@@ -13,6 +14,7 @@ type MissionCostProps = {
 class MissionCost extends PureComponent<MissionCostProps> {
 	render() {
 		const is_known = this.props.cost > 0;
+		const has_avg = this.props.avg_cost && this.props.avg_cost > 0;
 
 		// TODO: name should be a Link to /missions/${mission_symbol}/
 		return (
@@ -27,7 +29,7 @@ class MissionCost extends PureComponent<MissionCostProps> {
 						<span style={{ display: 'inline-block' }}>
 							<img src={`/media/icons/energy_icon.png`} height={14} />
 						</span>
-						{` ${this.props.cost})`}
+						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost.toFixed(2)}` : ''})`}
 					</span>
 				)}
 			</span>
