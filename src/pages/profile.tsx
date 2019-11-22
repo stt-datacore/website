@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Header, Label, Message, Item, Tab, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
+import { isMobile } from 'react-device-detect';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -19,6 +20,7 @@ type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
 	playerData?: any;
+	mobile: boolean;
 };
 
 class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
@@ -28,7 +30,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		this.state = {
 			dbid: undefined,
 			errorMessage: undefined,
-			playerData: undefined
+			playerData: undefined,
+			mobile: false
 		};
 	}
 
@@ -37,6 +40,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		if (urlParams.has('dbid')) {
 			let dbid = urlParams.get('dbid');
 			this.setState({ dbid });
+
+			if (isMobile || (urlParams.has('mobile') && urlParams.get('mobile'))) {
+				this.setState({ mobile: true });
+			}
 
 			let lastModified = undefined;
 
@@ -142,37 +149,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		}
 	}
 
-	render() {
-		const { dbid, errorMessage, playerData } = this.state;
-
-		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
-			return (
-				<Layout>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as="h4">Player profile</Header>
-						{errorMessage && (
-							<Message negative>
-								<Message.Header>Unable to load profile</Message.Header>
-								<p>
-									Failed to find the player profile you were searching. Make sure you have the right URL, or contact the
-									player and ask them to reupload their profile.
-								</p>
-								<pre>{errorMessage.toString()}</pre>
-							</Message>
-						)}
-						<p>
-							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
-							upload your player.json and access other useful player tools.
-						</p>
-						{!errorMessage && (
-							<div>
-								<Icon loading name="spinner" /> Loading...
-							</div>
-						)}
-					</Container>
-				</Layout>
-			);
-		}
+	renderDesktop() {
+		const { playerData } = this.state;
 
 		const panes = [
 			{
@@ -181,7 +159,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			},
 			{
 				menuItem: 'Crew (mobile)',
-				render: () => <ProfileCrewMobile playerData={this.state.playerData} />
+				render: () => <ProfileCrewMobile playerData={this.state.playerData} isMobile={false} />
 			},
 			{
 				menuItem: 'Ships',
@@ -235,6 +213,49 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				</Container>
 			</Layout>
 		);
+	}
+
+	renderMobile() {
+		return <ProfileCrewMobile playerData={this.state.playerData} isMobile={true} />;
+	}
+
+	render() {
+		const { dbid, errorMessage, playerData, mobile } = this.state;
+
+		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
+			return (
+				<Layout>
+					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
+						<Header as="h4">Player profile</Header>
+						{errorMessage && (
+							<Message negative>
+								<Message.Header>Unable to load profile</Message.Header>
+								<p>
+									Failed to find the player profile you were searching. Make sure you have the right URL, or contact the
+									player and ask them to reupload their profile.
+								</p>
+								<pre>{errorMessage.toString()}</pre>
+							</Message>
+						)}
+						<p>
+							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to
+							upload your player.json and access other useful player tools.
+						</p>
+						{!errorMessage && (
+							<div>
+								<Icon loading name="spinner" /> Loading...
+							</div>
+						)}
+					</Container>
+				</Layout>
+			);
+		}
+
+		if (mobile) {
+			return this.renderMobile();
+		} else {
+			return this.renderDesktop();
+		}
 	}
 }
 

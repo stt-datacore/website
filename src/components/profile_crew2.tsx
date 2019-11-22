@@ -12,6 +12,7 @@ enum SkillSort {
 
 type ProfileCrewMobileProps = {
 	playerData: any;
+	isMobile: boolean;
 };
 
 type ProfileCrewMobileState = {
@@ -147,6 +148,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const { includeFrozen, excludeFF, activeItem, searchFilter } = this.state;
 		let { data } = this.state;
 
+		const { isMobile } = this.props;
+
 		if (!includeFrozen) {
 			data = data.filter(crew => crew.immortal === 0);
 		}
@@ -164,7 +167,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			);
 		}
 
-		const zoomFactor = 0.85;
+		const zoomFactor = isMobile ? 0.65 : 0.85;
 
 		let opts = [];
 		if (activeItem === '') {
@@ -177,7 +180,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 		return (
 			<div>
-				<Menu attached="top">
+				<Menu attached={isMobile ? false : "top"} fixed={isMobile ? "top" : undefined}>
 					<Menu.Item
 						name="command_skill"
 						active={activeItem === 'command_skill'}
@@ -240,7 +243,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 					</Menu.Menu>
 				</Menu>
 
-				<Segment attached="bottom">
+				<Segment attached={isMobile ? false : "bottom"} style={isMobile ? { paddingTop: '6em', paddingBottom: '2em' } : {}}>
 					<div
 						style={{
 							display: 'grid',
