@@ -1,14 +1,43 @@
 import React, { PureComponent } from 'react';
+import { Popup } from 'semantic-ui-react';
+import * as TinyColor from 'tinycolor2';
+
+import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
-
-import * as TinyColor from 'tinycolor2';
 
 type VaultCrewProps = {
 	size: number;
 	style?: React.CSSProperties;
 	crew: any;
 };
+
+function formatCrewStats(crew: any): JSX.Element {
+	let skills = [];
+	for (let skillName in CONFIG.SKILLS) {
+		let skill = crew.base_skills[skillName];
+
+		if (skill && skill.core && skill.core > 0) {
+			let skillShortName = CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short;
+			skills.push(
+				<p key={skillShortName}>
+					<span>{skillShortName}</span> <b>{skill.core}</b>{' '}
+					<span>
+						{' '}
+						{skill.range_min}-{skill.range_max}
+					</span>
+				</p>
+			);
+		}
+	}
+	return (
+		<div>
+			<h4>Tier {crew.bigbook_tier}</h4>
+			{skills}
+			<Link to={`/crew/${crew.symbol}/`}>Full details</Link>
+		</div>
+	);
+}
 
 class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
@@ -141,7 +170,13 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		return (
 			<div style={divStyle}>
 				<div style={portraitDivStyle}>
-					<img src={`/media/assets/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />
+					<Popup
+						on='click'
+						header={crew.name}
+						content={formatCrewStats(crew)}
+						trigger={<img src={`/media/assets/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
+					/>
+
 					<div
 						style={{
 							position: 'absolute',
