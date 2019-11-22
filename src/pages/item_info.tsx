@@ -229,15 +229,15 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
-													src={`/media/assets/${entry.equipment.imageUrl}`}
+													src={`/media/assets/${entry.imageUrl}`}
 													size={48}
-													maxRarity={entry.equipment.rarity}
-													rarity={entry.equipment.rarity}
+													maxRarity={entry.rarity}
+													rarity={entry.rarity}
 												/>
 											}
 											content={
-												<Link to={`/item_info?symbol=${entry.equipment.symbol}`}>
-													{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+												<Link to={`/item_info?symbol=${entry.symbol}`}>
+													{CONFIG.RARITIES[entry.rarity].name + ' ' + entry.name}
 												</Link>
 											}
 										/>
