@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Popup, Rating, Image } from 'semantic-ui-react';
-import { StaticQuery, graphql } from 'gatsby';
 import { formatCrewStats } from '../utils/voyageutils';
 
 type CrewPopupProps = {
@@ -9,43 +8,20 @@ type CrewPopupProps = {
 
 class CrewPopup extends Component<CrewPopupProps> {
 	render() {
+		const { crew } = this.props;
+		if (!crew || !crew.symbol) {
+			return <span>ERROR!</span>;
+		}
+
 		return (
-			<StaticQuery
-				query={graphql`
-					query {
-						allCrewJson {
-							edges {
-								node {
-									name
-									symbol
-									imageUrlPortrait
-								}
-							}
-						}
-					}
-				`}
-				render={data => {
-					const { crew } = this.props;
-					if (!crew || !crew.symbol) {
-						console.warn(crew);
-						return <span>ERROR!</span>
-					}
-
-					let crewStatic = data.allCrewJson.edges.find(({ node }) => node.symbol === crew.symbol).node;
-					let content = <span style={{ cursor: 'help', fontWeight: 'bolder' }}>{crew.name}</span>;
-
-					return (
-						<Popup trigger={content}>
-							<Popup.Header>{crew.name}</Popup.Header>
-							<Popup.Content>
-								<Image size='small' src={`/media/assets/${crewStatic.imageUrlPortrait}`} />
-								<Rating icon='star' defaultRating={crew.rarity} maxRating={crew.max_rarity} />
-								<p>{formatCrewStats(crew)}</p>
-							</Popup.Content>
-						</Popup>
-					);
-				}}
-			/>
+			<Popup trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{crew.name}</span>}>
+				<Popup.Header>{crew.name}</Popup.Header>
+				<Popup.Content>
+					<Image size='small' src={`/media/assets/${crew.imageUrlPortrait}`} />
+					<Rating icon='star' defaultRating={crew.rarity} maxRating={crew.max_rarity} />
+					<p>{formatCrewStats(crew, true)}</p>
+				</Popup.Content>
+			</Popup>
 		);
 	}
 }

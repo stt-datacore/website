@@ -51,10 +51,10 @@ export function applyBuffConfig(buffConfig: { [index: string]: IBuffStat }, crew
 	}
 }
 
-export function formatCrewStats(crew: any): string {
+export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
 	for (let skillName in CONFIG.SKILLS) {
-		let skill = crew.skills[skillName];
+		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
 		
 		if (skill && skill.core && (skill.core > 0)) {
 			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;

@@ -12,18 +12,6 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 			name: `slug`,
 			value: slug
 		});
-	} else if (node.internal.type === `CollectionsJson`) {
-		createNodeField({
-			node,
-			name: `slug`,
-			value: `/${node.name}/`
-		});
-	} else if (node.internal.type === `CrewJson`) {
-		createNodeField({
-			node,
-			name: `slug`,
-			value: `/${node.symbol}/`
-		});
 	}
 };
 
@@ -45,33 +33,15 @@ exports.createPages = ({ graphql, actions }) => {
 					}
 				}
 			}
-			allCollectionsJson {
-				edges {
-					node {
-						fields {
-							slug
-						}
-						id
-						name
-					}
-				}
-			}
-			allCrewJson {
-				edges {
-					node {
-						fields {
-							slug
-						}
-						symbol
-						name
-					}
-				}
-			}
 		}
 	`).then(result => {
 		result.data.allMarkdownRemark.edges.forEach(({ node }) => {
 			if (/(\/static\/crew\/).*\.md$/.test(node.fileAbsolutePath)) {
-				// Do nothing for crew markdown, as this is already joined through allCrewJson
+				createPage({
+					path: `crew${node.fields.slug}`,
+					component: path.resolve(`./src/templates/crewpage.tsx`),
+					context: { slug: node.fields.slug, symbol: node.fields.slug.replace(/\//g, '') }
+				});
 			} else {
 				if (node.frontmatter && node.frontmatter.bigbook_section && node.frontmatter.bigbook_section > 0) {
 					// Sections of the big book just get rendered inline with the bigbook page, not as separate pages
@@ -83,23 +53,6 @@ exports.createPages = ({ graphql, actions }) => {
 					});
 				}
 			}
-		});
-
-		result.data.allCollectionsJson.edges.forEach(({ node }) => {
-			createPage({
-				path: `collection${node.fields.slug}`,
-				component: path.resolve(`./src/templates/collectionpage.tsx`),
-				context: { slug: `${node.fields.slug}`, id: node.id }
-			});
-		});
-
-		// TODO: this crashes after 313 pages during graphql phase
-		result.data.allCrewJson.edges.forEach(({ node }) => {
-			createPage({
-				path: `crew${node.fields.slug}`,
-				component: path.resolve(`./src/templates/crewpage.tsx`),
-				context: { slug: `${node.fields.slug}`, symbol: node.symbol }
-			});
 		});
 	});
 };

@@ -98,7 +98,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	renderVoyageCalculator() {
 		const { playerData } = this.props;
-		const { bestShip } = this.state;
+		const { bestShip, crew } = this.state;
 
 		let curVoy = '';
 		let currentVoyage = false;
@@ -200,12 +200,13 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							</p>
 							<ul>
 								{this.state.result.entries.map((entry, idx) => {
-									let crew = playerData.player.character.crew.find(c => c.id === entry.choice);
+									let pcrew = playerData.player.character.crew.find(c => c.id === entry.choice);
+									let acrew = crew.find(c => c.symbol === pcrew.symbol);
 									return (
 										<li key={idx}>
 											{playerData.player.character.voyage_descriptions[0].crew_slots[entry.slotId].name}
 											{'  :  '}
-											<CrewPopup crew={crew} />
+											<CrewPopup crew={acrew} />
 										</li>
 									);
 								})}

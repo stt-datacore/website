@@ -170,7 +170,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						<b>Collections: </b>
 						{crew.collections
 							.map(col => (
-								<Link key={col} to={`/collection/${col}/`}>
+								<Link key={col} to={`/collections/#${encodeURIComponent(col)}`}>
 									{col}
 								</Link>
 							))

@@ -48,8 +48,5 @@ module.exports = {
 			}
 		},
 		`gatsby-plugin-netlify`
-	],
-	mapping: {
-		'CollectionsJson.crew': `CrewJson.symbol`
-	}
+	]
 };
