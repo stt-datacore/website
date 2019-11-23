@@ -8,9 +8,9 @@ export function sortedStats(crew): any[] {
 	for (const skill in crew.base_skills) {
 		toSort.push({
 			name: CONFIG.SKILLS_SHORT.find(s => s.name === skill).short,
-			value:
-				crew.base_skills[skill].core * STARBASE_BONUS_CORE +
-				((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE
+			value: Math.round(crew.base_skills[skill].core * STARBASE_BONUS_CORE +
+                ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE),
+            valueGauntlet: Math.round(((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE),
 		});
     }
     
@@ -28,11 +28,13 @@ export function insertInStatTree(crewStats: any[], tree: any[], parentName: stri
                 name,
                 children: [],
                 value: bestSkill.value,
+                valueGauntlet: bestSkill.valueGauntlet,
                 loc: 1
             };
             tree.push(entry);
         } else {
             entry.value += bestSkill.value;
+            entry.valueGauntlet += bestSkill.valueGauntlet;
             entry.loc++;
         }
         insertInStatTree(crewStats, entry.children, name);

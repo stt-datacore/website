@@ -16,7 +16,10 @@
   },
   "dependencies": {
     "@nivo/bar": "^0.59.2",
+    "@nivo/pie": "^0.59.1",
+    "@nivo/radar": "^0.59.1",
     "@nivo/sunburst": "^0.59.1",
+    "@nivo/treemap": "^0.59.0",
     "@types/tinycolor2": "^1.4.2",
     "gatsby": "^2.17.11",
     "gatsby-plugin-google-analytics": "^2.1.25",
