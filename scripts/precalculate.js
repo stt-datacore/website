@@ -72,7 +72,11 @@ function calculateCrewDemands(crew, items) {
 				continue;
 			}
 
-			costCalc.push((6 - source.chance_grade) * RNGESUS * source.cost);
+			if (source.avg_cost) {
+				costCalc.push(source.avg_cost);
+			} else {
+				costCalc.push((6 - source.chance_grade) * RNGESUS * source.cost);
+			}
 		}
 
 		if (costCalc.length === 0) {

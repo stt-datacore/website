@@ -15,6 +15,8 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
+    "@nivo/bar": "^0.59.2",
+    "@nivo/sunburst": "^0.59.1",
     "@types/tinycolor2": "^1.4.2",
     "gatsby": "^2.17.11",
     "gatsby-plugin-google-analytics": "^2.1.25",

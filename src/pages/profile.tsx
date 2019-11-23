@@ -9,6 +9,7 @@ import ProfileCrewMobile from '../components/profile_crew2';
 import ProfileShips from '../components/profile_ships';
 import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
+import ProfileCharts from '../components/profile_charts';
 
 import { calculateBuffConfig } from '../utils/voyageutils';
 
@@ -172,6 +173,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			{
 				menuItem: 'Other',
 				render: () => <ProfileOther playerData={this.state.playerData} />
+			},
+			{
+				menuItem: 'Charts & Stats',
+				render: () => <ProfileCharts playerData={this.state.playerData} />
 			}
 		];
 
