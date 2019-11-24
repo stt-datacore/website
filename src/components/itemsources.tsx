@@ -1,7 +1,5 @@
 import React, { PureComponent } from 'react';
 
-import { graphql } from 'gatsby';
-
 import MissionCost from './missioncost';
 
 type ItemSourcesProps = {
@@ -71,16 +69,3 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 }
 
 export default ItemSources;
-
-export const query = graphql`
-	fragment ItemSourcesFragment on ItemsJson {
-		item_sources {
-			type
-			mission_symbol
-			cost
-			name
-			chance_grade
-			mastery
-		}
-	}
-`;

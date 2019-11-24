@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { Container, Header, Dropdown, Grid, Rating, Divider } from 'semantic-ui-react';
-import { graphql, Link } from 'gatsby';
+import { Link } from 'gatsby';
+import marked from 'marked';
 
 import Layout from '../components/layout';
 import CommonCrewData from '../components/commoncrewdata';
 
-import { calculateCrewDemands } from '../utils/equipment';
-
 type BeholdsPageProps = {
-	data: {
-		crewpages: any;
-	};
 };
 
 type BeholdsPageState = {
@@ -18,7 +14,7 @@ type BeholdsPageState = {
 	currentSelectedItems: any;
 	allcrew: any[];
 	entries: any[];
-	items: any[];
+	botcrew: any[];
 };
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
@@ -27,15 +23,15 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		currentSelectedItems: [],
 		allcrew: [],
 		entries: [],
-		items: []
+		botcrew: []
 	};
 
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
 
-		response = await fetch('/structured/items.json');
-		const items = await response.json();
+		response = await fetch('/structured/botcrew.json');
+		const botcrew = await response.json();
 
 		let peopleList = [];
 		allcrew.forEach(crew => {
@@ -47,7 +43,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			});
 		});
 
-		this.setState({ allcrew, items, peopleList }, () => {
+		this.setState({ allcrew, botcrew, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));
@@ -90,18 +86,13 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 						{this.state.entries.map((entry, idx) => (
 							<Grid.Column key={idx}>
 								<Header as='h5'>
-									<Link to={`/crew${entry.markdown.node.fields.slug}`}>
+									<Link to={`/crew/${entry.crew.symbol}/`}>
 										{entry.crew.name}{' '}
 										<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
 									</Link>
 								</Header>
-								<CommonCrewData
-									compact={true}
-									crewDemands={entry.crewDemands}
-									crew={entry.crew}
-									markdownRemark={entry.markdown ? entry.markdown.node : undefined}
-								/>
-								{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown.node.html }} />}
+								<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} />
+								{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown }} />}
 							</Grid.Column>
 						))}
 					</Grid>
@@ -114,15 +105,29 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		let params = new URLSearchParams();
 		let entries = [];
 		for (let symbol of value) {
-			let entry = {
-				markdown: this.props.data.crewpages.edges.find(e => e.node.fields.slug === `/${symbol}/`),
+			let bcrew = this.state.botcrew.find(bc => bc.symbol === symbol);
+			if (!bcrew) {
+				console.error(`Crew ${symbol} not found in botcrew.json!`);
+				break;
+			}
+
+			// This emulates the Gatsby markdown output until the transition to dynamic loading entirely
+			entries.push({
+				markdown: marked(bcrew.markdownContent),
 				crew: this.state.allcrew.find(c => c.symbol === symbol),
-				crewDemands: undefined
-			};
-
-			entry.crewDemands = calculateCrewDemands(entry.crew, this.state.items);
-
-			entries.push(entry);
+				crewDemands: {
+					factionOnlyTotal: bcrew.factionOnlyTotal,
+					totalChronCost: bcrew.totalChronCost,
+					craftCost: bcrew.craftCost
+				},
+				markdownRemark: {
+					frontmatter: {
+						bigbook_tier: bcrew.bigbook_tier,
+						events: bcrew.events,
+						in_portal: bcrew.in_portal
+					}
+				}
+			});
 
 			params.append('crew', symbol);
 		}
@@ -135,28 +140,3 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 }
 
 export default BeholdsPage;
-
-export const query = graphql`
-	query {
-        crewpages: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/crew)/.*\\.md$/"}}) {
-			totalCount
-			edges {
-				node {
-					id
-					html
-					frontmatter {
-						name
-						memory_alpha
-						bigbook_tier
-						events
-						in_portal
-						published
-					}
-					fields {
-						slug
-					}
-				}
-			}
-		}
-	}
-`;

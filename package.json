@@ -20,6 +20,7 @@
     "@nivo/radar": "^0.59.1",
     "@nivo/sunburst": "^0.59.1",
     "@nivo/treemap": "^0.59.0",
+    "@types/marked": "^0.7.2",
     "@types/tinycolor2": "^1.4.2",
     "gatsby": "^2.17.11",
     "gatsby-plugin-google-analytics": "^2.1.25",
