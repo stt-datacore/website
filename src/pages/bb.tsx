@@ -21,7 +21,7 @@ class BigBookCrew extends PureComponent<BigBookCrewProps> {
 						<span>
 							{crew.collections
 								.map(col => (
-									<Link key={col} to={`/collection/${col}/`}>
+									<Link key={col} to={`/collections/#${encodeURIComponent(col)}`}>
 										{col}
 									</Link>
 								))
