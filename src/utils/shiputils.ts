@@ -1,3 +1,72 @@
+import { simplejson2csv } from './misc';
+
+export function exportShips(ships): string {
+	let fields = [
+		{
+			label: 'Name',
+			value: (row: any) => row.name
+		},
+		{
+			label: 'Owned',
+			value: (row: any) => row.owned
+		},
+		{
+			label: 'Rarity',
+			value: (row: any) => row.rarity
+		},
+		{
+			label: 'Level',
+			value: (row: any) => `${row.level} / ${row.max_level}`
+		},
+		{
+			label: 'Antimatter',
+			value: (row: any) => row.antimatter
+		},
+		{
+			label: 'Accuracy',
+			value: (row: any) => row.accuracy
+		},
+		{
+			label: 'Attack',
+			value: (row: any) => row.attack
+		},
+		{
+			label: 'Attacks per second',
+			value: (row: any) => row.attacks_per_second
+		},
+		{
+			label: 'Crit bonus',
+			value: (row: any) => row.crit_bonus
+		},
+		{
+			label: 'Crit chance',
+			value: (row: any) => row.crit_chance
+		},
+		{
+			label: 'Evasion',
+			value: (row: any) => row.evasion
+		},
+		{
+			label: 'Hull',
+			value: (row: any) => row.hull
+		},
+		{
+			label: 'Shields',
+			value: (row: any) => row.shields
+		},
+		{
+			label: 'Shield regen',
+			value: (row: any) => row.shield_regen
+		},
+		{
+			label: 'Traits',
+			value: (row: any) => row.traits_named.join(' ')
+		}
+	];
+
+	return simplejson2csv(ships, fields);
+}
+
 export function mergeShips(ship_schematics: any, ships: any): any {
 	let newShips: any[] = [];
 	ship_schematics.forEach((schematic: any) => {
@@ -17,8 +86,8 @@ export function mergeShips(ship_schematics: any, ships: any): any {
 			schematic.ship.level = owned.level;
 			schematic.ship.rarity = owned.rarity;
 			schematic.ship.shield_regen = owned.shield_regen;
-            schematic.ship.shields = owned.shields;
-            schematic.ship.owned = true;
+			schematic.ship.shields = owned.shields;
+			schematic.ship.owned = true;
 		} else {
 			schematic.ship.level = 0;
 			schematic.ship.owned = false;

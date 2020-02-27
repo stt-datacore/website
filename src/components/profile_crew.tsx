@@ -175,7 +175,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`/media/assets/${crew.imageUrlPortrait}`} />
+										<img width={48} src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
 									</div>
 									<div style={{ gridArea: 'stats' }}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
@@ -184,7 +184,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 								</div>
 							</Table.Cell>
 							<Table.Cell>
-								<Rating defaultRating={crew.rarity} rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+								<Rating rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
 							</Table.Cell>
 							{crew.base_skills.command_skill ? (
 								<Table.Cell textAlign="center">

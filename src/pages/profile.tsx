@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Item, Tab, Icon } from 'semantic-ui-react';
+import { Container, Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 
@@ -11,9 +11,8 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
-import { calculateBuffConfig } from '../utils/voyageutils';
-
-import CONFIG from '../components/CONFIG';
+import { downloadData, exportCrew, prepareProfileData } from '../utils/crewutils';
+import { mergeShips, exportShips } from '../utils/shiputils';
 
 type ProfilePageProps = {};
 
@@ -48,7 +47,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 			let lastModified = undefined;
 
-			fetch('https://datacore9545.blob.core.windows.net/player-data/' + dbid)
+			fetch('https://datacore.app/profiles/' + dbid)
 				.then(response => {
 					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
 
@@ -62,83 +61,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 								.then(response => response.json())
 								.then(botcrew => {
 									// Do some computation on the data to avoid doing it on every render
-									let numImmortals = new Set(playerData.player.character.c_stored_immortals);
-
-									playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
-
-									playerData.player.character.crew.forEach(crew => {
-										if (crew.level === 100 && crew.equipment.length === 4) {
-											numImmortals.add(crew.archetype_id);
-										}
-									});
-
-									playerData.calc = {
-										numImmortals: numImmortals.size,
-										lastModified
-									};
-
-									let buffConfig = calculateBuffConfig(playerData.player);
-									const getMultiplier = (skill: string, stat: string) => {
-										return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-									};
-
-									const applyCrewBuffs = (crew: any) => {
-										for (let skill in CONFIG.SKILLS) {
-											crew[skill] = { core: 0, min: 0, max: 0 };
-										}
-
-										// Apply buffs
-										for (let skill in crew.base_skills) {
-											crew[skill] = {
-												core: Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
-												min: Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
-												max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
-											};
-										}
-									};
-
-									// Merge with player crew
-									let ownedCrew = [];
-									for (let crew of allcrew) {
-										crew.rarity = crew.max_rarity;
-										crew.level = 100;
-										crew.favorite = false;
-
-										let bcrew = botcrew.find(bc => bc.symbol === crew.symbol);
-										if (bcrew) {
-											crew.bigbook_tier = bcrew.bigbook_tier;
-										} else {
-											crew.bigbook_tier = 11;
-										}
-
-										if (playerData.player.character.c_stored_immortals.includes(crew.archetype_id)) {
-											crew.immortal = 1;
-										} else {
-											let immortal = playerData.player.character.stored_immortals.find(
-												im => im.id === crew.archetype_id
-											);
-											crew.immortal = immortal ? immortal.quantity : 0;
-										}
-										if (crew.immortal > 0) {
-											applyCrewBuffs(crew);
-											ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-										}
-
-										let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
-										inroster.forEach(owned => {
-											crew.immortal = 0;
-											crew.rarity = owned.rarity;
-											crew.base_skills = owned.base_skills;
-											crew.level = owned.level;
-											crew.have = true;
-											crew.favorite = owned.favorite;
-											crew.equipment = owned.equipment;
-											applyCrewBuffs(crew);
-											ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-										});
-									}
-
-									playerData.player.character.crew = ownedCrew;
+									prepareProfileData(allcrew, botcrew, playerData, lastModified);
 
 									this.setState({ playerData });
 								});
@@ -185,7 +108,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>
-							<Item.Image size="tiny" src={`/media/assets/${playerData.player.character.crew_avatar.portrait}`} />
+							<Item.Image size="tiny" src={`https://assets.datacore.app/${playerData.player.character.crew_avatar ? playerData.player.character.crew_avatar.portrait : 'crew_portraits_cm_empty_sm.png'}`} />
 
 							<Item.Content>
 								<Item.Header>{playerData.player.character.display_name}</Item.Header>
@@ -209,15 +132,45 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							</Item.Content>
 						</Item>
 					</Item.Group>
-					{playerData.calc.lastModified ? (
-						<Label size="tiny">Last updated: {playerData.calc.lastModified.toLocaleString()}</Label>
-					) : (
-						<span />
-					)}
+
+					<Menu compact>
+						<Menu.Item>
+							{playerData.calc.lastModified ? (
+								<span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span>
+							) : (
+								<span />
+							)}
+						</Menu.Item>
+						<Dropdown item text="Download">
+							<Dropdown.Menu>
+								<Dropdown.Item onClick={() => this._exportCrew()}>Crew table (CSV)</Dropdown.Item>
+								<Dropdown.Item onClick={() => this._exportShips()}>Ship table (CSV)</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+					</Menu>
 					<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 				</Container>
 			</Layout>
 		);
+	}
+
+	_exportCrew() {
+		const { playerData } = this.state;
+
+		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
+	}
+
+	_exportShips() {
+		const { playerData } = this.state;
+
+		fetch('/structured/ship_schematics.json')
+			.then(response => response.json())
+			.then(ship_schematics => {
+				let data = mergeShips(ship_schematics, playerData.player.character.ships);
+				let text = exportShips(data);
+				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'ships.csv');
+			});
 	}
 
 	renderMobile() {

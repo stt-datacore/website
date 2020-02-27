@@ -1,6 +1,21 @@
 import React, { Component } from 'react';
-import { Container, Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
+import {
+	Container,
+	Header,
+	Image,
+	Divider,
+	Grid,
+	Segment,
+	Rating,
+	Dropdown,
+	Popup,
+	Label,
+	Button
+} from 'semantic-ui-react';
 import { graphql } from 'gatsby';
+
+import SimpleMDE from 'react-simplemde-editor';
 
 import Layout from '../components/layout';
 import ItemDisplay from '../components/itemdisplay';
@@ -59,9 +74,20 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
+		const windowGlobal = typeof window !== 'undefined' && window;
+		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token');
+
 		const crew = crewJson.edges[0].node;
 		return (
 			<Layout>
+				<Helmet>
+					<title>DataCore - {crew.name}</title>
+					<meta property="og:type" content="website" />
+					<meta property="og:title" content={crew.name} />
+					<meta property="og:site_name" content="DataCore" />
+					<meta property="og:image" content={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+					<meta property="og:description" content={markdownRemark.rawMarkdownBody.trim()} />
+				</Helmet>
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
 					items={this.state.items}
@@ -73,14 +99,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Row stretched>
 							<Grid.Column width={16}>
 								<Header>
-									{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon='star' size='large' disabled />
+									{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon="star" size="large" disabled />
 								</Header>
 							</Grid.Column>
 						</Grid.Row>
 						<Grid.Row>
 							<Grid.Column width={4}>
-								{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
-								<Image src={`/media/assets/${crew.imageUrlFullBody}`} size='small' />
+								{crew.series && <Image src={`/media/series/${crew.series}.png`} size="small" />}
+								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size="small" />
 							</Grid.Column>
 							<Grid.Column width={12}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
@@ -92,29 +118,33 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 										<Button
 											onClick={() => this.setState({ modalVisible: true })}
 											style={{ marginTop: '1em' }}
-											content='Full equipment tree'
-											icon='right arrow'
-											labelPosition='right'
+											content="Full equipment tree"
+											icon="right arrow"
+											labelPosition="right"
 										/>
 									</React.Fragment>
 								) : (
-									<div className='ui medium centered text active inline loader'>Loading items...</div>
+									<div className="ui medium centered text active inline loader">Loading items...</div>
 								)}
 
 								<Segment>
-									<Header as='h4'>{crew.action.name}</Header>
+									<Header as="h4">{crew.action.name}</Header>
 									<p>
 										Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}
 									</p>
 									<p>
-										Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration: {crew.action.duration}s
+										Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration:{' '}
+										{crew.action.duration}s
 									</p>
 									{crew.action.limit && <p>Uses Per Battle: {crew.action.limit}</p>}
 
 									{crew.action.ability && (
 										<p>
 											Bonus ability:
-											{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
+											{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace(
+												'%VAL%',
+												crew.action.ability.amount
+											)}{' '}
 											{crew.action.ability.condition > 0 && (
 												<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
 											)}
@@ -132,7 +162,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 									</p>
 									{crew.action.penalty && (
 										<p>
-											Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}
+											Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by{' '}
+											{crew.action.penalty.amount}
 										</p>
 									)}
 
@@ -143,11 +174,22 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					</Grid>
 					<Divider horizontal hidden />
 					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
+					{isLoggedIn && (
+						<SimpleMDE
+							value={markdownRemark.rawMarkdownBody.trim()}
+							onChange={value => this._handleMarkDownChange(value)}
+							options={{ hideIcons: ['fullscreen', 'guide', 'image', 'side-by-side'] }}
+						/>
+					)}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
 					<CrewVariants short_name={crew.short_name} />
 				</Container>
 			</Layout>
 		);
+	}
+
+	_handleMarkDownChange(value) {
+		console.log(value);
 	}
 
 	renderEquipment(crew) {
@@ -162,7 +204,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				content: (
 					<Header
 						icon={
-							<ItemDisplay src={`/media/assets/${equipment.imageUrl}`} size={48} maxRarity={equipment.rarity} rarity={equipment.rarity} />
+							<ItemDisplay
+								src={`https://assets.datacore.app/${equipment.imageUrl}`}
+								size={48}
+								maxRarity={equipment.rarity}
+								rarity={equipment.rarity}
+							/>
 						}
 						content={equipment.name}
 						subheader={`Level ${es.level}`}
@@ -176,7 +223,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				selection
 				fluid
 				options={options}
-				placeholder='Choose an equipment to see its details'
+				placeholder="Choose an equipment to see its details"
 				onChange={(ev, { value }) => this.setState({ selectedEquipment: value as number })}
 			/>
 		);
@@ -187,7 +234,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			return <span />;
 		}
 
-		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment)
+		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
 		let equipment = this.state.items.find(item => item.symbol === es.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
@@ -210,11 +257,11 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					{equipment.recipe.list.map(entry => {
 						let recipeEntry = this.state.items.find(item => item.symbol === entry.symbol);
 						return (
-							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
+							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign="center">
 								<Popup
 									trigger={
-										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
-											<img src={`/media/assets/${recipeEntry.imageUrl}`} />x{entry.count}
+										<Label as="a" style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size="big">
+											<img src={`https://assets.datacore.app/${recipeEntry.imageUrl}`} />x{entry.count}
 										</Label>
 									}
 									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}
@@ -273,6 +320,7 @@ export default StaticCrewPage;
 export const query = graphql`
 	query($slug: String!, $symbol: String!) {
 		markdownRemark(fields: { slug: { eq: $slug } }) {
+			rawMarkdownBody
 			html
 			frontmatter {
 				name
@@ -296,6 +344,7 @@ export const query = graphql`
 					collections
 					max_rarity
 					imageUrlFullBody
+					imageUrlPortrait
 					...RanksFragment
 					base_skills {
 						security_skill {
@@ -327,6 +376,41 @@ export const query = graphql`
 							core
 							range_min
 							range_max
+						}
+					}
+					skill_data {
+						rarity
+						base_skills {
+							security_skill {
+								core
+								range_min
+								range_max
+							}
+							command_skill {
+								core
+								range_min
+								range_max
+							}
+							diplomacy_skill {
+								core
+								range_min
+								range_max
+							}
+							science_skill {
+								core
+								range_min
+								range_max
+							}
+							medicine_skill {
+								core
+								range_min
+								range_max
+							}
+							engineering_skill {
+								core
+								range_min
+								range_max
+							}
 						}
 					}
 					cross_fuse_targets {

@@ -45,8 +45,8 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
-		let star_reward = `/media/icons/star_reward.png`;
-		let star_reward_inactive = `/media/icons/star_reward_inactive.png`;
+		let star_reward = `https://assets.datacore.app/atlas/star_reward.png`;
+		let star_reward_inactive = `https://assets.datacore.app/atlas/star_reward_inactive.png`;
 
 		let iconStyle: React.CSSProperties = {
 			display: 'inline-block',
@@ -68,7 +68,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			let skill = crew.base_skills[skillName];
 
 			if (skill && skill.core && skill.core > 0) {
-				skillicons.push(<img key={skillName} src={`/media/assets/atlas/icon_${skillName}.png`} style={iconStyle} />);
+				skillicons.push(<img key={skillName} src={`https://assets.datacore.app/atlas/icon_${skillName}.png`} style={iconStyle} />);
 			}
 		}
 
@@ -140,13 +140,24 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		};
 
 		let startlevel = crew.level === 100 ? 36 : Math.ceil(crew.level / 10) * 4;
-
-		let eqimgs = [
-			crew.equipment_slots[startlevel].imageUrl,
-			crew.equipment_slots[startlevel + 1].imageUrl,
-			crew.equipment_slots[startlevel + 2].imageUrl,
-			crew.equipment_slots[startlevel + 3].imageUrl
-		];
+		let eqimgs = [];
+		if (!crew.equipment_slots[startlevel]) {
+			console.error(`Missing equipment slots information for crew '${crew.name}'`);
+			console.log(crew);
+			eqimgs = [
+				'items_equipment_box02_icon.png',
+				'items_equipment_box02_icon.png',
+				'items_equipment_box02_icon.png',
+				'items_equipment_box02_icon.png'
+			];
+		} else {
+			eqimgs = [
+				crew.equipment_slots[startlevel].imageUrl,
+				crew.equipment_slots[startlevel + 1].imageUrl,
+				crew.equipment_slots[startlevel + 2].imageUrl,
+				crew.equipment_slots[startlevel + 3].imageUrl
+			];
+		}
 
 		if (crew.equipment) {
 			[0, 1, 2, 3].forEach(idx => {
@@ -164,17 +175,17 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		if (crew.immortal > 0 || (crew.rarity === crew.max_rarity && crew.level === 100 && crew.equipment.length === 4)) {
 			// For immortalized crew only
 			portraitDivStyle.backgroundSize = 'cover';
-			portraitDivStyle.backgroundImage = 'url("/media/assets/collection_vault_vault_item_bg_immortalized_256.png")';
+			portraitDivStyle.backgroundImage = 'url("https://assets.datacore.app/collection_vault_vault_item_bg_immortalized_256.png")';
 		}
 
 		return (
 			<div style={divStyle}>
 				<div style={portraitDivStyle}>
 					<Popup
-						on='click'
+						on="click"
 						header={crew.name}
 						content={formatCrewStats(crew)}
-						trigger={<img src={`/media/assets/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
+						trigger={<img src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
 					/>
 
 					<div
@@ -206,16 +217,16 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 
 				<div style={equipmentColumnStyle}>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[0]}`} />
+						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[0]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[1]}`} />
+						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[1]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[2]}`} />
+						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[2]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`/media/assets/${eqimgs[3]}`} />
+						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[3]}`} />
 					</div>
 				</div>
 

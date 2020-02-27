@@ -156,7 +156,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`/media/assets/${item.imageUrl}`} />
+										<img width={48} src={`https://assets.datacore.app/${item.imageUrl}`} />
 									</div>
 									<div style={{ gridArea: 'stats' }}>
 										<Link to={`/item_info?symbol=${item.symbol}`}>

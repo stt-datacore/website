@@ -5,8 +5,8 @@ module.exports = {
 	plugins: [
 		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
+		`gatsby-plugin-react-helmet`,
 		`gatsby-plugin-typescript`,
-		`gatsby-plugin-netlify-cache`,
 		{
 			resolve: 'gatsby-source-filesystem',
 			options: {
@@ -25,7 +25,25 @@ module.exports = {
 			resolve: 'gatsby-source-filesystem',
 			options: {
 				name: 'structured',
-				path: `${__dirname}/static/structured/`
+				path: `${__dirname}/static/structured/`,
+				ignore: [
+					'**/events/*',
+					'**/botcrew.json',
+					'**/allcrew.json',
+					'**/botcrewbad.json',
+					'**/collections.json',
+					'**/dilemmas.json',
+					'**/event_crew.json',
+					'**/event_instances.json',
+					'**/event_leaderboards.json',
+					'**/factions.json',
+					'**/items.json',
+					'**/missions.json',
+					'**/quests.json',
+					'**/ship_schematics.json',
+					'**/upcomingevents.json',
+					'**/misc_stats.json'
+				]
 			}
 		},
 		{
@@ -46,7 +64,6 @@ module.exports = {
 			options: {
 				trackingId: 'UA-112738113-3'
 			}
-		},
-		`gatsby-plugin-netlify`
+		}
 	]
 };

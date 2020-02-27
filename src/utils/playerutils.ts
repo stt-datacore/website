@@ -61,10 +61,12 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.stimpack;
 	delete p.player.character.location_channel_prefix;
 
-	p.player.character.crew_avatar = {
-		symbol: p.player.character.crew_avatar.symbol,
-		portrait: p.player.character.crew_avatar.portrait.file.substr(1).replace('/', '_') + '.png'
-	};
+	if (p.player.character.crew_avatar && p.player.character.crew_avatar.symbol) {
+		p.player.character.crew_avatar = {
+			symbol: p.player.character.crew_avatar.symbol,
+			portrait: p.player.character.crew_avatar.portrait.file.substr(1).replace('/', '_') + '.png'
+		};
+	}
 
 	p.player.character.accepted_missions = p.player.character.accepted_missions.map(mission => ({
 		id: mission.id,
@@ -169,4 +171,53 @@ export function stripPlayerData(items: any[], p: any): any {
 	p.player.character.c_stored_immortals = c_stored_immortals;
 
 	return p;
+}
+
+export class BonusCrew {
+	eventName: string = '';
+	eventCrew: { [index: string]: any } = {};
+}
+
+export function bonusCrewForCurrentEvent(character: any): BonusCrew | undefined {
+	let result = new BonusCrew();
+
+	if (character.events && character.events.length > 0) {
+		let activeEvent = character.events[0];
+		result.eventName = activeEvent.name;
+
+		if (activeEvent.content) {
+			if (activeEvent.content.crew_bonuses) {
+				for (let symbol in activeEvent.content.crew_bonuses) {
+					result.eventCrew[symbol] = activeEvent.content.crew_bonuses[symbol];
+				}
+			}
+
+			// For skirmish events
+			if (activeEvent.content.bonus_crew) {
+				for (let symbol in activeEvent.content.bonus_crew) {
+					result.eventCrew[symbol] = activeEvent.content.bonus_crew[symbol];
+				}
+			}
+
+			// For expedition events
+			if (activeEvent.content.special_crew) {
+				activeEvent.content.special_crew.forEach((symbol: string) => {
+					result.eventCrew[symbol] = symbol;
+				});
+			}
+
+			// TODO: there's also bonus_traits; should we bother selecting crew with those? It looks like you can use voyage crew in skirmish events, so it probably doesn't matter
+			if (activeEvent.content.shuttles) {
+				activeEvent.content.shuttles.forEach((shuttle: any) => {
+					for (let symbol in shuttle.crew_bonuses) {
+						result.eventCrew[symbol] = shuttle.crew_bonuses[symbol];
+					}
+				});
+			}
+		}
+
+		return result;
+	}
+
+	return undefined;
 }

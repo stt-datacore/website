@@ -8,6 +8,7 @@ import { ResponsiveTreeMap } from '@nivo/treemap';
 
 import CONFIG from './CONFIG';
 
+import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree } from '../utils/statutils';
 
@@ -173,8 +174,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity,
 			radar_skill_rarity_owned,
 			skill_distribution: { name: 'Skills', children: skill_distribution },
-			r4_stars: r4owned.map((v, i) => ({ id: `${i + 1} / 4`, value: v })).filter(e => e.value > 0),
-			r5_stars: r5owned.map((v, i) => ({ id: `${i + 1} / 5`, value: v })).filter(e => e.value > 0)
+			r4_stars: r4owned.map((v, i) => ({ label: `${i + 1} / 4`, id: `${i + 1} / 4`, value: v })).filter(e => e.value > 0),
+			r5_stars: r5owned.map((v, i) => ({ label: `${i + 1} / 5`, id: `${i + 1} / 5`, value: v })).filter(e => e.value > 0)
 		});
 	}
 
@@ -199,7 +200,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		} = this.state;
 
 		return (
-			<div>
+			<ErrorBoundary>
 				<h3>Owned vs. Not Owned crew per rarity</h3>
 				<div style={{ height: '320px' }}>
 					<ResponsiveBar
@@ -520,7 +521,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						/>
 					</div>
 				</div>
-			</div>
+			</ErrorBoundary>
 		);
 	}
 }

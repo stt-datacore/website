@@ -44,7 +44,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 					<Item.Group>
 						{collections.map(collection => (
 							<Item key={collection.name} id={encodeURIComponent(collection.name)}>
-								<Item.Image size='medium' src={`/media/assets/${collection.image}`} />
+								<Item.Image size='medium' src={`https://assets.datacore.app/${collection.image}`} />
 
 								<Item.Content>
 									<Item.Header>{collection.name}</Item.Header>

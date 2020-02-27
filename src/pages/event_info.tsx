@@ -77,6 +77,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					</Message.Content>
 				</Message>
 				<p>{event.description}</p>
+				<p>{event.rules}</p>
 
 				<Label>{event.bonus_text}</Label>
 
@@ -94,6 +95,12 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 						});
 
 						// TODO: crew from traits
+					} else if (cnt.special_crew) {
+						// Expeditions
+						crew_bonuses = {};
+						cnt.special_crew.forEach(element => {
+							crew_bonuses[element] = 50;
+						});
 					}
 					return (
 						<div key={idx}>
@@ -208,7 +215,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h3'>{event_data.ev_inst.event_name}</Header>
-					<Image size='large' src={`/media/assets/${event_data.ev_inst.image}`} />
+					<Image size='large' src={`https://assets.datacore.app/${event_data.ev_inst.image}`} />
 
 					{this.renderEventDetails()}
 
@@ -235,7 +242,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 											<div style={{ gridArea: 'icon' }}>
 												<img
 													width={48}
-													src={`/media/assets/${
+													src={`https://assets.datacore.app/${
 														member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 												/>

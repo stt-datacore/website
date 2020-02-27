@@ -4,6 +4,8 @@ import { Input, Menu, Segment } from 'semantic-ui-react';
 import VaultCrew from './vaultcrew';
 import DropdownOpts from './dropdownopts';
 
+import { bonusCrewForCurrentEvent } from './../utils/playerutils';
+
 enum SkillSort {
 	Base = 1,
 	Proficiency,
@@ -23,6 +25,7 @@ type ProfileCrewMobileState = {
 	activeItem: string;
 	includeFrozen: boolean;
 	excludeFF: boolean;
+	onlyEvent: boolean;
 	sortKind: SkillSort;
 };
 
@@ -38,6 +41,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			data: this.props.playerData.player.character.crew,
 			includeFrozen: false,
 			excludeFF: false,
+			onlyEvent: false,
 			sortKind: SkillSort.Base
 		};
 	}
@@ -141,11 +145,13 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			this.setState({ includeFrozen: value });
 		} else if (setting === 'Exclude FF') {
 			this.setState({ excludeFF: value });
+		} else if (setting.startsWith('Only event')) {
+			this.setState({ onlyEvent: value });
 		}
 	}
 
 	render() {
-		const { includeFrozen, excludeFF, activeItem, searchFilter } = this.state;
+		const { includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
 		let { data } = this.state;
 
 		const { isMobile } = this.props;
@@ -176,52 +182,61 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			opts = ['Base Skill', 'Proficiency Skill', 'Combined Skill'];
 		}
 
-		const settings = ['Include Frozen', 'Exclude FF'];
+		let settings = ['Include Frozen', 'Exclude FF'];
+		let eventCrew = bonusCrewForCurrentEvent(this.props.playerData.player.character);
+		if (eventCrew) {
+			console.log(eventCrew);
+			settings.push(`Only event bonus (${eventCrew.eventName})`);
+
+			if (onlyEvent) {
+				data = data.filter(crew => eventCrew.eventCrew[crew.symbol]);
+			}
+		}
 
 		return (
 			<div>
-				<Menu attached={isMobile ? false : "top"} fixed={isMobile ? "top" : undefined}>
+				<Menu attached={isMobile ? false : 'top'} fixed={isMobile ? 'top' : undefined}>
 					<Menu.Item
 						name="command_skill"
 						active={activeItem === 'command_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_command_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_command_skill.png" />
 					</Menu.Item>
 					<Menu.Item
 						name="diplomacy_skill"
 						active={activeItem === 'diplomacy_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_diplomacy_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_diplomacy_skill.png" />
 					</Menu.Item>
 					<Menu.Item
 						name="engineering_skill"
 						active={activeItem === 'engineering_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_engineering_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_engineering_skill.png" />
 					</Menu.Item>
 					<Menu.Item
 						name="security_skill"
 						active={activeItem === 'security_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_security_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_security_skill.png" />
 					</Menu.Item>
 					<Menu.Item
 						name="medicine_skill"
 						active={activeItem === 'medicine_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_medicine_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_medicine_skill.png" />
 					</Menu.Item>
 					<Menu.Item
 						name="science_skill"
 						active={activeItem === 'science_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="/media/assets/atlas/icon_science_skill.png" />
+						<img src="https://assets.datacore.app/atlas/icon_science_skill.png" />
 					</Menu.Item>
 
 					<DropdownOpts
@@ -243,7 +258,10 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 					</Menu.Menu>
 				</Menu>
 
-				<Segment attached={isMobile ? false : "bottom"} style={isMobile ? { paddingTop: '6em', paddingBottom: '2em' } : {}}>
+				<Segment
+					attached={isMobile ? false : 'bottom'}
+					style={isMobile ? { paddingTop: '6em', paddingBottom: '2em' } : {}}
+				>
 					<div
 						style={{
 							display: 'grid',

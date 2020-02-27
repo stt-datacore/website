@@ -42,7 +42,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			let fleet_id = urlParams.get('fleetid');
 			this.setState({ fleet_id });
 
-			fetch('https://datacore.azurewebsites.net/api/fleet_info?fleetid=' + fleet_id)
+			fetch('https://datacore.app/api/fleet_info?fleetid=' + fleet_id)
 				.then(response => response.json())
 				.then(fleetData => {
 					this.setState({ fleet_data: fleetData });
@@ -105,7 +105,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>
-							<Item.Image size="tiny" src={`/media/assets/${imageUrl}`} />
+							<Item.Image size="tiny" src={`https://assets.datacore.app/${imageUrl}`} />
 
 							<Item.Content>
 								<Item.Header>{fleet_data.name}</Item.Header>
@@ -149,9 +149,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 								</th>
 							</tr>
 							<tr>
-								<td><Image size="medium" src={`/media/assets/${event1.image}`} /></td>
-								<td><Image size="medium" src={`/media/assets/${event2.image}`} /></td>
-								<td><Image size="medium" src={`/media/assets/${event3.image}`} /></td>
+								<td><Image size="medium" src={`https://assets.datacore.app/${event1.image}`} /></td>
+								<td><Image size="medium" src={`https://assets.datacore.app/${event2.image}`} /></td>
+								<td><Image size="medium" src={`https://assets.datacore.app/${event3.image}`} /></td>
 							</tr>
 							<tr>
 								<td align="center">Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
@@ -186,7 +186,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 											<div style={{ gridArea: 'icon' }}>
 												<img
 													width={48}
-													src={`/media/assets/${member.crew_avatar || 'crew_portraits_cm_empty_sm.png'}`}
+													src={`https://assets.datacore.app/${member.crew_avatar || 'crew_portraits_cm_empty_sm.png'}`}
 												/>
 											</div>
 											<div style={{ gridArea: 'stats' }}>

@@ -1,4 +1,5 @@
 import { simplejson2csv } from './misc';
+import { calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 
@@ -49,8 +50,8 @@ export function exportCrew(crew): string {
 		{
 			label: 'Level',
 			value: (row: any) => row.level
-        },
-        {
+		},
+		{
 			label: 'Immortal',
 			value: (row: any) => row.immortal
 		},
@@ -60,11 +61,11 @@ export function exportCrew(crew): string {
 		},
 		{
 			label: 'Tier',
-			value: (row: any) => row.tier
+			value: (row: any) => row.bigbook_tier
 		},
 		{
 			label: 'In portal',
-			value: (row: any) => (row.in_portal === undefined) ? 'N/A' : row.in_portal
+			value: (row: any) => (row.in_portal === undefined ? 'N/A' : row.in_portal)
 		},
 		{
 			label: 'Collections',
@@ -149,8 +150,8 @@ export function exportCrew(crew): string {
 		{
 			label: 'Security max',
 			value: (row: any) => row.security_skill.max
-        },
-        {
+		},
+		{
 			label: 'Traits',
 			value: (row: any) => row.traits_named.concat(row.traits_hidden)
 		},
@@ -180,11 +181,12 @@ export function exportCrew(crew): string {
 		},
 		{
 			label: 'Bonus Ability',
-			value: (row: any) => row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+			value: (row: any) =>
+				row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
 		},
 		{
 			label: 'Trigger',
-			value: (row: any) => row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : ''
+			value: (row: any) => (row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',
@@ -192,11 +194,11 @@ export function exportCrew(crew): string {
 		},
 		{
 			label: 'Handicap Type',
-			value: (row: any) => row.action.penalty ? CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.penalty.type] : ''
+			value: (row: any) => (row.action.penalty ? CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.penalty.type] : '')
 		},
 		{
 			label: 'Handicap Amount',
-			value: (row: any) => row.action.penalty ? row.action.penalty.amount : ''
+			value: (row: any) => (row.action.penalty ? row.action.penalty.amount : '')
 		},
 		{
 			label: 'Accuracy',
@@ -216,9 +218,124 @@ export function exportCrew(crew): string {
 		},
 		{
 			label: 'Charge Phases',
-			value: (row: any) => row.action.charge_phases ? formatChargePhases(row) : ''
-		},
+			value: (row: any) => (row.action.charge_phases ? formatChargePhases(row) : '')
+		}
 	];
 
 	return simplejson2csv(crew, fields);
+}
+
+export function applyCrewBuffs(crew: any, buffConfig: any) {
+	const getMultiplier = (skill: string, stat: string) => {
+		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+	};
+
+	for (let skill in CONFIG.SKILLS) {
+		crew[skill] = { core: 0, min: 0, max: 0 };
+	}
+
+	// Apply buffs
+	for (let skill in crew.base_skills) {
+		crew[skill] = {
+			core: Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
+			min: Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
+			max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
+		};
+	}
+}
+
+export function mergeBotCrew(c: any, bc: any) {
+	if (bc) {
+		c.bigbook_tier = bc.bigbook_tier;
+		c.voyRank = bc.ranks.voyRank;
+		c.gauntletRank = bc.ranks.gauntletRank;
+		c.in_portal = bc.in_portal;
+	} else {
+		c.bigbook_tier = 11;
+		c.voyRank = 0;
+		c.gauntletRank = 0;
+		c.in_portal = undefined;
+	}
+}
+
+export function downloadData(dataUrl, name: string) {
+	let pom = document.createElement('a');
+	pom.setAttribute('href', dataUrl);
+	pom.setAttribute('download', name);
+
+	if (document.createEvent) {
+		let event = document.createEvent('MouseEvents');
+		event.initEvent('click', true, true);
+		pom.dispatchEvent(event);
+	} else {
+		pom.click();
+	}
+}
+
+export function prepareProfileData(allcrew, botcrew, playerData, lastModified) {
+	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
+
+	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
+
+	playerData.player.character.crew.forEach(crew => {
+		if (crew.level === 100 && crew.equipment.length === 4) {
+			numImmortals.add(crew.archetype_id);
+		}
+	});
+
+	playerData.calc = {
+		numImmortals: numImmortals.size,
+		lastModified
+	};
+
+	let buffConfig = calculateBuffConfig(playerData.player);
+
+	// Merge with player crew
+	let ownedCrew = [];
+	let unOwnedCrew = [];
+	for (let crew of allcrew) {
+		crew.rarity = crew.max_rarity;
+		crew.level = 100;
+		crew.have = false;
+		crew.equipment = [0, 1, 2, 3];
+		crew.favorite = false;
+
+		let bcrew = botcrew.find(bc => bc.symbol === crew.symbol);
+		mergeBotCrew(crew, bcrew);
+
+		if (playerData.player.character.c_stored_immortals.includes(crew.archetype_id)) {
+			crew.immortal = 1;
+		} else {
+			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
+			crew.immortal = immortal ? immortal.quantity : 0;
+		}
+		if (crew.immortal > 0) {
+			crew.have = true;
+			applyCrewBuffs(crew, buffConfig);
+			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
+		}
+
+		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+		inroster.forEach(owned => {
+			crew.immortal = 0;
+			crew.rarity = owned.rarity;
+			crew.base_skills = owned.base_skills;
+			crew.level = owned.level;
+			crew.have = true;
+			crew.favorite = owned.favorite;
+			crew.equipment = owned.equipment;
+			applyCrewBuffs(crew, buffConfig);
+			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
+		});
+
+		if (!crew.have) {
+			// Crew is not immortal or in the active roster
+			applyCrewBuffs(crew, buffConfig);
+			// Add a copy to the list
+			unOwnedCrew.push(JSON.parse(JSON.stringify(crew)));
+		}
+	}
+
+	playerData.player.character.crew = ownedCrew;
+	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }

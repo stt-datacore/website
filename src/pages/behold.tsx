@@ -38,7 +38,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			peopleList.push({
 				key: crew.symbol,
 				value: crew.symbol,
-				image: { avatar: true, src: `/media/assets/${crew.imageUrlPortrait}` },
+				image: { avatar: true, src: `https://assets.datacore.app/${crew.imageUrlPortrait}` },
 				text: `${crew.short_name} (${crew.name})`
 			});
 		});
