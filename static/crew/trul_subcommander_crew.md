@@ -3,7 +3,7 @@ name: Subcommander T'Rul
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 5
 in_portal: true
 published: true

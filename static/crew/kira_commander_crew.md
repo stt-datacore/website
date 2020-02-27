@@ -3,10 +3,12 @@ name: Commander Kira Nerys
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 18
+bigbook_tier: 6
+events: 21
 in_portal: true
 published: true
 ---
 
-Kira events have rebounded well after a slow 2018, notching three events with six months yet to go. Workhorse is the Commander's middle name - her skill set won't garner much respect, but her CMD base is primo for shuttles and her voyage work holds up fine as she hangs on in the top ten CMD/DIP. And let's be honest, she's worth taking just for the frankly magnificent art.
+Players go crazy 'bout a sharp dressed (wo)man! *Guitar Riff*
+
+The Commander is still an event force with a number of yearly variant events and enough traits to make a difference, but beyond that she's sort of become yesterday's news. Below average voyage work "highlights" the rest of a card which includes a perfunctory collection and molasses arena ability. She's earned her reputation over the years, but if you're looking to acquire her now, it's merely as an event piece, particularly with the waves of CMD/DIP/SEC megas DB throws at us.

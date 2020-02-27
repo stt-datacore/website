@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-If she ever performs for voyages, events, or shuttles it will be a surprise to everyone. If you select her in a behold, it's a one star only proposition for her gauntlet work - or because her artwork appeals to certain itches that only Dominatrix Troi can otherwise scratch. Despite her top ten CMD proficiency, she only holds one ranked pair in the super competitive CMD/DIP set. She's no longer elite after two years in service, but is a fine stopgap for gauntlet-goers who eschew Kahless' price tag. In the arena you can employ her alongside fast activating damage crew to try for one shots at six or eight seconds, though better options can usually be found even among super rare crew.
+Shoutout to whomever mentioned years ago that Nechayev is giving off that naughty schoolmarm vibe. That brain worm isn't going anywhere any time soon and her art pose certainly doesn't help. The Admiral is a one star behold proposition thanks to a top ten gauntlet pair and occasional 45% crit trait set. Don't let her double collections (or hand on hip) tempt you into more stars; you'll never make it to 5/5.

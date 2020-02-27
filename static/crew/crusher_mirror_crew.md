@@ -3,8 +3,8 @@ name: Mirror Beverly Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 10
+bigbook_tier: 5
+events: 7
 in_portal: true
 published: true
 ---

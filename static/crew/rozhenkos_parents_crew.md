@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-They were adorable on the show, but are more of a pet project in game. If you're investing in a 2-skill crew, it has to be for their shuttle or arena work and with zero events to date and no stat sniffing elite, these two are better left pestering Chief O'Brien about the Enterprise specs and diagrams.
+They were adorable on the show, but are more of a pet project in game. If you're investing in a 2-skill crew, they have to be useful outside of voyages, but with zero events to date and no stat sniffing elite, these two are better left pestering Chief O'Brien about the Enterprise specs and diagrams.

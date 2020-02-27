@@ -3,10 +3,10 @@ name: The Duras Sisters
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 11
 in_portal:
 published: true
 ---
 
-[_"Human females are so repulsive!"_](https://www.youtube.com/watch?v=lgRzyichD40) Not quite as repulsive as the thought of throwing away as much time and effort on bad crew as these two require, but here you are. They've accumulated an impressive event count on the backs of two mega events and may indeed trigger one more with their third and final trait, but with bases best suited to requisition shuttles. The name on the marquee has always been their +9 arena attack which is fantastic for ship battles, but with a ten second initiation that's on the slow side these days, you should look for faster where you can. If you've been unlucky getting a crew to match their attack, they're probably worth building, but if their arena offering would be redundant on your roster, then so are they.
+“Human females are so repulsive!” Not quite as repulsive as about 90% of the card. From skill set to traits to event chances to simple stat ranks, Lursa and B'Etor are repugnant. But on ships, they're worth the admittedly cheap cost of fusion. Newer players will want (need) a strong attack crew to help them climb the arena ranks and progress through Skirmish difficulties to reap the lavish rewards of the event type. The duo may activate a bit slower than some of the more popular options, but can be built deterministically by any level of roster.

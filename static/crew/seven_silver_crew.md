@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 11
+events: 14
 in_portal: true
 published: true
 ---
 
-It's odd to see a version of Seven with such good bases. The only variant with a base over 1k has two of them, in fact. She's clearly better than the older Sevens for events, but the fact that she was a global gift does muddy the water a bit. If you're looking to add stars to her, keep in mind that the competition probably also has Silvers, whose 1/5 ENG is actually better than a fully fused [_gauntlet Seven_](https://stt.wiki/wiki/Seven_of_Nine). She's okay-not-good in other areas of the game and if your roster is weak enough that she would be an upgrade for you anywhere but events, then you may want to focus your resources on other crew first.
+A "new era" Seven has bases to put past variants to shame and with Cheesecake Seven following suit and ST:Picard on the horizon, Seven in Silver is a speculative investment. Variant and/or Borg events *should* pick up in some capacity to provide a more impressive event clip than what she's enjoyed to date. She's not recommended in a non-shuttle capacity, despite various top ten voyage or gauntlet metrics. The lack of a third skill and skill pair concerns hamper her utility for all but the youngest rosters.

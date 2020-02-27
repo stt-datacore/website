@@ -4,9 +4,9 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 9
-events: 6
+events: 11
 in_portal: true
 published: true
 ---
 
-She's a shuttle body for two events per year. You won't be (shouldn't be) using her otherwise.
+The only thing saving this, and frankly most Uhura variants from the airlock are semi-regular events with an above average Faction rate. You'll never use her otherwise.

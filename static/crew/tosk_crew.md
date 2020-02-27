@@ -4,9 +4,9 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 10
-events: 5
+events: 6
 in_portal: true
 published: true
 ---
 
-His ENG base is among the least common shuttle skills and there are already three mega crew with better base ENG to fill those non-bonus faction seats. A zero for voyages/gauntlet and his arena EV activates after almost all instant damage crew have blown you to bits. His number was called for a recent mega event and may pop in a weekend or two down the line, but chasing obscure and volatile work should really only be an option if your other behold choices are equally useless or bland.
+An eclectic trait set is Groot's strength as it's already triggered a half dozen event bonuses with, perhaps, room for more. But aside from photos of a few shuttle rides with O'Brien to share among your fleet, there's little to no practical value here.

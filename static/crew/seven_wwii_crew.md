@@ -3,8 +3,8 @@ name: Mademoiselle de Neuf
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 12
+bigbook_tier: 7
+events: 13
 in_portal: true
 published: true
 ---

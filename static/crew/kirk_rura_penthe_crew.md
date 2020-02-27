@@ -4,11 +4,11 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 4
-events: 21
+events: 25
 in_portal: true
 published: true
 ---
 
-His stats and collection are both inspiring. Double digit events to pair with a top SEC base that's elite (no, seriously, it's 1337). Kirk's 85% Faction event rate means that when his event number is called, he will contribute almost without exception, especially considering he's the #1 "SEC and DIP" shuttler in the game. With huge voyage SEC and a stat total ahead of a couple 3-skill crew, he has a chance to catch a ride there too, depending on your situation.
+Kirk's Wrathful variant may have bumped RP down a notch, but don't ship him off to the dilithium mines just yet. Kirk tops the charts for variant events and between boasting an 80% Faction rate, two handfuls of traits, and RP's huge base SEC, you're looking at what is probably the safest event 2-skiller in the game. 
 
-Even better is his shipboard potential. A Skirmish anchor who can cut your battles down to six seconds with the right complimentary crew is invaluable. 500% is the highest that instant damage gets and most other damage crew are +Attack or Evasion. The caveat is a cloak trigger that you'll need to scrape together schematics for from the Dabo wheel or packs, but his ability is worth the extra effort. His first star is important to grab for his ship ability and can save you hours of gameplay over time.
+Even more well known is RP's arena hammer. Instant damage doesn't come any bigger than Kirk's 500% and a ship tailor-made for his cloak trigger, The Valdore, is now in the portal. If you don't trust Ferengi engineering and don't mind an extra button press, RP Kirk is a great arena and skirmish piece who will send your opponents to their frosty death in the wink of an eye.

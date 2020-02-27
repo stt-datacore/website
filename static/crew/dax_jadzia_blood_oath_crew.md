@@ -4,9 +4,9 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 17
+events: 18
 in_portal: true
 published: true
 ---
 
-Certainly weaker than your average Dax, but a useful skill set in the early game and plenty of events later on for which her SEC base sits behind only Mirror Jadzia among variants. She has some use potential in a few phases of the game, just don't let the Dax reputation oversell this version.
+Certainly weaker than your average Dax, but a useful skill set in the early game and plenty of events later on for which her SEC base sits behind only Mirror Jadzia among variants. She has some use potential in a few phases of the game, just don’t let the Dax reputation oversell this version.

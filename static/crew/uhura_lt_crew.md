@@ -4,11 +4,11 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 4
-events: 6
+events: 10
 in_portal:
 published: true
 ---
 
-A brand new Uhura, and almost certainly her best variant, released just a few days after the end of an Uhura event - clever marketing, or slightly silly? You decide! DB may be making an effort to fill out the more barren skill combinations these days, but make no mistake, CMD/DIP/SEC voyagers are ten a penny and age like unpasteurised milk. It'd be one thing if she came with some kind of silver bullet - an aces Gauntlet pair, for example, or killer Arena stats. But no, she's as vanilla as she comes, with fewer bells and whistles than her Gunslinger counterpart, despite having the overall statistical advantage. 
+'Fro-get what years of stomach-churning Uhura variants have taught you - this version is actually pretty good! You can still see most of her stat ranks without scrolling down the pages of a spreadsheet, which can be rare for someone with her skill set.
 
-That being said, it is a  _sizeable_  statistical advantage, and it comes with a fantastic fro, if little else. If you have a particular affection for her character or  [__The Slow Motion Picture__](https://www.youtube.com/watch?v=mvDma4sG8Vg), or just need a particularly strong CMD base that can handle voyages and shuttles, then she'll serve you extremely well. And for those rare Uhura events, she's  _the_  variant to own. Just don't expect her value to go anywhere but down, because this particular crew's boogeyman is age, events, replaceability. . . just about  [_KC and the whole goddamn Sunshine Band_](https://www.youtube.com/watch?v=CaPcKtLioww) .
+The downsides are obvious; skill set, limited event chances, and "Afro Pick Sold Separately!", but you can only ding a crew so much who boasts the sort of base and voyage power that Uhura does. If you collect the requisite number of stars, she's guaranteed work for you, even if she promises not to age as well as her namesake.

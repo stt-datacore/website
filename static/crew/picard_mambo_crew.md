@@ -3,12 +3,12 @@ name: Mambo Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 12
 in_portal: true
 published: true
 ---
 
-[_A slightly goofy, endearing, dancing_](https://www.youtube.com/watch?v=2YvJt86EMGg&t=161) Jean-Luc was certainly feeling his oats after a trip to the Ba'ku planet and it shows in this card. Picard events aren't nearly as frequent as his massive number of variants might suggest, but he still owns double 1k bases (#1 SCI) to make an impact when they do come around. Those bases are even more impressive when you consider the chunk of stats his card has allocated to proficiencies. In the gauntlet he owns two ranked pairs, including the #1 DIP/CMD. It's the most competitive pairing in the game, but combined with a thick roll of DIP sandwiched between Gowron and Guinan (#3), he's still plenty effective. 
+A slightly goofy, endearing, dancing Jean-Luc was certainly feeling his oats after a trip to the Ba'ku planet and it shows in this card. One of the rare times a crew moves upward in the Big Book, Mambo's dual 1k bases are in line for an uptick in weekend usefulness with ST:Picard debuting in 2020. Between regular event work and strong gauntlet credentials including big DIP and DIP/CMD rolls, Mambo will perform in several corners of your gameplay.
 
-His voyage number pops, but  [_Mambo's number one, two, three-four-five_](https://www.youtube.com/watch?v=EK_LN3XEcnw&t=18)  in the DIP/SCI ranks which is curiously quite common at the top of the charts. That's not to say he's redundant, in fact if anything his utility over cards like Xindi Insectoid or Sarah Sisko make him the more useful piece most of the time.
+His voyage scorehas held up well, but Mambo's number one, two, three-four-five in the DIP/SCI ranks which is curiously quite common at the top of the charts. That's not to say he's superfluous, in fact if anything his utility over cards like Xindi Insectoid or Sarah Sisko make him the more useful piece most of the time. If he's hanging around your roster (or inbox) at 1/5, consider feeding him some honor if he offers what you need.

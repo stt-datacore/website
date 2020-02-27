@@ -4,9 +4,11 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 1
-events: 15
+events: 16
 in_portal:
 published: true
 ---
 
-It's no secret that MED/SEC is an uncommon skill pairing, with the best Super Rare option previously being Mirror Phlox - by all accounts, something of an outlier in his overall versatility. Bashir can't quite match his ability to be the best at everything, but he does have some extremely valuable contributions to make, bringing dual collections to the table (including Engineered, one of the harder collections to finish, and needing every 4* it can get) as well as stats even better than his older two skill RAF brother. Definitely worth pulling a pack or two for, especially if you find yourself in need of MEDical attention.
+Captive's respectable event clip is propped up by a couple previous mega events, but there's a little wiggle room for more trait action. And the Bashir character has been prone to event droughts, to boot. All this is to say that his Faction usability may stop and start, but he sports plus event potential overall, particularly if you routinely pass on any of his handful of mediocre legendary variants.
+
+Of more interest are double collections and fantastic voyage potential. MED/SEC is an uncommon stack and a good power/trait combo as well as the best voyage MED this side of Mirror Phlox suppliment the skills well to give him better staying power than almost any other super rare voyager. The occasional 45% gauntlet presents minor one-star opportunities, but Bashir is more event (and voyage) focused than his MED gauntlet counterparts.

@@ -4,9 +4,9 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 5
-events: 16
+events: 20
 in_portal: true
 published: true
 ---
 
-Fairly vanilla crew. His two areas of interest are in the arena and events. A chunk of damage at eight seconds without a trigger is just peachy for skirmishes and many arena situations. And though I won't pretend to know how Discovery will play out in the future, there's no denying that the Disco and SEC 31 traits have not only been among the most valuable to date, but are likely to be so going forward.
+Leland would be a forgotten man if not for his two big anchor points - Disco (and Section 31) events for a bonus tally that blows by household names and triggerless arena damage which is just a step below the big shipboard options and does a fine job of shortening the skirmish grind. If you're well stocked in those areas, his only other point of interest is a middling gauntlet pair which occasionally pops up with 45% crit. He's a good starter crew, but has a ceiling of Disco requistion shuttles on established rosters.

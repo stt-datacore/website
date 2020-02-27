@@ -3,8 +3,8 @@ name: Sarek
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 2
-events: 21
+bigbook_tier: 3
+events: 24
 in_portal: true
 published: true
 ---

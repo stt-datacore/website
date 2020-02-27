@@ -4,11 +4,11 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 5
-events: 19
+events: 24
 in_portal: true
 published: true
 ---
 
-No, you haven't wandered into the Super Rare crew, those are Gangster's actual stat ranks. Yet somehow he manages to dodge those poor numbers and contribute. First and foremost, he's well known in the gauntlet. Despite taking a beating there from recent crew additions, he still owns the #2 SEC/ENG ranked pair (three pairs total) on the strength of his #1 overall SEC proficiency.
+No, you haven't wandered into the Super Rare crew...those are Gangster's actual stat ranks. Yet he still manages to dodge those poor numbers and contribute. The gauntlet is Gangster's game and despite taking a beating there from recent crew additions, he still owns the #2 SEC/ENG ranked pair on the strength of his #1 overall SEC proficiency. A lengthy trait list has him popping up with 45% crit from time to time and helps make him a practiced Caretaker sniper.
 
-His SEC is also worthwhile for events where a good-for-super-rare number meets reliable event chances. Eleven traits are useful for triggering bonuses of all sorts for events, voyages, and gauntlet crit. Though I can't recommend that the average player invest more than one star, he triggers the difficult Jury Rigger collection when fused. If you add stars to him for that reason and/or events, his return on investment may not match other crew, but a useful skill set is likely to garner him some work outside the gauntlet.
+Beyond that, he profiles similarly to many gauntlet crew - poor base and voyage numbers. There's a gulf in usefulness betweens stars one to five and even though his return on investment is poor compared to many cards, Spock events and good-for-super-rare bases should earn him Faction work at higher fusion levels, even if it's on requisition shuttles.

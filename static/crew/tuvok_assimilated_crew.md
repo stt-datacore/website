@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-His voyage numbers are still good enough and he compliments them with lots of variant/trait events, double collections, a good SEC base, and +9 arena attack. He's a swiss army knife reminiscent of his Borg brother La Forge.
+CMD/SEC rarely needs help from players to burgeon on a roster and with a sinking voyage rank beside, that area of the game is not a big part of Tuvok's value any longer. Still of note are double collections and some steady event work punctuated by a few traits headlined by Borg. If fused early, his substantial attack boost on ships can be of benefit for the Arena and Skirmishes, even considering a slow activation time.

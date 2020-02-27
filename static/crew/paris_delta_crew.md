@@ -3,10 +3,12 @@ name: Delta Flyer Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 16
 in_portal: true
 published: true
 ---
 
-Paris' sagging rankings are beginning to catch up to him, even if he's dodged them expertly so far with what is in my opinion the most useful skill set in the game. There's almost no competition for ENG/MED or CMD/MED and you might not notice lower overall totals when you send Mr Torres (or is she Mrs. Paris?) on voyages as a viable option in many cases. In fact, only one other crew in the game shares his skill set. Paris variants joined the ten event club back in 2018, but his traits have pushed that number up even further and in combination with two variant-best bases and 75% of his events having included a Faction component, that means as much work as he can handle, both daily and on the weekends.
+Like my belt at Thanksgiving, we're going to see just how much Paris' skill set can handle before it snaps. It's already Altas holding up the world as the best skill set in the game drags pathetic voyage strength kicking and screaming into service for some of the game's rarest skill combos and even puts some medium strength gauntlet roles into play, thanks to that lack of competition and the occasional 45% gauntlets.
+
+CMD and ENG bases still tops for Paris variants may be equally weak, but Paris boasts a good Faction rate thus far and only one of nine traits have been picked for mega duty, leaving him more wiggle room there. A skill set does not a crew make and even though it's done a valiant job making Paris relevant thus far, when you start adding stars to him you're going to wonder how many it takes before the numbers on the screen finally look good.

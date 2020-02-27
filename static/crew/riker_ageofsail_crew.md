@@ -4,9 +4,9 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 11
+events: 12
 in_portal: true
 published: true
 ---
 
-[_I'll just put this here._](https://www.youtube.com/watch?v=vfF4Jq478_s) The beard, the lean, the grin. No one can resist the Riker charm and he certainly deserves more events. As for the card; formerly top shelf voyage stats are drooping, but remain good enough for daily voyage work with the odd weekend chip-in thanks to his #1 variant CMD. Someone pm me on the day I need to edit in his Age of Sail collection.
+Riker had a bountiful event year in 2019, but still short his due vanity collection and with dreary bases beside, AoS is flying at half mast without a handful of stars. An overstuffed skill set undercuts a formerly great voyage ranking that has fallen to merely average. Riker's steady event tally in combination with a handful of intriguing traits should give his modest bases relevance into the future, but he's gone from behold target to consolation prize.

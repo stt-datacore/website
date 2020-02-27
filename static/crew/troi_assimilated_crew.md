@@ -4,9 +4,11 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 1
-events: 16
+events: 19
 in_portal: true
 published: true
 ---
 
-Approximately no one's prediction for the next Troi variant, this pale lass may be unexpected, but by no means unwelcome. With a huge voyage score that outstrips her Mintakan sister by a whole two points, she provides a rarer skill set at the cost of particularly interesting traits - but who needs traits when you're Borg, baby? Especially one of only two Borg packing MED. With the 2019 Borg Faction still shiny and chrome and looking ripe for future exploration, Troi also nets two collections, +1 Borg and +1 Timelines' Originals, as well as an all expenses paid trip to a bevy of events. Assimilation has never been so therapeutic.
+One of Troi's therapeutic traits caught a bonus to close out 2019, but it's her more assimilate-y buzzwords that have our interest piqued. Borg may (or may not) be in line for more weekend work via ST:Picard and the perennial baddies are due to pop up sooner or later regardless of TV futures. Paired with healthy Troi event work, this card's one weakness, bases, can still find work for many rosters.
+
+Elsewhere, Troi is dynamite. Voyage work among the elite thanks to a beautiful marriage of skill set + power, double collections, and even 65% gauntlet crit capability available at one star for younger rosters. A grab bag of value worthy of behold capital.

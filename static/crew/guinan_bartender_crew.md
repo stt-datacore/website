@@ -4,11 +4,11 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 4
-events: 1
+events: 2
 in_portal:
 published: true
 ---
 
-Whoopi is world-renowned for her big gauntlet rolls and even bigger hat. But [_did you know that_](https://www.youtube.com/watch?v=bSJAwndDTds) she's great for voyages too? Seeing any kind of MED near the top of the voyage ranks was a rarity for a long time and despite DB recently opening things up a little more, she's still holding strong as a top DIP/MED option. There's very little to talk about in the way of shuttle or event work, but her gauntlet prowess helps make her among the best daily use crew in the game. A #1 ranked DIP/MED pair (by a big margin) in combination with two hefty single rolls has given her preeminent status in the gauntlet since her introduction two years ago. And as you may hear from unhappy gauntlet-goers, she even has a trait set all to herself; El-Aurian, Marksman, and Communicator combine to put her head and shoulders above everyone else for 48 hour at a time. 
+Fittingly for someone who's been to the Nexus, Bartender Guinan is a crew somewhat in purgatory these days. There's a cost associated with citing gauntlet reward crew now that they're able to drop after rotating out, meaning that her voyage potential may not be realized any time soon on some rosters. If you do have her finished, she's still useful there, but names like Vina, Merry Troi, and Humbled Archer have begun chipping away at her value.
 
-There is a sense of waning power with the proliferation (and buffing) of DIP monster Locutus and even a mega event Minuet that nearly matches her DIP and can catch her napping. But unless you're overstocked with the best that the gauntlet has to offer, Guinan remains a great choice for professional coin flipping. With the change to gauntlet rewards, you may not want to cite her for fear of pulling additional copies in the future, but considering her voyage utility and the chance to smash an occasional gauntlet, a second copy is likely to do alright on most rosters.
+Guinan's gauntlet power is waning too with the proliferation of Locutus again and a few MED/SEC names, though she remains untouchable and dominant in her monthly 65% crit gauntlet. A great rotational gauntlet piece (or anchor for newer players), worthwhile voyage value, and an exclusive collection spot comprise significant value for a single crew, even if you feel hamstrung by her fusion situation.

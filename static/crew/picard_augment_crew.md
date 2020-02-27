@@ -4,9 +4,9 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 19
+events: 21
 in_portal: true
 published: true
 ---
 
-Even though Picard's event count has yet to catch up with his ridiculous number of variants, Augment's SEC sits on the top of the heap and, in combination with a couple traits, has popped up in double-digit events. I can't promise a CMD/DIP/SEC crew with his voyage total will make too many runs for you, but it's more of a perk that event-similar 2-skill crew lack. He remains a solid event contributor, but you may find him otherwise limited.
+The voyage work and general utility outside of a vanity collection spot isn't there anymore for one of several fake Picards, but he still has a TV series and a medley of interesting traits to look forward to which should provide plenty of weekend work. If you're looking for a prognostication for a pair that packs a punch in 2020 and beyond, Burnham and Picard are the names to watch.

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Freeze and forget for the Inspiring collection. A few traits should trigger mega bonuses down the line, but his bases are best suited to requisition shuttles.
+Nearly zero long-term usefulness outside of two event features. Some early game voyage work is available due to his skill set.

@@ -3,10 +3,10 @@ name: Agent Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 14
+bigbook_tier: 8
+events: 18
 in_portal: true
 published: true
 ---
 
-Though not a special crew by any means, Agent Janeway is usable enough to be a value pick in certain beholds. The first thing to note is a recent stealth nerf to this card which removed her Section 31 trait. Not only has that trait accounted for four extra events (one per calendar year), but could be a huge factor in the future based on the way the television winds blow. Going forward, her dual 1k bases will have to rely on Janeway events only, barring a Costumed mega. DIP/SEC is not an appealing voyage combo for prospective crew, but a tertiary SCI gives her somewhere else to sit, extending her life as an option on your roster.
+Janeway is not an event name you need to worry about, even if she's had her ups and downs, but that's about all you're getting from the former Section 31 recruit. Her voyage power is missing in action and her traits' pools would seem to be either too large or too small to support much weekend work out of left field. A #2 variant SEC base just ahead of former mega Determined Janeway is just about all she can hang her hat on for contributions to your roster.

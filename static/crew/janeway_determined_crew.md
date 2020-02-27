@@ -4,11 +4,11 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 3
-events: 18
+events: 14
 in_portal:
 published: true
 ---
 
-First things first; yes, cite her if you can. Outside of her mega, Janeway will continue perform well on voyages, shuttles, and weekends for a long time to come, so she is well worth the investment, and stacks up well alongside the rest of the numerous ENG/SEC crew options DB has released recently. In particular, she is an almost exact copy of Delta Flyer Torres, down to an identical voyage score. Where the other crew cannot match her, however, is collections, where DB has done all of us a tremendous favor and given Janeway the all-important Jury Rigger trait, along with Veteran, should you need it.
+First things first; yes, cite her last star if you haven't. Outside of her mega, Janeway will continue to perform well on voyages, shuttles, and weekends for a long time to come. She's worth the investment and stacks up well alongside the rest of the numerous ENG/SEC crew DB released in 2019. For the price of a single star, she hits on two collections including everybody's favorite Jury Rigger.
 
-Janeway's events have slowed down considerably over the last year and a half, but two features so far in 2019 give hope that things may be changing there. That's good news, because her Survivalist Kirk-like monopoly on ENG for Janeway variants will give her a huge advantage over the field, with a 20% base lead over her only other competition, the good Vice Admiral. If you're looking for downsides, Janeway brings nothing to the Gauntlet, and her ship ability makes her little more than a hull-repairing warm body for Skirmishes, but these are trivial compared to everything else she brings to the table. She may come from a  [_year she'd like to forget_](https://www.youtube.com/watch?v=CjQ784S2xKg), but Determined Janeway is built for the long haul and will make a lasting impression on your roster.
+If you're coming to her new in a behold, you can expect a fairly complete package. A base/event pairing you can set your replicated watch by, bolstered by a bevy of traits tied for the most among Janeway variants, second tier ENG/SEC voyage power, and double collections. Considering the plethora of statistically weak Janeways, Determined stands out as one to target if you have too many basic coffees in your inventory.

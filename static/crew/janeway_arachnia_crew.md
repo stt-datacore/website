@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 13
+events: 18
 in_portal: true
 published: true
 ---
 
-The Janeway event spigot was turned off in 2018 and few of her traits (costumed) seem to be in line for a future mega. With her voyage numbers dead last among all CMD/DIP/SEC legendaries, that sort of bonus dry spell can tank the desirability of any card. Her events have picked back up and a vanity collection spot and workable arena numbers are considerations, but her daily use is too poor to justify taking her for an event count which may rise, but likely not return to its previously stellar rate.
+Arachnia hasn't deserved the title of 'Queen' for about three years now and with honors like 'worst CMD/DIP/SEC voyage total', you should know what you're getting into before she skunks you with her pheromones. The third ranked Janeway DIP base (respectable, for its age), which has poor chances to flourish through trait events, and a vanity collection spot. There's still is value to be gleaned from this aged monarch, but don't expect any daily use.

@@ -3,10 +3,12 @@ name: Captain Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 23
+bigbook_tier: 5
+events: 29
 in_portal: true
 published: true
 ---
 
-There were many lamentations that the iconic movie Spock wasn't give the stats to back up his on-screen gravitas, but he's still plenty serviceable any day of the week. CMD/SCI voyager options have been more fleshed out recently, but several of them are not yet in the portal. With rank 100 being the new average, Spock can certainly hold his own there if you choose to invest in him for event or emotional reasons. On the topic of events, Spock's heady event count meets his traditional two scoops of traits for a voyage antimatter boost or stray weekend bonus. There are already several superior SCI options among variants, but his CMD base is #1 and likely will have no trouble pitching in on Spock-flavored weekends.
+Captain Spock would remind us that "Klingons don't have tear ducts", but forum posters do. Stats for the iconic movie Spock came in a hair under impressive and heralded the opening of many new salt mines, but a year and a half later, he still has some usefulness as a mid-level card. 
+
+Go figure, his stats haven't gotten better over time, but he's still teetering on the plus side for voyages with a dash of new player gauntlet utility when he collects a favorable gauntlet crit number from one or more of his many traits. Spock's main contribution continues to be events, also boosted by traits, with perennially strong bonus chances and a pair of usable (but weak) bases.

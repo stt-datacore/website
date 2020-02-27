@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-It seems strange to see a respectable stat like ~~Joseph Sisko's~~ Cartwright's CMD ranked this low. Emphasis on seems. He's a zero for events, a zero for voyages, a zero for the gauntlet, and only passable in the arena. In a typical Faction event there are currently over 200 crew who, with a 2x bonus, are better than a 5/5 Cartwright and several more that rank a bit lower, but perform better because of their bonus affecting skill boosts. Don't let a big base sucker you in if they don't have events in which to use them and offer nothing else.
+Brock's gunna getcha! It seems just about time for one of those off the wall trait megas and Gambler or Saboteur (of wooden shoe origin - thanks, Valeris) would make Admiral Arrestthosemen relevant for a brief period. Until that happens, relevant he is not and not worth the behold equity.

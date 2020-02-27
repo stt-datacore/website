@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 3
-events: 8
+events: 10
 in_portal: true
 published: true
 ---
 
-Often imitated, rarely duplicated - the originator of the coveted ENG/SCI/MED skill set has attracted a half dozen followers to its ranks, but the skill set remains undeniably valuable. His daily use value is off the charts; he's irreplaceable for a few different voyage combos and has two shuttle-worthy bases. Once in a while you'll see him [_stroll through the gauntlet saloon doors_](https://www.youtube.com/watch?v=vgqRis_czYg) when his #2 ranked pair and 65% crit trait set align. And when you immortalize him (and you _will _immortalize him), he hits on two stat-boosting collections. Spotty-at-best event and gauntlet work are unable to prop up slowly drooping stat ranks, but a rare skill combo and stats that still demand daily work ensure that his slide will be a graceful one.
+Saluti! Allow me to regale you with the story of Leonardo da Timelines. The first legendary to sport the ENG/SCI/MED skill set is not far off from turning three years old, yet he remains among the more effective crew in the game. His delicious trait mélange has afforded him enough cracks at the event wheel for our purposes as more should continue to trickle in from megas and one-offs. Fringe collection and gauntlet offerings add a bit of garnish to his main course; voyages. Though crew wearing his skill set now number in the double digits, the blessed union of skill set and raw stat total allow him to mantain his mantle of key voyage cog.

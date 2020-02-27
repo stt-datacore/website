@@ -4,9 +4,9 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 3
-events: 25
+events: 24
 in_portal: true
 published: true
 ---
 
-Just like his brother Navigator Stamets, Mirror debuted with a #1 Discovery base (now #3) and above average voyage numbers. The time since has not been kind to him, however. 2019 has been the year of the rare skill set, which includes ENG/MED, and a couple better Discovery SCI options (and SCI in general) were added. The skill set and multi-week splash potential are still attributes you want to acquire for your roster, but aren't as rare as they once were. Think of him as da Vinci junior with a less daily maneuverability, but explosive event potential.
+Everybody's favorite Uncle Jesse, played by John Stamets, was a total hoss upon release. One of the earlier ENG/MED crew, the evil exomycologist carried the banner of top Disco SCI through a event-loaded 2019. He's since come back to earth rank-wise, but punches up with a skill set to lift a mediocre voyage score and a fantastic event clip, even if variant weekends have been sparse. His trait mix is thinner than it appears at first glance, but with useful voyage and event offerings, he's a fine crew to behold or even cite.

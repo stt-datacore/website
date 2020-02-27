@@ -3,10 +3,10 @@ name: Cadet Sylvia Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 17
 in_portal: true
 published: true
 ---
 
-More variants are undoubtedly coming, but for now the Cadet owns two variant-best bases and one of the best Disco ENG stats. Unfortunately, variant events simply aren't happening and we've just received our third ENG primary mega crew. Still a useful event piece for as long as Disco mega months continue, but she's beginning to slip for daily use.
+Tilly's event work would be safe if Discovery megas follow TOS' suit and shift to bridge crew only, but that's more or less the extent of her usefulness. With poor traits and a curious lack of variant events as well as a handful of prior ENG primary mega crew, you may not use her for much else. A fine event piece with a big bonus tally to date, but don't be surprised if that's all she does on your roster.

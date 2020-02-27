@@ -1,14 +1,14 @@
 ---
 name: Zhian'tara Odo
 rarity: 5
-series: tos
+series: ds9
 memory_alpha:
 bigbook_tier: 4
-events: 24
+events: 25
 in_portal: true
 published: true
 ---
 
-2018 was a bad year for Curzon's host. Professor Sato took a dump on the DIP ranks below her and more recently [_an Archer variant_](https://stt.wiki/wiki/Humbled_Archer) displaced Odo from the #2 base spot as well. Events and bases as a whole lost a bit of lustre with the introduction of a new ranked reward system where high event count crew no longer win you more of the same, but rather a lottery draw of next week's random legendary. There's also his redundant skill set and zeroes for the gauntlet, arena, and collections to consider.
+There was a time when you could call KurzOdo the best crew in the game. His DIP base was monstrous and his event work unchallenged. Nowadays, the game welcomes a big DIP seemingly every other week while crew you've never heard of blow past his impressive event count due to the plethora of trait and TV-fueled mega events. So where does that leave Zhian'tara Odo?
 
-But the key to his respectable rating here and in the opinion of many players isn't found on most spreadsheets or wiki pages; he counts as bonus for Dax events as well (click the link in his name for more info). He's still rock solid for events as an obviously variant(s)-best DIP and a shuttle all star.
+Well, his voyage power has nearly shriveled up, but the dude's event value abides. In a unique situation, Z'Odo qualifies for Odo AND Dax events which, combined, have never failed to tally at least three events in a calendar year. Working in concert with an interesting trait set and a base that remains stout, Zhian'tara's weekend situation is a special offering that you want to acquire if possible and allows him to stand out on rosters, even as his utility narrows.

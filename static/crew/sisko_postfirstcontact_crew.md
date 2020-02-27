@@ -3,10 +3,10 @@ name: Captain Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 14
+bigbook_tier: 9
+events: 15
 in_portal: true
 published: true
 ---
 
-CMD/DIP/SEC voyage numbers scraping the bottom of the barrel mean that Captain Sisko relies on his event work and collections for relevance. His CMD base is only second among Siskos (#1 Niners was given as a global gift), but close enough for our purposes and pairs nicely with both a healthy event count and double collections. There aren't too many situations where it would be prudent to spend honor on Ben, but double collections make him worthy of consideration, especially if you have a few stars on him already.
+A repugnant combo of skill set and limp stat total makes him a non-starter on voyages, leaving events as his only path to contributions on your roster. Plenty of variant events and two scoops of traits will activate Ben perhaps 2-4 weekends per year on your shuttles, but that's his upper limit.

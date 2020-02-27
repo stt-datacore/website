@@ -4,9 +4,11 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 5
-events: 14
+events: 15
 in_portal: true
 published: true
 ---
 
-Two of his best attributes come from the less common corners of a card - 400% damage in the arena and two stat-boosting collections. His healthy event count and CMD base (26 points off of variant-best) are fine additions as well and average voyage numbers have a chance to find some voyage work if you channel honor into him to finish off collections. Frankly boring, but well-rounded.
+It's alright that Sisko's voyage power isn't there (anymore), his skill set isn't one that you need more of in that area of the game anyways. B.A. Sisko is more of an event piece with a useful arena ability attached. One Sisko is pretty much as good as the next for his events (unless you're wearing a tux) and with almost double digit traits, you can pencil him in for a few bonuses yearly.
+
+His Skirmish and Arena nuke hits for the max amount among triggerless options and is a fine substitute if you're missing one of the top shelf options. Double collections are there if you need them, but are a blip on the radar for his overall value.

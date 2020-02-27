@@ -3,7 +3,7 @@ name: Warship Yar
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 10
 in_portal: true
 published: true

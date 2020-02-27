@@ -4,9 +4,9 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 5
-events: 15
+events: 21
 in_portal: true
 published: true
 ---
 
-I often make the claim that CMD/DIP/SEC crew don't age gracefully, but the Universal Fizzbin Champion is two years old now and proving me wrong. He's still a worthwhile base option and above average CMD/DIP/SEC voyager with double-digit events. He may not be as versatile as some and his skill set often needs an extra star to beat out its peers due to higher competition, but if you invest in him, he pays it off without a doubt.
+Going on three years old, the utility just isn't there anymore for Hannibal, unless you count Fizzbin instructor. Kirk's voyage power (including skill set) is firmly in its twilight years and there are no interesting corners of the card to dive into. That being said, you won't find more clockwork event bonuses outside of current TV shows than the Icon James T. and Gangster has an established CMD lead over the pack. He's a fine event card to snag copies of against poor or irrelevant options, just don't expect much heavy lifting day to day from a crew his age.

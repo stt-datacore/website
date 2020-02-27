@@ -1,11 +1,11 @@
 ---
 name: Ensign Robin Lefler
 rarity: 3
-series: ent
+series: tng
 memory_alpha:
 bigbook_tier: 2
 events: 0
-in_portal:
+in_portal: true
 published: true
 ---
 

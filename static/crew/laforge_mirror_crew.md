@@ -3,8 +3,8 @@ name: Mirror Geordi La Forge
 rarity: 4
 series:
 memory_alpha:
-bigbook_tier: 2
-events: 16
+bigbook_tier: 3
+events: 17
 in_portal: true
 published: true
 ---

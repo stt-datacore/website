@@ -3,8 +3,8 @@ name: Prospect Michael Burnham
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 2
-events: 16
+bigbook_tier: 3
+events: 23
 in_portal: true
 published: true
 ---

@@ -3,10 +3,12 @@ name: EV Suit Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 20
+bigbook_tier: 4
+events: 24
 in_portal: true
 published: true
 ---
 
-[_Fugazi Burnham_](http://i.imgur.com/6e22bYi.jpg) is in some ways a poor man's First Officer Burnham. Same great CMD base, same skill set, same, well, character. But the (wo)man in the suit is not without merit. Her numbers are great and...are actually just good enough on their own. There's no hidden gem to discover(y) here, she is simply a base/event powerhouse with sufficient voyage ability.
+Not to be confused with older sister First Officer Burnham, this variant is a great event piece and...not terribly much else. Adaquate voyage numbers come in a bit lower in 'Real Feel' situations, thanks to a poor skill order resulting in lots of CMD/SEC seating competition from more popular names like big sis. EV's list of traits which swap between bloated and esoteric, likely won't provide much event help down the line. 
+
+Luckily for her owners, you won't need it. Discovery has been leagues ahead of anything or anyone else in event opportunity for years and Burnham herself will never hurt for variant bonuses. In combination with a fat CMD base to guarantee her a shuttle spot in any configuration, she's a fine behold option whose value swells a bit for players who lack top voyage options sharing her skill set.

@@ -3,8 +3,8 @@ name: Mirror Reed
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 12
+bigbook_tier: 8
+events: 10
 in_portal: true
 published: true
 ---

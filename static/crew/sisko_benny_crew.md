@@ -3,10 +3,13 @@ name: Benny Russell
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 12
 in_portal: true
 published: true
 ---
 
-Benny's #1 variant SCI and DIP bases paired with a healthy event count comprise the bulk of his value. Unlike certain rare skill combos, a SCI/DIP voyage total is a fairly accurate one where you're likely to have some capable options, especially if you were around for Surak. Speaking of whom, Surak dominates Benny's one ranked pair in the gauntlet as well. He's a rotational option for new rosters who should quickly fall out of favor, but adds a bit of daily use value. As they say, 'black don't crack' and after two and a half years, Benny is still capable of helping you win weekends, even if he lacks pop elsewhere.
+Benny doesn't quite live up to his reputation these days, despite a fantastic on-screen affair. His gauntlet pair is respectable at a glance, but it's stuck between a rock and a hard place. Two even proficiency rolls won't win any 1-for-2 matchups and the four names above him are all well-known and highly sought after, including Locutus who can smash him with one armature tied behind his back. His single collection spot is a simple matter to complete with super rares and former mega gold and both his voyage power and skill set are shy-away for anyone playing for any length of time.
+
+The last bit of bad news comes from the trait department, which are either too common or esoteric to be likely event candidates down the line. Thankfully his SCI base faces little competition for variant events which have included multiple features and at least one Faction in each calendar year. Between sporadic shuttle chances and early game gauntlet work, Benny is an alright behold choice who will have chances to help you, even if only on the weekends
+.

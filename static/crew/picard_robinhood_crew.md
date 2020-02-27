@@ -3,8 +3,8 @@ name: Robin Hood
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 9
+bigbook_tier: 3
+events: 11
 in_portal: true
 published: true
 ---

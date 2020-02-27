@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Soval's bases aren't really good enough for daily use which leaves the Vulcan trait as his most likely chance to man a shuttle. If you're taking him in a behold it's almost always for his rare arena ability; EV available at one second. His DIP proficiency ranked near the top 10 is notable, but the skill pair is crowded with options and his chance of snagging wins there is slim.
+Let's not bury the lede - arena evasion at one second is the only notable thing about a crew who is, aptly, dry as Vulcan. But needing a full contingent of stars just to protect a small credit investment doesn't make Soval worth the behold capital. Vulcan and a handful of untapped event traits aren't supported by bases strong enough to justify selecting him for that area either.

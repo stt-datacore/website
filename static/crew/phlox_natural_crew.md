@@ -3,10 +3,10 @@ name: Phlox, Au Naturel
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 5
 in_portal: true
 published: true
 ---
 
-Even if you don't have fond mammaries of Phlox, you have to admit his body of work is impressive. The cupboard has long been bare of ENG/MED crew and with a thicc SCI base which nips at the heels of the renowned Surak as well as meaty voyage power, Naked Phlox is an extremely titillating crew. Only one other crew shares his order of skills and though event work may be hard to come by, he outperforms his voyage score and can even pitch in for the odd gauntlet with two low ranked pairs.
+Even if you don't have fond mammaries of Phlox, you have to admit his body of work is impressive. The cupboard is no longer bare of ENG/MED crew and we can be more pec and choosy about who we thrust out there, butt he's still a member of a most attractive skill set. And while his SCI base no longer warrants a wolf whistle, it's still a thicc and formidable package when taken alongside his fringe benefits, such as his low-hanging gauntlet pair. P.P.S - don't let him slip through the crack if your voyages need some lift. Just don't focus on the fact that his shuttle and event contributions are so naked.

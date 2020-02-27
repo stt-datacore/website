@@ -3,12 +3,10 @@ name: Laborer Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 21
+bigbook_tier: 6
+events: 29
 in_portal: true
 published: true
 ---
 
-An extraordinary 2-skiller, Laborer is built from the ground up to be the prototypical event crew. His bases are #2 and #1 among variants, his event count is steadily climbing (Spock, Vulcan, Exobiology, Musician), and his twelve traits are second most in the game which gives him plenty of chances for one-off event bonuses. If you want to avoid starring up the likes of Captain Scott to finish your Jury Rigger collection, Laborer is there for you.
-
-He's also a premier defensive tool in the area. A huge +10 EV at 4 seconds with a helping of shield repair on top is obviously great and can match nearly every early activating instant damage crew. None of the crew with abilities that exceed Laborer's +10 EV can activate that quickly and only one (Dancing Chekov) activates before 8 seconds.
+A monster trait and event tally buoys a pair of now-average bases to far more relevance than your average 6-pack flavor of the week crew. He also has a shot at everyday use with the premier defensive ability in the arena for anyone who was lucky enough to miss out on former mega Minuet. Dual collections sound better on paper with one of them being laughably easy to finish and Laborer's lack of voyage work to justify the honor spend, but with such a happy mélange of weekend relevance, he's the rare 2-skill gold who's justifiable as a behold choice.

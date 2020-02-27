@@ -3,10 +3,10 @@ name: Mirror Zefram Cochrane
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 12
 in_portal: true
 published: true
 ---
 
-Just a few tweaks away from being great crew, but Zef is still useful. Dual 1k bases paired with several eventable traits grant occasional weekend value and his skill order among 5*s is shared by only two other crew. Not a candidate for citations unless you're nearing the threshold of his collections, but someone you should be glad to snag from a behold.
+A skill set that used to be rarer, collections that used to matter, and voyage power that used to be useful. Now slumped in the stat rank doldrums, Zef's primary benefit is a gorgeous, double-digit smörgåsbord of traits which have provided a respectable number of event chances while promising more down the line. There's a chance of sporadic voyage work for the average roster, but fusion capital for that purpose would be better spent elsewhere. Bound to pop up in shuttles when you least expect it, Bearded Cochrane is a fine low-end behold choice to save your bacon if you're looking at some other stinker behold choices.

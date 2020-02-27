@@ -3,12 +3,12 @@ name: Tactical Officer Neelix
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 8
 in_portal:
 published: true
 ---
 
-When a profile starts with dethroning Warship EMA, you should know immediately we're dealing with a card that should not be taken lightly, even if, to be fair, [_it's Neelix_](https://www.youtube.com/watch?v=VWlv_02fRyY). Yes, say hello to the new #1 SEC/MED voyager, and to raw voyage power that the game has not made available outside of Tuesday packs since Captain Braxton. That alone makes Tin Cup close to a must-have, which is good, because when you step away from his lofty spot on the voyage ranks, there are some sizable holes in his resume. He's all but a zero for Gauntlet, his ship ability is pretty bland, and Neelix variants are only good for about one event a year outside of the Survivalist mega he comes from and possibly a one-off trait match down the line (looking at you, Chef).
+When a profile starts with dethroning Warship EMA, you should know immediately that we’re dealing with a crew who should not be taken lightly, even if, to be fair, it’s Neelix. Say hello to the #1 SEC/MED voyager, and to raw voyage power that the game has not made available outside of Tuesday packs since Captain Braxton. Tin Cup's voyage metrics across the board are gaudy and stellar enough to even make his 1300+ SEC base a footnote.
 
-On the plus side, however, his variant-best SEC and MED bases will ensure when his number is called, he will step up and fill the role that is required of him admirably. In the end, Neelix's numbers speak for themselves and cannot be denied, and though he may not be useful everywhere, where he is, he crushes it.
+Which is understandable - Neelix is not a household event name and with some fairly esoteric traits beside, his chances to anchor weekend shuttles may be few and far between. Despite a decidedly negative utility profile, his voyage power is underrated even among top ten names and his bases will Hulk Smash what few event chances he can accumulate.

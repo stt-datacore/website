@@ -3,10 +3,12 @@ name: Doctor Ann Mulhall
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 3
 in_portal:
 published: true
 ---
 
-Doctornate Future Ann Daxhall immediately drew comparisons to AF Jadzia for her big SCI base, but there's no way that trading Dax's prodigious event count for a base improvement of less than 1% can be seen as anything but a downgrade. Mulhall's traits are a notch less useful as well with perhaps only Explorer in line to snag future weekend bonuses. Thankfully she compensates with more voyage power in a skill set which is no longer uncommon, but is more useful with much of its representation not yet in the portal. If we break with the Jadzia comparisons and checklist the corners of this crew, Mulhall offers very little in the way of fringe or luxury benefits, but will perform well as a stout base/voyage crew for daily use and [_hits the right note_](https://docs.google.com/document/d/1ycUq3J1E4xr1z4Pe6BfT56-M1SBaEYtWsl-O4oPwxlk/edit#bookmark=id.xb0y6yxtwr8l) for non-bonus Faction shuttles.
+Holding a spot atop the SCI base rankings, Mulhall has proven more a spreadsheet warrior than roster cornerstone. Only one trait, Exobiology, has borne any fruit from any otherwise lean trait set, leaving her in mop up shuttle duty by only a hair over far more rangy options like Spock or Dax. The Big Book branded "Empty Calories crew™️" would seem to apply here, though the value one gets out of big bases varies largely from player to player.
+
+If you're looking for a supplementary payoff for your investment, it's solely voyage ability which is above average, but in an increasingly crowded skill set. The numbers are there for Pulaski's progenitor, but she'd be a much more comfortable investment if they were attached to repeat value like a main cast name.

@@ -4,9 +4,9 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 2
-events: 10
+events: 12
 in_portal: true
 published: true
 ---
 
-Strong voyage numbers with an 800+ base, double collections, regular events, and even arena EV at 4 seconds. It's hard to find so much utility in one package.
+Geordi's voyage work is still on par with new 4/4 or 1/5 releases, but most of his post-fusion goodness comes in the form of double collections, a smattering of traits to provide some weekend opportunities, and being one of only two DIP options for La Forge events. Just don't forget to search for him when thawing variants for an event.

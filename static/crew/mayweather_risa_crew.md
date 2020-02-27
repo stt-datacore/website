@@ -9,6 +9,6 @@ in_portal:
 published: true
 ---
 
-Call him Delta Flyer Paris Version 2.0. As North Face Knee Brace Mayweather is the second legendary crew to have a CMD/ENG/MED skill set, the comparison is unavoidable. Mayweather's bases and voyage prowess thoroughly outclass Ol' Speed Racer, with a CMD base that slots in right between perennial stalwarts Commander Kira and Borg Queen, elite company to be sure.
+Call him Delta Flyer Paris Version 2.0. As North Face Knee Brace Mayweather is the second legendary crew to have a CMD/ENG/MED skill set, the comparison is unavoidable. Mayweather's base and voyage prowess thoroughly outclass Ol' Speed Racer, with a CMD base that slots in right between OG stalwarts Commander Kira and Borg Queen to give him some spotty event work when you least expect it
 
-Unfortunately, Mayweather's event chances are about as forgotten as Mayweather himself was on  _Enterprise_, as he is tied with the likes of Barclay, Vic Fontaine and Wesley bleepin' Crusher in variant features, and hasn't had his name called since 2017. A Pilot mega and Athlete one-off prop up that paltry total, but make no mistake, his future weekend outlook is poor. That won't matter much if you're lucky enough to get him in a pack, as you'll be too busy plugging him into voyage after voyage, and Paris can finally start thumbing through the Power Creep Acres brochure you gave him months ago.
+But you're here to hear me gush about his voyage work. His pair of top five voyage pairs as well as *the best* skill set in the game is like popping in a couple of quarters on Paris' flashing 'Game Over' screen so that you can enjoy a few more years of voyage work from Mayweather and Paris can finally start thumbing through the Power Creep Acres brochure you gave him months ago.

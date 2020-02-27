@@ -4,9 +4,11 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 5
-events: 14
+events: 17
 in_portal: true
 published: true
 ---
 
-With such an effective base/event pairing, her skill set and voyage efficacy, or lack thereof, can be excused. Her efficacy has been dented somewhat by the debut of Cruella de Troi, who can contribute very similarly in events, but who isn't hampered by Durango's severely power creeped voyage offerings and vanilla skill set, so keep that in mind if you were lucky enough to snatch her Dark Empath counterpart. That being said, Durango's SEC base is still perfect for common shuttle seating in faction events, even when not bonus, and there's no denying that she can make your weekends go much smoother. Just keep in mind that her time in the Spaghetti Western sun is coming to an end.
+Durango's note used to gush about her huge SEC lead over other variants and that's still true, in a sense. Dark Empath Troi (Naughty Troi, Deanna de Vil, Cruella de Troi, Skunk Troi) nearly matches her base, and with a far better voyage profile is someone we would jump ship to, if that were feasible. Alas, DE Troi is still a year out from portal touch down and so Durango remains on top of her event mountain a while longer.
+
+There's a smoking crater where her voyage power used to be, but with her event pedigree, vanity collection spot, and non-standard trait set, she's still a fine mid-range behold target who can pitch in on Troi event shuttles with her first star.

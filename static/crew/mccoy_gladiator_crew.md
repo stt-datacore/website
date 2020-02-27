@@ -3,10 +3,12 @@ name: Gladiator McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
-events: 14
+bigbook_tier: 6
+events: 19
 in_portal: true
 published: true
 ---
 
-From [_'Bread and Circuses'_](http://memory-alpha.wikia.com/wiki/Bread_and_Circuses_(episode)) comes an old man with a sword as one of the most deadly beings in the known universe. His SEC is obviously tops for a MED focused character and may be so for a long time. An uncommon skill pairing translates to usefulness elsewhere including usable gauntlet numbers and the #3 MED+SEC sum for voyages. Once fused, he's likely to make voyage runs for you far past the 8 hour mark a la Mirror Phlox. Gladiator is capable of contributing an impressive amount for a 2-skill crew whose name rarely generates buzz.
+From 'Bread and Circuses' comes an old man with a sword as one of the most deadly beings in the known universe. His SEC is obviously tops for a MED focused character and may be so for a long time, but for MED or 'SEC and MED' seats it still sits behind the man who practiced one kick 10,000 times - global gift Bones McCoy. Losing that bit of equity hurts, but Faction events have never lacked SEC seats.
+
+Beyond shuttles, his uncommon skill pairing translates to plus utility including usable gauntlet numbers with the occasional 45% crit and a top five MED/SEC pair for voyages. Once fused, he's capable of making voyage runs for you far past the 8 hour mark a la Mirror Phlox, though will never be a recommended option due to the poor overall stat total. McCoy offers strong event value, but his peripherals are trending toward helping out younger rosters only.

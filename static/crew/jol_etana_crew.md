@@ -3,12 +3,12 @@ name: Etana Jol
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 4
 in_portal: true
 published: true
 ---
 
-As with all mega event crew, it's important to remember skewed public opinion for a crew who enters the roster with a star advantage. That said, Etana is still useful, if not omnipotent. With zero events to date outside of her mega, dual 1k bases may end up ineffective on the weekend for established players. On younger rosters her ENG will no doubt catch some Faction work, but will likely be busier hauling daily shuttles instead.
+DB has been generous to the engineering landscape since Etana's appearance which, in conjunction with not having collected a bonus since then, renders her dual 1k bases rather pedestrian. She does have one of the more intriguing trait sets with a few of them sitting in the right size range for a mega, but her shuttle work to date remains on a downhill trajectory.
 
-Her outlook is brighter elsewhere; gauntlet work suitable for new players, even if she only registers one ranked pair, and strong voyage numbers where she'll pull most of her weight. A few DIP+ENG crew with more power have been released since her appearance, but all are DIP primary which gives her the flexibility edge outside of that particular voyage combo.
+Still quite viable, however, is her top ten ENG/DIP voyage work. Event and campaign names may have bumped her down the list for some players, but in an extraordinary turn of events, you DO get to use more than one crew on voyages. (Very) Early game gauntlet work driven by a top ten ENG proficiency and an awkward-but-strong arena ability (where do I put my hands during Position?) give her shades of value on the periphery.

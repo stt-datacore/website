@@ -4,9 +4,11 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 4
+events: 5
 in_portal: true
 published: true
 ---
 
-Fennim is best deployed on voyages where his skill set is somewhat uncommon for the top half of the voyage ranks and is accompanied by traits which work fine for voyages and story nodes, even if they're not particularly eventable. Two ranked gauntlet pairs are worth at least a mention, but neither are particularly powerful and he lacks a single big roll to give him a chance when his skill pairs don't align.
+"*unintelligible noises*" - Wise words from Fennim. I think he's trying to tell us to rescue him from the Think Tank, but this is one fish you'll want to throw back.
+
+An intriguing skill set and favorable distribution of proficiency vs base could really make Fennim a special card if his power level was better. But it's not. So both his gauntlet and voyage potential have a hard cap on them which limits his work there to newer rosters, or Seinfeld fanatics. His hodgepodge of traits doesn't translate to any 45% gauntlets or stable event work and a sole stat-boosting collection no longer moves the needle much for a five star investment. An interesting crew from a great episode is let down by the raw numbers.

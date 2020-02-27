@@ -3,10 +3,14 @@ name: Captain Lorian
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
-events: 9
+bigbook_tier: 5
+events: 7
 in_portal: true
 published: true
 ---
 
-Rock solid for daily use, Lorian is also one of the gatekeepers to the Jury Rigger collection. With Smuggler Yates and a few other Jury Riggers having joined the game, the superb T'Pucker love child is no longer necessarily your best choice to finish off the collection, but he still stands head and shoulders above some of the more lackluster options. Sitting just outside the top ten for both base and voyage ENG, he also has the chance to snag an occasional Vulcan event bonus, but is strong value even without them. If you want a laugh, check out his arena page where an odd mix of crit rating and +EV activate after a [_Solar Beam-esque_](https://bulbapedia.bulbagarden.net/wiki/Solar_Beam_(move)#Generation_I) 18 seconds.
+There was a time when the T'Pucker love child's note read top five for base and voyage. Then top ten. Now he sits outside the top twenty for both and even though he still enjoys a strong reputation, the numbers would advise caution on a ground-up investment.
+
+Lorian's event rate predictably slowed as Vulcan, accounting for most of his bonuses, has been M.I.A. for two years and Saboteur seems to be his only other wacky trait mega option. You're probably not using him much on shuttles anymore either with a few megas and plenty of event crew ahead of him. The voyage work is still mostly intact as he's a fringe top ten ENG/CMD option, but with another piece of his utility. Jury Rigger, taking a hit, he may not be much more than mid-level voyager going forward.
+
+If you want a laugh, check out his arena page where an odd mix of crit rating and +EV activate after a Solar Beam-esque 18 seconds.

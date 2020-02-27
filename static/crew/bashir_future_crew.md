@@ -3,10 +3,10 @@ name: Alternate Future Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 13
+bigbook_tier: 7
+events: 9
 in_portal: true
 published: true
 ---
 
-His numbers are...less than ideal. With his most likely mega in the rear view mirror and voyage totals near the bottom of the barrel, he's certainly a card showing his age. And yet, [_MED/CMD, uh, finds a way_](https://www.youtube.com/watch?v=dMjQ3hA9mEA). One of three legendaries with his skill set, Bashir may surprise you by joining a couple different voyage combos despite sagging totals and though his event rate has slowed, he's still a lock for work in the future. Three ranked gauntlet pairs don't pack much punch anymore, but are usable for newer players.
+The Kukalaka waits...silently stalking your chronitons, ready to strike. This Bashir has a build cost reputation, but the bigger issue is that he doesn't pay it off. Statistically weak in all areas of the game, he, like a handful of others, is saved by his MED-centric skill set and brand name. Ugly bases should chip on from higher star counts for a few shuttles each year and he has an outside shot at MED/CMD voyages for those in dire straits. Gauntlet work for newer players is available as a one star investment against other poor behold choices.

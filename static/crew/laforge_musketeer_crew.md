@@ -4,9 +4,11 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 4
-events: 18
+events: 20
 in_portal: true
 published: true
 ---
 
-A complete crew from top to bottom. Double 1k bases complement the coveted blend of "bridge crew" events + racial (Hologram) trait for weekend impact throughout the year. Day to day, he's just as valuable by contributing very usable SEC and SEC/ENG numbers on voyages, even if that particular niche turned mainstream during the Year of Hell mega event. Although he doesn't make too many gauntlet "best of" lists, a top 10 SEC roll gives him a ranked pair to make him at least serviceable there and is a big boon for new players. His double collections aren't the hardest to finish, but finding two in one crew who's worthy of citations is rare.
+Like most LaForges, Musketeer is a well-rounded crew with fingers in many of Wesley's pies. A pair of usable bases pop up on Faction lists often enough between Geordi-flavored weekends and his handful of traits which show more promise than most. D'Artagnan's voyage and gauntlet profiles are fairly similar - mid-level power, but with a plus skill set.
+
+In the casino, a Caretaker-sniping SEC/ENG pair hits 45% crit from time to time to make him a worthwhile include, even on established rosters. Add in dual collections and a six second arena ability to give him possibilites for work in just about every phase of the game, even The Next Phase.

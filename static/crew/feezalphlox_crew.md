@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-The skill set is going to look useful on the behold screen, but Feezal is not. Current 1/5 event reward crew are going to blow past her on voyages leaving her with a sole notable attribute - the #2 super rare SCI base for a potential Romantic mega.
+The skill set is going to look useful on the behold screen, but Feezal is not. Current 1/5 event reward crew are going to blow past her on voyages leaving her with a sole notable attribute - the outside chance of a Romantic event/mega, where she would have the #3 SCI base among super-rares.

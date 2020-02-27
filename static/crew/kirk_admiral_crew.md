@@ -4,9 +4,9 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 15
+events: 20
 in_portal: true
 published: true
 ---
 
-It hurts to see the legendary Admiral knocked down the diplomacy ranks, but thus is the nature of power creep. Regardless, Kirk is into double-digit events now with a huge percentage of them being Factions and his DIP will still dominate those while providing great daily shuttle value the rest of the time.
+Any other two-skiller with utility this low would be buried in the mines of Rura Penthe, but Kirk is not just any other man. He's the quintessential event name who still holds a big lead over other variant DIP options. With a few untapped potential traits and a base worthy of daily shuttles, the nattily dressed Admiral is ready to be pressed into service a few times each year, right from star one.

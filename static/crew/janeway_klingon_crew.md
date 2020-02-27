@@ -4,9 +4,9 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 4
-events: 23
+events: 24
 in_portal: true
 published: true
 ---
 
-SEC/SCI has been historically hard to come by for voyages and despite a sinking voyage total, Klingway (No? We'll work on it…) remains a top five option. Still holding strong is her base SEC. Even with an event count that slowed to a glacial crawl in 2018, Janeway + Klingon will give her plenty of future chances to shine where her SEC and SCI are both #1 or 2 among all Janeways and Klingons.
+SEC/SCI has been historically hard to come by for voyages, meaning that despite a sinking voyage rank, Janeway is not yet a lost cause. But it's her prodigious event potential that we're after. A capable SEC base has had dozens of opportunties to shine on the weekend and though her event clip may slow with a few mega events in the rear view mirror, the name Janeway isn't going anywhere and she still carres a bit of juice in her traits. Likely to make event shuttles from star one, Klingon Janeway is a fine mid-level name to come across in a behold.

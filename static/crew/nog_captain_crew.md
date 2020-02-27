@@ -3,10 +3,10 @@ name: Captain Nog
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 7
+bigbook_tier: 8
+events: 8
 in_portal: true
 published: true
 ---
 
-Nog's event situation is very interesting. Though Ferengi has collected four bonuses, two of them overlap with Nog's features so his variants sit at just five event bonuses total. Two features for this particular card are notable as he owns a spot in the Inspiring collection and any way to fuse those crew is a nice bonus. But the rub in Nog's event future is his #1 Ferengi CMD - I would expect, though perhaps not bet on, a future Ferengi mega event. Outside of events, he's rather limited for daily use, though average voyage numbers have at least a chance to find work. With increased competition for his skill set, he will need an extra star to start appearing there, but is not a lost cause like some stat basement voyagers.
+We here at the Big Book have campaigned on the promise of a Ferengi mega for years and though the two party system of Discovery and Picard will continue to trounce us in the years ahead, the Ferengi's time will come. Nog's #1 CMD base during that month will be supplemented by stray standalone events in the meantime which serve to insulate his value against otherwise dreary base and voyage numbers and a non-starter skill set. He's a souped up super rare at this stage, but offers more than several other decrepit golds.

@@ -9,4 +9,6 @@ in_portal: true
 published: true
 ---
 
-Her base/event pairing is obvious, but she also owns the honorific of being one of two Legendary crew to qualify for three stat-boosting collections. That alone is an important consideration and makes adding a star to her more important than with other crew. In the event of an(other) all-Disco mega, her DIP is within 25 points of #1 L'Rell.
+Georgy girl holds the distinction of being one of only two legendary crew to appear in three stat-boosting collections. That used to carry much more weight, but with none of them requiring Goldmembers any longer, it's more of a behold screen perk if she's collected a few stars already.
+
+The bulk of her value now rests on Discovery and variant events, of which there have been plenty. Even considering a trait set mostly bereft of value, Georgiou has collected multiple Faction events in each of the last three calendar years including TEN event bonuses in 2019.

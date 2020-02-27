@@ -9,4 +9,6 @@ in_portal: true
 published: true
 ---
 
-Another old gauntleteer who's fallen by the wayside. With constant walls of superior crew in front of all his skill pairs, you're not really considering using him without a crit advantage - which, to be fair, he often does pick up thanks to the Cardassian/Obsidian Order trait sets. He's one of several budget Kahless options, but does a poor imitation and it's generally only worth taking a single star of him. Some unrealized potential may appear in the form of a Cardassian mega event where he could contribute two usable-when-bonus bases, provided you (un)lucked into a few stars on him.
+"A man shouldn't allow his enemies to outlive him." - Tain may have one foot in the gauntlet grave, but strikes back at his enemies with an oft-seen 45% crit trait set which features the CMD skill; a role/roll he's familiar with, boasting a top five CMD proficiency. Two low ranked pairs aren't quite the same as having Kahless himself on your squad, but Tain will do well as a rotational piece. 
+
+Nothing resembling a good investment, Tain may luck into some requisition work for likely Cardassian events down the line if you're forced (at SEC point) to star him up.

@@ -3,10 +3,12 @@ name: Gloria
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 1
+bigbook_tier: 6
+events: 2
 in_portal: true
 published: true
 ---
 
-Gloria _from Cleveland_ is one of the most fascinating crew who never gets talked about. There's nothing about her that screams powerhouse, but she'll perform well in several niche situations. First off, she qualifies for the dreaded "Guinan" gauntlet where "El-Aurian" and requisite traits give her (and only few others) 45-65% crit. With a CMD skill that Bartender Guinan lacks, she should be able to produce even against normally superior crew. On ships, she provides a beefy +11 attack (trigger required) with great passive accuracy and activates quickly enough to supplement almost any crew. Her vanity collection spot is unique, if not beneficial to gameplay, and with a chunk of CMD/MED for voyages, she'll likely perform beyond the raw total for a couple different combos.
+Being accessible is never good for a crew's value and with Gloria (from Cleveland) not being a power card to begin with, her stint as a campaign crew and the lost bit of exclusivity hurts. One struggles to describe this crew's strengths, but she's (barely) a plus voyager considering her rare skill set including a splash of MED and has the potential to hit 45% in a few different gauntlets. Granted, she'll face many more mirror matchups there now, but can at least turn a steamrolling from big sister Bartender Guinan into a glancing blow with her secondary CMD skill.
+
+Gloria's vanity collection and intriguing arena ability gives her something to offer to most kinds of players, but the lack of power, event relevance, and now exclusivity means you may need to try harder than with most crew to find spots for her to contribute to your roster.

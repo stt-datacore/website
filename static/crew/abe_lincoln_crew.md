@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Even with the prospect of a President mega looming on the horizon, it's hard to see any event work in Honest Abe's future. No matter, his bases wouldn't be worthwhile there anyways. The aged gauntlet option is no longer ranked in the top 15 of any skill pair, but still lets his spear do the talking as a top ten DIP option. His collections are something of a catch 22; it's undeniable value to snag two tough collection spots with one crew, but you'd essentially be investing four stars worth of value for them and nothing else. Recommended one star investment only, if that.
+Like many other crew, Honest Abe is at the mercy of trait megas to be of any use on the weekends, which has yet to happen for him. With putrid voyage power beside, Lincoln is a bottom-barrel behold option who will team up a borderline top 20 gauntlet pair with a seldom seen 45% crit trait set for infrequent gauntlet relevance. Don't chase pie in the sky double collections with this crew who doesn't deserve stars two through five.
