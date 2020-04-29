@@ -318,14 +318,14 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				<Message icon>
 					<Icon name='bell' />
 					<Message.Content>
-						<Message.Header>NEW! Share your player profile!</Message.Header>
+						<Message.Header>Share your player profile!</Message.Header>
 						{!this.state.uploaded && (
 							<p>
 								Click here to{' '}
 								<Button size='small' color='green' onClick={() => this._shareProfile()}>
 									{this.state.uploading && <Icon loading name='spinner' />}share your profile
 								</Button>{' '}
-								with the world. More details:
+								and unlock more tools and export options for items and ships. More details:
 							</p>
 						)}
 						{!this.state.uploaded && (

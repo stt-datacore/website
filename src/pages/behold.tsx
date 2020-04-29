@@ -82,7 +82,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 
 					<Divider horizontal hidden />
 
-					<Grid columns={3} centered padded divided>
+					<Grid columns={3} stackable centered padded divided>
 						{this.state.entries.map((entry, idx) => (
 							<Grid.Column key={idx}>
 								<Header as='h5'>

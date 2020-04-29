@@ -5,7 +5,6 @@ import { graphql, Link } from 'gatsby';
 import Layout from '../components/layout';
 
 import CommonCrewData from '../components/commoncrewdata';
-import SimpleBarChart from '../components/simplebarchart';
 
 type BigBookCrewProps = {
 	markdownRemark: any;
@@ -50,7 +49,6 @@ type BigBookPageProps = {
 		crewpages: any;
 		sections: any;
 		allCrewJson: any;
-		allSortedSkillSetsJson: any;
 	};
 };
 
@@ -102,8 +100,6 @@ class BigBook extends PureComponent<BigBookPageProps> {
 
 		res = res.sort(fieldSorter(['-rarity', 'tier', 'name']));
 
-		let chartData = this.props.data.allSortedSkillSetsJson.edges.map(e => ({name: e.node.name.replace(/\./g,'/'), value: e.node.value}));
-
 		return (
 			<Layout>
 				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
@@ -112,7 +108,6 @@ class BigBook extends PureComponent<BigBookPageProps> {
 					{sections[1].elem}
 					{res.filter(e => e.rarity === 4).map(e => e.elem)}
 					{sections.slice(2).map(e => e.elem)}
-					<SimpleBarChart title={'Rarest skill sets 4* and 5*'} data={chartData} />
 				</Container>
 			</Layout>
 		);
@@ -153,14 +148,6 @@ export const query = graphql`
 						title
 						bigbook_section
 					}
-				}
-			}
-		}
-		allSortedSkillSetsJson(limit: 15) {
-			edges {
-				node {
-					name
-					value
 				}
 			}
 		}

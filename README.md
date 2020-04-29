@@ -1,15 +1,14 @@
 # Star Trek Timelines Data Core
 
-This project is built with [Gatsby](https://www.gatsbyjs.org/), [React](https://reactjs.org/) and a lot of hard work.
+As of May 2020, I'm preparing to archive the project (documentation, source code, data) in case someone wants to take over development in the future. The current situation (covid) doesn't afford me the time to continue working on it, and I'm also no longer having fun working on it alone.
 
-It follows the [JAMstack architecture](https://jamstack.org) by using Git as a single source of truth.
+## System overview
 
-## Features ##
+The assets (parsing, hosting) is set up on a separate machine to allow for more aggressive CDN / caching configuraiton, but the functionality could be combined with the main VM.
 
-- A simple landing page with crew stats
-- Detail pages for each crew, including full equipment tree with sources, ship abilities and user-generated blurbs
-- Editabe Pages: About, "Big Book" comments for crew, and any other topical pages you want to add
-- Create and edit pages directly from GitHub
+![assets VM](assets.svg "assets.datacore.app")
+
+![main VM](main.svg "datacore.app")
 
 # CONTRIBUTING
 

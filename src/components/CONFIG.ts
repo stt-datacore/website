@@ -110,4 +110,6 @@ export default class CONFIG {
 		27: { symbol: 'medicine_skill_range_min', skill: 'medicine_skill', stat: 'range_min' },
 		28: { symbol: 'medicine_skill_range_max', skill: 'medicine_skill', stat: 'range_max' }
 	};
+
+	static readonly CITATION_COST = [500, 500, 500, 4500, 18000, 50000];
 }

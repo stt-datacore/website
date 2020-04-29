@@ -60,6 +60,7 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.freestanding_quests;
 	delete p.player.character.stimpack;
 	delete p.player.character.location_channel_prefix;
+	delete p.player.character.events;
 
 	if (p.player.character.crew_avatar && p.player.character.crew_avatar.symbol) {
 		p.player.character.crew_avatar = {
@@ -160,6 +161,7 @@ export function stripPlayerData(items: any[], p: any): any {
 			symbol: crew.symbol,
 			archetype_id: crew.archetype_id,
 			level: crew.level,
+			max_level: crew.max_level,
 			rarity: crew.rarity,
 			equipment: crew.equipment.map(eq => eq[0]),
 			base_skills: crew.base_skills,

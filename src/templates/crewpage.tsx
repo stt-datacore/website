@@ -1,21 +1,10 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import {
-	Container,
-	Header,
-	Image,
-	Divider,
-	Grid,
-	Segment,
-	Rating,
-	Dropdown,
-	Popup,
-	Label,
-	Button
-} from 'semantic-ui-react';
+import { Container, Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
 import SimpleMDE from 'react-simplemde-editor';
+import marked from 'marked';
 
 import Layout from '../components/layout';
 import ItemDisplay from '../components/itemdisplay';
@@ -46,7 +35,9 @@ type StaticCrewPageProps = {
 type StaticCrewPageState = {
 	selectedEquipment?: number;
 	modalVisible: boolean;
+	commentMarkdown: string;
 	items: any[];
+	comments: any[];
 };
 
 class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {
@@ -56,6 +47,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		this.state = {
 			selectedEquipment: undefined,
 			modalVisible: false,
+			commentMarkdown: '', // TODO: load
+			comments: [],
 			items: []
 		};
 	}
@@ -64,6 +57,27 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => this.setState({ items }));
+
+		fetch('https://datacore.app/api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
+			.then(response => response.json())
+			.then(comments => {
+				this.setState({ comments });
+
+				const userName = this._getCurrentUsername();
+				if (userName) {
+					comments.forEach(comment => {
+						if (comment.user.loginUserName === userName) {
+							this.setState({ commentMarkdown: comment.markdown });
+						}
+					});
+				}
+			});
+	}
+
+	_getCurrentUsername() {
+		const windowGlobal = typeof window !== 'undefined' && window;
+		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
+		return isLoggedIn ? window.localStorage.getItem('username') : '';
 	}
 
 	render() {
@@ -72,21 +86,22 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			return <span>Crew not found!</span>;
 		}
 
+		const { comments } = this.state;
+
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
-		const windowGlobal = typeof window !== 'undefined' && window;
-		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token');
+		const userName = this._getCurrentUsername();
 
 		const crew = crewJson.edges[0].node;
 		return (
 			<Layout>
 				<Helmet>
 					<title>DataCore - {crew.name}</title>
-					<meta property="og:type" content="website" />
-					<meta property="og:title" content={crew.name} />
-					<meta property="og:site_name" content="DataCore" />
-					<meta property="og:image" content={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
-					<meta property="og:description" content={markdownRemark.rawMarkdownBody.trim()} />
+					<meta property='og:type' content='website' />
+					<meta property='og:title' content={crew.name} />
+					<meta property='og:site_name' content='DataCore' />
+					<meta property='og:image' content={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim()} />
 				</Helmet>
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
@@ -99,14 +114,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Row stretched>
 							<Grid.Column width={16}>
 								<Header>
-									{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon="star" size="large" disabled />
+									{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon='star' size='large' disabled />
 								</Header>
 							</Grid.Column>
 						</Grid.Row>
 						<Grid.Row>
 							<Grid.Column width={4}>
-								{crew.series && <Image src={`/media/series/${crew.series}.png`} size="small" />}
-								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size="small" />
+								{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
+								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size='small' />
 							</Grid.Column>
 							<Grid.Column width={12}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
@@ -118,33 +133,29 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 										<Button
 											onClick={() => this.setState({ modalVisible: true })}
 											style={{ marginTop: '1em' }}
-											content="Full equipment tree"
-											icon="right arrow"
-											labelPosition="right"
+											content='Full equipment tree'
+											icon='right arrow'
+											labelPosition='right'
 										/>
 									</React.Fragment>
 								) : (
-									<div className="ui medium centered text active inline loader">Loading items...</div>
+									<div className='ui medium centered text active inline loader'>Loading items...</div>
 								)}
 
 								<Segment>
-									<Header as="h4">{crew.action.name}</Header>
+									<Header as='h4'>{crew.action.name}</Header>
 									<p>
 										Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}
 									</p>
 									<p>
-										Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration:{' '}
-										{crew.action.duration}s
+										Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration: {crew.action.duration}s
 									</p>
 									{crew.action.limit && <p>Uses Per Battle: {crew.action.limit}</p>}
 
 									{crew.action.ability && (
 										<p>
 											Bonus ability:
-											{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace(
-												'%VAL%',
-												crew.action.ability.amount
-											)}{' '}
+											{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
 											{crew.action.ability.condition > 0 && (
 												<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
 											)}
@@ -162,24 +173,50 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 									</p>
 									{crew.action.penalty && (
 										<p>
-											Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by{' '}
-											{crew.action.penalty.amount}
+											Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}
 										</p>
 									)}
 
-									{this.renderChargePhases(crew.action.bonus_type, crew.action.charge_phases)}
+									{this.renderChargePhases(crew.action, crew.action.charge_phases)}
 								</Segment>
 							</Grid.Column>
 						</Grid.Row>
 					</Grid>
 					<Divider horizontal hidden />
 					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
-					{isLoggedIn && (
-						<SimpleMDE
-							value={markdownRemark.rawMarkdownBody.trim()}
-							onChange={value => this._handleMarkDownChange(value)}
-							options={{ hideIcons: ['fullscreen', 'guide', 'image', 'side-by-side'] }}
-						/>
+					{userName && (
+						<div>
+							<br />
+							<p>Hello, {userName}. You can edit your comment below:</p>
+							<SimpleMDE
+								value={this.state.commentMarkdown}
+								onChange={value => this._handleMarkDownChange(value)}
+								options={{ hideIcons: ['fullscreen', 'guide', 'image', 'side-by-side'] }}
+							/>
+							<Button onClick={() => this._saveComment(crew.symbol, window.localStorage.getItem('token'))} content='Save comment' />
+						</div>
+					)}
+					{comments && (
+						<Comment.Group>
+							<Header as='h3' dividing>
+								Comments
+							</Header>
+
+							{comments.map(comment => (
+								<Comment key={comment.id}>
+									<Comment.Avatar src={comment.user.avatar || 'https://assets.datacore.app/crew_portraits_cm_empty_sm.png'} />
+									<Comment.Content>
+										<Comment.Author>{comment.user.loginUserName}</Comment.Author>
+										<Comment.Metadata>
+											<div>{comment.lastUpdate}</div>
+										</Comment.Metadata>
+										<Comment.Text>
+											<div dangerouslySetInnerHTML={{ __html: marked(comment.markdown) }} />
+										</Comment.Text>
+									</Comment.Content>
+								</Comment>
+							))}
+						</Comment.Group>
 					)}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
 					<CrewVariants short_name={crew.short_name} />
@@ -189,7 +226,26 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	}
 
 	_handleMarkDownChange(value) {
-		console.log(value);
+		this.setState({ commentMarkdown: value });
+	}
+
+	async _saveComment(symbol: string, token: string) {
+		const { commentMarkdown } = this.state;
+
+		fetch('https://datacore.app/api/savecomment', {
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ token, symbol, markdown: commentMarkdown })
+		})
+			.then(response => response.json())
+			.then(res => {
+				console.log(res);
+			})
+			.catch(err => {
+				console.error(err);
+			});
 	}
 
 	renderEquipment(crew) {
@@ -223,7 +279,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				selection
 				fluid
 				options={options}
-				placeholder="Choose an equipment to see its details"
+				placeholder='Choose an equipment to see its details'
 				onChange={(ev, { value }) => this.setState({ selectedEquipment: value as number })}
 			/>
 		);
@@ -257,10 +313,10 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					{equipment.recipe.list.map(entry => {
 						let recipeEntry = this.state.items.find(item => item.symbol === entry.symbol);
 						return (
-							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign="center">
+							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
 								<Popup
 									trigger={
-										<Label as="a" style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size="big">
+										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
 											<img src={`https://assets.datacore.app/${recipeEntry.imageUrl}`} />x{entry.count}
 										</Label>
 									}
@@ -276,7 +332,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		);
 	}
 
-	renderChargePhases(bonus_type, charge_phases) {
+	renderChargePhases(action, charge_phases) {
 		if (!charge_phases) {
 			return <span />;
 		} else {
@@ -287,11 +343,11 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				let phaseDescription = `After ${charge_time}s, `;
 
 				if (cp.ability_amount) {
-					phaseDescription += `+${cp.ability_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[bonus_type]}`;
+					phaseDescription += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', cp.ability_amount);
 				}
 
 				if (cp.bonus_amount) {
-					phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[bonus_type]}`;
+					phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
 				}
 
 				if (cp.duration) {

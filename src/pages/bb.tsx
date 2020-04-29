@@ -47,7 +47,6 @@ type BigBookPageProps = {
 		crewpages: any;
 		sections: any;
 		allCrewJson: any;
-		allSortedSkillSetsJson: any;
 	};
 };
 
@@ -208,14 +207,6 @@ export const query = graphql`
 						title
 						bigbook_section
 					}
-				}
-			}
-		}
-		allSortedSkillSetsJson(limit: 15) {
-			edges {
-				node {
-					name
-					value
 				}
 			}
 		}

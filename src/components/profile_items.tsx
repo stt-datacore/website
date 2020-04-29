@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
+import { mergeItems } from '../utils/itemutils';
+
 import CONFIG from '../components/CONFIG';
 
 type ProfileItemsProps = {
@@ -42,33 +44,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = [];
-				this.props.playerData.player.character.items.forEach(item => {
-					let itemEntry = items.find(i => i.symbol === item.symbol);
-					if (itemEntry) {
-						data.push({
-							name: itemEntry.name,
-							type: itemEntry.type,
-							rarity: itemEntry.rarity,
-							flavor: itemEntry.flavor,
-							bonuses: itemEntry.bonuses,
-							imageUrl: itemEntry.imageUrl,
-							symbol: item.symbol,
-							quantity: item.quantity
-						});
-					} else {
-						data.push({
-							name: item.name,
-							type: item.type,
-							rarity: item.rarity,
-							flavor: item.flavor,
-							bonuses: undefined,
-							imageUrl: item.imageUrl,
-							symbol: item.symbol,
-							quantity: item.quantity
-						});
-					}
-				});
+				let data = mergeItems(this.props.playerData.player.character.items, items);
 				this.setState({ data });
 			});
 	}

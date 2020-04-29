@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Container, Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
-import { graphql, Link } from 'gatsby';
+import { Link } from 'gatsby';
 import marked from 'marked';
+import { isMobile } from 'react-device-detect';
 
 import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
@@ -9,9 +10,6 @@ import CONFIG from '../components/CONFIG';
 import CommonCrewData from '../components/commoncrewdata';
 
 type BigBookPageProps = {
-	data: {
-		sections: any;
-	};
 };
 
 type BigBookPageState = {
@@ -117,34 +115,15 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 	render() {
 		const { groupedByTier } = this.state;
 
-		let sections = [];
-		this.props.data.sections.edges.forEach((element, idx) => {
-			sections.push({
-				bigbook_section: element.node.frontmatter.bigbook_section,
-				elem: (
-					<div key={idx}>
-						<Header as='h2' style={{ paddingTop: '1em' }}>
-							{element.node.frontmatter.title}
-						</Header>
-						<div dangerouslySetInnerHTML={{ __html: element.node.html }} />
-					</div>
-				)
-			});
-		});
-
-		sections = sections.sort(fieldSorter(['bigbook_section']));
-
 		return (
 			<Layout>
 				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-					{sections[0].elem}
 					{[...groupedByTier.keys()].map((tier, idx) => (
 						<React.Fragment key={idx}>
 							<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
-							<Grid columns={6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
+							<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
 						</React.Fragment>
 					))}
-					{sections.slice(2).map(e => e.elem)}
 				</Container>
 			</Layout>
 		);
@@ -152,21 +131,3 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 }
 
 export default BigBook;
-
-export const query = graphql`
-	query {
-		sections: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {ne: null}}}) {
-			totalCount
-			edges {
-				node {
-					id
-					html
-					frontmatter {
-						title
-						bigbook_section
-					}
-				}
-			}
-		}
-	}
-`;

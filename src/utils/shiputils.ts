@@ -1,7 +1,7 @@
-import { simplejson2csv } from './misc';
+import { simplejson2csv, ExportField } from './misc';
 
-export function exportShips(ships): string {
-	let fields = [
+export function exportShipFields(): ExportField[] {
+	return [
 		{
 			label: 'Name',
 			value: (row: any) => row.name
@@ -63,8 +63,10 @@ export function exportShips(ships): string {
 			value: (row: any) => row.traits_named.join(' ')
 		}
 	];
+}
 
-	return simplejson2csv(ships, fields);
+export function exportShips(ships): string {
+	return simplejson2csv(ships, exportShipFields());
 }
 
 export function mergeShips(ship_schematics: any, ships: any): any {

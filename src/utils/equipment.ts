@@ -8,52 +8,69 @@ export interface IDemand {
 export interface ICrewDemands {
 	demands: IDemand[];
 	factionOnlyTotal: number;
-    totalChronCost: number;
-    craftCost: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export function demandsPerSlot(es: any, items: any[], dupeChecker: Set<string>, demands: IDemand[]): number {
+	let equipment = items.find(item => item.symbol === es.symbol);
+	if (!equipment.recipe) {
+		if (dupeChecker.has(equipment.symbol)) {
+			demands.find(d => d.symbol === equipment.symbol).count += 1;
+		} else {
+			dupeChecker.add(equipment.symbol);
+
+			demands.push({
+				count: 1,
+				symbol: equipment.symbol,
+				equipment: equipment,
+				factionOnly: equipment.factionOnly
+			});
+		}
+
+		return 0;
+	}
+
+	for (let iter of equipment.recipe.list) {
+		let recipeEquipment = items.find(item => item.symbol === iter.symbol);
+		if (dupeChecker.has(iter.symbol)) {
+			demands.find(d => d.symbol === iter.symbol).count += iter.count;
+			continue;
+		}
+
+		if (recipeEquipment.item_sources.length === 0) {
+			console.error(`Oops: equipment with no recipe and no sources: `, recipeEquipment);
+		}
+
+		dupeChecker.add(iter.symbol);
+
+		demands.push({
+			count: iter.count,
+			symbol: iter.symbol,
+			equipment: recipeEquipment,
+			factionOnly: iter.factionOnly
+		});
+	}
+
+	return equipment.recipe.craftCost;
 }
 
 export function calculateCrewDemands(crew: any, items: any[]): ICrewDemands {
 	let craftCost = 0;
-	let demands = [];
-	let dupeChecker = new Set();
+	let demands: IDemand[] = [];
+	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
-		let equipment = items.find(item => item.symbol === es.symbol);
-		if (!equipment.recipe) {
-			return;
-		}
-
-		for (let iter of equipment.recipe.list) {
-			let recipeEquipment = items.find(item => item.symbol === iter.symbol);
-			if (dupeChecker.has(iter.symbol)) {
-				demands.find(d => d.symbol === iter.symbol).count += iter.count;
-				continue;
-			}
-
-			if (recipeEquipment.item_sources.length === 0) {
-				console.error(`Oops: equipment with no recipe and no sources: `, recipeEquipment);
-			}
-
-			dupeChecker.add(iter.symbol);
-
-			demands.push({
-				count: iter.count,
-				symbol: iter.symbol,
-				equipment: recipeEquipment,
-				factionOnly: iter.factionOnly
-			});
-		}
-
-		craftCost += equipment.recipe.craftCost;
+		craftCost += demandsPerSlot(es, items, dupeChecker, demands);
 	});
 
-    const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
-    
-    return {
-        craftCost,
-        demands,
-        factionOnlyTotal: demands.filter(d => d.factionOnly).reduce(reducer, 0),
-        totalChronCost: Math.floor(demands.reduce((a, c) => a + estimateChronitonCost(c.equipment), 0)),
-    };
+	const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
+
+	return {
+		craftCost,
+		demands,
+		factionOnlyTotal: demands.filter(d => d.factionOnly).reduce(reducer, 0),
+		totalChronCost: Math.floor(demands.reduce((a, c) => a + estimateChronitonCost(c.equipment), 0))
+	};
 }
 
 function estimateChronitonCost(equipment) {

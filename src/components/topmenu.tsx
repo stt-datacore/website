@@ -21,7 +21,8 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 	render() {
 		const { user, password, loginDialogOpen, loggingIn, errorMessage } = this.state;
 		const windowGlobal = typeof window !== 'undefined' && window;
-		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token');
+		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
+		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
 		return (
 			<div>
 				<Menu fixed='top' inverted>
@@ -43,6 +44,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 								<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
 								<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
 								<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
+								<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
 								<Dropdown.Item disabled>Missions</Dropdown.Item>
 								<Dropdown.Item disabled>Ships</Dropdown.Item>
 								<Dropdown.Divider />
@@ -54,7 +56,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 					<Menu.Menu position='right'>
 						<Menu.Item>
-							<Button onClick={() => this._showLoginDialog(!!isLoggedIn)} content={!isLoggedIn ? 'Login' : 'Logout'} />
+							<Button size='tiny' onClick={() => this._showLoginDialog(!!isLoggedIn)} content={!isLoggedIn ? 'Login' : `Logout ${userName}`} />
 						</Menu.Item>
 						<Menu.Item as='a' onClick={() => window.open('https://github.com/TemporalAgent7/datacore', '_blank')}>
 							<Icon name='github' />
@@ -125,6 +127,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 				} else {
 					// Logged in
 					window.localStorage.setItem('token', res.token);
+					window.localStorage.setItem('username', user);
 					this.setState({ loggingIn: false, loginDialogOpen: false });
 				}
 			})
@@ -136,6 +139,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 	_showLoginDialog(isLoggedIn: boolean) {
 		if (isLoggedIn) {
 			window.localStorage.removeItem('token');
+			window.localStorage.removeItem('username');
 		} else {
 			this.setState({ loginDialogOpen: true });
 		}

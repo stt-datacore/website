@@ -1,24 +1,29 @@
 import React, { Component } from 'react';
-import { Checkbox } from 'semantic-ui-react';
+import { Checkbox, Popup, Grid, Header, Table, Message } from 'semantic-ui-react';
 import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveSunburst } from '@nivo/sunburst';
 import { ResponsiveRadar } from '@nivo/radar';
 import { ResponsivePie } from '@nivo/pie';
 import { ResponsiveTreeMap } from '@nivo/treemap';
 
-import CONFIG from './CONFIG';
+import ItemDisplay from '../components/itemdisplay';
+import ItemSources from '../components/itemsources';
+
+import CONFIG from '../components/CONFIG';
 
 import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree } from '../utils/statutils';
+import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 type ProfileChartsProps = {
 	playerData: any;
 };
 
 type ProfileChartsState = {
-	allcrew: any;
-	botcrew: any;
+	allcrew: any[];
+	botcrew: any[];
+	items: any[];
 	data_ownership: any[];
 	skill_distribution: any;
 	flat_skill_distribution: any[];
@@ -27,6 +32,12 @@ type ProfileChartsState = {
 	r5_stars: any[];
 	radar_skill_rarity: any[];
 	radar_skill_rarity_owned: any[];
+	demands: IDemand[];
+	honordebt: {
+		ownedStars: number[];
+		totalStars: number[];
+		craftCost: number;
+	};
 };
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
@@ -36,6 +47,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		this.state = {
 			allcrew: undefined,
 			botcrew: undefined,
+			items: undefined,
+			demands: [],
 			data_ownership: [],
 			flat_skill_distribution: [],
 			skill_distribution: {},
@@ -43,20 +56,25 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			r4_stars: [],
 			r5_stars: [],
 			radar_skill_rarity: [],
-			radar_skill_rarity_owned: []
+			radar_skill_rarity_owned: [],
+			honordebt: undefined,
 		};
 	}
 
 	componentDidMount() {
 		fetch('/structured/crew.json')
-			.then(response => response.json())
-			.then(allcrew => {
+			.then((response) => response.json())
+			.then((allcrew) => {
 				fetch('/structured/botcrew.json')
-					.then(response => response.json())
-					.then(botcrew => {
-						this.setState({ allcrew, botcrew }, () => {
-							this._calculateStats();
-						});
+					.then((response) => response.json())
+					.then((botcrew) => {
+						fetch('/structured/items.json')
+							.then((response) => response.json())
+							.then((items) => {
+								this.setState({ allcrew, botcrew, items }, () => {
+									this._calculateStats();
+								});
+							});
 					});
 			});
 	}
@@ -66,35 +84,55 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let total = [0, 0, 0, 0, 0];
 
 		const { playerData } = this.props;
-		const { allcrew, includeTertiary } = this.state;
+		const { allcrew, includeTertiary, items } = this.state;
 
 		let r4owned = [0, 0, 0, 0];
 		let r5owned = [0, 0, 0, 0, 0];
 
-		let radar_skill_rarity = Object.values(CONFIG.SKILLS).map(r => ({
+		let ownedStars = [0, 0, 0, 0, 0];
+		let totalStars = [0, 0, 0, 0, 0];
+
+		let radar_skill_rarity = Object.values(CONFIG.SKILLS).map((r) => ({
 			name: r,
 			Common: 0,
 			Uncommon: 0,
 			Rare: 0,
 			'Super Rare': 0,
-			Legendary: 0
+			Legendary: 0,
 		}));
-		let radar_skill_rarity_owned = Object.values(CONFIG.SKILLS).map(r => ({
+		let radar_skill_rarity_owned = Object.values(CONFIG.SKILLS).map((r) => ({
 			name: r,
 			Common: 0,
 			Uncommon: 0,
 			Rare: 0,
 			'Super Rare': 0,
-			Legendary: 0
+			Legendary: 0,
 		}));
+
+		let craftCost = 0;
+		let demands: IDemand[] = [];
+		let dupeChecker = new Set<string>();
 
 		let skill_distribution = [];
 		for (let crew of allcrew) {
-			let pcrew = playerData.player.character.crew.find(bc => bc.symbol === crew.symbol);
+			let pcrew = undefined;
+
+			// If multiple copies, find the "best one"
+			let pcrewlist = playerData.player.character.crew.filter((bc) => bc.symbol === crew.symbol);
+			if (pcrewlist.length === 1) {
+				pcrew = pcrewlist[0];
+			} else if (pcrewlist.length > 1) {
+				pcrew = pcrewlist.sort((a, b) => b.level - a.level)[0];
+			}
+
+			totalStars[crew.max_rarity - 1] += crew.max_rarity;
+			if (pcrew) {
+				ownedStars[crew.max_rarity - 1] += pcrew.rarity;
+			}
 
 			for (const skill in crew.base_skills) {
 				if (crew.base_skills[skill].core > 0) {
-					let rsr = radar_skill_rarity.find(r => r.name === CONFIG.SKILLS[skill]);
+					let rsr = radar_skill_rarity.find((r) => r.name === CONFIG.SKILLS[skill]);
 					rsr[CONFIG.RARITIES[crew.max_rarity].name]++;
 				}
 			}
@@ -105,7 +143,6 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 				insertInStatTree(sortedStats(pcrew), skill_distribution, '');
 
-				// TODO: Which to pick if the user has more than one copy of the same crew?
 				if (pcrew.max_rarity === 5) {
 					r5owned[pcrew.rarity - 1]++;
 				}
@@ -116,23 +153,38 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 				for (const skill in pcrew.base_skills) {
 					if (pcrew.base_skills[skill].core > 0) {
-						let rsro = radar_skill_rarity_owned.find(r => r.name === CONFIG.SKILLS[skill]);
+						let rsro = radar_skill_rarity_owned.find((r) => r.name === CONFIG.SKILLS[skill]);
 						rsro[CONFIG.RARITIES[pcrew.max_rarity].name]++;
 					}
 				}
+
+				let startLevel = pcrew.max_level ? pcrew.max_level - 10 : pcrew.level - (pcrew.level % 10);
+				if (pcrew.equipment.length < 4) {
+					// If it's not fully equipped for this level band, we include the previous band as well
+					startLevel = Math.max(1, startLevel - 10);
+				}
+
+				// all levels past pcrew.level
+				crew.equipment_slots
+					.filter((es) => es.level >= startLevel)
+					.forEach((es) => {
+						craftCost += demandsPerSlot(es, items, dupeChecker, demands);
+					});
 			}
 		}
 
+		demands = demands.sort((a, b) => b.count - a.count);
+
 		let flat_skill_distribution = [];
-		skill_distribution.forEach(sec => {
+		skill_distribution.forEach((sec) => {
 			sec.loc = 0;
-			sec.children.forEach(tri => {
+			sec.children.forEach((tri) => {
 				let name = tri.name
 					.split('>')
-					.map(n => n.trim())
+					.map((n) => n.trim())
 					.sort()
 					.join('/');
-				let existing = flat_skill_distribution.find(e => e.name === name);
+				let existing = flat_skill_distribution.find((e) => e.name === name);
 				if (existing) {
 					existing.Count += tri.loc;
 					existing.Gauntlet += tri.valueGauntlet;
@@ -142,7 +194,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						name,
 						Count: tri.loc,
 						Gauntlet: tri.valueGauntlet,
-						Voyage: tri.value
+						Voyage: tri.value,
 					});
 				}
 			});
@@ -150,8 +202,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		flat_skill_distribution.sort((a, b) => a.Count - b.Count);
 
 		if (!includeTertiary) {
-			skill_distribution.forEach(sec => {
-				sec.children.forEach(tri => {
+			skill_distribution.forEach((sec) => {
+				sec.children.forEach((tri) => {
 					tri.children = [];
 				});
 			});
@@ -162,26 +214,26 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			data_ownership.push({
 				rarity: CONFIG.RARITIES[i + 1].name,
 				Owned: owned[i],
-				'Not Owned': total[i] - owned[i]
+				'Not Owned': total[i] - owned[i],
 			});
 		}
-
-		// TODO: Voyage Treemap: https://nivo.rocks/treemap/ ; maybe pies with number of stars for legendaries / super rares
 
 		this.setState({
 			data_ownership,
 			flat_skill_distribution,
 			radar_skill_rarity,
 			radar_skill_rarity_owned,
+			demands,
+			honordebt: { ownedStars, totalStars, craftCost },
 			skill_distribution: { name: 'Skills', children: skill_distribution },
-			r4_stars: r4owned.map((v, i) => ({ label: `${i + 1} / 4`, id: `${i + 1} / 4`, value: v })).filter(e => e.value > 0),
-			r5_stars: r5owned.map((v, i) => ({ label: `${i + 1} / 5`, id: `${i + 1} / 5`, value: v })).filter(e => e.value > 0)
+			r4_stars: r4owned.map((v, i) => ({ label: `${i + 1} / 4`, id: `${i + 1} / 4`, value: v })).filter((e) => e.value > 0),
+			r5_stars: r5owned.map((v, i) => ({ label: `${i + 1} / 5`, id: `${i + 1} / 5`, value: v })).filter((e) => e.value > 0),
 		});
 	}
 
 	_onIncludeTertiary() {
 		this.setState(
-			prevState => ({ includeTertiary: !prevState.includeTertiary }),
+			(prevState) => ({ includeTertiary: !prevState.includeTertiary }),
 			() => {
 				this._calculateStats();
 			}
@@ -196,8 +248,53 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			r4_stars,
 			r5_stars,
 			radar_skill_rarity,
-			radar_skill_rarity_owned
+			radar_skill_rarity_owned,
+			demands,
+			honordebt,
 		} = this.state;
+
+		let totalHonorDebt = 0;
+		let readableHonorDebt = '';
+
+		if (honordebt) {
+			totalHonorDebt = honordebt.totalStars
+				.map((val, idx) => (val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx])
+				.reduce((a, b) => a + b, 0);
+
+			let totalHonorDebtDays = totalHonorDebt / 2000;
+
+			let years = Math.floor(totalHonorDebtDays / 365);
+			let months = Math.floor((totalHonorDebtDays - years * 365) / 30);
+			let days = totalHonorDebtDays - years * 365 - months * 30;
+
+			readableHonorDebt = `${years} years ${months} months ${Math.floor(days)} days`;
+		}
+
+		let totalChronCost = 0;
+		let factionRec = [];
+		demands.forEach((entry) => {
+			let cost = entry.equipment.item_sources.map((its: any) => its.avg_cost).filter((cost) => !!cost);
+			if (cost && cost.length > 0) {
+				totalChronCost += Math.min(...cost) * entry.count;
+			} else {
+				let factions = entry.equipment.item_sources.filter((e) => e.type === 1);
+				if (factions && factions.length > 0) {
+					let fe = factionRec.find((e: any) => e.name === factions[0].name);
+					if (fe) {
+						fe.count += entry.count;
+					} else {
+						factionRec.push({
+							name: factions[0].name,
+							count: entry.count,
+						});
+					}
+				}
+			}
+		});
+
+		factionRec = factionRec.sort((a, b) => b.count - a.count).filter((e) => e.count > 0);
+
+		totalChronCost = Math.floor(totalChronCost);
 
 		return (
 			<ErrorBoundary>
@@ -214,7 +311,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						axisBottom={{
 							legend: 'Number of crew',
 							legendPosition: 'middle',
-							legendOffset: 32
+							legendOffset: 32,
 						}}
 						labelSkipWidth={12}
 						labelSkipHeight={12}
@@ -235,14 +332,122 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 									{
 										on: 'hover',
 										style: {
-											itemOpacity: 1
-										}
-									}
-								]
-							}
+											itemOpacity: 1,
+										},
+									},
+								],
+							},
 						]}
 						animate={false}
 					/>
+				</div>
+
+				<h3>Honor debt</h3>
+				{honordebt && (
+					<div>
+						<Table basic='very' striped>
+							<Table.Header>
+								<Table.Row>
+									<Table.HeaderCell>Rarity</Table.HeaderCell>
+									<Table.HeaderCell>Required stars</Table.HeaderCell>
+									<Table.HeaderCell>Honor cost</Table.HeaderCell>
+								</Table.Row>
+							</Table.Header>
+
+							<Table.Body>
+								{honordebt.totalStars.map((val, idx) => (
+									<Table.Row key={idx}>
+										<Table.Cell>
+											<Header as='h4'>{CONFIG.RARITIES[idx + 1].name}</Header>
+										</Table.Cell>
+										<Table.Cell>
+											{val - honordebt.ownedStars[idx]}{' '}
+											<span>
+												<i>
+													({honordebt.ownedStars[idx]} / {val})
+												</i>
+											</span>
+										</Table.Cell>
+										<Table.Cell>{(val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx]}</Table.Cell>
+									</Table.Row>
+								))}
+							</Table.Body>
+
+							<Table.Footer>
+								<Table.Row>
+									<Table.HeaderCell />
+									<Table.HeaderCell>
+										Owned {honordebt.ownedStars.reduce((a, b) => a + b, 0)} out of {honordebt.totalStars.reduce((a, b) => a + b, 0)}
+									</Table.HeaderCell>
+									<Table.HeaderCell>{totalHonorDebt}</Table.HeaderCell>
+								</Table.Row>
+							</Table.Footer>
+						</Table>
+
+						<Message info>
+							<Message.Header>{readableHonorDebt}</Message.Header>
+							<p>That's how long will it take you to max all remaining crew in the vault at 2000 honor / day</p>
+						</Message>
+					</div>
+				)}
+
+				<h3>Items required to level all owned crew</h3>
+				<h5>Note: this may over-include already equipped items from previous level bands for certain crew</h5>
+				<Message info>
+					<Message.Header>Cost and faction recommendations</Message.Header>
+					<p>
+						Total chroniton cost to farm all these items: {totalChronCost}{' '}
+						<span style={{ display: 'inline-block' }}>
+							<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+						</span>
+					</p>
+					{honordebt && (
+						<p>
+							Total number of credits required to craft all the recipes: {honordebt.craftCost}{' '}
+							<span style={{ display: 'inline-block' }}>
+								<img src={`https://assets.datacore.app/atlas/soft_currency_icon.png`} height={14} />
+							</span>
+						</p>
+					)}
+				</Message>
+
+				<h4>Factions with most needed non-mission items</h4>
+				<ul>
+					{factionRec.map((e) => (
+						<li key={e.name}>
+							{e.name}: {e.count} items
+						</li>
+					))}
+				</ul>
+
+				<div>
+					<Grid columns={3} centered padded>
+						{demands.map((entry, idx) => (
+							<Grid.Column key={idx}>
+								<Popup
+									trigger={
+										<Header
+											style={{ display: 'flex', cursor: 'zoom-in' }}
+											icon={
+												<ItemDisplay
+													src={`https://assets.datacore.app/${entry.equipment.imageUrl}`}
+													size={48}
+													maxRarity={entry.equipment.rarity}
+													rarity={entry.equipment.rarity}
+												/>
+											}
+											content={entry.equipment.name}
+											subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+										/>
+									}
+									header={CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+									content={<ItemSources item_sources={entry.equipment.item_sources} />}
+									on='click'
+									wide
+								/>
+							</Grid.Column>
+						))}
+					</Grid>
 				</div>
 
 				<h3>Skill coverage per rarity (yours vs. every crew in vault)</h3>
@@ -291,11 +496,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 										{
 											on: 'hover',
 											style: {
-												itemTextColor: '#000'
-											}
-										}
-									]
-								}
+												itemTextColor: '#000',
+											},
+										},
+									],
+								},
 							]}
 						/>
 					</div>
@@ -343,11 +548,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 										{
 											on: 'hover',
 											style: {
-												itemTextColor: '#000'
-											}
-										}
-									]
-								}
+												itemTextColor: '#000',
+											},
+										},
+									],
+								},
 							]}
 						/>
 					</div>
@@ -380,11 +585,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 										{
 											on: 'hover',
 											style: {
-												itemTextColor: '#000'
-											}
-										}
-									]
-								}
+												itemTextColor: '#000',
+											},
+										},
+									],
+								},
 							]}
 						/>
 					</div>
@@ -413,11 +618,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 										{
 											on: 'hover',
 											style: {
-												itemTextColor: '#000'
-											}
-										}
-									]
-								}
+												itemTextColor: '#000',
+											},
+										},
+									],
+								},
 							]}
 						/>
 					</div>
@@ -456,7 +661,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							axisBottom={{
 								legend: 'Number of crew',
 								legendPosition: 'middle',
-								legendOffset: 32
+								legendOffset: 32,
 							}}
 							labelSkipWidth={12}
 							labelSkipHeight={12}
@@ -477,11 +682,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 										{
 											on: 'hover',
 											style: {
-												itemOpacity: 1
-											}
-										}
-									]
-								}
+												itemOpacity: 1,
+											},
+										},
+									],
+								},
 							]}
 							animate={false}
 						/>
@@ -506,7 +711,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						/>
 					</div>
 					<div style={{ height: '320px', width: '50%', display: 'inline-block' }}>
-					<ResponsiveTreeMap
+						<ResponsiveTreeMap
 							root={{ name: 'Skills', children: flat_skill_distribution }}
 							theme={themes.dark}
 							identity='name'

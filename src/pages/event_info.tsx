@@ -168,16 +168,16 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 				<Header as='h4'>Quest</Header>
 
-				{event.quest.map((quest, idx) => (
+				{event.quest ? event.quest.map((quest, idx) => (
 					<div key={idx}>
-						{quest.screens.map((screen, idx) => (
+						{quest && quest.screens && quest.screens.map((screen, idx) => (
 							<p key={idx}>
 								<b>{screen.speaker_name}: </b>
 								{screen.text}
 							</p>
 						))}
 					</div>
-				))}
+				)) : <span>Mini-events don't include quest information.</span>}
 
 				<Message>
 					<Message.Header>TODO: Leaderboard out of date</Message.Header>

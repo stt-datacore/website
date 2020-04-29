@@ -1,4 +1,4 @@
-import { simplejson2csv } from './misc';
+import { simplejson2csv, ExportField } from './misc';
 import { calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
@@ -25,8 +25,8 @@ function formatChargePhases(crew): string {
 	return result.join('; ');
 }
 
-export function exportCrew(crew): string {
-	let fields = [
+export function exportCrewFields(): ExportField[] {
+	return [
 		{
 			label: 'Name',
 			value: (row: any) => row.name
@@ -221,8 +221,10 @@ export function exportCrew(crew): string {
 			value: (row: any) => (row.action.charge_phases ? formatChargePhases(row) : '')
 		}
 	];
+}
 
-	return simplejson2csv(crew, fields);
+export function exportCrew(crew): string {
+	return simplejson2csv(crew, exportCrewFields());
 }
 
 export function applyCrewBuffs(crew: any, buffConfig: any) {
@@ -270,6 +272,32 @@ export function downloadData(dataUrl, name: string) {
 	} else {
 		pom.click();
 	}
+}
+
+export function download(filename, text) {
+    let extension = filename.split('.').pop();
+    let mimeType = '';
+    let isText = true;
+    if (extension === 'csv') {
+        mimeType = 'text/csv;charset=utf-8';
+    } else if (extension === 'xlsx') {
+        mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        isText = false;
+    } else if (extension === 'json') {
+        mimeType = 'text/json;charset=utf-8';
+    } else if (extension === 'html') {
+        mimeType = 'text/html;charset=utf-8';
+    }
+
+    if (isText) {
+        downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
+    } else {
+        var a = new FileReader();
+        a.onload = (e) => {
+            downloadData(e.target.result, filename);
+        };
+        a.readAsDataURL(text);
+    }
 }
 
 export function prepareProfileData(allcrew, botcrew, playerData, lastModified) {
