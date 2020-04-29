@@ -15,6 +15,9 @@ A Linux VM with 2 CPUs and 4Gb of dedicated RAM should suffice for the current l
 
 ### Components
 
+#### the website
+Written in TypeScript with React.js and built with Gatsby, combines source code with big book notes (as markdown) and other data (as json) to create a static website which needs to be uploaded to the server's file system (CI loop recommended for build validation and deployments).
+
 #### assets
 This VM runs a cronjob every 10 minutes that scans, downloads and unpacks new assets (crew images) to the local file system. There's also an nginx HTTP server that publishes the assets.
 
