@@ -32,9 +32,7 @@ Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info,
 - [ ] TODO upload source code
 
 #### discord bot
-The Discord bot implementation (written in TypeScript with discord.js).
-
-- [ ] TODO upload source code
+The Discord bot implementation (written in TypeScript with discord.js). See source code [here](https://github.com/TemporalAgent7/datacorebot).
 
 #### DB
 A simple DB (currently PostgreSQL but configurable) that links discord user ids with uploaded profiles (where associated) and includes the crew comments.
