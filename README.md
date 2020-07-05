@@ -30,9 +30,7 @@ Written in dotnet core and using OpenCV and Tesseract OCR, this is the most taxi
 Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info, crew comments). Code is hosted [here](https://github.com/TemporalAgent7/site-server).
 
 #### discord bot
-The Discord bot implementation (written in TypeScript with discord.js).
-
-- [ ] TODO upload source code
+The Discord bot implementation (written in TypeScript with discord.js). See source code [here](https://github.com/TemporalAgent7/datacorebot).
 
 #### DB
 A simple DB (currently PostgreSQL but configurable) that links discord user ids with uploaded profiles (where associated) and includes the crew comments.
