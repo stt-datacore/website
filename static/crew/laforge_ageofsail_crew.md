@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 5
-events: 13
+events: 18
 in_portal: true
 published: true
 ---

@@ -9,4 +9,4 @@ in_portal: true
 published: true
 ---
 
-Two usable-when-bonus bases including ~900 SEC for daily work. She'll get a bonus bump every few months with double-digit events to date, though Torres variants have eclipsed a single variant event just once in a calendar year and her overall tally is inflated by two previous megas.
+Not exactly what you'd call daily use crew, Klingon Torres is perfect event crew shackled to a character that has yet to yield consistent events, sadly. Trait megas have inflated an event count that's otherwise pretty poor, so don't let her SEC base fool you into thinking she's anything but freezer bound. I'll leave you to decide if it was intentional or by accident that both this card, and her human half, the 5* Human Torres, are both sort of useless. Maybe it's true that the whole is greater than the sum of its parts, eh?

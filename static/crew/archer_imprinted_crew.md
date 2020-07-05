@@ -3,10 +3,14 @@ name: Imprinted Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 6
-in_portal:
+bigbook_tier: 6
+events: 11
+in_portal: true
 published: true
 ---
 
-The year of the ENG/MED/SCI crew keeps on rolling, and for the first-ever MED primary with the coveted trifecta, DB gives us the legendary doctor...Archer? Mother Hen Jonathan is bugging out in a big way, but he winds up being much more White Rabbit than Leonardo Da Vinci in overall impact. Exclusive skill sets like his have value, and he's likely to get plenty of voyage run, but no matter the skill set, you never want to see a crew with a voyage total worse than luminaries like Judge Q and Revolutionary Damar. The outlook is bleak on the weekends, as only one of Archer's three events has been Faction, and even that was a hybrid. If the stars align and Archer's number is finally called for a Faction event, Bug Brain would bring variant-best MED and ENG to the table, but if you think that's very likely, you're really sniffing Xindi slime.
+It is still baffling that the first MED primary ENG/MED crew the game ever gave us was the legendary doctor...Archer? Mother Hen Jonathan is bugging out in a big way, but the avenues he has to make a real impact are shrinking over time.
+
+Like his sweet babies, each ENG/MED crew is precious, and he's still guaranteed to make voyage runs for just about any roster, but with crew like Indulgent Seven and especially Medic Reno encroaching on his territory, it gets harder and harder to forgive a voyage total worse than luminaries like Judge Q and Revolutionary Damar.
+
+Archer's event history has shown a bit more life than we originally gave him credit for, but he is far from anyone's idea of an event powerhouse. Still, when the stars align and Archer's number is called for a Faction event, Bug Brain will bring variant-best MED and ENG to the table. But if you think that's very likely, you're really sniffing Xindi slime.

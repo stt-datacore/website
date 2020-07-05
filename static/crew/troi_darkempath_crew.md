@@ -3,7 +3,7 @@ name: Dark Empath Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 14
 in_portal:
 published: true

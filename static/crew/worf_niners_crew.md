@@ -4,9 +4,9 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 20
+events: 22
 in_portal: true
 published: true
 ---
 
-Worf has a lot of "blah" versions and, unfortunately, Niners is no exception. His skill set and voyage/gauntlet numbers are total duds. The vanity collection is there if you want it, but his best area of contribution is going to be as the #2 Worf SEC base. He does have the well-known Protomorphosis variant ahead of him, but will still perform fine for Faction events, even from lower star counts.
+You know what you should do if you can identify the employee who keeps giving Worf generic and bad CMD/DIP/SEC variants? Find him and kill him! No, but in all seriousness, this is a rather poor variant whose best claim used to be being one of the better Worf SEC bases - not so much anymore, with the advent of his more virile brother, Age of Sail Worf. He’ll make shuttles when his event number is called, but he’s not exactly daily use crew, and, in the end, you’re really just taking him for the vanity.

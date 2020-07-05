@@ -33,6 +33,7 @@ type ProfileChartsState = {
 	radar_skill_rarity: any[];
 	radar_skill_rarity_owned: any[];
 	demands: IDemand[];
+	excludeFulfilled: boolean;
 	honordebt: {
 		ownedStars: number[];
 		totalStars: number[];
@@ -58,6 +59,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity: [],
 			radar_skill_rarity_owned: [],
 			honordebt: undefined,
+			excludeFulfilled: false
 		};
 	}
 
@@ -175,6 +177,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		demands = demands.sort((a, b) => b.count - a.count);
 
+		for (let demand of demands) {
+			let item = playerData.player.character.items.find((it) => it.symbol === demand.symbol);
+			demand.have = item ? item.quantity : 0;
+		}
+
 		let flat_skill_distribution = [];
 		skill_distribution.forEach((sec) => {
 			sec.loc = 0;
@@ -249,9 +256,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			r5_stars,
 			radar_skill_rarity,
 			radar_skill_rarity_owned,
-			demands,
 			honordebt,
+			excludeFulfilled
 		} = this.state;
+
+		let {demands} = this.state;
 
 		let totalHonorDebt = 0;
 		let readableHonorDebt = '';
@@ -291,6 +300,10 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				}
 			}
 		});
+
+		if (excludeFulfilled) {
+			demands = demands.filter(d => d.count > d.have);
+		}
 
 		factionRec = factionRec.sort((a, b) => b.count - a.count).filter((e) => e.count > 0);
 
@@ -421,6 +434,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				</ul>
 
 				<div>
+					<Checkbox label='Exclude already fulfilled' onChange={() => this.setState({excludeFulfilled: !excludeFulfilled})} checked={this.state.excludeFulfilled} />
 					<Grid columns={3} centered padded>
 						{demands.map((entry, idx) => (
 							<Grid.Column key={idx}>
@@ -437,7 +451,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 												/>
 											}
 											content={entry.equipment.name}
-											subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+											subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''} (have ${entry.have})`}
 										/>
 									}
 									header={CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}

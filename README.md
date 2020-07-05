@@ -27,9 +27,7 @@ This VM runs a cronjob every 10 minutes that scans, downloads and unpacks new as
 Written in dotnet core and using OpenCV and Tesseract OCR, this is the most taxing (CPU and RAM) component of the system, used by the bot for recognizing behold (and voyage setup) screenshots. Code is hosted [here](https://github.com/TemporalAgent7/datacore-bot).
 
 #### site-server
-Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info, crew comments).
-
-- [ ] TODO upload source code
+Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info, crew comments). Code is hosted [here](https://github.com/TemporalAgent7/site-server).
 
 #### discord bot
 The Discord bot implementation (written in TypeScript with discord.js).

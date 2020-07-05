@@ -3,9 +3,9 @@ name: Rura Penthe Commandant
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 17
-in_portal:
+in_portal: true
 published: true
 ---
 

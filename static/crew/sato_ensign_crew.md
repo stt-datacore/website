@@ -3,8 +3,8 @@ name: Ensign Sato
 rarity: 2
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 0
+bigbook_tier: 6
+events: 3
 in_portal: true
 published: true
 ---

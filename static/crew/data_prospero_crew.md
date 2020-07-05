@@ -3,8 +3,8 @@ name: Prospero Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 17
+bigbook_tier: 4
+events: 21
 in_portal: true
 published: true
 ---

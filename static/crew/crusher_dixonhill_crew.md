@@ -3,8 +3,8 @@ name: Doc Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 4
+bigbook_tier: 3
+events: 9
 in_portal: true
 published: true
 ---

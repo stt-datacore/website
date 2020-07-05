@@ -3,6 +3,7 @@ export interface IDemand {
 	symbol: string;
 	equipment: any;
 	factionOnly: boolean;
+	have: number;
 }
 
 export interface ICrewDemands {

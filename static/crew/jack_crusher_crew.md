@@ -4,9 +4,9 @@ rarity: 3
 series: tng
 memory_alpha:
 bigbook_tier: 5
-events: 0
+events: 9
 in_portal: true
 published: true
 ---
 
-#5 CMD base is respectable but CMD is quite common. He will make some of your early voyages but it won't be long before retirement. His Hologram trait will be useful for a few mission nodes along the way but other than his Inspiring collection there's not much use for him when better crew come along.
+#5 CMD base is respectable but CMD is quite common. He will make some of your early voyages but it won’t be long before retirement. His Hologram trait will be useful for a few mission nodes along the way but other than his Inspiring collection there’s not much use for him when better crew come along.

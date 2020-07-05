@@ -3,8 +3,8 @@ name: Elizabeth Dehner
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 2
+bigbook_tier: 9
+events: 3
 in_portal: true
 published: true
 ---

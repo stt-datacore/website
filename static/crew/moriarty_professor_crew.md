@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha: https://memory-alpha.fandom.com/wiki/James_Moriarty_(hologram)
 bigbook_tier: 9
-events: 9
+events: 13
 in_portal: true
 published: true
 ---

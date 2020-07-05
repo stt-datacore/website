@@ -1,0 +1,233 @@
+[
+	{
+		"name": "Where Nightmares Meet",
+		"type": "Hybrid Faction/Galaxy",
+		"dates": "Thursday 02/13 until Monday 02/17 at noon (17.00 UTC)",
+		"startDate": "2020-02-13T17:00:00Z",
+		"endDate": "2020-02-17T17:00:00Z",
+		"highbonus": ["seven_annika_crew", "odo_cold_weather_crew", "picard_numberone_crew"],
+		"smallbonus": {
+			"traits": ["burnham", "seven", "odo", "Astrophysicist"]
+		}
+	},
+	{
+		"name": "Phantom Pain",
+		"type": "Galaxy",
+		"dates": "Thursday 02/20 until Monday 02/24 at noon (17.00 UTC)",
+		"startDate": "2020-02-20T17:00:00Z",
+		"endDate": "2020-02-24T17:00:00Z",
+		"highbonus": ["arjin_crew", "icheb_lt_commander_crew", "dax_jadzia_blood_oath_crew", "picard_numberone_crew"],
+		"smallbonus": {
+			"traits": ["icheb", "dax", "Astrophysicist"]
+		}
+	},
+	{
+		"name": "Reunion at Dawn",
+		"type": "Faction",
+		"dates": "Thursday 02/27 until Monday 03/02 at noon (17.00 UTC)",
+		"startDate": "2020-02-27T17:00:00Z",
+		"endDate": "2020-03-02T17:00:00Z",
+		"highbonus": ["troi_ageofsail_crew", "worf_ageofsail_crew", "dsc_spock_fugitive_crew", "picard_numberone_crew"],
+		"smallbonus": {
+			"traits": ["worf", "troi", "Astrophysicist"]
+		}
+	},
+	{
+		"name": "Dirty Rotten Holograms",
+		"type": "Galaxy",
+		"dates": "Thursday 03/05 until Monday 03/09 at noon (16.00 UTC)",
+		"startDate": "2020-03-05T17:00:00Z",
+		"endDate": "2020-03-09T16:00:00Z",
+		"highbonus": ["kira_decoy_crew", "grathon_tolar_crew", "dsc_mudd_takeover_crew"],
+		"smallbonus": {
+			"traits": ["kira", "mudd", "Hologram"]
+		}
+	},
+	{
+		"name": "The Enemy Within",
+		"type": "Faction",
+		"dates": "Thursday 03/12 until Monday 03/16 at noon (16.00 UTC)",
+		"startDate": "2020-03-12T17:00:00Z",
+		"endDate": "2020-03-16T17:00:00Z",
+		"highbonus": ["riker_odan_crew", "bashir_1701_crew", "dsc_culber_mycelial_crew"],
+		"smallbonus": {
+			"traits": ["riker", "bashir", "culber", "Physician"]
+		}
+	},
+	{
+		"name": "Leisure Time",
+		"type": "Galaxy",
+		"dates": "Thursday 03/19 until Monday 03/23 at noon (16.00 UTC)",
+		"startDate": "2020-03-19T17:00:00Z",
+		"endDate": "2020-03-23T17:00:00Z",
+		"highbonus": ["scott_claymore_crew", "kira_niners_crew", "emh_caddy_crew"],
+		"smallbonus": {
+			"traits": ["scott", "emh", "kira"]
+		}
+	},
+	{
+		"name": "Roj",
+		"type": "Faction",
+		"dates": "Thursday 03/26 until Monday 03/30 at noon (16.00 UTC)",
+		"startDate": "2020-03-26T17:00:00Z",
+		"endDate": "2020-03-30T17:00:00Z",
+		"highbonus": ["dsc_detmer_mirror_crew", "worf_defiant_commander_crew", "TODO Riva"],
+		"smallbonus": {
+			"traits": ["detmer", "worf", "mirror"]
+		}
+	},
+	{
+		"name": "The Galactic Series",
+		"type": "Hybrid Faction/Galaxy",
+		"dates": "Thursday 04/02 until Monday 04/06 at noon (16.00 UTC)",
+		"startDate": "2020-04-02T17:00:00Z",
+		"endDate": "2020-04-06T17:00:00Z",
+		"highbonus": ["ezri_niners_crew", "quark_martian_crew", "rom_niners_crew", "garland_crew"],
+		"smallbonus": {
+			"traits": ["dax", "quark", "rom", "Athlete"]
+		}
+	},
+	{
+		"name": "Constellations",
+		"type": "Galaxy",
+		"dates": "Thursday 04/09 until Monday 04/13 at noon (16.00 UTC)",
+		"startDate": "2020-04-09T17:00:00Z",
+		"endDate": "2020-04-13T17:00:00Z",
+		"highbonus": ["dsc_nhan_evsuit_crew", "raffi_musiker_crew", "dsc_airiam_ltcmdr_crew", "soji_asha_crew_crew"],
+		"smallbonus": {
+			"traits": ["airiam", "Cyberneticist"]
+		}
+	},
+	{
+		"name": "Seekers of Life",
+		"type": "Hybrid Faction/Skirmish",
+		"dates": "Thursday 04/16 until Monday 04/20 at noon (16.00 UTC)",
+		"startDate": "2020-04-16T17:00:00Z",
+		"endDate": "2020-04-20T17:00:00Z",
+		"highbonus": ["elnor_crew", "seven_fenris_crew", "dsc_tyler_torchbearer_crew", "soji_asha_crew_crew"],
+		"smallbonus": {
+			"traits": ["seven", "tyler", "Cyberneticist"]
+		}
+	},
+	{
+		"name": "Suitable Menace",
+		"type": "Faction",
+		"dates": "Thursday 04/23 until Monday 04/27 at noon (16.00 UTC)",
+		"startDate": "2020-04-23T17:00:00Z",
+		"endDate": "2020-04-27T17:00:00Z",
+		"highbonus": ["dsc_saru_vaharai_crew", "jurati_doctor_crew", "lore_original_crew", "soji_asha_crew_crew"],
+		"smallbonus": {
+			"traits": ["saru", "lore", "Cyberneticist"]
+		}
+	},
+	{
+		"name": "A Marginal Victory",
+		"type": "Skirmish",
+		"dates": "Thursday 04/30 until Monday 05/04 at noon (16.00 UTC)",
+		"startDate": "2020-04-30T17:00:00Z",
+		"endDate": "2020-05-04T17:00:00Z",
+		"highbonus": ["hugh_director_crew", "rios_cristobal_crew", "dsc_burnham_fugitive_crew", "soji_asha_crew_crew"],
+		"smallbonus": {
+			"traits": ["hugh", "burnham", "Cyberneticist"]
+		}
+	},
+	{
+		"name": "Faster Future",
+		"type": "Faction",
+		"dates": "Thursday 05/07 until Monday 05/11 at Noon (16.00 UTC)",
+		"startDate": "2020-05-07T17:00:00Z",
+		"endDate": "2020-05-11T17:00:00Z",
+		"highbonus": ["janeway_viceadmiral_crew", "dsc_zora_crew", "laforge_mirror_crew"],
+		"smallbonus": {
+			"traits": ["janeway", "laforge"]
+		}
+	},
+	{
+		"name": "The Need for Speed",
+		"type": "Faction/Galaxy",
+		"dates": "Thursday 05/14 until Monday 05/18 at Noon (16.00 UTC)",
+		"startDate": "2020-05-14T17:00:00Z",
+		"endDate": "2020-05-18T17:00:00Z",
+		"highbonus": ["dsc_gburnham_displaced_crew", "kim_delta_flyer_crew", "mayweather_tuskegee_crew"],
+		"smallbonus": {
+			"traits": ["kim", "Pilot", "mayweather"]
+		}
+	},
+	{
+		"name": "Runaway Bride",
+		"type": "Faction",
+		"dates": "Thursday 05/21 until Monday 05/25 at Noon (16.00 UTC)",
+		"startDate": "2020-05-21T17:00:00Z",
+		"endDate": "2020-05-25T17:00:00Z",
+		"highbonus": ["keiko_bride_crew", "braxton_vagrant_crew", "obrien_undercoversfi_crew"],
+		"smallbonus": {
+			"traits": ["keiko", "braxton", "obrien", "Romantic"]
+		}
+	},
+	{
+		"name": "Blundering Terror",
+		"type": "Galaxy",
+		"dates": "Thursday 05/28 until Monday 06/01 at Noon (16.00 UTC)",
+		"startDate": "2020-05-28T17:00:00Z",
+		"endDate": "2020-06-01T17:00:00Z",
+		"highbonus": ["paris_determined_crew", "grebnedlog_crew", "scott_stiv_crew"],
+		"smallbonus": {
+			"traits": ["paris", "scott", "Thief"]
+		}
+	},
+	{
+		"name": "One Incredible Tale",
+		"type": "Faction/Galaxy",
+		"dates": "Thursday 06/04 until Monday 06/08 at Noon (16.00 UTC)",
+		"startDate": "2020-06-04T17:00:00Z",
+		"endDate": "2020-06-08T17:00:00Z",
+		"highbonus": ["kira_eaton_crew", "lily_sloane_satin_crew", "quark_herbert_crew", "paris_wwii_crew"],
+		"smallbonus": {
+			"traits": ["kira", "lily", "quark", "paris"]
+		}
+	},
+	{
+		"name": "Small Mercies",
+		"type": "Faction",
+		"dates": "Thursday 06/11 until Monday 06/15 at Noon (16.00 UTC)",
+		"startDate": "2020-06-11T17:00:00Z",
+		"endDate": "2020-06-15T17:00:00Z",
+		"highbonus": ["linnis_paris_crew", "kes_grandmother_crew", "janeway_coffee_crew", "suspiria_crew"],
+		"smallbonus": {
+			"traits": ["kes", "janeway", "Warp Theorist", "Caregiver"]
+		}
+	},
+	{
+		"name": "A Web of Lies",
+		"type": "Skirmish",
+		"dates": "Thursday 06/18 until Monday 06/22 at Noon (16.00 UTC)",
+		"startDate": "2020-06-18T17:00:00Z",
+		"endDate": "2020-06-22T17:00:00Z",
+		"highbonus": ["dahj_activated_crew", "kestra_wild_crew", "tholian_prisoner_crew", "suspiria_crew"],
+		"smallbonus": {
+			"traits": ["Warp Theorist", "Caregiver"]
+		}
+	},
+	{
+		"name": "Against the House",
+		"type": "Galaxy",
+		"dates": "Thursday 06/25 until Monday 06/29 at noon (16.00 UTC)",
+		"startDate": "2020-06-25T17:00:00Z",
+		"endDate": "2020-06-29T17:00:00Z",
+		"highbonus": ["emh_gogh_crew", "karyn_archer_crew", "obrist_crew", "suspiria_crew"],
+		"smallbonus": {
+			"traits": ["emh", "Warp Theorist", "Caregiver"]
+		}
+	},
+	{
+		"name": "Someone Like Me",
+		"type": "Galaxy/Skirmish",
+		"dates": "Thursday 07/02 until Monday 07/06 at noon (16.00 UTC)",
+		"startDate": "2020-07-02T17:00:00Z",
+		"endDate": "2020-07-06T17:00:00Z",
+		"highbonus": ["chakotay_krenim_guest_crew", "TODO_Tanis", "kim_rogue_crew", "suspiria_crew"],
+		"smallbonus": {
+			"traits": ["chakotay", "kim", "Warp Theorist", "Caregiver"]
+		}
+	}
+]

@@ -4,8 +4,8 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 5
-events: 25
-in_portal:
+events: 27
+in_portal: true
 published: true
 ---
 

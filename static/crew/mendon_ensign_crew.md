@@ -3,10 +3,10 @@ name: Ensign Mendon
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 5
 events: 0
 in_portal: true
 published: true
 ---
 
-#1 3* SCI boy wonder here destroys most SCI stats in rare leagues. Even his ENG score is very respectable which makes him one of the few two skilled crewmembers to be useful on a voyage. He is just one collection and ship skill away from being top tier however but that does not belittle his usefulness. DB confirming that Ensigns in this game are somehow far superior than most of the Captains.
+Sadly Mendon has fallen from grace somewhat. His shuttle score is outpaced by most other 3* SCI/ENG crew due to his low bases however he has enough variation with his skill set to afford him use on a voyage or two. Keep him in mind should you be lacking SCI or ENG crew but don't rush him to promotion.

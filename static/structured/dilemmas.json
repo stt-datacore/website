@@ -1,0 +1,441 @@
+[
+	{
+		"title": "A Higher Duty, Part 1",
+		"choiceA": {
+			"text": "Give a rousing speech in support of the diplomat. (Choice A can lead to **A Higher Duty, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Give a neutral speech to avoid sides. (Choice B can lead to **A Higher Duty, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceC": {
+			"text": "Refuse to speak at the diplomat's gala.",
+			"reward": ["30 :honor:", "30 :chrons:", "2? Crew"]
+		}
+	},
+	{
+		"title": "A Higher Duty, Part 2",
+		"choiceA": {
+			"text": "Suggest a lenient sentence in the hopes of reform.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?)"]
+		},
+		"choiceB": {
+			"text": "Suggest a harsh sentence in light of the consequences of his theft. (Choice B can lead to **A Higher Duty, Part 3**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?)"]
+		}
+	},
+	{
+		"title": "A Higher Duty, Part 3",
+		"choiceA": { "text": "Disable his ship before he can harm the colony.", "reward": ["**Fierce Guinan**"] },
+		"choiceB": { "text": "Talk him down before he or anyone else is hurt.", "reward": ["**Dr. Leonard McCoy**"] }
+	},
+	{
+		"title": "A Life Alone, Part 1",
+		"choiceA": {
+			"text": "Encourage the young Trill to join Starfleet (Choice A can lead to **A Life Alone, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Advise the young Trill to look for purpose elsewhere.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		}
+	},
+	{
+		"title": "A Life Alone, Part 2",
+		"choiceA": {
+			"text": "Tell him to remain at Starfleet Academy.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR **Jannar** OR 600 Ship Schematics <!--NX-01 Schematics-->"]
+		},
+		"choiceB": { "text": "Tell him to return home for the joining.", "reward": ["Component (2x 4?, 1x 4?)"] }
+	},
+	{
+		"title": "Blood-Red Tide",
+		"choiceA": {
+			"text": "Avoid taking sides in the rebellion.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5? Replicator Rations) OR 4? Component"]
+		},
+		"choiceB": {
+			"text": "Support the colony's governor.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5? Replicator Rations) OR 4? Component"]
+		},
+		"choiceC": {
+			"text": "Support the rebelling colonists.",
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"(4? Crew, 5x 5? Replicator Rations) OR Component (1x 4?, 2x 4? 5 times)"
+			]
+		}
+	},
+	{
+		"title": "Blow by Blow",
+		"choiceA": {
+			"text": "Protect the Andorian by stunning the Gorn. (Choice A unlocks Choice B of **Friends in Need**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Protect the Gorn by stunning the Andorian. (Choice B unlocks Choice C of **Friends in Need**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		}
+	},
+	{
+		"title": "Burden of Proof",
+		"choiceA": {
+			"text": "Encourage him to gather definitive proof before accusing the Ardanan.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew"]
+		},
+		"choiceB": {
+			"text": "Urge him to arrest the suspect before she can flee the system.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew"]
+		},
+		"choiceC": {
+			"text": "Share the secret correspondences we received from the Ardanan's servant.  (Requires Choice B in **Class Act**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew,(3?, 4?)OR600 Ship Schematics"]
+		}
+	},
+	{
+		"title": "By Our Own Hands",
+		"choiceA": {
+			"text": "Repay the outpost for what **crew name**'s counterpart took.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Reassure the outpost's inhabitants that **crew name** means them no harm.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "Champion of the People, Part 1",
+		"choiceA": {
+			"text": "Reveal their leader's true identity. (Choice A can lead to **Champion of the People, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Allow the colonists to continue following her.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		}
+	},
+	{
+		"title": "Champion of the People, Part 2",
+		"choiceA": {
+			"text": "Arrest all of the mercenaries for attacking the crew.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew"]
+		},
+		"choiceB": {
+			"text": "Give the Ventaxian a chance to flee. (Choice B can lead to **Champion of the People, Part 3**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?)"]
+		}
+	},
+	{
+		"title": "Champion of the People, Part 3",
+		"choiceA": { "text": "Reinforce the Ventaxian colony.", "reward": ["**Ensign Picard** OR 2x 4? Component"] },
+		"choiceB": {
+			"text": "Encourage the former mercenary and the colonists to work together.",
+			"reward": ["**Colonel Worf**"]
+		}
+	},
+	{
+		"title": "Class Act",
+		"choiceA": {
+			"text": "Support the respectable Ardanan's accusations.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Defend the frightened servant. (Choice B unlocks Choice C of **Burden of Proof**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		}
+	},
+	{
+		"title": "Cracks in the Wall",
+		"choiceA": {
+			"text": "Cross the border and assist the Romulan interceptor. (Choice A may lead to Choice C in **First Author**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Ensure that the distress call reaches another Romulan ship. (Choice B may lead to Choice C in **First Author**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceC": { "text": "Ignore the distress call.", "reward": ["30 :honor:", "30 :chrons:", "2? Crew"] }
+	},
+	{
+		"title": "First Author",
+		"choiceA": {
+			"text": "Allow the researcher to claim the doctor's work.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew"]
+		},
+		"choiceB": { "text": "Attempt to warn the Romulan doctor.", "reward": ["60 :honor:", "50 :chrons:", "3? Crew"] },
+		"choiceC": {
+			"text": "The captain of the Romulan interceptor we assisted is at the conference. Ask her to warn the doctor. (Requires Choice A or B in **Cracks in the Wall**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 600 Ship Schematics"]
+		}
+	},
+	{
+		"title": "Friends in Need",
+		"choiceA": {
+			"text": "Negotiate with the guards for freedom.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew"]
+		},
+		"choiceB": {
+			"text": "Ask the Andorian we rescued to distract the guards. (If you saved the Andorian in **Blow by Blow**)",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR 600 Ship Schematics"]
+		},
+		"choiceC": {
+			"text": "Ask the Gorn we rescued to fight the guards. (If you saved the Gorn in **Blow by Blow**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?)"]
+		}
+	},
+	{
+		"title": "Interference, Part 1",
+		"choiceA": {
+			"text": "Leave the substance on the planet where it was found.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Take a sample back to the **ship name** for further study. (Choice B may lead to **Interference, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceC": {
+			"text": "Destroy the potentially dangerous substance.",
+			"reward": ["30 :honor:", "30 :chrons:", "2? Crew"]
+		}
+	},
+	{
+		"title": "Interference, Part 2",
+		"choiceA": {
+			"text": "Lure the substance out without harming it.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, other 4?) OR **Lucien**) OR 600 Ship Schematics"]
+		},
+		"choiceB": {
+			"text": "Dissolve the substance before it reaches the impulse engines.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR 2x 4? Component"]
+		}
+	},
+	{
+		"title": "Ladders and Chains",
+		"choiceA": {
+			"text": "Defend the Vorta passenger.",
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"(4? Crew, 5? Replicator Rations) OR 5? Replicator Rations OR Component (1x 4?, 2x 4?)"
+			]
+		},
+		"choiceB": {
+			"text": "Return the Vorta passenger to the Dominion.",
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"(4? Crew, 5x 5? Replicator Rations) OR 5x 5? Replicator Rations OR Component (1x 4?, 2x 4?)"
+			]
+		}
+	},
+	{
+		"title": "Next Stop Absolution",
+		"choiceA": {
+			"text": "Take the stowaway to see his family.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Arrest the Maquis stowaway.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceC": {
+			"text": "Leave the stowaway at the nearest outpost.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "Off the Books, Part 1",
+		"choiceA": {
+			"text": "Allow the supposed agent to use the **ship name**. (Choice A may lead to **Off the Books, Part 2**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": { "text": "Refuse the supposed agent's demands.", "reward": ["30 :honor:", "30 :chrons:", "2? Crew"] }
+	},
+	{
+		"title": "Off the Books, Part 2",
+		"choiceA": {
+			"text": "Transport the wounded agent to sickbay.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR 4? Component"]
+		},
+		"choiceB": {
+			"text": "Transport the agent to the brig.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR **Thot Gor** OR 600 Ship Schematics"]
+		},
+		"choiceC": {
+			"text": "Leave the agent to face the enemies she has made.",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR 4? Component"]
+		}
+	},
+	{
+		"title": "Outstretched Talons",
+		"choiceA": {
+			"text": "Contact the Romulans and demand that they reverse course.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 4? Component"]
+		},
+		"choiceB": {
+			"text": "Open fire on the trespassing Romulan warbird.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 4? Component"]
+		}
+	},
+	{
+		"title": "Profit in the Wind",
+		"choiceA": {
+			"text": "Give the mining rights to the colonists, who own this star system.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Give the mining rights to the Ferengi company, who found the deposit.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "Retrofit",
+		"choiceA": {
+			"text": "Give the space to **crew name** for auxiliary deflector array. (Choice A unlocks Choice B of **The Tools at Hand**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Give the space to **crew name** for torpedo development. (Choice B unlocks Choice C of **The Tools at Hand**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		}
+	},
+	{
+		"title": "Sticks and Stones",
+		"choiceA": {
+			"text": "Endure the Klingon captain's insults.",
+			"reward": ["30 :honor:", "30 :chrons:", "2? Crew OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Insult the drunken captain for his behavior.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceC": {
+			"text": "Correct the offensive rumors the Klingon captain has heard.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "The Beginning of the End of the World",
+		"choiceA": {
+			"text": "Debate the vedek (Choice A may lead to **The Voice of the Prophets**)",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceB": {
+			"text": "Reassure the crowd that they are safe.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?)"]
+		},
+		"choiceC": { "text": "Allow the vedek to share his beliefs.", "reward": ["30 :honor:", "30 :chrons:", "2? Crew"] }
+	},
+	{
+		"title": "The Buried Years",
+		"choiceA": {
+			"text": "Make the surface habitable for the Yalosians once again.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5? Replicator Rations) OR Component (1x 4?, 2x 4?)"]
+		},
+		"choiceB": {
+			"text": "Leave the planet's life to develop without interfering.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5? Replicator Rations) OR 4? Component"]
+		}
+	},
+	{
+		"title": "The Cost of Living",
+		"choiceA": {
+			"text": "Continue to help the colonist search for a cure",
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"(4? Crew, 5x 5? Replicator Rations) OR 4? Component OR 5x 5? Replicator Rations"
+			]
+		},
+		"choiceB": {
+			"text": "Refuse to help until the colony's doctors have stopped these experiments.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5?Replicator Rations) OR 4? Component"]
+		},
+		"choiceC": {
+			"text": "Leave the colonists to find a cure on their own",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5?Replicator Rations) OR 4? Component"]
+		}
+	},
+	{
+		"title": "The Greater Need",
+		"choiceA": {
+			"text": "Confiscate the stolen items.",
+			"reward": ["30 :honor:", "30 :chrons:", "2? Crew OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Allow the scavenger to leave with what she has taken.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "The Tools at Hand",
+		"choiceA": { "text": "Distract the probe with phaser fire.", "reward": ["60 :honor:", "50 :chrons:", "3? Crew"] },
+		"choiceB": {
+			"text": "Disable the probe with **crew name**'s new deflector array. (Requires Choice A in **Retrofit**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?)"]
+		},
+		"choiceC": {
+			"text": "Destroy the probe with **crew name**'s new experimental torpedo. (Requires Choice B in **Retrofit**)",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 600 Ship Schematics"]
+		}
+	},
+	{
+		"title": "The Voice of the Prophets",
+		"choiceA": { "text": "Ask the vedek to hand over the Orb.", "reward": ["60 :honor:", "50 :chrons:", "3? Crew"] },
+		"choiceB": { "text": "Stun him before he can open the Orb.", "reward": ["60 :honor:", "50 :chrons:", "3? Crew"] },
+		"choiceC": {
+			"text": "Convince the vedek that he does not need the Orb's visions. (Requires Choice A from **The Beginning of the End of the World**)",
+			"reward": ["60 :honor:", "50 :chrons:", "3? Crew OR **The Clown** OR 600 Ship Schematics"]
+		}
+	},
+	{
+		"title": "True to the Uniform",
+		"choiceA": {
+			"text": "Recommend the commander for promotion",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		},
+		"choiceB": {
+			"text": "Advise Against promoting the commander.",
+			"reward": ["30 :honor:", "30 :chrons:", "2? Crew OR 3? Component"]
+		},
+		"choiceC": {
+			"text": "Decline to comment on the potential promotion.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "What Smiles May Hide",
+		"choiceA": {
+			"text": "Allow the trader to board the **ship name**.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component)"]
+		},
+		"choiceB": {
+			"text": "Tell the trader to make other arrangements.",
+			"reward": ["30 :honor:", "30 :chrons:", "Crew (2?, 3?) OR 3? Component"]
+		}
+	},
+	{
+		"title": "Where Earth Meets Sky",
+		"choiceA": {
+			"text": "Evacuate the station for as long as possible, allowing it to crash.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew, 5x 5? Replicator Rations) OR Component (1x 4?, 2x 4?)"]
+		},
+		"choiceB": {
+			"text": "Destroy the station before it can impact the planet's surface.",
+			"reward": ["100 :honor:", "75 :chrons:", "(4? Crew), 5x 5? Replicator Rations) OR 4? Component"]
+		}
+	},
+	{
+		"title": "Winter's Price",
+		"choiceA": {
+			"text": "Save the captain.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 4? Component"]
+		},
+		"choiceB": {
+			"text": "Save the prisoner.",
+			"reward": ["60 :honor:", "50 :chrons:", "Crew (3?, 4?) OR 4? Component"]
+		}
+	}
+]

@@ -4,9 +4,11 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 3
-events: 16
-in_portal:
+events: 17
+in_portal: true
 published: true
 ---
 
-He’s not sure what to do with his hands, but with his third event of 2019, he pushes into double digit Riker weekends which makes Homeless Jazz Hands Riker’s #4 CMD and #3 ENG bases among variants valuable event shuttle fillers. Newer rosters can make use of his viable CMD/ENG voyage stack and +6 attack booster at 6 seconds that kicks up to +9 if you manage the position trigger. Even adds a helpful +1 Veteran. For just one crew slot and 34 cents a day, you can help provide warmth and shelter for Rikers just like this one. Call now.
+He’s not sure what to do with his hands, but we can be sure what to do with him - stick him on shuttles! Between an impressive event clip headlined by two plus Riker weekends in each calendar year, and a CMD base that sits nearly 200 points above the next purple Riker, he should be the first name out of the freezer when his character's number is called.
+
+A CMD/ENG stack that's underrepresented on voyages among super rares, +9 arena attack (trigger needed), and stat-boosting collection spot all combine to give him something to do in between Faction duties. For just one crew slot and 34 cents a day, you can help provide warmth and shelter for Rikers just like this one. Call now.

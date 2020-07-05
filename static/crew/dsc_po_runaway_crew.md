@@ -17,5 +17,5 @@ Boy, I wish I had her as my starting crew and if you snagged her early, good tim
 
 From top to bottom, Runaway excels and hits several elite high spots.
 A great event/base pairing, thanks to Disco, but even better may be her voyage work.
-Po slots in as the top ENG/DIP voyager, one of only three in the top 120.
+Po slots in as the top ENG/DIP voyager, one of only three in the top 140.
 Family runaway or not, Po is one crew you'll want to welcome with open arms.

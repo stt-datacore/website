@@ -13,16 +13,28 @@ type TopMenuState = {
 	user: string;
 	password: string;
 	errorMessage: string | undefined;
+	messageModalOpen: boolean;
 };
 
 class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
-	state = { user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false };
+	state = { user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false, messageModalOpen: false };
 
 	render() {
-		const { user, password, loginDialogOpen, loggingIn, errorMessage } = this.state;
+		const { user, password, loginDialogOpen, loggingIn, errorMessage, messageModalOpen } = this.state;
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
+
+		const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+		const firstDate = new Date(2020, 7, 1);
+		const secondDate = new Date();
+		const days = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+
+		let buttonLabel = 'Site is shutting down!';
+		if (days > 0) {
+			buttonLabel = `Site is shutting down in ${days} days!`;
+		}
+
 		return (
 			<div>
 				<Menu fixed='top' inverted>
@@ -56,7 +68,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 					<Menu.Menu position='right'>
 						<Menu.Item>
-							<Button size='tiny' onClick={() => this._showLoginDialog(!!isLoggedIn)} content={!isLoggedIn ? 'Login' : `Logout ${userName}`} />
+							<Button size='tiny' color='red' onClick={() => this.setState({messageModalOpen: true})} content={buttonLabel} />
 						</Menu.Item>
 						<Menu.Item as='a' onClick={() => window.open('https://github.com/TemporalAgent7/datacore', '_blank')}>
 							<Icon name='github' />
@@ -105,6 +117,24 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						<Button positive content='Login' onClick={() => this._doLogin()} />
 					</Modal.Actions>
 				</Modal>
+
+				<Modal open={messageModalOpen} closeOnEscape={false} closeOnDimmerClick={false} onClose={() => this._closeMessageDialog()}>
+					<Modal.Header>DataCore website and bot are shutting down!</Modal.Header>
+					<Modal.Content>
+						<p>Due to unaddressed <a href='https://forum.disruptorbeam.com/stt/discussion/16369/offer-wall-feedback-thread-live-now#latest'>concerns</a> around built-in adware and integration with scummy features like the Offer Wall, I've decided to stop investing my time and money in supporting these community tools.</p>
+						<p>Most of my work is open source, so if someone wants to take over maintenance and hosting for the website and bot, here are some links:</p>
+						<ul>
+							<li><a href='https://github.com/TemporalAgent7/datacore'>The DataCore website (TypeScript)</a></li>
+							<li><a href='https://github.com/TemporalAgent7/datacorebot'>The DataCore bot (TypeScript / node.js)</a></li>
+							<li><a href='https://github.com/TemporalAgent7/datacore-bot'>The image analysis for beholds and voyages (C# / dotnetcore)</a></li>
+						</ul>
+						<p>Until the end of August 2020 I'll try to open source more bits and pieces of my work. My hope is that whatever ends up being built with these will benefit the entire community, not just closed / private cliques.</p>
+						<p>Live long and prosper!</p>
+					</Modal.Content>
+					<Modal.Actions>
+						<Button icon='checkmark' onClick={() => this._closeMessageDialog()} content='Ok' />
+					</Modal.Actions>
+				</Modal>
 			</div>
 		);
 	}
@@ -116,12 +146,12 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		fetch('https://datacore.app/api/login', {
 			method: 'post',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ user, password })
+			body: JSON.stringify({ user, password }),
 		})
-			.then(response => response.json())
-			.then(res => {
+			.then((response) => response.json())
+			.then((res) => {
 				if (res.error || !res.token) {
 					this.setState({ loggingIn: false, errorMessage: res.error });
 				} else {
@@ -131,7 +161,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					this.setState({ loggingIn: false, loginDialogOpen: false });
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				this.setState({ loggingIn: false, errorMessage: err.toString() });
 			});
 	}
@@ -147,6 +177,10 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 	_closeLoginDialog() {
 		this.setState({ loginDialogOpen: false });
+	}
+
+	_closeMessageDialog() {
+		this.setState({ messageModalOpen: false });
 	}
 }
 

@@ -3,8 +3,8 @@ name: Sniper Ezri Dax
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 0
+bigbook_tier: 3
+events: 15
 in_portal: true
 published: true
 ---

@@ -3,8 +3,8 @@ name: Solar Sails Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 15
+bigbook_tier: 5
+events: 19
 in_portal: true
 published: true
 ---

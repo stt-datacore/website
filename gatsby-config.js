@@ -28,21 +28,22 @@ module.exports = {
 				path: `${__dirname}/static/structured/`,
 				ignore: [
 					'**/events/*',
-					'**/botcrew.json',
 					'**/allcrew.json',
+					'**/botcrew.json',
 					'**/botcrewbad.json',
 					'**/collections.json',
 					'**/dilemmas.json',
-					'**/event_crew.json',
+					'**/disputes.json',
 					'**/event_instances.json',
 					'**/event_leaderboards.json',
 					'**/factions.json',
 					'**/items.json',
+					'**/misc_stats.json',
 					'**/missions.json',
+					'**/missionsfull.json',
 					'**/quests.json',
 					'**/ship_schematics.json',
-					'**/upcomingevents.json',
-					'**/misc_stats.json'
+					'**/upcomingevents.json'
 				]
 			}
 		},

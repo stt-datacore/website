@@ -3,9 +3,9 @@ name: Wrathful Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 20
-in_portal:
+in_portal: true
 published: true
 ---
 

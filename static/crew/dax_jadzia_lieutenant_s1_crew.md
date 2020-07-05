@@ -1,10 +1,10 @@
 ---
-name: Lt Jadzia Dax
+name: Lt. Jadzia Dax
 rarity: 1
 series: ds9
 memory_alpha:
 bigbook_tier: 9
-events: 0
+events: 25
 in_portal: true
 published: true
 ---

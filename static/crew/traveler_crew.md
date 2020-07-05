@@ -3,8 +3,8 @@ name: The Traveler
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 0
+bigbook_tier: 9
+events: 4
 in_portal: true
 published: true
 ---

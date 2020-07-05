@@ -1,10 +1,10 @@
 ---
-name: Lt Thomas Riker
+name: Lt. Thomas Riker
 rarity: 1
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 0
+events: 18
 in_portal: true
 published: true
 ---

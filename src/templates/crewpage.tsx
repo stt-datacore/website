@@ -58,7 +58,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			.then(response => response.json())
 			.then(items => this.setState({ items }));
 
-		fetch('https://datacore.app/api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
+		// Disabled until we get big book folks on-board
+		/*fetch('https://datacore.app/api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
 			.then(response => response.json())
 			.then(comments => {
 				this.setState({ comments });
@@ -71,7 +72,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						}
 					});
 				}
-			});
+			});*/
 	}
 
 	_getCurrentUsername() {
@@ -184,7 +185,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					</Grid>
 					<Divider horizontal hidden />
 					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
-					{userName && (
+					{/*userName && (
 						<div>
 							<br />
 							<p>Hello, {userName}. You can edit your comment below:</p>
@@ -217,7 +218,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								</Comment>
 							))}
 						</Comment.Group>
-					)}
+							)*/}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
 					<CrewVariants short_name={crew.short_name} />
 				</Container>

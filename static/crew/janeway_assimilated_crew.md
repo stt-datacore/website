@@ -3,8 +3,8 @@ name: Assimilated Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 23
+bigbook_tier: 6
+events: 25
 in_portal: true
 published: true
 ---

@@ -3,8 +3,8 @@ name: Chef Neelix
 rarity: 1
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 0
+bigbook_tier: 10
+events: 9
 in_portal: true
 published: true
 ---

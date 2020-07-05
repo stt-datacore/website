@@ -3,7 +3,7 @@ name: Ambassador K'Ehleyr
 rarity: 4
 series:
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 12
 in_portal: true
 published: true

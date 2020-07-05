@@ -3,8 +3,8 @@ name: Tsunkatse Seven
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 2
-events: 19
+bigbook_tier: 3
+events: 21
 in_portal: true
 published: true
 ---

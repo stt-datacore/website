@@ -4,9 +4,9 @@ rarity: 1
 series: tos
 memory_alpha:
 bigbook_tier: 8
-events: 0
+events: 29
 in_portal: true
 published: true
 ---
 
-It's Spock! Iconic character, decent common crew. Second best 1* science stat and gets the Vulcan collection filled out a bit more. His ship ability is pretty decent and when paired with a high attack card will make short work of some early game enemy ships. He has a nice amount of bonus traits sadly his command stats are pretty poor otherwise I'd have put him up a tier.
+It’s Spock! Iconic character, decent common crew. Second best 1* science stat and gets the Vulcan collection filled out a bit more. His ship ability is pretty decent and when paired with a high attack card will make short work of some early game enemy ships. He has a nice amount of bonus traits sadly his command stats are pretty poor otherwise I’d have put him up a tier.

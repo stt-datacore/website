@@ -12,6 +12,12 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 			name: `slug`,
 			value: slug
 		});
+	} else if (node.internal.type === `EpisodesJson`) {
+		createNodeField({
+			node,
+			name: `slug`,
+			value: `/${node.symbol}/`
+		});
 	}
 };
 
@@ -30,6 +36,17 @@ exports.createPages = ({ graphql, actions }) => {
 							published
 							bigbook_section
 						}
+					}
+				}
+			}
+			allEpisodesJson {
+				edges {
+					node {
+						fields {
+							slug
+						}
+						symbol
+						name
 					}
 				}
 			}
@@ -53,6 +70,14 @@ exports.createPages = ({ graphql, actions }) => {
 					});
 				}
 			}
+		});
+
+		result.data.allEpisodesJson.edges.forEach(({ node }) => {
+			createPage({
+				path: `episode${node.fields.slug}`,
+				component: path.resolve(`./src/templates/episodepage.tsx`),
+				context: { slug: `${node.fields.slug}`, symbol: node.symbol }
+			});
 		});
 	});
 };
