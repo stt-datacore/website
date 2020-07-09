@@ -225,9 +225,20 @@
 		"dates": "Thursday 07/02 until Monday 07/06 at noon (16.00 UTC)",
 		"startDate": "2020-07-02T17:00:00Z",
 		"endDate": "2020-07-06T17:00:00Z",
-		"highbonus": ["chakotay_krenim_guest_crew", "TODO_Tanis", "kim_rogue_crew", "suspiria_crew"],
+		"highbonus": ["chakotay_krenim_guest_crew", "tanis_crew", "kim_rogue_crew", "suspiria_crew"],
 		"smallbonus": {
 			"traits": ["chakotay", "kim", "Warp Theorist", "Caregiver"]
+		}
+	},
+	{
+		"name": "Secrets in the Desert",
+		"type": "Faction",
+		"dates": "Thursday 07/09 until Monday 07/13 at Noon (16.00 UTC)",
+		"startDate": "2020-07-09T17:00:00Z",
+		"endDate": "2020-07-13T17:00:00Z",
+		"highbonus": ["archer_desert_crew", "dsc_tyler_torchbearer_crew", "obrien_undercoversfi_crew"],
+		"smallbonus": {
+			"traits": ["archer", "tyler", "obrien"]
 		}
 	}
 ]

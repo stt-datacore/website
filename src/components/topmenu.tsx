@@ -122,12 +122,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					<Modal.Header>DataCore website and bot are shutting down!</Modal.Header>
 					<Modal.Content>
 						<p>Due to unaddressed <a href='https://forum.disruptorbeam.com/stt/discussion/16369/offer-wall-feedback-thread-live-now#latest'>concerns</a> around built-in adware and integration with scummy features like the Offer Wall, I've decided to stop investing my time and money in supporting these community tools.</p>
-						<p>Most of my work is open source, so if someone wants to take over maintenance and hosting for the website and bot, here are some links:</p>
-						<ul>
-							<li><a href='https://github.com/TemporalAgent7/datacore'>The DataCore website (TypeScript)</a></li>
-							<li><a href='https://github.com/TemporalAgent7/datacorebot'>The DataCore bot (TypeScript / node.js)</a></li>
-							<li><a href='https://github.com/TemporalAgent7/datacore-bot'>The image analysis for beholds and voyages (C# / dotnetcore)</a></li>
-						</ul>
+						<p>Most of my work is open source, and there is some interest around creating a community to continue supporting DataCore. See <a href='https://github.com/stt-datacore'>GitHub</a> or contact me for details.</p>
 						<p>Until the end of August 2020 I'll try to open source more bits and pieces of my work. My hope is that whatever ends up being built with these will benefit the entire community, not just closed / private cliques.</p>
 						<p>Live long and prosper!</p>
 					</Modal.Content>
