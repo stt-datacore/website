@@ -94,14 +94,14 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			player_data: strippedPlayerData
 		});
 
-		fetch('https://datacore.app/api/post_profile', {
+		fetch('${process.env.GATSBY_DATACORE_URL}api/post_profile', {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: jsonBody
 		}).then(() => {
-			window.open(`https://datacore.app/profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
+			window.open(`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${originalPlayerData.player.dbid}`, '_blank');
 			this.setState({ uploading: false, uploaded: true });
 		});
 	}
@@ -261,7 +261,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					{this.state.fuellist.map(item => (
 						<Grid.Column key={item.archetype_id} textAlign='center'>
 							<ItemDisplay
-								src={`https://assets.datacore.app/${item.icon.file.substr(1).replace(/\//g, '_')}.png`}
+								src={`${process.env.GATSBY_ASSETS_URL}${item.icon.file.substr(1).replace(/\//g, '_')}.png`}
 								size={64}
 								maxRarity={item.rarity}
 								rarity={item.rarity}
@@ -343,8 +343,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							<p>
 								Your profile was uploaded. Share the link:{' '}
 								<a
-									href={`https://datacore.app/profile/?dbid=${playerData.player.dbid}`}
-									target='_blank'>{`https://datacore.app/profile/?dbid=${playerData.player.dbid}`}</a>
+									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
+									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
 							</p>
 						)}
 					</Message.Content>
@@ -448,7 +448,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 										peopleList.push({
 											key: crew.crew_id || crew.id,
 											value: crew.crew_id || crew.id,
-											image: { avatar: true, src: `https://assets.datacore.app/${crew.imageUrlPortrait}` },
+											image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
 											text: crew.name
 										});
 									}
