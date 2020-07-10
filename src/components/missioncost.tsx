@@ -21,13 +21,13 @@ class MissionCost extends PureComponent<MissionCostProps> {
 			<span>
 				<span style={{ color: is_known ? 'inherit' : 'red' }}>{this.props.name}</span>{' '}
 				<span style={{ display: 'inline-block' }}>
-					<img src={`https://assets.datacore.app/atlas/${CONFIG.MASTERY_LEVELS[this.props.mastery].imageUrl}.png`} height={14} />
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/${CONFIG.MASTERY_LEVELS[this.props.mastery].imageUrl}.png`} height={14} />
 				</span>
 				{is_known && (
 					<span>
 						{' ('}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>
 						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost.toFixed(2)}` : ''})`}
 					</span>

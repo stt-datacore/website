@@ -52,7 +52,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 			let lastModified = undefined;
 
-			fetch('https://datacore.app/profiles/' + dbid)
+			fetch('${process.env.GATSBY_DATACORE_URL}profiles/' + dbid)
 				.then(response => {
 					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
 
@@ -115,7 +115,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 						<Item>
 							<Item.Image
 								size='tiny'
-								src={`https://assets.datacore.app/${
+								src={`${process.env.GATSBY_ASSETS_URL}${
 									playerData.player.character.crew_avatar
 										? playerData.player.character.crew_avatar.portrait
 										: 'crew_portraits_cm_empty_sm.png'

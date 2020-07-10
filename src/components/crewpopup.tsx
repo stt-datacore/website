@@ -17,7 +17,7 @@ class CrewPopup extends Component<CrewPopupProps> {
 			<Popup trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{crew.name}</span>}>
 				<Popup.Header>{crew.name}</Popup.Header>
 				<Popup.Content>
-					<Image size='small' src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+					<Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 					<Rating icon='star' defaultRating={crew.rarity} maxRating={crew.max_rarity} />
 					<p>{formatCrewStats(crew, true)}</p>
 				</Popup.Content>

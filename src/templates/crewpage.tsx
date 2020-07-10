@@ -59,7 +59,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			.then(items => this.setState({ items }));
 
 		// Disabled until we get big book folks on-board
-		/*fetch('https://datacore.app/api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
+		/*fetch('${process.env.GATSBY_DATACORE_URL}api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
 			.then(response => response.json())
 			.then(comments => {
 				this.setState({ comments });
@@ -101,7 +101,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					<meta property='og:type' content='website' />
 					<meta property='og:title' content={crew.name} />
 					<meta property='og:site_name' content='DataCore' />
-					<meta property='og:image' content={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+					<meta property='og:image' content={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim()} />
 				</Helmet>
 				<CrewFullEquipTree
@@ -122,7 +122,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Row>
 							<Grid.Column width={4}>
 								{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
-								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size='small' />
+								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
 							</Grid.Column>
 							<Grid.Column width={12}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
@@ -205,7 +205,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 							{comments.map(comment => (
 								<Comment key={comment.id}>
-									<Comment.Avatar src={comment.user.avatar || 'https://assets.datacore.app/crew_portraits_cm_empty_sm.png'} />
+									<Comment.Avatar src={comment.user.avatar || '${process.env.GATSBY_ASSETS_URL}crew_portraits_cm_empty_sm.png'} />
 									<Comment.Content>
 										<Comment.Author>{comment.user.loginUserName}</Comment.Author>
 										<Comment.Metadata>
@@ -233,7 +233,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	async _saveComment(symbol: string, token: string) {
 		const { commentMarkdown } = this.state;
 
-		fetch('https://datacore.app/api/savecomment', {
+		fetch('${process.env.GATSBY_DATACORE_URL}api/savecomment', {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
@@ -262,7 +262,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					<Header
 						icon={
 							<ItemDisplay
-								src={`https://assets.datacore.app/${equipment.imageUrl}`}
+								src={`${process.env.GATSBY_ASSETS_URL}${equipment.imageUrl}`}
 								size={48}
 								maxRarity={equipment.rarity}
 								rarity={equipment.rarity}
@@ -318,7 +318,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								<Popup
 									trigger={
 										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
-											<img src={`https://assets.datacore.app/${recipeEntry.imageUrl}`} />x{entry.count}
+											<img src={`${process.env.GATSBY_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
 										</Label>
 									}
 									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}

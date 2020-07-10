@@ -19,8 +19,8 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		let borderRadius = Math.floor(this.props.size / 7);
 		let borderColor = CONFIG.RARITIES[this.props.maxRarity].color;
 
-		let star_reward = `https://assets.datacore.app/atlas/star_reward.png`;
-		let star_reward_inactive = `https://assets.datacore.app/atlas/star_reward_inactive.png`;
+		let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
+		let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
 
 		let rarity = [];
 		if (!this.props.hideRarity) {

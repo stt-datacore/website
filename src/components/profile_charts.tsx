@@ -411,14 +411,14 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					<p>
 						Total chroniton cost to farm all these items: {totalChronCost}{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>
 					</p>
 					{honordebt && (
 						<p>
 							Total number of credits required to craft all the recipes: {honordebt.craftCost}{' '}
 							<span style={{ display: 'inline-block' }}>
-								<img src={`https://assets.datacore.app/atlas/soft_currency_icon.png`} height={14} />
+								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
 							</span>
 						</p>
 					)}
@@ -444,7 +444,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
-													src={`https://assets.datacore.app/${entry.equipment.imageUrl}`}
+													src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 													size={48}
 													maxRarity={entry.equipment.rarity}
 													rarity={entry.equipment.rarity}

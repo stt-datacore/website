@@ -31,7 +31,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 					paddingRight: `${0.4 * scale}em`
 				}}>
 				<div style={{ gridArea: 'icon' }}>
-					<img src={`https://assets.datacore.app/atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
 				</div>
 				<div style={{ gridArea: 'stats' }}>
 					<span style={{ fontWeight: 'bolder', fontSize: `${1.5 * scale}em` }}>{stats.core}</span>

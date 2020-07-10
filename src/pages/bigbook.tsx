@@ -29,7 +29,7 @@ class BigBookCrew extends PureComponent<BigBookCrewProps> {
 						<Grid.Column width={4}>
 							{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
 							<Link to={`/crew${markdownRemark.fields.slug}`}>
-								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size='small' />
+								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
 							</Link>
 						</Grid.Column>
 						<Grid.Column width={12}>
