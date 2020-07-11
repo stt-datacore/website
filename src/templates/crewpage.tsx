@@ -58,6 +58,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			.then(response => response.json())
 			.then(items => this.setState({ items }));
 
+
 		// Disabled until we get big book folks on-board
 		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
 			.then(response => response.json())
