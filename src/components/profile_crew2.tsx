@@ -201,42 +201,42 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						active={activeItem === 'command_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="diplomacy_skill"
 						active={activeItem === 'diplomacy_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="engineering_skill"
 						active={activeItem === 'engineering_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="security_skill"
 						active={activeItem === 'security_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="medicine_skill"
 						active={activeItem === 'medicine_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="science_skill"
 						active={activeItem === 'science_skill'}
 						onClick={(e, { name }) => this._handleItemClick(name)}
 					>
-						<img src="${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png" />
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} />
 					</Menu.Item>
 
 					<DropdownOpts

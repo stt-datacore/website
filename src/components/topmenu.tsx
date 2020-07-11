@@ -113,7 +113,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		const { user, password } = this.state;
 		this.setState({ loggingIn: true });
 
-		fetch('${process.env.GATSBY_DATACORE_URL}api/login', {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/login`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',

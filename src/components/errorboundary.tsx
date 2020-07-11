@@ -29,7 +29,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 		if (this.state.hasError) {
 			return (
 				<div>
-					<h2>Oops! Something went wrong. Please log a <a href=https://github.com/stt-datacore>GitHub</a> bug with these details:</h2>
+					<h2>Oops! Something went wrong. Please log a <a href="https://github.com/stt-datacore">GitHub</a> bug with these details:</h2>
 					<p>{this.state.error ? this.state.error.toString() : 'UNKNOWN ERROR!'}</p>
 				</div>
 			);

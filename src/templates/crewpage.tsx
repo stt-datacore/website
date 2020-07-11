@@ -59,7 +59,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			.then(items => this.setState({ items }));
 
 		// Disabled until we get big book folks on-board
-		/*fetch('${process.env.GATSBY_DATACORE_URL}api/comments?symbol=' + this.props.data.crewJson.edges[0].node.symbol)
+		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
 			.then(response => response.json())
 			.then(comments => {
 				this.setState({ comments });
@@ -205,7 +205,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 							{comments.map(comment => (
 								<Comment key={comment.id}>
-									<Comment.Avatar src={comment.user.avatar || '${process.env.GATSBY_ASSETS_URL}crew_portraits_cm_empty_sm.png'} />
+									<Comment.Avatar src={comment.user.avatar || `${process.env.GATSBY_ASSETS_URL}crew_portraits_cm_empty_sm.png`} />
 									<Comment.Content>
 										<Comment.Author>{comment.user.loginUserName}</Comment.Author>
 										<Comment.Metadata>
@@ -233,7 +233,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	async _saveComment(symbol: string, token: string) {
 		const { commentMarkdown } = this.state;
 
-		fetch('${process.env.GATSBY_DATACORE_URL}api/savecomment', {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/savecomment`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

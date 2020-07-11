@@ -175,7 +175,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		if (crew.immortal > 0 || (crew.rarity === crew.max_rarity && crew.level === 100 && crew.equipment.length === 4)) {
 			// For immortalized crew only
 			portraitDivStyle.backgroundSize = 'cover';
-			portraitDivStyle.backgroundImage = 'url("${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png")';
+			portraitDivStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 		}
 
 		return (

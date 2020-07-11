@@ -42,7 +42,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			let fleet_id = urlParams.get('fleetid');
 			this.setState({ fleet_id });
 
-			fetch('${process.env.GATSBY_DATACORE_URL}fleet_info?fleetid=' + fleet_id)
+			fetch(`${process.env.GATSBY_DATACORE_URL}fleet_info?fleetid=` + fleet_id)
 				.then(response => response.json())
 				.then(fleetData => {
 					this.setState({ fleet_data: fleetData });

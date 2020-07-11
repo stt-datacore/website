@@ -94,7 +94,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			player_data: strippedPlayerData
 		});
 
-		fetch('${process.env.GATSBY_DATACORE_URL}api/post_profile', {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/post_profile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

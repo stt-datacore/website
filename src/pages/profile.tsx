@@ -52,7 +52,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 			let lastModified = undefined;
 
-			fetch('${process.env.GATSBY_DATACORE_URL}profiles/' + dbid)
+			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
 				.then(response => {
 					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
 
