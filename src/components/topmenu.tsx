@@ -104,7 +104,6 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						<Button positive content='Login' onClick={() => this._doLogin()} />
 					</Modal.Actions>
 				</Modal>
-
 			</div>
 		);
 	}
