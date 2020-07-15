@@ -1,3 +1,4 @@
+require('dotenv').config();
 module.exports = {
 	siteMetadata: {
 		title: `Star Trek Timelines Data Core`

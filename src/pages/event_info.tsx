@@ -215,7 +215,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 			<Layout>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h3'>{event_data.ev_inst.event_name}</Header>
-					<Image size='large' src={`https://assets.datacore.app/${event_data.ev_inst.image}`} />
+					<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
 
 					{this.renderEventDetails()}
 
@@ -242,8 +242,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 											<div style={{ gridArea: 'icon' }}>
 												<img
 													width={48}
-													src={`https://assets.datacore.app/${
-														member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+													src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 												/>
 											</div>

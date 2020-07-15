@@ -34,7 +34,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Estimated chroniton cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>{' '}
 						<b>{totalChronCost}</b>
 						<Popup
@@ -58,7 +58,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Build cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/currency_sc_currency_0.png`} height={16} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 						</span>{' '}
 						<b>{craftCost}</b>
 					</p>
@@ -71,7 +71,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
-													src={`https://assets.datacore.app/${entry.equipment.imageUrl}`}
+													src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 													size={48}
 													maxRarity={entry.equipment.rarity}
 													rarity={entry.equipment.rarity}

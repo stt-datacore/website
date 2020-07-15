@@ -104,7 +104,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							gridGap: '1px'
 						}}>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>

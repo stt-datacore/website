@@ -156,7 +156,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`https://assets.datacore.app/${ship.icon.file.substr(1).replace('/', '_')}.png`} />
+										<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} />
 									</div>
 									<div style={{ gridArea: 'stats' }}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>

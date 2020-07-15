@@ -45,8 +45,8 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
-		let star_reward = `https://assets.datacore.app/atlas/star_reward.png`;
-		let star_reward_inactive = `https://assets.datacore.app/atlas/star_reward_inactive.png`;
+		let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
+		let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
 
 		let iconStyle: React.CSSProperties = {
 			display: 'inline-block',
@@ -68,7 +68,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			let skill = crew.base_skills[skillName];
 
 			if (skill && skill.core && skill.core > 0) {
-				skillicons.push(<img key={skillName} src={`https://assets.datacore.app/atlas/icon_${skillName}.png`} style={iconStyle} />);
+				skillicons.push(<img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={iconStyle} />);
 			}
 		}
 
@@ -175,7 +175,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		if (crew.immortal > 0 || (crew.rarity === crew.max_rarity && crew.level === 100 && crew.equipment.length === 4)) {
 			// For immortalized crew only
 			portraitDivStyle.backgroundSize = 'cover';
-			portraitDivStyle.backgroundImage = 'url("https://assets.datacore.app/collection_vault_vault_item_bg_immortalized_256.png")';
+			portraitDivStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 		}
 
 		return (
@@ -185,7 +185,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 						on="click"
 						header={crew.name}
 						content={formatCrewStats(crew)}
-						trigger={<img src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
+						trigger={<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
 					/>
 
 					<div
@@ -217,16 +217,16 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 
 				<div style={equipmentColumnStyle}>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[0]}`} />
+						<img style={equipmentCellImg} src={`${process.env.GATSBY_ASSETS_URL}${eqimgs[0]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[1]}`} />
+						<img style={equipmentCellImg} src={`${process.env.GATSBY_ASSETS_URL}${eqimgs[1]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[2]}`} />
+						<img style={equipmentCellImg} src={`${process.env.GATSBY_ASSETS_URL}${eqimgs[2]}`} />
 					</div>
 					<div style={{ display: 'inline-block' }}>
-						<img style={equipmentCellImg} src={`https://assets.datacore.app/${eqimgs[3]}`} />
+						<img style={equipmentCellImg} src={`${process.env.GATSBY_ASSETS_URL}${eqimgs[3]}`} />
 					</div>
 				</div>
 

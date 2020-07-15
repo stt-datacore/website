@@ -25,16 +25,6 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
 
-		const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-		const firstDate = new Date(2020, 7, 1);
-		const secondDate = new Date();
-		const days = Math.round(Math.abs((firstDate - secondDate) / oneDay));
-
-		let buttonLabel = 'Site is shutting down!';
-		if (days > 0) {
-			buttonLabel = `Site is shutting down in ${days} days!`;
-		}
-
 		return (
 			<div>
 				<Menu fixed='top' inverted>
@@ -67,10 +57,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					</Container>
 
 					<Menu.Menu position='right'>
-						<Menu.Item>
-							<Button size='tiny' color='red' onClick={() => this.setState({messageModalOpen: true})} content={buttonLabel} />
-						</Menu.Item>
-						<Menu.Item as='a' onClick={() => window.open('https://github.com/TemporalAgent7/datacore', '_blank')}>
+						<Menu.Item as='a' onClick={() => window.open('https://github.com/stt-datacore', '_blank')}>
 							<Icon name='github' />
 						</Menu.Item>
 						<Menu.Item as='a' onClick={() => (window as any).swapThemeCss()}>
@@ -117,19 +104,6 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						<Button positive content='Login' onClick={() => this._doLogin()} />
 					</Modal.Actions>
 				</Modal>
-
-				<Modal open={messageModalOpen} closeOnEscape={false} closeOnDimmerClick={false} onClose={() => this._closeMessageDialog()}>
-					<Modal.Header>DataCore website and bot are shutting down!</Modal.Header>
-					<Modal.Content>
-						<p>Due to unaddressed <a href='https://forum.disruptorbeam.com/stt/discussion/16369/offer-wall-feedback-thread-live-now#latest'>concerns</a> around built-in adware and integration with scummy features like the Offer Wall, I've decided to stop investing my time and money in supporting these community tools.</p>
-						<p>Most of my work is open source, and there is some interest around creating a community to continue supporting DataCore. See <a href='https://github.com/stt-datacore'>GitHub</a> or contact me for details.</p>
-						<p>Until the end of August 2020 I'll try to open source more bits and pieces of my work. My hope is that whatever ends up being built with these will benefit the entire community, not just closed / private cliques.</p>
-						<p>Live long and prosper!</p>
-					</Modal.Content>
-					<Modal.Actions>
-						<Button icon='checkmark' onClick={() => this._closeMessageDialog()} content='Ok' />
-					</Modal.Actions>
-				</Modal>
 			</div>
 		);
 	}
@@ -138,7 +112,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		const { user, password } = this.state;
 		this.setState({ loggingIn: true });
 
-		fetch('https://datacore.app/api/login', {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/login`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',

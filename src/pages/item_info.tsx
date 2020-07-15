@@ -138,7 +138,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 						{item_data.item.name}{' '}
 						<Rating rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />
 					</Header>
-					<Image size="small" src={`https://assets.datacore.app/${item_data.item.imageUrl}`} />
+					<Image size="small" src={`${process.env._GATSBY_ASSETS_URL}${item_data.item.imageUrl}`} />
 
 					<br />
 
@@ -161,7 +161,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 													style={{ display: 'flex', cursor: 'zoom-in' }}
 													icon={
 														<ItemDisplay
-															src={`https://assets.datacore.app/${entry.equipment.imageUrl}`}
+															src={`${process.env._GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 															size={48}
 															maxRarity={entry.equipment.rarity}
 															rarity={entry.equipment.rarity}
@@ -204,7 +204,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 											style={{ display: 'flex' }}
 											icon={
 												<ItemDisplay
-													src={`https://assets.datacore.app/${entry.crew.imageUrlPortrait}`}
+													src={`${process.env._GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 													size={60}
 													maxRarity={entry.crew.max_rarity}
 													rarity={entry.crew.max_rarity}
@@ -229,7 +229,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
-													src={`https://assets.datacore.app/${entry.imageUrl}`}
+													src={`${process.env._GATSBY_ASSETS_URL}${entry.imageUrl}`}
 													size={48}
 													maxRarity={entry.rarity}
 													rarity={entry.rarity}

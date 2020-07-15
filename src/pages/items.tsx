@@ -109,7 +109,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`https://assets.datacore.app/${item.imageUrl}`} />
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<Link to={`/item_info?symbol=${item.symbol}`}>

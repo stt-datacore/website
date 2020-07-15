@@ -34,7 +34,7 @@ class CrewVariants extends Component<CrewVariantsProps, CrewVariantsState> {
 					{this.state.variants.map(variant => (
 						<Grid.Column key={variant.symbol} textAlign='center'>
 							<ItemDisplay
-								src={`https://assets.datacore.app/${variant.imageUrlPortrait}`}
+								src={`${process.env.GATSBY_ASSETS_URL}${variant.imageUrlPortrait}`}
 								size={128}
 								maxRarity={variant.max_rarity}
 								rarity={variant.max_rarity}

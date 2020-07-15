@@ -43,7 +43,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<Segment>
 						<Grid columns={2}>
 							<Grid.Column width={4}>
-								<Image src={`https://assets.datacore.app/${crew.imageUrlFullBody}`} size="tiny" />
+								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size="tiny" />
 							</Grid.Column>
 							<Grid.Column width={12}>
 								<CrewStat
@@ -177,12 +177,12 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						<b>{crewDemands.factionOnlyTotal}</b>
 						{' faction items, '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>{' '}
 						<b>{crewDemands.totalChronCost}</b>
 						{', '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`https://assets.datacore.app/currency_sc_currency_0.png`} height={16} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 						</span>{' '}
 						<b>{crewDemands.craftCost}</b>
 					</p>

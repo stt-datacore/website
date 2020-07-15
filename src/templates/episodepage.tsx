@@ -66,7 +66,7 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 					</Header>
 					{quest.screens.map((screen, idx) => (
 						<Comment key={idx}>
-							<Comment.Avatar src={`https://assets.datacore.app/${imageFileUrl(screen.speaker_image)}`} />
+							<Comment.Avatar src={`${process.env.GATSBY_ASSETS_URL}${imageFileUrl(screen.speaker_image)}`} />
 							<Comment.Content>
 								<Comment.Author as='a'>{screen.speaker_name}</Comment.Author>
 								<Comment.Text>
@@ -92,12 +92,12 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 					{quest.mastery_levels.map(ml => (
 						<div key={ml.id}>
 							<span style={{ display: 'inline-block' }}>
-								<img src={`https://assets.datacore.app/atlas/${CONFIG.MASTERY_LEVELS[ml.id].imageUrl}.png`} height={14} />
+								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/${CONFIG.MASTERY_LEVELS[ml.id].imageUrl}.png`} height={14} />
 							</span>
 							<span>
 								{'  ' + CONFIG.MASTERY_LEVELS[ml.id].name} mastery - {ml.energy_cost}{' '}
 								<span style={{ display: 'inline-block' }}>
-									<img src={`https://assets.datacore.app/atlas/energy_icon.png`} height={14} />
+									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 								</span>
 							</span>
 							{ml.opponent && (
@@ -139,7 +139,7 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 				{quest.intro && (
 					<Comment.Group>
 						<Comment>
-							<Comment.Avatar src={`https://assets.datacore.app/${imageFileUrl(quest.intro.portrait)}`} />
+							<Comment.Avatar src={`${process.env.GATSBY_ASSETS_URL}${imageFileUrl(quest.intro.portrait)}`} />
 							<Comment.Content>
 								<Comment.Author as='a'>{quest.intro.speaker_name}</Comment.Author>
 								<Comment.Text>
@@ -173,7 +173,7 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 					<Item.Group divided>
 						{episode.quests.map((c, idx) => (
 							<Item key={idx}>
-								<Item.Image size='small' src={`https://assets.datacore.app/${this._getImageUrl(c)}`} />
+								<Item.Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${this._getImageUrl(c)}`} />
 
 								<Item.Content>
 									<Item.Header as='a'>{c.name}</Item.Header>

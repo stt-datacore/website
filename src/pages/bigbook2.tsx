@@ -84,7 +84,7 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 					<Popup
 						trigger={
 							<Image
-								src={`https://assets.datacore.app/${entry.crew.imageUrlPortrait}`}
+								src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 								size='small'
 								style={{
 									borderColor: CONFIG.RARITIES[entry.crew.max_rarity].color,

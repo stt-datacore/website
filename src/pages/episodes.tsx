@@ -40,7 +40,7 @@ class EpisodesPage extends PureComponent {
 									<Item key={index}>
 										<Item.Image
 											size="tiny"
-											src={`https://assets.datacore.app/${
+											src={`${process.env.GATSBY_ASSETS_URL}${
 												node.episode_portrait
 													? node.episode_portrait.file.substr(1).replace('/', '_') + '.png'
 													: 'crew_full_body_cm_empty_full.png'
