@@ -1,0 +1,20 @@
+name: Website CI (test.datacore.app)
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build project
+      run: |
+        npm install
+        npm run build
+    - name: Publish to server via sftp
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      with:
+        ftp-server: ${{ secrets.SFTP_HOST }}
+        ftp-username: ${{ secrets.SFTP_USER }}
+        ftp-password: ${{ secrets.SFTP_PASS }}
+        local-dir: ./public
