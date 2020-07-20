@@ -20,4 +20,5 @@ jobs:
         ftp-server: ${{ secrets.SFTP_HOST }}
         ftp-username: ${{ secrets.SFTP_USER }}
         ftp-password: ${{ secrets.SFTP_PASS }}
+        known-hosts: ${{ secrets.SFTP_KNOWNHOSTS }}
         local-dir: ./public
