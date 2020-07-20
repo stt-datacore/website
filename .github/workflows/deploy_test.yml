@@ -9,8 +9,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build project
       env:
-        GATSBY_DATACORE_URL: https://test.datacore.app
-        GATSBY_ASSETS_URL: https://assets.datacore.app
+        GATSBY_DATACORE_URL: https://test.datacore.app/
+        GATSBY_ASSETS_URL: https://assets.datacore.app/
       run: |
         npm install
         npm run build
