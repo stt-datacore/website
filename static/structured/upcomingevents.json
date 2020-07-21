@@ -240,5 +240,16 @@
 		"smallbonus": {
 			"traits": ["archer", "tyler", "obrien"]
 		}
+	},
+	{
+		"name": "Lightseekers",
+		"type": "Galaxy",
+		"dates": "Thursday 07/16 until Monday 07/20 at Noon (16.00 UTC)",
+		"startDate": "2020-07-16T17:00:00Z",
+		"endDate": "2020-07-20T17:00:00Z",
+		"highbonus": ["picard_kamin_crew", "TODO_Traveler_Wesley", "tomalak_commander_crew"],
+		"smallbonus": {
+			"traits": ["picard", "wesley", "obrien"]
+		}
 	}
 ]
