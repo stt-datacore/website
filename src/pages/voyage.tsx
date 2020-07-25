@@ -39,7 +39,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
-								<a href='https://stt.disruptorbeam.com/player?client_api=12' target='_blank'>
+								<a href='https://stt.disruptorbeam.com/player?client_api=15' target='_blank'>
 									https://stt.disruptorbeam.com/player
 								</a>
 								, make sure you are logged in and your player data is loaded; it should look like a bunch of gibberish starting with{' '}
