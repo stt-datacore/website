@@ -262,5 +262,16 @@
 		"smallbonus": {
 			"traits": ["lrell", "worf", "Q Continuum"]
 		}
+	},
+	{
+		"name": "No Trouble At All",
+		"type": "Faction ",
+		"dates": "Thursday 07/30 until Monday 08/03 at Noon (16.00 UTC)",
+		"startDate": "2020-07-30T17:00:00Z",
+		"endDate": "2020-08-03T17:00:00Z",
+		"highbonus": ["elaforge_crew", "dsc_larkin_crew", "horta_crew"],
+		"smallbonus": {
+			"traits": ["Exobiology"]
+		}
 	}
 ]

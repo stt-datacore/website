@@ -27648,7 +27648,7 @@ Floated Menu / Item
 }
 
 .ui.inverted.table th {
-  background-color: rgba(0, 0, 0, 0.15);
+  /*background-color: rgba(0, 0, 0, 0.15);*/
   border-color: rgba(255, 255, 255, 0.1) !important;
   color: rgba(255, 255, 255, 0.9) !important;
 }
@@ -33765,7 +33765,7 @@ select.ui.dropdown {
 }
 
 .ui.dropdown .divider {
-  background: rgba(0, 0, 0, 0.15);
+  /*background-color: rgba(0, 0, 0, 0.15);*/
 }
 
 /*******************************

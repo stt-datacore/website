@@ -15,7 +15,6 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 						<title>DataCore</title>
 						<link id='themeCSS' rel='stylesheet' href='/styles/semantic.slate.css' />
 						<link rel='stylesheet' href='/styles/easymde.min.css' />
-						<script src='/styles/js.cookie.min.js' />
 						<script src='/styles/theming.js' type='text/javascript' />
 					</Helmet>
 

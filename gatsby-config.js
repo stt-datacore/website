@@ -60,12 +60,6 @@ module.exports = {
 				icon: `src/images/logo.svg`,
 				include_favicon: true
 			}
-		},
-		{
-			resolve: `gatsby-plugin-google-analytics`,
-			options: {
-				trackingId: 'UA-112738113-3'
-			}
 		}
 	]
 };
