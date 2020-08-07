@@ -265,13 +265,24 @@
 	},
 	{
 		"name": "No Trouble At All",
-		"type": "Faction ",
+		"type": "Faction",
 		"dates": "Thursday 07/30 until Monday 08/03 at Noon (16.00 UTC)",
 		"startDate": "2020-07-30T17:00:00Z",
 		"endDate": "2020-08-03T17:00:00Z",
 		"highbonus": ["elaforge_crew", "dsc_larkin_crew", "horta_crew"],
 		"smallbonus": {
 			"traits": ["Exobiology"]
+		}
+	},
+	{
+		"name": "Legend Unwritten (re-run)",
+		"type": "Galaxy",
+		"dates": "Thursday 08/06 until Monday 08/10 at Noon (16.00 UTC)",
+		"startDate": "2020-08-06T17:00:00Z",
+		"endDate": "2020-08-10T17:00:00Z",
+		"highbonus": ["fisher_technician_crew", "kim_captain_crew", "kirk_evil_crew", "dax_jadzia_tos_crew"],
+		"smallbonus": {
+			"traits": ["kim", "kirk", "dax"]
 		}
 	}
 ]

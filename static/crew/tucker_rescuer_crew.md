@@ -4,7 +4,7 @@ rarity: 3
 series: ent
 memory_alpha:
 bigbook_tier: 7
-events: 8
+events: 12
 in_portal: true
 published: true
 ---
