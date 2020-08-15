@@ -1,7 +1,7 @@
 ---
 name: Assimilated La Forge
 rarity: 5
-series: tng
+series: original
 memory_alpha:
 bigbook_tier: 4
 events: 24

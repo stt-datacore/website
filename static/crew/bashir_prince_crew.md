@@ -1,7 +1,7 @@
 ---
 name: Prince Bashir
 rarity: 5
-series: ds9
+series: original
 memory_alpha:
 bigbook_tier: 5
 events: 19

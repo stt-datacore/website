@@ -1,7 +1,7 @@
 ---
 name: Aviator Yar
 rarity: 5
-series: tng
+series: original
 memory_alpha:
 bigbook_tier: 6
 events: 15

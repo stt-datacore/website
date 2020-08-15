@@ -1,7 +1,7 @@
 ---
 name: Tucker On-The-Ropes
 rarity: 5
-series: ent
+series: original
 memory_alpha:
 bigbook_tier: 7
 events: 14

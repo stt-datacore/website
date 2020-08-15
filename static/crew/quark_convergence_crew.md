@@ -1,7 +1,7 @@
 ---
 name: Convergence Day Quark
 rarity: 5
-series: ds9
+series: original
 memory_alpha:
 bigbook_tier: 8
 events: 14

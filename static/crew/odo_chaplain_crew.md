@@ -1,7 +1,7 @@
 ---
 name: Army Chaplain Odo
 rarity: 4
-series: ds9
+series: original
 memory_alpha:
 bigbook_tier: 7
 events: 14

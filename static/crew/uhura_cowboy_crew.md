@@ -1,7 +1,7 @@
 ---
 name: Gunslinger Uhura
 rarity: 5
-series: tos
+series: original
 memory_alpha:
 bigbook_tier: 6
 events: 10

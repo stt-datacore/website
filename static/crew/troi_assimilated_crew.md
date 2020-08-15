@@ -1,7 +1,7 @@
 ---
 name: Assimilated Troi
 rarity: 4
-series: tng
+series: original
 memory_alpha:
 bigbook_tier: 1
 events: 19

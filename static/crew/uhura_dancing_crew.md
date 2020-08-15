@@ -1,7 +1,7 @@
 ---
 name: Dancing Uhura
 rarity: 5
-series: tos
+series: original
 memory_alpha:
 bigbook_tier: 8
 events: 11

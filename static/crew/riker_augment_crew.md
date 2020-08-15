@@ -1,7 +1,7 @@
 ---
 name: Augment Riker
 rarity: 4
-series: ent
+series: original
 memory_alpha:
 bigbook_tier: 5
 events: 21

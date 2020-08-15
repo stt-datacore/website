@@ -1,7 +1,7 @@
 ---
 name: EV Suit Seven of Nine
 rarity: 5
-series: ent
+series: voy
 memory_alpha:
 bigbook_tier: 6
 events: 15

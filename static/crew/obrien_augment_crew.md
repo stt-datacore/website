@@ -1,7 +1,7 @@
 ---
 name: Augment Commander O'Brien
 rarity: 5
-series:
+series: original
 memory_alpha:
 bigbook_tier: 5
 events: 15

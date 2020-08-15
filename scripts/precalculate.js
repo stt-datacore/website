@@ -308,6 +308,19 @@ function main() {
 		}
 	}
 
+	// Add markdown data
+	for (let crew of crewlist) {
+		let mdData = getCrewMarkDown(crew.symbol);
+		if (!mdData) {
+			console.log(`Crew ${crew.name} not found!`);
+		} else {
+			crew.bigbook_tier = mdData.meta.bigbook_tier;
+			crew.events = mdData.meta.events || 0;
+			crew.in_portal = !!mdData.meta.in_portal;
+			crew.markdownContent = mdData.markdownContent;
+		}
+	}
+
 	fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
 
 	// Calculate some skill set stats for the BigBook
@@ -446,6 +459,8 @@ function updateBotStats() {
 		});
 	});*/
 
+	// TODO: finish removing botcrew since all the data is now in crew.json!
+
 	let botData = [];
 	for (let crew of crewlist) {
 		let mdData = getCrewMarkDown(crew.symbol);
@@ -458,6 +473,7 @@ function updateBotStats() {
 				name: crew.name,
 				short_name: crew.short_name,
 				max_rarity: crew.max_rarity,
+				traits: crew.traits,
 				traits_named: crew.traits_named,
 				traits_hidden: crew.traits_hidden,
 				imageUrlPortrait: crew.imageUrlPortrait,
@@ -465,13 +481,13 @@ function updateBotStats() {
 				totalChronCost: crew.totalChronCost,
 				factionOnlyTotal: crew.factionOnlyTotal,
 				craftCost: crew.craftCost,
-				bigbook_tier: mdData.meta.bigbook_tier,
-				events: mdData.meta.events || 0,
+				bigbook_tier: crew.bigbook_tier,
+				events: crew.events,
 				ranks: crew.ranks,
 				base_skills: crew.base_skills,
 				skill_data: crew.skill_data,
-				in_portal: !!mdData.meta.in_portal,
-				markdownContent: mdData.markdownContent,
+				in_portal: crew.in_portal,
+				markdownContent: crew.markdownContent,
 				action: crew.action,
 				ship_battle: crew.ship_battle
 			};
@@ -490,15 +506,6 @@ function updateBotStats() {
 	}
 
 	fs.writeFileSync(STATIC_PATH + 'botcrew.json', JSON.stringify(botData));
-
-	// Leecher jesting :)
-	for (let crew of botData) {
-		crew.imageUrlPortrait = 'crew_portraits_cm_rick_sm.png';
-		crew.traits_named = ['Leecher'];
-		crew.traits_hidden = ['leecher'];
-	}
-
-	fs.writeFileSync(STATIC_PATH + 'botcrewleech.json', JSON.stringify(botData));
 }
 
 function updateExcelSheet() {
