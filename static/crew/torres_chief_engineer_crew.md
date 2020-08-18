@@ -4,7 +4,7 @@ rarity: 1
 series: voy
 memory_alpha:
 bigbook_tier: 7
-events: 16
+events: 17
 in_portal: true
 published: true
 ---

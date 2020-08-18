@@ -1,6 +1,9 @@
 #!/bin/bash
 GIT_PATH=/home/stt/datacore
 
+export GATSBY_DATACORE_URL="https://datacore.app/"
+export GATSBY_ASSETS_URL="https://assets.datacore.app/"
+
 pushd $GIT_PATH
 # This would be more thorough but would also require re-installing all dependencies in node_modules
 #git clean -x

@@ -22,7 +22,6 @@ type ProfileChartsProps = {
 
 type ProfileChartsState = {
 	allcrew: any[];
-	botcrew: any[];
 	items: any[];
 	data_ownership: any[];
 	skill_distribution: any;
@@ -47,7 +46,6 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		this.state = {
 			allcrew: undefined,
-			botcrew: undefined,
 			items: undefined,
 			demands: [],
 			data_ownership: [],
@@ -59,7 +57,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity: [],
 			radar_skill_rarity_owned: [],
 			honordebt: undefined,
-			excludeFulfilled: false
+			excludeFulfilled: false,
 		};
 	}
 
@@ -67,16 +65,12 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		fetch('/structured/crew.json')
 			.then((response) => response.json())
 			.then((allcrew) => {
-				fetch('/structured/botcrew.json')
+				fetch('/structured/items.json')
 					.then((response) => response.json())
-					.then((botcrew) => {
-						fetch('/structured/items.json')
-							.then((response) => response.json())
-							.then((items) => {
-								this.setState({ allcrew, botcrew, items }, () => {
-									this._calculateStats();
-								});
-							});
+					.then((items) => {
+						this.setState({ allcrew, items }, () => {
+							this._calculateStats();
+						});
 					});
 			});
 	}
@@ -257,10 +251,10 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity,
 			radar_skill_rarity_owned,
 			honordebt,
-			excludeFulfilled
+			excludeFulfilled,
 		} = this.state;
 
-		let {demands} = this.state;
+		let { demands } = this.state;
 
 		let totalHonorDebt = 0;
 		let readableHonorDebt = '';
@@ -302,7 +296,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		});
 
 		if (excludeFulfilled) {
-			demands = demands.filter(d => d.count > d.have);
+			demands = demands.filter((d) => d.count > d.have);
 		}
 
 		factionRec = factionRec.sort((a, b) => b.count - a.count).filter((e) => e.count > 0);
@@ -434,7 +428,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				</ul>
 
 				<div>
-					<Checkbox label='Exclude already fulfilled' onChange={() => this.setState({excludeFulfilled: !excludeFulfilled})} checked={this.state.excludeFulfilled} />
+					<Checkbox
+						label='Exclude already fulfilled'
+						onChange={() => this.setState({ excludeFulfilled: !excludeFulfilled })}
+						checked={this.state.excludeFulfilled}
+					/>
 					<Grid columns={3} centered padded>
 						{demands.map((entry, idx) => (
 							<Grid.Column key={idx}>
