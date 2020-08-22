@@ -38,6 +38,14 @@ Scripts that take care of parsing the big / little book data, new items, ships a
 
 - [ ] TODO upload source code
 
+# Usage
+On first run, run `publish.sh -f` to generate static frontend website. 
+
+For future updates, setup a cron job that runs `publish.sh` once per hour.
+
+`-f` flag forces website to be regenerated, otherwise content will only be regenerated when there is new content in remote github source.
+
 # CONTRIBUTING
 
 Contributions are always welcome, no matter how large or small. Before contributing, please read the [code of conduct](CODE_OF_CONDUCT.md).
+
