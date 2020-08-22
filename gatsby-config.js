@@ -31,7 +31,6 @@ module.exports = {
 					'**/events/*',
 					'**/allcrew.json',
 					'**/botcrew.json',
-					'**/botcrewbad.json',
 					'**/collections.json',
 					'**/dilemmas.json',
 					'**/disputes.json',

@@ -284,5 +284,27 @@
 		"smallbonus": {
 			"traits": ["kim", "kirk", "dax"]
 		}
+	},
+	{
+		"name": "Cultural Property",
+		"type": "Skirmish",
+		"dates": "Thursday 08/13 until Monday 08/17 at Noon (16.00 UTC)",
+		"startDate": "2020-08-13T17:00:00Z",
+		"endDate": "2020-08-17T17:00:00Z",
+		"highbonus": ["tpol_ev_suit_crew", "phlox_ev_suit_crew", "tucker_evsuit_crew", "humanoid_figure_crew"],
+		"smallbonus": {
+			"traits": ["ent"]
+		}
+	},
+	{
+		"name": "Plateau of Tomorrow",
+		"type": "Faction",
+		"dates": "Thursday 08/20 until Monday 08/24 at Noon (16.00 UTC)",
+		"startDate": "2020-08-20T17:00:00Z",
+		"endDate": "2020-08-24T17:00:00Z",
+		"highbonus": ["travers_crew", "TODO_Brigitte_Torres", "kirk_incognito_crew", "humanoid_figure_crew"],
+		"smallbonus": {
+			"traits": ["torres", "kirk", "ent"]
+		}
 	}
 ]

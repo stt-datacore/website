@@ -1,7 +1,7 @@
 ---
 name: 1701 O'Brien
 rarity: 5
-series: ds9
+series: original
 memory_alpha:
 bigbook_tier: 7
 events: 9

@@ -2,6 +2,9 @@
 #GIT_PATH=/home/stt/datacore
 GIT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+export GATSBY_DATACORE_URL="https://datacore.app/"
+export GATSBY_ASSETS_URL="https://assets.datacore.app/"
+
 pushd $GIT_PATH
 
 if [[ -f ".git/index.lock" ]]; then

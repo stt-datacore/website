@@ -1,7 +1,7 @@
 ---
 name: Lieutenant Tarah
 rarity: 4
-series: ent
+series: voy
 memory_alpha:
 bigbook_tier: 9
 events: 10

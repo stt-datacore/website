@@ -1,7 +1,7 @@
 ---
 name: EV Suit Phlox
 rarity: 4
-series: original
+series: ent
 memory_alpha:
 bigbook_tier: 3
 events: 8

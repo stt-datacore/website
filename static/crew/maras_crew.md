@@ -1,7 +1,7 @@
 ---
 name: Maras
 rarity: 5
-series: ent
+series:
 memory_alpha:
 bigbook_tier: 10
 events: 9

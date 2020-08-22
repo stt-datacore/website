@@ -1,7 +1,7 @@
 ---
 name: Talas
 rarity: 5
-series: ent
+series: voy
 memory_alpha:
 bigbook_tier: 5
 events: 10

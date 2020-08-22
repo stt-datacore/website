@@ -1,7 +1,7 @@
 ---
 name: Fesek
 rarity: 4
-series: voy
+series: ent
 memory_alpha:
 bigbook_tier: 9
 events: 5

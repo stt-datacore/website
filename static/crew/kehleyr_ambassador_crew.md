@@ -1,7 +1,7 @@
 ---
 name: Ambassador K'Ehleyr
 rarity: 4
-series: tng
+series:
 memory_alpha:
 bigbook_tier: 8
 events: 12
