@@ -11,8 +11,7 @@ if [[ -f ".git/index.lock" ]]; then
 fi
 
 # use as "./publish.sh -f" to force rebuilding even if git is up to date
-
-if [ $1 != "-f" ]
+if [ $# -eq 0 ] || [ $1 != "-f" ]
 then
     git fetch
 
