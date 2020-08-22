@@ -11,5 +11,7 @@ typings/
 # Gatsby files
 .cache/
 public
+public_web
+public_old
 schema.json
 schema.graphql
