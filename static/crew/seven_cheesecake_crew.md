@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 1
 events: 28
 in_portal:
+date: 30/07/2019
+obtained: Fuse
+mega: false
 published: true
 ---
 

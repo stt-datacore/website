@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 5
 events: 21
 in_portal: true
+date: 23/10/2018
+obtained: Missions
+mega: false
 published: true
 ---
 

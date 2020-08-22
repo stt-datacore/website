@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 2
 events: 18
 in_portal: true
+date: 02/10/2019
+obtained: Event
+mega: true
 published: true
 ---
 

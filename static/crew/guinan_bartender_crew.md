@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 4
 events: 2
 in_portal:
+date: 06/06/2017
+obtained: Gauntlet
+mega: false
 published: true
 ---
 

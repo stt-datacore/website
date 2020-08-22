@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 3
 events: 18
 in_portal:
+date: 04/08/2020
+obtained: Honor Hall
+mega: false
 published: true
 ---
 

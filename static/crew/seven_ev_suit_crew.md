@@ -1,11 +1,14 @@
 ---
 name: EV Suit Seven of Nine
 rarity: 5
-series: ent
+series: voy
 memory_alpha:
 bigbook_tier: 6
 events: 15
 in_portal: true
+date: 25/09/2018
+obtained: Pack
+mega: false
 published: true
 ---
 

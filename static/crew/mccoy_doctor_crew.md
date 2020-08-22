@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 5
 events: 17
 in_portal:
+date: 14/01/2020
+obtained: Giveaway
+mega: false
 published: true
 ---
 

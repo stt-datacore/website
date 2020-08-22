@@ -1,11 +1,14 @@
 ---
 name: Ambassador K'Ehleyr
 rarity: 4
-series:
+series: tng
 memory_alpha:
 bigbook_tier: 8
 events: 12
 in_portal: true
+date: 17/07/2017
+obtained: Event
+mega: true
 published: true
 ---
 

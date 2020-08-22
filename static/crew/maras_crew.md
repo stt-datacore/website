@@ -1,11 +1,14 @@
 ---
 name: Maras
 rarity: 5
-series:
+series: ent
 memory_alpha:
 bigbook_tier: 10
 events: 9
 in_portal:
+date: 15/10/2019
+obtained: Pack
+mega: false
 published: true
 ---
 

@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 4
 events: 7
 in_portal:
+date: 27/04/2017
+obtained: Honor Hall
+mega: false
 published: true
 ---
 

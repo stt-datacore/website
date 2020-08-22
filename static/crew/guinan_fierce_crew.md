@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 10
 events: 8
 in_portal:
+date: 20/10/2017
+obtained: Voyage
+mega: false
 published: true
 ---
 

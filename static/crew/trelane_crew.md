@@ -6,6 +6,9 @@ memory_alpha:
 bigbook_tier: 7
 events: 6
 in_portal: true
+date: 04/11/2016
+obtained: Post-Launch
+mega: false
 published: true
 ---
 

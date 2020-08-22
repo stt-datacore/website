@@ -1,11 +1,14 @@
 ---
 name: Fesek
 rarity: 4
-series: ent
+series: voy
 memory_alpha:
 bigbook_tier: 9
 events: 5
 in_portal: true
+date: 03/10/2016
+obtained: Post-Launch
+mega: false
 published: true
 ---
 

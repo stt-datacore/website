@@ -1,11 +1,14 @@
 ---
 name: Talas
 rarity: 5
-series: voy
+series: ent
 memory_alpha:
 bigbook_tier: 5
 events: 10
 in_portal:
+date: 24/12/2019
+obtained: Pack
+mega: false
 published: true
 ---
 
