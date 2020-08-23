@@ -18,5 +18,7 @@ jobs:
       run: |
         sudo apt-get update -y -qq
         sudo apt-get install -y -qq sshpass rsync
+        mkdir -p ~/.ssh
+        touch ~/.ssh/known_hosts
         ssh-keyscan -p 1337 ${{ secrets.RSYNC_HOST }} >> ~/.ssh/known_hosts
         sshpass -p "${{ secrets.RSYNC_PASS }}" rsync -avz -e 'ssh -p 1337' --progress --delete ./public ${{ secrets.RSYNC_USER }}@${{ secrets.RSYNC_HOST }}:/sitebuild
