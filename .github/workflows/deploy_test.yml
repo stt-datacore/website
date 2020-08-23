@@ -14,11 +14,9 @@ jobs:
       run: |
         npm install
         npm run build
-    - name: Publish to server via sftp
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      with:
-        ftp-server: ${{ secrets.SFTP_HOST }}
-        ftp-username: ${{ secrets.SFTP_USER }}
-        ftp-password: ${{ secrets.SFTP_PASS }}
-        known-hosts: ${{ secrets.SFTP_KNOWNHOSTS }}
-        local-dir: ./public
+    - name: Publish to server via rsync
+      run: |
+        sudo apt-get update -y -qq
+        sudo apt-get install -y -qq sshpass rsync
+        ssh-keyscan -p 1337 ${{ secrets.RSYNC_HOST }} >> ~/.ssh/known_hosts
+        sshpass -p "${{ secrets.RSYNC_PASS }}" rsync -avz -e 'ssh -p 1337' --progress --delete ./public ${{ secrets.RSYNC_USER }}@${{ secrets.RSYNC_HOST }}:/sitebuild
