@@ -39,4 +39,4 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Rsync over ssh
         run: |
-          rsync -avz -e --progress ./public ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/website/public_web
+          rsync -avz --progress ./public ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/website/public_web
