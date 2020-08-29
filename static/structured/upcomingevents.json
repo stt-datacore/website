@@ -302,9 +302,20 @@
 		"dates": "Thursday 08/20 until Monday 08/24 at Noon (16.00 UTC)",
 		"startDate": "2020-08-20T17:00:00Z",
 		"endDate": "2020-08-24T17:00:00Z",
-		"highbonus": ["travers_crew", "TODO_Brigitte_Torres", "kirk_incognito_crew", "humanoid_figure_crew"],
+		"highbonus": ["travers_crew", "torres_brigitte_crew", "kirk_incognito_crew", "humanoid_figure_crew"],
 		"smallbonus": {
 			"traits": ["torres", "kirk", "ent"]
+		}
+	},
+	{
+		"name": "Whistles and Canaries",
+		"type": "Galaxy",
+		"dates": "Thursday 08/27 until Monday 08/31 at Noon (16.00 UTC)",
+		"startDate": "2020-08-27T17:00:00Z",
+		"endDate": "2020-08-31T17:00:00Z",
+		"highbonus": ["jhamel_crew", "shran_ransom_crew", "jarok_crew", "humanoid_figure_crew"],
+		"smallbonus": {
+			"traits": ["shran", "ent"]
 		}
 	}
 ]

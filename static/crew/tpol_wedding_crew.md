@@ -3,7 +3,7 @@ name: Vulcan Wedding T'Pol
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 21
 in_portal: true
 date: 12/04/2018

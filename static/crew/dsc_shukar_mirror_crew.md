@@ -3,7 +3,7 @@ name: Mirror Shukar
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 23
 in_portal: true
 date: 27/02/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Shukar has a handful of traits, most notably Disco, to help elevate pretty poor bases. More sturdy proficiencies combine for a couple ranked gauntlet pairs and help form respectable voyage numbers where he picks up a splash of SCI to prevent him from being too easily replaceable. Discovery megas have hugely buoyed his value, but as a voyager he has just enough juice to help you out even if those events dry up.
+Shukar has a handful of traits, most notably Discovery, to help elevate pretty poor bases. More sturdy proficiencies combine for a couple ranked gauntlet pairs and can be a formidable option at 45% crit. Discovery megas have hugely buoyed his value, but if they were to dry up, his voyage power relative to the field as dropped too much to be of much use outside the gauntlet.

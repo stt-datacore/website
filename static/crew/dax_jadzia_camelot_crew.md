@@ -3,7 +3,7 @@ name: Princess Jadzia
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 24
 in_portal: true
 date: 19/06/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Impressive voyage, event, and base numbers. Being only 4 points off the SCI leader for a character as popular as Dax makes Princess a base + event count marriage made in heaven. Her spot in a very tricky to complete collection only cements her position as a must-have.
+This crew note update for the Royal will be the first one that isn't absolutely glowing. Greater SCI bases and a plethora of strong(er) voyagers have brought her down to earth a bit, which is how you'd describe an event count that will likely never again reach 2017's lofty tally of seven. You'll still have plenty of chances to relieve her of vanity collection duties and thaw this capable event shuttler, but her punch lacks the power that it once had, leaving her a 'merely' solid crew with plus long term value.

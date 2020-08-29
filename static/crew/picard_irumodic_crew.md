@@ -3,8 +3,8 @@ name: Irumodic Syndrome Picard
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 11
+bigbook_tier: 3
+events: 12
 in_portal: true
 date: 01/08/2018
 obtained: Pack

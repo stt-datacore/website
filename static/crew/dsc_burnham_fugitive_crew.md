@@ -3,7 +3,7 @@ name: Fugitive Burnham
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 25
 in_portal:
 date: 16/10/2019
