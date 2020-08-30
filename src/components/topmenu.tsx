@@ -61,7 +61,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 							<Popup content='Donate to Community Patreon' trigger={<Icon name='patreon' />} />
 						</Menu.Item>
 						<Menu.Item>
-							<Button size='tiny' color='red' onClick={() => this.setState({messageModalOpen: true})} content={"We've moved!"} />
+							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"We've moved!"} />
 						</Menu.Item>
 						<Menu.Item as='a' onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 							<Icon name='github' />
