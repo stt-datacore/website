@@ -314,8 +314,8 @@ function main() {
 		if (!mdData) {
 			console.log(`Crew ${crew.name} not found!`);
 		} else {
-			crew.bigbook_tier = mdData.meta.bigbook_tier;
-			crew.events = mdData.meta.events || 0;
+			crew.bigbook_tier = mdData.meta.bigbook_tier ? Number.parseInt(mdData.meta.bigbook_tier) : undefined;
+			crew.events = mdData.meta.events ? Number.parseInt(mdData.meta.events) : 0;
 			crew.in_portal = !!mdData.meta.in_portal;
 			crew.markdownContent = mdData.markdownContent;
 		}
