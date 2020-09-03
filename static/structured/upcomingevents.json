@@ -317,5 +317,16 @@
 		"smallbonus": {
 			"traits": ["shran", "ent"]
 		}
+	},
+	{
+		"name": "Restoration",
+		"type": "Galaxy/Skirmish",
+		"dates": "Thursday 09/03 until Monday 09/07 at Noon (16.00 UTC)",
+		"startDate": "2020-09-03T17:00:00Z",
+		"endDate": "2020-09-07T17:00:00Z",
+		"highbonus": ["hernandez_captain_crew", "narissa_reclamation_crew", "reed_rura_penthe_crew", "humanoid_figure_crew"],
+		"smallbonus": {
+			"traits": ["reed", "ent"]
+		}
 	}
 ]
