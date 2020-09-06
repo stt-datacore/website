@@ -3,7 +3,7 @@ name: Wrathful Khan
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 13
 in_portal: true
 date: 01/01/2016

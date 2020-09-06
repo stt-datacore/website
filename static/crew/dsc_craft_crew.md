@@ -3,7 +3,7 @@ name: Stranded Craft
 rarity: 3
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 23
 in_portal: true
 date: 09/10/2019
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-New crew usually bring a little bit of excitement as to what their stats can bring to new players sadly our Craft here is aptly stranded among the average cards. His SEC base will bring a bit of power to shuttles if you are missing some of the bigger players. Whilst his voyage totals are fair substantial, don't expect his common combination of skills to be included over the multitudes of other, more useful crew. Consider The Viceroy or Boxer Chakotay for stronger alternatives.
+Once you get past the disappointment that as a human male, he won't be doing any weekend cadet work for you, you'll find he's a pretty solid card. His SEC base will bring a bit of power to shuttles if you are missing some of the bigger players, and his voyage totals are substantial with a nice ENG tertiary to increase flexibility and seating options. He's got a space in the Veteran collection and can also help clear some mission nodes with Veteran or Pilot locks.

@@ -3,7 +3,7 @@ name: Maquis Tuvok
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 12
 in_portal: true
 date: 12/06/2017
