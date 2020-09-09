@@ -328,5 +328,16 @@
 		"smallbonus": {
 			"traits": ["reed", "ent"]
 		}
+	},
+	{
+		"name": "Mistress of the Mirror",
+		"type": "Faction",
+		"dates": "Thursday 09/10 until Monday 09/14 at Noon (16.00 UTC)",
+		"startDate": "2020-09-10T17:00:00Z",
+		"endDate": "2020-09-14T17:00:00Z",
+		"highbonus": ["dsc_georgiou_mirror_crew", "troi_lwaxana_festive_crew", "picard_dixonhill_crew"],
+		"smallbonus": {
+			"traits": ["georgiou", "lwaxana", "picard"]
+		}
 	}
 ]
