@@ -339,5 +339,16 @@
 		"smallbonus": {
 			"traits": ["georgiou", "lwaxana", "picard"]
 		}
+	},
+	{
+		"name": "In Taste Confounds",
+		"type": "Skirmish",
+		"dates": "Thursday 09/17 until Monday 09/21 at Noon (16.00 UTC)",
+		"startDate": "2020-09-17T17:00:00Z",
+		"endDate": "2020-09-21T17:00:00Z",
+		"highbonus": ["nona_crew", "TODO_Kivas_Fajo", "yates_smuggler_crew"],
+		"smallbonus": {
+			"traits": ["yates", "borg"]
+		}
 	}
 ]
