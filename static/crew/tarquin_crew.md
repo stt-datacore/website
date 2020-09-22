@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The herald of the Delphic Expanse collection may be the only intriguing attribute about this crew. He lacks event chances or raw statistical power, offering merely a chunk of arena crit bonus until you find stronger and faster options.
+His spot in the Delphic Expanse collection may be the only intriguing attribute about this crew. He lacks event chances or raw statistical power, offering merely a chunk of arena crit bonus until you find stronger and faster options.

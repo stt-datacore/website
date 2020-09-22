@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A card that resembles her prowess at transporter techniques, this Tuesday wonder is less a useful card than it is decoration for your Motion Picture inspired bridge crew. Don't let her determined expression lead you into thinking that her engineering prospects are half way good because frankly she gets outpaced by most of the commonly available Portal crew. No event bonus, no collection bonuses and two lackluster skills. Her only variant bonus comes from a common card that the Little Book didn't care for. Consider her for the upcoming TOS mega but don't expect to see her on many shuttles.
+A card that resembles her prowess at transporter techniques, this Tuesday wonder is less a useful card than it is decoration for your Motion Picture inspired bridge crew. Don't let her determined expression lead you into thinking that her engineering prospects are half way good because frankly she gets outpaced by most of the commonly available Portal crew.
+
+No event bonus, no collection bonuses and two lackluster skills. Her only variant bonus comes from a common card that the Little Book didn't care for. Consider her for the upcoming TOS mega but don't expect to see her on many shuttles.

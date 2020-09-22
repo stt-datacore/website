@@ -346,9 +346,20 @@
 		"dates": "Thursday 09/17 until Monday 09/21 at Noon (16.00 UTC)",
 		"startDate": "2020-09-17T17:00:00Z",
 		"endDate": "2020-09-21T17:00:00Z",
-		"highbonus": ["nona_crew", "TODO_Kivas_Fajo", "yates_smuggler_crew"],
+		"highbonus": ["nona_crew", "fajo_kivas_crew", "yates_smuggler_crew"],
 		"smallbonus": {
-			"traits": ["yates", "borg"]
+			"traits": ["yates", "Borg"]
+		}
+	},
+	{
+		"name": "Law of Conservation",
+		"type": "Galaxy",
+		"dates": "Thursday 09/24 until Monday 09/28 at Noon (16.00 UTC)",
+		"startDate": "2020-09-24T17:00:00Z",
+		"endDate": "2020-09-28T17:00:00Z",
+		"highbonus": ["emory_erickson_crew", "TODO_Altan_Inigo_Soong", "rand_transporter_crew"],
+		"smallbonus": {
+			"traits": ["Innovator"]
 		}
 	}
 ]

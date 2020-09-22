@@ -12,4 +12,12 @@ mega: true
 published: true
 ---
 
-For a character whose contribution to the Trekverse boils down to “Go, racers, go!”, it’s only fitting that his card is equally dull. Most of us need an average DIP shuttler like we need another hole in our head, but if you find yourself without having the Diplomat collection complete, then the Ambassador is at least worth an hour of tap tap taparoo to acquire. Take him for the +1 and some niche arena work, but if you’re expecting more, I’m afraid that, well...That’s Zahl, Folks!
+O'Zaal! my Zahl! our average build is done,
+The campaign's finished every track, the prize we bought is won,
+Collections near, LCARS I hear, the stat boosts all resulting,
+While follow eyes the roster space, the slot sales all too sparing;
+
+But O'Zaal! Zahl! Zahl!
+O the freeing slots ahead,
+Where on the deck my purple lies,
+Cryo'd cold and dead.
