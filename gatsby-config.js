@@ -29,6 +29,7 @@ module.exports = {
 				path: `${__dirname}/static/structured/`,
 				ignore: [
 					'**/events/*',
+					'**/eventlogs/*',
 					'**/allcrew.json',
 					'**/botcrew.json',
 					'**/collections.json',

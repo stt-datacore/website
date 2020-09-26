@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Header, Label, Message, Icon, Table, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
+import { ResponsiveLine } from '@nivo/line'
+import themes from '../components/nivo_themes';
+import ErrorBoundary from '../components/errorboundary';
 
 import Layout from '../components/layout';
 
@@ -10,6 +13,7 @@ type EventInfoPageState = {
 	event_data?: any;
 	event_instace?: string;
 	errorMessage?: string;
+	event_log?: any[];
 };
 
 class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
@@ -18,7 +22,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		this.state = {
 			event_instace: undefined,
-			event_data: undefined
+			event_data: undefined,
+			event_log: undefined
 		};
 	}
 
@@ -46,6 +51,15 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 										.then(event_details => {
 											this.setState({ event_data: { ev_inst, ev_lead, event_details } });
 										});
+
+									fetch(`/eventlogs/${ev_inst.instance_id}.json`)
+										.then(response => response.json())
+										.then(event_log => {
+											this.setState({ event_log });
+										}).catch(err => {
+											// No log for this event
+											this.setState({ event_log: undefined });
+										});
 								} else {
 									this.setState({ event_data: { ev_inst, ev_lead } });
 								}
@@ -56,6 +70,93 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					this.setState({ errorMessage: err });
 				});
 		}
+	}
+
+	renderEventLog() {
+		const { event_log } = this.state;
+
+		if (event_log === undefined) {
+			return <span />;
+		}
+
+		let data_formatted = event_log.slice(-1)[0].leaderboard.slice(0,10).map(entry => ({
+			id: entry.display_name,
+			dbid: entry.dbid,
+			data: []
+		}));
+
+		event_log.forEach(entry => {
+			data_formatted.forEach(line => {
+				let found = entry.leaderboard.find(l =>l.dbid === line.dbid);
+				if (found) {
+					line.data.push({
+						x: new Date(entry.date),
+						y: found.score
+					});
+				}
+			})
+		});
+
+		return (
+			<ErrorBoundary>
+				<h3>Score evolution</h3>
+				<div style={{ height: '380px' }}>
+					<ResponsiveLine
+						data={data_formatted}
+						theme={themes.dark}
+						enableGridX={false}
+						enableCrosshair={false}
+						enablePoints={false}
+						xScale={{
+							type: 'time',
+							precision: 'minute'
+						}}
+        				yScale={{ type: 'linear', min: 'auto', max: 'auto', reverse: false }}
+						curve="monotoneX"
+						margin={{ top: 50, right: 190, bottom: 50, left: 100 }}
+						axisBottom={{
+							format: '%b %d %H:%M',
+							tickValues: 'every hour',
+							legend: 'time scale',
+							legendOffset: 5,
+						}}
+						axisLeft={{
+							orient: 'left',
+							tickSize: 5,
+							tickPadding: 5,
+							tickRotation: 0,
+							legend: 'score',
+							legendOffset: -70,
+							legendPosition: 'middle'
+						}}
+						legends={[
+							{
+								anchor: 'bottom-right',
+								direction: 'column',
+								justify: false,
+								translateX: 120,
+								translateY: 0,
+								itemsSpacing: 2,
+								itemWidth: 100,
+								itemHeight: 20,
+								itemDirection: 'left-to-right',
+								symbolSize: 20,
+								effects: [
+									{
+										on: 'hover',
+										style: {
+											itemOpacity: 1,
+										},
+									},
+								],
+							},
+						]}
+						isInteractive={true}
+						useMesh={true}
+						enableSlices="x"
+					/>
+				</div>
+			</ErrorBoundary>);
 	}
 
 	renderEventDetails() {
@@ -218,6 +319,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
 
 					{this.renderEventDetails()}
+
+					{this.renderEventLog()}
 
 					<Header as='h4'>Leaderboard</Header>
 					<Table celled selectable striped collapsing unstackable compact='very'>
