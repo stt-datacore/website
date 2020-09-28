@@ -23,7 +23,7 @@ Analyze beholds and get stats and recommendations:
 | <div style="width:400px">Command with Options</div> | Description |
 | :-------------------- | :----------- |
 | -d help | Show the available commands. |
-| -d help <cmd> | Show the syntax help for a command. |
+| -d help \<cmd\> | Show the syntax help for a command. |
 | -d search <term> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
 | -d [stats &#124 estats &#124 c] <crew> | Displays stats for the given crew |
 | -d best <skilltype> <skill> [secondskill] [-s #] | Searches for the best crew according to the skill type.  Available types are base, gauntlet (proficiency), or either avg or voyages (combined) skill rating.  Available skills are com (Command), dip (Diplomacy), eng (Engineering), sec (Security), med (Medicine), and sci (Science).  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
