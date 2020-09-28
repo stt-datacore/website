@@ -20,16 +20,8 @@ Analyze beholds and get stats and recommendations:
 
 ## Full list of current bot commands:
 
-	  | Command with Options | Description |
-	  | --- | --- |
-	  | -d help | Show the available commands. |
-    | -d help <command> | Show the syntax help for a command. |
-    | -d search <term...> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
-    | -d [stats &#124 estats &#124 c] <crew> | Displays stats for the given crew |
-    | -d best <skilltype> <skill> [secondskill] [-s #] | Searches for the best crew according to the skill type.  Available types are base, gauntlet (proficiency), or either avg or voyages (combined) skill rating.  Available skills are com (Command), dip (Diplomacy), eng (Engineering), sec (Security), med (Medicine), and sci (Science).  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
-    | -d behold <url> | Analyzes a behold screenshot and returns crew details.  When creating your screenshot, make sure the "Choose One" text is fully visible at the top of the behold, and "Tap and Hold the portrait for more information" is also visible at the bottom.  Make sure the left and right box borders are visible.  This helps the system recognize the portraits. |
 | Command with Options | Description |
-| -------------------- | ----------- |
+| :-------------------- | :----------- |
 | -d help | Show the available commands. |
 | -d help <command> | Show the syntax help for a command. |
 | -d search <term...> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
@@ -44,7 +36,7 @@ Analyze beholds and get stats and recommendations:
 | -d associate <dbid> [text] | Associate your Discord user account with a previously uploaded profile DBID. |
 | -d profile [verb] [text] | Display a summary of the profile associated with your DBID. |
 | -d resetprofile | Remove any associations between your discord user and an uploaded profile DBID. |
-    | -d crewneed <crewname> | Shows a breakdown of items needed to craft a specific crew member. |
+ -d crewneed <crewname> | Shows a breakdown of items needed to craft a specific crew member. |
 
 ## How to be polite to your bot:
 
@@ -53,7 +45,7 @@ Your bot is like a small child; it hears everything.  Please do not send extrane
 ## Adding the bot to your fleet:     
 If you want to add the bot to your own fleet server, please contact us for details (see below for instructions).
 
-## Setup instructions
+### Setup instructions
 
 Before inviting the bot to your Discord server, make sure you have set up the following emojis the bot depends on. Also, if possible, restrict the bot to specific channels; it will attempt to download and analyze all images (in case they are beholds), which puts a big stress on the server.
 
