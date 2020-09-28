@@ -20,7 +20,7 @@ Analyze beholds and get stats and recommendations:
 
 ## Full list of current bot commands:
 
-| <div style="width:100px"> Command with Options</div> | Description |
+| <div style="width:400px"> Command with Options</div> | Description |
 | :-------------------- | :----------- |
 | -d help | Show the available commands. |
 | -d help <command> | Show the syntax help for a command. |
