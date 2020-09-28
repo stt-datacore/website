@@ -23,8 +23,8 @@ Analyze beholds and get stats and recommendations:
 | <div style="width:400px">Command with Options</div> | Description |
 | :-------------------- | :----------- |
 | -d help | Show the available commands. |
-| -d help <command> | Show the syntax help for a command. |
-| -d search <term...> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
+| -d help <cmd> | Show the syntax help for a command. |
+| -d search <term> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
 | -d [stats &#124 estats &#124 c] <crew> | Displays stats for the given crew |
 | -d best <skilltype> <skill> [secondskill] [-s #] | Searches for the best crew according to the skill type.  Available types are base, gauntlet (proficiency), or either avg or voyages (combined) skill rating.  Available skills are com (Command), dip (Diplomacy), eng (Engineering), sec (Security), med (Medicine), and sci (Science).  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
 | -d behold <url> | Analyzes a behold screenshot and returns crew details.  When creating your screenshot, make sure the "Choose One" text is fully visible at the top of the behold, and "Tap and Hold the portrait for more information" is also visible at the bottom.  Make sure the left and right box borders are visible.  This helps the system recognize the portraits. |
