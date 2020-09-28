@@ -24,19 +24,19 @@ Analyze beholds and get stats and recommendations:
 | :-------------------- | :----------- |
 | -d help | Show the available commands. |
 | -d help \<cmd\> | Show the syntax help for a command. |
-| -d search <term> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
-| -d [stats &#124 estats &#124 c] <crew> | Displays stats for the given crew |
-| -d best <skilltype> <skill> [secondskill] [-s #] | Searches for the best crew according to the skill type.  Available types are base, gauntlet (proficiency), or either avg or voyages (combined) skill rating.  Available skills are com (Command), dip (Diplomacy), eng (Engineering), sec (Security), med (Medicine), and sci (Science).  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
-| -d behold <url> | Analyzes a behold screenshot and returns crew details.  When creating your screenshot, make sure the "Choose One" text is fully visible at the top of the behold, and "Tap and Hold the portrait for more information" is also visible at the bottom.  Make sure the left and right box borders are visible.  This helps the system recognize the portraits. |
-| -d farm <rarity> <item name> | This searches the drop rate and recipes for an item and returns the best places to get the item.  Rarity is the number corresponding to the number of stars on the item in question. |
-| -d voytime <primary> <secondary> <skill 3> <skill 4> <skill 5> <skill 6> [antimatter] | This tool estimates the length of a voyage.  Entries are the total skill value for the primary skill for the voyage, secondary skill, and then each of the other skills on your voyage.  You can also optionally tell the estimator your starting antimatter. |
-| -d dilemma <dilemma title> | Searches for voyage dilemmas with the given title. |
+| -d search \<term\> [-s #] | Searches crew by name, traits, or skills.  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
+| -d [stats &#124 estats &#124 c] \<crew\> | Displays stats for the given crew |
+| -d best \<skilltype\> \<skill\> [secondskill] [-s #] | Searches for the best crew according to the skill type.  Available types are base, gauntlet (proficiency), or either avg or voyages (combined) skill rating.  Available skills are com (Command), dip (Diplomacy), eng (Engineering), sec (Security), med (Medicine), and sci (Science).  The -s argument allows you to specify the rarity of the crew in stars (default search is five). |
+| -d behold \<url\> | Analyzes a behold screenshot and returns crew details.  When creating your screenshot, make sure the "Choose One" text is fully visible at the top of the behold, and "Tap and Hold the portrait for more information" is also visible at the bottom.  Make sure the left and right box borders are visible.  This helps the system recognize the portraits. |
+| -d farm \<rarity\> \<item name\> | This searches the drop rate and recipes for an item and returns the best places to get the item.  Rarity is the number corresponding to the number of stars on the item in question. |
+| -d voytime \<primary\> \<secondary\> \<skill 3\> \<skill 4\> \<skill 5\> \<skill 6\> [antimatter] | This tool estimates the length of a voyage.  Entries are the total skill value for the primary skill for the voyage, secondary skill, and then each of the other skills on your voyage.  You can also optionally tell the estimator your starting antimatter. |
+| -d dilemma \<dilemma title\> | Searches for voyage dilemmas with the given title. |
 | -d gauntlet [trait 1] [trait 2] [trait 3] | Enter the traits featured in the gauntlet, and retrieve the best crew to use with at least two of the three traits. |
-| -d meme <name> [text] | Generate a meme image and post it. |
-| -d associate <dbid> [text] | Associate your Discord user account with a previously uploaded profile DBID. |
+| -d meme \<name\> [text] | Generate a meme image and post it. |
+| -d associate \<dbid\> [text] | Associate your Discord user account with a previously uploaded profile DBID. |
 | -d profile [verb] [text] | Display a summary of the profile associated with your DBID. |
 | -d resetprofile | Remove any associations between your discord user and an uploaded profile DBID. |
-| -d crewneed <crewname> | Shows a breakdown of items needed to craft a specific crew member. |
+| -d crewneed \<crewname\> | Shows a breakdown of items needed to craft a specific crew member. |
 
 ## How to be polite to your bot:
 
