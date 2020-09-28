@@ -36,7 +36,7 @@ Analyze beholds and get stats and recommendations:
 | -d associate <dbid> [text] | Associate your Discord user account with a previously uploaded profile DBID. |
 | -d profile [verb] [text] | Display a summary of the profile associated with your DBID. |
 | -d resetprofile | Remove any associations between your discord user and an uploaded profile DBID. |
- -d crewneed <crewname> | Shows a breakdown of items needed to craft a specific crew member. |
+| -d crewneed <crewname> | Shows a breakdown of items needed to craft a specific crew member. |
 
 ## How to be polite to your bot:
 
