@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-A close enough replica of Prisoner O'Brien that you'd swear he was constructed on the planet Mudd. Top 1/3rd voyage (and voyage ENG) numbers with dual 700+ bases for Mudd and Disco event work. A good chunk of his value hinges on possible future Disco mega(s) where he owns the #1 ENG base for super rare crew.
+“I wish there was a way to know you're in the good old days before you've actually left them.”
+
+Stella aside, Mudd's golden days of holding down Discovery ENG or pushing your voyages ever longer are just about over. He still has a handful of traits, most notably Disco, to get him some shuttle work beyond what his otherwise poor bases would demand. Outside of that, his low-ish power will get him lost in the shuffle of new crew who have base and voyage scores hundreds of points higher.

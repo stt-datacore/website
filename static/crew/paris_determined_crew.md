@@ -12,7 +12,7 @@ mega: false
 published: true
 ---
 
-I gotta take a little time, to stop hostile Klingon takeovers
+I've gotta take a little time, to stop hostile Klingon takeovers
 I better read between the lines, before I get my wife's cold shoulder
 
 Now it's bat'leth practice time, with stiff leather upon my shoulders
