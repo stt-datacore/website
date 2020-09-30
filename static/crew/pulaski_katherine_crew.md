@@ -3,7 +3,7 @@ name: Dr. Katherine Pulaski
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 7
 events: 8
 in_portal: true
 date: 06/03/2019

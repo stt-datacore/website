@@ -3,7 +3,7 @@ name: Temporal Agent Seven
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 16
 in_portal: true
 date: 01/03/2016
