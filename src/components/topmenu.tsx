@@ -114,7 +114,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 				<Modal open={messageModalOpen} closeOnEscape={false} closeOnDimmerClick={false} onClose={() => this._closeMessageDialog()}>
 					<Modal.Header>The DataCore website and bot have transitioned to a community ownership model!</Modal.Header>
 					<Modal.Content>
-						<p>We need your help! The project is <a href='https://github.com/stt-datacore'>open source</a> so we're open for contributions from software engineers, designers, devops, testers and so on. Reach out on our <a href='https://discord.gg/rmHjKK'>development Discord</a> if you're not sure where to start.</p>
+						<p>We need your help! The project is <a href='https://github.com/stt-datacore'>open source</a> so we're open for contributions from software engineers, designers, devops, testers and so on. Reach out on our <a href='https://discord.gg/reFXRX'>development Discord</a> if you're not sure where to start.</p>
 						<p>You can also contribute financially to support the cost of hosting our servers. Please consider <a href='https://www.patreon.com/Datacore'>becoming our patron!</a></p>
 						<p>Please see this <a href='https://forum.disruptorbeam.com/stt/discussion/16539/datacore-current-status'>forum thread</a> for details and updates.</p>
 					</Modal.Content>
