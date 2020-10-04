@@ -78,6 +78,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 	_calculateStats() {
 		let owned = [0, 0, 0, 0, 0];
 		let total = [0, 0, 0, 0, 0];
+		let unowned_portal = [0,0,0,0,0];
 
 		const { playerData } = this.props;
 		const { allcrew, includeTertiary, items } = this.state;
@@ -166,6 +167,10 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					.forEach((es) => {
 						craftCost += demandsPerSlot(es, items, dupeChecker, demands);
 					});
+			} else {
+				if (crew.in_portal) {
+					unowned_portal[crew.max_rarity - 1]++;
+				}
 			}
 		}
 
@@ -215,7 +220,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			data_ownership.push({
 				rarity: CONFIG.RARITIES[i + 1].name,
 				Owned: owned[i],
-				'Not Owned': total[i] - owned[i],
+				'Not Owned': total[i] - owned[i] - unowned_portal[i],
+				'Not Owned - Portal': unowned_portal[i],
 			});
 		}
 
@@ -310,7 +316,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					<ResponsiveBar
 						data={data_ownership}
 						theme={themes.dark}
-						keys={['Owned', 'Not Owned']}
+						keys={['Owned', 'Not Owned', 'Not Owned - Portal']}
 						indexBy='rarity'
 						layout='horizontal'
 						margin={{ top: 50, right: 130, bottom: 50, left: 100 }}

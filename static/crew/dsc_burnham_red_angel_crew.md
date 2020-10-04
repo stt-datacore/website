@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 1
-events: 25
+events: 26
 in_portal:
 date: 07/07/2020
 obtained: Gauntlet
