@@ -98,11 +98,6 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		this.setState({ searchFilter: value, pagination_page: 1 });
 	}
 
-	_onClearFilter() {
-		localForage.setItem<string>('searchFilter', '');
-		this.setState({ searchFilter: '', pagination_page: 1 });
-	}
-
 	renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
 		return (
 			<Table.Row>
@@ -143,7 +138,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 					onChange={(e, { value }) => this._onChangeFilter(value)}>
 						<input />
 						<Icon name='search' />
-						<Button icon onClick={() => this._onClearFilter()} >
+						<Button icon onClick={() => this._onChangeFilter('')} >
 							<Icon name='delete' />
 						</Button>
 				</Input>
