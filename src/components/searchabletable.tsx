@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
@@ -98,6 +98,11 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		this.setState({ searchFilter: value, pagination_page: 1 });
 	}
 
+	_onClearFilter() {
+		localForage.setItem<string>('searchFilter', '');
+		this.setState({ searchFilter: '', pagination_page: 1 });
+	}
+
 	renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
 		return (
 			<Table.Row>
@@ -132,11 +137,16 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 			<div>
 				<Input
 					style={{ width: '50%' }}
-					icon="search"
+					iconPosition="left"
 					placeholder="Search..."
 					value={this.state.searchFilter}
-					onChange={(e, { value }) => this._onChangeFilter(value)}
-				/>
+					onChange={(e, { value }) => this._onChangeFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => this._onClearFilter()} >
+							<Icon name='delete' />
+						</Button>
+				</Input>
 
 				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
 
