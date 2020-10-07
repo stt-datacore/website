@@ -3,7 +3,7 @@ name: Commander Chapel
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 8
 in_portal: true
 date: 04/12/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Double collections automatically qualify her for consideration, but she's not bad elsewhere. A better than average voyager with a slim chance to be event relevant - her one featured event was a faction with the popular da Vinci. Cross your fingers that she'll help you win a copy of him in a rerun.
+Double collections automatically qualify her for consideration, but a plus skill set no longer has the power to compete with day 1 options. With a slim chance to be event relevant - her one featured event was a faction alongside the popular da Vinci - cross your fingers that she'll find her way out of cryo once a year.

@@ -3,7 +3,7 @@ name: RAF Miles O'Brien
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 14
 in_portal: true
 date: 06/09/2016

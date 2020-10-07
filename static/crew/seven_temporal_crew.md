@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A useful skill set, but not in an amount that gives her much staying power. Two event features (including alongside da Vinci), a spot in the Borg collection, and future event chances are her greatest strengths.
+A useful skill set, but not in an amount that gives her much staying power. Three event features (including alongside da Vinci), a spot in the Borg collection, and future event chances are her greatest strengths.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Certainly weaker than your average Dax, but a useful skill set in the early game and plenty of events later on for which her SEC base sits behind only Mirror Jadzia among variants. She has some use potential in a few phases of the game, just don’t let the Dax reputation oversell this version.
+Unfortunately her art makeover from melted crayon to hatchet man is the most exciting thing this Jadzia has done in ages. The event count is there, but nearly nothing else is - voyage power, base oomph, collections, gauntlet, or arena are all missing in action.
+
+Formerly exploitable niches of voyage skill set and lack of Dax SEC are both hamstrung by a sinking relative power. She's a warm shuttle body if you lack for bonus crew, but in an event with a big pool, she may not be worth the merits to re-enlist.

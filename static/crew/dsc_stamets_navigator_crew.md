@@ -3,7 +3,7 @@ name: Navigator Stamets
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 22
 in_portal: true
 date: 12/02/2019

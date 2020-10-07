@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A true dichotomy; double collections (including the tough Jury Rigger), a handful of events, and passable arena work, but the dead last voyage total for 3-skillers and bad bases. Best to think of him as a popsicle stick with collections attached.
+O'Brien events are about as in vogue as the Tamagotchi and his offering there is bookended by bad bases and poor traits for weekend thawpertunities. A chance at relevance twice per year is more than some crew can boast, but it's best to think of him as a popsicle stick with collections attached.

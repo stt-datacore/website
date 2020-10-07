@@ -3,7 +3,7 @@ name: H.M.S. Pinafore Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 31/10/2018
