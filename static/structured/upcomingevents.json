@@ -379,7 +379,7 @@
 		"dates": "Thursday 10/08 until Monday 10/12 at Noon (16.00 UTC)",
 		"startDate": "2020-10-08T17:00:00Z",
 		"endDate": "2020-10-12T17:00:00Z",
-		"highbonus": ["amanda_grayson_awaiting_crew", "TODO_Dignitary_Sarek", "dsc_burnham_prospect_crew"],
+		"highbonus": ["amanda_grayson_awaiting_crew", "sarek_dignitary_crew", "dsc_burnham_prospect_crew"],
 		"smallbonus": {
 			"traits": ["amanda_grayson", "sarek", "burnham", "vulcan"]
 		}
