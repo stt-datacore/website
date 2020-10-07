@@ -36,6 +36,9 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 							This website cannot make requests directly to DB's servers (due to security configurations as well as unclear communication
 							from them about ToS interpretation), so there are a few manual steps required to import your data:
 						</p>
+            <p>
+              If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials; making it easier to change accounts.
+            </p>
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
