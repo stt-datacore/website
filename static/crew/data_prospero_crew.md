@@ -3,7 +3,7 @@ name: Prospero Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 06/02/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Data's customary huge event count paired with a variant DIP base behind only a 5/5 Emotion Chip Data make him a long term asset. Though his voyage total doesn't wow, no crew ranked above him shares his skill set.
+Prospero, a 2017 crew, is certainly starting to look his age. Having missed out on the Holodeck Enthusiasts collection to his big brother Data V, Prospero has also seen his previously rare skill set expand and his voyage power continue to drop. Now relegated primarily to event crew, he cobbles together a handful of vaguely eventable traits to combo with the Data name which is thought of as "solid", but has seen its event chances decrease each calendar year.

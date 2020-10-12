@@ -3,7 +3,7 @@ name: Tempted Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 01/01/2016

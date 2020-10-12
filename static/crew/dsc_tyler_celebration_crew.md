@@ -3,7 +3,7 @@ name: Celebratory Ash Tyler
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 25
 in_portal: true
 date: 31/01/2018
