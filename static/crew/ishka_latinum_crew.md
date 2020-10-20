@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Moogie! Top 10 DIP for daily shuttles and only a select few 3/5s can top her for Ferengi shuttles (mega when?). Double collections push her into the upper echelon of 2-skill crew, though most of her value comes post-cryo.
+The model of post-cryo value, Moogie offers double collections and some sporadic event work, but is not a daily player. She's one of several crew who can unlock the appropriately named Ishka's Issues DIP node in episode four to help you farm some polyalloys. After that, freeze and wait for trait event bonuses to trickle in.

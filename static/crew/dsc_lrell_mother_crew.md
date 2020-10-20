@@ -3,7 +3,7 @@ name: Mother L'Rell
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 events: 29
 in_portal:
 date: 16/07/2020

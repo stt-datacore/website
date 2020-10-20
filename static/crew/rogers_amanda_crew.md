@@ -3,7 +3,7 @@ name: Amanda Rogers
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 10
 in_portal: true
 date: 14/08/2019
