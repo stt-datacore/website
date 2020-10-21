@@ -3,7 +3,7 @@ name: Pining Vina
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 18
 in_portal:
 date: 24/10/2019
