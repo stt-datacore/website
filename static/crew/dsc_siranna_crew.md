@@ -3,7 +3,7 @@ name: Siranna
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 18
 in_portal: true
 date: 21/02/2019

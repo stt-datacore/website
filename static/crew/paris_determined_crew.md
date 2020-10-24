@@ -12,15 +12,15 @@ mega: false
 published: true
 ---
 
-I've gotta take a little time, to stop hostile Klingon takeovers
-I better read between the lines, before I get my wife's cold shoulder
+I've gotta take a little time, to stop hostile Klingon takeovers.
+I better read between the lines, before I get my wife's cold shoulder.
 
-Now it's bat'leth practice time, with stiff leather upon my shoulders
-Through the crowd I see bloodwine, it keeps me warm as life grows colder
+Now it's bat'leth practice time, with stiff leather upon my shoulders.
+Through the crowd I see bloodwine, it keeps me warm as life grows colder.
 
-On his knife I see lots of bloodstains
-I thank God, that Kohlar helped me to train
-Can't stop now, I've traveled so far, to change this lonely life
+On his knife I see lots of bloodstains.
+I thank God, that Kohlar helped me to train.
+Can't stop now, I've traveled so far, to change this lonely life.
 
-I want to know what love is, B'Elanna can show me
-I want to feel what love is, this T'Greth can blow me
+I want to know what love is, B'Elanna can show me.
+I want to feel what love is, this T'Greth can blow me.

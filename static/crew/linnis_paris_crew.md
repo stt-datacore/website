@@ -3,8 +3,8 @@ name: Linnis Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 7
+bigbook_tier: 10
+events: 8
 in_portal:
 date: 04/06/2020
 obtained: Event

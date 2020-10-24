@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Gross stats and a redundant skill set spell out that he’s not a daily use crew. But he does bring home some bacon with his collection spot and event chances, including three prior featured event appearances. He’s a textbook example of traits keeping even bad crew relevant.
+Gross stats and a redundant skill set spell out that he’s not a daily use crew. But he does bring home some bacon with dual collection spots and event chances, including three prior features. He’s a textbook example of traits keeping even bad crew relevant, though he'll merit a long, hard look before you thaw bases that may not make Faction shuttles.

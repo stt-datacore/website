@@ -3,7 +3,7 @@ name: Mirror Keiko
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 7
 in_portal: true
 date: 30/08/2018

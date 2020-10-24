@@ -3,7 +3,7 @@ name: Mirror Uhura
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 17
 in_portal: true
 date: 16/05/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Main cast crew with the mirror trait (and the accompanying Terran Empire/Brutal) always have at least a bit of value. Tack on a couple event features and she's a usable, if uninspiring, cryo vault thaw candidate. Also notable are usable arena acc/crit and a middling gauntlet pair for her only chances at daily use.
+Lumped in with the other purple Mirorr dregs isn't quite fair to this Uhura. A new collection has bumped her value up at the behold screen, but beyond that she does an Ardra-lite impression in the arena, grabs the occasional event bonus (with admittedly poor bases), and even owns four different 45% crit trait sets in the gauntlet. On the weak side due to age, but a must-have for a stat-boosting collection brings her other offerings into the limelight again on young rosters.

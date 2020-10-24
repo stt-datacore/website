@@ -3,7 +3,7 @@ name: Mirror Janeway
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 26
 in_portal: true
 date: 28/12/2018

@@ -3,8 +3,8 @@ name: Mirror Chekov
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
-events: 13
+bigbook_tier: 8
+events: 17
 in_portal:
 date: 16/06/2020
 obtained: Pack

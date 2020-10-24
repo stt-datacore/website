@@ -3,7 +3,7 @@ name: Mirror Inquisitor Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 22
 in_portal: true
 date: 28/12/2018
