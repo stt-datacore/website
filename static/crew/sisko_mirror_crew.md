@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The universe has a cruel sense of humor to give so many events to the likes of this guy. Sisko’s bases are a joke and his untapped traits may have bonus pools that are too large for future mega consideration, leaving his value to limp along on variant events only. It’s hard to ignore the sheer number of events he’s qualified for so far, but that pace is likely to slow significantly moving forward.
+Handfuls of events wasted on irredeemable bases have long left Sisko in the avoid pile. 2020, being the wacky year that it was, did finally give us a reason to behold this otherwise pathetic mess. You will need him for the Smoke and Mirrors collection for the foreseeable future, but don't bother leveling him until you're at a collection threshold or just need the crew slot.

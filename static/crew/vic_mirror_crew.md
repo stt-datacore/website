@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Vic’s above average mix of base and trait count is not as useful as it appears. Two megas have propped up just three variant events to create an event count that is not a reliable indicator for forward-thinking players. He’s okay as a luxury pick for established rosters, but will go through huge stretches of irrelevance.
+Vic’s above average mix of base and trait count has been useful in spurts and should continue to be, but leaves him susceptible to huge stretches of irrelevance. Luckily for him, a spot in a post-release stat-boosting collections makes him an attractive behold choice for players who don't need any day to day contributions from their super rares.

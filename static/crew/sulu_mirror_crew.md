@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Richelieu beware! Finally a usable Sulu. His character picked up its first two events at the end of 2018 and in combination with the mirror trait (#3 SEC, but the difference is minimal), he has some narrow, but impactful event potential when not piloting daily shuttles.
+Richelieu beware! Finally a usable Sulu. His character picked up its first two events at the end of 2018 and in combination with the mirror trait, he has some narrow, but impactful event potential when not piloting daily shuttles. There's a very fine line between a "bad" crew and a rarely useful crew - Sulu is the latter. He would have chances to shine once immortalized and is not the worst Mirror option to help you finish the collection, but won't pay back the investment at nearly the rate of many other golds.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-As her art might hint at, there's far more to the Intendant than meets the eye. CMD/DIP/SEC or not, her voyage numbers are still useful, even if they're a couple notches below her debut. The base numbers might not look great, and they aren't, but her SEC is still second among Kiras, whose considerable event count is joined by Cardassian, Klingon, and Mirror traits to make the Intendant a Tuvix-like fusion of several possible future event bonuses. There's no huge stat number to point to, but with the requisite number of stars, she's a name that will come up more often than you might think.
+As her art might hint at, there's far more to this Kira than meets the eye. A jewel back in 2017, the Intendant's numbers no longer flatter her, but plus versatility (gauntlet, events, collections) help make her a nice chess piece to have, even if she needs more stars than the average legendary. A handful of juicy racial traits pair with a rock solid Kira event history to produce a persuasive argument to make her one of the golds you immortalize for the Mirror collection, even if we'd rather do that through beholds than citations.

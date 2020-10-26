@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-There was a time when the joining of Dax and Mirror events would have made us weak in the knees, but time has not been kind to Ezri’s bases. Even now, in the midst of what is likely her last chance for a multi-week impact in the Scoundrel mega, her upper limit is probably requisition shuttle for many rosters.
+This unjoined Ezri has been grandfathered into Dax events, but the point is usually moot with bases too weak for even requisition shuttles on most rosters. A recent Mirror collection has made her a must-have for many players and that's likely her only payoff for a build cost that gobbles up Terran Empire faction items.

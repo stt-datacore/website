@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-Sporting a dizzying #1 voyage SEC, Colonel Wai Lin's overall voyage total remains among the elite a year and a half after her debut, while boasting an event count that ticks all the right boxes, including Section 31, Mirror Universe, Discovery … she's everyone's favourite Empress (sorry Hoshi), even bringing a potent 200% instant damage ship ability to the table. 
+Colonel Wai Lin's voyage score remains among the elite two years after her debut, while boasting an event portfolio that ticks all the right boxes including Section 31, Mirror Universe, Discovery... The advent of the mirror collection has given her something for everyone - even veterans who don't normally give super rares a second look. She's everyone's favourite Empress (sorry Hoshi), even bringing a triggerless 200% instant damage ship ability to the table. 
 
-Her sole black mark is the skill set, but if you could only pick one CMD/DIP/SEC super rare, Georgiou is probably the one. This big base SEC is a card worth taking home to meet your mother. Just make sure you're cooking ganglia that night.
+Her sole black mark is the skill set, but if you could only pick one CMD/DIP/SEC super rare, Georgiou is probably the one. This big SEC base is a card worth taking home to meet your mother. Just make sure you're cooking ganglia that night.

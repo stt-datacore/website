@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A good marriage of skill set and voyage power with bases just high enough to be relevant for a handful of Mirror events. Even some hard-to-acquire arena crit rating on a short initialization. Good value for a crew who’s only had one variant event, but she’s nearly useless to established rosters.
+A niche, low-power option in several areas of the game means that she’s nearly useless to established rosters, but far from the worst option on young rosters. Her inclusion in a tough collection gives her wider appeal and makes her essential for those looking to min/max their global boosts into the endgame.

@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Fairly useful in several areas, though most of them are niche. His good SEC base is a nice shuttle stuffer for a couple events per year and though Mirror is an MIA trait that shouldn't be bet on going forward, it's one of a couple that could still trigger a thaw. If you happen to fuse him early on, there's some voyage potential and he offers a +9 attack boost in the arena which is a hair slow, but an essential asset for shortening the ship battle grind.
+At one point, Mayweather was viable for daily shuttles and voyages, but years of competition have stuffed him down into the roster-dependent pile. There's still enough voyage juice for newer players who can fuse him early, but the valuable Mirror collection spot and occasional Faction event help is what gives him broader appeal.

@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-For a character with so much personality they don’t even have a name, the Prisoner is a bit of an odd duck, all told. His event count is inflated by two ultimately random trait megas, and with only Tholian and Mirror left over, you’re going to have to rely on DB’s love of the Mirror Universe to get any event mileage out of him. That being said, that’s more than a lot of worse crew have going for them, and Tholian falls squarely in the good category thanks to a healthy SCI/ENG/SEC combo that’s going to stay relevant on voyages for a while thanks to decent bases. Unlikely to be thawed very often, if at all, once you outgrow that usefulness.
+Over twenty events wringed from four traits (and one invisible one) is unbelievable and has made this one-off, nameless crew more relevant than he has any right to be. Continuing that trend is his post-release spot in a stat-boosting collection which requires you to collect every eligible super rare, including this one. Voyage numbers still on the right side of usable makes him worth grabbing from events if possible and building slowly via beholds for his premium collection spot.

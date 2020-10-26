@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Double digit events for an Archer?! What is this, the Mirror Universe? Actually, yea. And even though two previous megas have inflated his event count, M’Archer may be able to call on a few more traits down the line to “highlight” a pair of mediocre bases for your requisition shuttles. He’s not suitable for daily use, but will likely be a name to consider for the odd event here and there.
+Double digit events for an Archer?! What is this, the Mirror Universe? Actually, yea. And even though two previous megas have inflated his event count, M’Archer may be able to call on a few more traits down the line to “highlight” a pair of flaccid bases for your requisition shuttles. He’s not close to daily use and may not even merit a thaw for many users, but a tough collection spot gives him universal appeal.

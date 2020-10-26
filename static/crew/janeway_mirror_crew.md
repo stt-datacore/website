@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-A voyage total in the top 1/3rd may feel lower than that due to skill set, but she brings two scoops of events to the table and a sugary sprinkling of dual collections.
+Her base and voyage power leaves quite a bit to be desired, but a handful of juicy, eventable traits and Faction queen Janeway's reputation will give her spots to man shuttles on the weekend. The main course for most players is a trio of collections, including two fairly exclusive ones in Timelines' Originals and Smoke and Mirrors.

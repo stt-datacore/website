@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Her voyage score/skill set combo has some potential, but probably not if you’re starting from star one. Like her collection, this Keiko is a vanity project who you may want to collect for speculative trait event work, but who offers nothing unique or powerful.
+Hardly an event name, Keiko can at least claim a handful of eventable traits to push flat bases into service on the odd occasion. Of more interest to many players are dual collections - one vanity and one premium stat-booster.

@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Poor bases, but pretty frequently event crew thanks to a few traits. Big proficiency numbers, including the #3 overall ENG roll, make him a force in the gauntlet and also voyages where his stat total is still running hot and his ENG top five among 3-skillers.
+Like big brother Borg La Forge, Geordi has some great versatility, but is lacking a bit in power these days. Plus event chances and bad bases are an odd couple pairing that not every roster will be able to utilize, but his profile looks up from there. Still playable in the gauntlet thanks to a hefty ENG proficiency and his voyage ability is still on the plus side. Two stat-boosting collections including the tough Smoke and Mirrors make him a priority behold choice for any level of player.

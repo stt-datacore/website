@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Dax + Mirror events, #1 base SEC, #1 variant SEC, #2 voyage SEC, big voyage total. The hits just keep on comin'. Mirror Dax is the ultimate "use" crew. No legendary shares her order of skills, so it's hard to find a direct comparison, but she performs like a 3/5 crew. If you're looking for 'dupe' candidates to flesh out your requisition shuttles, this Dax sets the bar.
+Behaving like a partially fused gold, this Jadzia has been an attractive prospect not just on the behold screen, but for duplicating as an event piece. She still excels there, but Dax will likely never reach her torrid weekend pace from 2017 again and her voyage power has fallen off as well. A new collection spot solidifies her as a top behold pick and her still-great SEC base fills a great niche for future Dax events.
