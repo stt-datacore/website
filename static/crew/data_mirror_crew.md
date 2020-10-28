@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-The Mr. Potato Head of Trek characters, many of Data's variants seem to have the same solid core with just some external tweaks from crew to crew. That's not a bad thing; they're all pretty reliable and Data events should rebound from a quiet 2019 to continue to provide value to his variants. Mirror's voyage power has been bruised lately from the run of SEC/ENG crew in 2019 and an ever-sinking voyage rank, but an ENG (or MED) primary crew with guaranteed event work will always be a roster piece worth acquiring.
+The Mr. Potato Head of Trek characters, many of Data's variants seem to have the same solid core with just some external tweaks from crew to crew. That's not a bad thing; they're all pretty reliable and Data is too popular a name for his downward event trend to continue. Mirror's voyage power reflects his three years in the game and ENG/SEC is no longer an uncommon pairing, but he's recently picked up a collection spot to supplement his value, which is still worth considering despite his age.
