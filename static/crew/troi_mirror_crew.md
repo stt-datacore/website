@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Dominatroix has the tools to fulfill your every wish. #1 variant MED with two scoops of events, respectable voyage power for a MED primary, and underrated gauntlet viability. Drooping stat ranks don't affect MED primary crew in the same way as other skills - she may not be the best in any one area, but is one of the more complete MED crew in the game.
+Three years in, the wheels are starting to fall of Dominatroix's wagon a little bit. A plus skill set can't completely compensate for 2017 voyage and gauntlet numbers, which caps her day to day usefulness on endgame rosters. Nevertheless, variant event work is a fine cushion to fall back on, accompanied by a few traits which still see her bases rank highly among them. A late 2020 inclusion in the Mirror collection is a nice boost in value to one of the few such golds you shouldn't feel bad about immortalizing.

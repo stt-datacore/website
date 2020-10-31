@@ -383,5 +383,16 @@
 		"smallbonus": {
 			"traits": ["amanda_grayson", "sarek", "burnham", "vulcan"]
 		}
+	},
+	{
+		"name": "The Enemy Within (flashback)",
+		"type": "Faction",
+		"dates": "Thursday 11/05 until Monday 11/09 at noon (17.00 UTC)",
+		"startDate": "2020-11-05T17:00:00Z",
+		"endDate": "2020-11-09T17:00:00Z",
+		"highbonus": ["riker_odan_crew", "bashir_1701_crew", "dsc_culber_mycelial_crew"],
+		"smallbonus": {
+			"traits": ["riker", "bashir", "culber", "Physician"]
+		}
 	}
 ]

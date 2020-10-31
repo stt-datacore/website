@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-His event count seems inflated thanks to three prior megas, but his traits have room for even more and Bashir recently broke a long event drought while proving that he's still a fine weekend ingredient. A good deal of his value is in the absurd lead he has over other Bashirs for both of his bases. When it comes time for SEC/ENG event work, it's a case of the haves and the have nots. He's the type of crew along with names like Survivalist Kirk or Solar Sisko that you'd like to snag if you're looking to corner the market on a character's event work. As a small bonus, his gauntlet pair sits at 90% of the power of #1 if you want to use him when his traits align.
+His event count seems inflated thanks to four prior megas, but his traits have room for even more and Bashir remains an average-or-better bet for variant event work down the line. A good deal of his value is in the absurd lead he has over other Bashirs for both of his bases. When it comes time for SEC/ENG event work, it's a case of the haves and the have nots. He's the type of crew along with names like Survivalist Kirk or Solar Sisko that you'd like to snag if you're looking to corner the market on a character's event work.
+
+Previously noted gauntlet work just doesn't pass muster any longer with proficiency monsters like Locutus and Red Angel dominating several skill combos, but Bashir recently picked up his second stat-boosting collection, making him an OK name to consider if looking to finish Smoke and Mirrors sooner than later.

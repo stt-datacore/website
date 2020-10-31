@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I'm not as hard on Mirror Kirk as many players. No, he's not suitable for daily use, but an impressive event count and #2/4 bases among variants means that when his number is called (every other month), he'll perform fine. That's not the sort of contribution you'd want from a legendary behold, but it's better than a handful of others can offer.
+We're not as hard on Mirror Kirk as many players. No, he's not suitable for daily use, but an impressive event count and #2/4 bases among variants means that when his number is called (every other month), he'll perform fine. Kirk currently leads all other characters in variant events, making him one of the better names to consider when looking to fuse the requisite number of legendary crew to finish the Mirror collection.

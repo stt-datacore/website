@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-You may have seen "weak Surak clone" thrown around before and it's regrettably true. She's buried behind a couple different walls for her two ranked gauntlet pairs and her voyage numbers leave a lot to be desired. While more useful for new players, she'll find herself edged out on established rosters. But where she comes into relevance is events. Two megas, a handful of trait events, and a half dozen T'Pol events (two features) for which she has two variant-best bases all constitute a considerable amount of work. She's no powerhouse, but her name will pop up more often than you expect on the weekend.
+You can almost hear some cartoonish villain taunting Mirror T'Pol with labels of "old" and "weak" and it's regrettably true. She's buried behind a couple different walls for her two ranked gauntlet pairs and her voyage numbers nearly have her cozying up to some 2-skill crew. While more useful for new players, she'll find herself edged out for daily use on established rosters.
+
+But where she comes into relevance are events and collections. Three megas, a handful of trait events, and a half dozen T'Pol events (two features) for which she has two variant-best bases all constitute a considerable amount of work with traits that offer the mirage/promise of more. Two currently valuable collection spots have upped her worth in recent times, granting her non-standard behold consideration if you're sick of chasing the new top #X base of the week.
