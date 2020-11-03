@@ -3,7 +3,7 @@ name: Captain Beverly Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 12
 in_portal:
 date: 13/03/2018

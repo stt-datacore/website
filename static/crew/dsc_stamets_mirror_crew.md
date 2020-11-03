@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Everybody's favorite Uncle Jesse, played by John Stamets, was a total hoss upon release. One of the earlier ENG/MED crew, the evil exomycologist carried the banner of top Disco SCI through an event-loaded 2019. He's since come back to earth rank-wise, but punches up with a skill set to lift a mediocre voyage score and a fantastic event clip, even if variant weekends have been sparse. His trait mix is thinner than it appears at first glance, but with useful voyage and event offerings, he's a fine crew to behold or even cite.
+What you might call the King of the Might Have Been, Mirror Stamets used to be very highly regarded in these parts, but time and missed opportunities have worn him down. The least desirable combination of the ENG/MED/SCI skill set combine with barren traits, a sinking voyage score, and overstuffed SCI skill ranks to make him daily use crew only for those with an affection for his character or a need to justify finishing him off for his stat booster.
+
+That being said, the #1 Mirror SCI, #3 Mirror ENG and #3 Discovery SCI base are all worth something. If you luck into him early, there are far worse crew to stash away for the future, especially since one ENG/MED crew does not a voyage make - you might well find yourself using him more than ‘better’ crew with worse skill sets until you can settle on an upgrade you feel strongly about citing.

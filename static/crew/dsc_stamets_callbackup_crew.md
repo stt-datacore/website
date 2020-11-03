@@ -3,7 +3,7 @@ name: Reinforcements Stamets
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 17
 in_portal: true
 date: 16/10/2017

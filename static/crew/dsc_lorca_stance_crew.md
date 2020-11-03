@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-An old card by Discovery standards, Lorca has been a true shuttle anchor with a massive event tally since his debut, but his crystal ball is looking awfully cloudy going forward. With his character seemingly phased out of the show (hey, we're past the spoiler period) and the Discovery bonus pool ballooning, he might find work very much harder to come by in the future. Working in his favor is the #1 Mirror and Explorer CMD base, though he's looking like less of a boss and more of an Assistant to the District Manager going forward.
+No longer the #1 CMD/DIP shuttler, Lorca has been outmatched by Tom Paris and Gul Dukat’s dopplegangers and what I can only describe as a green wench from one of Enterprise’s worst episodes - a more ignominious fate is hard to imagine for anyone who was playing the game when he was amongst the most desirable shuttle crew in the game.
+
+He’s still the #1 Mirror and Explorer CMD, and will still hold down daily shuttles with aplomb if that’s your bag, but taking him in a raw Behold is a risky prospect that I can’t guarantee will pay off if you expect anything out of him beyond a spot in his stat boosting collection. Buyer beware.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Rather milquetoast numbers for 'Leather Daddy Lorca' (not my moniker). Like all Discovery crew, he comes out of the box with a huge event tally, further boosted by the Mirror trait. But that's where the appeal ends. A skill set you don't need more of meets disappointing voyage numbers and bases that won't see much event use unless he's carrying the bonus tag. With non-existent peripheries in the arena, gauntlet, and collection tab, he's mainly a weekend helper whose usefulness hinges on the RNG Dabo wheel of event bonuses.
+A crew you take more for cool factor or sheer affection than anything else, ‘Leather Daddy Lorca’ may be swinging around a big ol’ sword and a third skill, but don’t allow yourself to be fooled - his best base only ranks #6 between Mirror, Villain and Disco SEC crew, and he really shouldn’t be voyaging on anyone’s roster. And while the stat-boosting collection is a nice post-release value add, don’t use it as a justification to take him over better cards when you know you’re only doing it because you like Jason Isaacs. Shh, it’s okay, you’re among friends.
