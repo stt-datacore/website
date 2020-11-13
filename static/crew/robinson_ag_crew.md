@@ -12,7 +12,7 @@ mega: false
 published: true
 ---
 
-It may be one of his traits, but very little about A.G. Robinson is actually inspiring. Debuting with the worst voyage rank for a new three-skill crew in the game's history, Mr. Robinson is born into a kind of statistical irrelevance normally reserved for crew three or four years older than he is.
+It may be one of his traits, but very little about A.G. Robinson's card is actually inspiring. Debuting with the worst voyage rank for a new three-skill crew in the game's history, Mr. Robinson is born into a kind of statistical irrelevance normally reserved for crew three or four years older than he is.
 
 As the herald of the A Little Stroll collection, you would think the news would be better on the collection front, except that, as of this writing, neither of his collections requires gold crew to complete, again rendering him superfluous. 
 

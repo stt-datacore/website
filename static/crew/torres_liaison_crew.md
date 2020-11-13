@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Worse than average in nearly every statistical category. She can contribute some faction event work with double-digit events to date and the only other Torres DIP option is a pack-only who’s not in the portal, but the bulk of her value is in +1 Diplomat.
+Worse than average in nearly every statistical category. Super rare sister Brigitte Torres has gobbled up one more shuttle opportunity for Torres' scattershot events, leaving those infrequent bonuses her main attribute alongside the most valuable collection spot a purple crew can currently have - Diplomat.
