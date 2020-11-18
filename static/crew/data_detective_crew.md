@@ -3,8 +3,8 @@ name: Detective Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 21
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 19/07/2016
 obtained: Event

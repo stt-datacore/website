@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 4
-events: 20
+events: 21
 in_portal:
 date: 25/11/2019
 obtained: Campaign

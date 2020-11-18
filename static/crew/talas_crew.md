@@ -3,7 +3,7 @@ name: Talas
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 10
 in_portal:
 date: 24/12/2019

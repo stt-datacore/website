@@ -3,7 +3,7 @@ name: Trevis
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 12
 in_portal:
 date: 29/10/2019

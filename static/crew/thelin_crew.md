@@ -3,7 +3,7 @@ name: Commander Thelin
 rarity: 4
 series: tas
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 5
 in_portal: true
 date: 07/02/2018

@@ -3,7 +3,7 @@ name: 1701 Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 24
 in_portal:
 date: 12/03/2020
