@@ -14,7 +14,6 @@ type BeholdsPageState = {
 	currentSelectedItems: any;
 	allcrew: any[];
 	entries: any[];
-	botcrew: any[];
 };
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
@@ -22,16 +21,12 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		peopleList: [],
 		currentSelectedItems: [],
 		allcrew: [],
-		entries: [],
-		botcrew: []
+		entries: []
 	};
 
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
-
-		response = await fetch('/structured/botcrew.json');
-		const botcrew = await response.json();
 
 		let peopleList = [];
 		allcrew.forEach(crew => {
@@ -43,7 +38,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			});
 		});
 
-		this.setState({ allcrew, botcrew, peopleList }, () => {
+		this.setState({ allcrew, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));
@@ -105,9 +100,9 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		let params = new URLSearchParams();
 		let entries = [];
 		for (let symbol of value) {
-			let bcrew = this.state.botcrew.find(bc => bc.symbol === symbol);
+			let bcrew = this.state.allcrew.find(bc => bc.symbol === symbol);
 			if (!bcrew) {
-				console.error(`Crew ${symbol} not found in botcrew.json!`);
+				console.error(`Crew ${symbol} not found in crew.json!`);
 				break;
 			}
 

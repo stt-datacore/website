@@ -30,8 +30,6 @@ module.exports = {
 				ignore: [
 					'**/events/*',
 					'**/eventlogs/*',
-					'**/allcrew.json',
-					'**/botcrew.json',
 					'**/collections.json',
 					'**/dilemmas.json',
 					'**/disputes.json',

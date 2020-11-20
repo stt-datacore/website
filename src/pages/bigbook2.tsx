@@ -37,16 +37,13 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
 
-		response = await fetch('/structured/botcrew.json');
-		const botcrew = await response.json();
-
 		let groupedByTier = new Map<number, any>();
-		botcrew.forEach(bcrew => {
+		allcrew.forEach(bcrew => {
 			if (bcrew.max_rarity > 1) {
 				let item = {
 					rarity: bcrew.max_rarity,
 					name: bcrew.name,
-					crew: allcrew.find(c => c.symbol === bcrew.symbol),
+					crew: bcrew,
 					bcrew
 				};
 

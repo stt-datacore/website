@@ -4,7 +4,6 @@ import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveSunburst } from '@nivo/sunburst';
 import { ResponsiveRadar } from '@nivo/radar';
 import { ResponsivePie } from '@nivo/pie';
-import { ResponsiveTreeMap } from '@nivo/treemap';
 
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
@@ -706,40 +705,6 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 									],
 								},
 							]}
-							animate={false}
-						/>
-					</div>
-				</div>
-
-				<h3>Skill combos by value for Voyage and Gauntlet</h3>
-				<div>
-					<div style={{ height: '320px', width: '50%', display: 'inline-block' }}>
-						<ResponsiveTreeMap
-							root={{ name: 'Skills', children: flat_skill_distribution }}
-							theme={themes.dark}
-							identity='name'
-							value='Voyage'
-							colors={{ scheme: 'green_blue' }}
-							innerPadding={3}
-							outerPadding={3}
-							margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-							label='name'
-							labelSkipSize={24}
-							animate={false}
-						/>
-					</div>
-					<div style={{ height: '320px', width: '50%', display: 'inline-block' }}>
-						<ResponsiveTreeMap
-							root={{ name: 'Skills', children: flat_skill_distribution }}
-							theme={themes.dark}
-							identity='name'
-							value='Gauntlet'
-							colors={{ scheme: 'green_blue' }}
-							innerPadding={3}
-							outerPadding={3}
-							margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-							label='name'
-							labelSkipSize={24}
 							animate={false}
 						/>
 					</div>

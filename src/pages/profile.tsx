@@ -62,14 +62,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					fetch('/structured/crew.json')
 						.then(response => response.json())
 						.then(allcrew => {
-							fetch('/structured/botcrew.json')
-								.then(response => response.json())
-								.then(botcrew => {
-									// Do some computation on the data to avoid doing it on every render
-									prepareProfileData(allcrew, botcrew, playerData, lastModified);
+							// Do some computation on the data to avoid doing it on every render
+							prepareProfileData(allcrew, playerData, lastModified);
 
-									this.setState({ playerData });
-								});
+							this.setState({ playerData });
 						});
 				})
 				.catch(err => {

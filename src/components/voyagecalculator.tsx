@@ -17,7 +17,7 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
-import { exportCrew, applyCrewBuffs, mergeBotCrew, downloadData, prepareProfileData } from '../utils/crewutils';
+import { exportCrew, applyCrewBuffs, downloadData, prepareProfileData } from '../utils/crewutils';
 import { stripPlayerData } from '../utils/playerutils';
 
 import CrewPopup from '../components/crewpopup';
@@ -364,116 +364,103 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				fetch('/structured/items.json')
 					.then(response => response.json())
 					.then(items => {
-						fetch('/structured/botcrew.json')
-							.then(response => response.json())
-							.then(botcrew => {
-								const { playerData } = this.props;
+						const { playerData } = this.props;
 
-								let strippedPlayerData = stripPlayerData(items, JSON.parse(JSON.stringify(playerData)));
-								let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
+						let strippedPlayerData = stripPlayerData(items, JSON.parse(JSON.stringify(playerData)));
+						let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
 
-								prepareProfileData(allcrew, botcrew, preparedProfileData, undefined);
+						prepareProfileData(allcrew, preparedProfileData, undefined);
 
-								this.setState({ originalPlayerData: playerData, strippedPlayerData, preparedProfileData });
-								let buffConfig = calculateBuffConfig(playerData.player);
+						this.setState({ originalPlayerData: playerData, strippedPlayerData, preparedProfileData });
+						let buffConfig = calculateBuffConfig(playerData.player);
 
-								let equipmentAlreadyOnCrew = new Set();
+						let equipmentAlreadyOnCrew = new Set();
 
-								// Merge with player crew
-								let crewlist = [];
-								let fakeID = 1;
-								for (let crew of allcrew) {
-									crew.rarity = crew.max_rarity;
-									crew.level = 100;
-									crew.have = false;
-									crew.equipment = [0, 1, 2, 3];
-									crew.id = fakeID++;
+						// Merge with player crew
+						let crewlist = [];
+						let fakeID = 1;
+						for (let crew of allcrew) {
+							crew.rarity = crew.max_rarity;
+							crew.level = 100;
+							crew.have = false;
+							crew.equipment = [0, 1, 2, 3];
+							crew.id = fakeID++;
 
-									let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-									crew.immortal = immortal ? immortal.quantity : 0;
-									if (crew.immortal > 0) {
-										crew.have = true;
-										applyCrewBuffs(crew, buffConfig);
+							let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
+							crew.immortal = immortal ? immortal.quantity : 0;
+							if (crew.immortal > 0) {
+								crew.have = true;
+								applyCrewBuffs(crew, buffConfig);
 
-										// Add a copy to the list
-										crewlist.push(JSON.parse(JSON.stringify(crew)));
-										crew.immortal = 0;
-									}
+								// Add a copy to the list
+								crewlist.push(JSON.parse(JSON.stringify(crew)));
+								crew.immortal = 0;
+							}
 
-									let inRoster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
-									inRoster.forEach(owned => {
-										if (!owned.in_buy_back_state) {
-											crew.rarity = owned.rarity;
-											crew.base_skills = owned.base_skills;
-											crew.level = owned.level;
-											crew.have = true;
-											crew.crew_id = owned.id;
+							let inRoster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+							inRoster.forEach(owned => {
+								if (!owned.in_buy_back_state) {
+									crew.rarity = owned.rarity;
+									crew.base_skills = owned.base_skills;
+									crew.level = owned.level;
+									crew.have = true;
+									crew.crew_id = owned.id;
 
-											crew.equipment = owned.equipment.map(e => e[0]);
+									crew.equipment = owned.equipment.map(e => e[0]);
 
-											applyCrewBuffs(crew, buffConfig);
-											// Add a copy to the list
-											crewlist.push(JSON.parse(JSON.stringify(crew)));
-										}
-									});
-
-									// Calculate replicator fodder
-									if (crew.have) {
-										crew.equipment_slots.forEach(equipment => {
-											equipmentAlreadyOnCrew.add(equipment.symbol);
-										});
-									} else {
-										// Crew is not immortal or in the active roster
-										applyCrewBuffs(crew, buffConfig);
-										// Add a copy to the list
-										crewlist.push(JSON.parse(JSON.stringify(crew)));
-									}
+									applyCrewBuffs(crew, buffConfig);
+									// Add a copy to the list
+									crewlist.push(JSON.parse(JSON.stringify(crew)));
 								}
-
-								let fuellist = playerData.player.character.items.filter(
-									item =>
-										(equipmentAlreadyOnCrew.has(item.symbol) && item.quantity === 1 && item.rarity > 1) ||
-										item.name.indexOf("'s ") > 0 ||
-										item.name.indexOf("s' ") > 0
-								);
-
-								let bonusCrew = bonusCrewForCurrentEvent(playerData.player, crewlist);
-								if (bonusCrew) {
-									this.setState({ activeEvent: bonusCrew.eventName, currentSelection: bonusCrew.crewIds });
-								}
-
-								let peopleList = [];
-								crewlist.forEach(crew => {
-									if (crew.have) {
-										peopleList.push({
-											key: crew.crew_id || crew.id,
-											value: crew.crew_id || crew.id,
-											image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
-											text: crew.name
-										});
-									}
-								});
-
-								this.setState({ peopleList, fuellist, crew: crewlist });
 							});
+
+							// Calculate replicator fodder
+							if (crew.have) {
+								crew.equipment_slots.forEach(equipment => {
+									equipmentAlreadyOnCrew.add(equipment.symbol);
+								});
+							} else {
+								// Crew is not immortal or in the active roster
+								applyCrewBuffs(crew, buffConfig);
+								// Add a copy to the list
+								crewlist.push(JSON.parse(JSON.stringify(crew)));
+							}
+						}
+
+						let fuellist = playerData.player.character.items.filter(
+							item =>
+								(equipmentAlreadyOnCrew.has(item.symbol) && item.quantity === 1 && item.rarity > 1) ||
+								item.name.indexOf("'s ") > 0 ||
+								item.name.indexOf("s' ") > 0
+						);
+
+						let bonusCrew = bonusCrewForCurrentEvent(playerData.player, crewlist);
+						if (bonusCrew) {
+							this.setState({ activeEvent: bonusCrew.eventName, currentSelection: bonusCrew.crewIds });
+						}
+
+						let peopleList = [];
+						crewlist.forEach(crew => {
+							if (crew.have) {
+								peopleList.push({
+									key: crew.crew_id || crew.id,
+									value: crew.crew_id || crew.id,
+									image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
+									text: crew.name
+								});
+							}
+						});
+
+						this.setState({ peopleList, fuellist, crew: crewlist });
 					});
 			});
 	}
 
 	_exportCrew() {
-		fetch('/structured/botcrew.json')
-			.then(response => response.json())
-			.then(botcrew => {
-				const { crew } = this.state;
+		const { crew } = this.state;
 
-				for (let c of crew) {
-					let bc = botcrew.find(cr => c.symbol === cr.symbol);
-					mergeBotCrew(c, bc);
-				}
-
-				let text = exportCrew(crew);
-				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
-			});
+		let text = exportCrew(crew);
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	_packVoyageOptions(shipAM: number) {

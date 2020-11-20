@@ -28,7 +28,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	state = { botcrew: [] };
 
 	async componentDidMount() {
-		let response = await fetch('/structured/botcrew.json');
+		let response = await fetch('/structured/crew.json');
 		const botcrew = await response.json();
 
 		// Add dummy fields for sorting to work

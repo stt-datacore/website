@@ -73,11 +73,11 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Voyage rank',
-			value: (row: any) => row.voyRank
+			value: (row: any) => row.ranks.voyRank
 		},
 		{
 			label: 'Gauntlet rank',
-			value: (row: any) => row.gauntletRank
+			value: (row: any) => row.ranks.gauntletRank
 		},
 		{
 			label: 'Command core',
@@ -246,20 +246,6 @@ export function applyCrewBuffs(crew: any, buffConfig: any) {
 	}
 }
 
-export function mergeBotCrew(c: any, bc: any) {
-	if (bc) {
-		c.bigbook_tier = bc.bigbook_tier;
-		c.voyRank = bc.ranks.voyRank;
-		c.gauntletRank = bc.ranks.gauntletRank;
-		c.in_portal = bc.in_portal;
-	} else {
-		c.bigbook_tier = 11;
-		c.voyRank = 0;
-		c.gauntletRank = 0;
-		c.in_portal = undefined;
-	}
-}
-
 export function downloadData(dataUrl, name: string) {
 	let pom = document.createElement('a');
 	pom.setAttribute('href', dataUrl);
@@ -300,7 +286,7 @@ export function download(filename, text) {
     }
 }
 
-export function prepareProfileData(allcrew, botcrew, playerData, lastModified) {
+export function prepareProfileData(allcrew, playerData, lastModified) {
 	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
 
 	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
@@ -327,9 +313,6 @@ export function prepareProfileData(allcrew, botcrew, playerData, lastModified) {
 		crew.have = false;
 		crew.equipment = [0, 1, 2, 3];
 		crew.favorite = false;
-
-		let bcrew = botcrew.find(bc => bc.symbol === crew.symbol);
-		mergeBotCrew(crew, bcrew);
 
 		if (playerData.player.character.c_stored_immortals.includes(crew.archetype_id)) {
 			crew.immortal = 1;

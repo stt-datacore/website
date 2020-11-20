@@ -442,72 +442,6 @@ function main() {
 	fs.writeFileSync(STATIC_PATH + 'equipment_matrix.csv', matrixCsv);*/
 }
 
-function updateBotStats() {
-	let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf8'));
-
-	/*let eventcrew = JSON.parse(fs.readFileSync(STATIC_PATH + 'event_crew.json', 'utf8'));
-
-	let crew_event_count = {};
-	eventcrew.forEach(ev => {
-		let crew = [...new Set(ev.featured_crew.concat(ev.bonus_crew))];
-		crew.forEach(c => {
-			if (crew_event_count[c]) {
-				crew_event_count[c]++;
-			} else {
-				crew_event_count[c] = 1;
-			}
-		});
-	});*/
-
-	// TODO: finish removing botcrew since all the data is now in crew.json!
-
-	let botData = [];
-	for (let crew of crewlist) {
-		let mdData = getCrewMarkDown(crew.symbol);
-		if (!mdData) {
-			console.log(`Crew ${crew.name} not found!`);
-		} else {
-			let botCrew = {
-				archetype_id: crew.archetype_id,
-				symbol: crew.symbol,
-				name: crew.name,
-				short_name: crew.short_name,
-				max_rarity: crew.max_rarity,
-				traits: crew.traits,
-				traits_named: crew.traits_named,
-				traits_hidden: crew.traits_hidden,
-				imageUrlPortrait: crew.imageUrlPortrait,
-				collections: crew.collections,
-				totalChronCost: crew.totalChronCost,
-				factionOnlyTotal: crew.factionOnlyTotal,
-				craftCost: crew.craftCost,
-				bigbook_tier: crew.bigbook_tier,
-				events: crew.events,
-				ranks: crew.ranks,
-				base_skills: crew.base_skills,
-				skill_data: crew.skill_data,
-				in_portal: crew.in_portal,
-				markdownContent: crew.markdownContent,
-				action: crew.action,
-				ship_battle: crew.ship_battle
-			};
-
-			/*if (!crew_event_count[crew.symbol]) {
-				crew_event_count[crew.symbol] = 0;
-			}
-
-			if (Number.parseInt(mdData.meta.events) !== crew_event_count[crew.symbol]) {
-				// TODO: figure out discrepancies
-				//console.log(`${crew.name}: ${Number.parseInt(mdData.meta.events)} - ${crew_event_count[crew.symbol]}`);
-			}*/
-
-			botData.push(botCrew);
-		}
-	}
-
-	fs.writeFileSync(STATIC_PATH + 'botcrew.json', JSON.stringify(botData));
-}
-
 function updateExcelSheet() {
 	let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json'));
 
@@ -741,6 +675,5 @@ function generateMissions() {
 }
 
 main();
-updateBotStats();
 updateExcelSheet();
 generateMissions();
