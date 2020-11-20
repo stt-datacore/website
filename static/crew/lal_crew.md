@@ -3,7 +3,7 @@ name: Lal
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 3
 in_portal: true
 date: 21/08/2017

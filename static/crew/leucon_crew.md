@@ -3,7 +3,7 @@ name: Leucon
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 0
 in_portal:
 date: 04/02/2020
