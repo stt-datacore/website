@@ -3,7 +3,7 @@ name: Flustered Jett Reno
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 17
 in_portal:
 date: 17/11/2020

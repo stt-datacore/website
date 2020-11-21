@@ -394,5 +394,16 @@
 		"smallbonus": {
 			"traits": ["riker", "bashir", "culber", "Physician"]
 		}
+	},
+	{
+		"name": "The Big Sting (rerun)",
+		"type": "Faction",
+		"dates": "Thursday 11/26 until Monday 11/30 at noon (17.00 UTC)",
+		"startDate": "2020-11-26T17:00:00Z",
+		"endDate": "2020-11-30T17:00:00Z",
+		"highbonus": ["data_carlos_crew", "kirk_gangster_crew", "picard_dixonhill_crew", "kira_anastasia_crew"],
+		"smallbonus": {
+			"traits": ["data", "kirk", "picard", "kira"]
+		}
 	}
 ]
