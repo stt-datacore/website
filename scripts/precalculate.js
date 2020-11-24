@@ -6,6 +6,7 @@ const STATIC_PATH = `${__dirname}/../static/structured/`;
 
 let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json'));
 let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json'));
+let skill_bufs = JSON.parse(fs.readFileSync(STATIC_PATH + 'skill_bufs.json'));
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -16,8 +17,6 @@ const SKILLS = {
 	medicine_skill: 'MED'
 };
 
-const STARBASE_BONUS_CORE = 1.15;
-const STARBASE_BONUS_RANGE = 1.13;
 const THIRD_SKILL_MULTIPLIER = 0.25;
 const RNGESUS = 1.8; // Used for chron cost calculation
 
@@ -211,13 +210,15 @@ function main() {
 
 	fs.writeFileSync(STATIC_PATH + 'misc_stats.json', JSON.stringify({ alldemands, perFaction, perTrait }));
 
+	let getSkillWithBonus = (crew_skills, skillName, skillType) => {
+		return crew_skills[skillName][skillType] * (skill_bufs[skillName.replace('_skill','')][skillType] + 1.1);
+	};
+
 	calcRank(crew => {
 		let voyTotal = 0;
 		for (let skill in SKILLS) {
 			if (crew.base_skills[skill]) {
-				let voyScore =
-					crew.base_skills[skill].core * STARBASE_BONUS_CORE +
-					((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE;
+				let voyScore = getSkillWithBonus(crew.base_skills, skill, 'core') + (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
 				voyTotal += voyScore;
 			}
 		}
@@ -229,7 +230,7 @@ function main() {
 		let gauntletTotal = 0;
 		for (let skill in SKILLS) {
 			if (crew.base_skills[skill]) {
-				let gauntletScore = ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) * STARBASE_BONUS_RANGE) / 2;
+				let gauntletScore = (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
 				gauntletTotal += gauntletScore;
 			}
 		}
@@ -247,7 +248,7 @@ function main() {
 
 		calcRank(crew => {
 			if (crew.base_skills[skill]) {
-				return Math.ceil(crew.base_skills[skill].core * STARBASE_BONUS_CORE);
+				return Math.ceil(getSkillWithBonus(crew.base_skills, skill, 'core'));
 			}
 
 			return 0;
@@ -255,10 +256,7 @@ function main() {
 
 		calcRank(crew => {
 			if (crew.base_skills[skill]) {
-				return Math.ceil(
-					crew.base_skills[skill].core * STARBASE_BONUS_CORE +
-						((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) * STARBASE_BONUS_RANGE) / 2
-				);
+				return Math.ceil(getSkillWithBonus(crew.base_skills, skill, 'core') + (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2);
 			}
 
 			return 0;
@@ -272,9 +270,7 @@ function main() {
 				let vTertiary = 0;
 				for (let skill in SKILLS) {
 					if (crew.base_skills[skill]) {
-						let vScore =
-							crew.base_skills[skill].core * STARBASE_BONUS_CORE +
-							((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE;
+						let vScore = getSkillWithBonus(crew.base_skills, skill, 'core') + (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
 
 						if (skill === skillNames[i] || skill === skillNames[j]) {
 							vTotal += vScore;
@@ -288,22 +284,21 @@ function main() {
 			}, `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
 
 			calcRank(crew => {
-				let vTotal = 0;
-				let vTertiary = 0;
+				let gTotal = 0;
+				let gTertiary = 0;
 				for (let skill in SKILLS) {
 					if (crew.base_skills[skill]) {
-						let vScore = ((crew.base_skills[skill].range_max + crew.base_skills[skill].range_min) / 2) * STARBASE_BONUS_RANGE;
+						let gScore = (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
 
 						if (skill === skillNames[i] || skill === skillNames[j]) {
-							vTotal += vScore;
+							gTotal += gScore;
 						} else {
-							vTertiary += vScore;
+							gTertiary += gScore;
 						}
 					}
 				}
 
-				//return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
-				return Math.ceil(vTotal);
+				return Math.ceil(gTotal);
 			}, `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
 		}
 	}
