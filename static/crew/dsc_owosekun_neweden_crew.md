@@ -5,7 +5,7 @@ series: dsc
 memory_alpha:
 bigbook_tier: 2
 events: 23
-in_portal:
+in_portal: true
 date: 03/10/2019
 obtained: Event
 mega: true
