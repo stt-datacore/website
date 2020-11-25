@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Beehive Dax is the absolute epitome of event crew. With sub-standard voyage numbers and no Gauntlet use, you’ll find her slipping from daily utility as you gather more potent and multi-faceted SCI crew who can match her base. But leading the pack with FIVE separate event features - more than any other crew - and a skyhigh Dax event count on top of that, you’re going to be unfreezing her several times a year. Arena evasion earns her niche use elsewhere, but this Dax is a weekend warrior, first and foremost.
+Beehive Dax is the absolute epitome of event crew. With sub-standard voyage numbers and no Gauntlet use, many players coming new to Dax may find her dead on arrival for daily use. But leading the pack as the only crew with SIX separate event features  and a skyhigh Dax event count on top of that, you’re going to be thawing her several times a year. Arena evasion earns her niche use elsewhere, but this Dax is a weekend warrior, first and foremost.

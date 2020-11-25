@@ -3,7 +3,7 @@ name: Safecracker Nog
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 6
 in_portal: true
 date: 12/11/2019
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Good ol’ Noggles here is, much like the character he represents, a card with hidden depths. On the surface, he’s infrequent event crew more suited for daily shuttles than he is anything else, with a decent-but-not great 6 second +7 Accuracy boost in the Arena, but if you take the time to work those locks and really study the contents, you’ll see a hidden value here. This particular Nog, is the singular Ferengi in the game with SCI. No, I don’t count Dr. Reyga, thank you. His work on metaphasic shielding has been discredited by the scientific community. Okay, fine, only 4* and above Ferengi with SCI.
+Don't let his name subliminally influence you - Nog is a fairly risky investment. "Good enough" debut voyage power is now in the range where your weekly gold is likely to outperform him with star one and the number of Ferengi in the game these days make him non-essential for his collection, even if he's still one of the better super rare options.
 
-Now, on the surface of things, that may not seem like much, but you gotta have faith in the Great Material Continuum. A Ferengi mega feels like it’s been in the offing for a while now, and to have the entire market cornered on a skill, well. It’s a lot more than a lot of 4* crew can offer, I can tell you that. He may not set the world on fire, but he’s certainly unique, and sometimes, that’s all it takes.
+As for events and the chance to utilize Nog's strong ENG base - the optimist would say that we haven't had a Ferengi mega yet, the pessimist would say that he's had one bonus in over two years. So...is the vault half empty or half full?

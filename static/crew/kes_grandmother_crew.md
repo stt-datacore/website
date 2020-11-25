@@ -3,7 +3,7 @@ name: Grandmother Kes
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 3
 in_portal:
 date: 11/06/2020

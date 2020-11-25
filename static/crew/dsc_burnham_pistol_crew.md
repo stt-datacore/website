@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The “worst variant" for cost would be an insult to most characters, but not Burnham. This version still manages to pick up a collection and post above average voyage numbers alongside fistfuls of Burnham and Disco events to make even average bases useful. Her usable +Attack in arena may be a consideration for some players.
+The “worst variant for cost" would be an insult to most characters, but not Burnham. This version still manages to pick up a collection alongside fistfuls of Burnham and Disco events to make even average bases useful. Her usable +Attack in arena may be a consideration for some players.

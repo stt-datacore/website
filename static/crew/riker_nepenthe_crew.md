@@ -3,7 +3,7 @@ name: Nepenthe Riker
 rarity: 3
 series: pic
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 4
 events: 19
 in_portal:
 date: 18/06/2020

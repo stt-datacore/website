@@ -3,7 +3,7 @@ name: Commander Ellen Landry
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 19
 in_portal: true
 date: 21/02/2018
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-A "use" crew, rather than an investment. The #1 SEC proficiency gives her gauntlet work right from 1/4 and strong SEC voyage numbers with a splash of SEC/SCI can help push your roster into the mid-game. Usable +Att at 6 seconds in the arena. And the "Disco. So hot right now. Disco." invisi-trait might pluck her from the freezer in the future, though more storied rosters might find her bases unpalatable now that Disco crew are so plentiful.
+A "use" crew, rather than an investment. The #1 super rare SEC proficiency gives her gauntlet work right from 1/4 and her arena attack is quick enough to be useful, even if it's painfully short. Despite sporting the Discovery tag, she's not a recommending thaw between bad bases and a plethora of other options. Ultimately replaceable, she makes the best target on brand new rosters for whom gauntlet work can be difficult to find.

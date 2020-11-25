@@ -3,7 +3,7 @@ name: Graduation Michael Burnham
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 25
 in_portal: true
 date: 10/01/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The rare 2-skill voyager; #1 voyage SCI by a good margin and a voyage total ahead of dozen of other 3-skill crew. A hefty SCI base coupled with Burnham's already impressive event count makes her the ultimate “use” 2-skill Super Rare.
+Long ago touted as a "daily use" crew in this space, Graduation has been power creeped out of that usefulness save as possibly some early-game arena accuracy. She remains "just" a shuttle-filler, but with Burnham and Discovery dominating event work since their arrival to the game, she's undoubtedly one of the best in that area.

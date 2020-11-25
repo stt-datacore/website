@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-She is the very model of a tired, worn-out skill set.
-
-The numbers look pretty good, and if Discovery megas still include the whole gang or a Pike series launches, Number One can be very handy for many weekends to come.That said, read Riker Odan's note if you want a deeper dive on the subject, but Una Paloma Blanca is the fourth character out of the last seven to feature some combination of a CMD/DIP/SCI skill set. Consider this the BBoBA's official request to the powers that be to move onto something else for a while.
+See Odan, Riker for some additional ranting about the skill set, but CMD/DIP/SCI has been WRG's pet project for far too long - perhaps unavoidably as a pivot from CMD/DIP/SEC. Number One's strong voyage power is unfortunately stuck in a bad skill set marriage making her pop on younger rosters, but will see her replaced much sooner than some more exotic combinations. Still, the raw power in an important area of the game coupled with the Discovery and/or Strange New Worlds relevance bump should give you chances to put her strong diplomacy base to use in spurts.

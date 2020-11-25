@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-If you’re going to be a copy, you might as well copy from the best. In Zora, we have a Disco-eligible copy of Tier 1 stalwart, Mintakan Troi. It’s worth noting that, point for point, Zora comes up a little short in comparison, but that does not make her contributions any less useful. We still don’t know when the Disco mega train will stop, so until we do, it’s always going to be worth grabbing any crew that can cash in, and a Costumed mega or one-off Hologram events are still feasible, so Zora’s future weekend work should be roughly as good as her past. For established rosters, she’s destined to be frozen until Disco time, but for newer players, Zora can be a daily use anchor.
+There's some voyage use to be had here, but with a fairly thin traits set and no variants, her mountainous event count may be backwards-looking. Discovery and Hologram have carried dozens of crew to relevance over the last few years, but it's anyone's guess when that may stop. Barring something like a Costumed or Hologram collection, Zora's contribution level to the average roster has been high, but is on shaky ground.
