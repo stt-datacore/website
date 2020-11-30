@@ -14,7 +14,7 @@ The wiki is entirely user-generated, which means it is susceptible to human erro
 
 ### Contact
 
-Once we grow the team of contributors and volunteers we may set up a Discord or some other means of communication. But for now, the easiest way to get in touch is by opening [issues on GitHub](https://github.com/stt-datacore/) in the appropriate repository. You can also find TemporalAgent7 on the [STT Discord server](https://discord.gg/8Du7ZtJ) as TemporalAgent7#3792, and on reddit as [u/TemporalAgent7](https://www.reddit.com/user/TemporalAgent7).
+The easiest way to get in touch is by opening [issues on GitHub](https://github.com/stt-datacore/) in the appropriate repository. You can also join our [development Discord](https://discord.gg/2SY8W7Aeme), ask about a maintainer on the [STT Discord server](https://discord.gg/8Du7ZtJ), or e-mail us: admin@datacore.app .
 
 ### Licensing
 
@@ -25,6 +25,8 @@ It follows the [JAMstack architecture](https://jamstack.org) by using Git as a s
 Assets and some textual elements like names and descriptions are owned by Tilting Point or their licensors. This project is not associated with nor endorsed by Tilting Point.
 
 Some code used to build this site was originally authored by IAmPicard (c) 2017 - 2018 and released under GPL-V3.
+
+Most of the code for the website, the bot and accompanying services was originally authored by TemporalAgent7 (c) 2019 – 2020 and released under the MIT license.
 
 Some crew notes are imported from [u/Automaton_2000](https://reddit.com/user/Automaton_2000)'s [Big Book](https://docs.google.com/document/d/1vvl3wS1cY29ScQwWcTA6tJgcXvbdadY6vgPpn0swzbs/edit#) and [u/idoliside](https://reddit.com/user/idoliside)'s [Little Book](https://docs.google.com/document/d/1RKdRtJcePeey-921OCVKcU41YZTmFpVThXE10Uff-aA/edit#). Content used with their permission.
 
