@@ -1,14 +1,14 @@
 ---
-name: Twilight T’Pol
+name: Twilight T'Pol
 rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 3
 events: 29
 in_portal: true
-date:
-obtained:
-mega: false
+date: 06/02/2020
+obtained: Event
+mega: true
 published: true
 ---
 

@@ -1,13 +1,13 @@
 ---
-name: Ambassador V’Lar
+name: Ambassador V'Lar
 rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 8
 events: 11
 in_portal:
-date:
-obtained:
+date: 22/09/2020
+obtained: Pack
 mega: false
 published: true
 ---

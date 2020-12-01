@@ -1,5 +1,5 @@
 ---
-name: Vahar’ai Saru
+name: Vahar'ai Saru
 rarity: 5
 series: dsc
 memory_alpha:
