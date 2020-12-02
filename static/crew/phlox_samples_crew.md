@@ -1,5 +1,5 @@
 ---
-name: Dr Phlox
+name: Dr. Phlox
 rarity: 2
 series: ent
 memory_alpha:
