@@ -405,5 +405,16 @@
 		"smallbonus": {
 			"traits": ["data", "kirk", "picard", "kira"]
 		}
+	},
+	{
+		"name": "Tick Tock",
+		"type": "Galaxy/Faction",
+		"dates": "Thursday 12/10 until Monday 12/14 at noon (17.00 UTC)",
+		"startDate": "2020-12-10T17:00:00Z",
+		"endDate": "2020-12-14T17:00:00Z",
+		"highbonus": ["dsc_sahil_crew", "TOOD_The_Colony", "mayweather_mirror_crew", "dsc_burnham_homecoming_crew"],
+		"smallbonus": {
+			"traits": ["tilly", "mayweather", "mirror"]
+		}
 	}
 ]
