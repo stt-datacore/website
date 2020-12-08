@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-There are many things to like about this Chekov. The way his shapely hips flow in this unappealing brown pyjama suit. His perfectly parted hair. His strong voyage score. Hm. His base SEC? I’m sorry, there’s just not much to say about poor young Pavel here.
+Another year, another bland Pavel to Chekoff the list. Not quite Walter Koenig's worst crime against fashion (we're still waiting on Search for Spock pink romper suit Chekov), this tan Tactician's trait set is as inoffensive and unexciting as his skill set, a dash of SCI the equivalent of a bit of dill weed on particularly boring eggs. Fittingly, he can't even lay claim to being the #1 Chekov base for any skill, possessing less security than unarmed Dancing and less command than waporising First Officer.
 
-He was a fine daily use card on release, but when you’re surrounded by crew who offer different and better utility left and right, you do tend to get lost in the crowd without collections or a particularly noteworthy ship ability. On the plus side, four of Chekov’s six events have been Faction based, so he’s probably going to be worth unfreezing eventually - just not any time soon.
+Without any collections, he'll be headed straight to the freezer once you're done equipping him, to be thawed once or twice a year, depending on how the powers that be are feeling about the original 'someone's got to be the ensign' Trek archetype.

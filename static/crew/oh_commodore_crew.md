@@ -3,7 +3,7 @@ name: Commodore Oh
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 12
 in_portal: true
 date: 05/05/2020

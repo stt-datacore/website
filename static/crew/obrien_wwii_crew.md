@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Without peeking, do you know RAF Miles' release date? Would you have guessed mid-2016? Few crew have a more sterling reputation, but like his buddy Clive strafing the Jerries over the channel, he's earned every inch of it. Base and voyage numbers that were ostentatous for their time are in free fall, but he's even picked up a post-release collection to go with his spot in Jury Rigger. Miles' event clip remains modest, but a pair of variant-best bases still make him a key piece to acquire.
+Good ol' Miles has a sterling reputation, and even with his voyage numbers finally hitting the point of obscurity, there's still a lot to recommend (and a lot to like) about this mid-2016 card. Jury Rigger no longer requires anywhere near the investment it used to, but in an era of expanding collections and all kinds of cards regaining relevance, it's not a bad bonus to pick up, and he's definitely still one of the more desirable cards in Holodeck Enthusiasts (Bridge to Ensign Kim, Ensign Kim, your sword is drooping).
+
+The #1 O'Brien ENG and CMD bases still count for something, even if the Chief's events only ever clock in at a respectable two per year, and as befitting someone with pilot wings as shiny as his, the Hero trait still feels like a dark horse for a potential mega once WRG gets all the other pesky 'what kind of a link is THAT?' themes we've had recently. Fittingly, perhaps the ultimate wingman - you'll never be unhappy to see him in a begold.
