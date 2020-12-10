@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Vash's captor is unlikely to claim much daily work, even with a top 10 CMD roll in the gauntlet, but strong bases among variants and a half dozen events ensures that he's usable twice a year, if nothing else.
+Vash's captor is unlikely to claim much daily work, but a 65% gauntlet set with a respectable CMD roll and strong bases among variants ensures that he's usable a few times a year, if nothing else.

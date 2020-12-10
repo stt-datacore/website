@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Demonstrating less than exemplary Q-ness, Qunior is a shuttle pilot with the notoriety of being the only card in the game with the Brat trait. +1 Immo for all but the most anaemic or particularly young of rosters.
+Revenge of the punchline! The only Brat in game (debateable) can now at least boast a somewhat exclusive stat-boosting collection spot, if nothing else. With mostly bloated (or previous mega) traits, it might be nothing else for this collection-or-bust offering.
