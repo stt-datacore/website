@@ -3,7 +3,7 @@ name: Commanding Officer Sisko
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 1
 events: 14
 in_portal:
 date: 11/09/2018
@@ -12,5 +12,6 @@ mega: false
 published: true
 ---
 
-Stop right here, if he is in your roster DO NOT AIRLOCK HIM. In the current state of the game CO Sisko is only available by accepting the achievement for changing your in-game name. This means if you don’t accept it he will sit there happily until you have the honor to cite and freeze him. But once he’s gone there is no going back.
-Skill wise his SEC base is pretty strong and his CMD is fairly significant. If you do decide to invest in him he will make a strong addition to your early roster. I just can’t recommend him any higher on the tier list due to him costing honor to freeze.
+CO Sisko is not a tier one crew, but the copy you get from achievments will be your only one so we here at the Big Book want to make sure you're aware of that before tossing him out in the cold. If you've already done so without realizing it, a friendly ticket to customer support might be able to help you out.
+
+As a standalone crew, he's mostly a notch on the Inspiring collection with some pinch hitting arena accuracy that you should be able to upgrade out of before too long. Two competent (read:not huge) bases are okay in the early game, but won't merit a thaw for events down the line and his voyage power + skill set combo doesn't register on the radar.

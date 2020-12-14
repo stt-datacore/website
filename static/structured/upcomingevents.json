@@ -412,9 +412,20 @@
 		"dates": "Thursday 12/10 until Monday 12/14 at noon (17.00 UTC)",
 		"startDate": "2020-12-10T17:00:00Z",
 		"endDate": "2020-12-14T17:00:00Z",
-		"highbonus": ["dsc_sahil_crew", "TOOD_The_Colony", "mayweather_mirror_crew", "dsc_burnham_homecoming_crew"],
+		"highbonus": ["dsc_sahil_crew", "dsc_tilly_colony_crew", "mayweather_mirror_crew", "dsc_burnham_homecoming_crew"],
 		"smallbonus": {
 			"traits": ["tilly", "mayweather", "mirror"]
+		}
+	},
+	{
+		"name": "A Stitch Saves Nine",
+		"type": "Faction",
+		"dates": "Thursday 12/17 until Monday 12/21 at noon (17.00 UTC)",
+		"startDate": "2020-12-17T17:00:00Z",
+		"endDate": "2020-12-21T17:00:00Z",
+		"highbonus": ["dsc_saru_mirror_crew", "TOOD_Mirror_McCoy", "dsc_georgiou_section31_crew", "dsc_burnham_homecoming_crew"],
+		"smallbonus": {
+			"traits": ["saru", "georgiou", "mccoy", "mirror"]
 		}
 	}
 ]
