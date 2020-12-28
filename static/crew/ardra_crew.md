@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Only useful in a single area (traits notwithstanding), but she's fantastic there; arena accuracy at six seconds with huge crit values. Until DB introduces more serious competition for what she offers, she’s top shelf value for ship battles, both daily and for Skirmishes.
+Only useful in a single area (random trait events notwithstanding), but she's fantastic there; arena accuracy at six seconds with huge crit values. Until DB introduces more serious competition for what she offers, she’s top shelf value for ship battles, both daily and for Skirmishes.

@@ -12,15 +12,8 @@ mega: true
 published: true
 ---
 
-Roses are red,
-Age of Sail Riker isn’t very good but he is charming,
-Worf’s lack of variation,
-Is truly alarming.
-The only thing that'll keep me from self-harming,
-During hours of Galaxy item crafting and farming,
-Is knowing that Worf is my darling,
-And that some DB employee, somewhere, is downing several pints of Carling.
+With EV Suit Worf having finally broken the logjam of CMD/DIP/SEC Worves in an appropriately dramatic fashion, it's easy to dismiss Age of Sail Worf on a superficial scan, but as the man himself would say, the true test of a warrior is not without, it is within. And within this charmingly sized Klingon (seriously, put him on your bridge crew and see how he stacks up), there's value to unpack. The #1 Worf and Klingon SEC is nothing to sniff at, especially since it translates into one of the top ten SEC bases in the game, meaning plenty of non-bonus event and daily shuttle work. 
 
-With that charming little ditty out of the way, I have to sadly tell you that Age of Sail Worf is, well . . . less impressive than his hat. He trades Costumed for Governor Worf’s Duelist and Brutal, giving him less than impressive trait chances (Costumed is now swollen far beyond what would be viable for a trait mega), and a voyage score that’s squarely in the very good but not great range. The only thing that could have really saved him is a unique skill set. 
+It's also true that while the skill set is undoubtedly vanilla, it's at station keeping with a good number of Worf's contemporaries, including campaign darling High Roller Sisko, his more commanding big brother Governor Worf, and Honor Hall luminary Kahless the Unforgettable. The Age of Sail collection is the cherry on top, his essential status there elevating him to unmissable for die hard completionists, while the rest of us are content to collect our token rewards and gaze longingly at the hat avatar at the end of the tunnel, knowing that after AoS Worf and Picard, it's pretty much all downhill.
 
-But here we are, with the fourteenth Worf variant who only has some variation of CMD/DIP/SEC. In fact, I take that back - I take umbrage with the idea of this being a variation. This is a palette swap of Governor Worf with very nice art. If you’re a Worf devotee, then he’s worth snagging for the strong SEC base and thoroughly average (for 2020) score, but there’s not much here else that we can’t get elsewhere. That being said, we’re now only two crew away from a full Age of Sail complement, so who knows, he might suddenly become a little valuable in the future...
+Oh, and one last thing before you go - it's retract plank, not REMOVE plank.

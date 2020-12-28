@@ -3,7 +3,7 @@ name: Suus Mahna Sarek
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 30
 in_portal: true
 date: 15/02/2018
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-His numbers don't jump off the page and aren't even average in many cases, but with Sarek, Vulcan, and Disco bonuses supplementing his base and a little SEC/SCI voyage action, Suus Mahna gets his number called more often than you might realize. As long as the Disco mega bubble exists, so will his value. His other great utility is a T'kuvma-esque arena offering where his eerily similar passive stats meet an even greater 400% instant damage. You're missing out on a juicy +Attack stat, but considering his utility elsewhere, he can certainly find ways to perform on your roster, especially since he, like many other Sareks, possesses the Holy Grail of double collections now.
+His numbers don't jump off the page and aren't even average in many cases, but Sarek's trait rolodex and smattering of series appearances have caused him to collect a litany of event chances. Owning two spots in collections that were expanded in 2020 help offset a voyage score resting in the dumpster and the presumable loss of blanket Discovery event bonuses. Slow, but strong, trigglerless arena damage should find use on most early-to-midgame rosters and help round him out, offering a wider array of value to various rosters.

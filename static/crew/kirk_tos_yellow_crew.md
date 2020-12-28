@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-First time players will probably remember Kirk from the beginning of the game where they choose one of their starting PokeCaptains. A good strong CMD stat and proficient early game Voyager with a collection boost too. Nothing amazingly special about this crew but a solid selection if you did happen to pick him.
+First time players will probably remember Kirk from the beginning of the game where they choose one of their starting PokeCaptains (he's definitely Charmander). A good strong CMD stat and proficient early game Voyager with a collection boost too. He's a step behind your other intro options due to the lack of the extra Diplomat collection spot, but will perform as well as Sisko and Picard otherwise.

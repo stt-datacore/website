@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Rarely talked about outside of his couple of event features, but a great skill set allows him to perform admirably on voyages and in the gauntlet for new players. Sucks up loads of Medical Experiments to equip, but tends to justify it with his early-mid game efficacy and +1 Inspiring.
+Rarely talked about outside of his couple of event features, but workable proficiencies and a plus skill set grants him 45% crit in three different gauntlets; great for new players.. He sucks up loads of Medical Experiments to equip, but tends to justify it with his early-mid game efficacy and spot in a stat-boosting collection.

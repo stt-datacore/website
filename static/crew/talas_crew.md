@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-DB provided too many ENG/SEC choices throughout 2019 to make Talas worth the foray into 6-pack territory, but if you somehow missed a year's worth of offerings and need voyage help for that combo, Talas qualifies.
+Sitting vaguely in the teens ranks for ENG/SEC voyagers with some vaguely eventable traits, this character you vaguely remember from a vaguely remembered series still has the raw stats to provide help to the average roster in today's landscape, even if she's not your typical top-shelf, wise investment.
 
-Sitting vaguely in the top ten ENG/SEC voyagers with some vaguely eventable traits, this character you vaguely remember from a vaguely remembered series has the raw stats to provide help to almost any roster in today's landscape, even if she's not your typical top-shelf, wise investment. Antennae fetishists get the green light to invest, but the rest of us should look for better long term or unique potential.
+Think budget Determined Janeway without all the bells and whistles (events, collections) that made Janeway a household name. Similarly, Talas' campaign will provide four stars at once, giving you the chance to utilize her on voyages - her best area of use. As for beholds, antennae fetishists get the green light to invest, but the rest of us should look for better long term or unique potential.

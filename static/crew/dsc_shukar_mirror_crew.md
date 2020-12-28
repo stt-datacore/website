@@ -3,7 +3,7 @@ name: Mirror Shukar
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 27
 in_portal: true
 date: 27/02/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Shukar has a handful of traits, most notably Discovery, to help elevate pretty poor bases. More sturdy proficiencies combine for a couple ranked gauntlet pairs and can be a formidable option at 45% crit. Discovery megas have hugely buoyed his value, but if they were to dry up, his voyage power relative to the field as dropped too much to be of much use outside the gauntlet. Dual collections are a nice value bump for one of the above average legendary Mirror crew.
+The Smoke and Mirrors collection came along at the right time to prop up the value of a one-off crew who seems to have lost the comforting relevance of blanket Discovery bonuses of yore. With ranks drooping in all corners and a big tumble in event chances, Shukar has one other area of note besides his dual collections; gauntlet. Two 45% crit sets will bump him above the walls of Locutuses for 48 hours at a time and makes him a fine rotational piece in that section of the game.

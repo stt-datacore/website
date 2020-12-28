@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-A "use" crew, rather than an investment. The #1 super rare SEC proficiency gives her gauntlet work right from 1/4 and her arena attack is quick enough to be useful, even if it's painfully short. Despite sporting the Discovery tag, she's not a recommending thaw between bad bases and a plethora of other options. Ultimately replaceable, she makes the best target on brand new rosters for whom gauntlet work can be difficult to find.
+A "use" crew, rather than an investment. The #1 super rare SEC proficiency gives her gauntlet work right from 1/4 and her arena attack is quick enough to be useful, even if it's painfully short. With Discovery blanket bonuses seemingly at and end and awful bases beside, she should never see the inside of a shuttle in ideal conditions. Ultimately replaceable, she makes the best target for brand new players for whom gauntlet work can be difficult to find.

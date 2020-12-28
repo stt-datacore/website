@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Upgraded Wesley Crusher isn’t too much better than his common counterpart. He has the advantage of the prodigy trait which will help with a few mission nodes but that’s about all. Don’t bank on him helping too much with cadets, he isn’t terrible but there are better crew you can work with. Consider using the upgraded 3* Ensign Crusher for a better Wesley experience.
+Upgraded Wesley Crusher isn’t too much better than his common counterpart. His only noteworth attribute is the prodigy trait which, in combination with his top two skills, offers a smattering of early-game node unlocks. Not a recommended cadet name, despite the Starfleet tag - instead look for uncommon crew who area also female or alien to kill two birds with one stone.

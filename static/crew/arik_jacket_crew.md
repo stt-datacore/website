@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Nearly zero long-term usefulness outside of two event features. Some early game voyage work is available due to his skill set.
+Nearly zero long-term usefulness outside of three previous event features. A plus skill set looks good stacked up against CMD/DIP/SEC stinkers at the behold screen, but the power isn't there to make a difference.

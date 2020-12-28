@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Owner of a huge DIP base, but with few events in which to multiply it. Despite that and the most common skill set, he’s still useful for newer players with above average voyage numbers and +1 Diplomat for long term benefit. +9 arena attack can meet or exceed what the more popular Rura Penthe Reed and Duras sisters offer.
+Owner of a huge DIP base, but with few events in which to multiply it. Despite those poor event chances and the most common skill set, he’s still useful for newer players with shuttle-worthy DIP and +1 Diplomat for long term benefit. His +9 arena attack boost can meet or exceed what the more popular Rura Penthe Reed and Duras Sisters offer.

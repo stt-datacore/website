@@ -22,6 +22,10 @@ const RNGESUS = 1.8; // Used for chron cost calculation
 
 function demandsPerSlot(es, items, dupeChecker, demands) {
 	let equipment = items.find(item => item.symbol === es.symbol);
+	if (!equipment) {
+		console.error(`Cannot find equipment ${es.symbol}!`);
+		return 0;
+	}
 	if (!equipment.recipe) {
 		if (dupeChecker.has(equipment.symbol)) {
 			demands.find(d => d.symbol === equipment.symbol).count += 1;

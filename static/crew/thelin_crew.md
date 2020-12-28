@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Sagging stat ranks meet an ever-increasing number of SCI options from events. If you can collect four copies on a weekend, he’s likely to perform well day to day into the mid-game, but as the first star in a behold, you might opt to go with better event or collection value pieces
+Sagging stat ranks meet an ever-increasing number of available SCI options. If you can collect four copies on a weekend, he has a little juice in the early game, but as the first star in a behold, you should opt for better event or collection value pieces.

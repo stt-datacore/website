@@ -3,7 +3,7 @@ name: Expedition Shran
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 3
 events: 14
 in_portal: true
 date: 07/02/2018
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-If there is anything that I’ve learned from watching endless hours of Star Trek is that you should always bet on Jeffery Combs. He has the highest DIP stat across all 3* crew completely. His backup skills are high enough to make him the #1 voyage crew and can perform very well on sunday cadet missions. If you have a ship with the Position ability then his +4 attack AND +1250 to Crit will make short work of any enemy ships. Only shortcoming is no extra collections bonuses but that is so minor compared to his amazing skillset.
+Sterling base and voyage ranks are much better suited for endgame rarity crew, where their contributions would last longer than a couple months. Still, you'll notice the difference between Shran and your average rare crew upon completion. Beyond those daily contributions, his blue skin qualifies him to work on Sundays to help you clear cadet missions with ease and he offers a little juice in the arena, provided you can meet his position trigger requirement.

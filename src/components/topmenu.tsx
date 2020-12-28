@@ -61,7 +61,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 							<Popup content='Donate to Community Patreon' trigger={<Icon name='patreon' />} />
 						</Menu.Item>
 						<Menu.Item>
-							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"We've moved!"} />
+							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"Developers needed!"} />
 						</Menu.Item>
 						<Menu.Item as='a' onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 							<Icon name='github' />
@@ -112,11 +112,10 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 				</Modal>
 
 				<Modal open={messageModalOpen} closeOnEscape={false} closeOnDimmerClick={false} onClose={() => this._closeMessageDialog()}>
-					<Modal.Header>The DataCore website and bot have transitioned to a community ownership model!</Modal.Header>
+					<Modal.Header>The DataCore website and bot are in need of software engineers!</Modal.Header>
 					<Modal.Content>
 						<p>We need your help! The project is <a href='https://github.com/stt-datacore'>open source</a> so we're open for contributions from software engineers, designers, devops, testers and so on. Reach out on our <a href='https://discord.gg/reFXRX'>development Discord</a> if you're not sure where to start.</p>
-						<p>You can also contribute financially to support the cost of hosting our servers. Please consider <a href='https://www.patreon.com/Datacore'>becoming our patron!</a></p>
-						<p>Please see this <a href='https://forum.disruptorbeam.com/stt/discussion/16539/datacore-current-status'>forum thread</a> for details and updates.</p>
+						<p>If you've always wanted a feature on DataCore, here's your chance to hack on the project and implement it yourself! Most of the project is written in TypeScript, with node.js on the backend and React with Gatsby on the frontend.</p>
 					</Modal.Content>
 					<Modal.Actions>
 						<Button icon='checkmark' onClick={() => this._closeMessageDialog()} content='Ok' />
