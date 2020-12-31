@@ -427,5 +427,16 @@
 		"smallbonus": {
 			"traits": ["saru", "georgiou", "mccoy", "mirror"]
 		}
+	},
+	{
+		"name": "Arrow Again",
+		"type": "Faction",
+		"dates": "Thursday 01/07 until Monday 01/11 at noon (17.00 UTC)",
+		"startDate": "2021-01-07T17:00:00Z",
+		"endDate": "2021-01-11T17:00:00Z",
+		"highbonus": ["kehleyr_klingon_crew", "TOOD_Gray", "yar_alternate_crew"],
+		"smallbonus": {
+			"traits": ["kehleyr", "yar", "Cultural Figure"]
+		}
 	}
 ]
