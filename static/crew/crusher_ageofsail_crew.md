@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Crusher's skill set has been carrying her for a long time, but the numbers simply aren't there anymore. Yawn-inducing voyage, base, and event rankings with gauntlet pairs that require hefty amounts of crit to function. The afforementioned skill set and slim gauntlet work make her something of a boon to newer players, but there's no light at the end of the tunnel; her ceiling has a hard cap of MED/CMD voyages and one-a-year Faction work. If you're taking her, it's either because you had a crush on Gates McFadden (guilty as charged), or because you really want that vanity collection all sewn up.
+Crusher's skill set has been carrying her for a long time, but the numbers simply aren't there anymore. Yawn-inducing voyage, base, and event rankings with gauntlet pairs that require hefty amounts of crit to function outside of the early game.
+
+The afforementioned skill set and slim gauntlet work make her something of a boon to newer players, but there's no light at the end of the tunnel; her ceiling has a hard cap of MED/CMD voyages and one-a-year Faction work. If you're taking her, it's either because you have a crush on Gates McFadden (guilty), or because you really want that vanity collection all sewn up.

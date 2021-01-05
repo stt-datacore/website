@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Another bi-polar crew card that has the second best 1* CMD stat but one of the worst SCI scores. His ship ability is fairly decent for a 1* but as CMD is a fairly common card and he doesn’t fill any extra collections probably worth trading in the russian wonder for a pittance of honor.
+Pavel wins the booby prize for most boring trait set possible in game, but there ends his notoriety in Timelines. Even his build cost is rated on the expensive side for basic crew. How bad is it when even a gray Ensign Kim is your superior?

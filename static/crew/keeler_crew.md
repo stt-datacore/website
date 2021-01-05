@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Whodathunk Kirk would fall for a 453 DIP base? Her current role is (very) early game gauntlet throw-in and collection fuel, but a couple eventable traits may allow her to bolster your requisition shuttles for a few weeks down the line.
+Whodathunk Kirk would fall for a 453 DIP base? For most players, Edith is merely collection fodder, but a ranked gauntlet pair hits the 45% crit mark in a trio of gauntlets and is a viable option for beginner rosters.

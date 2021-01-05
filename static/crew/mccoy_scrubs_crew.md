@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-For a card so old (Mid 2016), McCoy has held up remarkably well. DA has a rather flat stat distribution; sort of like a primary and two secondaries. For that reason, his MED is not noteworthy even if his work for MED/SEC voyages is. Four event features is unparalleled for non-mega golds, but although McCoy is a household name, he's not an event powerhouse and his #1 McCoy MED was just torpedoed by no less than two variants. Considering the universal lack of MED crew and such poor stats on the gauntlet focused ones, DA McCoy is a worthwhile pickup for most rosters with a bias toward early-to-mid game players.
+For a card so old (Mid 2016), McCoy has had a hell of a run. DA has a rather flat stat distribution; sort of like a primary and two secondaries. Practically insignificant, but a callback to days of yore when stat distribution wasn't so cookie cutter.
+
+Bones' four event features is an unparalleled number for non-mega golds, but although McCoy is a household name, he's not been a Faction event powerhouse and his aged sub-1,000 primary base is markedly worse than a few newer variants. Considering the universal lack of MED crew and such poor stats on the gauntlet focused ones, DA McCoy can still find niche work on some rosters, with a bias toward early-to-mid game players.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-This anachronistic Sisko’s primary flip-flops from base to voyages, but neither is particularly effective. Between a gross voyage power/skill set combo and having no base better than third among Sisko variants, 1701’s best chance at relevance is either an unprecedented third re-run of his event feature or something like a Bajoran mega. His spot in the Inspiring collection should be out of reach for all those except the unluckiest.
+This anachronistic Sisko’s primary flip-flops from base to voyages, but neither is particularly effective. Between a gross voyage power/skill set combo and having no base better than fourth among Sisko variants, 1701’s best chance at relevance will likely come at the helm of a requisition shuttle. He'll at least have the opportunity for those, between Sisko's healthy event clip and a handful of juicy traits. His spot in the Inspiring collection is paper value and should never come into play barring a massive collection expansion in the future.

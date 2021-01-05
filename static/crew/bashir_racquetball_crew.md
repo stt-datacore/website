@@ -3,7 +3,7 @@ name: Racquetball Bashir
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 17
 in_portal: true
 date: 29/11/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-I vastly underestimated this card when I first got it often throwing it into the airlock whilst giving myself credit for collecting so many MED crew already. However although his MED/SCI stats might not be best, combined he has some great voyaging stats. His strong proficiency bonus too means he has the #2 MED score which combined with his other stats will give him use in the Gauntlet. In a bizarre move too he is somehow considered for the Sunday cadets! That and two additional collection bonuses means he is a must have crew for newer players. Be warned however, he is notoriously difficult to level up requiring lots of Ancient Films, Medical Experiments and Science Experiments which are mostly faction items.
+Looking like the front page of a men's sportswear catalogue, Racquetball thankfully has a bit more substance to him than that. Due to some fantastically controversial parenting, Bashir's nonhuman tag grants him Sunday cadet work if you're not so keen on the 1-skill MED wonder Dr. Selar and can't find other female AND alien MED options to pull double duty.
+
+Bashir's cost to equip is rather expensive with a high chron cost sandwiched between a smattering of Faction items and super rare components. But with two stat-boosting collection spots at the end of the rainbow, you'll want to immortalize him sooner or later. Worthwhile voyage work, including ever-valuable MED, will help him pay off an early leveling process and some strong (handicapped) arena evasion rounds him out well.

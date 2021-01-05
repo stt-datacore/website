@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Long lambasted by players for milquetoast stats and being ugly as sin, Martok's stats are finally catching up to his reputation. Boring from all angles, but with a few trait event options and a fairly exclusive collection, Ol' Blue Eye is a crew you wish was a super rare that you could thaw twice a year, rather than have him hog a crew slot. The one-eyed monster is far from elite, but not quite bottom of the barrel in any respect. An alright crew to take a flier on for late game players looking to flesh out possible event options.
+Long lambasted by players for milquetoast stats and being ugly as sin, Martok's stats have caught up to his reputation. Boring from most angles, but with a few trait event options and a fairly exclusive collection, Ol' Blue Eye is a crew you wish was a super rare that you could thaw twice a year, rather than have him hog a crew slot. But if you're keeping him out anyways, his six (!!!) different 45% gauntlet sets are fine for a lark or as an early-game option, give his limited proficiencies and stiff skill set competition.

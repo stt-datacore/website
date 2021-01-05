@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The former Undisputed Champion of Timelines took a lot of body blows in 2019. Her early game arena damage was replaced by better, faster, stronger from all angles (Event, Packs, Mega) and CMD/SCI went from underrated to overrepresented. Late-year mega crew Timelord Tenavik does a fair impersonation of her on shuttles and voyages to boot.
+FOB is the poster child for return on investment. She's only dropped three voyage ranks (and one base rank) over her first three years and may still be making runs when your toddler is accepting their diploma. CMD/SCI's value over replacement in that area isn't top shelf, but Burnham will remain a strong option while exotic skill sets with middling power have dropped from use entirely.
 
-But we're far from the panic button and what she offers, though less difficult to find these days, is still unquestionably elite. Her base and voyage power as well as a sterling event clip still demand you smash that Select button on the behold screen. If you cite your weakest areas, Burnham may not top that particular list, but she tops enough different lists to earn your honor and behold capital before too long.
+She's also been the event boss, grabbing fistful after fistful of event bonuses. With Disco blanket bonuses likely cooled off, she'll have to settle for merely 'very reliable' variant event work going forward to highlight a huge CMD score that can even perform non-bonus work admirably. Slow, triggerless arena damage is a great new player perk, but it's her stability as a behold and citation investment that has her sitting pretty among the top names in the game.

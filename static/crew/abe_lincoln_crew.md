@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Like many other crew, Honest Abe is at the mercy of trait megas to be of any use on the weekends, which has yet to happen for him. With putrid voyage power beside, Lincoln is a bottom-barrel behold option who will team up a borderline top 20 gauntlet pair with a seldom seen 45% crit trait set for infrequent gauntlet relevance. Don't chase pie in the sky double collections with this crew who doesn't deserve stars two through five.
+Like many other crew, Honest Abe is at the mercy of traits to put his laughable bases to work on the weekends. And with putrid voyage power beside, Lincoln is a bottom-barrel behold option with but one realistic use; gauntlet. Abe practices diplomacy at the tip of his spear, pairing a borderline top ten DIP roll with three different 45% crit sets to provide a medium-power option to newer players or the occasional bit of fun for veterans. Don't chase pie in the sky double collections with this crew who doesn't deserve stars two through five.

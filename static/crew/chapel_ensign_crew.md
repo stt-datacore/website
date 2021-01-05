@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-For a medic she’s got a pretty poor medicine stats, doesn’t fill out the “Do No Harm” collection and a poor ship ability. Not that this counts for 1* crew but she is the worst Voyager in the game. The only reason you should immortalize her is if you have absolutely nothing left to do in the game and have a fetish for wasting chronitons.
+That bowl of Plomeek soup she's ushering is about the most nourishing thing Chapel has to offer your roster. There's simply nothing she can do to help you out that a dozen other crew can't do a better job of and no discernible path to a bump in value except, perhaps, a new Nurse collection some day ten years from now.
