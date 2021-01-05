@@ -3,7 +3,7 @@ name: Alicia Travers
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 5
 in_portal:
 date: 13/08/2020
