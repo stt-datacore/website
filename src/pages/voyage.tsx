@@ -10,6 +10,7 @@ type VoyagePageState = {
 	playerData?: any;
 	errorMessage?: string;
 	pastedContent: string | number;
+	clippedContent: string | number;
 };
 
 class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
@@ -19,7 +20,8 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		this.state = {
 			playerData: undefined,
 			errorMessage: undefined,
-			pastedContent: ''
+			pastedContent: '',
+			clippedContent: '',
 		};
 	}
 
@@ -55,8 +57,9 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						<Form>
 							<TextArea
 								placeholder='Paste the content here'
-								value={this.state.pastedContent}
-								onChange={(e, { value }) => this.setState({ pastedContent: value })}
+								value={this.state.clippedContent}
+								onChange={(e, { value }) => this.setState({ clippedContent: value })}
+								onPaste={(e) => { return this._onPaste(e) }}
 							/>
 						</Form>
 
@@ -88,7 +91,23 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		}
 	}
 
+	_onPaste(event) {
+		let self = this;
+		let paste = event.clipboardData || window.clipboardData;
+		if (paste) {
+			self.setState({ pastedContent: paste.getData('text') });
+			self.setState({ clippedContent: paste.getData('text').substr(0, 500)+' [...]' });
+			event.preventDefault();
+			return false;
+		}
+		return true;
+	}
+
 	_parseFromTextbox() {
+		// Use inputted text if no pasted text detected
+		if (this.state.pastedContent == '')
+			this.setState({ pastedContent: this.state.clippedContent });
+
 		try {
 			let playerData = JSON.parse(this.state.pastedContent as string);
 
@@ -110,6 +129,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 			});
 		}
 	}
+
 }
 
 export default VoyagePage;
