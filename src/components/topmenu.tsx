@@ -47,8 +47,6 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 								<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
 								<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
 								<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
-								<Dropdown.Item disabled>Missions</Dropdown.Item>
-								<Dropdown.Item disabled>Ships</Dropdown.Item>
 								<Dropdown.Divider />
 								<Dropdown.Header>All other pages</Dropdown.Header>
 								<OtherPages />

@@ -438,5 +438,16 @@
 		"smallbonus": {
 			"traits": ["kehleyr", "yar", "Cultural Figure"]
 		}
+	},
+	{
+		"name": "Too Good to Be True",
+		"type": "Faction/Galaxy",
+		"dates": "Thursday 01/14 until Monday 01/18 at noon (17.00 UTC)",
+		"startDate": "2021-01-14T17:00:00Z",
+		"endDate": "2021-01-18T17:00:00Z",
+		"highbonus": ["uxbridge_kevin_crew", "TODO_Mike_Burnham", "david_marcus_crew"],
+		"smallbonus": {
+			"traits": ["Innovator"]
+		}
 	}
 ]

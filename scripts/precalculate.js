@@ -215,7 +215,7 @@ function main() {
 	fs.writeFileSync(STATIC_PATH + 'misc_stats.json', JSON.stringify({ alldemands, perFaction, perTrait }));
 
 	let getSkillWithBonus = (crew_skills, skillName, skillType) => {
-		return crew_skills[skillName][skillType] * (skill_bufs[skillName.replace('_skill','')][skillType] + 1.1);
+		return crew_skills[skillName][skillType] * (skill_bufs[skillName.replace('_skill', '')][skillType] + 1.1);
 	};
 
 	calcRank(crew => {
@@ -316,9 +316,21 @@ function main() {
 			crew.bigbook_tier = mdData.meta.bigbook_tier ? Number.parseInt(mdData.meta.bigbook_tier) : undefined;
 			crew.events = mdData.meta.events ? Number.parseInt(mdData.meta.events) : 0;
 			crew.in_portal = !!mdData.meta.in_portal;
+			crew.date_added = new Date();
+			if (mdData.meta.date) {
+				// Date is in European format :) "dd/mm/yyyy"
+				let m = mdData.meta.date.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+				if (m) {
+					crew.date_added = new Date(m[3], m[2] - 1, m[1]);
+				}
+			}
+			crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
 			crew.markdownContent = mdData.markdownContent;
 		}
 	}
+
+	// Sory by date added
+	crewlist = crewlist.sort((a, b) => a.date_added - b.date_added);
 
 	fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
 
@@ -400,9 +412,8 @@ function main() {
 		crewLine += `"${crew.traits_named.join(', ').replace(/"/g, '')}","${crew.traits_hidden.join(', ').replace(/"/g, '')}",`;
 		crewLine += `"${crew.action.name}",${crew.action.bonus_type}, ${crew.action.bonus_amount}, ${crew.action.initial_cooldown}, ${crew.action.duration}, ${crew.action.cooldown}, `;
 		crewLine += `${crew.action.ability ? crew.action.ability.type : ''}, ${crew.action.ability ? crew.action.ability.condition : ''}, `;
-		crewLine += `${crew.action.limit || ''}, ${crew.action.penalty ? crew.action.penalty.type : ''}, ${
-			crew.action.penalty ? crew.action.penalty.amount : ''
-		}, `;
+		crewLine += `${crew.action.limit || ''}, ${crew.action.penalty ? crew.action.penalty.type : ''}, ${crew.action.penalty ? crew.action.penalty.amount : ''
+			}, `;
 		crewLine += `${crew.ship_battle.accuracy || ''}, ${crew.ship_battle.crit_bonus || ''}, ${crew.ship_battle.crit_chance || ''}, ${crew
 			.ship_battle.evasion || ''}, ${!!crew.action.charge_phases},`;
 		crewLine += `"${crew.short_name}",${crew.imageUrlPortrait}`;

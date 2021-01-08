@@ -223,6 +223,8 @@ export const query = graphql`
 					traits_hidden
 					collections
 					flavor
+					date_added
+					obtained
 					...RanksFragment
 					cross_fuse_targets {
 						symbol

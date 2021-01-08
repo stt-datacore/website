@@ -403,6 +403,8 @@ export const query = graphql`
 					max_rarity
 					imageUrlFullBody
 					imageUrlPortrait
+					date_added
+					obtained
 					...RanksFragment
 					base_skills {
 						security_skill {

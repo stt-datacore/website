@@ -72,19 +72,19 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						</Grid>
 					</Segment>
 				) : (
-					<Segment>
-						<CrewStat skill_name="security_skill" data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
-						<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
-						<CrewStat skill_name="diplomacy_skill" data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
-						<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
-						<CrewStat skill_name="medicine_skill" data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
-						<CrewStat
-							skill_name="engineering_skill"
-							data={crew.base_skills.engineering_skill}
-							scale={compact ? 0.75 : 1}
-						/>
-					</Segment>
-				)}
+						<Segment>
+							<CrewStat skill_name="security_skill" data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
+							<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+							<CrewStat skill_name="diplomacy_skill" data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
+							<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+							<CrewStat skill_name="medicine_skill" data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
+							<CrewStat
+								skill_name="engineering_skill"
+								data={crew.base_skills.engineering_skill}
+								scale={compact ? 0.75 : 1}
+							/>
+						</Segment>
+					)}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
 					<Accordion
@@ -238,6 +238,10 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							.reduce((prev, curr) => [prev, ', ', curr])}
 					</p>
 				)}
+
+				<p>
+					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b> Obtained: </b>{crew.obtained})
+				</p>
 			</React.Fragment>
 		);
 	}

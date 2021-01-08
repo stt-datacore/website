@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 21
+events: 22
 in_portal: true
 date: 15/08/2016
 obtained: Event

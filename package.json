@@ -14,12 +14,12 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
-    "@nivo/bar": "^0.65.1",
-    "@nivo/core": "^0.65.0",
-    "@nivo/line": "^0.65.1",
-    "@nivo/pie": "^0.65.1",
-    "@nivo/radar": "^0.65.1",
-    "@nivo/sunburst": "^0.65.1",
+    "@nivo/bar": "^0.67.0",
+    "@nivo/core": "^0.67.0",
+    "@nivo/line": "^0.67.0",
+    "@nivo/pie": "^0.67.0",
+    "@nivo/radar": "^0.67.0",
+    "@nivo/sunburst": "^0.67.0",
     "exceljs": "^4.2.0",
     "gatsby": "^2.27.0",
     "gatsby-plugin-manifest": "^2.7.0",
@@ -28,7 +28,7 @@
     "gatsby-source-filesystem": "^2.6.0",
     "gatsby-transformer-json": "^2.6.0",
     "gatsby-transformer-remark": "^2.11.0",
-    "graphql-typescript-definitions": "^0.21.0",
+    "graphql-typescript-definitions": "^0.21.1",
     "localforage": "^1.9.0",
     "marked": "^1.2.5",
     "react": "^17.0.1",
@@ -44,7 +44,7 @@
     "write": "^2.0.0"
   },
   "devDependencies": {
-    "@types/marked": "^1.2.0",
+    "@types/marked": "^1.2.1",
     "@types/tinycolor2": "^1.4.2",
     "dotenv": "^8.2.0",
     "showdown": "^1.9.1"
