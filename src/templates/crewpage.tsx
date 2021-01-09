@@ -221,7 +221,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						</Comment.Group>
 							)*/}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
-					<CrewVariants short_name={crew.short_name} />
+					<CrewVariants traits_hidden={crew.traits_hidden} />
 				</Container>
 			</Layout>
 		);
