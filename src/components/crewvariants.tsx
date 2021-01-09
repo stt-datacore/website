@@ -51,7 +51,7 @@ class CrewVariants extends Component<CrewVariantsProps, CrewVariantsState> {
 						variants.push({'name': found[0].short_name, 'trait_variants': found});
 					}
 				});
-				self.setState({ 'variants': variants });
+				self.setState({ variants });
 			});
 	}
 
