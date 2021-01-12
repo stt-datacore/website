@@ -42,14 +42,32 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 	componentDidMount() {
 		let urlParams = new URLSearchParams(window.location.search);
+		if (isMobile || (urlParams.has('mobile') && urlParams.get('mobile'))) {
+			this.setState({ mobile: true });
+		}
 		if (urlParams.has('dbid')) {
-			let dbid = urlParams.get('dbid');
-			this.setState({ dbid });
+			this.setState({ dbid: urlParams.get('dbid') });
+		} else if (urlParams.has('discord') && window.location.hash !== '') {
+			let discordUsername = urlParams.get('discord');
+			let discordDiscriminator = window.location.hash.replace('#', '');
+			fetch(`${process.env.GATSBY_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
+				.then(response => {
+					return response.json();
+				})
+				.then(data => {
+					if (data && data.dbid) {
+						this.setState({ dbid: data.dbid });
+					}
+				})
+				.catch(err => {
+					this.setState({ errorMessage: err });
+				});
+		}
+	}
 
-			if (isMobile || (urlParams.has('mobile') && urlParams.get('mobile'))) {
-				this.setState({ mobile: true });
-			}
-
+	componentDidUpdate() {
+		const { dbid, playerData, errorMessage } = this.state;
+		if (dbid && !playerData && !errorMessage ) {
 			let lastModified = undefined;
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)

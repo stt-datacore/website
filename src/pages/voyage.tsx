@@ -10,6 +10,7 @@ type VoyagePageState = {
 	playerData?: any;
 	errorMessage?: string;
 	pastedContent: string | number;
+	clippedContent: string | number;
 };
 
 class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
@@ -19,7 +20,8 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		this.state = {
 			playerData: undefined,
 			errorMessage: undefined,
-			pastedContent: ''
+			pastedContent: '',
+			clippedContent: '',
 		};
 	}
 
@@ -31,39 +33,37 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as='h4'>Player tools</Header>
-						<p>You can load your player information from the game's website and get rich insights from it, including calculating optimal voyage lineup, unnecessary items, exporting your crew list as a CSV or sharing your profile with other players.</p>
-						<p>
-							This website cannot make requests directly to DB's servers (due to security configurations as well as unclear communication
-							from them about ToS interpretation), so there are a few manual steps required to import your data:
-						</p>
-            <p>
-              If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials; making it easier to change accounts.
-            </p>
+						<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
+						<p>If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials, making it easier to change accounts.</p>
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
 								<a href='https://stt.disruptorbeam.com/player?client_api=15' target='_blank'>
 									https://stt.disruptorbeam.com/player
 								</a>
-								, make sure you are logged in and your player data is loaded; it should look like a bunch of gibberish starting with{' '}
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
 								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
 							</li>
 							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>Paste the contents in the text box, then click the 'Read data' button below</li>
+							<li>Paste it (Ctrl+V) in the text box below. Note that only the first few lines may be displayed</li>
+							<li>Click the 'Import data' button</li>
 						</ul>
 
 						<Form>
 							<TextArea
-								placeholder='Paste the content here'
-								value={this.state.pastedContent}
-								onChange={(e, { value }) => this.setState({ pastedContent: value })}
+								placeholder='Paste your player data here'
+								value={this.state.clippedContent}
+								onChange={(e, { value }) => this.setState({ clippedContent: value })}
+								onPaste={(e) => { return this._onPaste(e) }}
 							/>
 						</Form>
 
 						<Button
 							onClick={() => this._parseFromTextbox()}
 							style={{ marginBottom: '1em', marginTop: '1em' }}
-							content='Read data'
+							content='Import data'
 							icon='paste'
 							labelPosition='right'
 						/>
@@ -88,7 +88,24 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		}
 	}
 
+	_onPaste(event) {
+		let self = this;
+		let paste = event.clipboardData || window.clipboardData;
+		if (paste) {
+			let pastedContent = paste.getData('text');
+			let clippedContent = pastedContent.substr(0, 500)+' [ ... ]';
+			self.setState({ pastedContent, clippedContent });
+			event.preventDefault();
+			return false;
+		}
+		return true;
+	}
+
 	_parseFromTextbox() {
+		// Use inputted text if no pasted text detected
+		if (this.state.pastedContent == '')
+			this.setState({ pastedContent: this.state.clippedContent });
+
 		try {
 			let playerData = JSON.parse(this.state.pastedContent as string);
 
@@ -110,6 +127,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 			});
 		}
 	}
+
 }
 
 export default VoyagePage;
