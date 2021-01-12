@@ -374,7 +374,7 @@ function main() {
 	}
 
 	csvOutput +=
-		'voyage_rank, gauntlet_rank, traits, hidden_traits, action_name, action_bonus_type, action_bonus_amount, action_initial_cooldown, action_duration, action_cooldown, bonus_ability, trigger, uses_per_battle, penalty_type, penalty_amount, accuracy, crit_bonus, crit_chance, evasion, charge_phases, short_name, image_name\r\n';
+		'voyage_rank, gauntlet_rank, traits, hidden_traits, action_name, action_bonus_type, action_bonus_amount, action_initial_cooldown, action_duration, action_cooldown, bonus_ability, trigger, uses_per_battle, penalty_type, penalty_amount, accuracy, crit_bonus, crit_chance, evasion, charge_phases, short_name, image_name, symbol\r\n';
 
 	for (let crew of crewlist) {
 		let crewLine = `"${crew.name.replace(/"/g, '')}",`;
@@ -416,7 +416,7 @@ function main() {
 			}, `;
 		crewLine += `${crew.ship_battle.accuracy || ''}, ${crew.ship_battle.crit_bonus || ''}, ${crew.ship_battle.crit_chance || ''}, ${crew
 			.ship_battle.evasion || ''}, ${!!crew.action.charge_phases},`;
-		crewLine += `"${crew.short_name}",${crew.imageUrlPortrait}`;
+		crewLine += `"${crew.short_name}",${crew.imageUrlPortrait},${crew.symbol}`;
 
 		crewLine = crewLine.replace(/undefined/g, '0');
 

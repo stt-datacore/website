@@ -55,8 +55,12 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					</Container>
 
 					<Menu.Menu position='right'>
-						<Menu.Item as='a' onClick={() => window.open('https://www.patreon.com/Datacore', '_blank')}>
-							<Popup content='Donate to Community Patreon' trigger={<Icon name='patreon' />} />
+						<Menu.Item>
+							<Popup position='bottom center' flowing hoverable content='Donate to Community Patreon' trigger={<Icon name='dollar' />}>
+								<p>We have enough reserve funds for now!</p>
+								<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
+								<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
+							</Popup>
 						</Menu.Item>
 						<Menu.Item>
 							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"Developers needed!"} />

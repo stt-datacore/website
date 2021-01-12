@@ -219,6 +219,10 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Charge Phases',
 			value: (row: any) => (row.action.charge_phases ? formatChargePhases(row) : '')
+		},
+		{
+			label: 'Symbol',
+			value: (row: any) => row.symbol
 		}
 	];
 }
