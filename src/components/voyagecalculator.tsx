@@ -288,7 +288,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			},
 			{
 				menuItem: 'Crew',
-				render: () => <ProfileCrew playerData={this.state.preparedProfileData} />
+				render: () => <ProfileCrew playerData={this.state.preparedProfileData} isTools={true} />
 			},
 			{
 				menuItem: 'Crew (mobile)',
