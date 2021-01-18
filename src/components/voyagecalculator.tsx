@@ -38,6 +38,7 @@ type VoyageCalculatorState = {
 	bestShip: any;
 	crew: any[];
 	fuellist: any[];
+	fuelschematicslist: any[];
 	calcState: CalculatorState;
 	result?: ICalcResult;
 	originalPlayerData?: any;
@@ -256,6 +257,21 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					</Message>
 				)}
 
+				<Header as='h4'>Here are some potential items that you don't need (used to upgrade ships you already maxed):</Header>
+				<Grid columns={5} centered padded>
+					{this.state.fuelschematicslist.map(item => (
+						<Grid.Column key={item.archetype_id} textAlign='center'>
+							<ItemDisplay
+								src={`${process.env.GATSBY_ASSETS_URL}${item.icon.file.substr(1).replace(/\//g, '_')}.png`}
+								size={64}
+								maxRarity={item.rarity}
+								rarity={item.rarity}
+							/>
+							<p>{item.name}</p>
+						</Grid.Column>
+					))}
+				</Grid>
+
 				<Header as='h4'>Here are some potential items that you don't need (used to equip crew you already equipped):</Header>
 				<Grid columns={5} centered padded>
 					{this.state.fuellist.map(item => (
@@ -433,6 +449,14 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 								item.name.indexOf("'s ") > 0 ||
 								item.name.indexOf("s' ") > 0
 						);
+						
+						let maxedShips = playerData.player.character.ships.filter(
+							ship => ship.level === ship.max_level
+						);
+
+						let fuelschematicslist = playerData.player.character.items.filter(
+							item => maxedShips.some((ship) => ship.schematic_id === item.archetype_id)
+						);
 
 						let bonusCrew = bonusCrewForCurrentEvent(playerData.player, crewlist);
 						if (bonusCrew) {
@@ -451,7 +475,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							}
 						});
 
-						this.setState({ peopleList, fuellist, crew: crewlist });
+						this.setState({ peopleList, fuellist, fuelschematicslist, crew: crewlist });
 					});
 			});
 	}
