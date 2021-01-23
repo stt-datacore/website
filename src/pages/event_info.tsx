@@ -39,31 +39,36 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 					fetch('/structured/event_leaderboards.json')
 						.then(response => response.json())
 						.then(event_leaderboards => {
-							let ev_inst = event_instances.find(ev => ev.instance_id === Number.parseInt(event_instace));
-							let ev_lead = ev_inst ? event_leaderboards.find(ev => ev.instance_id === ev_inst.instance_id) : undefined;
+							fetch('/structured/event_fleaderboards.json')
+								.then(response => response.json())
+								.then(event_fleaderboards => {
+									let ev_inst = event_instances.find(ev => ev.instance_id === Number.parseInt(event_instace));
+									let ev_lead = ev_inst ? event_leaderboards.find(ev => ev.instance_id === ev_inst.instance_id) : undefined;
+									let ev_flead = ev_inst ? event_fleaderboards.find(ev => ev.fixed_instance_id === ev_inst.fixed_instance_id) : undefined;
 
-							if (ev_inst === undefined || ev_lead === undefined) {
-								this.setState({ errorMessage: 'Invalid event name, or data not yet available for this event.' });
-							} else {
-								if (ev_inst.event_details) {
-									fetch(`/structured/events/${ev_inst.instance_id}.json`)
-										.then(response => response.json())
-										.then(event_details => {
-											this.setState({ event_data: { ev_inst, ev_lead, event_details } });
-										});
+									if (ev_inst === undefined || ev_lead === undefined) {
+										this.setState({ errorMessage: 'Invalid event name, or data not yet available for this event.' });
+									} else {
+										if (ev_inst.event_details) {
+											fetch(`/structured/events/${ev_inst.instance_id}.json`)
+												.then(response => response.json())
+												.then(event_details => {
+													this.setState({ event_data: { ev_inst, ev_lead, ev_flead, event_details } });
+												});
 
-									fetch(`/eventlogs/${ev_inst.instance_id}.json`)
-										.then(response => response.json())
-										.then(event_log => {
-											this.setState({ event_log });
-										}).catch(err => {
-											// No log for this event
-											this.setState({ event_log: undefined });
-										});
-								} else {
-									this.setState({ event_data: { ev_inst, ev_lead } });
-								}
-							}
+											fetch(`/eventlogs/${ev_inst.instance_id}.json`)
+												.then(response => response.json())
+												.then(event_log => {
+													this.setState({ event_log });
+												}).catch(err => {
+													// No log for this event
+													this.setState({ event_log: undefined });
+												});
+										} else {
+											this.setState({ event_data: { ev_inst, ev_lead, ev_flead } });
+										}
+									}
+								});
 						});
 				})
 				.catch(err => {
@@ -79,7 +84,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 			return <span />;
 		}
 
-		let data_formatted = event_log.slice(-1)[0].leaderboard.slice(0,10).map(entry => ({
+		let data_formatted = event_log.slice(-1)[0].leaderboard.slice(0, 10).map(entry => ({
 			id: entry.display_name,
 			dbid: entry.dbid,
 			data: []
@@ -87,7 +92,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		event_log.forEach(entry => {
 			data_formatted.forEach(line => {
-				let found = entry.leaderboard.find(l =>l.dbid === line.dbid);
+				let found = entry.leaderboard.find(l => l.dbid === line.dbid);
 				if (found) {
 					line.data.push({
 						x: new Date(entry.date),
@@ -111,7 +116,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							type: 'time',
 							precision: 'minute'
 						}}
-        				yScale={{ type: 'linear', min: 'auto', max: 'auto', reverse: false }}
+						yScale={{ type: 'linear', min: 'auto', max: 'auto', reverse: false }}
 						curve="monotoneX"
 						margin={{ top: 50, right: 190, bottom: 50, left: 100 }}
 						axisBottom={{
@@ -329,6 +334,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
 								<Table.HeaderCell width={1}>Rank</Table.HeaderCell>
 								<Table.HeaderCell width={1}>Score</Table.HeaderCell>
+								<Table.HeaderCell width={2}>Fleet</Table.HeaderCell>
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
@@ -346,7 +352,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 												<img
 													width={48}
 													src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
-													}`}
+														}`}
 												/>
 											</div>
 											<div style={{ gridArea: 'stats' }}>
@@ -354,8 +360,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 													{member.last_update ? (
 														<Link to={`/profile?dbid=${member.dbid}`}>{member.display_name}</Link>
 													) : (
-														<span>{member.display_name}</span>
-													)}
+															<span>{member.display_name}</span>
+														)}
 												</span>
 											</div>
 											<div style={{ gridArea: 'description' }}>
@@ -368,10 +374,45 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 									</Table.Cell>
 									<Table.Cell>{member.rank}</Table.Cell>
 									<Table.Cell>{member.score}</Table.Cell>
+									<Table.Cell>
+										{member.fleetname ? <Link to={`/fleet_info?fleetid=${member.fleetid}`}>
+											<b>{member.fleetname}</b>
+										</Link> : <span>-</span>}
+									</Table.Cell>
 								</Table.Row>
 							))}
 						</Table.Body>
 					</Table>
+
+					{event_data.ev_flead &&
+					<div>
+						<Message>
+							<Message.Header>TODO: Fleet Leaderboard is experimental</Message.Header>
+							This data may be incomplete or out of date!
+						</Message>
+
+						<Header as='h4'>Fleet leaderboard</Header>
+						<Table celled selectable striped collapsing unstackable compact='very'>
+							<Table.Header>
+								<Table.Row>
+									<Table.HeaderCell width={3}>Name</Table.HeaderCell>
+									<Table.HeaderCell width={1}>Rank</Table.HeaderCell>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{event_data.ev_flead.fleet_ranks.map((fleet, idx) => (
+									<Table.Row key={idx}>
+										<Table.Cell>{fleet.fleet_rank}</Table.Cell>
+										<Table.Cell>
+											<Link to={`/fleet_info?fleetid=${fleet.id}`}>
+												<b>{fleet.name}</b>
+											</Link>
+										</Table.Cell>
+									</Table.Row>
+								))}
+							</Table.Body>
+						</Table>
+					</div>}
 				</Container>
 			</Layout>
 		);

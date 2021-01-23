@@ -3,7 +3,7 @@ name: Defiant Commander Worf
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 21
 in_portal: true
 date: 01/01/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Gross stats, though very new players might get a win out of him in the gauntlet. Even if Worf/Klingon events are frequent enough, his bases won't win you any weeks. Great crit values in the arena are undercut by a slower activation time and evasion handicap - there are better options available. His equip list is relatively light on Klingon/KCA faction items if you want to level him the week before his event.
+Worf's brand name will win him some fans, but unless he expands on his three previous big-bonus features, a pair of dishonorable bases aren't going to win him much Faction event seating in the future. Luckily, the Klingon collection has given him and his variants some long term value that should persist for several years. Slow arena crit and gauntlet proficiencies for players just starting out are mere garnish to his collection spot and fairly regular event bonuses.
