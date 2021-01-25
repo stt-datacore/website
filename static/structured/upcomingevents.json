@@ -445,9 +445,20 @@
 		"dates": "Thursday 01/14 until Monday 01/18 at noon (17.00 UTC)",
 		"startDate": "2021-01-14T17:00:00Z",
 		"endDate": "2021-01-18T17:00:00Z",
-		"highbonus": ["uxbridge_kevin_crew", "TODO_Mike_Burnham", "david_marcus_crew"],
+		"highbonus": ["uxbridge_kevin_crew", "dsc_mburnham_sr_crew", "david_marcus_crew"],
 		"smallbonus": {
 			"traits": ["Innovator"]
+		}
+	},
+	{
+		"name": "Fireside Stories (flashback)",
+		"type": "Faction",
+		"dates": "Thursday 01/28 until Monday 02/01 at noon (17.00 UTC)",
+		"startDate": "2021-01-28T17:00:00Z",
+		"endDate": "2021-02-01T17:00:00Z",
+		"highbonus": ["torres_deltaflyer_crew", "dsc_detmer_keyla_crew", "picard_admiral_crew"],
+		"smallbonus": {
+			"traits": ["torres", "detmer", "picard"]
 		}
 	}
 ]
