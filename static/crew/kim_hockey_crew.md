@@ -4,7 +4,7 @@ rarity: 3
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 15
+events: 16
 in_portal: true
 date: 23/06/2016
 obtained: Post-Launch

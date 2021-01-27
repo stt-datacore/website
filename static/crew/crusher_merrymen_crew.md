@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 6
+events: 7
 in_portal: true
 date: 31/07/2018
 obtained: Pack
