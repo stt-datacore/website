@@ -240,7 +240,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				<p>
-					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b> Obtained: </b>{crew.obtained})
+					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{crew.obtained})
 				</p>
 			</React.Fragment>
 		);

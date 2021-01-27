@@ -37,6 +37,7 @@ module.exports = {
 					'**/event_leaderboards.json',
 					'**/factions.json',
 					'**/items.json',
+					'**/keystones.json',
 					'**/misc_stats.json',
 					'**/missions.json',
 					'**/missionsfull.json',

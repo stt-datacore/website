@@ -5,7 +5,7 @@ series: voy
 memory_alpha:
 bigbook_tier: 6
 events: 22
-in_portal: true
+in_portal:
 date: 23/10/2018
 obtained: Missions
 mega: false

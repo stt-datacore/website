@@ -11,7 +11,7 @@ import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 import CrewFullEquipTree from '../components/crewfullequiptree';
 import CommonCrewData from '../components/commoncrewdata';
-import CrewVariants from '../components/crewvariants';
+import ExtraCrewDetails from '../components/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
 
@@ -221,7 +221,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						</Comment.Group>
 							)*/}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
-					<CrewVariants traits_hidden={crew.traits_hidden} />
+					<ExtraCrewDetails traits_hidden={crew.traits_hidden} crew_archetype_id={crew.archetype_id} />
 				</Container>
 			</Layout>
 		);
@@ -397,6 +397,7 @@ export const query = graphql`
 					flavor
 					series
 					symbol
+					archetype_id
 					traits_named
 					traits_hidden
 					collections
