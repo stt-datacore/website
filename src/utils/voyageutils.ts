@@ -268,7 +268,10 @@ export function bonusCrewForCurrentEvent(playerData: any, crewlist: any[]): Bonu
     let result = new BonusCrew();
 
     if (playerData.character.events && playerData.character.events.length > 0) {
-		let activeEvent = playerData.character.events[0];
+        let activeEvent = playerData.character.events
+          .filter((ev) => (ev.seconds_to_end > 0))
+          .sort((a, b) => (a.seconds_to_start - b.seconds_to_start))
+          [0];
         result.eventName = activeEvent.name;
 
         let eventCrew: { [index: string]: any } = {};
