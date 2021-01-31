@@ -3,7 +3,7 @@ name: Dr. Pollard
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 19
 in_portal: true
 date: 17/07/2019
