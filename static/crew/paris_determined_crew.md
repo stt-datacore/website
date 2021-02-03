@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 2
-events: 15
+events: 22
 in_portal:
 date: 21/05/2020
 obtained: Event
