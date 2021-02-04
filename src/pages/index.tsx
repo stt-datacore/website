@@ -41,55 +41,66 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		this.setState({ botcrew });
 	}
 
-	_filterCrew(crew: any, filter: any): boolean {
+	_filterCrew(crew: any, filters: any): boolean {
 		const matchesFilter = (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
-		let matches = true;
+		let anymatches = false;
 
-		if (filter.conditionArray.length === 0) {
-			// text search only
-			for (let segment of filter.textSegments) {
-				let segmentResult =
-					matchesFilter(crew.name, segment.text) ||
-					crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
-					crew.traits_hidden.some(t => matchesFilter(t, segment.text));
-				matches = matches && (segment.negated ? !segmentResult : segmentResult);
-			}
-		} else {
-			let rarities = [];
-			for (let condition of filter.conditionArray) {
-				let conditionResult = true;
-				if (condition.keyword === 'name') {
-					conditionResult = matchesFilter(crew.name, condition.value);
-				} else if (condition.keyword === 'trait') {
-					conditionResult =
-						crew.traits_named.some(t => matchesFilter(t, condition.value)) ||
-						crew.traits_hidden.some(t => matchesFilter(t, condition.value));
-				} else if (condition.keyword === 'rarity') {
-					if (!condition.negated) {
-						rarities.push(Number.parseInt(condition.value));
-						continue;
-					}
-
-					conditionResult = crew.max_rarity === Number.parseInt(condition.value);
+		for (let filter of filters) {
+			let matches = true;
+			if (filter.conditionArray.length === 0) {
+				// text search only
+				for (let segment of filter.textSegments) {
+					let segmentResult =
+						matchesFilter(crew.name, segment.text) ||
+						crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
+						crew.traits_hidden.some(t => matchesFilter(t, segment.text));
+					matches = matches && (segment.negated ? !segmentResult : segmentResult);
 				}
-				matches = matches && (condition.negated ? !conditionResult : conditionResult);
-			}
+			} else {
+				let rarities = [];
+				for (let condition of filter.conditionArray) {
+					let conditionResult = true;
+					if (condition.keyword === 'name') {
+						conditionResult = matchesFilter(crew.name, condition.value);
+					} else if (condition.keyword === 'trait') {
+						conditionResult =
+							crew.traits_named.some(t => matchesFilter(t, condition.value)) ||
+							crew.traits_hidden.some(t => matchesFilter(t, condition.value));
+					} else if (condition.keyword === 'rarity') {
+						if (!condition.negated) {
+							rarities.push(Number.parseInt(condition.value));
+							continue;
+						}
 
-			if (rarities.length > 0) {
-				matches = matches && rarities.includes(crew.max_rarity);
-			}
+						conditionResult = crew.max_rarity === Number.parseInt(condition.value);
+					} else if (condition.keyword === 'skill') {
+						let skillShort = CONFIG.SKILLS_SHORT.find(skill => skill.short === condition.value.toUpperCase());
+						let skillName = skillShort ? skillShort.name : condition.value.toLowerCase()+"_skill";
+						conditionResult = skillName in crew.base_skills;
+					}
+					matches = matches && (condition.negated ? !conditionResult : conditionResult);
+				}
 
-			for (let segment of filter.textSegments) {
-				let segmentResult =
-					matchesFilter(crew.name, segment.text) ||
-					crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
-					crew.traits_hidden.some(t => matchesFilter(t, segment.text));
-				matches = matches && (segment.negated ? !segmentResult : segmentResult);
+				if (rarities.length > 0) {
+					matches = matches && rarities.includes(crew.max_rarity);
+				}
+
+				for (let segment of filter.textSegments) {
+					let segmentResult =
+						matchesFilter(crew.name, segment.text) ||
+						crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
+						crew.traits_hidden.some(t => matchesFilter(t, segment.text));
+					matches = matches && (segment.negated ? !segmentResult : segmentResult);
+				}
+			}
+			if (matches) {
+				anymatches = true;
+				break;
 			}
 		}
 
-		return matches;
+		return anymatches;
 	}
 
 	renderTableRow(crew: any): JSX.Element {
@@ -154,7 +165,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						explanation={
 							<div>
 								<p>
-									Do simple text search in the name and traits (with optional '-' for exclusion). For example, this will return all Rikers
+									Do simple text search in the name and traits (with optional '-' for exclusion). For example, this returns all Rikers
 									that are not romantic:
 								</p>
 								<p>
@@ -162,13 +173,19 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 								</p>
 
 								<p>
-									You can also use advanced search to look through the <b>name</b>, <b>trait</b> or <b>rarity</b> fields. For example, this
-									returns all crew with the 'Cultural Figure' trait of rarity 4 and 5 which are not alien and are from DS9:
+									You can search for multiple crew by separating terms with <b>OR</b>. For example, this returns any Scotty or B'Elanna Torres:
 								</p>
 								<p>
-									<code>trait:cultu rarity:4,5 -trait:nonhum ds9</code>
+									<code>scott OR torres</code>
 								</p>
-								<p>Feedback is welcome!</p>
+
+								<p>
+									You can also specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields to do advanced searches. For example, this
+									returns crew of rarity 4 or 5 with medicine skill and the 'Cultural Figure' trait:
+								</p>
+								<p>
+									<code>rarity:4,5 skill:med trait:cultu</code>
+								</p>
 							</div>
 						}
 						renderTableRow={crew => this.renderTableRow(crew)}
