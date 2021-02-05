@@ -79,21 +79,28 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 			});
 	}
 
-	_filterItem(item: any, filter: any): boolean {
+	_filterItem(item: any, filters: []): boolean {
 		const matchesFilter = (input: string, searchString: string) =>
 			input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
-		let matches = true;
+		let meetsAnyCondition = false;
 
-		if (filter.conditionArray.length === 0) {
-			// text search only
-			for (let segment of filter.textSegments) {
-				let segmentResult = matchesFilter(item.name, segment.text) || matchesFilter(item.flavor, segment.text);
-				matches = matches && (segment.negated ? !segmentResult : segmentResult);
+		for (let filter of filters) {
+			let meetsAllConditions = true;
+			if (filter.conditionArray.length === 0) {
+				// text search only
+				for (let segment of filter.textSegments) {
+					let segmentResult = matchesFilter(item.name, segment.text) || matchesFilter(item.flavor, segment.text);
+					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
+				}
+			}
+			if (meetsAllConditions) {
+				meetsAnyCondition = true;
+				break;
 			}
 		}
 
-		return matches;
+		return meetsAnyCondition;
 	}
 
 	renderTableRow(item: any): JSX.Element {
@@ -149,7 +156,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 							data={this.state.items}
 							explanation={
 								<div>
-									<p>Do simple text search in the name and flavor</p>
+									<p>Search for items by name or flavor.</p>
 								</div>
 							}
 							renderTableRow={crew => this.renderTableRow(crew)}

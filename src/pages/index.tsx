@@ -41,13 +41,13 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		this.setState({ botcrew });
 	}
 
-	_filterCrew(crew: any, filters: any): boolean {
+	_filterCrew(crew: any, filters: []): boolean {
 		const matchesFilter = (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
-		let anymatches = false;
+		let meetsAnyCondition = false;
 
 		for (let filter of filters) {
-			let matches = true;
+			let meetsAllConditions = true;
 			if (filter.conditionArray.length === 0) {
 				// text search only
 				for (let segment of filter.textSegments) {
@@ -55,7 +55,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						matchesFilter(crew.name, segment.text) ||
 						crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
 						crew.traits_hidden.some(t => matchesFilter(t, segment.text));
-					matches = matches && (segment.negated ? !segmentResult : segmentResult);
+					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
 				}
 			} else {
 				let rarities = [];
@@ -75,15 +75,16 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 
 						conditionResult = crew.max_rarity === Number.parseInt(condition.value);
 					} else if (condition.keyword === 'skill') {
+						// Only full skill names or short names are valid here e.g. command or cmd
 						let skillShort = CONFIG.SKILLS_SHORT.find(skill => skill.short === condition.value.toUpperCase());
 						let skillName = skillShort ? skillShort.name : condition.value.toLowerCase()+"_skill";
 						conditionResult = skillName in crew.base_skills;
 					}
-					matches = matches && (condition.negated ? !conditionResult : conditionResult);
+					meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 				}
 
 				if (rarities.length > 0) {
-					matches = matches && rarities.includes(crew.max_rarity);
+					meetsAllConditions = meetsAllConditions && rarities.includes(crew.max_rarity);
 				}
 
 				for (let segment of filter.textSegments) {
@@ -91,16 +92,16 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						matchesFilter(crew.name, segment.text) ||
 						crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
 						crew.traits_hidden.some(t => matchesFilter(t, segment.text));
-					matches = matches && (segment.negated ? !segmentResult : segmentResult);
+					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
 				}
 			}
-			if (matches) {
-				anymatches = true;
+			if (meetsAllConditions) {
+				meetsAnyCondition = true;
 				break;
 			}
 		}
 
-		return anymatches;
+		return meetsAnyCondition;
 	}
 
 	renderTableRow(crew: any): JSX.Element {
@@ -165,7 +166,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						explanation={
 							<div>
 								<p>
-									Do simple text search in the name and traits (with optional '-' for exclusion). For example, this returns all Rikers
+									Search for crew by name or trait (with optional '-' for exclusion). For example, this returns all Rikers
 									that are not romantic:
 								</p>
 								<p>
@@ -173,18 +174,18 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 								</p>
 
 								<p>
-									You can search for multiple crew by separating terms with <b>OR</b>. For example, this returns any Scotty or B'Elanna Torres:
+									Search for multiple crew by separating terms with <b>OR</b>. This returns any Tuvok or T'Pol:
 								</p>
 								<p>
-									<code>scott OR torres</code>
+									<code>tuvok OR tpol</code>
 								</p>
 
 								<p>
-									You can also specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields to do advanced searches. For example, this
-									returns crew of rarity 4 or 5 with medicine skill and the 'Cultural Figure' trait:
+									Specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields for more advanced searches. This
+									returns all female crew of rarity 4 or 5 with science skill and the Q Continuum trait:
 								</p>
 								<p>
-									<code>rarity:4,5 skill:med trait:cultu</code>
+									<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
 								</p>
 							</div>
 						}

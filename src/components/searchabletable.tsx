@@ -121,7 +121,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 
 		if (this.state.searchFilter) {
 			let filters = [];
-			let grouped = this.state.searchFilter.split(/ OR /i);
+			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
 			grouped.forEach(group => {
 				filters.push(SearchString.parse(group));
 			});
