@@ -120,8 +120,12 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		let { data } = this.state;
 
 		if (this.state.searchFilter) {
-			let filter = SearchString.parse(this.state.searchFilter);
-			data = data.filter(row => this.props.filterRow(row, filter));
+			let filters = [];
+			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
+			grouped.forEach(group => {
+				filters.push(SearchString.parse(group));
+			});
+			data = data.filter(row => this.props.filterRow(row, filters));
 		}
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
