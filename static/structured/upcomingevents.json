@@ -460,5 +460,16 @@
 		"smallbonus": {
 			"traits": ["torres", "detmer", "picard"]
 		}
+	},
+	{
+		"name": "God of Thunder",
+		"type": "Faction/Galaxy",
+		"dates": "Thursday 02/11 until Monday 02/15 at noon (17.00 UTC)",
+		"startDate": "2021-02-11T17:00:00Z",
+		"endDate": "2021-02-15T17:00:00Z",
+		"highbonus": ["troi_bridal_crew", "yates_bridal_crew", "worf_groom_crew", "q_lothario_crew"],
+		"smallbonus": {
+			"traits": ["troi", "yates", "worf", "Scoundrel"]
+		}
 	}
 ]
