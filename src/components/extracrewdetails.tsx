@@ -84,6 +84,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			.then(crew => {
 				// Find all crew who have any polestars in common
 				for (let i = 0; i < crew.length; i++) {
+				  if (!crew[i].in_portal) continue;
 					let polesInCommon = [];
 					for (let t = 0; t < this.props.traits.length; t++) {
 						if (crew[i].traits.indexOf(this.props.traits[t]) >= 0)
@@ -111,10 +112,10 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				// Find optimal polestars, i.e. combinations with best chance of retrieving this crew
 				polestarCounts.sort((a, b) => {
 					if (a.count == b.count)
-						return a.polestars.length > b.polestars.length;
-					return a.count > b.count;
+						return a.polestars.length - b.polestars.length;
+					return a.count - b.count;
 				});
-				let optimized = [], iBestCount = 5, iMinimumTraits = 4;
+				let optimized = [], iBestCount = 10, iMinimumTraits = 4;
 				for (let i = 0; i < polestarCounts.length; i++) {
 					// Ignore the other counts if worse than best chance or minimum trait count
 					if (polestarCounts[i].count > iBestCount)
@@ -227,7 +228,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	}
 
 	renderPolestars() {
-		if (!this.state.polestars) {
+		if (!this.state.polestars || !this.state.keystone) {
 			return <span />;
 		}
 
