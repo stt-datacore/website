@@ -122,7 +122,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 					if (iMinimumTraits < 4 && polestarCounts[i].polestars.length == 4)
 						break;
 
-					if (polestarCounts[i].count > 5) continue;	// Only a maximum of 4 polestars are allowed
+					if (polestarCounts[i].length > 5) continue;	// Only a maximum of 4 polestars are allowed
 					if (polestarCounts[i].count < iBestCount)
 						iBestCount = polestarCounts[i].count;
 					if (polestarCounts[i].polestars.length < iMinimumTraits)
