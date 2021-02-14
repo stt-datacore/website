@@ -38,7 +38,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
-								<a href='https://stt.disruptorbeam.com/player?client_api=15' target='_blank'>
+								<a href='https://stt.disruptorbeam.com/player?client_api=17' target='_blank'>
 									https://stt.disruptorbeam.com/player
 								</a>
 							</li>
