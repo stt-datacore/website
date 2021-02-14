@@ -225,7 +225,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						crew_archetype_id={crew.archetype_id}
 						max_rarity={crew.max_rarity}
 						base_skills={crew.base_skills}
-						traits={crew.traits} traits_hidden={crew.traits_hidden}
+						traits_named={crew.traits_named} traits_hidden={crew.traits_hidden}
 					/>
 				</Container>
 			</Layout>

@@ -17,6 +17,16 @@ type ExtraCrewDetailsState = {
 	polestars: any
 };
 
+const RARITIES = ['Basic Rarity','Common Rarity','Uncommon Rarity','Rare Rarity','Super Rare Rarity','Legendary Rarity'];
+const SKILLS = {
+	command_skill: 'Command Skill',
+	science_skill: 'Science Skill',
+	security_skill: 'Security Skill',
+	engineering_skill: 'Engineering Skill',
+	diplomacy_skill: 'Diplomacy Skill',
+	medicine_skill: 'Medicine Skill'
+};
+
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
 	state = {
 		variants: [],
@@ -26,10 +36,11 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	componentDidMount() {
 		// Prepare polestar counts
-		let polestars = this.props.traits.slice();
-		polestars.push('crew_max_rarity_'+this.props.max_rarity);
+		//	Use traits_named instead of traits
+		let polestars = this.props.traits_named.slice();
+		polestars.push(RARITIES[this.props.max_rarity]);
 		for (let skill in this.props.base_skills) {
-			if (this.props.base_skills[skill]) polestars.push(skill);
+			if (this.props.base_skills[skill]) polestars.push(SKILLS[skill]);
 		}
 		let polestarCounts = [];
 		let f = function(prepoles, traits) {
@@ -86,17 +97,18 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				for (let i = 0; i < crew.length; i++) {
 				  if (!crew[i].in_portal) continue;
 					let polesInCommon = [];
-					for (let t = 0; t < this.props.traits.length; t++) {
-						if (crew[i].traits.indexOf(this.props.traits[t]) >= 0)
-							polesInCommon.push(this.props.traits[t]);
+					for (let t = 0; t < this.props.traits_named.length; t++) {
+						if (crew[i].traits_named.indexOf(this.props.traits_named[t]) >= 0)
+							polesInCommon.push(this.props.traits_named[t]);
 					}
 					// Add 1 to count of every polestar combination in common
 					if (polesInCommon.length > 0) {
+						// Only consider rarity and skills if at least 1 trait in common
 						if (crew[i].max_rarity == this.props.max_rarity)
-							polesInCommon.push('crew_max_rarity_'+this.props.max_rarity);
+							polesInCommon.push(RARITIES[this.props.max_rarity]);
 						for (let skill in crew[i].base_skills) {
 							if (crew[i].base_skills[skill] && this.props.base_skills[skill])
-								polesInCommon.push(skill);
+								polesInCommon.push(SKILLS[skill]);
 						}
 						polestarCounts.forEach(count => {
 							if (polesInCommon.length >= count.polestars.length) {
@@ -115,40 +127,39 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						return a.polestars.length - b.polestars.length;
 					return a.count - b.count;
 				});
-				let optimized = [], iBestCount = 10, iMinimumTraits = 4;
+				let optimized = [], iBestCount = 10, iBestTraitCount = 4;
 				for (let i = 0; i < polestarCounts.length; i++) {
-					// Ignore the other counts if worse than best chance or minimum trait count
-					if (polestarCounts[i].count > iBestCount)
+					let testcount = polestarCounts[i];
+
+					// We stop looking for optimals if testcount is:
+					//	1) worse than current best count (lower is better)
+					if (testcount.count > iBestCount)
 						break;
-					if (iMinimumTraits < 4 && polestarCounts[i].polestars.length == 4)
+					//	or 2) trait count is 4 and current best trait count is less than 4
+					if (testcount.polestars.length == 4 && iBestTraitCount < 4)
 						break;
 
-					if (polestarCounts[i].length > 5) continue;	// Only a maximum of 4 polestars are allowed
-					if (polestarCounts[i].count < iBestCount)
-						iBestCount = polestarCounts[i].count;
-					if (polestarCounts[i].polestars.length < iMinimumTraits)
-						iMinimumTraits = polestarCounts[i].polestars.length;
+					if (testcount.count < iBestCount)
+						iBestCount = testcount.count;
+					if (testcount.polestars.length < iBestTraitCount)
+						iBestTraitCount = testcount.polestars.length;
 
-					let bInclude = true;
-					let polestars = polestarCounts[i].polestars;
-					// Do not include redundant combinations
-					//	(i.e. combos w/ 4 polestars that aren't better than similar 3 polestar combos)
-					optimized.forEach(count => {
-						if (polestars.length >= count.polestars.length) {
-							let bMatching = true;
-							count.polestars.forEach(polestar => {
-								bMatching = bMatching && polestars.indexOf(polestar) >= 0;
-							});
-							if (bMatching && polestarCounts[i].count <= count.count) {
-								bInclude = false;
-							}
-						}
-					});
-					if (bInclude)
-						optimized.push({
-							'polestars': polestarCounts[i].polestars,
-							'chance': (1/polestarCounts[i].count*100).toFixed()
+					// Ignore supersets of an already optimal subset
+					let bIsSuperset = false;
+					for (let j = 0; j < optimized.length; j++) {
+						if (testcount.polestars.length <= optimized[j].polestars.length) continue;
+						bIsSuperset = true;
+						optimized[j].polestars.forEach(polestar => {
+							bIsSuperset = bIsSuperset && testcount.polestars.indexOf(polestar) >= 0;
 						});
+						if (bIsSuperset) break;
+					}
+					if (bIsSuperset) continue;
+
+					optimized.push({
+						'polestars': testcount.polestars,
+						'chance': (1/testcount.count*100).toFixed()
+					});
 				}
 				self.setState({ polestars: optimized });
 
@@ -210,9 +221,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 										</div>
 										<div style={{ gridArea: 'description' }}>
 											<span>Trait filter: </span>
-											{kk.filter.trait && <Link to={`https://datacore.app/?search=trait:${kk.filter.trait}`}>
+											{kk.filter.trait && <Link to={`https://datacore.app/?search=trait:${kk.short_name}`}>
 												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-													{kk.filter.trait}
+													{kk.short_name}
 												</span>
 											</Link>}
 										</div>
