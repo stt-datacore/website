@@ -1,6 +1,8 @@
 const fs = require('fs');
 const showdown = require('showdown');
 const ExcelJS = require('exceljs');
+require('lodash.combinations');
+const _ = require('lodash');
 
 const STATIC_PATH = `${__dirname}/../static/structured/`;
 
@@ -327,6 +329,40 @@ function main() {
 			crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
 			crew.markdownContent = mdData.markdownContent;
 		}
+	}
+
+	// Calculate optimised polestars
+	let polestarCombos = {};
+	for (let crew of crewlist) {
+		if (!crew.in_portal) continue;
+		let polestars = crew.traits.slice();
+		polestars.push('crew_max_rarity_'+crew.max_rarity);
+		for (let skill in crew.base_skills) {
+			if (crew.base_skills[skill]) polestars.push(skill);
+		}
+		let onePolestarCombos = polestars.slice().map((pol) => [pol]);
+		let twoPolestarCombos = _.combinations(polestars, 2);
+		let threePolestarCombos = _.combinations(polestars, 3);
+		let fourPolestarCombos = _.combinations(polestars, 4);
+		let crewPolestarCombos = [].concat(onePolestarCombos).concat(twoPolestarCombos).concat(threePolestarCombos).concat(fourPolestarCombos);
+		for (let combo of crewPolestarCombos) {
+			let sorted = combo.sort();
+			if (!polestarCombos[sorted]) {
+				polestarCombos[sorted] = {
+					count: 0,
+					crew: [],
+					polestars: sorted,
+				}
+			}
+			polestarCombos[sorted].count = polestarCombos[sorted].count + 1;
+			polestarCombos[sorted].crew.push(crew.symbol);
+		}
+	}
+
+	for (let crew of crewlist) {
+		if (!crew.in_portal) continue;
+		let uniqueCombos = Object.keys(polestarCombos).filter((pc) => polestarCombos[pc].count === 1 && polestarCombos[pc].crew[0] === crew.symbol).map((pc) => polestarCombos[pc].polestars);
+		crew.unique_polestar_combos = uniqueCombos;
 	}
 
 	// Sory by date added
