@@ -58,7 +58,21 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 								onChange={(e, { value }) => this.setState({ clippedContent: value })}
 								onPaste={(e) => { return this._onPaste(e) }}
 							/>
+							<input
+								type='file'
+								onChange={(e) => { this._handleFileUpload(e) }}
+								style={{display:'none'}}
+								ref={e => this.inputUploadFile = e}
+							/>
 						</Form>
+
+						<Button
+							onClick={() => this.inputUploadFile.click()}
+							style={{ marginBottom: '1em', marginTop: '1em', marginRight: '1em' }}
+							content='Upload data file'
+							icon='file'
+							labelPosition='right'
+						/>
 
 						<Button
 							onClick={() => this._parseFromTextbox()}
@@ -101,6 +115,16 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		return true;
 	}
 
+	_handleFileUpload(event) {
+		// use FileReader to read file content in browser
+		const fReader = new FileReader();
+		fReader.onload = (e) => {
+			this.setState({ pastedContent: e.target.result });
+			this._parseFromTextbox();
+		};
+		fReader.readAsText(event.target.files[0]);
+	}
+	
 	_parseFromTextbox() {
 		// Use inputted text if no pasted text detected
 		if (this.state.pastedContent == '')
