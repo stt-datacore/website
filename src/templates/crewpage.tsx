@@ -221,7 +221,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						</Comment.Group>
 							)*/}
 					<Divider horizontal hidden style={{ marginTop: '4em' }} />
-					<ExtraCrewDetails traits_hidden={crew.traits_hidden} crew_archetype_id={crew.archetype_id} />
+					<ExtraCrewDetails
+						crew_archetype_id={crew.archetype_id}
+						max_rarity={crew.max_rarity}
+						base_skills={crew.base_skills}
+						traits_named={crew.traits_named} traits_hidden={crew.traits_hidden}
+					/>
 				</Container>
 			</Layout>
 		);
@@ -398,6 +403,7 @@ export const query = graphql`
 					series
 					symbol
 					archetype_id
+					traits
 					traits_named
 					traits_hidden
 					collections
