@@ -167,8 +167,6 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			return null;
 		}
 
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
-		
 		if (unownedOnly) {
 			data = data.filter((crew) => !this.props.playerData.player.character.crew.some((c) => crew.symbol === c.symbol));
 		}
@@ -176,6 +174,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		if (minRarity) {
 			data = data.filter((crew) => crew.max_rarity >= minRarity);
 		}
+		
+		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
