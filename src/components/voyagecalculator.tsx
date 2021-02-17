@@ -16,6 +16,8 @@ import ProfileShips from '../components/profile_ships';
 import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
+import CrewRetrieval from '../components/crewretrieval';
+
 
 import { exportCrew, applyCrewBuffs, downloadData, prepareProfileData } from '../utils/crewutils';
 import { stripPlayerData } from '../utils/playerutils';
@@ -309,6 +311,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			{
 				menuItem: 'Crew (mobile)',
 				render: () => <ProfileCrewMobile playerData={this.state.preparedProfileData} isMobile={false} />
+			},
+			{
+				menuItem: 'Crew Retrieval',
+				render: () => <CrewRetrieval playerData={this.state.preparedProfileData} />
 			},
 			{
 				menuItem: 'Ships',
