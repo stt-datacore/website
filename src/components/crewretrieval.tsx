@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
 
 type CrewRetrievalProps = {
@@ -234,7 +235,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 					<Table.Body>
 						{data.map((crew, idx) => (
 							<Table.Row key={idx} style={{ cursor: 'zoom-in' }} >
-								<Table.Cell>
+								<Table.Cell onClick={() => navigate(`/crew/${crew.symbol}/`)}>
 									<div
 										style={{
 											display: 'grid',
