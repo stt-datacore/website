@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-import { isMobile } from 'react-device-detect';
 
 import OtherPages from './otherpages';
 
@@ -38,7 +37,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 								<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
-						{!isMobile && <Menu.Item onClick={() => navigate('/voyage')}>Player tools</Menu.Item>}
+						<Menu.Item onClick={() => navigate('/voyage')}>Player tools</Menu.Item>
 						<Menu.Item onClick={() => navigate('/behold')}>Behold</Menu.Item>
 
 						<Dropdown item simple text='Pages'>
