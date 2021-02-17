@@ -345,6 +345,7 @@ function main() {
 		let threePolestarCombos = _.combinations(polestars, 3);
 		let fourPolestarCombos = _.combinations(polestars, 4);
 		let crewPolestarCombos = [].concat(onePolestarCombos).concat(twoPolestarCombos).concat(threePolestarCombos).concat(fourPolestarCombos);
+		let comboIds = [];	// Potential list of combos to check later
 		for (let combo of crewPolestarCombos) {
 			let sorted = combo.sort();
 			if (!polestarCombos[sorted]) {
@@ -353,16 +354,26 @@ function main() {
 					crew: [],
 					polestars: sorted,
 				}
+				// Only add new combos to list; if it already exists in polestarCombos,
+				//	its count is > 1 and is of no use to us here
+				comboIds.push(sorted);
 			}
 			polestarCombos[sorted].count = polestarCombos[sorted].count + 1;
 			polestarCombos[sorted].crew.push(crew.symbol);
 		}
+		crew._comboIds = comboIds;	// Attach as temp property
 	}
 
 	for (let crew of crewlist) {
 		if (!crew.in_portal) continue;
-		let uniqueCombos = Object.keys(polestarCombos).filter((pc) => polestarCombos[pc].count === 1 && polestarCombos[pc].crew[0] === crew.symbol).map((pc) => polestarCombos[pc].polestars);
+		let uniqueCombos = [];
+		// Now double check a crew's list of combos to find counts that are still 1
+		crew._comboIds.forEach((pc) => {
+			if (polestarCombos[pc].count === 1)
+				uniqueCombos.push(polestarCombos[pc].polestars);
+		});
 		crew.unique_polestar_combos = uniqueCombos;
+		delete crew._comboIds;	// Don't need it anymore
 	}
 
 	// Sory by date added
