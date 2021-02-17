@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-One of the best super rare voyagers currently in the game and likely for a long time thanks to her skill set. Zimmerman is her closest competition, but he lacks the same punch - like all other ENG+MED crew, he sacrifices some base power for versatility. Not so here. Her strong SCI base is laudable, and although an equivalent Burnham or Dax might be better to keep around since they pick up a lot of events as well, it's hard to talk about "when you freeze her", because with her voyage credentials, she won't be edged out there until you're super late game 🐋.
+A great voyager for years has come down off the irreplaceable pedestal thanks to a fleshing out of ENG/MED crew and natural power creep. A couple of multi-collection pieces joined the game in 2020 as value replacements, though she will still hold her own in most cases. A strong SCI base is laudable, and although an equivalent Burnham or Dax might be better to keep around since they pick up a lot of events as well, Sarina's collection spot is a nice pivot if you're not big on Faction events.
