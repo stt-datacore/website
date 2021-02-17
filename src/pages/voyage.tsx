@@ -67,14 +67,6 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 						</Form>
 
 						<Button
-							onClick={() => this.inputUploadFile.click()}
-							style={{ marginBottom: '1em', marginTop: '1em', marginRight: '1em' }}
-							content='Upload data file'
-							icon='file'
-							labelPosition='right'
-						/>
-
-						<Button
 							onClick={() => this._parseFromTextbox()}
 							style={{ marginBottom: '1em', marginTop: '1em' }}
 							content='Import data'
@@ -88,6 +80,23 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 								<p>{errorMessage}</p>
 							</Message>
 						)}
+					</Container>
+
+					<Container style={{ paddingBottom: '2em' }}>
+						<p>To circumvent the long text copy limitations on mobile devices, download{' '}
+							<a href='https://stt.disruptorbeam.com/player?client_api=15' target='_blank'>
+								your player data
+							</a> 
+							{' '}to your device, then click the 'Upload data file' button.
+						</p>
+
+						<Button
+							onClick={() => this.inputUploadFile.click()}
+							style={{ marginBottom: '1em', marginTop: '1em', marginRight: '1em' }}
+							content='Upload data file'
+							icon='file'
+							labelPosition='right'
+						/>
 					</Container>
 				</Layout>
 			);
