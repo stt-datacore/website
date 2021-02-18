@@ -364,13 +364,25 @@ function main() {
 		crew._comboIds = comboIds;	// Attach as temp property
 	}
 
+	const isSuperset = (test, existing) =>
+		existing.some(
+			(subset) => test.length > subset.length && subset.every(
+				(subtrait) => test.some(
+					(testtrait) => testtrait === subtrait
+				)
+			)
+		);
+
 	for (let crew of crewlist) {
 		if (!crew.in_portal) continue;
 		let uniqueCombos = [];
 		// Now double check a crew's list of combos to find counts that are still 1
 		crew._comboIds.forEach((pc) => {
-			if (polestarCombos[pc].count === 1)
-				uniqueCombos.push(polestarCombos[pc].polestars);
+			if (polestarCombos[pc].count === 1) {
+				// Ignore supersets of already perfect subsets
+				if (!isSuperset(pc, uniqueCombos))
+					uniqueCombos.push(polestarCombos[pc].polestars);
+			}
 		});
 		crew.unique_polestar_combos = uniqueCombos;
 		delete crew._comboIds;	// Don't need it anymore
