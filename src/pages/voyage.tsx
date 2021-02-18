@@ -128,7 +128,13 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		// use FileReader to read file content in browser
 		const fReader = new FileReader();
 		fReader.onload = (e) => {
-			this.setState({ pastedContent: e.target.result });
+			let data = e.target.result.toString();
+			// Handle Apple webarchive wrapping
+			if (data.match(/^bplist00/)) {
+				// Find where the JSON begins and ends, and extract just that from the larger string.
+				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}')+2);
+			}
+			this.setState({ pastedContent: data });
 			this._parseFromTextbox();
 		};
 		fReader.readAsText(event.target.files[0]);
