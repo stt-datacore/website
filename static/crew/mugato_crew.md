@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Weekday pack filler who's poor in almost every area. The one number which piques interest is a #7 CMD/SEC gauntlet pair, but it's buried behind walls of Kahless/Mirror JLP and is accompanied by a poor trait set.
+Weekday pack filler who's poor in almost every area. The one number which piques interest is a top ten CMD/SEC gauntlet pair, but it's buried behind walls of Kahless/Mirror JLP and is accompanied by a poor trait set.
