@@ -37,7 +37,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 								<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
-						<Menu.Item onClick={() => navigate('/voyage')}>Player tools</Menu.Item>
+						<Menu.Item onClick={() => navigate('/playertools')}>Player tools</Menu.Item>
 						<Menu.Item onClick={() => navigate('/behold')}>Behold</Menu.Item>
 
 						<Dropdown item simple text='Pages'>
@@ -55,7 +55,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 					<Menu.Menu position='right'>
 						<Menu.Item>
-							<Popup position='bottom center' flowing hoverable content='Donate to Community Patreon' trigger={<Icon name='dollar' />}>
+							<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
 								<p>We have enough reserve funds for now!</p>
 								<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
 								<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
