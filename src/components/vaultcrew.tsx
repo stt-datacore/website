@@ -64,13 +64,12 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		}
 
 		let skillicons = [];
-		for (let skillName in CONFIG.SKILLS) {
-			let skill = crew.base_skills[skillName];
-
-			if (skill && skill.core && skill.core > 0) {
-				skillicons.push(<img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={iconStyle} />);
-			}
-		}
+		let skills_sorted = Object.entries(crew.base_skills)
+			.sort((a, b) => { a[1].core - b[1].core });
+		skills_sorted.forEach((s) => {
+			let skillName = CONFIG.SKILLS[s[0]];
+			skillicons.push(<img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={iconStyle} />);
+		});
 
 		let divStyle: React.CSSProperties = this.props.style || {};
 		divStyle.display = 'grid';
