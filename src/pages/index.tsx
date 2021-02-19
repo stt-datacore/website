@@ -14,7 +14,7 @@ type IndexPageState = {
 };
 
 const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew' },
+	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
 	{ width: 1, column: 'command_skill', title: 'Command' },
 	{ width: 1, column: 'science_skill', title: 'Science' },
