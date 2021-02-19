@@ -79,6 +79,8 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						let skillShort = CONFIG.SKILLS_SHORT.find(skill => skill.short === condition.value.toUpperCase());
 						let skillName = skillShort ? skillShort.name : condition.value.toLowerCase()+"_skill";
 						conditionResult = skillName in crew.base_skills;
+					} else if (condition.keyword === 'in_portal') {
+						conditionResult = condition.value.toLowerCase() === 'true' ? crew.in_portal : !crew.in_portal;
 					}
 					meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 				}
