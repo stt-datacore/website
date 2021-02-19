@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
+import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox, Header } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
 
