@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
+import { isMobile } from 'react-device-detect';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
@@ -155,7 +156,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		return (
 			<div>
 				<Input
-					style={{ width: '50%' }}
+					style={{ width: isMobile ? '100%' : '50%' }}
 					iconPosition="left"
 					placeholder="Search..."
 					value={this.state.searchFilter}
@@ -165,9 +166,15 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 						<Button icon onClick={() => this._onChangeFilter('')} >
 							<Icon name='delete' />
 						</Button>
+						<Popup
+							wide
+							trigger={<Button icon style={{ marginLeft: '1em' }}><Icon name="help" /></Button>}
+							header={'Advanced search'}
+							content={this.props.explanation}
+							position="bottom left"
+						/>
 				</Input>
 
-				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
 
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
