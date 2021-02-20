@@ -189,6 +189,13 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 								<p>
 									<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
 								</p>
+
+								<p>
+									Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
+								</p>
+								<p>
+									<code>in_portal:true</code>
+								</p>
 							</div>
 						}
 						renderTableRow={crew => this.renderTableRow(crew)}
