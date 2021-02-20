@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Button, Message, Form, TextArea } from 'semantic-ui-react';
+import { Container, Header, Button, Message, Form, TextArea, Modal } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import VoyageCalculator from '../components/voyagecalculator';
@@ -89,6 +89,23 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 							</a> 
 							{' '}to your device, then click the 'Upload data file' button.
 						</p>
+						<p>
+							<Modal
+								trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
+								header='Player data upload on iOS'
+								content={<ul>
+									<li>Go to your player data using the link provided, logging in if asked.</li>
+									<li>Wait for the page to finish loading. It should start with:{' '}
+											<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+									</li>
+									<li>Press the share icon while viewing the page.</li>
+									<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
+									<li>Come back to this page (DataCore.app player tools).</li>
+									<li>Tap the 'Upload data file' button.</li>
+									<li>Choose the file starting with 'player?client_api...' from where you saved it.</li>
+								</ul>}
+							/>
+						</p>
 
 						<Button
 							onClick={() => this.inputUploadFile.click()}
@@ -128,7 +145,13 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 		// use FileReader to read file content in browser
 		const fReader = new FileReader();
 		fReader.onload = (e) => {
-			this.setState({ pastedContent: e.target.result });
+			let data = e.target.result.toString();
+			// Handle Apple webarchive wrapping
+			if (data.match(/^bplist00/)) {
+				// Find where the JSON begins and ends, and extract just that from the larger string.
+				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}')+2);
+			}
+			this.setState({ pastedContent: data });
 			this._parseFromTextbox();
 		};
 		fReader.readAsText(event.target.files[0]);

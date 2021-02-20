@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
+import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox, Header } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
 
@@ -182,6 +182,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 
 		return (
 			<>
+				<Header as='h4'>Here are all the crew who you can perform a 100% guaranteed Crew Retrieval for, using the polestars currently in your inventory:</Header>
 				<Form>
 					<Form.Group inline>
 							<Form.Field

@@ -14,7 +14,7 @@ type IndexPageState = {
 };
 
 const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew' },
+	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
 	{ width: 1, column: 'command_skill', title: 'Command' },
 	{ width: 1, column: 'science_skill', title: 'Science' },
@@ -79,6 +79,8 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						let skillShort = CONFIG.SKILLS_SHORT.find(skill => skill.short === condition.value.toUpperCase());
 						let skillName = skillShort ? skillShort.name : condition.value.toLowerCase()+"_skill";
 						conditionResult = skillName in crew.base_skills;
+					} else if (condition.keyword === 'in_portal') {
+						conditionResult = condition.value.toLowerCase() === 'true' ? crew.in_portal : !crew.in_portal;
 					}
 					meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 				}
@@ -186,6 +188,13 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 								</p>
 								<p>
 									<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
+								</p>
+
+								<p>
+									Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
+								</p>
+								<p>
+									<code>in_portal:true</code>
 								</p>
 							</div>
 						}

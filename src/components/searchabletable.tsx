@@ -15,6 +15,7 @@ export interface ITableConfigRow {
 	width: number;
 	column: string;
 	title: string;
+	pseudocolumns?: string[];
 }
 
 type SearchableTableProps = {
@@ -65,13 +66,32 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		}
 	}
 
-	_handleSort(clickedColumn) {
+	_handleSort(clickedColumn, pseudocolumns) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
-		if (column !== clickedColumn) {
-			const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
+		const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
 
+		if (pseudocolumns) {
+			if (pseudocolumns.includes(column) && direction === 'ascending') {
+				this.setState({
+					direction: 'descending',
+					pagination_page: 1,
+					data: data.reverse()
+				});
+			} else {
+				const nextIndex = pseudocolumns.indexOf(column) + 1; // Will be 0 if previous column was not a pseudocolumn
+				const nextColumnIndex = nextIndex === pseudocolumns.length ? 0 : nextIndex;
+				const newColumn = pseudocolumns[nextColumnIndex];
+				const sortedData = data.sort((a, b) => compare(a[newColumn], b[newColumn]));
+				this.setState({
+					column: newColumn,
+					direction: 'ascending',
+					pagination_page: 1,
+					data: sortedData
+				});
+			}
+		} else if (column !== clickedColumn) {
 			let sortedData = data.sort((a, b) => compare(a[clickedColumn], b[clickedColumn]));
 
 			this.setState({
@@ -105,10 +125,10 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 					<Table.HeaderCell
 						key={idx}
 						width={cell.width as any}
-						sorted={column === cell.column ? direction : null}
-						onClick={() => this._handleSort(cell.column)}
+						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
+						onClick={() => this._handleSort(cell.column, cell.pseudocolumns)}
 					>
-						{cell.title}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
