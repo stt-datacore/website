@@ -1,4 +1,4 @@
-export function getCoolStats(crew: any, simple: boolean): string {
+export function getCoolStats(crew: any, simple: boolean, showMore: boolean = true): string {
 	let stats = [];
 
 	const rankType = rank => {
@@ -26,9 +26,9 @@ export function getCoolStats(crew: any, simple: boolean): string {
 		return stats.join(' | ');
 	} else {
 		if (stats.length === 0) {
-			return 'More stats...';
+			return showMore ? 'More stats...': '';
 		} else {
-			return stats.join(', ') + ', more stats...';
+			return stats.join(', ') + (showMore ? ', more stats...' : '');
 		}
 	}
 }

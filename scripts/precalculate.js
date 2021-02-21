@@ -1,6 +1,8 @@
 const fs = require('fs');
 const showdown = require('showdown');
 const ExcelJS = require('exceljs');
+require('lodash.combinations');
+const _ = require('lodash');
 
 const STATIC_PATH = `${__dirname}/../static/structured/`;
 
@@ -327,6 +329,63 @@ function main() {
 			crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
 			crew.markdownContent = mdData.markdownContent;
 		}
+	}
+
+	// Calculate optimised polestars
+	let polestarCombos = {};
+	for (let crew of crewlist) {
+		if (!crew.in_portal) continue;
+		let polestars = crew.traits.slice();
+		polestars.push('crew_max_rarity_'+crew.max_rarity);
+		for (let skill in crew.base_skills) {
+			if (crew.base_skills[skill]) polestars.push(skill);
+		}
+		let onePolestarCombos = polestars.slice().map((pol) => [pol]);
+		let twoPolestarCombos = _.combinations(polestars, 2);
+		let threePolestarCombos = _.combinations(polestars, 3);
+		let fourPolestarCombos = _.combinations(polestars, 4);
+		let crewPolestarCombos = [].concat(onePolestarCombos).concat(twoPolestarCombos).concat(threePolestarCombos).concat(fourPolestarCombos);
+		let comboIds = [];	// Potential list of combos to check later
+		for (let combo of crewPolestarCombos) {
+			let sorted = combo.sort();
+			if (!polestarCombos[sorted]) {
+				polestarCombos[sorted] = {
+					count: 0,
+					crew: [],
+					polestars: sorted,
+				}
+				// Only add new combos to list; if it already exists in polestarCombos,
+				//	its count is > 1 and is of no use to us here
+				comboIds.push(sorted);
+			}
+			polestarCombos[sorted].count = polestarCombos[sorted].count + 1;
+			polestarCombos[sorted].crew.push(crew.symbol);
+		}
+		crew._comboIds = comboIds;	// Attach as temp property
+	}
+
+	const isSuperset = (test, existing) =>
+		existing.some(
+			(subset) => test.length > subset.length && subset.every(
+				(subtrait) => test.some(
+					(testtrait) => testtrait === subtrait
+				)
+			)
+		);
+
+	for (let crew of crewlist) {
+		if (!crew.in_portal) continue;
+		let uniqueCombos = [];
+		// Now double check a crew's list of combos to find counts that are still 1
+		crew._comboIds.forEach((pc) => {
+			if (polestarCombos[pc].count === 1) {
+				// Ignore supersets of already perfect subsets
+				if (!isSuperset(pc, uniqueCombos))
+					uniqueCombos.push(polestarCombos[pc].polestars);
+			}
+		});
+		crew.unique_polestar_combos = uniqueCombos;
+		delete crew._comboIds;	// Don't need it anymore
 	}
 
 	// Sory by date added
