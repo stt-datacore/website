@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Table, Rating, Icon, Button } from 'semantic-ui-react';
+import { Container, Header, Table, Rating, Icon, Dropdown } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -13,6 +13,12 @@ type IndexPageState = {
 	botcrew: any[];
 };
 
+const searchTypeOptions = [
+    { key : '0', value : 'Exact', text : 'Exact match only' },
+    { key : '1', value : 'Whole word', text : 'Whole word only' },
+    { key : '2', value : 'Any match', text : 'Match any text' }
+];
+
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
@@ -25,12 +31,12 @@ const tableConfig: ITableConfigRow[] = [
 ];
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
-	state = { botcrew: [], searchLevel : 2 };
-    searchTypes = [
-        (input: string, searchString: string) => input.toLowerCase() == searchString.toLowerCase(),
-        (input: string, searchString: string) => new RegExp('\\b' + searchString + '\\b', 'i').test(input),
-        (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0
-    ];
+	state = { botcrew: [], searchType : 'Any match' };
+    searchTypes = {
+        'Exact': (input: string, searchString: string) => input.toLowerCase() == searchString.toLowerCase(),
+        'Whole word': (input: string, searchString: string) => new RegExp('\\b' + searchString + '\\b', 'i').test(input),
+        'Any match': (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0
+    };
     
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
@@ -47,7 +53,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	}
 
 	_filterCrew(crew: any, filters: []): boolean {
-		const matchesFilter = this.searchTypes[this.state.searchLevel];
+		const matchesFilter = this.searchTypes[this.state.searchType];
 		let meetsAnyCondition = false;
 
 		for (let filter of filters) {
@@ -206,18 +212,17 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						renderTableRow={crew => this.renderTableRow(crew)}
 						filterRow={(crew, filter) => this._filterCrew(crew, filter)}
 						config={tableConfig}
-                        footerExt = {() => {
-                            return (
-                            <span>
-                                {this.state.searchLevel > 0 && <Button onClick={() => this.setState({searchLevel : this.state.searchLevel - 1})}>
-                                    Show less
-                                </Button>}
-                                {this.state.searchLevel < this.searchTypes.length - 1 && <Button onClick={() => this.setState({searchLevel : this.state.searchLevel + 1})}>
-                                    Show more
-                                </Button>}
+                        searchExt = { 
+                            <span style={{ paddingLeft: '2em' }}>
+                                <Dropdown inline
+                                          options={searchTypeOptions}
+                                          value={this.state.searchType}
+                                          onChange={(event, {value}) => 
+                                            this.setState({ searchType: value as number })
+                                          }
+                                />
                             </span>
-                            );
-                        }}
+                        }
                     />
 
 					<p>

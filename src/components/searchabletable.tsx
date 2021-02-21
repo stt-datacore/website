@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
-import { isMobile } from 'react-device-detect';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
@@ -25,7 +24,7 @@ type SearchableTableProps = {
 	config: ITableConfigRow[];
 	renderTableRow: (row: any) => JSX.Element;
 	filterRow: (crew: any, filter: any) => boolean;
-    footerExt: () => React.ReactNode;
+    searchExt: React.ReactNode;
 };
 
 type SearchableTableState = {
@@ -41,6 +40,9 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 	constructor(props) {
 		super(props);
 
+        //if (this.searchExt == undefined)
+        //    this.searchExt = () => (<span></span>)
+            
 		this.state = {
 			column: null,
 			direction: null,
@@ -157,7 +159,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		return (
 			<div>
 				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
+					style={{ width: '50%' }}
 					iconPosition="left"
 					placeholder="Search..."
 					value={this.state.searchFilter}
@@ -167,16 +169,11 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 						<Button icon onClick={() => this._onChangeFilter('')} >
 							<Icon name='delete' />
 						</Button>
-						<Popup
-							wide
-							trigger={<Button icon style={{ marginLeft: '1em' }}><Icon name="help" /></Button>}
-							header={'Advanced search'}
-							content={this.props.explanation}
-							position="bottom left"
-						/>
 				</Input>
 
-
+				{this.props.searchExt}
+				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
+				
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map(row => this.props.renderTableRow(row))}</Table.Body>
@@ -188,7 +185,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 									activePage={pagination_page}
 									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
 								/>
-								<span style={{ paddingLeft: '2em' }}>
+								<span style={{ paddingLeft: '2em'}}>
 									Rows per page:{' '}
 									<Dropdown
 										inline
@@ -199,7 +196,6 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 										}
 									/>
 								</span>
-								{this.props.footerExt(this)}
 							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Footer>
