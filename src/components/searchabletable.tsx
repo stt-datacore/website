@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
+import { isMobile } from 'react-device-detect';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
@@ -159,7 +160,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		return (
 			<div>
 				<Input
-					style={{ width: '50%' }}
+					style={{ width: isMobile ? '100%' : '50%' }}
 					iconPosition="left"
 					placeholder="Search..."
 					value={this.state.searchFilter}
