@@ -2,12 +2,14 @@
 name: Admiral Georgiou
 rarity: 2
 series: dsc
-memory_alpha: ''
-bigbook_tier:
-events:
+memory_alpha:
+bigbook_tier: 2
+events: 31
 in_portal:
-date:
-obtained:
-mega:
-published: false
+date: 25/02/2021
+obtained: Event
+mega: true
+published: true
 ---
+
+
