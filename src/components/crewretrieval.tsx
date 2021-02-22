@@ -21,6 +21,20 @@ type CrewRetrievalState = {
 	minRarity: any;
 };
 
+const ownedFilterOptions = [
+    { key: '0', value: 'Show all crew', text: 'Show all crew' },
+    { key: '1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
+    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew (not FF)' },
+    { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'}
+];
+
+const ownedFilters = {
+    'Show all crew': data => crew => true,
+    'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol),
+    'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
+    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol)
+};
+
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
 	{ key: '1', value: '25', text: '25' },
@@ -65,21 +79,25 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			ownedPolestars: null,
 			allCrew: null,
 			activeCrew: null,
-			unownedOnly: false,
+			ownedFilter: ownedFilterOptions[0].value,
 			minRarity: null,
 		};
 	}
 
 	componentDidMount() {
-		fetch('/structured/keystones.json')
-			.then(response => response.json())
-			.then(allkeystones => {
-				let ownedPolestars = allkeystones.filter((k) => k.type === 'keystone' && this.props.playerData.forte_root.items.some((f) => f.id === k.id));
-				this.setState({ ownedPolestars });
-			});
-		fetch('/structured/crew.json')
-			.then(response => response.json())
-			.then(allCrew => this.setState({ allCrew }));
+        if (this.props.playerData.forte_root) {
+            fetch('/structured/keystones.json')
+                .then(response => response.json())
+			.    then(allkeystones => {
+                    let ownedPolestars = allkeystones.filter((k) => k.type === 'keystone' && this.props.playerData.forte_root.items.some((f) => f.id === k.id));
+                    this.setState({ ownedPolestars });
+                });
+        
+        
+            fetch('/structured/crew.json')
+                .then(response => response.json())
+            .   then(allCrew => this.setState({ allCrew }));
+        }
 	}
 
 	componentDidUpdate() {
@@ -161,16 +179,24 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	}
 
 	render() {
-		const { column, direction, pagination_rows, pagination_page, unownedOnly, minRarity } = this.state;
+		const { column, direction, pagination_rows, pagination_page, ownedFilter, minRarity } = this.state;
 		let { data } = this.state;
-		if (!data) {
-			return null;
-		}
-
-		if (unownedOnly) {
-			data = data.filter((crew) => !this.props.playerData.player.character.crew.some((c) => crew.symbol === c.symbol));
-		}
-
+		if (!this.props.playerData.forte_root) {
+                        return (
+                <div>
+                    <h2>Crew Retrieval Unavailable</h2>
+                    <p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file. 
+                       Please follow the link and copy the correct version to paste.</p>
+                </div>
+            )
+        }
+        
+        if (!data) {
+            return null;
+        }
+        
+        data = data.filter(ownedFilters[this.state.ownedFilter](this.props.playerData.player.character.crew));
+		
 		if (minRarity) {
 			data = data.filter((crew) => crew.max_rarity >= minRarity);
 		}
@@ -186,17 +212,18 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 				<Form>
 					<Form.Group inline>
 							<Form.Field
-								control={Checkbox}
-								label='Only show unowned crew'
-								checked={this.state.unownedOnly}
-								onChange={(e, { checked }) => this.setState({ unownedOnly: checked })}
+								control={Dropdown}
+								selection
+								options={ownedFilterOptions}
+								value={this.state.ownedFilter}
+								onChange={(e, { value }) => this.setState({ ownedFilter: value })}
 						/>
 						<Form.Field
 								control={Dropdown}
 								placeholder="Minimum rarity"
 								selection
 								options={rarityOptions}
-								checked={this.state.unownedOnly}
+								value={this.state.minRarity}
 								onChange={(e, { value }) => this.setState({ minRarity: value })}
 						/>
 					</Form.Group>
