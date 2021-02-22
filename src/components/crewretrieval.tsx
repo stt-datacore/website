@@ -24,13 +24,15 @@ type CrewRetrievalState = {
 const ownedFilterOptions = [
     { key: '0', value: 'Show all crew', text: 'Show all crew' },
     { key: '1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
-    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew' }
+    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew not FF' },
+    { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'}
 ];
 
 const ownedFilters = {
     'Show all crew': data => crew => true,
-    'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol), 
-    'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol)
+    'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol),
+    'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
+    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol)
 };
 
 const pagingOptions = [
@@ -207,7 +209,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 					<Form.Group inline>
 							<Form.Field
 								control={Dropdown}
-								inline
+								selection
 								options={ownedFilterOptions}
 								value={this.state.ownedFilter}
 								onChange={(e, { value }) => this.setState({ ownedFilter: value })}
