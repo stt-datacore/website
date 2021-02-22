@@ -19,6 +19,7 @@ type CrewRetrievalState = {
 	pagination_page: number;
 	ownedFilter?: string;
 	minRarity: any;
+	collection: any;
 };
 
 const ownedFilterOptions = [
@@ -43,12 +44,16 @@ const pagingOptions = [
 ];
 
 const rarityOptions = [
-	{ key: null, value: null, text: 'None' },
+	{ key: null, value: null, text: 'Any' },
 	{ key: '1', value: '1', text: '1' },
 	{ key: '2', value: '2', text: '2' },
 	{ key: '3', value: '3', text: '3' },
 	{ key: '4', value: '4', text: '4' },
 	{ key: '5', value: '5', text: '5' }
+];
+
+const collectionsOptions = [
+	{ key: null, value: null, text: 'Any' }
 ];
 
 const filterTraits = (polestar, trait) => {
@@ -81,6 +86,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			activeCrew: null,
 			ownedFilter: ownedFilterOptions[0].value,
 			minRarity: null,
+			collection: null,
 		};
 	}
 
@@ -112,6 +118,16 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			)
 		);
 		this.setState({ data });
+		
+		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
+		cArr.forEach(c => {
+			let kv = cArr.indexOf(c) + 1;
+			collectionsOptions.push({
+				key: kv,
+				value: kv,
+				text: c
+			});
+		});
 	}
 
 	_onChangePage(activePage) {
@@ -190,7 +206,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	}
 
 	render() {
-		const { column, direction, pagination_rows, pagination_page, ownedFilter, minRarity } = this.state;
+		const { column, direction, pagination_rows, pagination_page, ownedFilter, minRarity, collection } = this.state;
 		const { playerData } = this.props
 		let { data } = this.state;
 		if (!playerData?.forte_root) {
@@ -211,6 +227,11 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		
 		if (minRarity) {
 			data = data.filter((crew) => crew.max_rarity >= minRarity);
+		}
+		
+		if (collection) {
+			let cName = collectionsOptions.find(o => o.key === collection).text;
+			data = data.filter((crew) => crew.collections.indexOf(cName) !== -1);
 		}
 		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -237,6 +258,14 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								options={rarityOptions}
 								value={this.state.minRarity}
 								onChange={(e, { value }) => this.setState({ minRarity: value })}
+						/>
+						<Form.Field
+								control={Dropdown}
+								placeholder="Collections"
+								selection
+								options={collectionsOptions}
+								value={this.state.collection}
+								onChange={(e, { value }) => this.setState({ collection: value })}
 						/>
 					</Form.Group>
 				</Form>
