@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import {
-	calculateBuffConfig,
 	ICalcResult,
 	calculateVoyage,
 	formatTimeSeconds,
@@ -72,33 +71,55 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		let ships = mergeShips(allships, playerData.player.character.ships);
 		let bestShips = this._bestVoyageShip(ships, voyageData);
 
+		let shuttleCrew = JSON.parse(JSON.stringify(voyageData.shuttle_crew));
+
 		let crewlist = [];
-		let peopleListActive = [], peopleListAll = [];
+		let peopleListDefault = [], peopleListAll = [];
 		let fakeID = 1;
+
 		playerData.player.character.crew.forEach(crew => {
-			let newcrew = JSON.parse(JSON.stringify(crew));
+			let crewman = JSON.parse(JSON.stringify(crew));
+			crewman.id = fakeID++;
+
+			// Voyage calculator looks for skills, range_min, range_max properties
 			let skills = {};
 			for (let skill in CONFIG.SKILLS) {
 				if (crew[skill].core > 0)
-					skills[skill] = crew[skill];
+					skills[skill] = {
+						'core': crew[skill].core,
+						'range_min': crew[skill].min,
+						'range_max': crew[skill].max
+					};
 			}
-			newcrew.skills = skills;
-			newcrew.id = fakeID++;
-			crewlist.push(newcrew);
+			crewman.skills = skills;
+
+			// Voyage roster generation looks for active_id property
+			crewman.active_id = 0;
+			if (crew.immortal === 0) {
+				let shuttleCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
+				let shuttleIndex = shuttleCrew.indexOf(shuttleCrewId);
+				if (shuttleIndex >= 0) {
+					crewman.active_id = 1;
+					shuttleCrew[shuttleIndex] = '';	// Clear this ID so that dupes are counted properly
+				}
+			}
+
+			crewlist.push(crewman);
 
 			// Populate exclusion lists
 			let person = {
-				key: newcrew.id,
-				value: newcrew.id,
-				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${newcrew.imageUrlPortrait}` },
-				text: newcrew.name
+				key: crewman.id,
+				value: crewman.id,
+				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crewman.imageUrlPortrait}` },
+				text: crewman.name
 			};
 			peopleListAll.push(person);
-			if (crew.immortal === 0) peopleListActive.push(person);
+			if (crew.immortal === 0) peopleListDefault.push(person);
 		});
+
 		let peopleList = {
 			'all': peopleListAll.sort((a, b) => a.text.localeCompare(b.text)),
-			'active': peopleListActive.sort((a, b) => a.text.localeCompare(b.text))
+			'default': peopleListDefault.sort((a, b) => a.text.localeCompare(b.text))
 		};
 
 		let bonusCrew = this._bonusCrewForCurrentEvent(eventData, crewlist);
@@ -130,7 +151,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			currentVoyage = voyageData.voyage[0].state === 'started';
 		}
 
-		let peopleListStyle = this.state.includeFrozen ? 'all' : 'active';
+		let peopleListStyle = this.state.includeFrozen ? 'all' : 'default';
 
 		return (
 			<div style={{ margin: '5px' }}>

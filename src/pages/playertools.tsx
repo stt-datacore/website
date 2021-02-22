@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Message, Tab, Icon, Menu, Button, Form, TextArea, Modal } from 'semantic-ui-react';
+import { Container, Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Modal } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -31,6 +31,8 @@ type PlayerToolsPageState = {
 	eventData?: any;
 };
 
+const PLAYERLINK = 'https://stt.disruptorbeam.com/player?client_api=17';
+
 const asyncSessionStorage = {
 	setItem: async function (key, value) {
 		await null;
@@ -39,6 +41,10 @@ const asyncSessionStorage = {
 	getItem: async function (key) {
 		await null;
 		return sessionStorage.getItem(key);
+	},
+	clear: async function () {
+		await null;
+		return sessionStorage.clear();
 	}
 };
 
@@ -61,14 +67,14 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 	}
 
 	async componentDidMount() {
-		let playerData = await asyncSessionStorage.getItem('playerData');
-		if (playerData) {
+		let strippedPlayerData = await asyncSessionStorage.getItem('playerData');
+		if (strippedPlayerData) {
 			let voyageData = await asyncSessionStorage.getItem('voyageData');
 			let eventData = await asyncSessionStorage.getItem('eventData');
-			playerData = JSON.parse(playerData);
+			strippedPlayerData = JSON.parse(strippedPlayerData);
 			if (voyageData) voyageData = JSON.parse(voyageData);
 			if (eventData) eventData = JSON.parse(eventData);
-			this.setState({ strippedPlayerData: playerData, voyageData, eventData });
+			this.setState({ strippedPlayerData, voyageData, eventData });
 		}
 	}
 
@@ -91,10 +97,22 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		const allcrew = await crewResponse.json();
 		const allitems = await itemsResponse.json();
 
-		// Voyage and event data will be stripped from playerData, so keep a copy for voyage calculator
+		// Crew on shuttles, voyage data, and event data will be stripped from playerData,
+		//	so keep a copy for voyage calculator here
+		//	Event data is not player-specific, so we should find a way to get that outside of playerData
+		let shuttleCrew = [];
+		inputPlayerData.player.character.crew.forEach(crew => {
+			if (crew.active_id > 0) {
+				// Stripped data doesn't include crewId, so create pseudoId based on level and equipment
+				let shuttleCrewId = crew.symbol+','+crew.level+',';
+				crew.equipment.forEach(equipment => shuttleCrewId += equipment[0]);
+				shuttleCrew.push(shuttleCrewId);
+			}
+		});
 		let voyageData = {
 			voyage_descriptions: JSON.parse(JSON.stringify(inputPlayerData.player.character.voyage_descriptions)),
-			voyage: JSON.parse(JSON.stringify(inputPlayerData.player.character.voyage))
+			voyage: JSON.parse(JSON.stringify(inputPlayerData.player.character.voyage)),
+			shuttle_crew: shuttleCrew
 		}
 		let eventData = JSON.parse(JSON.stringify(inputPlayerData.player.character.events));
 
@@ -102,7 +120,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 
 		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
 		let strippedPlayerData = stripPlayerData(allitems, JSON.parse(JSON.stringify(inputPlayerData)));
-		strippedPlayerData.lastImported = dtImported;
+		strippedPlayerData.calc = { 'lastImported': dtImported };
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
 		//	so other components don't have to keep calculating the same data
@@ -129,7 +147,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		const allcrew = await crewResponse.json();
 
 		let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
-		prepareProfileData(allcrew, preparedProfileData, new Date(Date.parse(strippedPlayerData.lastImported)));
+		prepareProfileData(allcrew, preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
 
 		this.setState({ playerData: preparedProfileData });
 	}
@@ -229,10 +247,14 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 					</Message>
 
 					<Menu compact>
-						<Menu.Item>
-							{playerData.calc.lastModified ? <span>Player data imported: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
-						</Menu.Item>
-						<Button onClick={() => this._forceInputForm()} content='Update now' />
+						{playerData.calc.lastModified && (
+							<Dropdown item text={`Player data imported: ${playerData.calc.lastModified.toLocaleString()}`}>
+								<Dropdown.Menu>
+									<Dropdown.Item onClick={() => this._forceInputForm()}>Update now...</Dropdown.Item>
+									<Dropdown.Item onClick={() => this._clearPlayerData()}>Clear player data</Dropdown.Item>
+								</Dropdown.Menu>
+							</Dropdown>
+						)}
 						<Button onClick={() => this._exportCrew()} content='Export crew spreadsheet...' />
 					</Menu>
 
@@ -242,9 +264,19 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		);
 	}
 
+	_clearPlayerData() {
+		asyncSessionStorage.clear();
+		this._forceInputForm();
+	}
+
 	_forceInputForm() {
-		this.setState({playerData: undefined, inputPlayerData: undefined, strippedPlayerData: undefined });
-		// Should we also clear sessionStorage?
+		this.setState({
+			playerData: undefined,
+			inputPlayerData: undefined,
+			strippedPlayerData: undefined,
+			fullInput: '',
+			displayedInput: ''
+		});
 	}
 
 	_shareProfile() {
@@ -278,8 +310,6 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 	renderInputForm() {
 		const { errorMessage } = this.state;
 
-		let playerLink = 'https://stt.disruptorbeam.com/player?client_api=17';
-
 		return (
 				<Layout>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
@@ -289,7 +319,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 						<ul>
 							<li>
 								Open this page in your browser:{' '}
-								<a href={playerLink} target='_blank'>
+								<a href={PLAYERLINK} target='_blank'>
 									https://stt.disruptorbeam.com/player
 								</a>
 							</li>
@@ -335,7 +365,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 
 					<Container style={{ paddingBottom: '2em' }}>
 						<p>To circumvent the long text copy limitations on mobile devices, download{' '}
-							<a href={playerLink} target='_blank'>
+							<a href={PLAYERLINK} target='_blank'>
 								your player data
 							</a>
 							{' '}to your device, then click the 'Upload data file' button.

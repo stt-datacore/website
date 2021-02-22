@@ -41,10 +41,6 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let items = mergeItems(playerData.player.character.items, allitems);
 		let ships = mergeShips(allships, playerData.player.character.ships);
 
-		//let testitem = items.find(item => item.name === "Salia’s True Form" && item.rarity === 5);
-		//if (testitem)
-		//	console.log(testitem);
-
 		// Calculate unneeded schematics
 		let maxedShips = ships.filter(
 			ship => ship.level === ship.max_level
