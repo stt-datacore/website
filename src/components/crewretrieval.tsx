@@ -24,7 +24,7 @@ type CrewRetrievalState = {
 const ownedFilterOptions = [
     { key: '0', value: 'Show all crew', text: 'Show all crew' },
     { key: '1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
-    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew not FF' },
+    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew (not FF)' },
     { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'}
 ];
 
@@ -181,14 +181,18 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	render() {
 		const { column, direction, pagination_rows, pagination_page, ownedFilter, minRarity } = this.state;
 		let { data } = this.state;
-		if (!data) {
-            return (
+		if (!this.props.playerData.forte_root) {
+                        return (
                 <div>
                     <h2>Crew Retrieval Unavailable</h2>
                     <p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file. 
                        Please follow the link and copy the correct version to paste.</p>
                 </div>
             )
+        }
+        
+        if (!data) {
+            return null;
         }
         
         data = data.filter(ownedFilters[this.state.ownedFilter](this.props.playerData.player.character.crew));
