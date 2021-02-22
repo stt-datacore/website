@@ -85,7 +85,7 @@ export function mergeShips(ship_schematics: any, ships: any): any {
 			schematic.ship.crit_chance = owned.crit_chance;
 			schematic.ship.evasion = owned.evasion;
 			schematic.ship.hull = owned.hull;
-			schematic.ship.level = owned.level;
+			schematic.ship.level = owned.level + 1;
 			schematic.ship.rarity = owned.rarity;
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
@@ -94,6 +94,8 @@ export function mergeShips(ship_schematics: any, ships: any): any {
 			schematic.ship.level = 0;
 			schematic.ship.owned = false;
 		}
+		
+		schematic.ship.max_level += 1;
 
 		schematic.ship.traits_named = traits_named;
 
