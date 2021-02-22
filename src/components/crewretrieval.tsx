@@ -17,7 +17,7 @@ type CrewRetrievalState = {
 	activeCrew: any;
 	pagination_rows: number;
 	pagination_page: number;
-	unownedOnly: boolean;
+	ownedFilter?: string;
 	minRarity: any;
 };
 
@@ -178,10 +178,22 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		)
 	}
 
+	_findHighestOwnedRarityForCrew(crewSymbol: string): number {
+		const { playerData: { player: { character: { crew } } } } = this.props;
+		const highestRarityMatchingCrew = crew
+			.sort((a, b) => b.rarity - a.rarity)
+			.find((c) => c.symbol === crewSymbol);
+		if (highestRarityMatchingCrew) {
+			return highestRarityMatchingCrew['rarity'];
+		}
+		return 0;
+	}
+
 	render() {
 		const { column, direction, pagination_rows, pagination_page, ownedFilter, minRarity } = this.state;
+		const { playerData } = this.props
 		let { data } = this.state;
-		if (!this.props.playerData.forte_root) {
+		if (!playerData?.forte_root) {
                         return (
                 <div>
                     <h2>Crew Retrieval Unavailable</h2>
@@ -195,7 +207,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
             return null;
         }
         
-        data = data.filter(ownedFilters[this.state.ownedFilter](this.props.playerData.player.character.crew));
+        data = data.filter(ownedFilters[ownedFilter](playerData.player.character.crew));
 		
 		if (minRarity) {
 			data = data.filter((crew) => crew.max_rarity >= minRarity);
@@ -282,7 +294,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 									</div>
 								</Table.Cell>
 								<Table.Cell>
-									<Rating rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+									<Rating rating={this._findHighestOwnedRarityForCrew(crew.symbol)} maxRating={crew.max_rarity} size="large" disabled />
 								</Table.Cell>
 								<Table.Cell textAlign="center">
 									<b>{crew.bigbook_tier}</b>
