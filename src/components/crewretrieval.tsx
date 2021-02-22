@@ -44,7 +44,7 @@ const pagingOptions = [
 ];
 
 const rarityOptions = [
-	{ key: null, value: null, text: 'None' },
+	{ key: null, value: null, text: 'Any' },
 	{ key: '1', value: '1', text: '1' },
 	{ key: '2', value: '2', text: '2' },
 	{ key: '3', value: '3', text: '3' },
@@ -53,7 +53,7 @@ const rarityOptions = [
 ];
 
 const collectionsOptions = [
-	{ key: null, value: null, text: 'None' }
+	{ key: null, value: null, text: 'Any' }
 ];
 
 const filterTraits = (polestar, trait) => {
