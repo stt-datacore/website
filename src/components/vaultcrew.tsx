@@ -67,7 +67,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		let skills_sorted = Object.entries(crew.base_skills)
 			.sort((a, b) => { a[1].core - b[1].core });
 		skills_sorted.forEach((s) => {
-			let skillName = CONFIG.SKILLS[s[0]];
+			let skillName = s[0];
 			skillicons.push(<img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={iconStyle} />);
 		});
 
