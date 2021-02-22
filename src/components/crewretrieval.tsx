@@ -180,8 +180,9 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 
 	_findHighestOwnedRarityForCrew(crewSymbol: string): number {
 		const { playerData: { player: { character: { crew } } } } = this.props;
-		const highestRarityMatchingCrew = crew.sort((a, b) => b.rarity - a.rarity)
-																					.find((c) => c.symbol === crewSymbol);
+		const highestRarityMatchingCrew = crew
+			.sort((a, b) => b.rarity - a.rarity)
+			.find((c) => c.symbol === crewSymbol);
 		if (highestRarityMatchingCrew) {
 			return highestRarityMatchingCrew['rarity'];
 		}
