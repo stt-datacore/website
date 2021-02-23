@@ -40,10 +40,7 @@ type SearchableTableState = {
 export class SearchableTable extends PureComponent<SearchableTableProps, SearchableTableState> {
 	constructor(props) {
 		super(props);
-
-        //if (this.searchExt == undefined)
-        //    this.searchExt = () => (<span></span>)
-            
+		
 		this.state = {
 			column: null,
 			direction: null,
