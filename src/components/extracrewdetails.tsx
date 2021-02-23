@@ -8,56 +8,36 @@ type ExtraCrewDetailsProps = {
 	max_rarity: number,
 	base_skills: any,
 	traits: any[],
-	traits_hidden: any[]
+	traits_hidden: any[],
+	unique_polestar_combos: any[]
 };
 
 type ExtraCrewDetailsState = {
 	variants: any[],
-	keystone: any,
-	polestars: any
+	constellation: any,
+	optimalpolestars: any
 };
 
-const RARITIES = ['Basic Rarity','Common Rarity','Uncommon Rarity','Rare Rarity','Super Rare Rarity','Legendary Rarity'];
-const SKILLS = {
-	command_skill: 'Command Skill',
-	science_skill: 'Science Skill',
-	security_skill: 'Security Skill',
-	engineering_skill: 'Engineering Skill',
-	diplomacy_skill: 'Diplomacy Skill',
-	medicine_skill: 'Medicine Skill'
-};
+const filterTraits = (polestar, trait) => {
+	if (polestar.filter.type === 'trait') {
+		return polestar.filter.trait === trait;
+	}
+	if (polestar.filter.type === 'rarity') {
+		return `crew_max_rarity_${polestar.filter.rarity}` === trait;
+	}
+	if (polestar.filter.type === 'skill') {
+		return polestar.filter.skill === trait;
+	}
+}
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
 	state = {
 		variants: [],
-		keystone: undefined,
-		polestars: undefined
+		constellation: undefined,
+		optimals: undefined
 	};
 
 	componentDidMount() {
-		// Prepare polestar counts
-		//	Use traits_named instead of traits
-		let polestars = this.props.traits_named.slice();
-		polestars.push(RARITIES[this.props.max_rarity]);
-		for (let skill in this.props.base_skills) {
-			if (this.props.base_skills[skill]) polestars.push(SKILLS[skill]);
-		}
-		let polestarCounts = [];
-		let f = function(prepoles, traits) {
-			for (let t = 0; t < traits.length; t++) {
-				const newpoles = prepoles.slice();
-				newpoles.push(traits[t]);
-				if (newpoles.length <= 4) {
-					polestarCounts.push({
-						'polestars': newpoles,
-						'count': 0
-					});
-				}
-				f(newpoles, traits.slice(t+1));
-			}
-		}
-		f([], polestars);
-
 		// Get variant names from traits_hidden
 		let ignore = [
 			'tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic',
@@ -80,93 +60,39 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			.then(allkeystones => {
 				let crew_keystone_crate = allkeystones.find((k: any) => k.crew_archetype_id === this.props.crew_archetype_id);
 
+				// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
+				let raritystone = allkeystones.filter((keystone) =>
+					keystone.filter && keystone.filter.type === 'rarity' && keystone.filter.rarity === this.props.max_rarity
+				);
+				let skillstones = allkeystones.filter((keystone) =>
+					keystone.filter && keystone.filter.type === 'skill' && this.props.base_skills[keystone.filter.skill]
+				);
+
 				if (crew_keystone_crate) {
 					self.setState({
-						keystone: {
+						constellation: {
 							name: crew_keystone_crate.name, flavor: crew_keystone_crate.flavor,
-							keystones: crew_keystone_crate.keystones.map((kid: any) => allkeystones.find((k: any) => k.id === kid))
+							keystones: crew_keystone_crate.keystones.map((kid: any) => allkeystones.find((k: any) => k.id === kid)),
+							raritystone,
+							skillstones
 						}
 					});
 				}
 			});
 
+
 		fetch('/structured/crew.json')
 			.then(response => response.json())
-			.then(crew => {
-				// Find all crew who have any polestars in common
-				for (let i = 0; i < crew.length; i++) {
-				  if (!crew[i].in_portal) continue;
-					let polesInCommon = [];
-					for (let t = 0; t < this.props.traits_named.length; t++) {
-						if (crew[i].traits_named.indexOf(this.props.traits_named[t]) >= 0)
-							polesInCommon.push(this.props.traits_named[t]);
-					}
-					// Add 1 to count of every polestar combination in common
-					if (polesInCommon.length > 0) {
-						// Only consider rarity and skills if at least 1 trait in common
-						if (crew[i].max_rarity == this.props.max_rarity)
-							polesInCommon.push(RARITIES[this.props.max_rarity]);
-						for (let skill in crew[i].base_skills) {
-							if (crew[i].base_skills[skill] && this.props.base_skills[skill])
-								polesInCommon.push(SKILLS[skill]);
-						}
-						polestarCounts.forEach(count => {
-							if (polesInCommon.length >= count.polestars.length) {
-								let bMatching = true;
-								count.polestars.forEach(polestar => {
-									bMatching = bMatching && polesInCommon.indexOf(polestar) >= 0;
-								});
-								if (bMatching) count.count++;
-							}
-						});
-					}
-				}
-				// Find optimal polestars, i.e. combinations with best chance of retrieving this crew
-				polestarCounts.sort((a, b) => {
-					if (a.count == b.count)
-						return a.polestars.length - b.polestars.length;
-					return a.count - b.count;
-				});
-				let optimized = [], iBestCount = 10, iBestTraitCount = 4;
-				for (let i = 0; i < polestarCounts.length; i++) {
-					let testcount = polestarCounts[i];
-
-					// We stop looking for optimals if testcount is:
-					//	1) worse than current best count (lower is better)
-					if (testcount.count > iBestCount)
-						break;
-					//	or 2) trait count is 4 and current best trait count is less than 4
-					if (testcount.polestars.length == 4 && iBestTraitCount < 4)
-						break;
-
-					if (testcount.count < iBestCount)
-						iBestCount = testcount.count;
-					if (testcount.polestars.length < iBestTraitCount)
-						iBestTraitCount = testcount.polestars.length;
-
-					// Ignore supersets of an already optimal subset
-					let bIsSuperset = false;
-					for (let j = 0; j < optimized.length; j++) {
-						if (testcount.polestars.length <= optimized[j].polestars.length) continue;
-						bIsSuperset = true;
-						optimized[j].polestars.forEach(polestar => {
-							bIsSuperset = bIsSuperset && testcount.polestars.indexOf(polestar) >= 0;
-						});
-						if (bIsSuperset) break;
-					}
-					if (bIsSuperset) continue;
-
-					optimized.push({
-						'polestars': testcount.polestars,
-						'chance': (1/testcount.count*100).toFixed()
-					});
-				}
-				self.setState({ polestars: optimized });
+			.then(allcrew => {
+				// Use precalculated unique polestars combos if any, otherwise get best chances
+				let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
+					this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
+					this._findOptimalPolestars(allcrew);
 
 				// Get variants
 				let variants = [];
 				variantTraits.forEach(function (trait) {
-					let found = crew.filter(c => c.traits_hidden.indexOf(trait) >= 0);
+					let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
 					// Ignore variant group if crew is the only member of the group
 					if (found.length > 1) {
 						found.sort(function (a, b) {
@@ -178,96 +104,217 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						variants.push({ 'name': found[0].short_name, 'trait_variants': found });
 					}
 				});
-				self.setState({ variants });
+
+				self.setState({ optimalpolestars, variants });
 			});
 	}
 
-	renderKeystone() {
-		if (!this.state.keystone) {
+	_findOptimalPolestars(allcrew: []) {
+		// Generate crewman's list of polestars (traits + rarity + skills)
+		let polestars = this.props.traits.slice();
+		polestars.push('crew_max_rarity_'+this.props.max_rarity);
+		for (let skill in this.props.base_skills) {
+			if (this.props.base_skills[skill]) polestars.push(skill);
+		}
+		polestars = polestars.sort((a, b) => a.localeCompare(b));
+		// Initialize all valid combinations of polestars with a zero count
+		let crewPolestarCombos = [];
+		let f = function(prepoles, traits) {
+			for (let t = 0; t < traits.length; t++) {
+				const newpoles = prepoles.slice();
+				newpoles.push(traits[t]);
+				if (newpoles.length <= 4) {
+					crewPolestarCombos.push({
+						'count': 0,
+						'alts': [],
+						'polestars': newpoles
+					});
+				}
+				f(newpoles, traits.slice(t+1));
+			}
+		}
+		f([], polestars);
+
+		// Find all crew who have any polestars in common
+		for (let i = 0; i < allcrew.length; i++) {
+			if (!allcrew[i].in_portal) continue;
+			let polesInCommon = [];
+			for (let t = 0; t < this.props.traits.length; t++) {
+				if (allcrew[i].traits.indexOf(this.props.traits[t]) >= 0)
+					polesInCommon.push(this.props.traits[t]);
+			}
+			// Add 1 to count of every polestar combination in common
+			if (polesInCommon.length > 0) {
+				// Only consider rarity and skills if at least 1 trait in common
+				if (allcrew[i].max_rarity == this.props.max_rarity)
+					polesInCommon.push('crew_max_rarity_'+this.props.max_rarity);
+				for (let skill in allcrew[i].base_skills) {
+					if (allcrew[i].base_skills[skill] && this.props.base_skills[skill])
+						polesInCommon.push(skill);
+				}
+				crewPolestarCombos.forEach(combo => {
+					if (polesInCommon.length >= combo.polestars.length) {
+						if (combo.polestars.every(polestar => polesInCommon.indexOf(polestar) >= 0)) {
+							combo.count++;
+							if (allcrew[i].archetype_id != this.props.crew_archetype_id) {
+								combo.alts.push({
+									'symbol': allcrew[i].symbol,
+									'name': allcrew[i].name
+								});
+							}
+						}
+					}
+				});
+			}
+		}
+
+		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
+		crewPolestarCombos.sort((a, b) => {
+			if (a.count == b.count)
+				return a.polestars.length - b.polestars.length;
+			return a.count - b.count;
+		});
+
+		let iBestCount = crewPolestarCombos[0].count;
+
+		let optimals = [], iBestTraitCount = 4;
+		for (let i = 0; i < crewPolestarCombos.length; i++) {
+			let testcombo = crewPolestarCombos[i];
+
+			// We stop looking for optimals if:
+			//	1) test count is worse than current best count
+			if (testcombo.count > iBestCount)
+				break;
+			//	or 2) trait count is 4 and current best trait count is less than 4
+			if (testcombo.polestars.length == 4 && iBestTraitCount < 4)
+				break;
+
+			if (testcombo.polestars.length < iBestTraitCount)
+				iBestTraitCount = testcombo.polestars.length;
+
+			// Ignore supersets of an already optimal subset
+			let bIsSuperset = false;
+			for (let j = 0; j < optimals.length; j++) {
+				if (testcombo.polestars.length <= optimals[j].length) continue;
+				bIsSuperset = true;
+				optimals[j].polestars.forEach(polestar => {
+					bIsSuperset = bIsSuperset && testcombo.polestars.indexOf(polestar) >= 0;
+				});
+				if (bIsSuperset) break;
+			}
+			if (bIsSuperset) continue;
+
+			optimals.push(crewPolestarCombos[i]);
+		}
+		return optimals;
+	}
+
+	_optimizeUniquePolestars(crewPolestarCombos: any[]) {
+		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
+		let optimals = [], iBestTraitCount = 4;
+		for (let i = 0; i < crewPolestarCombos.length; i++) {
+			let testpolestars = crewPolestarCombos[i];
+
+			// We stop looking for optimals if trait count is 4 and current best trait count is less than 4
+			if (testpolestars.length == 4 && iBestTraitCount < 4)
+				break;
+
+			if (testpolestars.length < iBestTraitCount)
+				iBestTraitCount = testpolestars.length;
+
+			optimals.push({
+				'count': 1,
+				'alts': [],
+				'polestars': testpolestars
+			});
+		}
+		return optimals;
+	}
+
+	render() {
+		return <div>
+			{this.renderConstellation()}
+			{this.renderOptimalPolestars()}
+			{this.renderVariants()}
+		</div>;
+	}
+
+	renderConstellation() {
+		if (!this.state.constellation) {
 			return <span />;
 		}
 
-		const { keystone } = this.state;
+		const { constellation } = this.state;
 
 		return (
 			<Segment>
-				<Header as='h4'>{keystone.name}</Header>
-				<div dangerouslySetInnerHTML={{ __html: keystone.flavor }} />
-				<Table celled selectable striped collapsing unstackable compact='very'>
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell width={2}>Name</Table.HeaderCell>
-							<Table.HeaderCell width={2}>Flavor</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{keystone.keystones.map((kk, idx) => (
-							<Table.Row key={idx}>
-								<Table.Cell>
-
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon name' 'icon description'`,
-											gridGap: '1px'
-										}}
-									>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.substr(1).replace(/\//g, '_')}`} />
-										</div>
-										<div style={{ gridArea: 'name' }}>
-											{kk.name}
-										</div>
-										<div style={{ gridArea: 'description' }}>
-											<span>Trait filter: </span>
-											{kk.filter.trait && <Link to={`https://datacore.app/?search=trait:${kk.short_name}`}>
-												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-													{kk.short_name}
-												</span>
-											</Link>}
-										</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>{kk.flavor}</Table.Cell>
-							</Table.Row>
-						))}
-					</Table.Body>
-				</Table>
+				<Header as='h4'>{constellation.name}</Header>
+				<div dangerouslySetInnerHTML={{ __html: constellation.flavor }} />
+				<Grid columns={5} centered padded>
+					{constellation.keystones.map((kk, idx) => (
+					<Grid.Column key={idx} textAlign='center'>
+						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.substr(1).replace(/\//g, '_')}`} />
+						<br/ >
+						<Link to={`/?search=trait:${kk.short_name}`}>
+						<span style={{ fontWeight: 'bolder' }}>
+							{kk.short_name}
+						</span>
+						</Link>
+					</Grid.Column>
+					))}
+				</Grid>
 			</Segment>
 		);
 	}
 
-	renderPolestars() {
-		if (!this.state.polestars || !this.state.keystone) {
+	renderOptimalPolestars() {
+		if (!this.state.constellation || !this.state.optimalpolestars) {
 			return <span />;
 		}
 
-		const { polestars } = this.state;
+		const { optimalpolestars, constellation } = this.state;
+
+		let crewPolestars = constellation.keystones.concat(constellation.raritystone.concat(constellation.skillstones));
+		optimalpolestars.forEach((optimal) => {
+			optimal.combos = optimal.polestars.map((trait) =>
+				crewPolestars.find((op) => filterTraits(op, trait))
+			)
+		});
 
 		return (
 			<Segment>
 				<Header as='h4'>Optimal Polestars for Crew Retrieval</Header>
+				<div>The best chance to retrieve this crew using as few polestars as possible</div>
 				<Table celled selectable striped collapsing unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell width={1}>Best Chance</Table.HeaderCell>
-							<Table.HeaderCell width={3}>Polestar Combination</Table.HeaderCell>
+							<Table.HeaderCell width={3} textAlign='center'>Polestar Combination</Table.HeaderCell>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{polestars.map(chance => (
+						{optimalpolestars.map((optimal) => (
 							<Table.Row>
 								<Table.Cell>
-									<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-										{chance.chance}%
-									</span>
+									<div style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
+										{(1/optimal.count*100).toFixed()}%
+									</div>
+									{optimal.count > 1 && (
+									<div style={{ gridArea: 'description' }}>Shared with{' '}
+										{optimal.alts.map((alt, idx) => (
+											<Link to={`/crew/${alt.symbol}/`}>
+												{alt.name}
+											</Link>
+										)).reduce((prev, curr) => [prev, ', ', curr])}
+									</div>
+									)}
 								</Table.Cell>
 								<Table.Cell>
-									<Grid centered padded>
-									{chance.polestars.map((polestar, idx) => (
+									<Grid columns={4} centered padded>
+									{optimal.combos.map((polestar, idx) => (
 										<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
-											<div>{polestar}</div>
+											<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
+											<br />{polestar.short_name}
 										</Grid.Column>
 									))}
 									</Grid>
@@ -305,14 +352,6 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				</Segment>
 			))
 		);
-	}
-
-	render() {
-		return <div>
-			{this.renderKeystone()}
-			{this.renderPolestars()}
-			{this.renderVariants()}
-		</div>;
 	}
 }
 

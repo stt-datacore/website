@@ -225,7 +225,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						crew_archetype_id={crew.archetype_id}
 						max_rarity={crew.max_rarity}
 						base_skills={crew.base_skills}
-						traits_named={crew.traits_named} traits_hidden={crew.traits_hidden}
+						traits={crew.traits} traits_hidden={crew.traits_hidden}
+						unique_polestar_combos={crew.unique_polestar_combos}
 					/>
 				</Container>
 			</Layout>
@@ -519,6 +520,7 @@ export const query = graphql`
 						crit_chance
 						evasion
 					}
+					unique_polestar_combos
 				}
 			}
 		}
