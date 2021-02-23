@@ -249,7 +249,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								selection
 								options={ownedFilterOptions}
 								value={this.state.ownedFilter}
-								onChange={(e, { value }) => this.setState({ ownedFilter: value })}
+								onChange={(e, { value }) => this.setState({ ownedFilter: value, pagination_page: 1 })}
 						/>
 						<Form.Field
 								control={Dropdown}
@@ -257,7 +257,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								selection
 								options={rarityOptions}
 								value={this.state.minRarity}
-								onChange={(e, { value }) => this.setState({ minRarity: value })}
+								onChange={(e, { value }) => this.setState({ minRarity: value, pagination_page: 1 })}
 						/>
 						<Form.Field
 								control={Dropdown}
@@ -265,7 +265,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								selection
 								options={collectionsOptions}
 								value={this.state.collection}
-								onChange={(e, { value }) => this.setState({ collection: value })}
+								onChange={(e, { value }) => this.setState({ collection: value, pagination_page: 1 })}
 						/>
 					</Form.Group>
 				</Form>
