@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Grid, Segment, Table } from 'semantic-ui-react';
+import { Header, Grid, Segment, Table, Pagination, Dropdown } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import { Link } from 'gatsby';
 
@@ -15,8 +15,17 @@ type ExtraCrewDetailsProps = {
 type ExtraCrewDetailsState = {
 	variants: any[],
 	constellation: any,
-	optimalpolestars: any
+	optimalpolestars: any,
+	pagination_rows: number;
+	pagination_page: number;
 };
+
+const pagingOptions = [
+	{ key: '0', value: '10', text: '10' },
+	{ key: '1', value: '25', text: '25' },
+	{ key: '2', value: '50', text: '50' },
+	{ key: '3', value: '100', text: '100' }
+];
 
 const filterTraits = (polestar, trait) => {
 	if (polestar.filter.type === 'trait') {
@@ -34,7 +43,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	state = {
 		variants: [],
 		constellation: undefined,
-		optimals: undefined
+		optimals: undefined,
+		pagination_rows: 10,
+		pagination_page: 1
 	};
 
 	componentDidMount() {
@@ -177,20 +188,14 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		let iBestCount = crewPolestarCombos[0].count;
 
-		let optimals = [], iBestTraitCount = 4;
+		let optimals = [];
 		for (let i = 0; i < crewPolestarCombos.length; i++) {
 			let testcombo = crewPolestarCombos[i];
 
 			// We stop looking for optimals if:
-			//	1) test count is worse than current best count
+			//	test count is worse than current best count
 			if (testcombo.count > iBestCount)
 				break;
-			//	or 2) trait count is 4 and current best trait count is less than 4
-			if (testcombo.polestars.length == 4 && iBestTraitCount < 4)
-				break;
-
-			if (testcombo.polestars.length < iBestTraitCount)
-				iBestTraitCount = testcombo.polestars.length;
 
 			// Ignore supersets of an already optimal subset
 			let bIsSuperset = false;
@@ -211,17 +216,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	_optimizeUniquePolestars(crewPolestarCombos: any[]) {
 		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
-		let optimals = [], iBestTraitCount = 4;
+		let optimals = [];
 		for (let i = 0; i < crewPolestarCombos.length; i++) {
 			let testpolestars = crewPolestarCombos[i];
-
-			// We stop looking for optimals if trait count is 4 and current best trait count is less than 4
-			if (testpolestars.length == 4 && iBestTraitCount < 4)
-				break;
-
-			if (testpolestars.length < iBestTraitCount)
-				iBestTraitCount = testpolestars.length;
-
 			optimals.push({
 				'count': 1,
 				'alts': [],
@@ -272,19 +269,25 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			return <span />;
 		}
 
-		const { optimalpolestars, constellation } = this.state;
+		const { optimalpolestars, constellation, pagination_rows, pagination_page } = this.state;
+
+		let data = JSON.parse(JSON.stringify(optimalpolestars));
 
 		let crewPolestars = constellation.keystones.concat(constellation.raritystone.concat(constellation.skillstones));
-		optimalpolestars.forEach((optimal) => {
+		data.forEach((optimal) => {
 			optimal.combos = optimal.polestars.map((trait) =>
 				crewPolestars.find((op) => filterTraits(op, trait))
 			)
 		});
 
+		// Pagination
+		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
+		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+
 		return (
 			<Segment>
 				<Header as='h4'>Optimal Polestars for Crew Retrieval</Header>
-				<div>The best chance to retrieve this crew using as few polestars as possible</div>
+				<div>All the polestars that give the best chance of retrieving this crew</div>
 				<Table celled selectable striped collapsing unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
@@ -293,7 +296,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{optimalpolestars.map((optimal) => (
+						{data.map((optimal) => (
 							<Table.Row>
 								<Table.Cell>
 									<div style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
@@ -322,9 +325,35 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							</Table.Row>
 						))}
 					</Table.Body>
+					<Table.Footer>
+						<Table.Row>
+							<Table.HeaderCell colSpan="8">
+								<Pagination
+									totalPages={totalPages}
+									activePage={pagination_page}
+									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
+								/>
+								<span style={{ paddingLeft: '2em' }}>
+									Rows per page:{' '}
+									<Dropdown
+										inline
+										options={pagingOptions}
+										value={pagination_rows}
+										onChange={(event, { value }) =>
+											this.setState({ pagination_page: 1, pagination_rows: value as number })
+										}
+									/>
+								</span>
+							</Table.HeaderCell>
+						</Table.Row>
+					</Table.Footer>
 				</Table>
 			</Segment>
 		);
+	}
+
+	_onChangePage(activePage) {
+		this.setState({ pagination_page: activePage });
 	}
 
 	renderVariants() {
