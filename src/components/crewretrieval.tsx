@@ -117,6 +117,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 				)
 			)
 		);
+		data.forEach(crew => { crew.highest_owned_rarity = this._findHighestOwnedRarityForCrew(crew.symbol, false) });
+		
 		this.setState({ data });
 		
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
@@ -151,7 +153,11 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 						(b.base_skills[clickedColumn] ? b.base_skills[clickedColumn].core : 0)
 				);
 			} else {
-				sortedData = data.sort((a, b) => this._compare(a[clickedColumn], b[clickedColumn]));
+				if(clickedColumn == "rarity") {
+					sortedData = data.sort((a, b) => a.max_rarity - b.max_rarity || a.highest_owned_rarity - b.highest_owned_rarity);
+				} else {
+					sortedData = data.sort((a, b) => this._compare(a[clickedColumn], b[clickedColumn]));
+				}
 			}
 
 			this.setState({
@@ -194,11 +200,18 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		)
 	}
 
-	_findHighestOwnedRarityForCrew(crewSymbol: string): number {
+	_updateHighestRarities(ownedFilterValue: string) {
+		// update highest rarity for owned crew at each change of owned filter
+		let excludeFF = ownedFilterOptions[2].value === ownedFilterValue ? true : false;
+		this.state.data.forEach(crew => { crew.highest_owned_rarity = this._findHighestOwnedRarityForCrew(crew.symbol, excludeFF) });
+	}
+
+	_findHighestOwnedRarityForCrew(crewSymbol: string, excludeFF: boolean): number {
 		const { playerData: { player: { character: { crew } } } } = this.props;
-		const highestRarityMatchingCrew = crew
-			.sort((a, b) => b.rarity - a.rarity)
-			.find((c) => c.symbol === crewSymbol);
+		crew.sort((a, b) => b.rarity - a.rarity);
+		const highestRarityMatchingCrew = (excludeFF && excludeFF === true)
+			? crew.find((c) => c.symbol === crewSymbol && c.rarity < c.max_rarity)
+			: crew.find((c) => c.symbol === crewSymbol);
 		if (highestRarityMatchingCrew) {
 			return highestRarityMatchingCrew['rarity'];
 		}
@@ -249,7 +262,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								selection
 								options={ownedFilterOptions}
 								value={this.state.ownedFilter}
-								onChange={(e, { value }) => this.setState({ ownedFilter: value, pagination_page: 1 })}
+								onChange={(e, { value }) => {this._updateHighestRarities(value), this.setState({ ownedFilter: value, pagination_page: 1 })}}
 						/>
 						<Form.Field
 								control={Dropdown}
@@ -281,8 +294,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'max_rarity' ? direction : null}
-								onClick={() => this._handleSort('max_rarity', false)}
+								sorted={column === 'rarity' ? direction : null}
+								onClick={() => this._handleSort('rarity', false)}
 							>
 								Rarity
 							</Table.HeaderCell>
@@ -323,7 +336,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 									</div>
 								</Table.Cell>
 								<Table.Cell>
-									<Rating rating={this._findHighestOwnedRarityForCrew(crew.symbol)} maxRating={crew.max_rarity} size="large" disabled />
+									<Rating rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
 								</Table.Cell>
 								<Table.Cell textAlign="center">
 									<b>{crew.bigbook_tier}</b>
