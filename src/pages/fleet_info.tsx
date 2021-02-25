@@ -119,9 +119,6 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 										Enrollment {fleet_data.enrollment} (min level: {fleet_data.nmin_level})
 									</Label>
 								</Item.Meta>
-								<Item.Description>
-									<b>Admiral's MOTD:</b> {fleet_data.motd}
-								</Item.Description>
 							</Item.Content>
 						</Item>
 					</Item.Group>
