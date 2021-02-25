@@ -292,58 +292,58 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_bonusCrewForCurrentEvent(eventData: any[], crewlist: any[]): BonusCrew | undefined {
+		if (!eventData || eventData.length == 0)
+			return undefined;
+
+		let activeEvents = eventData.filter((ev) => (ev.seconds_to_end > 0 && ev.seconds_to_start < 86400));
+		if (activeEvents.length == 0)
+			return undefined;
+			
+		let activeEvent = activeEvents.sort((a, b) => (a.seconds_to_start - b.seconds_to_start))[0];
+
 		let result = new BonusCrew();
+		result.eventName = activeEvent.name;
 
-		if (eventData && eventData.length > 0) {
-			let activeEvent = eventData
-			  .filter((ev) => (ev.seconds_to_end > 0))
-			  .sort((a, b) => (a.seconds_to_start - b.seconds_to_start))
-			  [0];
-			result.eventName = activeEvent.name;
-
-			let eventCrew: { [index: string]: any } = {};
-			if (activeEvent.content) {
-				if (activeEvent.content.crew_bonuses) {
-					for (let symbol in activeEvent.content.crew_bonuses) {
-						eventCrew[symbol] = activeEvent.content.crew_bonuses[symbol];
-					}
-				}
-
-				// For skirmish events
-				if (activeEvent.content.bonus_crew) {
-					for (let symbol in activeEvent.content.bonus_crew) {
-						eventCrew[symbol] = activeEvent.content.bonus_crew[symbol];
-					}
-				}
-
-				// For expedition events
-				if (activeEvent.content.special_crew) {
-					activeEvent.content.special_crew.forEach((symbol: string) => {
-						eventCrew[symbol] = symbol;
-					});
-				}
-
-				// TODO: there's also bonus_traits; should we bother selecting crew with those? It looks like you can use voyage crew in skirmish events, so it probably doesn't matter
-				if (activeEvent.content.shuttles) {
-					activeEvent.content.shuttles.forEach((shuttle: any) => {
-						for (let symbol in shuttle.crew_bonuses) {
-							eventCrew[symbol] = shuttle.crew_bonuses[symbol];
-						}
-					});
+		let eventCrew: { [index: string]: any } = {};
+		if (activeEvent.content) {
+			if (activeEvent.content.crew_bonuses) {
+				for (let symbol in activeEvent.content.crew_bonuses) {
+					eventCrew[symbol] = activeEvent.content.crew_bonuses[symbol];
 				}
 			}
 
-			for (let symbol in eventCrew) {
-				let foundCrew = crewlist.find((crew: any) => crew.have && (crew.symbol === symbol));
-				if (foundCrew) {
-					result.crewIds.push(foundCrew.crew_id || foundCrew.id);
+			// For skirmish events
+			if (activeEvent.content.bonus_crew) {
+				for (let symbol in activeEvent.content.bonus_crew) {
+					eventCrew[symbol] = activeEvent.content.bonus_crew[symbol];
 				}
 			}
 
-			return result;
+			// For expedition events
+			if (activeEvent.content.special_crew) {
+				activeEvent.content.special_crew.forEach((symbol: string) => {
+					eventCrew[symbol] = symbol;
+				});
+			}
+
+			// TODO: there's also bonus_traits; should we bother selecting crew with those? It looks like you can use voyage crew in skirmish events, so it probably doesn't matter
+			if (activeEvent.content.shuttles) {
+				activeEvent.content.shuttles.forEach((shuttle: any) => {
+					for (let symbol in shuttle.crew_bonuses) {
+						eventCrew[symbol] = shuttle.crew_bonuses[symbol];
+					}
+				});
+			}
 		}
 
-		return undefined;
+		for (let symbol in eventCrew) {
+			let foundCrew = crewlist.find((crew: any) => crew.have && (crew.symbol === symbol));
+			if (foundCrew) {
+				result.crewIds.push(foundCrew.crew_id || foundCrew.id);
+			}
+		}
+
+		return result;
 	}
 
 	_packVoyageOptions(shipAM: number) {
