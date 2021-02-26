@@ -25,6 +25,7 @@ type SearchableTableProps = {
 	config: ITableConfigRow[];
 	renderTableRow: (row: any) => JSX.Element;
 	filterRow: (crew: any, filter: any) => boolean;
+    searchExt: React.ReactNode;
 };
 
 type SearchableTableState = {
@@ -39,7 +40,7 @@ type SearchableTableState = {
 export class SearchableTable extends PureComponent<SearchableTableProps, SearchableTableState> {
 	constructor(props) {
 		super(props);
-
+		
 		this.state = {
 			column: null,
 			direction: null,
@@ -166,16 +167,11 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 						<Button icon onClick={() => this._onChangeFilter('')} >
 							<Icon name='delete' />
 						</Button>
-						<Popup
-							wide
-							trigger={<Button icon style={{ marginLeft: '1em' }}><Icon name="help" /></Button>}
-							header={'Advanced search'}
-							content={this.props.explanation}
-							position="bottom left"
-						/>
 				</Input>
 
-
+				{this.props.searchExt}
+				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
+				
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map(row => this.props.renderTableRow(row))}</Table.Body>
@@ -187,7 +183,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 									activePage={pagination_page}
 									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
 								/>
-								<span style={{ paddingLeft: '2em' }}>
+								<span style={{ paddingLeft: '2em'}}>
 									Rows per page:{' '}
 									<Dropdown
 										inline
