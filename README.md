@@ -31,7 +31,7 @@ Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info,
 The Discord bot implementation (written in TypeScript with discord.js). See source code [here](https://github.com/stt-datacore/bot).
 
 #### DB
-A simple DB (currently PostgreSQL but configurable) that links discord user ids with uploaded profiles (where associated) and includes the crew comments.
+A simple DB (currently LiteSQL but configurable) that links discord user ids with uploaded profiles (where associated) and includes the crew comments.
 
 #### misc scripts
 Scripts that take care of parsing the big / little book data, new items, ships and crew info and event details. These are currently manually executed by the maintainer 2-3 times a week and require regular maintenance to keep up with changes to the various upstream sources.
