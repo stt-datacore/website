@@ -3,7 +3,7 @@
 Contributions are always welcome, no matter how large or small. Before contributing,
 please read the [code of conduct](CODE_OF_CONDUCT.md).
 
-If you want to contribute content (CMS pages, BigBook additions, use the website form for a nicer editing interface), or submit PRs here with the MarkDown changes.
+If you want to contribute content (CMS pages, BigBook additions, use the website form for a nicer editing interface), or submit PRs here with the MarkDown changes. All information on characters, events and related content is automatically generated from various external sources. Therefore we do not require manual contibutions related to in game content.  
 
 If you want to contribute code fixes, see below.
 
