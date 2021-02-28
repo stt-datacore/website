@@ -64,6 +64,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					let segmentResult =
 						matchesFilter(crew.name, segment.text) ||
 						matchesFilter(crew.short_name, segment.text) ||
+						crew.nicknames.some(n => matchesFilter(n.cleverThing, segment.text)) ||
 						crew.traits_named.some(t => matchesFilter(t, segment.text)) ||
 						crew.traits_hidden.some(t => matchesFilter(t, segment.text));
 					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
