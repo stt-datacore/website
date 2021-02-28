@@ -230,6 +230,10 @@ export const query = graphql`
 						symbol
 						name
 					}
+					nicknames {
+						cleverThing
+						creator
+					}
 					base_skills {
 						security_skill {
 							core
