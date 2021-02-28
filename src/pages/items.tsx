@@ -142,7 +142,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 
 	render() {
 		return (
-			<Layout>
+			<Layout title='Items'>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as="h2">Items</Header>
 

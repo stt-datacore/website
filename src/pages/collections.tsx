@@ -30,7 +30,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 		const { collections, allcrew } = this.state;
 		if (!collections || collections.length === 0) {
 			return (
-				<Layout>
+				<Layout title='Collections'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Icon loading name='spinner' /> Loading...
 					</Container>
@@ -39,7 +39,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 		}
 
 		return (
-			<Layout>
+			<Layout title='Collections'>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						{collections.map(collection => (

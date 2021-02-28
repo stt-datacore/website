@@ -30,7 +30,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 
 		if (!playerData) {
 			return (
-				<Layout>
+				<Layout title='Player tools'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as='h4'>Player tools</Header>
 						<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
@@ -119,7 +119,7 @@ class VoyagePage extends Component<VoyagePageProps, VoyagePageState> {
 			);
 		} else {
 			return (
-				<Layout>
+				<Layout title='Player tools'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<VoyageCalculator playerData={playerData} />
 					</Container>

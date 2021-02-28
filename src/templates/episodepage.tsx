@@ -165,7 +165,7 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 
 		const episode = allEpisodesJson.edges[0].node;
 		return (
-			<Layout>
+			<Layout title={getEpisodeName(episode)}>
 				<Container text style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h2'>{getEpisodeName(episode)}</Header>
 					<p dangerouslySetInnerHTML={{ __html: episode.description }} />
