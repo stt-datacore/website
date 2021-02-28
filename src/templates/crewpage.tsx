@@ -521,6 +521,10 @@ export const query = graphql`
 						evasion
 					}
 					unique_polestar_combos
+					nicknames {
+						cleverThing
+						creator
+					}
 				}
 			}
 		}
