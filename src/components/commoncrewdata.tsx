@@ -243,7 +243,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{crew.obtained})
 				</p>
 
-				{crew.nicknames.length > 0 && (
+				{crew.nicknames && crew.nicknames.length > 0 && (
 					<p>
 						<b>Also known as: </b>
 						{crew.nicknames
