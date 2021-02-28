@@ -298,7 +298,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		if (event_instace === undefined || event_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout>
+				<Layout title='Event information'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as='h4'>Event information</Header>
 						{errorMessage && (
@@ -318,7 +318,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		}
 
 		return (
-			<Layout>
+			<Layout title={event_data.ev_inst.event_name}>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h3'>{event_data.ev_inst.event_name}</Header>
 					<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />

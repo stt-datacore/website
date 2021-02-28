@@ -17,6 +17,14 @@ import CONFIG from '../components/CONFIG';
 
 type StaticCrewPageProps = {
 	data: {
+		site: {
+			siteMetadata: {
+				titleTemplate: string;
+				defaultTitle: string;
+				defaultDescription: string;
+				baseUrl: string;
+			}
+		};
 		markdownRemark: {
 			html: string;
 			frontmatter: {
@@ -27,9 +35,13 @@ type StaticCrewPageProps = {
 				in_portal?: boolean;
 				published: boolean;
 			};
+			rawMarkdownBody: string;
 		};
 		crewJson: any;
 	};
+	location: {
+		pathname: string;
+	}
 };
 
 type StaticCrewPageState = {
@@ -83,7 +95,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	}
 
 	render() {
-		const { markdownRemark, crewJson } = this.props.data;
+		const { location } = this.props;
+		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.data;
 		if (crewJson.edges.length === 0) {
 			return <span>Crew not found!</span>;
 		}
@@ -97,13 +110,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		const crew = crewJson.edges[0].node;
 		return (
 			<Layout>
-				<Helmet>
-					<title>DataCore - {crew.name}</title>
+				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
+					<title>{crew.name}</title>
 					<meta property='og:type' content='website' />
-					<meta property='og:title' content={crew.name} />
+					<meta property='og:title' content={`${crew.name} - ${siteMetadata.defaultTitle}`} />
 					<meta property='og:site_name' content='DataCore' />
 					<meta property='og:image' content={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim()} />
+					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim() || siteMetadata.defaultDescription} />
+					<meta property='og:url' content={`${siteMetadata.baseUrl}${location.pathname}`} />
 				</Helmet>
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
@@ -383,6 +397,14 @@ export default StaticCrewPage;
 
 export const query = graphql`
 	query($slug: String!, $symbol: String!) {
+		site {
+			siteMetadata {
+				defaultTitle: title
+				titleTemplate
+				defaultDescription: description
+				baseUrl
+			}
+		}
 		markdownRemark(fields: { slug: { eq: $slug } }) {
 			rawMarkdownBody
 			html

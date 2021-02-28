@@ -159,7 +159,7 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 		}
 
 		return (
-			<Layout>
+			<Layout title='Miscellaneous stats'>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as="h2">Miscellaneous stats</Header>
 					<p>

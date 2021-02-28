@@ -33,7 +33,7 @@ class EpisodesPage extends PureComponent {
 					}
 				`}
 				render={data => (
-					<Layout>
+					<Layout title='Episodes'>
 						<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 							<Item.Group>
 								{data.allEpisodesJson.edges.map(({ node }, index) => (
