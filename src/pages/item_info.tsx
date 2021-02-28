@@ -77,7 +77,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout>
+				<Layout title='Item information'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as="h4">Item information</Header>
 						{errorMessage && (
@@ -125,7 +125,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 		}
 
 		return (
-			<Layout>
+			<Layout title={item_data.item.name}>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Message icon warning>
 						<Icon name="exclamation triangle" />

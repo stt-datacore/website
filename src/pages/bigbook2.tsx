@@ -113,7 +113,7 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 		const { groupedByTier } = this.state;
 
 		return (
-			<Layout>
+			<Layout title='The Big Book of Behold Advice'>
 				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
 					{[...groupedByTier.keys()].map((tier, idx) => (
 						<React.Fragment key={idx}>

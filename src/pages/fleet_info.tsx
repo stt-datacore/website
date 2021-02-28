@@ -58,7 +58,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout>
+				<Layout title='Fleet information'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as="h4">Fleet information</Header>
 						{errorMessage && (
@@ -101,7 +101,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		}
 
 		return (
-			<Layout>
+			<Layout title={fleet_data.name}>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>

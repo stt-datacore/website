@@ -123,7 +123,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		];
 
 		return (
-			<Layout>
+			<Layout title={playerData.player.character.display_name}>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Item.Group>
 						<Item>
@@ -384,7 +384,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (
-				<Layout>
+				<Layout title='Player profile'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<Header as='h4'>Player profile</Header>
 						{errorMessage && (

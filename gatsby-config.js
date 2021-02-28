@@ -1,7 +1,10 @@
 require('dotenv').config();
 module.exports = {
 	siteMetadata: {
-		title: `Star Trek Timelines Data Core`
+		title: 'Star Trek Timelines DataCore',
+		titleTemplate: `%s - Star Trek Timelines DataCore`,
+		description: `DataCore is a companion resource to Tilting Point's Star Trek Timelines game. It's designed as a compendium of data, statistics and assets, both extracted from the game as well as user generated.`,
+		baseUrl: 'https://datacore.app',
 	},
 	plugins: [
 		`gatsby-transformer-remark`,

@@ -3,7 +3,7 @@
 Contributions are always welcome, no matter how large or small. Before contributing,
 please read the [code of conduct](CODE_OF_CONDUCT.md).
 
-If you want to contribute content (CMS pages, BigBook additions, use the website form for a nicer editing interface), or submit PRs here with the MarkDown changes.
+If you want to contribute content (CMS pages, BigBook additions, use the website form for a nicer editing interface), or submit PRs here with the MarkDown changes. All information on characters, events and related content is automatically generated from various external sources. Therefore we do not require manual contibutions related to in game content.  
 
 If you want to contribute code fixes, see below.
 
@@ -14,9 +14,15 @@ If you want to contribute code fixes, see below.
 ### Install dependencies
 
 ```sh
-$ git clone https://github.com/TemporalAgent7/datacore
+$ git clone https://github.com/stt-datacore/website.git
 $ npm install 
 ```
+
+In order to get images on your server you have to run the command. 
+```sh
+$ cp .env.default .env
+```
+Then change the line "GATSBY_ASSETS_URL=" to "GATSBY_ASSETS_URL=http://assets.datacore.app/".
 
 ## Available scripts
 

@@ -101,7 +101,7 @@ class BigBook extends PureComponent<BigBookPageProps> {
 		res = res.sort(fieldSorter(['-rarity', 'tier', 'name']));
 
 		return (
-			<Layout>
+			<Layout title='The Big Book of Behold Advice'>
 				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
 					{sections[0].elem}
 					{res.filter(e => e.rarity === 5).map(e => e.elem)}

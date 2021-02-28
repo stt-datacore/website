@@ -242,6 +242,17 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				<p>
 					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{crew.obtained})
 				</p>
+
+				{crew.nicknames && crew.nicknames.length > 0 && (
+					<p>
+						<b>Also known as: </b>
+						{crew.nicknames
+							.map(nick => (
+							<span>{nick.cleverThing}{nick.creator ? <> (coined by <i>{nick.creator}</i>)</> : ''}</span>
+						))
+						.reduce((prev, curr) => [prev, ', ', curr])}
+					</p>
+				)}
 			</React.Fragment>
 		);
 	}

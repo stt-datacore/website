@@ -7,6 +7,9 @@ import Layout from '../components/layout';
 import CommonCrewData from '../components/commoncrewdata';
 
 type BeholdsPageProps = {
+	location: {
+		pathname: string;
+	}
 };
 
 type BeholdsPageState = {
@@ -49,7 +52,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	render() {
 		if (this.state.allcrew.length === 0) {
 			return (
-				<Layout>
+				<Layout title='Behold helper / crew comparison'>
 					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 						<div className='ui medium centered text active inline loader'>Loading data...</div>
 					</Container>
@@ -58,7 +61,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		}
 
 		return (
-			<Layout>
+			<Layout title='Behold helper / crew comparison'>
 				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 					<Header as='h4'>Behold helper / crew comparison</Header>
 					<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
