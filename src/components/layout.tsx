@@ -21,7 +21,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 							<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
 								{title && <title>{title}</title>}
 								<meta property='og:type' content='website' />
-								<meta property='og:title' content={`${(title && `${title} - `)}${data.site.siteMetadata.defaultTitle}`} />
+								<meta property='og:title' content={`${(title ? `${title} - ` : '')}${data.site.siteMetadata.defaultTitle}`} />
 								<meta property='og:site_name' content='DataCore' />
 								<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
 								<meta property='og:description' content={data.site.siteMetadata.defaultDescription} />
