@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
-import { isMobile } from 'react-device-detect';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
+import { CrewSearchBar } from '../components/crewsearchbar';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -31,41 +31,31 @@ type SearchableTableProps = {
 type SearchableTableState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
 	data: any[];
 	pagination_rows: number;
 	pagination_page: number;
+    searchBar: CrewSearchBar;
 };
 
-export class SearchableTable extends PureComponent<SearchableTableProps, SearchableTableState> {
+export class SearchableTable extends Component<SearchableTableProps, SearchableTableState> {
 	constructor(props) {
 		super(props);
 		
 		this.state = {
 			column: null,
 			direction: null,
-			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: this.props.data
+			data: this.props.data,
+            searchBar: (<CrewSearchBar 
+                            data= {props.data} 
+                            explanation = { props.explanation }
+                            searchFilter = ''
+                            filterRow = { props.filterRow }
+                            searchExt = { props.searchExt }
+                            onChange = {this._onChangeFilter}
+                        />)
 		};
-	}
-
-	componentDidMount() {
-		let urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('search')) {
-			// Push the search string to localstorage for back button to behave as expected
-			localForage.setItem<string>('searchFilter', urlParams.get('search'));
-			this.setState({ searchFilter: urlParams.get('search') });
-		} else {
-			localForage.getItem<string>('searchFilter', (err, value) => {
-				if (err) {
-					console.error(err);
-				} else {
-					this.setState({ searchFilter: value });
-				}
-			});
-		}
 	}
 
 	_handleSort(clickedColumn, pseudocolumns) {
@@ -116,7 +106,6 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 	}
 
 	_onChangeFilter(value) {
-		localForage.setItem<string>('searchFilter', value);
 		this.setState({ searchFilter: value, pagination_page: 1 });
 	}
 
@@ -141,7 +130,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
-		if (this.state.searchFilter) {
+		if (this.state.searchBar.searchFilter) {
 			let filters = [];
 			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
 			grouped.forEach(group => {
@@ -156,21 +145,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 		return (
 			<div>
-				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
-					iconPosition="left"
-					placeholder="Search..."
-					value={this.state.searchFilter}
-					onChange={(e, { value }) => this._onChangeFilter(value)}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => this._onChangeFilter('')} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
-
-				{this.props.searchExt}
-				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
+                {this.state.searchBar}
 				
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
