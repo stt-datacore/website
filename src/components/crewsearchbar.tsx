@@ -54,6 +54,7 @@ export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchB
 	_onChangeFilter(value) {
 		localForage.setItem<string>('searchFilter', value);
         this.setState({filterPopupOpen: false, searchFilter: value, conditionValue: ''});
+        this.props.onChange(value);
 	}
 	
 	_updateFilter(value) {
@@ -64,6 +65,23 @@ export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchB
         const { searchFilter, conditionType, conditionValue } = this.state;
         this._onChangeFilter(searchFilter  + ' ' + (conditionType != 'keyword' ? conditionType + ':' : '') + '"' + conditionValue + '"');
     }
+    
+    getFilteredData() {
+        let data = this.state.data;
+        
+		if (this.state.searchFilter) {
+			let filters = [];
+			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
+			grouped.forEach(group => {
+				filters.push(SearchString.parse(group));
+			});
+			data = data.filter(row => this.props.filterRow(row, filters));
+		}
+		
+		return data;
+    }
+
+
 
 	render() {
         const { searchFilter, filterPopupOpen, conditionType } = this.state;

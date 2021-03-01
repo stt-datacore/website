@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 
 import * as SearchString from 'search-string';
@@ -46,15 +46,7 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 			direction: null,
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: this.props.data,
-            searchBar: (<CrewSearchBar 
-                            data= {props.data} 
-                            explanation = { props.explanation }
-                            searchFilter = ''
-                            filterRow = { props.filterRow }
-                            searchExt = { props.searchExt }
-                            onChange = {this._onChangeFilter}
-                        />)
+			data: this.props.data
 		};
 	}
 
@@ -128,6 +120,7 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 
 	render() {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
+        const props = this.props;
 		let { data } = this.state;
 
 		if (this.state.searchBar.searchFilter) {
@@ -145,7 +138,14 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 		return (
 			<div>
-                {this.state.searchBar}
+                <CrewSearchBar 
+                            data= {props.data} 
+                            explanation = { props.explanation }
+                            searchFilter = {this.state.searchFilter}
+                            filterRow = { props.filterRow }
+                            searchExt = { props.searchExt }
+                            onChange = {this._onChangeFilter}
+                        />
 				
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
