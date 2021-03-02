@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-#1 CMD score for all 3* crew is seriously impressive. Not just that he works on Sundays and can deal 400% damage on cloaking vessels. His dual identity as both Cardassian and Klingon will net him some early Gauntlet use and sports two additional collection bonuses when immortalised. Bearing in mind all that he also does well voyaging, this easily makes him one of the best cards to have in the early game. He is a better Klingon card than some of the actual Klingons.
+The Book gives deference to cadet eligibility for saving you resources and trainers in a period of your gameplay where those things can be hard to come by. So for Klingon Dukat to be rated highly with one cadet arm tied behind his back, you know he's the real deal. A fat CMD top end roll will have him blowing the doors off Sunday cadet missions, even if he lacks good supplimentary skills, but it's the rest of him that impresses even more.
+
+On ships, Dukat's 400% damage hammer matches up even against legendary crew and is worth the price of its cloak trigger to activate. His triple collections, including the massive Klingon, are unmatched at the rare level and make him a premium collection target for players at any stage of play.

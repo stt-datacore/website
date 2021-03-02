@@ -3,7 +3,7 @@ name: Lursa Duras
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 3
 events: 15
 in_portal: true
 date: 01/01/2016
@@ -12,5 +12,6 @@ mega: false
 published: true
 ---
 
-The other Duras sister has a fairly decent #8 CMD base with a decent proficiency score. She can work all weekend but her CMD stat won’t be the reason you keep her around.
-See B’Etor for details on how they fuse into the Duras Sisters but it’s probably the best option rather than immortalising them. You can find better CMD crew once the cadet missions have been completed and her voyage score is not keeping her on.
+Some may consider Lursa superfluous for weekend cadet work considering her CMD base sits between the more versatile Tourist Dax and Saavik, yet she's still an option there with great top-end CMD and SEC rolls if you manage to snag her before the others.
+
+But Timelines' kollection nesting doll is something of a two-for-one as she not only provides a notch on the difficult Klingon collection (after a fairly Faction item-heavy build), but is also the gateway to a fusion with her sister B'Etor for another super rare to tick that collection upwards and help you boost your ship's attack value.

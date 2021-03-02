@@ -18,4 +18,4 @@ Chapter one is cadet work. Full weekend eligibility makes the build cost easier 
 
 Saturday's Breakwater cadet mission (you know, the one that you can ad-warp for double premium packs) sees B'Etor tackling three nodes by herself. With the help of any competent CMD crew, you'll unlock a mission that you can farm every weekend as one of the best sources of credits in the game.
 
-Chapter two is the fusion dance. Combined with sister Lursa, the duo form a super rare crew who lacks in most areas, but has an outstanding shipboard attack boost for new players. Requiring only one rare crew to build and a fistful of fusion fodder, The Duras Sisters are worth tying up a few extra crew slots to bolster your ship's weaponry for the arena and skirmishes.
+Chapter two is the fusion dance. Combined with sister Lursa, the duo form a super rare crew who lacks in most areas, but has an outstanding shipboard attack boost for new players. Requiring only one rare crew to build and a fistful of fusion fodder, The Duras Sisters are worth tying up a few extra crew slots to bolster your kollections and ship's weaponry for the arena and skirmishes.
