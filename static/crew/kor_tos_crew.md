@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Of all the Klingons available in the Rare collection, this one is probably the poorest. His CMD score and ship ability are his best features but nothing to shout about. He can perform well on Sunday cadet missions but there are better Klingons with the same traits and skills.
+Some on-paper contributions in the way of (cloak triggered) crit bonus or Sunday cadet eligibility are better left to crew who have broader usability than this CMD/DIP/SEC also-ran. You really should only be leveling him for the great kollection spot, which takes a few dozen faction items, but is light on chronitons.

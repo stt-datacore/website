@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-This woman will literally wade through the blood of her digital enemies. The highest 2* SEC base in the game and a fairly respectable DIP score. Her SEC use will dominate the early game and make two days worth of cadet challenges quite meaningless. She will only drop out of use once you have a few 3* crewmembers levelled up.
+L'Rell boasts the best SEC base at the uncommon level with a DIP secondary that can mop up a few weekday nodes as well. The lack of a Starfleet tag limits her to two days of duty per week, but a valuable kollection spot makes her a must-have for every roster at some point, even if you pass on her to start your Timelines career in favor of a more flexible option or one that has a less Faction item-heavy build.

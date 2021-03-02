@@ -3,7 +3,7 @@ name: Chief Engineer Torres
 rarity: 1
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 21
 in_portal: true
 date: 01/01/2016

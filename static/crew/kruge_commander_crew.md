@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-For pure security power you can’t go wrong with Kruge, so his use on a Sunday cadet mission will help knock off a few nodes or two. Once that is completed then his usefulness is limited. His ship ability requires a ship with the boarding trait and his voyaging scores are poor. Keep if you need the SEC but he will be easily replaced by some of the first SR cards you get.
+Kruge is pretty sucky, in contrast to his entertaining on-screen role, but there are a few points of interest here. Without a powerhouse Female + Alien rare crew in game to soak up all of the weekend cadet SEC nodes, you may happen upon a few copies of him early and use him to help clear some Sunday missions. And if you're after (just) his valuable kollection spot, Kruge is a breeze to level by Klingon standards. Most of the faction items needed are basic Warnogs, farmable from ship battles which established players can knock out during the course of a Skirmish event.

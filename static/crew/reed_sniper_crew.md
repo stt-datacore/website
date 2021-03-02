@@ -3,7 +3,7 @@ name: Sniper Reed
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 9
 in_portal: true
 date: 26/05/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A less than inspiring SEC stat with a bad CMD base make this edition of Reed one of the worst 3* cards available. SEC/CMD is such a common pairing and there are plenty of other cards with better numbers in both. His one saving grace is 200% damage in ship battles but that is easily replaceable with Commando Crusher or Tourist Dax.
+Triggerless arena damage begins and ends the value portfolio for Reed who boasts no collections, no cadet work, no third skill for voyages, no gauntlet work, and no business hogging a crew slot as soon as you can replace him on ships.
