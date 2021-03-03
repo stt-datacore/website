@@ -471,5 +471,16 @@
 		"smallbonus": {
 			"traits": ["troi", "yates", "worf", "Scoundrel"]
 		}
+	},
+	{
+		"name": "A Brute Squad (rerun)",
+		"type": "Faction",
+		"dates": "Thursday 03/04 until Monday 03/08 at noon (17.00 UTC)",
+		"startDate": "2021-03-04T17:00:00Z",
+		"endDate": "2021-03-08T17:00:00Z",
+		"highbonus": ["earp_wyatt_crew", "data_cowboy_crew", "chekov_cowboy_crew", "tucker_evsuit_crew"],
+		"smallbonus": {
+			"traits": ["data", "chekov", "tucker"]
+		}
 	}
 ]
