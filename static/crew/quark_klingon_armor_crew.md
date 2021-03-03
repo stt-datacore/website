@@ -3,7 +3,7 @@ name: Klingon Quark
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 30
 in_portal: true
 date: 01/01/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-An impressive event count between three features, Quark events, and several trait opportunities, but only his DIP base (637) is usable and not all that impressive. With pathetic numbers across the board and the common skill set, he won't immediately pay off a very expensive build consisting of a mish-mash of Klingon and Ferengi faction items, 70 Klingon house crests, and the highest chroniton requirement of 4* crew. You'll eventually want him for the Ferengi collection and a load of event work, but getting him to FF/FE just to shove him into the freezer is a calculated venture for rosters that have resources to burn. If not for his legendarily irritating build cost, he would be a plus investment for most players.
+Make no mistake, Klingon Quark is a toadstool, but he's a toadstool with five previous event features and two collections, including the lucrative Klingon tag. Owning a crazy build cost, Quark's leveling lowlights include 70 Klingon house crests and the highest chroniton cost of any super rare crew. You may not want to level him until right before another event feature or when you're on the precipice of one of his collection thresholds, but he's become an essential crew for min/maxers looking to stack skill boosts in the mid-to-late game.
