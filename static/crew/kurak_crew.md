@@ -3,7 +3,7 @@ name: Kurak
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 18
 in_portal: true
 date: 08/09/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A good skill set which unfortunately lacks voyage oomph. But an 800 base for daily shuttles and +1 Innovator are fine assets beside. Her secret weapon is a SCI base that sits behind only K’mtar among super rare Klingons.
+Kurak's shockingly high event count is decidedly backwards-looking, even if future Klingon bonuses are a distinct possibility. Therein, her SCI base has the possibility of being thaw-worthy, but the real reason you're taking her from a behold is the dual collection spots. The Klingon tag will be of value in that context for years to come, by which time we may see an expansion of the 2018 Innovator collection. If nothing else, her Innovator trait saves you from rummaging through the super rare trash for Innovator collection-only pieces.
