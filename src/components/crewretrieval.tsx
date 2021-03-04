@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox, Header } from 'semantic-ui-react';
+import { Table, Icon, Rating, Pagination, Dropdown, Form, Button, Checkbox, Header, Modal, Grid } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
 
@@ -13,6 +13,7 @@ type CrewRetrievalState = {
 	searchFilter: string;
 	data: any[];
 	ownedPolestars: any[];
+	disabledPolestars: any[];
 	allCrew: any[];
 	activeCrew: any;
 	pagination_rows: number;
@@ -20,6 +21,8 @@ type CrewRetrievalState = {
 	ownedFilter?: string;
 	minRarity: any;
 	collection: any;
+	modalFilterIsOpen: boolean;
+	recalculateCombos: boolean;
 };
 
 const ownedFilterOptions = [
@@ -82,11 +85,14 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			pagination_page: 1,
 			data: null,
 			ownedPolestars: null,
+			disabledPolestars: [],
 			allCrew: null,
 			activeCrew: null,
 			ownedFilter: ownedFilterOptions[0].value,
 			minRarity: null,
 			collection: null,
+			modalFilterIsOpen: false,
+			recalculateCombos: false,
 		};
 	}
 
@@ -96,6 +102,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
                 .then(response => response.json())
 			.    then(allkeystones => {
                     let ownedPolestars = allkeystones.filter((k) => k.type === 'keystone' && this.props.playerData.forte_root.items.some((f) => f.id === k.id));
+                    ownedPolestars.forEach((p) => { p.quantity = this.props.playerData.forte_root.items.find(k => k.id === p.id).quantity });
                     this.setState({ ownedPolestars });
                 });
         
@@ -107,19 +114,20 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	}
 
 	componentDidUpdate() {
-		if (!this.state.ownedPolestars || !this.state.allCrew || this.state.data) {
+		if (!this.state.recalculateCombos && (!this.state.ownedPolestars || !this.state.allCrew || this.state.data)) {
 			return;
 		}
+		let filteredPolestars = this.state.ownedPolestars.filter((p) => this.state.disabledPolestars.indexOf(p.id) === -1);
 		let data = this.state.allCrew.filter(
 			(crew) => crew.unique_polestar_combos?.some(
 				(upc) => upc.every(
-					(trait) => this.state.ownedPolestars.some(op => filterTraits(op, trait))
+					(trait) => filteredPolestars.some(op => filterTraits(op, trait))
 				)
 			)
 		);
 		data.forEach(crew => { crew.highest_owned_rarity = this._findHighestOwnedRarityForCrew(crew.symbol, false) });
 		
-		this.setState({ data });
+		this.setState({ data: data, recalculateCombos: false });
 		
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
 		cArr.forEach(c => {
@@ -176,9 +184,10 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	}
 
 	_findCombosForCrew(crew: any) {
+		let filteredPolestars = this.state.ownedPolestars.filter((p) => this.state.disabledPolestars.indexOf(p.id) === -1);
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
-				(trait) => this.state.ownedPolestars.some(op => filterTraits(op, trait))
+				(trait) => filteredPolestars.some(op => filterTraits(op, trait))
 			)
 		).map((upc) => upc.map((trait) => this.state.ownedPolestars.find((op) => filterTraits(op, trait))));
 		return (
@@ -216,6 +225,76 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			return highestRarityMatchingCrew['rarity'];
 		}
 		return 0;
+	}
+
+	_filterCheckbox(p) {
+		return (
+			<Grid.Column>
+				<Checkbox
+					toggle
+					id={`polestar_filter_id_${p.id}`}
+					label={`${p.short_name} (${p.quantity})`}
+					checked={this.state.disabledPolestars.indexOf(p.id)===-1}
+					onChange={(e) => this._handleFilterChange(e)}
+				/>
+			</Grid.Column>
+		)
+	}
+
+	_filterCheckboxGroupHeader(t) {
+		return (
+			<Grid.Column largeScreen={16} mobile={4}>
+				<strong>{t}</strong>
+			</Grid.Column>
+		)
+	}
+
+	_createFilterCheckboxes() {
+		const grouped = [
+			{
+				title: "Rarity",
+				ids: [14502, 14504, 14506, 14507, 14509],
+				polestars: [],
+			},
+			{
+				title: "Skills",
+				ids: [14511, 14512, 14513, 14514, 14515, 14516],
+				polestars: [],
+			},
+			{
+				title: "Traits",
+				ids: null,
+				polestars: [],
+			},
+		];
+		this.state.ownedPolestars.forEach(p => {
+			let group = 2;
+			if(grouped[0].ids.indexOf(p.id) !== -1) group = 0;
+			if(grouped[1].ids.indexOf(p.id) !== -1) group = 1;
+			grouped[group].polestars.push(p);
+		});
+		const checkboxes = [];
+		grouped.map((group) => {
+			if(group.polestars.length > 0) {
+				checkboxes.push(this._filterCheckboxGroupHeader(group.title));
+				group.polestars.map((polestar) => {
+					checkboxes.push(this._filterCheckbox(polestar));
+				});
+			}
+		});
+		return checkboxes;
+	}
+
+	_handleFilterChange(e) {
+		let disabledPolestars = this.state.disabledPolestars;
+		let id = parseInt(e.target.id.replace(/polestar_filter_id_/, ''));
+		if(e.target.checked === true && disabledPolestars.indexOf(id) !== -1) {
+			disabledPolestars = disabledPolestars.filter(el => el !== id);
+		}
+		if(e.target.checked === false && this.state.disabledPolestars.indexOf(id) === -1) {
+			disabledPolestars.push(id);
+		}
+		this.setState({disabledPolestars: disabledPolestars});
 	}
 
 	render() {
@@ -257,7 +336,27 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 				<Header as='h4'>Here are all the crew who you can perform a 100% guaranteed Crew Retrieval for, using the polestars currently in your inventory:</Header>
 				<Form>
 					<Form.Group inline>
-							<Form.Field
+						<Modal
+							open={this.state.modalFilterIsOpen}
+							onClose={() => this.setState({modalFilterIsOpen: false, recalculateCombos: true})}
+							onOpen={() => this.setState({modalFilterIsOpen: true})}
+							trigger={<Button>{this.state.ownedPolestars.length-this.state.disabledPolestars.length} / {this.state.ownedPolestars.length} Polestars</Button>}
+							header='Filter Owned Polestars'
+							size='large'
+						>
+							<Modal.Header>Filter Owned Polestars</Modal.Header>
+							<Modal.Content scrolling>
+								<Grid columns={4} stackable padded>
+									{this._createFilterCheckboxes()}
+								</Grid>
+							</Modal.Content>
+							<Modal.Actions>
+								<Button positive onClick={() => this.setState({modalFilterIsOpen: false, recalculateCombos: true})}>
+									Update Filter
+								</Button>
+							</Modal.Actions>
+						</Modal>
+						<Form.Field
 								control={Dropdown}
 								selection
 								options={ownedFilterOptions}
