@@ -184,9 +184,10 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	}
 
 	_findCombosForCrew(crew: any) {
+		let filteredPolestars = this.state.ownedPolestars.filter((p) => this.state.disabledPolestars.indexOf(p.id) === -1);
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
-				(trait) => this.state.ownedPolestars.some(op => filterTraits(op, trait))
+				(trait) => filteredPolestars.some(op => filterTraits(op, trait))
 			)
 		).map((upc) => upc.map((trait) => this.state.ownedPolestars.find((op) => filterTraits(op, trait))));
 		return (
