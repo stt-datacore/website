@@ -55,10 +55,10 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('search')) {
 			// Push the search string to localstorage for back button to behave as expected
-			localForage.setItem<string>('searchFilter', urlParams.get('search'));
+			localForage.setItem<string>(window.location.pathname + 'searchFilter', urlParams.get('search'));
 			this.setState({ searchFilter: urlParams.get('search') });
 		} else {
-			localForage.getItem<string>('searchFilter', (err, value) => {
+			localForage.getItem<string>(window.location.pathname + 'searchFilter', (err, value) => {
 				if (err) {
 					console.error(err);
 				} else {
@@ -116,7 +116,7 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 	}
 
 	_onChangeFilter(value) {
-		localForage.setItem<string>('searchFilter', value);
+		localForage.setItem<string>(window.location.pathname + 'searchFilter', value);
 		this.setState({ searchFilter: value, pagination_page: 1 });
 	}
 
