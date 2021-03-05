@@ -3,7 +3,7 @@ name: Security Chief Worf
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 22
 in_portal: true
 date: 01/01/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Are you ready to tackle (most) weekday SEC missions! This is your man. Someone I neglected to my peril as his strong SEC stat will clear all the cadet missions he is eligible for. His CMD stat isn’t inspiring so he won’t make it on many voyages, his ship ability isn’t the best either nor does he fill any additional collections. But if you are still clearing cadet missions get your Worf up!
+While Worf variant sprout up left and right, don't forget this humble cadet stalwart. The Starfleet and alien tags allow Worf to let you unlock most of the "important" cadet nodes on weekdays, as the ladies usually like to stop at the elite level on Thursdays. Combined with several trait nodes that are tailor-made for him, Worf is the premier Uncommon SEC option for new players with a strong, enduring collection spot to boot.

@@ -3,7 +3,7 @@ name: Third Remata'Klan
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 8
 in_portal: true
 date: 01/01/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-So that Dominion faction you have at honored status...oh wait what, they are hostile. Oh boy. You are going to need a fair few Jem’Hadar weapons to get him immortalised. He has a #8 SEC base stat with a reasonable proficiency bonus but, like I’ve said many times in this document, SEC/CMD is incredibly common and although Third can work a sunday cadet mission there are many other options to consider before putting in the work on him. No extra collection bonus and a poor ship ability means that you can safely put him in the unneeded pile until you want to get the Rare collection completed.
+No one will blame you for being fresh out of Dominion faction items - there simply aren't that many crew in the game to justify flying those shuttles very often. The fact that Third needs almost a hundred of them means you'd better warm up your replicator and prepare for a garbage return on investment.
+
+Sunday cadet eligibility is his only saving grace, but he's not worth the effort it takes to equip him just for that. Keep taking the airlock's honor payment until you're just a few crew away from finishing the Rare Crew (vanity) collection.
