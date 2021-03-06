@@ -37,7 +37,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 								<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
-						<Menu.Item onClick={() => navigate('/voyage')}>Player tools</Menu.Item>
+						<Menu.Item onClick={() => navigate('/playertools')}>Player tools</Menu.Item>
 						<Menu.Item onClick={() => navigate('/behold')}>Behold</Menu.Item>
 
 						<Dropdown item simple text='Pages'>

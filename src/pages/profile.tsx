@@ -398,7 +398,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							</Message>
 						)}
 						<p>
-							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to upload your
+							Are you looking to share your player profile? Go to the <Link to={`/playertools`}>Player Tools page</Link> to upload your
 							player.json and access other useful player tools.
 						</p>
 						{!errorMessage && (
