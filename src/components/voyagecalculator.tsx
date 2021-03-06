@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox } from 'semantic-ui-react';
+import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import {
 	calculateBuffConfig,
@@ -134,7 +134,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					VOYAGE CALCULATOR! Configure the settings below, then click on the "Calculate" button to see the recommendations. Current voyage
 					is <b>{curVoy}</b>.
 				</Message>
-				<Form className='attached fluid segment' loading={this.state.calcState === CalculatorState.InProgress}>
+				<Form className='attached fluid segment'>
 					<Form.Group inline>
 						<Form.Field
 							control={Select}
@@ -239,6 +239,16 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 						</Form.Button>
 					</Form.Group>
 				</Form>
+				<Modal basic size='tiny' open={this.state.calcState === CalculatorState.InProgress}>
+                    <Modal.Content image>
+                        <Image centered src='/media/voyage-wait-icon.gif' />
+                    </Modal.Content>
+                    <Modal.Description>
+                        <Segment basic textAlign={"center"}>
+                            <Button onClick={e => this.setState({calcState : CalculatorState.Done})}>Abort</Button>
+                        </Segment>
+                    </Modal.Description>
+                </Modal>
 			</div>
 		);
 	}
