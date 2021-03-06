@@ -294,7 +294,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		if(e.target.checked === false && this.state.disabledPolestars.indexOf(id) === -1) {
 			disabledPolestars.push(id);
 		}
-		this.setState({disabledPolestars: disabledPolestars});
+		// temp. workaround: avoid broken sort order when data is recreated with filtered polestars
+		this.setState({column: null, direction: null, disabledPolestars: disabledPolestars});
 	}
 
 	render() {
