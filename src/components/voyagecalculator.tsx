@@ -241,7 +241,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				</Form>
 				<Modal basic size='tiny' open={this.state.calcState === CalculatorState.InProgress}>
                     <Modal.Content image>
-                        <Image centered src='/media/wait_icon.gif' />
+                        <Image centered src='/media/voyage-wait-icon.gif' />
                     </Modal.Content>
                     <Modal.Description>
                         <Segment basic textAlign={"center"}>
