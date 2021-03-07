@@ -131,11 +131,15 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
 		cArr.forEach(c => {
+			let pc = this.props.playerData.player.character.cryo_collections.find((pc) => pc.name === c);
 			let kv = cArr.indexOf(c) + 1;
 			collectionsOptions.push({
 				key: kv,
-				value: kv,
-				text: c
+				value: c,
+				text: c,
+				content: (
+					<span>{c} <span style={{ whiteSpace: 'nowrap' }}>({pc.progress} / {pc.milestone.goal || 'max'})</span></span>
+				),
 			});
 		});
 	}
@@ -323,8 +327,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		}
 		
 		if (collection) {
-			let cName = collectionsOptions.find(o => o.key === collection).text;
-			data = data.filter((crew) => crew.collections.indexOf(cName) !== -1);
+			data = data.filter((crew) => crew.collections.indexOf(collection) !== -1);
 		}
 		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
