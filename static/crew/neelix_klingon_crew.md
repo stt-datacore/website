@@ -3,7 +3,7 @@ name: Klingon Neelix
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 15
 in_portal: true
 date: 10/07/2017
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-A strong SEC base/event pair double dips with Neelix and Klingon events with a few trait supplements to give him a handful of yearly bonuses. With very narrow value, Kleenix is a luxury event pick who you should start collecting stars on after you’ve sorted out your daily roster and collection crew.
+An honorary Klingon, perhaps due to his ability to stomach leola root, this Neelix becomes an obligatory immortalize for late game players looking to stack skill boosts. Beyond that, he's more reminiscent of certain Sulus or Reeds who would perform well as Faction fillers when given the opportunity, but that chance rarely comes around.
