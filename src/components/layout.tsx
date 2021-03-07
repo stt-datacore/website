@@ -25,8 +25,6 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 								<meta property='og:site_name' content='DataCore' />
 								<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
 								<meta property='og:description' content={data.site.siteMetadata.defaultDescription} />
-								<link rel='stylesheet' type='text/css' title='dark' href={withPrefix('styles/semantic.slate.css')} />
-								<link rel='stylesheet' type='text/css' title='lite' href={withPrefix('styles/semantic.css')} />
 								<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
 								<script src={withPrefix('styles/theming.js')} type='text/javascript' />
 							</Helmet>
