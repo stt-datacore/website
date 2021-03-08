@@ -3,7 +3,7 @@ name: K'mtar
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 9
 in_portal: true
 date: 27/12/2018
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-If you ever want to grab my attention, show me a Klingon with a rare skill set. And Alexander here is no exception, sporting a quite frankly gorgeous top ten SCI base, a top 25 voyage total, +1 Diplomat collection, Klingon + Temporal Agent events to bolster his weekend chances, and an instant 300% damage ship ability. Exactly what we want from our non-main cast cards; versatility.
+Gorgeous double collections headline this card...well, that and James Sloyan, but there's a bit more juice outside of those boundaries as well. Slow, cloak-triggered arena damage isn't really what we're looking to grab for our ship lineup, but it's at least an option and accompanies worthwhile base and voyage numbers, both of which are boosted by a SCI primary to avoid what could have been another paint by numbers CMD/DIP/SEC Klingon.
