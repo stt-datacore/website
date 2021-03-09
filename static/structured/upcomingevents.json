@@ -482,5 +482,16 @@
 		"smallbonus": {
 			"traits": ["data", "chekov", "tucker"]
 		}
+	},
+	{
+		"name": "Baby Boom",
+		"type": "Galaxy",
+		"dates": "Thursday 03/11 until Monday 03/15 at noon (16.00 UTC)",
+		"startDate": "2021-03-11T17:00:00Z",
+		"endDate": "2021-03-15T16:00:00Z",
+		"highbonus": ["crusher_century_nurse_crew", "worf_midwife_crew", "laforge_doctor_crew"],
+		"smallbonus": {
+			"traits": ["crusher", "worf", "laforge"]
+		}
 	}
 ]
