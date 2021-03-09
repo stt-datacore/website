@@ -55,7 +55,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 					<Menu.Menu position='right'>
 						<Menu.Item>
-							<Popup position='bottom center' flowing hoverable content='Donate to Community Patreon' trigger={<Icon name='dollar' />}>
+							<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
 								<p>We have enough reserve funds for now!</p>
 								<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
 								<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
@@ -64,10 +64,10 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						<Menu.Item>
 							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"Developers needed!"} />
 						</Menu.Item>
-						<Menu.Item as='a' onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
+						<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 							<Icon name='github' />
 						</Menu.Item>
-						<Menu.Item as='a' onClick={() => (window as any).swapThemeCss()}>
+						<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 							<Icon name='adjust' />
 						</Menu.Item>
 					</Menu.Menu>

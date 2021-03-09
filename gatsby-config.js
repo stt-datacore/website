@@ -5,13 +5,13 @@ module.exports = {
 		titleTemplate: `%s - Star Trek Timelines DataCore`,
 		description: `DataCore is a companion resource to Tilting Point's Star Trek Timelines game. It's designed as a compendium of data, statistics and assets, both extracted from the game as well as user generated.`,
 		baseUrl: 'https://datacore.app',
-                siteUrl: 'https://datacore.app',
+		siteUrl: 'https://datacore.app'
 	},
 	plugins: [
 		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
-                `gatsby-plugin-sitemap`,
+		`gatsby-plugin-sitemap`,
 		`gatsby-plugin-typescript`,
 		{
 			resolve: 'gatsby-source-filesystem',
