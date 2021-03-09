@@ -40,7 +40,7 @@ function swapThemeCss(reverse) {
 
 	if (!theme) {
 		// First time visiting the website, use preferred color scheme
-		theme = getPreferredColorScheme();
+		theme = 'dark';
 	}
 
 	setThemeCss(reverse ? theme === 'dark' : theme !== 'dark');
