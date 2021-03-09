@@ -9,7 +9,7 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
-import VoyageCalculator from '../components/voyagecalculator_iap';
+import VoyageCalculator from '../components/voyagecalculator_mva';
 import CrewRetrieval from '../components/crewretrieval';
 import UnneededItems from '../components/unneededitems';
 
@@ -170,7 +170,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 
 		const panes = [
 			{
-				menuItem: 'Voyage Calculator',
+				menuItem: 'Voyage Calculators',
 				render: () => <VoyageCalculator playerData={playerData} voyageData={this.state.voyageData} eventData={this.state.eventData} />
 			},
 			{
