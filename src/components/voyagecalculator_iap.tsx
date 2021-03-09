@@ -4,6 +4,7 @@ import ItemDisplay from '../components/itemdisplay';
 import {
 	ICalcResult,
 	calculateVoyage,
+	abortVoyageCalculation,
 	formatTimeSeconds,
 	BonusCrew
 } from '../utils/voyageutils';
@@ -271,7 +272,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
                     </Modal.Content>
                     <Modal.Description>
                         <Segment basic textAlign={"center"}>
-                            <Button onClick={e => this.setState({calcState : CalculatorState.Done})}>Abort</Button>
+                            <Button onClick={e => { abortVoyageCalculation(), this.setState({calcState : CalculatorState.Done})}}>Abort</Button>
                         </Segment>
                     </Modal.Description>
                 </Modal>
