@@ -54,6 +54,9 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					</Container>
 
 					<Menu.Menu position='right'>
+						<Menu.Item onClick={() => (window as any).swapThemeCss()}>
+							<Icon name='adjust' />
+						</Menu.Item>
 						<Menu.Item>
 							<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
 								<p>We have enough reserve funds for now!</p>
@@ -66,9 +69,6 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						</Menu.Item>
 						<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 							<Icon name='github' />
-						</Menu.Item>
-						<Menu.Item onClick={() => (window as any).swapThemeCss()}>
-							<Icon name='adjust' />
 						</Menu.Item>
 					</Menu.Menu>
 				</Menu>
