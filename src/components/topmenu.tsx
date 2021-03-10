@@ -176,7 +176,7 @@ const NavBar = ({ children, onMessageClicked }: NavBarProps) => {
 				{children}
 			</NavBarMobile>
 		</Media>
-		<Media at="computer">
+		<Media greaterThanOrEqual="computer">
 			<NavBarDesktop leftItems={useMainMenuItems(false)} rightItems={rightItems}>
 				{children}
 			</NavBarDesktop>
