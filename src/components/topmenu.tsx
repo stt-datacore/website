@@ -33,7 +33,7 @@ const NavBarMobile = ({ children, leftItems, rightItems }) => {
 		</Sidebar>
 		<Sidebar.Pusher
 			dimmed={visible}
-			style={{ minHeight: "100vh" }}
+			style={{ minHeight: "100vh", overflowX: "scroll" }}
 		>
 			<Menu fixed="top" inverted>
 				<Menu.Item onClick={() => setVisible(!visible)}>
