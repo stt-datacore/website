@@ -4,6 +4,34 @@ import { isMobile } from 'react-device-detect';
 
 import * as localForage from 'localforage';
 
+// TODO: Put this in its own json file
+const filterTypes = {
+    'any': {
+        name: "Any of", 
+        value: (input: [], filter: []) => filter.some(item => input.includes(item)) 
+    },
+    'all': {
+        name: "All of", 
+        value: (input: [], filter: []) => filter.every(item => input.includes(item)) 
+    },
+    'none':: {
+        name: "None of",
+        value: (input: [], filter: []) => !filter.some(item => input.includes(item))
+    }
+};
+
+const allFilters = [
+    {
+        name: "Collection",
+    }
+];
+
+const filterTypes = [
+    { key: 0, value: 'any', text: 'Any of' },
+    { key: 1, value: 'all', text: 'All of' },
+    { key: 2, value: 'none', text: 'None of' }
+];
+
 const filterOptions = [
     { key: 0, value: 'keyword', text: 'Keyword' },
     { key: 1, value: 'trait', text: 'Trait' },
@@ -11,18 +39,49 @@ const filterOptions = [
     { key: 3, value: 'variantof', text: 'Variant of' }
 ];
 
-type CrewSearchBarProps = {
+type SearchPopupState = {
+    conditionType: string,
+    subFilterOptions:
+    conditionDropdown: Dropdown
+};
+
+class SearchPopup extends PureComponent<SearchPopupState> = {
+    constructor(props) {
+        super(props);
+    }
+    
+    
+    render() {
+        (
+            <Menu options = {filterOptions} value={conditionType} onChange = {(e, {value}) => this.setState({conditionType: value})} />
+            <Dropdown 
+                style={{ paddingLeft: '2em'}} 
+                clearable
+				fluid
+				multiple
+				search
+				selection
+				options={this.state.peopleList}
+				placeholder=''
+				value={this.state.currentSelectedItems}
+				onChange={(e, { value }) => this._selectionChanged(value)}
+            />
+        )
+    }
+};
+
+type SearchBarProps = {
     data: any[];
     searchFilter: string;
     filterRow: (crew: any, filter: any) => boolean;
     onChange: (value: string) => void;
 }
 
-type CrewSearchBarState = {
+type SearchBarState = {
     searchFilter: string;
 }
 
-export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchBarState> {
+export class SearchBar extends PureComponent<SearchBarProps, SearchBarState> {
 	constructor(props) {
         super(props);
         
@@ -38,10 +97,10 @@ export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchB
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('search')) {
 			// Push the search string to localstorage for back button to behave as expected
-			localForage.setItem<string>('searchFilter', urlParams.get('search'));
+			localForage.setItem<string>(window.location.pathname + 'searchFilter', urlParams.get('search'));
 			this.setState({ searchFilter: urlParams.get('search') });
 		} else {
-			localForage.getItem<string>('searchFilter', (err, value) => {
+			localForage.getItem<string>(window.location.pathname + 'searchFilter', (err, value) => {
 				if (err) {
 					console.error(err);
 				} else {
@@ -52,7 +111,7 @@ export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchB
 	}
 	
 	_onChangeFilter(value) {
-		localForage.setItem<string>('searchFilter', value);
+		localForage.setItem<string>(window.location.pathname + 'searchFilter', value);
         this.setState({filterPopupOpen: false, searchFilter: value, conditionValue: ''});
         this.props.onChange(value);
 	}
@@ -103,8 +162,7 @@ export class CrewSearchBar extends PureComponent<CrewSearchBarProps, CrewSearchB
                     position='bottom right' 
                     trigger={<Button icon onClick={() => this.setState({filterPopupOpen: !filterPopupOpen})}><Icon name='add' /></Button>} 
                     open={filterPopupOpen}>
-                        <Dropdown options = {filterOptions} value={conditionType} onChange = {(e, {value}) => this.setState({conditionType: value})} />
-                        <Input style={{ paddingLeft: '2em'}} onKeyPress={e => e.key == 'Enter' && this._onCloseFilterPopup()} onChange={(e, {value}) => this._updateFilter(value)} />
+                            <SearchPopup />
                         </Popup>
                         <Button icon onClick={() => this._onChangeFilter('')} >
                             <Icon name='delete' />
