@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Item, Comment } from 'semantic-ui-react';
+import { Header, Item, Comment } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -166,24 +166,22 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 		const episode = allEpisodesJson.edges[0].node;
 		return (
 			<Layout title={getEpisodeName(episode)}>
-				<Container text style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h2'>{getEpisodeName(episode)}</Header>
-					<p dangerouslySetInnerHTML={{ __html: episode.description }} />
+				<Header as='h2'>{getEpisodeName(episode)}</Header>
+				<p dangerouslySetInnerHTML={{ __html: episode.description }} />
 
-					<Item.Group divided>
-						{episode.quests.map((c, idx) => (
-							<Item key={idx}>
-								<Item.Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${this._getImageUrl(c)}`} />
+				<Item.Group divided>
+					{episode.quests.map((c, idx) => (
+						<Item key={idx}>
+							<Item.Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${this._getImageUrl(c)}`} />
 
-								<Item.Content>
-									<Item.Header as='a'>{c.name}</Item.Header>
-									<Item.Description>{this.renderQuestDescription(c)}</Item.Description>
-									<Item.Extra>{this._questType(c.quest_type)}</Item.Extra>
-								</Item.Content>
-							</Item>
-						))}
-					</Item.Group>
-				</Container>
+							<Item.Content>
+								<Item.Header as='a'>{c.name}</Item.Header>
+								<Item.Description>{this.renderQuestDescription(c)}</Item.Description>
+								<Item.Extra>{this._questType(c.quest_type)}</Item.Extra>
+							</Item.Content>
+						</Item>
+					))}
+				</Item.Group>
 			</Layout>
 		);
 	}

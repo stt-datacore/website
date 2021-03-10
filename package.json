@@ -14,14 +14,15 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
   "dependencies": {
+    "@artsy/fresnel": "^1.3.1",
     "@nivo/bar": "^0.67.0",
     "@nivo/core": "^0.67.0",
     "@nivo/line": "^0.67.0",
     "@nivo/pie": "^0.67.0",
     "@nivo/radar": "^0.67.0",
-    "@nivo/sunburst": "^0.67.0",
+    "@nivo/sunburst": "0.64.0",
     "@types/react-helmet": "^6.1.0",
-    "exceljs": "^4.2.0",
+    "exceljs": "^4.2.1",
     "gatsby": "^3.0.3",
     "gatsby-plugin-manifest": "^3.0.0",
     "gatsby-plugin-react-helmet": "^4.0.0",
@@ -48,7 +49,7 @@
     "write": "^2.0.0"
   },
   "devDependencies": {
-    "@types/marked": "^1.2.1",
+    "@types/marked": "^2.0.0",
     "@types/tinycolor2": "^1.4.2",
     "dotenv": "^8.2.0",
     "showdown": "^1.9.1"

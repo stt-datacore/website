@@ -104,7 +104,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_id > 0) {
 				// Stripped data doesn't include crewId, so create pseudoId based on level and equipment
-				let shuttleCrewId = crew.symbol+','+crew.level+',';
+				let shuttleCrewId = crew.symbol + ',' + crew.level + ',';
 				crew.equipment.forEach(equipment => shuttleCrewId += equipment[0]);
 				shuttleCrew.push(shuttleCrewId);
 			}
@@ -158,9 +158,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		if (!playerData && (inputPlayerData || strippedPlayerData)) {
 			return (
 				<Layout title='Player tools'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Icon loading name='spinner' /> Loading...
-					</Container>
+					<Icon loading name='spinner' /> Loading...
 				</Layout>
 			);
 		}
@@ -209,57 +207,55 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 
 		return (
 			<Layout title='Player tools'>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
-					<Message icon>
-						<Icon name='bell' />
-						<Message.Content>
-							<Message.Header>Share your player profile!</Message.Header>
-							{!this.state.profileUploaded && (
-								<p>
-									Click here to{' '}
-									<Button size='small' color='green' onClick={() => this._shareProfile()}>
-										{this.state.uploading && <Icon loading name='spinner' />}share your profile
+				<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
+				<Message icon>
+					<Icon name='bell' />
+					<Message.Content>
+						<Message.Header>Share your player profile!</Message.Header>
+						{!this.state.profileUploaded && (
+							<p>
+								Click here to{' '}
+								<Button size='small' color='green' onClick={() => this._shareProfile()}>
+									{this.state.uploading && <Icon loading name='spinner' />}share your profile
 									</Button>{' '}
 									and unlock more tools and export options for items and ships. More details:
-								</p>
-							)}
-							{!this.state.profileUploaded && (
-								<Message.List>
-									<Message.Item>
-										Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
-									</Message.Item>
-									<Message.Item>
-										There is no private information included in the player profile; information being shared is limited to:{' '}
-										<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
-									</Message.Item>
-								</Message.List>
-							)}
-							{this.state.profileUploaded && (
-								<p>
-									Your profile was uploaded. Share the link:{' '}
-									<a
-										href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
-										target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
-								</p>
-							)}
-						</Message.Content>
-					</Message>
-
-					<Menu compact>
-						{playerData.calc.lastModified && (
-							<Dropdown item text={`Player data imported: ${playerData.calc.lastModified.toLocaleString()}`}>
-								<Dropdown.Menu>
-									<Dropdown.Item onClick={() => this._forceInputForm()}>Update now...</Dropdown.Item>
-									<Dropdown.Item onClick={() => this._clearPlayerData()}>Clear player data</Dropdown.Item>
-								</Dropdown.Menu>
-							</Dropdown>
+							</p>
 						)}
-						<Button onClick={() => this._exportCrew()} content='Export crew spreadsheet...' />
-					</Menu>
+						{!this.state.profileUploaded && (
+							<Message.List>
+								<Message.Item>
+									Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
+									</Message.Item>
+								<Message.Item>
+									There is no private information included in the player profile; information being shared is limited to:{' '}
+									<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
+								</Message.Item>
+							</Message.List>
+						)}
+						{this.state.profileUploaded && (
+							<p>
+								Your profile was uploaded. Share the link:{' '}
+								<a
+									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
+									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
+							</p>
+						)}
+					</Message.Content>
+				</Message>
 
-					<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }} />
-				</Container>
+				<Menu compact>
+					{playerData.calc.lastModified && (
+						<Dropdown item text={`Player data imported: ${playerData.calc.lastModified.toLocaleString()}`}>
+							<Dropdown.Menu>
+								<Dropdown.Item onClick={() => this._forceInputForm()}>Update now...</Dropdown.Item>
+								<Dropdown.Item onClick={() => this._clearPlayerData()}>Clear player data</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+					)}
+					<Button onClick={() => this._exportCrew()} content='Export crew spreadsheet...' />
+				</Menu>
+
+				<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }} />
 			</Layout>
 		);
 	}
@@ -311,91 +307,89 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		const { errorMessage } = this.state;
 
 		return (
-				<Layout>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as='h4'>Player tools</Header>
-						<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
-						<p>If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials, making it easier to change accounts.</p>
-						<ul>
-							<li>
-								Open this page in your browser:{' '}
-								<a href={PLAYERLINK} target='_blank'>
-									https://stt.disruptorbeam.com/player
-								</a>
-							</li>
-							<li>
-								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-							</li>
-							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>Paste it (Ctrl+V) in the text box below. Note that only the first few lines may be displayed</li>
-							<li>Click the 'Import data' button</li>
-						</ul>
-
-						<Form>
-							<TextArea
-								placeholder='Paste your player data here'
-								value={this.state.displayedInput}
-								onChange={(e, { value }) => this.setState({ displayedInput: value })}
-								onPaste={(e) => { return this._onPaste(e) }}
-							/>
-							<input
-								type='file'
-								onChange={(e) => { this._handleFileUpload(e) }}
-								style={{display:'none'}}
-								ref={e => this.inputUploadFile = e}
-							/>
-						</Form>
-
-						<Button
-							onClick={() => this._parseInput()}
-							style={{ marginTop: '1em' }}
-							content='Import data'
-							icon='paste'
-							labelPosition='right'
-						/>
-
-						{errorMessage && (
-							<Message negative>
-								<Message.Header>Error</Message.Header>
-								<p>{errorMessage}</p>
-							</Message>
-						)}
-					</Container>
-
-					<Container style={{ paddingBottom: '2em' }}>
-						<p>To circumvent the long text copy limitations on mobile devices, download{' '}
+			<Layout>
+				<Container style={{ paddingBottom: '2em' }}>
+					<Header as='h4'>Player tools</Header>
+					<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
+					<p>If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials, making it easier to change accounts.</p>
+					<ul>
+						<li>
+							Open this page in your browser:{' '}
 							<a href={PLAYERLINK} target='_blank'>
-								your player data
-							</a>
-							{' '}to your device, then click the 'Upload data file' button.
-						</p>
-						<p>
-							<Modal
-								trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
-								header='Player data upload on iOS'
-								content={<ul>
-									<li>Go to your player data using the link provided, logging in if asked.</li>
-									<li>Wait for the page to finish loading. It should start with:{' '}
-											<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-									</li>
-									<li>Press the share icon while viewing the page.</li>
-									<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
-									<li>Come back to this page (DataCore.app player tools).</li>
-									<li>Tap the 'Upload data file' button.</li>
-									<li>Choose the file starting with 'player?client_api...' from where you saved it.</li>
-								</ul>}
-							/>
-						</p>
+								https://stt.disruptorbeam.com/player
+								</a>
+						</li>
+						<li>
+							Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+							<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+							</li>
+						<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
+						<li>Paste it (Ctrl+V) in the text box below. Note that only the first few lines may be displayed</li>
+						<li>Click the 'Import data' button</li>
+					</ul>
 
-						<Button
-							onClick={() => this.inputUploadFile.click()}
-							content='Upload data file'
-							icon='file'
-							labelPosition='right'
+					<Form>
+						<TextArea
+							placeholder='Paste your player data here'
+							value={this.state.displayedInput}
+							onChange={(e, { value }) => this.setState({ displayedInput: value })}
+							onPaste={(e) => { return this._onPaste(e) }}
 						/>
-					</Container>
-				</Layout>
+						<input
+							type='file'
+							onChange={(e) => { this._handleFileUpload(e) }}
+							style={{ display: 'none' }}
+							ref={e => this.inputUploadFile = e}
+						/>
+					</Form>
+
+					<Button
+						onClick={() => this._parseInput()}
+						style={{ marginTop: '1em' }}
+						content='Import data'
+						icon='paste'
+						labelPosition='right'
+					/>
+
+					{errorMessage && (
+						<Message negative>
+							<Message.Header>Error</Message.Header>
+							<p>{errorMessage}</p>
+						</Message>
+					)}
+				</Container>
+
+				<p>To circumvent the long text copy limitations on mobile devices, download{' '}
+					<a href={PLAYERLINK} target='_blank'>
+						your player data
+							</a>
+					{' '}to your device, then click the 'Upload data file' button.
+						</p>
+				<p>
+					<Modal
+						trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
+						header='Player data upload on iOS'
+						content={<ul>
+							<li>Go to your player data using the link provided, logging in if asked.</li>
+							<li>Wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+									</li>
+							<li>Press the share icon while viewing the page.</li>
+							<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
+							<li>Come back to this page (DataCore.app player tools).</li>
+							<li>Tap the 'Upload data file' button.</li>
+							<li>Choose the file starting with 'player?client_api...' from where you saved it.</li>
+						</ul>}
+					/>
+				</p>
+
+				<Button
+					onClick={() => this.inputUploadFile.click()}
+					content='Upload data file'
+					icon='file'
+					labelPosition='right'
+				/>
+			</Layout>
 		);
 	}
 
@@ -403,7 +397,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		let paste = event.clipboardData || window.clipboardData;
 		if (paste) {
 			let fullInput = paste.getData('text');
-			let displayedInput = fullInput.substr(0, 500)+' [ ... ]';
+			let displayedInput = fullInput.substr(0, 500) + ' [ ... ]';
 			this.setState({ fullInput, displayedInput });
 			event.preventDefault();
 			return false;
@@ -419,7 +413,7 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.
-				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}')+2);
+				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}') + 2);
 			}
 			this.setState({ fullInput: data });
 			this._parseInput();
