@@ -8,7 +8,7 @@ import { useOtherPages } from './otherpages';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
-		mobile: 400,
+		mobile: 0,
 		computer: 1024
 	},
 });
