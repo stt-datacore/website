@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-An event piece formerly lauded for some tough collection work is now more of a shuttle time bomb, relying on a fistful of interesting traits, both tapped and untapped, to present multi-week splash opportunities. With neither Borg nor Jury Rigger requiring a gold crew to complete, Torres is a rank 40ish ENG crew whose had good luck with event opportunities so far and may into the future as well with names like Maquis, Borg, and several traits of the right bonus pool size for DB to target.
+Ignore her art's vomitous hue, that's simply the opposition green with envy as you move one step closer to finishing the Klingon kollection. Borg Torres is a stop and start event piece who's destined to see her event chances come in chunks thanks to a pretty plus trait set overall with variant weekends sprinkled in. Though her trio of collections are of varying value, she *does* have three of them and may see adjustments in value over time should any of them be expanded.

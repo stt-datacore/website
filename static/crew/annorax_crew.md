@@ -3,7 +3,7 @@ name: Annorax
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 11
 in_portal: true
 date: 10/04/2018
