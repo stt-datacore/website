@@ -131,7 +131,13 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
 		cArr.forEach(c => {
-			let pc = this.props.playerData.player.character.cryo_collections ? this.props.playerData.player.character.cryo_collections.find((pc) => pc.name === c) : { progress: 'n/a', milestone: { goal: 'n/a' }};
+			let pc = { progress: 'n/a', milestone: { goal: 'n/a' }};
+			if (this.props.playerData.player.character.cryo_collections) {
+				let matchedCollection = this.props.playerData.player.character.cryo_collections.find((pc) => pc.name === c);
+				if (matchedCollection) {
+					pc = matchedCollection;
+				}
+			}
 			let kv = cArr.indexOf(c) + 1;
 			collectionsOptions.push({
 				key: kv,
