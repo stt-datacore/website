@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+
 import { mergeShips } from '../utils/shiputils';
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 type ProfileShipsProps = {
 	playerData: any;
@@ -53,23 +55,25 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
-		if (column !== clickedColumn) {
-			const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
-			let sortedData = data.sort((a, b) => compare(a[clickedColumn], b[clickedColumn]));
+		const sortConfig: IConfigSortData = {
+			field: clickedColumn,
+			direction: clickedColumn === column ? direction : (clickedColumn === 'name' ? null : 'ascending')
+		};
 
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
-		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
+		if(sortConfig.field === 'max_level') {
+			sortConfig.secondary = {
+				field: 'level',
+				direction: 'descending' //sortConfig.direction
+			};
 		}
+
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			column: sorted.field,
+			direction: sorted.direction,
+			pagination_page: 1,
+			data: sorted.result
+		});
 	}
 
 	render() {
