@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Button, Checkbox, Header, Modal, Grid } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
+
 import { getCoolStats } from '../utils/misc';
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 type CrewRetrievalProps = {
 	playerData: any;
@@ -127,11 +129,20 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		);
 		data.forEach(crew => { crew.highest_owned_rarity = this._findHighestOwnedRarityForCrew(crew.symbol, false) });
 		
+		if(this.state.recalculateCombos && this.state.column) {
+			data = this._reSort(data);
+		}
 		this.setState({ data: data, recalculateCombos: false });
-		
+
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
 		cArr.forEach(c => {
-			let pc = this.props.playerData.player.character.cryo_collections ? this.props.playerData.player.character.cryo_collections.find((pc) => pc.name === c) : { progress: 'n/a', milestone: { goal: 'n/a' }};
+			let pc = { progress: 'n/a', milestone: { goal: 'n/a' }};
+			if (this.props.playerData.player.character.cryo_collections) {
+				let matchedCollection = this.props.playerData.player.character.cryo_collections.find((pc) => pc.name === c);
+				if (matchedCollection) {
+					pc = matchedCollection;
+				}
+			}
 			let kv = cArr.indexOf(c) + 1;
 			collectionsOptions.push({
 				key: kv,
@@ -148,43 +159,53 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		this.setState({ pagination_page: activePage });
 	}
 
-	_compare(a, b) {
-		return (a > b ? 1 : b > a ? -1 : 0);
-	}
-
-	_handleSort(clickedColumn, isSkill) {
+	_handleSort(clickedColumn, keepSortOptions) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
+		
+		const sortConfig: IConfigSortData = {
+			field: clickedColumn,
+			direction: column === clickedColumn ? direction : null
+		};
 
-		if (column !== clickedColumn) {
-			let sortedData;
-			if (isSkill) {
-				sortedData = data.sort(
-					(a, b) =>
-						(a.base_skills[clickedColumn] ? a.base_skills[clickedColumn].core : 0) -
-						(b.base_skills[clickedColumn] ? b.base_skills[clickedColumn].core : 0)
-				);
-			} else {
-				if(clickedColumn == "rarity") {
-					sortedData = data.sort((a, b) => a.max_rarity - b.max_rarity || a.highest_owned_rarity - b.highest_owned_rarity);
-				} else {
-					sortedData = data.sort((a, b) => this._compare(a[clickedColumn], b[clickedColumn]));
-				}
-			}
-
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
-		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
+		if(keepSortOptions) {
+			sortConfig.direction = direction;
+			sortConfig.keepSortOptions = true;
 		}
+
+		if(clickedColumn === 'max_rarity') {
+			sortConfig.direction = direction || 'descending';
+			sortConfig.secondary = {
+				field: 'highest_owned_rarity',
+				direction: 'ascending'
+			};
+		}
+		
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			column: sorted.field,
+			direction: sorted.direction,
+			pagination_page: 1,
+			data: sorted.result
+		});
+	}
+	
+	_reSort(data) {
+		const sortConfig: IConfigSortData = {
+			field: this.state.column,
+			direction: this.state.direction,
+			keepSortOptions: true
+		};
+
+		if(sortConfig.field === 'max_rarity') {
+			sortConfig.secondary = {
+				field: 'highest_owned_rarity',
+				direction: sortConfig.direction
+			};
+		}
+
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		return sorted.result;
 	}
 
 	_findCombosForCrew(crew: any) {
@@ -298,8 +319,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		if(e.target.checked === false && this.state.disabledPolestars.indexOf(id) === -1) {
 			disabledPolestars.push(id);
 		}
-		// temp. workaround: avoid broken sort order when data is recreated with filtered polestars
-		this.setState({column: null, direction: null, disabledPolestars: disabledPolestars});
+		this.setState({disabledPolestars: disabledPolestars});
 	}
 
 	render() {
@@ -397,8 +417,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'rarity' ? direction : null}
-								onClick={() => this._handleSort('rarity', false)}
+								sorted={column === 'max_rarity' ? direction : null}
+								onClick={() => this._handleSort('max_rarity', false)}
 							>
 								Rarity
 							</Table.HeaderCell>
