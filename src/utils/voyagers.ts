@@ -1,24 +1,4 @@
-/*
-    Star Trek Timelines Assimilate This (STTAT)
-    Copyright (c) 2021 USS John Jay
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/*jshint esversion: 6 */
-
-// Voyage calculation inspired by TemporalAgent7 and IAmPicard before that
+// Voyage lineup generator inspired by TemporalAgent7 and IAmPicard before that
 //  https://github.com/stt-datacore/website
 //  https://github.com/iamtosk/StarTrekTimelinesSpreadsheet
 
@@ -62,6 +42,8 @@ export class Voyagers {
 			if (searchVectors > 1) origins.push({ 'primary': 1.0, 'secondary': 1.0, 'other': 1 });
 			if (searchVectors > 2) origins.push({ 'primary': 2.0, 'secondary': 2.0, 'other': 1 });
 			if (searchVectors > 3) origins.push({ 'primary': 3.0, 'secondary': 3.0, 'other': 1 });
+			if (searchVectors > 4) origins.push({ 'primary': 1.5, 'secondary': 1.5, 'other': 1 });
+			if (searchVectors > 5) origins.push({ 'primary': 2.5, 'secondary': 2.5, 'other': 1 });
 
 			const promises = origins.map((boosts, index) =>
 				self.doVector(index+1, voyage, primedRoster, boosts)
@@ -458,7 +440,7 @@ export class Voyagers {
 	}
 }
 
-export class VoyagersLineup {
+class VoyagersLineup {
 	constructor(assignments, assemblyLog = "") {
 		const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
 							'engineering_skill', 'science_skill', 'medicine_skill'];
@@ -493,142 +475,18 @@ export class VoyagersLineup {
 
 		let lineupKey = "";
 		for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
-			let dSkillScore = Math.floor(skillScores[SKILL_IDS[iSkill]]);
-			lineupKey += dSkillScore+',';
+			let dSkillScore = skillScores[SKILL_IDS[iSkill]];
+			lineupKey += Math.floor(dSkillScore)+',';
 			skillScores[SKILL_IDS[iSkill]] = dSkillScore;
 		}
 
-		this._key = lineupKey;
-		this._crew = crew;
-		this._traits = traitsMatched;
-		this._skills = skillScores;
-		this._score = dTotalScore;
-		this._proficiency = parseInt(dTotalProficiency/dTotalScore*100);
-		this._antimatter = iBonusTraits*25;
-		this._log = assemblyLog;
-	}
-
-	set vector(aVector) {
-		this._vector = aVector;
-	}
-
-	get vector() {
-		return this._vector;
-	}
-
-	get key() {
-		return this._key;
-	}
-
-	get crew() {
-		return this._crew;
-	}
-
-	get traits() {
-		return this._traits;
-	}
-
-	get skills() {
-		return this._skills;
-	}
-
-	get score() {
-		return this._score;
-	}
-
-	get proficiency() {
-		return this._proficiency;
-	}
-
-	get antimatter() {
-		return this._antimatter;
-	}
-
-	get log() {
-		return this._log;
-	}
-}
-
-export class VoyagersAnalyzer {
-	constructor(voyage, ship, lineups) {
-		this.voyage = voyage;
-		this.ship = ship;
-		this.lineups = lineups;
-	}
-
-	analyze(calculator, sorter) {
-		let self = this;
-		return new Promise((resolve, reject) => {
-			// Estimating lineup runtimes is the bottleneck
-			//	Best lineups usually have low proximities relative to others, so we can reasonably limit estimates here
-			const maxEstimates = Math.min(5, self.lineups.length);
-			let lineups = self.lineups.sort((a, b) => a.vector.proximity - b.vector.proximity).slice(0, maxEstimates);
-
-			const estimator = new VoyagersEstimator(calculator);
-			const promises = lineups.map((lineup) =>
-				estimator.estimate(lineup, self.voyage.skills.primary_skill, self.voyage.skills.secondary_skill, self.ship.antimatter)
-			);
-			Promise.all(promises).then((estimates) => {
-				let sorted = estimates.sort(sorter);
-				let best = lineups.find((lineup) => lineup.key == sorted[0].lineupKey);
-				let estimate = sorted[0].estimate.refills[0];
-				let log = {
-					'UniqueCount': self.lineups.length,
-					'Vector': best.vector.id,
-					'Attempt': best.vector.attempt,
-					'PromixityIndex': self.lineups.filter((lineup) => lineup.vector.proximity < best.vector.proximity).length,
-					'BestEstimate': (estimate.result*3+estimate.safeResult)/4,
-					'Chewable': estimate.result,
-					'SaferResult': estimate.saferResult
-				};
-				resolve([best, sorted[0].estimate, log]);
-			})
-			.catch((error) => {
-				reject(error);
-			});
-		});
-	}
-}
-
-export class VoyagersEstimator {
-	constructor(calculator) {
-		this.calculator = calculator;
-	}
-
-	estimate(lineup, primarySkill, secondarySkill, shipAntimatter) {
-		let self = this;
-		return new Promise((resolve, reject) => {
-			const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
-								'engineering_skill', 'science_skill', 'medicine_skill'];
-
-			let ps, ss, os = 0, others = [];
-			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
-				if (SKILL_IDS[iSkill] == primarySkill)
-					ps = lineup.skills[SKILL_IDS[iSkill]];
-				else if (SKILL_IDS[iSkill] == secondarySkill)
-					ss = lineup.skills[SKILL_IDS[iSkill]];
-				else {
-					os += lineup.skills[SKILL_IDS[iSkill]];
-					others.push(lineup.skills[SKILL_IDS[iSkill]]);
-				}
-			}
-
-			let config = {
-				'startAm': shipAntimatter + lineup.antimatter,
-				'ps': ps,
-				'ss': ss,
-				'os': os,
-				'others': others,
-				'prof': lineup.proficiency
-			};
-
-			setTimeout(() => {
-				let estimatedLineup = {
-					'lineupKey': lineup.key ? lineup.key : "",
-					'estimate': self.calculator(config)
-				};
-				resolve(estimatedLineup);
-			});
-		});
+		this.key = lineupKey;
+		this.crew = crew;
+		this.traits = traitsMatched;
+		this.skills = skillScores;
+		this.score = dTotalScore;
+		this.proficiency = parseInt(dTotalProficiency/dTotalScore*100);
+		this.antimatter = iBonusTraits*25;
+		this.log = assemblyLog;
 	}
 }

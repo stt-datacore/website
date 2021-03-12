@@ -1,7 +1,103 @@
+/* eslint-disable */
+
+self.addEventListener('message', message => {
+	if (message.data.lineups && message.data.lineups.length > 0) {
+		ChewableBestVectorLineup(data = message.data).then(result => {
+			self.postMessage(result);
+			self.close();
+		});
+	}
+	else {
+		ChewableEstimate(config = message.data).then(estimate => {
+			self.postMessage(estimate);
+			self.close();
+		});
+	}
+});
+
+// This worker can estimate a single lineup from input config
+const ChewableEstimate = config => {
+	return new Promise((resolve, reject) => {
+		let estimate = ChewableEstimator(config);
+		resolve(estimate);
+	});
+};
+
+// This worker can also determine best lineup given multiple lineups to test and voyage description
+const ChewableBestVectorLineup = data => {
+	const { lineups, primarySkill, secondarySkill, shipAM } = data;
+	return new Promise((resolve, reject) => {
+		const maxEstimates = Math.min(5, lineups.length);
+		let consideredLineups = lineups.sort((a, b) => a.vector.proximity - b.vector.proximity).slice(0, maxEstimates);
+		const promises = consideredLineups.map((lineup) =>
+			ChewableEstimateVectorLineup(lineup, primarySkill, secondarySkill, shipAM)
+		);
+		Promise.all(promises).then((estimates) => {
+			// Sort by best average (w/ DataCore pessimism)
+			let sorted = estimates.sort((a, b) => {
+				const playItSafe = false;
+				let aEstimate = a.estimate.refills[0];
+				let bEstimate = b.estimate.refills[0];
+				let aAverage = (aEstimate.result*3+aEstimate.safeResult)/4;
+				let bAverage = (bEstimate.result*3+bEstimate.safeResult)/4;
+				if (playItSafe || aAverage == bAverage)
+					return bEstimate.saferResult - aEstimate.saferResult;
+				return bAverage - aAverage;
+			});
+			let best = consideredLineups.find((lineup) => lineup.key == sorted[0].key);
+			let estimate = sorted[0].estimate.refills[0];
+			let log = {
+				'UniqueCount': lineups.length,
+				'ConsideredCount': consideredLineups.length,
+				'Vector': best.vector.id,
+				'Attempt': best.vector.attempt,
+				'ProximityIndex': consideredLineups.filter((lineup) => lineup.vector.proximity < best.vector.proximity).length,
+				'BestEstimate': (estimate.result*3+estimate.safeResult)/4,
+				'Chewable': estimate.result,
+				'SaferResult': estimate.saferResult
+			};
+			resolve({
+				'lineup': best,
+				'estimate': sorted[0].estimate,
+				log
+			});
+		})
+		.catch((error) => {
+			reject(error);
+		});
+	});
+};
+
+const ChewableEstimateVectorLineup = (lineup, primarySkill, secondarySkill, shipAM) => {
+	const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
+						'engineering_skill', 'science_skill', 'medicine_skill'];
+	let ps, ss, os = 0, others = [];
+	for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
+		let dSkillScore = Math.floor(lineup.skills[SKILL_IDS[iSkill]]);
+		if (SKILL_IDS[iSkill] == primarySkill)
+			ps = dSkillScore;
+		else if (SKILL_IDS[iSkill] == secondarySkill)
+			ss = dSkillScore;
+		else {
+			os += dSkillScore;
+			others.push(dSkillScore);
+		}
+	}
+	let config = {
+		ps, ss, os, others,
+		'startAm': shipAM + lineup.antimatter,
+		'prof': lineup.proficiency
+	};
+	return new Promise((resolve, reject) => {
+		let estimate = ChewableEstimator(config);
+		resolve({ estimate, 'key': lineup.key });
+	});
+};
+
 // Based on Chewable C++'s STT Voyage Estimator
 //  https://codepen.io/somnivore/pen/Nabyzw
 
-export function ChewableEstimator(config) {
+function ChewableEstimator(config) {
   // passed required parameters
   var ps = config.ps;
   var ss = config.ss;
@@ -13,8 +109,6 @@ export function ChewableEstimator(config) {
 
   // passed optional parameters
   var prof = config.prof ? config.prof : 20;
-
-  var skillVariance
 
   // returned estimate
   var estimate = {};

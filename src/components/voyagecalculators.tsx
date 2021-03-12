@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Header, Button, Message, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment, Table } from 'semantic-ui-react';
-import { Voyagers, VoyagersAnalyzer } from '../utils/voyagers';
-import { ChewableEstimator } from '../utils/voyagers-chewable';
+import { Voyagers } from '../utils/voyagers';
 import {
 	ICalcResult,
 	calculateVoyage,
@@ -14,6 +13,8 @@ import { mergeShips } from '../utils/shiputils';
 import CrewPopup from '../components/crewpopup';
 
 import CONFIG from './CONFIG';
+
+import ChewableWorker from 'worker-loader!../workers/chewableWorker';
 
 type VoyageCalculatorProps = {
 	playerData: any;
@@ -426,9 +427,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	_abort(e) {
 		this.state.worker.terminate();
 		this.setState({calcState : CalculatorState.Done});
-		this._reassessIAPResult().then((result) => {
-			if (result) this.setState({ resultIAPBot: result });
-		});
+		this._reassessIAPResult();
 	}
 
 	_bestVoyageShip(ships: any[], voyageData: any): any[] {
@@ -530,7 +529,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		// Options modify the calculation algorithm (optional)
 		let options = {
 			'initBoosts': { 'primary': 3.5, 'secondary': 2.5, 'other': 1.0 },
-			'searchVectors': 4,
+			'searchVectors': 10,
 			'luckFactor': false,
 			'favorSpecialists': false
 		};
@@ -543,17 +542,20 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		const voyagers = new Voyagers(crew, config);
 		voyagers.assemble(voyage, filter, options)
 			.then((lineups) => {
-				// Now figure out which lineup is "best"
-				const analyzer = new VoyagersAnalyzer(voyage, bestShip, lineups);
-				let estimator = (config) => ChewableEstimator(config);
-				let sorter = (a, b) => this._chewableSorter(a, b);
-				analyzer.analyze(estimator, sorter)
-					.then(([lineup, estimate, log]) => {
-						this.setState({
-							resultMVA: { lineup, estimate, log },
-							calcState: CalculatorState.Done
-						});
+				// Now pass lineups to worker to figure out which is "best"
+				const worker = new ChewableWorker();
+				worker.addEventListener('message', message => {
+					this.setState({
+						resultMVA: message.data,
+						calcState: CalculatorState.Done
 					});
+				});
+				worker.postMessage({
+					lineups,
+					primarySkill: voyage_description.skills.primary_skill,
+					secondarySkill: voyage_description.skills.secondary_skill,
+					shipAM: bestShip.antimatter
+				});
 			})
 			.catch((error) => {
 				console.log(error);
@@ -575,22 +577,6 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		return false;
-	}
-
-	_chewableSorter(a: any, b: any) {
-		const playItSafe = false;
-
-		let aEstimate = a.estimate.refills[0];
-		let bEstimate = b.estimate.refills[0];
-
-		// Return best average (w/ DataCore pessimism) by default
-		let aAverage = (aEstimate.result*3+aEstimate.safeResult)/4;
-		let bAverage = (bEstimate.result*3+bEstimate.safeResult)/4;
-
-		if (playItSafe || aAverage == bAverage)
-			return bEstimate.saferResult - aEstimate.saferResult;
-
-		return bAverage - aAverage;
 	}
 
 	_formatTime(time: number) {
@@ -651,9 +637,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					resultIAP: calcResult,
 					calcState: CalculatorState.Done
 				});
-				this._reassessIAPResult().then((result) => {
-					if (result) this.setState({ resultIAPBot: result });
-				});
+				this._reassessIAPResult();
 			}
 		);
 		this.setState({ worker });
@@ -672,6 +656,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			'command_skill': 0, 'diplomacy_skill': 0, 'security_skill': 0,
 			'engineering_skill': 0, 'science_skill': 0, 'medicine_skill': 0
 		};
+		let dTotalScore = 0, dTotalProficiency = 0;
 		let iSlot = 0, bonusTraits = 0;
 		resultIAP.entries.forEach((entry) => {
 			let crewman = crew.find(c => c.id === entry.choice);
@@ -683,6 +668,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				let dProficiency = skill.range_min+(skill.range_max-skill.range_min)/2;
 				let dSkillScore = skill.core+dProficiency;
 				skills[SKILL_IDS[iSkill]] += dSkillScore;
+				dTotalScore += dSkillScore;
+				dTotalProficiency += dProficiency;
 			}
 		});
 
@@ -703,17 +690,21 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			'ps': ps,
 			'ss': ss,
 			'os': os,
-			'others': others
+			'others': others,
+			'prof': parseInt(dTotalProficiency/dTotalScore*100)
 		};
 
-		return new Promise((resolve, reject) => {
-			let estimate = ChewableEstimator(config);
-			resolve({
+		const worker = new ChewableWorker();
+		worker.addEventListener('message', message => {
+			let estimate = message.data;
+			let result = {
 				skills,
 				bonusTraits,
 				estimate
-			});
+			};
+			this.setState({ resultIAPBot: result });
 		});
+		worker.postMessage(config);
 	}
 }
 

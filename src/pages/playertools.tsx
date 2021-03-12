@@ -9,7 +9,7 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
-import VoyageCalculator from '../components/voyagecalculator_mva';
+import VoyageCalculator from '../components/voyagecalculators';
 import CrewRetrieval from '../components/crewretrieval';
 import UnneededItems from '../components/unneededitems';
 
