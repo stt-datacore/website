@@ -109,7 +109,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		const crew = crewJson.edges[0].node;
 		return (
-			<Layout>
+			<Layout narrowLayout={true}>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
 					<title>{crew.name}</title>
 					<meta property='og:type' content='website' />

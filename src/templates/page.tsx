@@ -19,7 +19,7 @@ class StaticPage extends PureComponent<StaticPageProps> {
 	render() {
 		const { markdownRemark } = this.props.data;
 		return (
-			<Layout>
+			<Layout narrowLayout={true}>
 				<Header>{markdownRemark.frontmatter.title}</Header>
 				<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
 			</Layout>

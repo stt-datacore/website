@@ -2,7 +2,7 @@ import React, { PureComponent, useState } from 'react';
 import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
-import { createMedia } from "@artsy/fresnel"
+import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
 
@@ -10,53 +10,44 @@ const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
 		mobile: 0,
 		computer: 1024
-	},
+	}
 });
 
-const MainContent = ({ children }) => (
-	<Container style={{ marginTop: "4em", marginBottom: '2em' }}>{children}</Container>
-);
+const MainContent = ({ children, narrowLayout }) =>
+	narrowLayout ? (
+		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
+	) : (
+		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
+	);
 
 const NavBarMobile = ({ children, leftItems, rightItems }) => {
 	const [visible, setVisible] = useState(false);
 
-	return <Sidebar.Pushable>
-		<Sidebar
-			as={Menu}
-			animation="overlay"
-			inverted
-			vertical
-			onHide={() => setVisible(false)}
-			visible={visible}
-		>
-			{leftItems}
-		</Sidebar>
-		<Sidebar.Pusher
-			dimmed={visible}
-			style={{ minHeight: "100vh", overflowX: "scroll" }}
-		>
-			<Menu fixed="top" inverted>
-				<Menu.Item onClick={() => setVisible(!visible)}>
-					<Icon name="sidebar" />
-				</Menu.Item>
-				<Menu.Menu position="right">
-					{rightItems}
-				</Menu.Menu>
-			</Menu>
-			<MainContent>{children}</MainContent>
-		</Sidebar.Pusher>
-	</Sidebar.Pushable>;
-}
+	return (
+		<Sidebar.Pushable>
+			<Sidebar as={Menu} animation='overlay' inverted vertical onHide={() => setVisible(false)} visible={visible}>
+				{leftItems}
+			</Sidebar>
+			<Sidebar.Pusher dimmed={visible} style={{ minHeight: '100vh', overflowX: 'scroll' }}>
+				<Menu fixed='top' inverted>
+					<Menu.Item onClick={() => setVisible(!visible)}>
+						<Icon name='sidebar' />
+					</Menu.Item>
+					<Menu.Menu position='right'>{rightItems}</Menu.Menu>
+				</Menu>
+				<MainContent narrowLayout={false}>{children}</MainContent>
+			</Sidebar.Pusher>
+		</Sidebar.Pushable>
+	);
+};
 
-const NavBarDesktop = ({ children, leftItems, rightItems }) => (
+const NavBarDesktop = ({ children, leftItems, narrowLayout, rightItems }) => (
 	<React.Fragment>
-		<Menu fixed="top" inverted>
+		<Menu fixed='top' inverted>
 			{leftItems}
-			<Menu.Menu position="right">
-				{rightItems}
-			</Menu.Menu>
+			<Menu.Menu position='right'>{rightItems}</Menu.Menu>
 		</Menu>
-		<MainContent>{children}</MainContent>
+		<MainContent narrowLayout={narrowLayout}>{children}</MainContent>
 	</React.Fragment>
 );
 
@@ -67,8 +58,12 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 
 	let index = 0;
 	let items = [
-		<Menu.Item key={index++} onClick={() => navigate('/')}>Crew stats</Menu.Item>,
-		<Menu.Item key={index++} onClick={() => navigate('/about')}>About</Menu.Item>
+		<Menu.Item key={index++} onClick={() => navigate('/')}>
+			Crew stats
+		</Menu.Item>,
+		<Menu.Item key={index++} onClick={() => navigate('/about')}>
+			About
+		</Menu.Item>
 	];
 
 	if (verticalLayout) {
@@ -76,115 +71,151 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 			<Menu.Item>
 				<Menu.Header key={index++}>Big book</Menu.Header>
 				<Menu.Menu>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>Image list (fast)</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook')}>Complete (slow)</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bb')}>Text only</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>
+						Image list (fast)
+					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/bigbook')}>
+						Complete (slow)
+					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/bb')}>
+						Text only
+					</Menu.Item>
 				</Menu.Menu>
 			</Menu.Item>
 		);
-	}
-	else {
-		items.push(<Dropdown key={index++} item simple text='Big book'>
-			<Dropdown.Menu>
-				<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
-			</Dropdown.Menu>
-		</Dropdown>);
+	} else {
+		items.push(
+			<Dropdown key={index++} item simple text='Big book'>
+				<Dropdown.Menu>
+					<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
+				</Dropdown.Menu>
+			</Dropdown>
+		);
 	}
 
-	items.push(<Menu.Item key={index++} onClick={() => navigate('/playertools')}>Player tools</Menu.Item>);
-	items.push(<Menu.Item key={index++} onClick={() => navigate('/behold')}>Behold</Menu.Item>);
+	items.push(
+		<Menu.Item key={index++} onClick={() => navigate('/playertools')}>
+			Player tools
+		</Menu.Item>
+	);
+	items.push(
+		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
+			Behold
+		</Menu.Item>
+	);
 
 	if (verticalLayout) {
 		items.push(
 			<Menu.Item>
 				<Menu.Header key={index++}>Pages</Menu.Header>
 				<Menu.Menu>
-					<Menu.Item key={index++} onClick={() => navigate('/collections')}>Collections</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/items')}>Items</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/stats')}>Misc stats</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/episodes')}>Episodes</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/collections')}>
+						Collections
+					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/items')}>
+						Items
+					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/stats')}>
+						Misc stats
+					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/episodes')}>
+						Episodes
+					</Menu.Item>
 				</Menu.Menu>
 			</Menu.Item>,
 			<Menu.Item>
 				<Menu.Header key={index++}>All other pages</Menu.Header>
 				<Menu.Menu>
-					{otherPages.map(page => <Menu.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
-						{page.title}
-					</Menu.Item>)}
+					{otherPages.map((page) => (
+						<Menu.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
+							{page.title}
+						</Menu.Item>
+					))}
 				</Menu.Menu>
 			</Menu.Item>
 		);
-	}
-	else {
-		items.push(<Dropdown key={index++} item simple text='Pages'>
-			<Dropdown.Menu>
-				<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
-				<Dropdown.Divider />
-				<Dropdown.Header>All other pages</Dropdown.Header>
-				{otherPages.map(page => <Dropdown.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
-					{page.title}
-				</Dropdown.Item>)}
-			</Dropdown.Menu>
-		</Dropdown>);
+	} else {
+		items.push(
+			<Dropdown key={index++} item simple text='Pages'>
+				<Dropdown.Menu>
+					<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Header>All other pages</Dropdown.Header>
+					{otherPages.map((page) => (
+						<Dropdown.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
+							{page.title}
+						</Dropdown.Item>
+					))}
+				</Dropdown.Menu>
+			</Dropdown>
+		);
 	}
 
 	if (verticalLayout) {
 		return items;
 	} else {
-		return <React.Fragment>{items}</React.Fragment>;
+		return <Container>{items}</Container>;
 	}
 };
 
-const useRightItems = ({ onMessageClicked }) => <>
-	<Menu.Item onClick={() => (window as any).swapThemeCss()}>
-		<Icon name='adjust' />
-	</Menu.Item>
-	<Menu.Item>
-		<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
-			<p>We have enough reserve funds for now!</p>
-			<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
-			<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
-		</Popup>
-	</Menu.Item>
-	<Menu.Item>
-		<Button size='tiny' color='green' onClick={onMessageClicked} content={"Developers needed!"} />
-	</Menu.Item>
-	<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
-		<Icon name='github' />
-	</Menu.Item>
-</>;
+const useRightItems = ({ onMessageClicked }) => (
+	<>
+		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
+			<Icon name='adjust' />
+		</Menu.Item>
+		<Menu.Item>
+			<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
+				<p>We have enough reserve funds for now!</p>
+				<p>
+					Monthly cost <b>$15</b>, reserve fund <b>$205</b>
+				</p>
+				<p>
+					You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.
+				</p>
+			</Popup>
+		</Menu.Item>
+		<Menu.Item>
+			<Button size='tiny' color='green' onClick={onMessageClicked} content={'Developers needed!'} />
+		</Menu.Item>
+		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
+			<Icon name='github' />
+		</Menu.Item>
+	</>
+);
 
 type NavBarProps = {
 	children: React.ReactNode;
+	narrowLayout?: boolean;
 	onMessageClicked: () => void;
 };
 
-const NavBar = ({ children, onMessageClicked }: NavBarProps) => {
+const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
 
-	return <MediaContextProvider>
-		<Media at="mobile">
-			<NavBarMobile
-				leftItems={useMainMenuItems(true)}
-				rightItems={rightItems}
-			>
-				{children}
-			</NavBarMobile>
-		</Media>
-		<Media greaterThanOrEqual="computer">
-			<NavBarDesktop leftItems={useMainMenuItems(false)} rightItems={rightItems}>
-				{children}
-			</NavBarDesktop>
-		</Media>
-	</MediaContextProvider>;
-}
+	return (
+		<MediaContextProvider>
+			<Media at='mobile'>
+				<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
+					{children}
+				</NavBarMobile>
+			</Media>
+			<Media greaterThanOrEqual='computer'>
+				<NavBarDesktop narrowLayout={narrowLayout} leftItems={useMainMenuItems(false)} rightItems={rightItems}>
+					{children}
+				</NavBarDesktop>
+			</Media>
+		</MediaContextProvider>
+	);
+};
 
-type TopMenuProps = {};
+type TopMenuProps = {
+	narrowLayout?: boolean;
+};
 
 type TopMenuState = {
 	loginDialogOpen: boolean;
@@ -200,14 +231,14 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 	render() {
 		const { user, password, loginDialogOpen, loggingIn, errorMessage, messageModalOpen } = this.state;
-		const { children } = this.props;
+		const { narrowLayout, children } = this.props;
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
 
 		return (
 			<React.Fragment>
-				<NavBar onMessageClicked={() => this.setState({ messageModalOpen: true })}>
+				<NavBar narrowLayout={narrowLayout} onMessageClicked={() => this.setState({ messageModalOpen: true })}>
 					{children}
 				</NavBar>
 
@@ -253,8 +284,15 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 				<Modal open={messageModalOpen} closeOnEscape={false} closeOnDimmerClick={false} onClose={() => this._closeMessageDialog()}>
 					<Modal.Header>The DataCore website and bot are in need of software engineers!</Modal.Header>
 					<Modal.Content>
-						<p>We need your help! The project is <a href='https://github.com/stt-datacore'>open source</a> so we're open for contributions from software engineers, designers, devops, testers and so on. Reach out on our <a href='https://discord.gg/2SY8W7Aeme'>development Discord</a> if you're not sure where to start.</p>
-						<p>If you've always wanted a feature on DataCore, here's your chance to hack on the project and implement it yourself! Most of the project is written in TypeScript, with node.js on the backend and React with Gatsby on the frontend.</p>
+						<p>
+							We need your help! The project is <a href='https://github.com/stt-datacore'>open source</a> so we're open for contributions
+							from software engineers, designers, devops, testers and so on. Reach out on our{' '}
+							<a href='https://discord.gg/2SY8W7Aeme'>development Discord</a> if you're not sure where to start.
+						</p>
+						<p>
+							If you've always wanted a feature on DataCore, here's your chance to hack on the project and implement it yourself! Most of
+							the project is written in TypeScript, with node.js on the backend and React with Gatsby on the frontend.
+						</p>
 					</Modal.Content>
 					<Modal.Actions>
 						<Button icon='checkmark' onClick={() => this._closeMessageDialog()} content='Ok' />
@@ -271,9 +309,9 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		fetch(`${process.env.GATSBY_DATACORE_URL}api/login`, {
 			method: 'post',
 			headers: {
-				'Content-Type': 'application/json',
+				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ user, password }),
+			body: JSON.stringify({ user, password })
 		})
 			.then((response) => response.json())
 			.then((res) => {

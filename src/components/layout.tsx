@@ -5,13 +5,14 @@ import TopMenu from './topmenu';
 
 type LayoutProps = {
 	title?: string;
+	narrowLayout?: boolean;
 };
 
 type LayoutState = {};
 
 class Layout extends PureComponent<LayoutProps, LayoutState> {
 	render() {
-		const { title } = this.props;
+		const { title, narrowLayout } = this.props;
 		return (
 			<React.Fragment>
 
@@ -30,7 +31,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 						</Helmet>
 					)}
 				/>
-				<TopMenu>
+				<TopMenu narrowLayout={narrowLayout}>
 					{this.props.children}
 				</TopMenu>
 			</React.Fragment>
