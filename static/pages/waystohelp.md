@@ -1,7 +1,7 @@
 ---
 title: Ways to help
 ---
-## Ways to help
+
 There are numerous ways to help improve this website. All contributions large or small are welcome.
 
 ### Suggestions and problems

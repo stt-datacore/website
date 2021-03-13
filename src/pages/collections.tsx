@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Container, Item, Icon } from 'semantic-ui-react';
+import { Item, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -31,41 +31,37 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 		if (!collections || collections.length === 0) {
 			return (
 				<Layout title='Collections'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Icon loading name='spinner' /> Loading...
-					</Container>
+					<Icon loading name='spinner' /> Loading...
 				</Layout>
 			);
 		}
 
 		return (
 			<Layout title='Collections'>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Item.Group>
-						{collections.map(collection => (
-							<Item key={collection.name} id={encodeURIComponent(collection.name)}>
-								<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
+				<Item.Group>
+					{collections.map(collection => (
+						<Item key={collection.name} id={encodeURIComponent(collection.name)}>
+							<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
 
-								<Item.Content>
-									<Item.Header>{collection.name}</Item.Header>
-									<Item.Meta>
-										<span dangerouslySetInnerHTML={{ __html: collection.description }} />
-									</Item.Meta>
-									<Item.Description>
-										<b>Crew: </b>
-										{collection.crew
-											.map(crew => (
-												<Link key={crew} to={`/crew/${crew}/`}>
-													{allcrew.find(c => c.symbol === crew).name}
-												</Link>
-											))
-											.reduce((prev, curr) => [prev, ', ', curr])}
-									</Item.Description>
-								</Item.Content>
-							</Item>
-						))}
-					</Item.Group>
-				</Container>
+							<Item.Content>
+								<Item.Header>{collection.name}</Item.Header>
+								<Item.Meta>
+									<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+								</Item.Meta>
+								<Item.Description>
+									<b>Crew: </b>
+									{collection.crew
+										.map(crew => (
+											<Link key={crew} to={`/crew/${crew}/`}>
+												{allcrew.find(c => c.symbol === crew).name}
+											</Link>
+										))
+										.reduce((prev, curr) => [prev, ', ', curr])}
+								</Item.Description>
+							</Item.Content>
+						</Item>
+					))}
+				</Item.Group>
 			</Layout>
 		);
 	}

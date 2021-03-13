@@ -1,8 +1,188 @@
-import React, { PureComponent } from 'react';
-import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment } from 'semantic-ui-react';
+import React, { PureComponent, useState } from 'react';
+import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
-import OtherPages from './otherpages';
+import { createMedia } from "@artsy/fresnel"
+
+import { useOtherPages } from './otherpages';
+
+const { MediaContextProvider, Media } = createMedia({
+	breakpoints: {
+		mobile: 0,
+		computer: 1024
+	},
+});
+
+const MainContent = ({ children }) => (
+	<Container style={{ marginTop: "4em", marginBottom: '2em' }}>{children}</Container>
+);
+
+const NavBarMobile = ({ children, leftItems, rightItems }) => {
+	const [visible, setVisible] = useState(false);
+
+	return <Sidebar.Pushable>
+		<Sidebar
+			as={Menu}
+			animation="overlay"
+			inverted
+			vertical
+			onHide={() => setVisible(false)}
+			visible={visible}
+		>
+			{leftItems}
+		</Sidebar>
+		<Sidebar.Pusher
+			dimmed={visible}
+			style={{ minHeight: "100vh", overflowX: "scroll" }}
+		>
+			<Menu fixed="top" inverted>
+				<Menu.Item onClick={() => setVisible(!visible)}>
+					<Icon name="sidebar" />
+				</Menu.Item>
+				<Menu.Menu position="right">
+					{rightItems}
+				</Menu.Menu>
+			</Menu>
+			<MainContent>{children}</MainContent>
+		</Sidebar.Pusher>
+	</Sidebar.Pushable>;
+}
+
+const NavBarDesktop = ({ children, leftItems, rightItems }) => (
+	<React.Fragment>
+		<Menu fixed="top" inverted>
+			{leftItems}
+			<Menu.Menu position="right">
+				{rightItems}
+			</Menu.Menu>
+		</Menu>
+		<MainContent>{children}</MainContent>
+	</React.Fragment>
+);
+
+// TODO: we do all this weird functional dance because we want Gatsby to SSR the "other pages" via GraphQL
+// If we switch to a hard-coded list of "other pages", this can be simplified significantly
+const useMainMenuItems = (verticalLayout: boolean) => {
+	const otherPages = useOtherPages();
+
+	let index = 0;
+	let items = [
+		<Menu.Item key={index++} onClick={() => navigate('/')}>Crew stats</Menu.Item>,
+		<Menu.Item key={index++} onClick={() => navigate('/about')}>About</Menu.Item>
+	];
+
+	if (verticalLayout) {
+		items.push(
+			<Menu.Item>
+				<Menu.Header key={index++}>Big book</Menu.Header>
+				<Menu.Menu>
+					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>Image list (fast)</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/bigbook')}>Complete (slow)</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/bb')}>Text only</Menu.Item>
+				</Menu.Menu>
+			</Menu.Item>
+		);
+	}
+	else {
+		items.push(<Dropdown key={index++} item simple text='Big book'>
+			<Dropdown.Menu>
+				<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
+			</Dropdown.Menu>
+		</Dropdown>);
+	}
+
+	items.push(<Menu.Item key={index++} onClick={() => navigate('/playertools')}>Player tools</Menu.Item>);
+	items.push(<Menu.Item key={index++} onClick={() => navigate('/behold')}>Behold</Menu.Item>);
+
+	if (verticalLayout) {
+		items.push(
+			<Menu.Item>
+				<Menu.Header key={index++}>Pages</Menu.Header>
+				<Menu.Menu>
+					<Menu.Item key={index++} onClick={() => navigate('/collections')}>Collections</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/items')}>Items</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/stats')}>Misc stats</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/episodes')}>Episodes</Menu.Item>
+				</Menu.Menu>
+			</Menu.Item>,
+			<Menu.Item>
+				<Menu.Header key={index++}>All other pages</Menu.Header>
+				<Menu.Menu>
+					{otherPages.map(page => <Menu.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
+						{page.title}
+					</Menu.Item>)}
+				</Menu.Menu>
+			</Menu.Item>
+		);
+	}
+	else {
+		items.push(<Dropdown key={index++} item simple text='Pages'>
+			<Dropdown.Menu>
+				<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
+				<Dropdown.Divider />
+				<Dropdown.Header>All other pages</Dropdown.Header>
+				{otherPages.map(page => <Dropdown.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
+					{page.title}
+				</Dropdown.Item>)}
+			</Dropdown.Menu>
+		</Dropdown>);
+	}
+
+	if (verticalLayout) {
+		return items;
+	} else {
+		return <React.Fragment>{items}</React.Fragment>;
+	}
+};
+
+const useRightItems = ({ onMessageClicked }) => <>
+	<Menu.Item onClick={() => (window as any).swapThemeCss()}>
+		<Icon name='adjust' />
+	</Menu.Item>
+	<Menu.Item>
+		<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
+			<p>We have enough reserve funds for now!</p>
+			<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
+			<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
+		</Popup>
+	</Menu.Item>
+	<Menu.Item>
+		<Button size='tiny' color='green' onClick={onMessageClicked} content={"Developers needed!"} />
+	</Menu.Item>
+	<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
+		<Icon name='github' />
+	</Menu.Item>
+</>;
+
+type NavBarProps = {
+	children: React.ReactNode;
+	onMessageClicked: () => void;
+};
+
+const NavBar = ({ children, onMessageClicked }: NavBarProps) => {
+	const rightItems = useRightItems({ onMessageClicked });
+
+	return <MediaContextProvider>
+		<Media at="mobile">
+			<NavBarMobile
+				leftItems={useMainMenuItems(true)}
+				rightItems={rightItems}
+			>
+				{children}
+			</NavBarMobile>
+		</Media>
+		<Media greaterThanOrEqual="computer">
+			<NavBarDesktop leftItems={useMainMenuItems(false)} rightItems={rightItems}>
+				{children}
+			</NavBarDesktop>
+		</Media>
+	</MediaContextProvider>;
+}
 
 type TopMenuProps = {};
 
@@ -20,58 +200,16 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 	render() {
 		const { user, password, loginDialogOpen, loggingIn, errorMessage, messageModalOpen } = this.state;
+		const { children } = this.props;
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
 
 		return (
-			<div>
-				<Menu fixed='top' inverted>
-					<Container>
-						<Menu.Item onClick={() => navigate('/')}>Crew stats</Menu.Item>
-						<Menu.Item onClick={() => navigate('/about')}>About</Menu.Item>
-						<Dropdown item simple text='Big book'>
-							<Dropdown.Menu>
-								<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
-								<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
-								<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
-							</Dropdown.Menu>
-						</Dropdown>
-						<Menu.Item onClick={() => navigate('/playertools')}>Player tools</Menu.Item>
-						<Menu.Item onClick={() => navigate('/behold')}>Behold</Menu.Item>
-
-						<Dropdown item simple text='Pages'>
-							<Dropdown.Menu>
-								<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
-								<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
-								<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
-								<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
-								<Dropdown.Divider />
-								<Dropdown.Header>All other pages</Dropdown.Header>
-								<OtherPages />
-							</Dropdown.Menu>
-						</Dropdown>
-					</Container>
-
-					<Menu.Menu position='right'>
-						<Menu.Item onClick={() => (window as any).swapThemeCss()}>
-							<Icon name='adjust' />
-						</Menu.Item>
-						<Menu.Item>
-							<Popup position='bottom center' flowing hoverable trigger={<Icon name='dollar' />}>
-								<p>We have enough reserve funds for now!</p>
-								<p>Monthly cost <b>$15</b>, reserve fund <b>$205</b></p>
-								<p>You can join our <a href='https://www.patreon.com/Datacore'>Patreon</a> for future funding rounds.</p>
-							</Popup>
-						</Menu.Item>
-						<Menu.Item>
-							<Button size='tiny' color='green' onClick={() => this.setState({messageModalOpen: true})} content={"Developers needed!"} />
-						</Menu.Item>
-						<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
-							<Icon name='github' />
-						</Menu.Item>
-					</Menu.Menu>
-				</Menu>
+			<React.Fragment>
+				<NavBar onMessageClicked={() => this.setState({ messageModalOpen: true })}>
+					{children}
+				</NavBar>
 
 				<Modal open={loginDialogOpen} onClose={() => this._closeLoginDialog()} size='tiny'>
 					<Modal.Header>Log-in to your account</Modal.Header>
@@ -122,7 +260,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 						<Button icon='checkmark' onClick={() => this._closeMessageDialog()} content='Ok' />
 					</Modal.Actions>
 				</Modal>
-			</div>
+			</React.Fragment>
 		);
 	}
 

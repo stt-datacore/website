@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
+import { Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -78,20 +78,18 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
 				<Layout title='Item information'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as="h4">Item information</Header>
-						{errorMessage && (
-							<Message negative>
-								<Message.Header>Unable to load item information</Message.Header>
-								<pre>{errorMessage.toString()}</pre>
-							</Message>
-						)}
-						{!errorMessage && (
-							<div>
-								<Icon loading name="spinner" /> Loading...
-							</div>
-						)}
-					</Container>
+					<Header as="h4">Item information</Header>
+					{errorMessage && (
+						<Message negative>
+							<Message.Header>Unable to load item information</Message.Header>
+							<pre>{errorMessage.toString()}</pre>
+						</Message>
+					)}
+					{!errorMessage && (
+						<div>
+							<Icon loading name="spinner" /> Loading...
+						</div>
+					)}
 				</Layout>
 			);
 		}
@@ -126,127 +124,125 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 
 		return (
 			<Layout title={item_data.item.name}>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Message icon warning>
-						<Icon name="exclamation triangle" />
-						<Message.Content>
-							<Message.Header>Work in progress!</Message.Header>
+				<Message icon warning>
+					<Icon name="exclamation triangle" />
+					<Message.Content>
+						<Message.Header>Work in progress!</Message.Header>
 							This section is under development and not fully functional yet.
 						</Message.Content>
-					</Message>
-					<Header as="h3">
-						{item_data.item.name}{' '}
-						<Rating rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />
-					</Header>
-					<Image size="small" src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`} />
+				</Message>
+				<Header as="h3">
+					{item_data.item.name}{' '}
+					<Rating rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />
+				</Header>
+				<Image size="small" src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`} />
 
-					<br />
+				<br />
 
-					{bonusText.length > 0 && (
-						<div>
-							<p>Bonuses: {bonusText.join(', ')}</p>
-							<br />
-						</div>
-					)}
+				{bonusText.length > 0 && (
+					<div>
+						<p>Bonuses: {bonusText.join(', ')}</p>
+						<br />
+					</div>
+				)}
 
-					{item_data.item.recipe && item_data.item.recipe.list && (
-						<div>
-							<Header as="h4">Craft it for {item_data.item.recipe.craftCost} chrons using this recipe:</Header>
-							<Grid columns={3} padded>
-								{demands.map((entry, idx) => (
-									<Grid.Column key={idx}>
-										<Popup
-											trigger={
-												<Header
-													style={{ display: 'flex', cursor: 'zoom-in' }}
-													icon={
-														<ItemDisplay
-															src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
-															size={48}
-															maxRarity={entry.equipment.rarity}
-															rarity={entry.equipment.rarity}
-														/>
-													}
-													content={entry.equipment.name}
-													subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
-												/>
-											}
-											header={
-												<Link to={`/item_info?symbol=${entry.symbol}`}>
-													{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
-												</Link>
-											}
-											content={<ItemSources item_sources={entry.equipment.item_sources} />}
-											on="click"
-											wide
-										/>
-									</Grid.Column>
-								))}
-							</Grid>
-						</div>
-					)}
+				{item_data.item.recipe && item_data.item.recipe.list && (
+					<div>
+						<Header as="h4">Craft it for {item_data.item.recipe.craftCost} chrons using this recipe:</Header>
+						<Grid columns={3} padded>
+							{demands.map((entry, idx) => (
+								<Grid.Column key={idx}>
+									<Popup
+										trigger={
+											<Header
+												style={{ display: 'flex', cursor: 'zoom-in' }}
+												icon={
+													<ItemDisplay
+														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
+														size={48}
+														maxRarity={entry.equipment.rarity}
+														rarity={entry.equipment.rarity}
+													/>
+												}
+												content={entry.equipment.name}
+												subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+											/>
+										}
+										header={
+											<Link to={`/item_info?symbol=${entry.symbol}`}>
+												{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
+											</Link>
+										}
+										content={<ItemSources item_sources={entry.equipment.item_sources} />}
+										on="click"
+										wide
+									/>
+								</Grid.Column>
+							))}
+						</Grid>
+					</div>
+				)}
 
-					{item_data.item.item_sources.length > 0 && (
-						<div>
-							<Header as="h4">Item sources</Header>
-							<ItemSources item_sources={item_data.item.item_sources} />
-							<br />
-						</div>
-					)}
+				{item_data.item.item_sources.length > 0 && (
+					<div>
+						<Header as="h4">Item sources</Header>
+						<ItemSources item_sources={item_data.item.item_sources} />
+						<br />
+					</div>
+				)}
 
-					{item_data.crew_levels.length > 0 && (
-						<div>
-							<Header as="h4">Equippable by this crew:</Header>
-							<Grid columns={3} padded>
-								{item_data.crew_levels.map((entry, idx) => (
-									<Grid.Column key={idx}>
-										<Header
-											style={{ display: 'flex' }}
-											icon={
-												<ItemDisplay
-													src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
-													size={60}
-													maxRarity={entry.crew.max_rarity}
-													rarity={entry.crew.max_rarity}
-												/>
-											}
-											content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
-											subheader={`Level ${entry.level}`}
-										/>
-									</Grid.Column>
-								))}
-							</Grid>
-						</div>
-					)}
+				{item_data.crew_levels.length > 0 && (
+					<div>
+						<Header as="h4">Equippable by this crew:</Header>
+						<Grid columns={3} padded>
+							{item_data.crew_levels.map((entry, idx) => (
+								<Grid.Column key={idx}>
+									<Header
+										style={{ display: 'flex' }}
+										icon={
+											<ItemDisplay
+												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
+												size={60}
+												maxRarity={entry.crew.max_rarity}
+												rarity={entry.crew.max_rarity}
+											/>
+										}
+										content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
+										subheader={`Level ${entry.level}`}
+									/>
+								</Grid.Column>
+							))}
+						</Grid>
+					</div>
+				)}
 
-					{item_data.builds.length > 0 && (
-						<div>
-							<Header as="h4">Is used to build these</Header>
-							<Grid columns={3} padded>
-								{item_data.builds.map((entry, idx) => (
-									<Grid.Column key={idx}>
-										<Header
-											style={{ display: 'flex', cursor: 'zoom-in' }}
-											icon={
-												<ItemDisplay
-													src={`${process.env.GATSBY_ASSETS_URL}${entry.imageUrl}`}
-													size={48}
-													maxRarity={entry.rarity}
-													rarity={entry.rarity}
-												/>
-											}
-											content={
-												<Link to={`/item_info?symbol=${entry.symbol}`}>
-													{CONFIG.RARITIES[entry.rarity].name + ' ' + entry.name}
-												</Link>
-											}
-										/>
-									</Grid.Column>
-								))}
-							</Grid>
-						</div>
-					)}
-				</Container>
+				{item_data.builds.length > 0 && (
+					<div>
+						<Header as="h4">Is used to build these</Header>
+						<Grid columns={3} padded>
+							{item_data.builds.map((entry, idx) => (
+								<Grid.Column key={idx}>
+									<Header
+										style={{ display: 'flex', cursor: 'zoom-in' }}
+										icon={
+											<ItemDisplay
+												src={`${process.env.GATSBY_ASSETS_URL}${entry.imageUrl}`}
+												size={48}
+												maxRarity={entry.rarity}
+												rarity={entry.rarity}
+											/>
+										}
+										content={
+											<Link to={`/item_info?symbol=${entry.symbol}`}>
+												{CONFIG.RARITIES[entry.rarity].name + ' ' + entry.name}
+											</Link>
+										}
+									/>
+								</Grid.Column>
+							))}
+						</Grid>
+					</div>
+				)}
 			</Layout>
 		);
 	}

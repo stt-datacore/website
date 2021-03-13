@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Container, Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
+import { Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import marked from 'marked';
 import { isMobile } from 'react-device-detect';
@@ -114,14 +114,12 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 
 		return (
 			<Layout title='The Big Book of Behold Advice'>
-				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-					{[...groupedByTier.keys()].map((tier, idx) => (
-						<React.Fragment key={idx}>
-							<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
-							<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
-						</React.Fragment>
-					))}
-				</Container>
+				{[...groupedByTier.keys()].map((tier, idx) => (
+					<React.Fragment key={idx}>
+						<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
+						<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
+					</React.Fragment>
+				))}
 			</Layout>
 		);
 	}
