@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
+import { Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
@@ -67,7 +67,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 	componentDidUpdate() {
 		const { dbid, playerData, errorMessage } = this.state;
-		if (dbid && !playerData && !errorMessage ) {
+		if (dbid && !playerData && !errorMessage) {
 			let lastModified = undefined;
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
@@ -124,56 +124,53 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 		return (
 			<Layout title={playerData.player.character.display_name}>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Item.Group>
-						<Item>
-							<Item.Image
-								size='tiny'
-								src={`${process.env.GATSBY_ASSETS_URL}${
-									playerData.player.character.crew_avatar
-										? playerData.player.character.crew_avatar.portrait
-										: 'crew_portraits_cm_empty_sm.png'
+				<Item.Group>
+					<Item>
+						<Item.Image
+							size='tiny'
+							src={`${process.env.GATSBY_ASSETS_URL}${playerData.player.character.crew_avatar
+									? playerData.player.character.crew_avatar.portrait
+									: 'crew_portraits_cm_empty_sm.png'
 								}`}
-							/>
+						/>
 
-							<Item.Content>
-								<Item.Header>{playerData.player.character.display_name}</Item.Header>
-								<Item.Meta>
-									<Label>VIP {playerData.player.vip_level}</Label>
-									<Label>Level {playerData.player.character.level}</Label>
-									<Label>{playerData.calc.numImmortals} crew</Label>
-									<Label>{playerData.player.character.shuttle_bays} shuttles</Label>
-								</Item.Meta>
-								<Item.Description>
-									{playerData.player.fleet && (
-										<p>
-											Fleet{' '}
-											<Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
-												<b>{playerData.player.fleet.slabel}</b>
-											</Link>{' '}
+						<Item.Content>
+							<Item.Header>{playerData.player.character.display_name}</Item.Header>
+							<Item.Meta>
+								<Label>VIP {playerData.player.vip_level}</Label>
+								<Label>Level {playerData.player.character.level}</Label>
+								<Label>{playerData.calc.numImmortals} crew</Label>
+								<Label>{playerData.player.character.shuttle_bays} shuttles</Label>
+							</Item.Meta>
+							<Item.Description>
+								{playerData.player.fleet && (
+									<p>
+										Fleet{' '}
+										<Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
+											<b>{playerData.player.fleet.slabel}</b>
+										</Link>{' '}
 											({playerData.player.fleet.rank}) Starbase level {playerData.player.fleet.nstarbase_level}{' '}
-										</p>
-									)}
-								</Item.Description>
-							</Item.Content>
-						</Item>
-					</Item.Group>
+									</p>
+								)}
+							</Item.Description>
+						</Item.Content>
+					</Item>
+				</Item.Group>
 
-					<Menu compact>
-						<Menu.Item>
-							{playerData.calc.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
-						</Menu.Item>
-						<Dropdown item text='Download'>
-							<Dropdown.Menu>
-								<Dropdown.Item onClick={() => this._exportExcel()}>Complete spreadsheet (XLSX)</Dropdown.Item>
-								<Dropdown.Item onClick={() => this._exportCrew()}>Crew table (CSV)</Dropdown.Item>
-								<Dropdown.Item onClick={() => this._exportShips()}>Ship table (CSV)</Dropdown.Item>
-								<Dropdown.Item onClick={() => this._exportItems()}>Item table (CSV)</Dropdown.Item>
-							</Dropdown.Menu>
-						</Dropdown>
-					</Menu>
-					<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
-				</Container>
+				<Menu compact>
+					<Menu.Item>
+						{playerData.calc.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
+					</Menu.Item>
+					<Dropdown item text='Download'>
+						<Dropdown.Menu>
+							<Dropdown.Item onClick={() => this._exportExcel()}>Complete spreadsheet (XLSX)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportCrew()}>Crew table (CSV)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportShips()}>Ship table (CSV)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportItems()}>Item table (CSV)</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+				</Menu>
+				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 			</Layout>
 		);
 	}
@@ -385,28 +382,26 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (
 				<Layout title='Player profile'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as='h4'>Player profile</Header>
-						{errorMessage && (
-							<Message negative>
-								<Message.Header>Unable to load profile</Message.Header>
-								<p>
-									Failed to find the player profile you were searching. Make sure you have the right URL, or contact the player and ask them
-									to reupload their profile.
+					<Header as='h4'>Player profile</Header>
+					{errorMessage && (
+						<Message negative>
+							<Message.Header>Unable to load profile</Message.Header>
+							<p>
+								Failed to find the player profile you were searching. Make sure you have the right URL, or contact the player and ask them
+								to reupload their profile.
 								</p>
-								<pre>{errorMessage.toString()}</pre>
-							</Message>
-						)}
-						<p>
-							Are you looking to share your player profile? Go to the <Link to={`/voyage`}>Player Tools page</Link> to upload your
+							<pre>{errorMessage.toString()}</pre>
+						</Message>
+					)}
+					<p>
+						Are you looking to share your player profile? Go to the <Link to={`/playertools`}>Player Tools page</Link> to upload your
 							player.json and access other useful player tools.
 						</p>
-						{!errorMessage && (
-							<div>
-								<Icon loading name='spinner' /> Loading...
-							</div>
-						)}
-					</Container>
+					{!errorMessage && (
+						<div>
+							<Icon loading name='spinner' /> Loading...
+						</div>
+					)}
 				</Layout>
 			);
 		}

@@ -24163,7 +24163,7 @@ Floated Menu / Item
   background: none;
   padding: 0.5em 1.33333333em;
   font-size: 0.83809524em;
-  color: #7A8288;
+/*  color: #7A8288; */
 }
 
 .ui.vertical.menu .item .menu a.item:hover,
@@ -25101,7 +25101,7 @@ Floated Menu / Item
 
 .ui.vertical.inverted.menu .menu .item,
 .ui.vertical.inverted.menu .menu .item a:not(.ui) {
-  color: rgba(0, 0, 0, 0.4);
+/*  color: rgba(0, 0, 0, 0.4); */
 }
 
 /* Header */

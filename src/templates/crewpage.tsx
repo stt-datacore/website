@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Container, Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
+import { Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
 import SimpleMDE from 'react-simplemde-editor';
@@ -109,7 +109,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		const crew = crewJson.edges[0].node;
 		return (
-			<Layout>
+			<Layout narrowLayout={true}>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
 					<title>{crew.name}</title>
 					<meta property='og:type' content='website' />
@@ -125,82 +125,81 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					crew={crew}
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
-				<Container text style={{ paddingTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>
-					<Grid columns={2}>
-						<Grid.Row stretched>
-							<Grid.Column width={16}>
-								<Header>
-									{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon='star' size='large' disabled />
-								</Header>
-							</Grid.Column>
-						</Grid.Row>
-						<Grid.Row>
-							<Grid.Column width={4}>
-								{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
-								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
-							</Grid.Column>
-							<Grid.Column width={12}>
-								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
+				<Grid columns={2}>
+					<Grid.Row stretched>
+						<Grid.Column width={16}>
+							<Header>
+								{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon='star' size='large' disabled />
+							</Header>
+						</Grid.Column>
+					</Grid.Row>
+					<Grid.Row>
+						<Grid.Column width={4}>
+							{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
+							<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
+						</Grid.Column>
+						<Grid.Column width={12}>
+							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
-								{this.state.items.length > 0 ? (
-									<React.Fragment>
-										{this.renderEquipment(crew)}
-										{this.renderEquipmentDetails(crew)}
-										<Button
-											onClick={() => this.setState({ modalVisible: true })}
-											style={{ marginTop: '1em' }}
-											content='Full equipment tree'
-											icon='right arrow'
-											labelPosition='right'
-										/>
-									</React.Fragment>
-								) : (
+							{this.state.items.length > 0 ? (
+								<React.Fragment>
+									{this.renderEquipment(crew)}
+									{this.renderEquipmentDetails(crew)}
+									<Button
+										onClick={() => this.setState({ modalVisible: true })}
+										style={{ marginTop: '1em' }}
+										content='Full equipment tree'
+										icon='right arrow'
+										labelPosition='right'
+									/>
+								</React.Fragment>
+							) : (
 									<div className='ui medium centered text active inline loader'>Loading items...</div>
 								)}
 
-								<Segment>
-									<Header as='h4'>{crew.action.name}</Header>
-									<p>
-										Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}
+							<Segment>
+								<Header as='h4'>{crew.action.name}</Header>
+								<p>
+									Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}
+								</p>
+								<p>
+									Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration: {crew.action.duration}s
 									</p>
-									<p>
-										Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration: {crew.action.duration}s
-									</p>
-									{crew.action.limit && <p>Uses Per Battle: {crew.action.limit}</p>}
+								{crew.action.limit && <p>Uses Per Battle: {crew.action.limit}</p>}
 
-									{crew.action.ability && (
-										<p>
-											Bonus ability:
-											{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
-											{crew.action.ability.condition > 0 && (
-												<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
-											)}
-										</p>
-									)}
-
+								{crew.action.ability && (
 									<p>
-										<b>Accuracy:</b> +{crew.ship_battle.accuracy} <b>Crit Bonus:</b> +{crew.ship_battle.crit_bonus}{' '}
-										{crew.ship_battle.crit_chance && (
-											<span>
-												<b>Crit Rating:</b> +{crew.ship_battle.crit_chance}{' '}
-											</span>
+										Bonus ability:
+										{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
+										{crew.action.ability.condition > 0 && (
+											<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
 										)}
-										<b>Evasion:</b> +{crew.ship_battle.evasion}
 									</p>
-									{crew.action.penalty && (
-										<p>
-											Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}
-										</p>
-									)}
+								)}
 
-									{this.renderChargePhases(crew.action, crew.action.charge_phases)}
-								</Segment>
-							</Grid.Column>
-						</Grid.Row>
-					</Grid>
-					<Divider horizontal hidden />
-					{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
-					{/*userName && (
+								<p>
+									<b>Accuracy:</b> +{crew.ship_battle.accuracy} <b>Crit Bonus:</b> +{crew.ship_battle.crit_bonus}{' '}
+									{crew.ship_battle.crit_chance && (
+										<span>
+											<b>Crit Rating:</b> +{crew.ship_battle.crit_chance}{' '}
+										</span>
+									)}
+									<b>Evasion:</b> +{crew.ship_battle.evasion}
+								</p>
+								{crew.action.penalty && (
+									<p>
+										Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}
+									</p>
+								)}
+
+								{this.renderChargePhases(crew.action, crew.action.charge_phases)}
+							</Segment>
+						</Grid.Column>
+					</Grid.Row>
+				</Grid>
+				<Divider horizontal hidden />
+				{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
+				{/*userName && (
 						<div>
 							<br />
 							<p>Hello, {userName}. You can edit your comment below:</p>
@@ -234,15 +233,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							))}
 						</Comment.Group>
 							)*/}
-					<Divider horizontal hidden style={{ marginTop: '4em' }} />
-					<ExtraCrewDetails
-						crew_archetype_id={crew.archetype_id}
-						max_rarity={crew.max_rarity}
-						base_skills={crew.base_skills}
-						traits={crew.traits} traits_hidden={crew.traits_hidden}
-						unique_polestar_combos={crew.unique_polestar_combos}
-					/>
-				</Container>
+				<Divider horizontal hidden style={{ marginTop: '4em' }} />
+				<ExtraCrewDetails
+					crew_archetype_id={crew.archetype_id}
+					max_rarity={crew.max_rarity}
+					base_skills={crew.base_skills}
+					traits={crew.traits} traits_hidden={crew.traits_hidden}
+					unique_polestar_combos={crew.unique_polestar_combos}
+				/>
 			</Layout>
 		);
 	}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Table, Rating, Icon, Dropdown } from 'semantic-ui-react';
+import { Header, Table, Rating, Icon, Dropdown } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -163,73 +163,69 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		if (!botcrew || botcrew.length === 0) {
 			return (
 				<Layout>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Icon loading name='spinner' /> Loading...
-					</Container>
+					<Icon loading name='spinner' /> Loading...
 				</Layout>
 			);
 		}
 
 		return (
 			<Layout>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h2'>Crew stats</Header>
+				<Header as='h2'>Crew stats</Header>
 
-					<SearchableTable
-						data={botcrew}
-						explanation={
-							<div>
-								<p>
-									Search for crew by name or trait (with optional '-' for exclusion). For example, this returns all Rikers
-									that are not romantic:
-								</p>
-								<p>
-									<code>riker -romantic</code>
-								</p>
+				<SearchableTable
+					data={botcrew}
+					explanation={
+						<div>
+							<p>
+								Search for crew by name or trait (with optional '-' for exclusion). For example, this returns all Rikers
+								that are not romantic:
+							</p>
+							<p>
+								<code>riker -romantic</code>
+							</p>
 
-								<p>
-									Search for multiple crew by separating terms with <b>OR</b>. This returns any Tuvok or T'Pol:
-								</p>
-								<p>
-									<code>tuvok OR tpol</code>
-								</p>
+							<p>
+								Search for multiple crew by separating terms with <b>OR</b>. This returns any Tuvok or T'Pol:
+							</p>
+							<p>
+								<code>tuvok OR tpol</code>
+							</p>
 
-								<p>
-									Specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields for more advanced searches. This
-									returns all female crew of rarity 4 or 5 with science skill and the Q Continuum trait:
-								</p>
-								<p>
-									<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
-								</p>
+							<p>
+								Specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields for more advanced searches. This
+								returns all female crew of rarity 4 or 5 with science skill and the Q Continuum trait:
+							</p>
+							<p>
+								<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
+							</p>
 
-								<p>
-									Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
-								</p>
-								<p>
-									<code>in_portal:true</code>
-								</p>
-							</div>
-						}
-						renderTableRow={crew => this.renderTableRow(crew)}
-						filterRow={(crew, filter) => this._filterCrew(crew, filter)}
-						config={tableConfig}
-                        searchExt = { 
-                            <span style={{ paddingLeft: '2em' }}>
-                                <Dropdown inline
-                                          options={searchTypeOptions}
-                                          value={this.state.searchType}
-                                          onChange={(event, {value}) => 
-                                            this.setState({ searchType: value as number })
-                                          }
-                                />
-                            </span>
-                        }
-                    />
+							<p>
+								Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
+							</p>
+							<p>
+								<code>in_portal:true</code>
+							</p>
+						</div>
+					}
+					renderTableRow={crew => this.renderTableRow(crew)}
+					filterRow={(crew, filter) => this._filterCrew(crew, filter)}
+					config={tableConfig}
+					searchExt = { 
+						<span style={{ paddingLeft: '2em' }}>
+							<Dropdown inline
+										options={searchTypeOptions}
+										value={this.state.searchType}
+										onChange={(event, {value}) => 
+										this.setState({ searchType: value as number })
+										}
+							/>
+						</span>
+					}
+				/>
 
-					<p>
-						<i>Hint</i> Click on a row to get details on that specific crew
-					</p>
-				</Container>
+				<p>
+					<i>Hint</i> Click on a row to get details on that specific crew
+				</p>
 			</Layout>
 		);
 	}

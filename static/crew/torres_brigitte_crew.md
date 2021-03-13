@@ -3,7 +3,7 @@ name: Brigitte Torres
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 2
 events: 19
 in_portal:
 date: 20/08/2020
@@ -12,8 +12,6 @@ mega: true
 published: true
 ---
 
-'Great Gams Torres' may not have made it past WRG's censors, but we regrettably have less filter here. Brigitte's negatives jump off the page to veteran players (poor skill set and lack of collections), but despite them, the raw numbers will serve most players who employ super rare crew on shuttles and voyages.
+'Great Gams Torres' may not have made it past WRG's censors, but we regrettably have less filter here. A fairly nondescript 3/4 from events in the middle of 2020 struck gold just a few, short months later as she picked up double collections, both of which are massive and require fistfuls of legendary crew to complete. She's an automatic, must-pick behold option for veteran players looking to stack skill boosts, but Bump'lanna has something for everyone.
 
-Torres' sticker price when it comes to events is certainly deceiving, having been puffed up by multiple megas and the no longer fashionable Klingon bonus. Yet the slow-growing Spy trait and a few edge cases should at some point supplement her twice-per-year variant events.
-
-Fleshing out one of her character's gaping skill holes for anything not named security or engineering, Bump'lanna's four digit DIP score should have no trouble finding a Faction seat and merits a thaw down the line.
+Her respectable DIP base is one of painfully few options among B'Elanna's variants (who'd have guessed?) and even sits atop the non-gold options for Klingon crew too. Between her fairly generous trait set for weekend bonus chances and a strong, if vanilla presence on voyages, there's a wealth of value here along with an outside chance at a Killing Game vanity.

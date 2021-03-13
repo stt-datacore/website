@@ -244,11 +244,12 @@ export function exportVoyageData(options) {
 	return dataToExport;
 }
 
+var iap_worker = null;
 export function calculateVoyage(options, progressCallback: (result: ICalcResult) => void, doneCallback: (result: ICalcResult) => void) {
 	let dataToExport = exportVoyageData(options);
 
-	const worker = new ComputeWorker();
-	worker.addEventListener('message', message => {
+	iap_worker = new ComputeWorker();
+	iap_worker.addEventListener('message', message => {
 		if (message.data.progressResult) {
 			progressCallback(parseResults(Uint8Array.from(message.data.progressResult)));
 		} else if (message.data.result) {
@@ -256,7 +257,11 @@ export function calculateVoyage(options, progressCallback: (result: ICalcResult)
 		}
 	});
 
-	worker.postMessage(dataToExport);
+	iap_worker.postMessage(dataToExport);
+}
+
+export function abortVoyageCalculation() {
+	if(iap_worker) iap_worker.terminate();
 }
 
 export class BonusCrew {

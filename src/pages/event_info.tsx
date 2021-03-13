@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Label, Message, Icon, Table, Image } from 'semantic-ui-react';
+import { Header, Label, Message, Icon, Table, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { ResponsiveLine } from '@nivo/line'
 import themes from '../components/nivo_themes';
@@ -299,92 +299,89 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		if (event_instace === undefined || event_data === undefined || errorMessage !== undefined) {
 			return (
 				<Layout title='Event information'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<Header as='h4'>Event information</Header>
-						{errorMessage && (
-							<Message negative>
-								<Message.Header>Unable to load event information</Message.Header>
-								<pre>{errorMessage.toString()}</pre>
-							</Message>
-						)}
-						{!errorMessage && (
-							<div>
-								<Icon loading name='spinner' /> Loading...
-							</div>
-						)}
-					</Container>
+					<Header as='h4'>Event information</Header>
+					{errorMessage && (
+						<Message negative>
+							<Message.Header>Unable to load event information</Message.Header>
+							<pre>{errorMessage.toString()}</pre>
+						</Message>
+					)}
+					{!errorMessage && (
+						<div>
+							<Icon loading name='spinner' /> Loading...
+						</div>
+					)}
 				</Layout>
 			);
 		}
 
 		return (
 			<Layout title={event_data.ev_inst.event_name}>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h3'>{event_data.ev_inst.event_name}</Header>
-					<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
+				<Header as='h3'>{event_data.ev_inst.event_name}</Header>
+				<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
 
-					{this.renderEventDetails()}
+				{this.renderEventDetails()}
 
-					{this.renderEventLog()}
+				{this.renderEventLog()}
 
-					<Header as='h4'>Leaderboard</Header>
-					<Table celled selectable striped collapsing unstackable compact='very'>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
-								<Table.HeaderCell width={1}>Rank</Table.HeaderCell>
-								<Table.HeaderCell width={1}>Score</Table.HeaderCell>
-								<Table.HeaderCell width={2}>Fleet</Table.HeaderCell>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{event_data.ev_lead.leaderboard.map((member, idx) => (
-								<Table.Row key={idx}>
-									<Table.Cell>
-										<div
-											style={{
-												display: 'grid',
-												gridTemplateColumns: '60px auto',
-												gridTemplateAreas: `'icon stats' 'icon description'`,
-												gridGap: '1px'
-											}}>
-											<div style={{ gridArea: 'icon' }}>
-												<img
-													width={48}
-													src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
-														}`}
-												/>
-											</div>
-											<div style={{ gridArea: 'stats' }}>
-												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-													{member.last_update ? (
-														<Link to={`/profile?dbid=${member.dbid}`}>{member.display_name}</Link>
-													) : (
-															<span>{member.display_name}</span>
-														)}
-												</span>
-											</div>
-											<div style={{ gridArea: 'description' }}>
-												Level {member.level}
-												{member.last_update && (
-													<Label size='tiny'>Last profile upload: {new Date(Date.parse(member.last_update)).toLocaleDateString()}</Label>
-												)}
-											</div>
+				<Header as='h4'>Leaderboard</Header>
+				<Table celled selectable striped collapsing unstackable compact='very'>
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell width={3}>Name</Table.HeaderCell>
+							<Table.HeaderCell width={1}>Rank</Table.HeaderCell>
+							<Table.HeaderCell width={1}>Score</Table.HeaderCell>
+							<Table.HeaderCell width={2}>Fleet</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{event_data.ev_lead.leaderboard.map((member, idx) => (
+							<Table.Row key={idx}>
+								<Table.Cell>
+									<div
+										style={{
+											display: 'grid',
+											gridTemplateColumns: '60px auto',
+											gridTemplateAreas: `'icon stats' 'icon description'`,
+											gridGap: '1px'
+										}}>
+										<div style={{ gridArea: 'icon' }}>
+											<img
+												width={48}
+												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+													}`}
+											/>
 										</div>
-									</Table.Cell>
-									<Table.Cell>{member.rank}</Table.Cell>
-									<Table.Cell>{member.score}</Table.Cell>
-									<Table.Cell>
-										{member.fleetname ? <Link to={`/fleet_info?fleetid=${member.fleetid}`}>
-											<b>{member.fleetname}</b>
-										</Link> : <span>-</span>}
-									</Table.Cell>
-								</Table.Row>
-							))}
-						</Table.Body>
-					</Table>
+										<div style={{ gridArea: 'stats' }}>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
+												{member.last_update ? (
+													<Link to={`/profile?dbid=${member.dbid}`}>{member.display_name}</Link>
+												) : (
+														<span>{member.display_name}</span>
+													)}
+											</span>
+										</div>
+										<div style={{ gridArea: 'description' }}>
+											Level {member.level}
+											{member.last_update && (
+												<Label size='tiny'>Last profile upload: {new Date(Date.parse(member.last_update)).toLocaleDateString()}</Label>
+											)}
+										</div>
+									</div>
+								</Table.Cell>
+								<Table.Cell>{member.rank}</Table.Cell>
+								<Table.Cell>{member.score}</Table.Cell>
+								<Table.Cell>
+									{member.fleetname ? <Link to={`/fleet_info?fleetid=${member.fleetid}`}>
+										<b>{member.fleetname}</b>
+									</Link> : <span>-</span>}
+								</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
 
-					{event_data.ev_flead &&
+				{event_data.ev_flead &&
 					<div>
 						<Message>
 							<Message.Header>TODO: Fleet Leaderboard is experimental</Message.Header>
@@ -413,7 +410,6 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							</Table.Body>
 						</Table>
 					</div>}
-				</Container>
 			</Layout>
 		);
 	}

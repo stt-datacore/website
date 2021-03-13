@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Dropdown, Grid, Rating, Divider } from 'semantic-ui-react';
+import { Header, Dropdown, Grid, Rating, Divider } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import marked from 'marked';
 
@@ -53,48 +53,44 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		if (this.state.allcrew.length === 0) {
 			return (
 				<Layout title='Behold helper / crew comparison'>
-					<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-						<div className='ui medium centered text active inline loader'>Loading data...</div>
-					</Container>
+					<div className='ui medium centered text active inline loader'>Loading data...</div>
 				</Layout>
 			);
 		}
 
 		return (
 			<Layout title='Behold helper / crew comparison'>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as='h4'>Behold helper / crew comparison</Header>
-					<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
-					<Dropdown
-						clearable
-						fluid
-						multiple
-						search
-						selection
-						options={this.state.peopleList}
-						placeholder='Select or search for crew'
-						label='Behold crew'
-						value={this.state.currentSelectedItems}
-						onChange={(e, { value }) => this._selectionChanged(value)}
-					/>
+				<Header as='h4'>Behold helper / crew comparison</Header>
+				<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
+				<Dropdown
+					clearable
+					fluid
+					multiple
+					search
+					selection
+					options={this.state.peopleList}
+					placeholder='Select or search for crew'
+					label='Behold crew'
+					value={this.state.currentSelectedItems}
+					onChange={(e, { value }) => this._selectionChanged(value)}
+				/>
 
-					<Divider horizontal hidden />
+				<Divider horizontal hidden />
 
-					<Grid columns={3} stackable centered padded divided>
-						{this.state.entries.map((entry, idx) => (
-							<Grid.Column key={idx}>
-								<Header as='h5'>
-									<Link to={`/crew/${entry.crew.symbol}/`}>
-										{entry.crew.name}{' '}
-										<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
-									</Link>
-								</Header>
-								<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} />
-								{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown }} />}
-							</Grid.Column>
-						))}
-					</Grid>
-				</Container>
+				<Grid columns={3} stackable centered padded divided>
+					{this.state.entries.map((entry, idx) => (
+						<Grid.Column key={idx}>
+							<Header as='h5'>
+								<Link to={`/crew/${entry.crew.symbol}/`}>
+									{entry.crew.name}{' '}
+									<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
+								</Link>
+							</Header>
+							<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} />
+							{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown }} />}
+						</Grid.Column>
+					))}
+				</Grid>
 			</Layout>
 		);
 	}

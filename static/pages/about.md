@@ -1,5 +1,6 @@
 ---
 title: "About"
+hide_in_other: true
 ---
 
 > **NOTE** This project is a work in progress, still in the early stages. All feedback is welcome!

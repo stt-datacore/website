@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Container, Header, Image, Divider, Grid, Rating } from 'semantic-ui-react';
+import { Header, Image, Divider, Grid, Rating } from 'semantic-ui-react';
 import { graphql, Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -70,8 +70,7 @@ class BigBook extends PureComponent<BigBookPageProps> {
 		this.props.data.crewpages.edges.forEach((element, idx) => {
 			let crewEntry = this.props.data.allCrewJson.edges.find(e => e.node.symbol === element.node.fields.slug.replace(/\//g, ''));
 
-			if (crewEntry && crewEntry.node.max_rarity > 3)
-			{
+			if (crewEntry && crewEntry.node.max_rarity > 3) {
 				res.push({
 					name: crewEntry.node.name,
 					tier: element.node.frontmatter.bigbook_tier,
@@ -102,13 +101,11 @@ class BigBook extends PureComponent<BigBookPageProps> {
 
 		return (
 			<Layout title='The Big Book of Behold Advice'>
-				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-					{sections[0].elem}
-					{res.filter(e => e.rarity === 5).map(e => e.elem)}
-					{sections[1].elem}
-					{res.filter(e => e.rarity === 4).map(e => e.elem)}
-					{sections.slice(2).map(e => e.elem)}
-				</Container>
+				{sections[0].elem}
+				{res.filter(e => e.rarity === 5).map(e => e.elem)}
+				{sections[1].elem}
+				{res.filter(e => e.rarity === 4).map(e => e.elem)}
+				{sections.slice(2).map(e => e.elem)}
 			</Layout>
 		);
 	}
