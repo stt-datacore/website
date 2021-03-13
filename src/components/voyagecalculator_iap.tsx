@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
+import * as localForage from 'localforage';
+
 import ItemDisplay from '../components/itemdisplay';
 import {
 	ICalcResult,
@@ -40,6 +42,7 @@ type VoyageCalculatorState = {
 	currentSelection: any[];
 	searchDepth: number;
 	extendsTarget: number;
+	telemetryOptOut: boolean;
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -57,7 +60,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			currentSelection: [],
 			activeEvent: undefined,
 			searchDepth: 6,
-			extendsTarget: 0
+			extendsTarget: 0,
+			telemetryOptOut: false,
 		};
 	}
 
@@ -129,6 +133,44 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		this.setState({ bestShip: bestShips[0], crew: crewlist, peopleList });
+
+		localForage.getItem<boolean>('telemetryOptOut', (err, value) => {
+			if (err) {
+				console.error(err);
+			} else {
+				this.setState({ telemetryOptOut: value });
+			}
+		});
+	}
+
+	componentDidUpdate(_, prevState) {
+		try {
+			const { calcState, crew, telemetryOptOut, result } = this.state;
+			if (prevState.calcState === CalculatorState.InProgress && calcState === CalculatorState.Done && result) {
+				if (!telemetryOptOut) {
+					fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+						method: 'post',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							type: 'voyage',
+							data: result.entries.map((entry) => {
+								return crew.find(c => c.id === entry.choice).symbol;
+							})
+						})
+					});
+				}
+			}
+		} catch(err) {
+			console.log('An error occurred while sending telemetry', err);
+		}
+	}
+
+	setTelemetryOptOut(value) {
+		console.log(value);
+		localForage.setItem<boolean>('telemetryOptOut', value);
+		this.setState({ telemetryOptOut: value });
 	}
 
 	render() {
@@ -233,6 +275,13 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							label='Consider frozen (vaulted) crew'
 							checked={this.state.includeFrozen}
 							onChange={(e, { checked }) => this.setState({ includeFrozen: checked })}
+						/>
+
+						<Form.Field
+							control={Checkbox}
+							label={<label>Collect anonymous stats <small>(Statistics are used to improve DataCore and power our Voyage Hall of Fame)</small></label>}
+							checked={!this.state.telemetryOptOut}
+							onChange={(e, { checked }) => this.setTelemetryOptOut(!checked) }
 						/>
 					</Form.Group>
 
