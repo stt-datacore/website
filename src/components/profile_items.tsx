@@ -3,6 +3,7 @@ import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { mergeItems } from '../utils/itemutils';
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
 
@@ -57,23 +58,18 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
-		if (column !== clickedColumn) {
-			const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
-			let sortedData = data.sort((a, b) => compare(a[clickedColumn], b[clickedColumn]));
+		const sortConfig: IConfigSortData = {
+			field: clickedColumn,
+			direction: clickedColumn === column ? direction : (clickedColumn === 'quantity' ? 'ascending' : null)
+		};
 
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
-		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
-		}
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			column: sorted.field,
+			direction: sorted.direction,
+			pagination_page: 1,
+			data: sorted.result
+		});
 	}
 
 	render() {

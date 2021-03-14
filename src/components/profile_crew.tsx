@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+
 type ProfileCrewProps = {
 	playerData: any;
 	isTools?: boolean;
@@ -47,64 +49,44 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 		this.setState({ pagination_page: activePage });
 	}
 
-	_compare(a, b) {
-		return (a > b ? 1 : b > a ? -1 : 0);
-	}
-
-	_handleCrewSort() {
+	_handleSort(clickedColumn, pseudocolumns) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
-		let sortedData;
-		if (crewPseudoColumns.includes(column) && direction === 'ascending') {
-			this.setState({
-				direction: 'descending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
-		} else {
-			const nextIndex = crewPseudoColumns.indexOf(column) + 1; // Will be 0 if previous column was not a pseudocolumn
-			const nextColumnIndex = nextIndex === crewPseudoColumns.length ? 0 : nextIndex;
-			const newColumn = crewPseudoColumns[nextColumnIndex];
-			sortedData = data.sort((a, b) => this._compare(a[newColumn], b[newColumn]));
-			this.setState({
-				column: newColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
+		
+		const sortConfig: IConfigSortData = {
+			field: clickedColumn,
+			direction: direction
+		};
+
+		if(clickedColumn === 'max_rarity') {
+			sortConfig.direction = direction || 'descending';
+			sortConfig.secondary = {
+				field: 'rarity',
+				direction: 'descending'
+			};
 		}
-	}
 
-	// TODO: share this code with index.tsx
-	_handleSort(clickedColumn, isSkill) {
-		const { column, direction, findDupes } = this.state;
-		let { data } = this.state;
-
-		if (column !== clickedColumn) {
-			let sortedData;
-			if (isSkill) {
-				sortedData = data.sort(
-					(a, b) =>
-						(a.base_skills[clickedColumn] ? a.base_skills[clickedColumn].core : 0) -
-						(b.base_skills[clickedColumn] ? b.base_skills[clickedColumn].core : 0)
-				);
+		if(pseudocolumns) {
+			if(crewPseudoColumns.includes(column)) {
+				sortConfig.field = column;
 			} else {
-				sortedData = data.sort((a, b) => this._compare(a[clickedColumn], b[clickedColumn]));
+				sortConfig.direction = null;
 			}
-
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
+			sortConfig.rotateFields = crewPseudoColumns;
 		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
+			if(clickedColumn !== column) {
+				// sort rarity and skills descending first by default
+				sortConfig.direction = 'ascending';
+			}
 		}
+
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			column: sorted.field,
+			direction: sorted.direction,
+			pagination_page: 1,
+			data: sorted.result
+		});
 	}
 
 	_descriptionLabel(crew: any) {
@@ -154,7 +136,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 							<Table.HeaderCell
 								width={3}
 								sorted={crewPseudoColumns.includes(column) ? direction : null}
-								onClick={() => this._handleCrewSort()}
+								onClick={() => this._handleSort(crewPseudoColumns.includes(column) ? column : crewPseudoColumns[0], true)}
 							>
 								Crew <br /> {crewPseudoColumns.includes(column) && <small>{column}</small>}
 							</Table.HeaderCell>
@@ -167,43 +149,43 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'command_skill' ? direction : null}
-								onClick={() => this._handleSort('command_skill', true)}
+								sorted={column === 'command_skill.core' ? direction : null}
+								onClick={() => this._handleSort('command_skill.core', false)}
 							>
 								Command
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'diplomacy_skill' ? direction : null}
-								onClick={() => this._handleSort('diplomacy_skill', true)}
+								sorted={column === 'diplomacy_skill.core' ? direction : null}
+								onClick={() => this._handleSort('diplomacy_skill.core', false)}
 							>
 								Diplomacy
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'engineering_skill' ? direction : null}
-								onClick={() => this._handleSort('engineering_skill', true)}
+								sorted={column === 'engineering_skill.core' ? direction : null}
+								onClick={() => this._handleSort('engineering_skill.core', false)}
 							>
 								Engineering
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'medicine_skill' ? direction : null}
-								onClick={() => this._handleSort('medicine_skill', true)}
+								sorted={column === 'medicine_skill.core' ? direction : null}
+								onClick={() => this._handleSort('medicine_skill.core', false)}
 							>
 								Medicine
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'science_skill' ? direction : null}
-								onClick={() => this._handleSort('science_skill', true)}
+								sorted={column === 'science_skill.core' ? direction : null}
+								onClick={() => this._handleSort('science_skill.core', false)}
 							>
 								Science
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={1}
-								sorted={column === 'security_skill' ? direction : null}
-								onClick={() => this._handleSort('security_skill', true)}
+								sorted={column === 'security_skill.core' ? direction : null}
+								onClick={() => this._handleSort('security_skill.core', false)}
 							>
 								Security
 							</Table.HeaderCell>

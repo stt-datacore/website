@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
 
@@ -72,43 +74,32 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
-		const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
+		const sortConfig: IConfigSortData = {
+			field: clickedColumn,
+			direction: direction
+		};
 
-		if (pseudocolumns) {
-			if (pseudocolumns.includes(column) && direction === 'ascending') {
-				this.setState({
-					direction: 'descending',
-					pagination_page: 1,
-					data: data.reverse()
-				});
+		if(pseudocolumns) {
+			if(pseudocolumns.includes(column)) {
+				sortConfig.field = column;
 			} else {
-				const nextIndex = pseudocolumns.indexOf(column) + 1; // Will be 0 if previous column was not a pseudocolumn
-				const nextColumnIndex = nextIndex === pseudocolumns.length ? 0 : nextIndex;
-				const newColumn = pseudocolumns[nextColumnIndex];
-				const sortedData = data.sort((a, b) => compare(a[newColumn], b[newColumn]));
-				this.setState({
-					column: newColumn,
-					direction: 'ascending',
-					pagination_page: 1,
-					data: sortedData
-				});
+				sortConfig.direction = null;
 			}
-		} else if (column !== clickedColumn) {
-			let sortedData = data.sort((a, b) => compare(a[clickedColumn], b[clickedColumn]));
-
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
+			sortConfig.rotateFields = pseudocolumns;
 		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
+			if(clickedColumn !== column) {
+				// sort rarity and skills descending first by default
+				sortConfig.direction = 'ascending';
+			}
 		}
+
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			column: sorted.field,
+			direction: sorted.direction,
+			pagination_page: 1,
+			data: sorted.result
+		});
 	}
 
 	_onChangePage(activePage) {
