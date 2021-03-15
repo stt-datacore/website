@@ -29,6 +29,6 @@ Some code used to build this site was originally authored by IAmPicard (c) 2017 
 
 Most of the code for the website, the bot and accompanying services was originally authored by TemporalAgent7 (c) 2019 – 2020 and released under the MIT license.
 
-Some crew notes are imported from [u/Automaton_2000](https://reddit.com/user/Automaton_2000)'s [Big Book](https://docs.google.com/document/d/1vvl3wS1cY29ScQwWcTA6tJgcXvbdadY6vgPpn0swzbs/edit#) and [u/idoliside](https://reddit.com/user/idoliside)'s [Little Book](https://docs.google.com/document/d/1RKdRtJcePeey-921OCVKcU41YZTmFpVThXE10Uff-aA/edit#). Some nicknames are imported from a curated sheet maintained by DCPilot. Content used with their permission.
+Some crew notes are imported from [The Big Book of Behold Advice](https://docs.google.com/spreadsheets/d/1CYR5jnqtacbQM9MIsXp6ATs84Q3rbRM3SmKmUtBvlJ0), created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000). Some nicknames are imported from a curated sheet maintained by DCPilot. Content used with their permission.
 
 This project is licensed under MIT, and if you choose to contribute code or other media you agree that your contributions will be licensed under its [MIT license](https://github.com/stt-datacore/website/blob/master/LICENSE).
