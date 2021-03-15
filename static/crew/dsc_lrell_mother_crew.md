@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-L’Rell of the House of T’Kuvma, First Of Her Name, Mother Of... Tenavik. A nice card showing the softer side of a formidable leader and a refreshing variant of Chancellor L’Rell's skill combination. We still have the question mark over whether Disco events will feature the full pool, but regardless, she’s a powerful card in her own right. 
+L’Rell of the House of T’Kuvma, First Of Her Name, Mother Of... Tenavik. A nice card showing the softer side of a formidable leader and a refreshing variant of Chancellor L’Rell's skill combination. We still have the question mark over whether Disco events will ever make another appearance, but regardless, she’s a powerful card in her own right. 
 
-However, due to DIP’s overwhelming popularity in the game, she might not sit on her throne for long. Esteemed Chancellors Martok, Gorkon and even L’Rell herself are not too far behind her, and with some rosters you might question whether to invest in such a common pairing when more commonly available or concurrent cards can do the same job while also contributing in the arena or gauntlet. However, if she does get called for an event, she will certainly bring honor to your house!
+If you're looking to flesh out your Klingon collection, L'Rell's CMD/DIP/SEC skill set is an obligation, not necessarily a downside. She outpaces almost every other option in raw power with a sprinkle of eventability to boot. But if Klingon is not a consideration for you, L'Rell, while competent from a few angles, doesn't quite do enough to stand out in a crowd - matching dress and fingernails aside.
