@@ -49,16 +49,21 @@ const pagingOptions = [
 ];
 
 const rarityOptions = [
-	{ key: null, value: null, text: 'Any' },
-	{ key: '1', value: '1', text: '1' },
-	{ key: '2', value: '2', text: '2' },
-	{ key: '3', value: '3', text: '3' },
-	{ key: '4', value: '4', text: '4' },
-	{ key: '5', value: '5', text: '5' }
+	{ key: null, value: null, text: 'Any rarity' },
+	{ key: '1', value: '1', text: 'minimum 1*' },
+	{ key: '2', value: '2', text: 'minimum 2*' },
+	{ key: '3', value: '3', text: 'minimum 3*' },
+	{ key: '4', value: '4', text: 'minimum 4*' },
+	{ key: '5', value: '5', text: 'minimum 5*' }
 ];
 
 const collectionsOptions = [
-	{ key: null, value: null, text: 'Any' }
+	{ key: null, value: null, text: 'None or any' },
+	{ key: '1', value: '1', text: 'Any 1 collection' },
+	{ key: '2', value: '2', text: 'Any 2 collections' },
+	{ key: '3', value: '3', text: 'Any 3 collections' },
+	{ key: '4', value: '4', text: 'Any 4 collections' },
+	{ key: '5', value: '5', text: 'Any 5 collections' },
 ];
 
 const filterTraits = (polestar, trait) => {
@@ -143,9 +148,9 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 					pc = matchedCollection;
 				}
 			}
-			let kv = cArr.indexOf(c) + 1;
+			let kv = cArr.indexOf(c) + 6;
 			collectionsOptions.push({
-				key: kv,
+				key: kv.toString(),
 				value: c,
 				text: c,
 				content: (
@@ -174,10 +179,10 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		}
 
 		if(clickedColumn === 'max_rarity') {
-			sortConfig.direction = direction || 'descending';
+			sortConfig.direction = column === clickedColumn ? direction : 'ascending';
 			sortConfig.secondary = {
 				field: 'highest_owned_rarity',
-				direction: 'ascending'
+				direction: 'descending'
 			};
 		}
 		
@@ -200,7 +205,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		if(sortConfig.field === 'max_rarity') {
 			sortConfig.secondary = {
 				field: 'highest_owned_rarity',
-				direction: sortConfig.direction
+				direction: 'ascending'
 			};
 		}
 
@@ -347,7 +352,11 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 		}
 		
 		if (collection) {
-			data = data.filter((crew) => crew.collections.indexOf(collection) !== -1);
+			if(['1', '2', '3', '4', '5'].includes(collection)) {
+				data = data.filter((crew) => crew.collections.length === parseInt(collection));
+			} else {
+				data = data.filter((crew) => crew.collections.indexOf(collection) !== -1);
+			}
 		}
 		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -364,7 +373,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 							open={this.state.modalFilterIsOpen}
 							onClose={() => this.setState({modalFilterIsOpen: false, recalculateCombos: true})}
 							onOpen={() => this.setState({modalFilterIsOpen: true})}
-							trigger={<Button>{this.state.ownedPolestars.length-this.state.disabledPolestars.length} / {this.state.ownedPolestars.length} Polestars</Button>}
+							trigger={<Button><Icon name='filter' /> {this.state.ownedPolestars.length-this.state.disabledPolestars.length} / {this.state.ownedPolestars.length} Polestars</Button>}
 							header='Filter Owned Polestars'
 							size='large'
 						>
