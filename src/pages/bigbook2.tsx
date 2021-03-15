@@ -114,7 +114,6 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 
 	render() {
 		const { groupedByTier } = this.state;
-		console.log(this.props);
 		const header = this.props.data.sections.edges[0];
 
 		return (
