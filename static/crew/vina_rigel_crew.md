@@ -3,7 +3,7 @@ name: Rigel VII Vina
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 3
 in_portal: true
 date: 22/10/2019
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-In an endeavour to get Captain Pike’s torpedo to launch, Rigel Vina is another bit of Talosian trickery. But not even Roddenberry’s legendary soft lens could convince us to blow our (dilithium) load on this crew. Without any interesting gauntlet/arena/collection considerations that normally save other two-skillers, Vina’s packing only four traits with bloated crew pools which may put weekend relevance out of reach. Even if her dress sense were to convince DB to count her for Lwaxana events, this is not a crew who can justify her spot on your roster.
+In an endeavour to get Captain Pike’s torpedo to launch, Rigel Vina is another bit of Talosian trickery. Vina is a relative non-starter save for two areas - A fantastic dress sense that might convince WRG to include her for Lwaxana events and a spot in what is currently the most skill bonus-heavy collection in the game. Behold and freeze, but don't feel the need to justify keeping her on your active roster.

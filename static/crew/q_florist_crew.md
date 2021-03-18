@@ -3,7 +3,7 @@ name: Florist Q
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 18
 in_portal: true
 date: 09/01/2018
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-One of the top choices for DIP crew makes Q a top contender for Sunday cadet missions and node hunting. Might have some tertiary use on Voyages and if you have a ship with the position ability, consider pairing him up with it to increase damage dealt. With the addition of the Q Collection, this Q becomes essential as the only cadet in that collection and makes a strong choice to fill out your DIP crew.
+The collections headline here - John Luck Pickerd's beau is the only cadet-level option to grab that first skill bonus from The Continuum consortium and his spot in the monstrous Costume Party is equally valuable en route to the most ample source of bonuses in the game. He flirts with other top shelf Rare names as the best collection value in the game at his rarity.
+
+There's also a reasonable amount of cadet work here. A fairly unusual combination of DIP and SCI in amounts high enough to crit certain Sunday nodes (thanks to generous top end rolls) is really only matched by the dual-eligibile Mara. If she's unavailable to you, Florist will be able to handle multiple nodes in four of the five Sunday missions, with perhaps a smidge of early game shuttle time.
