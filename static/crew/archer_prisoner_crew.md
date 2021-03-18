@@ -3,7 +3,7 @@ name: Xindi 'Prisoner' Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 18
 in_portal: true
 date: 24/05/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Average or better stats that we'd welcome in another skill set. Still, a strong DIP base and an event count that's suddenly started to pick up will give him some cryo use even if you're no longer using him daily.
+A fairly lush trait set headlines this card, with one of them having hit on what is the largest stat-boosting collection currently in game. That same set of traits has hugely buoyed Archer's typically modest event tally and may offer further collection and/or event value down the line. Poor base and voyage metrics make Xindi Archer more a target for late game collection seekers.

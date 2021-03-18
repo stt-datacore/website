@@ -3,7 +3,7 @@ name: Maquis Takeover Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 14
 in_portal:
 date: 19/11/2020
@@ -12,10 +12,6 @@ mega: false
 published: true
 ---
 
-As 2020 winds down, don't forget - no matter what you do, don't re-open the narrative parameters file. Let's let this year's holoprogram lapse.
+An option in the little leagues of arena, Paris has a hefty chunk of instant damage whose position trigger can be met by the oft-seen Borg Sphere. Unfortunately that low-yield area might be his best chance at daily contribution as weak voyage numbers relegate him to event horse. Which is really not the worst job out there and has to at least be better than scrubbing the plasma manifolds.
 
-In the running for the booby prize for dullest Paris variant, Takeover can't even boast strong metrics to push him into service in spite of that. He's also completely useless during a mutiny, but that's beside the point.
-
-Weak voyage numbers and lack of collections or other perks relegate him to event horse. Which is really not the worst job out there and has to at least be better than scrubbing the plasma manifolds.
-
-Double digit events (and Factions) for Paris is good news, but even better are the ten (!!) Big Bonus event features to date split between his three other super rare variants. Not a Data-esque situation, Paris isn't swamped in ENG options, making Takeover worth the 100 merits to wrangle another shuttle pilot out of cryo a few times per year.
+Double digit events (and Factions) for Paris is good news, but even better are the ten (!!) Big Bonus event features to date split between his three other super rare variants. Not a Data-esque situation, Paris isn't swamped in ENG options, making Takeover worth the 100 merits to wrangle another shuttle pilot out of cryo a few times per year. Speaking of cryo, late game players will be happily obligated to cough up a handful of Maquis and Section 31 items in exchange for a notch on the biggest stat-boosting collection out there in the Costume Party.

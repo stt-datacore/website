@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Such a bizarre card from an episode I had completely forgotten about. Hang on, let me get my announcer voice on. 
-“In The Left Corner With The #1 SEC Stat For 3* Crews, It’s Acoocha Moyer Himself! Chaaaaaaaakotay!”
-In all seriousness his SEC stat is one of the highest a new player will get and his combination of skills, although quite common, makes him a great voyager. But with no extra collection bonuses and no use on weekend cadet challenges, don’t feel too bad if you have to push him out of the ring.
+Fighting out of the left corner, with the biggest cadet SEC in the game... The Acoocha Moyer Himself! Chaaaaaaaakotay!
+
+Chuckles is a compulsory immortalize for all players thanks to his spot in the Cotumed collection, but that doesn't mean it should be done early on in your Timelines journey. The bloated CMD/DIP/SEC skill set, his slow, handicapped arena ability, and lack of any weekend cadet work all hamstring Boxer in areas that matter for early game progress. And while the smattering of Maquis and Section 31 items needed to build him aren't too big an albatross, they serve to reinforce that he's not typically the best early-game return on investment out there.
