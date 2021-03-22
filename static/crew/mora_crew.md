@@ -5,7 +5,7 @@ series: ds9
 memory_alpha:
 bigbook_tier: 6
 events: 6
-in_portal: true
+in_portal:
 date: 09/06/2016
 obtained: Post-Launch
 mega: false

@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 4
 events: 16
-in_portal: true
+in_portal:
 date: 05/03/2020
 obtained: Event
 mega: false

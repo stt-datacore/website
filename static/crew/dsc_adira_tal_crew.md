@@ -1,5 +1,5 @@
 ---
-name: EDF Adira
+name: Adira Tal
 rarity: 5
 series: dsc
 memory_alpha:

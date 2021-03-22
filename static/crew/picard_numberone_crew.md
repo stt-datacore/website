@@ -5,7 +5,7 @@ series: pic
 memory_alpha:
 bigbook_tier: 2
 events: 19
-in_portal: true
+in_portal:
 date: 06/02/2020
 obtained: Mega
 mega: true

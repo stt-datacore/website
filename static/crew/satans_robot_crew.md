@@ -5,7 +5,7 @@ series: voy
 memory_alpha:
 bigbook_tier: 8
 events: 8
-in_portal: true
+in_portal:
 date: 02/01/2018
 obtained: Pack
 mega: false

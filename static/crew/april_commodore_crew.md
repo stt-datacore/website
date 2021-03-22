@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 10
 events: 0
-in_portal: true
+in_portal:
 date: 07/11/2018
 obtained: Pack
 mega: false
