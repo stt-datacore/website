@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Dropdown, Grid, Rating, Divider } from 'semantic-ui-react';
+import { Header, Dropdown, Grid, Rating, Divider, Form } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import marked from 'marked';
 
@@ -17,14 +17,25 @@ type BeholdsPageState = {
 	currentSelectedItems: any;
 	allcrew: any[];
 	entries: any[];
+	minRarity: any;
 };
+
+const rarityOptions = [
+	{ key: null, value: null, text: 'Any' },
+	{ key: '1', value: '1', text: '1' },
+	{ key: '2', value: '2', text: '2' },
+	{ key: '3', value: '3', text: '3' },
+	{ key: '4', value: '4', text: '4' },
+	{ key: '5', value: '5', text: '5' }
+];
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	state = {
 		peopleList: [],
 		currentSelectedItems: [],
 		allcrew: [],
-		entries: []
+		entries: [],
+		minRarity: null
 	};
 
 	async componentDidMount() {
@@ -37,14 +48,20 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 				key: crew.symbol,
 				value: crew.symbol,
 				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
-				text: `${crew.short_name} (${crew.name})`
+				text: `${crew.short_name} (${crew.name})`,
+				max_rarity: crew.max_rarity
 			});
 		});
+		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text)),
 
 		this.setState({ allcrew, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));
+			}
+			// Set default minimum rarity to behold minimum (4) if no crew is passed by URL
+			else {
+				this.setState({ minRarity: 4 });
 			}
 		});
 	}
@@ -58,22 +75,40 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			);
 		}
 
+		let peopleToShow = [...this.state.peopleList];
+		if (this.state.minRarity) {
+			peopleToShow = peopleToShow.filter((crew) => crew.max_rarity >= this.state.minRarity);
+		}
+
 		return (
 			<Layout title='Behold helper / crew comparison'>
 				<Header as='h4'>Behold helper / crew comparison</Header>
 				<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
-				<Dropdown
-					clearable
-					fluid
-					multiple
-					search
-					selection
-					options={this.state.peopleList}
-					placeholder='Select or search for crew'
-					label='Behold crew'
-					value={this.state.currentSelectedItems}
-					onChange={(e, { value }) => this._selectionChanged(value)}
-				/>
+				<Form>
+					<Form.Group>
+						<Dropdown
+							clearable
+							fluid
+							multiple
+							search
+							selection
+							closeOnChange
+							options={peopleToShow}
+							placeholder='Select or search for crew'
+							label='Behold crew'
+							value={this.state.currentSelectedItems}
+							onChange={(e, { value }) => this._selectionChanged(value)}
+						/>
+						<Form.Field
+							control={Dropdown}
+							placeholder={this.state.minRarity ? `Minimum rarity: ${this.state.minRarity}` : `Minimum rarity`}
+							selection
+							options={rarityOptions}
+							value={this.state.minRarity}
+							onChange={(e, { value }) => this.setState({ minRarity: value })}
+						/>
+					</Form.Group>
+				</Form>
 
 				<Divider horizontal hidden />
 
