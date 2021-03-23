@@ -493,5 +493,27 @@
 		"smallbonus": {
 			"traits": ["crusher", "worf", "laforge"]
 		}
+	},
+	{
+		"name": "Under New Management",
+		"type": "Skirmish",
+		"dates": "Thursday 03/18 until Monday 03/22 at Noon (16.00 UTC)",
+		"startDate": "2021-03-18T16:00:00Z",
+		"endDate": "2021-03-22T16:00:00Z",
+		"highbonus": ["dsc_culber_mirror_crew", "scott_mirror_crew", "orion_slaver_crew"],
+		"smallbonus": {
+			"traits": ["culber","scott","Mirror Universe"]
+		}
+	},
+	{
+		"name": "Guiding Principles (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 03/25 until Monday 03/29 at Noon (16.00 UTC)",
+		"startDate": "2021-03-25T16:00:00Z",
+		"endDate": "2021-03-29T16:00:00Z",
+		"highbonus": ["spock_reunion_crew", "kira_commander_crew", "tpol_captain_crew", "wesley_formal_dress_crew"],
+		"smallbonus": {
+			"traits": ["spock","kira","tpol","wesley"]
+		}
 	}
 ]
