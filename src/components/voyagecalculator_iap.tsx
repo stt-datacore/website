@@ -173,6 +173,41 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		this.setState({ telemetryOptOut: value });
 	}
 
+	setupVoyageLink(data) {
+		let pairs = [];
+		let otherCount = 1;
+		let variance = 0;
+		let addPair = (key, val) => pairs.push(key + '=' + val);
+
+		for (let agg of Object.values(data.skill_aggregates)) {
+			let score = Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
+			let skillOdds = 0.1;
+
+			if (agg.skill == data.skills.primary_skill) {
+				addPair('pri', score);
+				skillOdds = 0.35;
+			} else if (agg.skill == data.skills.secondary_skill) {
+				addPair('sec', score);
+				skillOdds = 0.25;
+			} else {
+				let key = 'o' + otherCount.toString();
+				++otherCount;
+				addPair(key, score);
+			}
+			
+			variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
+		};
+
+		addPair('prof', Math.floor(variance*100));
+		addPair('currentAm', data.hp);
+		addPair('startAm', data.max_hp);
+		let duration = Math.floor(data.voyage_duration/60);
+		addPair('elapsedHours', Math.floor(duration/60));
+		addPair('elapsedMinutes', duration%60);
+		
+		return 'https://codepen.io/joshurtree/full/eYgNJxV?' + pairs.join('&');
+	}
+	
 	render() {
 		const { playerData, voyageData } = this.props;
 		const { bestShip, crew } = this.state;
@@ -195,10 +230,15 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		let peopleListStyle = this.state.includeFrozen ? 'all' : 'default';
+		let voyageLink = <a href={this.setupVoyageLink(voyageData.voyage[0])}> here</a>;
 
 		return (
 			<div style={{ margin: '5px' }}>
-				{currentVoyage && <p>It looks like you already have a voyage started!</p>}
+				{currentVoyage && 
+					<p>
+						It looks like you already have a voyage started! You can see how it is likely to end up {voyageLink}.
+					</p>
+				}
 				<Message attached>
 					VOYAGE CALCULATOR! Configure the settings below, then click on the "Calculate" button to see the recommendations. Current voyage
 					is <b>{curVoy}</b>.
