@@ -3,6 +3,7 @@ import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Check
 import * as localForage from 'localforage';
 
 import ItemDisplay from '../components/itemdisplay';
+import { VoyageStats } from '../components/voyagestats';
 import {
 	ICalcResult,
 	calculateVoyage,
@@ -43,6 +44,7 @@ type VoyageCalculatorState = {
 	searchDepth: number;
 	extendsTarget: number;
 	telemetryOptOut: boolean;
+	showCalculator: boolean
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -62,6 +64,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			searchDepth: 6,
 			extendsTarget: 0,
 			telemetryOptOut: false,
+			showCalculator: false,
 		};
 	}
 
@@ -173,50 +176,55 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		this.setState({ telemetryOptOut: value });
 	}
 
-	setupVoyageLink(data) {
-		let pairs = [];
-		let otherCount = 1;
-		let variance = 0;
-		let addPair = (key, val) => pairs.push(key + '=' + val);
-
+	_renderCurrentVoyage(data) {
+		const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
+		
+		let ps, ss, others = [], variance;
 		for (let agg of Object.values(data.skill_aggregates)) {
 			let score = Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
 			let skillOdds = 0.1;
 
-			if (agg.skill == data.skills.primary_skill) {
-				addPair('pri', score);
-				skillOdds = 0.35;
-			} else if (agg.skill == data.skills.secondary_skill) {
-				addPair('sec', score);
-				skillOdds = 0.25;
-			} else {
-				let key = 'o' + otherCount.toString();
-				++otherCount;
-				addPair(key, score);
-			}
-			
-			variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
-		};
+			if (agg.skill == data.skills.primary_skill)
+				ps = score;
+			else if (agg.skill == data.skills.secondary_skill)
+				ss = score;
+			else
+				others.push(score);
 
-		addPair('prof', Math.floor(variance*100));
-		addPair('currentAm', data.hp);
-		addPair('startAm', data.max_hp);
-		let duration = Math.floor(data.voyage_duration/60);
-		addPair('elapsedHours', Math.floor(duration/60));
-		addPair('elapsedMinutes', duration%60);
-		
-		return 'https://codepen.io/joshurtree/full/eYgNJxV?' + pairs.join('&');
+			variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
+		}
+
+		return (
+			<div>
+				<VoyageStats
+					ps={ps}
+					ss={ss}
+					others={others}
+					variance={Math.floor(variance*100)}
+					elapsedSeconds={data.voyage_duration}
+					startAm={data.max_hp}
+					currentAm={data.hp}
+				/>
+				<br/>
+				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
+			</div>
+		);			
 	}
 	
 	render() {
 		const { playerData, voyageData } = this.props;
-		const { bestShip, crew } = this.state;
+		const { showCalculator, bestShip, crew } = this.state;
+		console.log(showCalculator);
+
+		if (!showCalculator && voyageData.voyage.length > 0 && voyageData.voyage[0].state === 'started')
+			return (this._renderCurrentVoyage(voyageData.voyage[0]));
 
 		if (!bestShip)
 			return (<></>);
-
-		let curVoy = '';
+		
 		let currentVoyage = false;
+		let curVoy = '';
+
 		if (voyageData.voyage_descriptions && voyageData.voyage_descriptions.length > 0) {
 			curVoy = `${CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.primary_skill]} primary / ${
 				CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.secondary_skill]
@@ -230,13 +238,12 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		let peopleListStyle = this.state.includeFrozen ? 'all' : 'default';
-		let voyageLink = <a href={this.setupVoyageLink(voyageData.voyage[0])}> here</a>;
 
 		return (
 			<div style={{ margin: '5px' }}>
 				{currentVoyage && 
 					<p>
-						It looks like you already have a voyage started! You can see how it is likely to end up {voyageLink}.
+						It looks like you already have a voyage started!
 					</p>
 				}
 				<Message attached>
