@@ -6,7 +6,6 @@ import themes from '../components/nivo_themes';
 
 import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
-import VoyageHOF from '../components/voyagehof';
 
 type StatsPageProps = {};
 
@@ -160,7 +159,6 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 
 		return (
 			<Layout title='Miscellaneous stats'>
-				<VoyageHOF />
 				<Header as="h2">Miscellaneous stats</Header>
 				<p>
 					Contains miscellaneous information, statistics, breakdowns and charts. Stats are fresh and always
