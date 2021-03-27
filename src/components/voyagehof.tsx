@@ -69,7 +69,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew }) => {
 										}}
 									>
                     <div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`https://assets.datacore.app/${crew.imageUrlPortrait}`} />
+											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}/${crew.imageUrlPortrait}`} />
 										</div>
 										<div style={{ gridArea: 'name' }}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
