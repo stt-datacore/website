@@ -123,6 +123,9 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 					<Menu.Item key={index++} onClick={() => navigate('/episodes')}>
 						Episodes
 					</Menu.Item>
+					<Menu.Item key={index++} onClick={() => navigate('/hall_of_fame')}>
+						Hall of Fame
+					</Menu.Item>
 				</Menu.Menu>
 			</Menu.Item>,
 			<Menu.Item>
