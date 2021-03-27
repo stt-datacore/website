@@ -3,8 +3,8 @@ name: Anastasia Komananov
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 26
+bigbook_tier: 6
+events: 31
 in_portal: true
 date: 24/04/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-She offers no impressive stats for daily use but a DIP base near 800 paired with Kira and hologram events will have her in and out of the freezer. You'd like to see more daily value from a crew with an equip cost this expensive, but a set of very eventable traits should do wonders for her Faction potential down the line.
+She offers no impressive stats for daily use but a DIP base over 900 with bonuses paired with Kira and trait events have her in and out of the freezer. Her equp cost is on the expensive side and littered with faction items, but the weekend work, including three big bonus features, generally pays it off. If you're not a fan of Faction events, a pair of collections including the huge 100 threshold Costume Party offers something to veteran players while her trait lineup has the potential to boost both of those attributes.

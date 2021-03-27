@@ -52,7 +52,11 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 					return true;
 				}
 			})
-		);
+		).sort((a, b) => {
+			if (a.rarity == b.rarity)
+				return a.name.localeCompare(b.name);
+			return b.rarity - a.rarity;
+		});
 
 		// Calculate all replicator fodder
 		// 	Only consider equipment of already immortalized crew as fodder
@@ -70,7 +74,11 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let fuellist = items.filter(
 			item => equipmentAlreadyOnCrew.has(item.symbol) &&
 					!equipmentNeededByCrew.has(item.symbol)
-		);
+		).sort((a, b) => {
+			if (a.rarity == b.rarity)
+				return a.name.localeCompare(b.name);
+			return b.rarity - a.rarity;
+		});
 
 		// Should probably regex this
 		//	Fancy apostrophe check needed for some crew
@@ -115,50 +123,62 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 					</Message>
 				)}
 
-				<Header as='h4'>Here are {this.state.fuelschematics.length} items that you don't need (used to upgrade ships you already maxed):</Header>
-				<Grid columns={5} centered padded>
-					{this.state.fuelschematics.map((item, idx) => (
-						<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
-							<ItemDisplay
-								src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
-								size={64}
-								maxRarity={item.rarity}
-								rarity={item.rarity}
-							/>
-							<p>{item.name}</p>
-						</Grid.Column>
-					))}
-				</Grid>
+				{this.state.fuelschematics.length > 0 && (
+					<React.Fragment>
+						<Header as='h4'>Here are {this.state.fuelschematics.length} Ship Schematics that you don't need (used to upgrade ships you already maxed):</Header>
+						<Grid columns={5} centered padded>
+							{this.state.fuelschematics.map((item, idx) => (
+								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<ItemDisplay
+										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+										size={64}
+										maxRarity={item.rarity}
+										rarity={item.rarity}
+									/>
+									<p>{item.name}</p>
+								</Grid.Column>
+							))}
+						</Grid>
+					</React.Fragment>
+				)}
 
-				<Header as='h4'>Here are {this.state.fuelspecific.length} items that you don't need (used to equip specific crew you already equipped):</Header>
-				<Grid columns={5} centered padded>
-					{this.state.fuelspecific.map((item, idx) => (
-						<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
-							<ItemDisplay
-								src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
-								size={64}
-								maxRarity={item.rarity}
-								rarity={item.rarity}
-							/>
-							<p>{item.name}</p>
-						</Grid.Column>
-					))}
-				</Grid>
+				{this.state.fuelspecific.length > 0 && (
+					<React.Fragment>
+						<Header as='h4'>Here are {this.state.fuelspecific.length} Equipment items that you don't need (used to equip specific crew you already equipped):</Header>
+						<Grid columns={5} centered padded>
+							{this.state.fuelspecific.map((item, idx) => (
+								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<ItemDisplay
+										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+										size={64}
+										maxRarity={item.rarity}
+										rarity={item.rarity}
+									/>
+									<p>{item.name}</p>
+								</Grid.Column>
+							))}
+						</Grid>
+					</React.Fragment>
+				)}
 
-				<Header as='h4'>Here are {this.state.fuelgeneric.length} items that you don't need now, but might be useful in the future:</Header>
-				<Grid columns={5} centered padded>
-					{this.state.fuelgeneric.map((item, idx) => (
-						<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
-							<ItemDisplay
-								src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
-								size={64}
-								maxRarity={item.rarity}
-								rarity={item.rarity}
-							/>
-							<p>{item.name}</p>
-						</Grid.Column>
-					))}
-				</Grid>
+				{this.state.fuelgeneric.length > 0 && (
+					<React.Fragment>
+						<Header as='h4'>Here are {this.state.fuelgeneric.length} Equipment items that you don't need now, but might be useful in the future:</Header>
+						<Grid columns={5} centered padded>
+							{this.state.fuelgeneric.map((item, idx) => (
+								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<ItemDisplay
+										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+										size={64}
+										maxRarity={item.rarity}
+										rarity={item.rarity}
+									/>
+									<p>{item.name}</p>
+								</Grid.Column>
+							))}
+						</Grid>
+					</React.Fragment>
+				)}
 			</div>
 		);
 	}

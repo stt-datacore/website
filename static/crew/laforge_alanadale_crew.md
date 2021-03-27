@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 3
-events: 22
+events: 26
 in_portal: true
 date: 09/05/2018
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Geordi's voyage work is still on par with new 4/4 or 1/5 releases, but most of his post-fusion goodness comes in the form of double collections, a smattering of traits to provide some weekend opportunities, and being one of only two DIP options for La Forge events. Just don't forget to search for him when thawing variants for an event.
+Formerly lofty ranks have descended into a more average range, but triple collections running the value gamut keep him in behold contention for every level of roster. As one of only two La Forge DIP options, Alan will make the thaw list in almost every case and has a handful of traits to augment weekend bonus chances. Just don't forget to search for him when thawing variants for an event.

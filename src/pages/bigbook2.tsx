@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { graphql, Link } from 'gatsby';
 import marked from 'marked';
 import { isMobile } from 'react-device-detect';
 
@@ -10,6 +10,9 @@ import CONFIG from '../components/CONFIG';
 import CommonCrewData from '../components/commoncrewdata';
 
 type BigBookPageProps = {
+	data: {
+		sections: any;
+	}
 };
 
 type BigBookPageState = {
@@ -111,9 +114,16 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 
 	render() {
 		const { groupedByTier } = this.state;
+		const header = this.props.data.sections.edges[0];
 
 		return (
 			<Layout title='The Big Book of Behold Advice'>
+				<div>
+						<Header as='h2' style={{ paddingTop: '1em' }}>
+							{header.node.frontmatter.title}
+						</Header>
+						<div dangerouslySetInnerHTML={{ __html: header.node.html }} />
+				</div>
 				{[...groupedByTier.keys()].map((tier, idx) => (
 					<React.Fragment key={idx}>
 						<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
@@ -126,3 +136,22 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 }
 
 export default BigBook;
+
+
+export const query = graphql`
+	query {
+		sections: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {ne: null}, title: {eq: "The Big Book of Behold Advice"}}}) {
+			totalCount
+			edges {
+				node {
+					id
+					html
+					frontmatter {
+						title
+						bigbook_section
+					}
+				}
+			}
+		}
+	}
+`;

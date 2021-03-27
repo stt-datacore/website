@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Sidling up to the renowned First Officer Burnham, this Timelord siphons her usefulness and reputation as if he were living on Planet M-113. A very good imitation, Tenavik offers fulsome base and voyage power in amounts very similar to Burnham, trading in her variant event history for some very spotty traits and the Disco tag which has provided ample opportunity to date. There's a drop of arena utility here, but really T-sizzle is your standard base/voyage tool who earns plenty of use despite an increasingly redundant skill set.
+Sidling up to the renowned First Officer Burnham, this Timelord siphons her reputation as if he were living on Planet M-113. A reasonable approximation, Tenavik offers fulsome base and voyage power, trading in her variant event history and rock-solid ranks for a spot in the Klingon collection. His SCI base isn't just great at differentiating his skill set among his angry brethren, but also gives him the top SCI base for that trait and any future Klingon events.

@@ -3,8 +3,8 @@ name: Hockey Paris
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 21
+bigbook_tier: 5
+events: 25
 in_portal: true
 date: 23/06/2016
 obtained: Post-Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A very standard CMD card with common pairings. Chances are if you are gunning to get this guy to level 100 then you will have some better crew with these statistics. However he does have the #16 CMD base stat and his voyage potential is not bad, it’s just very standard. I would only recommend him if he is your only blue card available, otherwise spend the chrons elsewhere.
+Paris' ranking here is mostly dependent on his lucrative spot in the huge, 100 threshold Costume Party collection. He's an automatic immortalize for late game players, but should be eschewed early on unless he's the first option available to you for the one crew threshold stat boost. 
+
+If he *is* that first choice, you'll at least be able to lockpick a few nodes across the galaxy map missions thanks to his fairly generous trait set which includes a number of options which may hit on a second collection at any time if they catch WRG's fancy.
