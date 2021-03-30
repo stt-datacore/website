@@ -214,7 +214,6 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	render() {
 		const { playerData, voyageData } = this.props;
 		const { showCalculator, bestShip, crew } = this.state;
-		console.log(showCalculator);
 
 		if (!showCalculator && voyageData.voyage.length > 0 && voyageData.voyage[0].state === 'started')
 			return (this._renderCurrentVoyage(voyageData.voyage[0]));

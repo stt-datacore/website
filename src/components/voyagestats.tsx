@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table } from 'semantic-ui-react';
-import ChewableWorker from 'worker-loader!../workers/chewableWorker';
+import { ResponsiveLine } from '@nivo/line'
+import ChewableWorker from 'worker-loader!../workers/chewableWorker2';
 
 type VoyageStatsProps = {
 	ps: number,
@@ -31,7 +32,10 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			this.setState({ estimate: message.data });
 		});
 		
-		worker.postMessage(this.props);
+		let config = Object.assign({}, this.props);
+		config.numSims = 10000;
+		config.createBins = true;
+		worker.postMessage(config);
 	}
 
 
@@ -62,16 +66,35 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		const header = this.props.elapsedSeconds 
 			?  <h3>You have a voyage running. Heres its chances.</h3>
 			: <h3>These are this voyages chances</h3>;
+
+		let data = [];
+		const estimateLabels = ['Estimate', '1 Refill', '2 Refills'];
+
+		for (let refill in estimate.refills) {
+			let label = estimateLabels[refill];
+			let values = estimate.refills[refill].bins.map(bin => {
+				return {
+					id: label,
+					x: bin.result,
+					y: bin.count/10000	
+				};
+			});
+			
+			data += values;
+		}
 		
+
 		return (
 			<div>
 				{header}
-				<Table>
+				<Table><tbody>
 					{renderEst("Estimate", 0)}
 					{renderEst("1 Refill", 1)}
 					{renderEst("2 Refills", 2)}
-				</Table>
+				</tbody></Table>
 				<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
+				
+				<ResponsiveLine data={data} />
 				<small>Powered by Chewable</small>
 			</div>
 		);
