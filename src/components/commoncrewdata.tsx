@@ -97,8 +97,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								content: {
 									content: (
 										<Segment.Group raised>
-											{crew.skill_data.map((sk: any) => (
-												<Segment>
+											{crew.skill_data.map((sk: any, idx: number) => (
+												<Segment key={idx}>
 													<Rating
 														defaultRating={sk.rarity}
 														maxRating={crew.max_rarity}
