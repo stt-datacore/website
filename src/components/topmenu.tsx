@@ -147,6 +147,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 					<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
 					<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
 					<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
+					<Dropdown.Item onClick={() => navigate('/hall_of_fame')}>Hall of Fame</Dropdown.Item>
 					<Dropdown.Divider />
 					<Dropdown.Header>All other pages</Dropdown.Header>
 					{otherPages.map((page) => (
