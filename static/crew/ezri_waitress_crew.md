@@ -3,7 +3,7 @@ name: Waitress Ezri
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 19
 in_portal: true
 date: 05/10/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The only number that pops is Dax's considerable event count. She receives a lot of praise from players, but I'm not seeing what they do. MED is useful in the early game and hers is tops among Dax crew, but in a small amount and her best gauntlet pair sits behind the stronger, more common Faith Garland and Doc Crusher. Modest shipboard damage will be replaced by faster options, but is usable for new players.
+Ezri is a textbook new player stepping stone crew. The young roster highlights, triggerless arena damage and medium proficiencies with a handful of 45% gauntlets, are availble at one star making her an easy behold choice if you're just starting out. Unfortunately the other three stars don't measure up in value. Dax does boast plenty of events and many rosters are looking to cobble voyage MED together from any source, but with 2016 stats, the window for use in those areas is short-lived.
+
+Considering the overall package and obligatory immotalization for the expansive Costume Party collection, Ezri exceeds the sum of her parts and is just waiting for that Bada Bang vanity collection to be fully joined.

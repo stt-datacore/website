@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Even if 2020 hadn't boosted the ranks of MED/ENG, this Geordi would still find himself phased out of service. With voyage power too low to compete with any new crew these days, his skill set perk is one for shuttles as the only La Forge MED available. There are a couple of plus traits to supplement Geordi's clockwork event clip and double collections are always tempting, even if their impact is relatively small in this case. A murderer's row of faction items in his build make him an expensive investment - one that you might want to wait on until right before he can help you in a Faction event.
+Doctor, Doctor, gimme the news. I got a bad case of crappy stat blues. Geordi's murderer's row of faction items in his build makes him a non-starter for daily use aspirations as his 2016 stats feel about as old as they are. The MED-led skill set is fool's gold on voyages and you'd be better served just grabbing any modern legendary at low fusion levels to outpace his contributions by hundreds of points.
+
+But what keeps him afloat as a behold choice is a thaw-able MED base which catches a bonus fairly regularly and triple collections. Note that despite owning three previous big bonus features, they were all in Expeditions. He may indeed resurface in that role again, but almost certainly in a different event type.

@@ -3,7 +3,7 @@ name: Friar Tuck Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 28
 in_portal: true
 date: 09/01/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Friar Tuck is the top voyager in his skill set and has plenty of events and traits. His bases aren't outstanding, but manage to avoid the ENG logjam from so many other legendary Datas and will perform nicely for SEC/DIP event shuttles instead. Take note of his expensive build cost including a fistful of Sec 31 items, but he will pay off the investment when finished.
+Hay bale Data has a little juice in his voyage ability yet, though that's more of a supplement at this stage. His great trait lineup is this crew's engine and has both bolstered his event work and granted him a spot in the biggest collection in the game; Costume Party. Take note of his expensive build cost including a fistful of Sec 31 items, but he will pay off the investment when finished.

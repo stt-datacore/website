@@ -3,7 +3,7 @@ name: Tuskegee Mayweather
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 17
 in_portal: true
 date: 31/08/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His 800+ ENG base is noteworthy, but it's hard to get excited about someone who offers almost nothing else aside from two events per year (traits included) Luckily, he was featured twice alongside two great crew - RAF O'Brien and Aviator Yar. Were another rerun to take place, he can help you score some premium legendary ENG crew.
+Travis is used to getting guff from players, but his 900+ ENG base combos well with a 100% hit rate for Mayweather Factions and a trio of big bonus features. You're not likely to use him very often, but in between reprieves from cryo, he'll be contributing to two collections including the huge, 100 threshold Costume Party.

@@ -3,7 +3,7 @@ name: RAF Julian Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 25
 in_portal: true
 date: 06/09/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Triple collections, double-digit events, double event features, top ten MED base - a quick hitters list detailing why Jules is still one of the best 2-skill Super Rares. His fast arena EV ability with strong passive stats make him a tech option there as well.
+A quartet of collections, substantial event clip, pair of event features, top ten MED base - a quick hitters list detailing why Jules is still one of the best 2-skill Super Rares. His fast arena EV ability with strong passive stats make him a tech option there as well. If nothing else, ticking so many collection boxes at once will save you behold capital and leveling resources otherwise spent on crew whose only use is that.
