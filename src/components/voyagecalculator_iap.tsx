@@ -193,7 +193,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		const { showCalculator, bestShip, crew } = this.state;
 		console.log(showCalculator);
 
-		if (!showCalculator && voyageData.voyage.length > 0 && voyageData.voyage[0].state === 'started')
+		if (!showCalculator && voyageData.voyage.length > 0)
 			return (this._renderCurrentVoyage(voyageData.voyage[0]));
 
 		if (!bestShip)

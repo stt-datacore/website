@@ -60,7 +60,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		return hours+"h " +minutes+"m";
 	}
 
-	_renderEstimate(topMsg: string) {
+	_renderEstimate(topMsg: string, needsRevive: boolean = false) {
 		let { estimate } = this.state;
 
 		if (!estimate)
@@ -78,14 +78,15 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 				</tr>
 			);
 		};
+		var refill = 0;
 
 		return (
 			<div>
 				<h3>{topMsg}</h3>
 				<Table>
-					{renderEst("Estimate", 0)}
-					{renderEst("1 Refill", 1)}
-					{renderEst("2 Refills", 2)}
+					{!needsRevive && renderEst("Estimate", refill++)}
+					{renderEst("1 Refill", refill++)}
+					{renderEst("2 Refills", refill++)}
 				</Table>
 				<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
 				<small>Powered by Chewable</small>
@@ -101,8 +102,8 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		const topMsg = pending
 		 	? 'The expected rewards are'
 			: 'The rewards to collect are';
-		const maxRarity = (type, item_type) => type == 2 && item_type == 3 ? 4 : 5;
-		const hideRarity = type => type == 3;
+		const hideRarity = (entry) => entry.type != 2 || entry.item_type != 3;
+		const maxRarity = (entry) => hideRarity(entry) ? entry.rarity : 4;
 		const assetURL = file => {
 			let url = file === 'energy_icon'
 				? 'atlas/energy_icon.png'
@@ -120,14 +121,14 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 					{rewards.loot.map((entry, idx) => (
 						<Grid.Column key={idx}>
 								<Header
-									style={{ display: 'flex', cursor: 'zoom-in' }}
+									style={{ display: 'flex' }}
 									icon={
 										<ItemDisplay
 											src={assetURL(entry.icon.file)}
 											size={48}
 											rarity={entry.rarity}
-											maxRarity={maxRarity(entry.type, entry.item_type)}
-											hideRarity={hideRarity(entry.type)}
+											maxRarity={maxRarity(entry)}
+											hideRarity={hideRarity(entry)}
 										/>
 									}
 									content={entry.name}
@@ -147,6 +148,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		return (
 			<div>
 				{voyState === 'started' && this._renderEstimate('You have a voyage started.')}
+				{voyState === 'failed' && this._renderEstimate('Your voyage needs reviving', true)}
 				<br/>
 				{this._renderRewards(voyageData)}
 			</div>
