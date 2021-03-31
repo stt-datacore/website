@@ -148,7 +148,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			<div>
 				{voyState === 'started' && this._renderEstimate('You have a voyage started.')}
 				<br/>
-				{this._renderRewards(voyageData)};
+				{this._renderRewards(voyageData)}
 			</div>
 		);
 	}
