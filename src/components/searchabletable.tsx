@@ -1,11 +1,18 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { useStateWithStorage } from '../utils/storage';
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
+
+const filterTypeOptions = [
+    { key : '0', value : 'Exact', text : 'Exact match only' },
+    { key : '1', value : 'Whole word', text : 'Whole word only' },
+    { key : '2', value : 'Any match', text : 'Match any text' }
+];
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -22,58 +29,37 @@ export interface ITableConfigRow {
 }
 
 type SearchableTableProps = {
+	id?: string;
 	data: any[];
-	explanation: React.ReactNode;
+	explanation?: React.ReactNode;
 	config: ITableConfigRow[];
-	renderTableRow: (row: any) => JSX.Element;
-	filterRow: (crew: any, filter: any) => boolean;
-    searchExt: React.ReactNode;
+	renderTableRow: (row: any, idx?: number) => JSX.Element;
+	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
+    showFilterOptions: boolean;
 };
 
-type SearchableTableState = {
-	column: any;
-	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
-	data: any[];
-	pagination_rows: number;
-	pagination_page: number;
-};
+export const SearchableTable = (props: SearchableTableProps) => {
+	let data = [...props.data];
+	const tableId = props.id ? props.id : '';
 
-export class SearchableTable extends PureComponent<SearchableTableProps, SearchableTableState> {
-	constructor(props) {
-		super(props);
-		
-		this.state = {
-			column: null,
-			direction: null,
-			searchFilter: '',
-			pagination_rows: 10,
-			pagination_page: 1,
-			data: this.props.data
-		};
+	// Ignore stored searchFilter if search parameter found
+	let defaultSearch = '', useAndStoreDefault = false;
+	let urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.has('search')) {
+		defaultSearch = urlParams.get('search');
+		useAndStoreDefault = true;
 	}
 
-	componentDidMount() {
-		let urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('search')) {
-			// Push the search string to localstorage for back button to behave as expected
-			localForage.setItem<string>(window.location.pathname + 'searchFilter', urlParams.get('search'));
-			this.setState({ searchFilter: urlParams.get('search') });
-		} else {
-			localForage.getItem<string>(window.location.pathname + 'searchFilter', (err, value) => {
-				if (err) {
-					console.error(err);
-				} else {
-					this.setState({ searchFilter: value });
-				}
-			});
-		}
-	}
+	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', defaultSearch, {useAndStoreDefault});
+	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
+	const [column, setColumn] = useStateWithStorage(tableId+'column', null);
+	const [direction, setDirection] = useStateWithStorage(tableId+'direction', null);
+	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
+	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
-	_handleSort(clickedColumn, pseudocolumns) {
-		const { column, direction } = this.state;
-		let { data } = this.state;
-
+	// We only sort here to store requested column and direction in state
+	//	Actual sorting of full dataset will occur on next render before filtering and pagination
+	function handleSort(clickedColumn, pseudocolumns) {
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
 			direction: direction
@@ -94,32 +80,26 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		}
 
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
-		this.setState({
-			column: sorted.field,
-			direction: sorted.direction,
-			pagination_page: 1,
-			data: sorted.result
-		});
+
+		setColumn(sorted.field);
+		setDirection(sorted.direction);
+		setPaginationPage(1);
 	}
 
-	_onChangePage(activePage) {
-		this.setState({ pagination_page: activePage });
+	function onChangeFilter(value) {
+		setSearchFilter(value);
+		setPaginationPage(1);
 	}
 
-	_onChangeFilter(value) {
-		localForage.setItem<string>(window.location.pathname + 'searchFilter', value);
-		this.setState({ searchFilter: value, pagination_page: 1 });
-	}
-
-	renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
+	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
 		return (
 			<Table.Row>
-				{this.props.config.map((cell, idx) => (
+				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
 						width={cell.width as any}
 						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
-						onClick={() => this._handleSort(cell.column, cell.pseudocolumns)}
+						onClick={() => handleSort(cell.column, cell.pseudocolumns)}
 					>
 						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
 					</Table.HeaderCell>
@@ -128,68 +108,127 @@ export class SearchableTable extends PureComponent<SearchableTableProps, Searcha
 		);
 	}
 
-	render() {
-		const { column, direction, pagination_rows, pagination_page } = this.state;
-		let { data } = this.state;
-
-		if (this.state.searchFilter) {
-			let filters = [];
-			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
-			grouped.forEach(group => {
-				filters.push(SearchString.parse(group));
-			});
-			data = data.filter(row => this.props.filterRow(row, filters));
-		}
-
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
-
-		// Pagination
-		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-		return (
-			<div>
-				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
-					iconPosition="left"
-					placeholder="Search..."
-					value={this.state.searchFilter}
-					onChange={(e, { value }) => this._onChangeFilter(value)}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => this._onChangeFilter('')} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
-
-				{this.props.searchExt}
-				<Popup wide trigger={<Icon name="help" />} header={'Advanced search'} content={this.props.explanation} />
-				
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
-					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
-					<Table.Body>{data.map(row => this.props.renderTableRow(row))}</Table.Body>
-					<Table.Footer>
-						<Table.Row>
-							<Table.HeaderCell colSpan={this.props.config.length}>
-								<Pagination
-									totalPages={totalPages}
-									activePage={pagination_page}
-									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
-								/>
-								<span style={{ paddingLeft: '2em'}}>
-									Rows per page:{' '}
-									<Dropdown
-										inline
-										options={pagingOptions}
-										value={pagination_rows}
-										onChange={(event, { value }) =>
-											this.setState({ pagination_page: 1, pagination_rows: value as number })
-										}
-									/>
-								</span>
-							</Table.HeaderCell>
-						</Table.Row>
-					</Table.Footer>
-				</Table>
-			</div>
-		);
+	// Sorting
+	if (column) {
+		const sortConfig: IConfigSortData = {
+			field: column,
+			direction: direction,
+			keepSortOptions: true
+		};
+		// Use original dataset for sorting
+		const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
+		data = sorted.result;
 	}
+
+	// Filtering
+	let filters = [];
+	if (searchFilter) {
+		let grouped = searchFilter.split(/\s+OR\s+/i);
+		grouped.forEach(group => {
+			filters.push(SearchString.parse(group));
+		});
+	}
+	data = data.filter(row => props.filterRow(row, filters, filterType));
+
+	// Pagination
+	let activePage = pagination_page;
+	let totalPages = Math.ceil(data.length / pagination_rows);
+	if (activePage > totalPages) activePage = totalPages;
+	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
+
+	return (
+		<div>
+			<Input
+				style={{ width: isMobile ? '100%' : '50%' }}
+				iconPosition="left"
+				placeholder="Search..."
+				value={searchFilter}
+				onChange={(e, { value }) => onChangeFilter(value)}>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => onChangeFilter('')} >
+						<Icon name='delete' />
+					</Button>
+			</Input>
+
+			{props.showFilterOptions && (
+				<span style={{ paddingLeft: '2em' }}>
+					<Dropdown inline
+								options={filterTypeOptions}
+								value={filterType}
+								onChange={(event, {value}) => setFilterType(value as number)}
+					/>
+				</span>
+			)}
+
+			<Popup wide trigger={<Icon name="help" />}
+				header={'Advanced search'}
+				content={props.explanation ? props.explanation : renderDefaultExplanation()}
+			/>
+
+			<Table sortable celled selectable striped collapsing unstackable compact="very">
+				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
+				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx))}</Table.Body>
+				<Table.Footer>
+					<Table.Row>
+						<Table.HeaderCell colSpan={props.config.length}>
+							<Pagination
+								totalPages={totalPages}
+								activePage={activePage}
+								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
+							/>
+							<span style={{ paddingLeft: '2em'}}>
+								Rows per page:{' '}
+								<Dropdown
+									inline
+									options={pagingOptions}
+									value={pagination_rows}
+									onChange={(event, {value}) => {
+										setPaginationPage(1);
+										setPaginationRows(value as number);
+									}}
+								/>
+							</span>
+						</Table.HeaderCell>
+					</Table.Row>
+				</Table.Footer>
+			</Table>
+		</div>
+	);
+}
+
+function renderDefaultExplanation() {
+	return (
+		<div>
+			<p>
+				Search for crew by name or trait (with optional '-' for exclusion). For example, this returns all Rikers
+				that are not romantic:
+			</p>
+			<p>
+				<code>riker -romantic</code>
+			</p>
+
+			<p>
+				Search for multiple crew by separating terms with <b>OR</b>. This returns any Tuvok or T'Pol:
+			</p>
+			<p>
+				<code>tuvok OR tpol</code>
+			</p>
+
+			<p>
+				Specify <b>name</b>, <b>trait</b>, <b>rarity</b> or <b>skill</b> fields for more advanced searches. This
+				returns all female crew of rarity 4 or 5 with science skill and the Q Continuum trait:
+			</p>
+			<p>
+				<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
+			</p>
+
+			<p>
+				Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
+			</p>
+			<p>
+				<code>in_portal:true</code>
+			</p>
+		</div>
+	);
 }
