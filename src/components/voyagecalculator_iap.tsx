@@ -177,40 +177,17 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_renderCurrentVoyage(data) {
-		const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
-		
-		let ps, ss, others = [], variance;
-		for (let agg of Object.values(data.skill_aggregates)) {
-			let score = Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
-			let skillOdds = 0.1;
-
-			if (agg.skill == data.skills.primary_skill)
-				ps = score;
-			else if (agg.skill == data.skills.secondary_skill)
-				ss = score;
-			else
-				others.push(score);
-
-			variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
-		}
-
 		return (
 			<div>
 				<VoyageStats
-					ps={ps}
-					ss={ss}
-					others={others}
-					variance={Math.floor(variance*100)}
-					elapsedSeconds={data.voyage_duration}
-					startAm={data.max_hp}
-					currentAm={data.hp}
+					voyageData={data}
 				/>
 				<br/>
 				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
 			</div>
-		);			
+		);
 	}
-	
+
 	render() {
 		const { playerData, voyageData } = this.props;
 		const { showCalculator, bestShip, crew } = this.state;
@@ -221,7 +198,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		if (!bestShip)
 			return (<></>);
-		
+
 		let currentVoyage = false;
 		let curVoy = '';
 
@@ -241,7 +218,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		return (
 			<div style={{ margin: '5px' }}>
-				{currentVoyage && 
+				{currentVoyage &&
 					<p>
 						It looks like you already have a voyage started!
 					</p>
