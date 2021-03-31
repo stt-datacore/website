@@ -80,6 +80,8 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 	}
 
 	_filterItem(item: any, filters: []): boolean {
+		if (filters.length == 0) return true;
+
 		const matchesFilter = (input: string, searchString: string) =>
 			input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
@@ -152,6 +154,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 				)}
 				{this.state.items && (
 					<SearchableTable
+						id="items"
 						data={this.state.items}
 						explanation={
 							<div>
