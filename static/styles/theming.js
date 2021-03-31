@@ -46,4 +46,14 @@ function swapThemeCss(reverse) {
 	setThemeCss(reverse ? theme === 'dark' : theme !== 'dark');
 }
 
+function aprilFools() {
+	let now = new Date();
+	if (now.getMonth() == 3 && now.getDate() == 1) {
+		let style = document.createElement('style');
+		style.innerHTML = 'img { transform: rotate(180deg); }';
+		document.head.appendChild(style);
+	}
+}
+
 swapThemeCss(true);
+aprilFools();
