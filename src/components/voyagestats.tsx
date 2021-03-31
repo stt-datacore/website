@@ -102,8 +102,8 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		const topMsg = pending
 		 	? 'The expected rewards are'
 			: 'The rewards to collect are';
-		const hideRarity = (entry) => entry.type != 2 || entry.item_type != 3;
-		const maxRarity = (entry) => hideRarity(entry) ? entry.rarity : 4;
+		const hideRarity = entry => entry.type == 3;
+		const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
 		const assetURL = file => {
 			let url = file === 'energy_icon'
 				? 'atlas/energy_icon.png'
@@ -126,8 +126,8 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 										<ItemDisplay
 											src={assetURL(entry.icon.file)}
 											size={48}
-											rarity={entry.rarity}
-											maxRarity={maxRarity(entry)}
+											rarity={rarity(entry)}
+											maxRarity={entry.rarity}
 											hideRarity={hideRarity(entry)}
 										/>
 									}
