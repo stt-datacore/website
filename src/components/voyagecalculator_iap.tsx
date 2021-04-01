@@ -334,16 +334,18 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		let consideredShips: any[] = [];
 		ships.forEach((ship: any) => {
-			let entry = {
-				ship: ship,
-				score: ship.antimatter
-			};
+			if (ship.owned) {
+				let entry = {
+					ship: ship,
+					score: ship.antimatter
+				};
 
-			if (ship.traits.find((trait: any) => trait == voyage.ship_trait)) {
-				entry.score += 150; // TODO: where is this constant coming from (Config)?
+				if (ship.traits.find((trait: any) => trait == voyage.ship_trait)) {
+					entry.score += 150; // TODO: where is this constant coming from (Config)?
+				}
+
+				consideredShips.push(entry);
 			}
-
-			consideredShips.push(entry);
 		});
 
 		consideredShips = consideredShips.sort((a, b) => b.score - a.score);
