@@ -101,7 +101,9 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 				<div>
 					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}, </span>
-					<span>Tier {crew.bigbook_tier}</span>
+					<span>Tier {crew.bigbook_tier},</span>
+					<span>{crew.events} events,</span>
+					<span>{crew.collections.length} collections</span>
 				</div>
 			);
 		}
