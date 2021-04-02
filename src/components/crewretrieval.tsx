@@ -4,6 +4,7 @@ import { navigate } from 'gatsby';
 
 import { getCoolStats } from '../utils/misc';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { formatTierLabel } from '../utils/crewutils';
 
 type CrewRetrievalProps = {
 	playerData: any;
@@ -462,7 +463,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 									<Rating rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
 								</Table.Cell>
 								<Table.Cell textAlign="center">
-									<b>{crew.bigbook_tier}</b>
+									<b>{formatTierLabel(crew.bigbook_tier)}</b>
 								</Table.Cell>
 								<Table.Cell textAlign="center">
 									{this._findCombosForCrew(crew)}

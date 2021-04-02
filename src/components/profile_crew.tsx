@@ -3,6 +3,7 @@ import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'seman
 import { navigate } from 'gatsby';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { formatTierLabel } from '../utils/crewutils';
 
 type ProfileCrewProps = {
 	playerData: any;
@@ -101,7 +102,7 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 				<div>
 					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}, </span>
-					<span>Tier {crew.bigbook_tier}</span>
+					<span>Tier {formatTierLabel(crew.bigbook_tier)}</span>
 				</div>
 			);
 		}

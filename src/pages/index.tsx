@@ -6,6 +6,7 @@ import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
+import { formatTierLabel } from '../utils/crewutils';
 
 type IndexPageProps = {};
 
@@ -136,7 +137,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							Tier {crew.bigbook_tier}, {crew.events} events
+							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events
 						</div>
 					</div>
 				</Table.Cell>

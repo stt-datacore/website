@@ -439,7 +439,7 @@ function main() {
 		let crewLine = `"${crew.name.replace(/"/g, '')}",`;
 
 		let mdData = getCrewMarkDown(crew.symbol);
-		if (mdData && mdData.meta && mdData.meta.bigbook_tier && mdData.meta.bigbook_tier < 20) {
+		if (mdData && mdData.meta && mdData.meta.bigbook_tier && mdData.meta.bigbook_tier < 20 && mdData.meta.bigbook_tier > 0) {
 			crewLine += `${mdData.meta.bigbook_tier},`;
 		} else {
 			crewLine += '0,';

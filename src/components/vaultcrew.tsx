@@ -5,6 +5,7 @@ import * as TinyColor from 'tinycolor2';
 import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
+import { formatTierLabel } from '../utils/crewutils';
 
 type VaultCrewProps = {
 	size: number;
@@ -32,7 +33,7 @@ function formatCrewStats(crew: any): JSX.Element {
 	}
 	return (
 		<div>
-			<h4>Tier {crew.bigbook_tier}</h4>
+			<h4>Tier {formatTierLabel(crew.bigbook_tier)}</h4>
 			{skills}
 			<Link to={`/crew/${crew.symbol}/`}>Full details</Link>
 		</div>

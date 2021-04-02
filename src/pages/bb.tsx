@@ -3,6 +3,7 @@ import { Container, Header, Divider, Sticky, Rail, Segment } from 'semantic-ui-r
 import { graphql, Link } from 'gatsby';
 
 import { getCoolStats } from '../utils/misc';
+import { formatTierLabel } from '../utils/crewutils';
 
 type BigBookCrewProps = {
 	markdownRemark: any;
@@ -145,14 +146,14 @@ class BigBookMobile extends PureComponent<BigBookPageProps> {
 				.forEach(element => {
 					if (section.length === 0 || section[0].tier !== element.tier) {
 						if (section.length > 0) {
-							actualres.push(<BigBookMobilSection section={section} title={`${title} - Tier ${section[0].tier}`} />);
+							actualres.push(<BigBookMobilSection section={section} title={`${title} - Tier ${formatTierLabel(section[0].tier)}`} />);
 						}
 						section = [element];
 					} else {
 						section.push(element);
 					}
 				});
-			actualres.push(<BigBookMobilSection section={section} title={`${title} - Tier ${section[0].tier}`} />);
+			actualres.push(<BigBookMobilSection section={section} title={`${title} - Tier ${formatTierLabel(section[0].tier)}`} />);
 			return actualres;
 		};
 

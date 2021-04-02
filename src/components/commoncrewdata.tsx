@@ -7,6 +7,7 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
+import { formatTierLabel } from '../utils/crewutils';
 
 type StatLabelProps = {
 	title: string;
@@ -132,9 +133,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
-						{markdownRemark.frontmatter.bigbook_tier !== null && (
-							<StatLabel title="Big book tier" value={markdownRemark.frontmatter.bigbook_tier} />
-						)}
+						<StatLabel title="Big book tier" value={formatTierLabel(markdownRemark.frontmatter.bigbook_tier)} />
 						{markdownRemark.frontmatter.events !== null && (
 							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
@@ -149,12 +148,10 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
 							</Statistic>
 						)}
-						{markdownRemark.frontmatter.bigbook_tier !== null && (
-							<Statistic>
-								<Statistic.Label>Tier</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
-							</Statistic>
-						)}
+						<Statistic>
+							<Statistic.Label>Tier</Statistic.Label>
+							<Statistic.Value>{formatTierLabel(markdownRemark.frontmatter.bigbook_tier)}</Statistic.Value>
+						</Statistic>
 						{!compact && markdownRemark.frontmatter.in_portal !== null && (
 							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
 								<Statistic.Label>Portal</Statistic.Label>

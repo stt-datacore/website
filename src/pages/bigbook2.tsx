@@ -8,6 +8,7 @@ import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
 
 import CommonCrewData from '../components/commoncrewdata';
+import { formatTierLabel } from '../utils/crewutils';
 
 type BigBookPageProps = {
 	data: {
@@ -126,7 +127,7 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 				</div>
 				{[...groupedByTier.keys()].map((tier, idx) => (
 					<React.Fragment key={idx}>
-						<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
+						<Header as='h3'>Tier {formatTierLabel(tier, true)}</Header>
 						<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
 					</React.Fragment>
 				))}
