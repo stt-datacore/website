@@ -3,7 +3,7 @@ import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semanti
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
-import { CrewSearchBar } from '../components/crewsearchbar';
+import { CrewSearchBar } from '../components/searchbar';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -98,7 +98,7 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 	}
 
 	_onChangeFilter(value) {
-		this.setState({ searchFilter: value, pagination_page: 1 });
+		this.setState({ data: value, pagination_page: 1 });
 	}
 
 	renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
@@ -122,16 +122,6 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 		const { column, direction, pagination_rows, pagination_page } = this.state;
         const props = this.props;
 		let { data } = this.state;
-
-		if (this.state.searchBar.searchFilter) {
-			let filters = [];
-			let grouped = this.state.searchFilter.split(/\s+OR\s+/i);
-			grouped.forEach(group => {
-				filters.push(SearchString.parse(group));
-			});
-			data = data.filter(row => this.props.filterRow(row, filters));
-		}
-
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
@@ -141,8 +131,6 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
                 <CrewSearchBar 
                             data= {props.data} 
                             explanation = { props.explanation }
-                            searchFilter = {this.state.searchFilter}
-                            filterRow = { props.filterRow }
                             searchExt = { props.searchExt }
                             onChange = {this._onChangeFilter}
                         />
