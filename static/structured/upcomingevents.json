@@ -526,5 +526,16 @@
 		"smallbonus": {
 			"traits": ["chakotay","troi","Costumed"]
 		}
+	},
+	{
+		"name": "In Plain Sight",
+		"type": "Galaxy",
+		"dates": "Thursday 04/08 until Monday 04/012 at Noon (16.00 UTC)",
+		"startDate": "2021-04-08T16:00:00Z",
+		"endDate": "2021-04-12T16:00:00Z",
+		"highbonus": ["dsc_saru_human_crew", "dsc_culber_bajoran_crew", "torres_klingon_crew", "darvin_waddle_crew"],
+		"smallbonus": {
+			"traits": ["saru","culber","torres","Costumed"]
+		}
 	}
 ]
