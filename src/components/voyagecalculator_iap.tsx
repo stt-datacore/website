@@ -181,6 +181,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			<div>
 				<VoyageStats
 					voyageData={data}
+					ships={this.props.playerData.player.character.ships}
+					showPanels={['estimate']}
 				/>
 				<br/>
 				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
@@ -191,7 +193,6 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	render() {
 		const { playerData, voyageData } = this.props;
 		const { showCalculator, bestShip, crew } = this.state;
-		console.log(showCalculator);
 
 		if (!showCalculator && voyageData.voyage.length > 0)
 			return (this._renderCurrentVoyage(voyageData.voyage[0]));

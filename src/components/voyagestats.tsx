@@ -1,16 +1,22 @@
 import React, { PureComponent } from 'react';
-import { Table, Grid, Header } from 'semantic-ui-react';
-import ItemDisplay from '../components/itemdisplay';
+import { Table, Grid, Header, Accordion, Popup, Segment, Image } from 'semantic-ui-react';
 import ChewableWorker from 'worker-loader!../workers/chewableWorker';
+import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../components/CONFIG';
+import ItemDisplay from '../components/itemdisplay';
+import CrewPopup from '../components/crewpopup';
 
 type VoyageStatsProps = {
-	voyageData: object
+	voyageData: object,
+	ships: [],
+	showPanels: []
 };
 
 type VoyageStatsState = {
-	estimate: []
+	estimate: [],
+	baseline: [],
+	activePanels: []
 };
 
 export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsState> {
@@ -18,13 +24,17 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		super(props);
 
 		this.state = {
-			estimate: undefined
+			estimate: undefined,
+			baseline: undefined,
+			activePanels: this.props.showPanels ? this.props.showPanels : []
 		};
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const {voyageData} = this.props;
 		const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
+		let ship = this.props.ships.find(s => s.id == this.props.voyageData.ship_id);
+
 		this.config = {
 			others: [],
 			startAm: voyageData.max_hp,
@@ -47,11 +57,11 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		}
 
 		const worker = new ChewableWorker();
-		worker.addEventListener('message', message => {
-			this.setState({ estimate: message.data });
-		});
-
+		worker.addEventListener('message', message => this.setState({ estimate: message.data }));
 		worker.postMessage(this.config);
+
+		let allShips = await (await fetch('/structured/ship_schematics.json')).json();
+		this.setState({ship: allShips.find(s => s.ship.symbol == ship.symbol).ship});
 	}
 
 	_formatTime(time: number) {
@@ -60,7 +70,66 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		return hours+"h " +minutes+"m";
 	}
 
-	_renderEstimate(topMsg: string, needsRevive: boolean = false) {
+	_renderCrew() {
+		const {voyageData} = this.props;
+		const { ship } = this.state;
+
+		return (
+			<div>
+			  {ship && `Ship: ${ship.name} (${voyageData.max_hp} Antimatter)`}
+				<Grid columns={isMobile ? 1 : 2}>
+					<Grid.Column>
+						<ul>
+							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
+								let crew = Object.values(voyageData.crew_slots).find(slot => slot.name == entry).crew;
+
+								if (!crew.imageUrlPortrait)
+									crew.imageUrlPortrait =
+										`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+
+								return (
+									<li key={idx}>
+										{entry}
+										{'  :  '}
+										<CrewPopup crew={crew} />
+										</li>
+									);
+								})}
+							</ul>
+						</Grid.Column>
+						<Grid.Column verticalAlign="middle">
+							<ul>
+								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
+									const agg = voyageData.skill_aggregates[entry];
+									const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
+
+									return (
+										<li key={idx}>
+											{CONFIG.SKILLS[entry]}
+											{' : '}
+											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
+												<Popup.Content>
+													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
+												</Popup.Content>
+											</Popup>
+										</li>
+									);
+								})}
+							</ul>
+						</Grid.Column>
+					</Grid>
+				</div>
+			);
+	}
+
+	_renderEstimateTitle(needsRevive: boolean = false) {
+		const { estimate } = this.state;
+		return needsRevive || !estimate
+			?	'Estimate'
+			: 'Estimate: ' + this._formatTime(estimate['refills'][0].result);
+	}
+
+	_renderEstimate(needsRevive: boolean = false) {
 		let { estimate } = this.state;
 
 		if (!estimate)
@@ -71,37 +140,66 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			return (
 				<tr>
 					<td>{label}: {this._formatTime(est.result)}</td>
-					<td>90%: {this._formatTime(est.safeResult)}</td>
+					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
 					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
 					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
 				</tr>
 			);
 		};
+
 		var refill = 0;
 
 		return (
 			<div>
-				<h3>{topMsg}</h3>
-				<Table>
+				<Table><tbody>
 					{!needsRevive && renderEst("Estimate", refill++)}
 					{renderEst("1 Refill", refill++)}
 					{renderEst("2 Refills", refill++)}
-				</Table>
+				</tbody></Table>
 				<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
 				<small>Powered by Chewable</small>
 			</div>
 		);
 	}
 
-	_renderRewards() {
-		const pending = this.props.voyageData.pending_rewards != [];
-		const rewards = pending
-			? this.props.voyageData.pending_rewards
-			: this.props.voyageData.granted_rewards;
-		const topMsg = pending
-		 	? 'The expected rewards are'
-			: 'The rewards to collect are';
+	_renderRewardsTitle(rewards) {
+		const { voyageData } = this.props;
+		const crewGained = rewards.filter(r => r.type === 1);
+		const bestRarity = crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
+		const bestCrewCount = crewGained
+			.filter(c => c.rarity == bestRarity)
+			.map(c => c.quantity)
+			.reduce((acc, c) => acc + c, 0);
+		const chronReward = rewards.filter(r => r.symbol === 'energy');
+		const chrons = chronReward.length == 0 ? 0 : chronReward[0].quantity;
+
+		return (
+			<span>
+				{`Rewards: ${bestCrewCount} ${bestRarity}*, `}
+				{`${chrons} `}
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
+					style={{width : '16px', verticalAlign: 'text-bottom'}}
+				/>
+			</span>
+		)
+	}
+
+	_renderRewards(rewards) {
+		rewards = rewards.sort((a, b) => {
+			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
+				return a.full_name.localeCompare(b.full_name);
+			else if (a.type == b.type && a.item_type === b.item_type)
+				return b.rarity - a.rarity;
+			else if (a.type == b.type)
+				return b.item_type - a.item_type;
+			else if (a.type == 2)
+				return 1;
+			else if (b.type == 2)
+				return -1;
+			return a.type - b.type;
+		});
 		const hideRarity = entry => entry.type == 3;
 		const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
 		const assetURL = file => {
@@ -116,9 +214,8 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 		return (
 			<div>
-				<h4>{topMsg}</h4>
-				<Grid columns={5} centered padded>
-					{rewards.loot.map((entry, idx) => (
+				<Grid columns={isMobile ? 2 : 5} centered padded>
+					{rewards.map((entry, idx) => (
 						<Grid.Column key={idx}>
 								<Header
 									style={{ display: 'flex' }}
@@ -143,15 +240,43 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 	render() {
 		const { voyageData } = this.props;
+		const { activePanels } = this.state;
 		const voyState = voyageData.state;
+		const rewards = voyageData.pending_rewards
+			? voyageData.pending_rewards.loot
+			: voyageData.granted_rewards.loot;
+		const flipItem = (items, item) => items.includes(item)
+			? items.filter(i => i != item)
+			: items.concat(item);
+		const handleClick = (e, {index}) =>
+			this.setState({
+				activePanels: flipItem(activePanels, index)
+			});
+		const accordionPanel = (title, content, key, ctitle = false) => {
+			const collapsedTitle = ctitle ? ctitle : title;
+			const isActive = activePanels.includes(key);
+			return (
+				<Accordion.Panel
+					active={isActive}
+					index={key}
+					onTitleClick={handleClick}
+					title={isActive ? {icon: 'caret down', content: title} : {icon: 'caret right', content: collapsedTitle}}
+					content={{content: <Segment>{content}</Segment>}}/>
+			);
+		};
 
 		return (
-			<div>
-				{voyState === 'started' && this._renderEstimate('You have a voyage started.')}
-				{voyState === 'failed' && this._renderEstimate('Your voyage needs reviving', true)}
-				<br/>
-				{this._renderRewards(voyageData)}
-			</div>
+			<Accordion fluid exclusive={false}>
+				{ accordionPanel('Crew', this._renderCrew(), 'crew') }
+				{
+					(voyState === 'started' || voyState === 'pending' || voyState === 'failed') &&
+				 	accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
+				}
+				{
+					voyState !== 'pending' &&
+					accordionPanel('Rewards', this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
+				}
+			</Accordion>
 		);
 	}
 }
