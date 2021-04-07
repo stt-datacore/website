@@ -10,6 +10,8 @@ import { formatTierLabel } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 
+import { crewMatchesSearchFilter } from '../utils/crewsearch';
+
 type IndexPageProps = {};
 
 type IndexPageState = {
