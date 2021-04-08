@@ -429,9 +429,9 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 		try {
 			let playerData = JSON.parse(this.state.fullInput as string);
 
-			if (playerData && playerData[0] && playerData[0].player && playerData[0].player.display_name) {
-				if (playerData[0].player.character && playerData[0].player.character.crew && (playerData[0].player.character.crew.length > 0)) {
-					this.setState({ inputPlayerData: playerData[0], errorMessage: undefined });
+			if (playerData && playerData.player && playerData.player.display_name) {
+				if (playerData.player.character && playerData.player.character.crew && (playerData.player.character.crew.length > 0)) {
+					this.setState({ inputPlayerData: playerData, errorMessage: undefined });
 				} else {
 					this.setState({ errorMessage: 'Failed to parse player data from the text you pasted. Make sure you are logged in with the correct account.' });
 				}
