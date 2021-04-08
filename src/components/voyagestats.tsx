@@ -173,13 +173,19 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			.reduce((acc, c) => acc + c, 0);
 		const chronReward = rewards.filter(r => r.symbol === 'energy');
 		const chrons = chronReward.length == 0 ? 0 : chronReward[0].quantity;
-
+		const honorReward = rewards.filter(r => r.symbol === 'honor');
+		const honor = honorReward.length == 0 ? 0 : honorReward[0].quantity;
 		return (
 			<span>
-				{`Rewards: ${bestCrewCount} ${bestRarity}*, `}
-				{`${chrons} `}
+				{`Rewards: ${bestCrewCount} ${bestRarity}* `}&nbsp;
+				{` ${chrons} `}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
+					style={{width : '16px', verticalAlign: 'text-bottom'}}
+				/>&nbsp;&nbsp;
+				{` ${honor} `}
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
 			</span>
@@ -267,7 +273,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 		return (
 			<Accordion fluid exclusive={false}>
-				{ accordionPanel('Crew', this._renderCrew(), 'crew') }
+				{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
 				{
 					(voyState === 'started' || voyState === 'pending' || voyState === 'failed') &&
 				 	accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
