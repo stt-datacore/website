@@ -134,7 +134,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		let { estimate } = this.state;
 
 		if (!estimate)
-			return (null);
+			return (<div>Calculating estimate. Please wait...</div>);
 
 		const renderEst = (label, refills) => {
 			const est = estimate['refills'][refills];
@@ -167,7 +167,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 	_renderRewardsTitle(rewards) {
 		const { voyageData } = this.props;
 		const crewGained = rewards.filter(r => r.type === 1);
-		const bestRarity = crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
+		const bestRarity = crewGained.length == 0 ? 0 : crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
 		const bestCrewCount = crewGained
 			.filter(c => c.rarity == bestRarity)
 			.map(c => c.quantity)
