@@ -139,6 +139,7 @@ export function stripPlayerData(items: any[], p: any): any {
 	}));
 
 	p.player.character.ships = p.player.character.ships.map(ship => ({
+		id: ship.id,
 		level: ship.level,
 		symbol: ship.symbol,
 		antimatter: ship.antimatter,

@@ -3,6 +3,7 @@ import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Check
 import * as localForage from 'localforage';
 
 import ItemDisplay from '../components/itemdisplay';
+import { VoyageStats } from '../components/voyagestats';
 import {
 	ICalcResult,
 	calculateVoyage,
@@ -43,6 +44,7 @@ type VoyageCalculatorState = {
 	searchDepth: number;
 	extendsTarget: number;
 	telemetryOptOut: boolean;
+	showCalculator: boolean
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -62,6 +64,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			searchDepth: 6,
 			extendsTarget: 0,
 			telemetryOptOut: false,
+			showCalculator: false,
 		};
 	}
 
@@ -173,15 +176,33 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		this.setState({ telemetryOptOut: value });
 	}
 
+	_renderCurrentVoyage(data) {
+		return (
+			<div>
+				<VoyageStats
+					voyageData={data}
+					ships={this.props.playerData.player.character.ships}
+					showPanels={['estimate']}
+				/>
+				<br/>
+				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
+			</div>
+		);
+	}
+
 	render() {
 		const { playerData, voyageData } = this.props;
-		const { bestShip, crew } = this.state;
+		const { showCalculator, bestShip, crew } = this.state;
+
+		if (!showCalculator && voyageData.voyage.length > 0)
+			return (this._renderCurrentVoyage(voyageData.voyage[0]));
 
 		if (!bestShip)
 			return (<></>);
 
-		let curVoy = '';
 		let currentVoyage = false;
+		let curVoy = '';
+
 		if (voyageData.voyage_descriptions && voyageData.voyage_descriptions.length > 0) {
 			curVoy = `${CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.primary_skill]} primary / ${
 				CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.secondary_skill]
@@ -198,7 +219,11 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		return (
 			<div style={{ margin: '5px' }}>
-				{currentVoyage && <p>It looks like you already have a voyage started!</p>}
+				{currentVoyage &&
+					<p>
+						It looks like you already have a voyage started!
+					</p>
+				}
 				<Message attached>
 					VOYAGE CALCULATOR! Configure the settings below, then click on the "Calculate" button to see the recommendations. Current voyage
 					is <b>{curVoy}</b>.
