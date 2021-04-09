@@ -1,7 +1,7 @@
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 import CONFIG from '../components/CONFIG';
 
-import ComputeWorker from 'worker-loader!../wasm/wasmWorker';
+import ComputeWorker from 'worker-loader!../workers/unifiedWorker';
 
 export interface IBuffStat {
 	multiplier: number;
@@ -55,7 +55,7 @@ export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
-		
+
 		if (skill && skill.core && (skill.core > 0)) {
 			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
 		}
