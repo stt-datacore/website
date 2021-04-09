@@ -92,10 +92,6 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 						use: { loader: 'worker-loader' }
 					},
 					{
-						test: /chewableWorker\.js$/,
-						use: { loader: 'worker-loader' }
-					},
-					{
 						test: /exceljs/,
 						use: loaders.null()
 					}
