@@ -9,14 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build project
-        env:
-          GATSBY_DATACORE_URL: https://datacore.app/
-          GATSBY_ASSETS_URL: https://assets.datacore.app/
-        run: |
-          npm install
-          npm run build
-
       - name: Run Cypress tests
         env:
           GATSBY_DATACORE_URL: https://datacore.app/
@@ -24,3 +16,5 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: npm run develop
+          wait-on: 'http://localhost:8881/'
+          wait-on-timeout: 240
