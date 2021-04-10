@@ -88,7 +88,7 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 			module: {
 				rules: [
 					{
-						test: /wasmWorker\.js$/,
+						test: /unifiedWorker\.js$/,
 						use: { loader: 'worker-loader' }
 					},
 					{
