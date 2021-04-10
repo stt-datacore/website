@@ -1,0 +1,33 @@
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  snapshot_test:
+    name: Snapshot Test
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '.pages.dev') }}
+    steps:
+      - uses: actions-ecosystem/action-regex-match@v2
+        name: extract CloudFlare preview URL
+        id: regex-match
+        with:
+          text: ${{ github.event.comment.body }}
+          regex: '(https.*?\.pages\.dev)'
+      - name: debug
+        run:   echo "$REGEX"
+        env:
+          REGEX: ${{ toJson(steps.regex-match.outputs) }}
+      - name: install puppeteer-headful
+        uses: mujo-code/puppeteer-headful@master
+        env:
+          CI: 'true'
+      - name: take screenshot of preview site
+        uses: flameddd/screenshots-ci-action@v1.1.1
+        with:
+          url: ${{ steps.regex-match.outputs.match }}
+      - name: upload screenshots
+        uses: actions/upload-artifact@v2
+        with:
+          path: screenshots
+          name: screenshots
