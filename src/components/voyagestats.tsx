@@ -82,7 +82,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 					<Grid.Column>
 						<ul>
 							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
-								let crew = Object.values(voyageData.crew_slots).find(slot => slot.name == entry).crew;
+								let { crew, name }  = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry);
 
 								if (!crew.imageUrlPortrait)
 									crew.imageUrlPortrait =
@@ -90,7 +90,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 								return (
 									<li key={idx}>
-										{entry}
+										{name}
 										{'  :  '}
 										<CrewPopup crew={crew} />
 										</li>
