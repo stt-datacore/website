@@ -82,7 +82,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 					<Grid.Column>
 						<ul>
 							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
-								let crew = Object.values(voyageData.crew_slots).find(slot => slot.name == entry).crew;
+								let crew = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry).crew;
 
 								if (!crew.imageUrlPortrait)
 									crew.imageUrlPortrait =

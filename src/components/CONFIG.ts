@@ -112,18 +112,18 @@ export default class CONFIG {
 	};
 
 	static readonly VOYAGE_CREW_SLOTS = [
-		"First Officer",
-		"Helm Officer",
-		"Communications Officer",
-		"Diplomat",
-		"Chief Security Officer",
-		"Tactical Officer",
-		"Chief Engineer",
-		"Engineer",
-		"Chief Science Officer",
-		"Deputy Science Officer",
-		"Chief Medical Officer",
-		"Ship's Counselor"
+		"captain_slot",
+		"first_officer",
+		"chief_communications_officer",
+		"communications_officer",
+		"chief_security_officer",
+		"security_officer",
+		"chief_engineering_officer",
+		"engineering_officer",
+		"chief_science_officer",
+		"science_officer",
+		"chief_medical_officer",
+		"medical_officer"
 	]
 
 	static readonly CITATION_COST = [500, 500, 500, 4500, 18000, 50000];
