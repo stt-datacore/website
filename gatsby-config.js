@@ -11,8 +11,17 @@ module.exports = {
 		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
+		`gatsby-plugin-remove-fingerprints`,
 		`gatsby-plugin-sitemap`,
 		`gatsby-plugin-typescript`,
+		{
+			resolve: 'gatsby-plugin-purge-cloudflare-cache',
+			options: {
+				token: process.env.CLOUDFLARE_TOKEN,
+				zoneId: process.env.CLOUDFLARE_ZONE_ID,
+				condition: (api, options) => process.env.GITHUB_REF === 'refs/heads/master',
+			}
+		},
 		{
 			resolve: 'gatsby-source-filesystem',
 			options: {
