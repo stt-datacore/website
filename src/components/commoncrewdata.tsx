@@ -295,13 +295,13 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage combo ranks</Header>
+					<Header as="h5">Voyage pair ranks</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{v}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Gauntlet combo ranks</Header>
+					<Header as="h5">Gauntlet pair ranks</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
 					</Statistic.Group>
