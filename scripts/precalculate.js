@@ -19,7 +19,6 @@ const SKILLS = {
 	medicine_skill: 'MED'
 };
 
-const THIRD_SKILL_MULTIPLIER = 0.25;
 const RNGESUS = 1.8; // Used for chron cost calculation
 
 function demandsPerSlot(es, items, dupeChecker, demands) {
@@ -286,7 +285,7 @@ function main() {
 					}
 				}
 
-				return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
+				return Math.ceil(vTotal);
 			}, `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
 
 			calcRank(crew => {
