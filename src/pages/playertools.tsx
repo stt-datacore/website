@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Modal } from 'semantic-ui-react';
+import { Container, Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -29,10 +29,20 @@ const PlayerToolsPage = () => {
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('toolsPlayerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('toolsVoyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('toolsEventData', undefined);
+
 	const [activeIndex, setActiveIndex] = useStateWithStorage('toolsActiveIndex', 0);
+	const [showIfStale, setShowIfStale] = useStateWithStorage('toolsShowStale', true);
+
 	const [showShare, setShowShare] = useStateWithStorage('toolsShowShare', true, { rememberForever: true });
+	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage('toolsProfileAutoUpdate', false, { rememberForever: true });
+	const [profileUploaded, setProfileUploaded] = React.useState(false);
+	const [profileUploading, setProfileUploading] = React.useState(false);
 
 	const [showForm, setShowForm] = React.useState(false);
+
+	React.useEffect(() => {
+		if (profileAutoUpdate) shareProfile();
+	}, [strippedPlayerData]);
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -102,14 +112,15 @@ const PlayerToolsPage = () => {
 		];
 
 		const StaleMessage = () => {
-			const STALETHRESHOLD = 1;	// in hours
-			if (new Date().getTime()-playerData.calc.lastModified.getTime() > STALETHRESHOLD*60*60*1000) {
+			const STALETHRESHOLD = 3;	// in hours
+			if (showIfStale && new Date().getTime()-playerData.calc.lastModified.getTime() > STALETHRESHOLD*60*60*1000) {
 				return (
 					<Message
 						warning
 						icon='clock'
 						header='Update your player data'
 						content="It's been a few hours since you last updated your player data. We recommend that you update now to make sure our tools are providing you recent information about your crew."
+						onDismiss={() => setShowIfStale(false)}
 					/>
 				);
 			}
@@ -118,11 +129,64 @@ const PlayerToolsPage = () => {
 			}
 		};
 
+		const ShareMessage = () => {
+			if (!showShare) return (<></>);
+			// The option to auto-share profile only appears immediately after clicking the share button
+			//	or if the user has previously set the checkbox option to true
+			const bShowAutoOption = profileUploaded || profileAutoUpdate;
+			return (
+				<Message icon onDismiss={() => setShowShare(false)}>
+					<Icon name='share alternate' />
+					<Message.Content>
+						<Message.Header>Share your player profile!</Message.Header>
+						{!profileUploaded && (
+							<p>
+								Click here to{' '}
+								<Button size='small' color='green' onClick={() => shareProfile()}>
+									{profileUploading && <Icon loading name='spinner' />}share your profile
+									</Button>{' '}
+									and unlock more tools and export options for items and ships. More details:
+							</p>
+						)}
+						{!profileUploaded && (
+							<Message.List>
+								<Message.Item>
+									Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
+									</Message.Item>
+								<Message.Item>
+									There is no private information included in the player profile; information being shared is limited to:{' '}
+									<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
+								</Message.Item>
+							</Message.List>
+						)}
+						{profileUploaded && (
+							<p>
+								Your profile was uploaded. Share the link:{' '}
+								<a
+									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
+									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
+							</p>
+						)}
+						{bShowAutoOption && (
+							<Form.Field
+								control={Checkbox}
+								label='Automatically share profile after every import'
+								checked={profileAutoUpdate}
+								onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
+								style={{ marginTop: '1em' }}
+							/>
+						)}
+					</Message.Content>
+				</Message>
+			);
+		};
+
 		return (
 			<Layout title='Player tools'>
 				<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
 
 				<StaleMessage />
+
 				<Menu compact stackable>
 					<Menu.Item>
 						Last imported: {playerData.calc.lastModified.toLocaleString()}
@@ -137,7 +201,7 @@ const PlayerToolsPage = () => {
 					<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
 				</Menu>
 
-				{showShare && (<PlayerToolsShare playerData={playerData} strippedPlayerData={strippedPlayerData} setShowShare={setShowShare} />)}
+				<ShareMessage />
 
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }}
 					activeIndex={activeIndex} onTabChange={handleTabChange} />
@@ -214,6 +278,8 @@ const PlayerToolsPage = () => {
 		let preparedProfileData = {...strippedData};
 		prepareProfileData(allCrew, preparedProfileData, dtImported);
 		setPlayerData(preparedProfileData);
+
+		setShowIfStale(true);
 	}
 
 	function prepareProfileDataFromSession() {
@@ -232,56 +298,6 @@ const PlayerToolsPage = () => {
 		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
-}
-
-type PlayerToolsShareProps = {
-	playerData: any;
-	strippedPlayerData: any;
-	setShowShare: fn;
-};
-
-const PlayerToolsShare = (props: PlayerToolsShareProps) => {
-	const { playerData, strippedPlayerData, setShowShare } = props;
-
-	const [profileUploaded, setProfileUploaded] = React.useState(false);
-	const [profileUploading, setProfileUploading] = React.useState(false);
-
-	return (
-		<Message icon onDismiss={handleDismiss}>
-			<Icon name='bell' />
-			<Message.Content>
-				<Message.Header>Share your player profile!</Message.Header>
-				{!profileUploaded && (
-					<p>
-						Click here to{' '}
-						<Button size='small' color='green' onClick={() => shareProfile()}>
-							{profileUploading && <Icon loading name='spinner' />}share your profile
-							</Button>{' '}
-							and unlock more tools and export options for items and ships. More details:
-					</p>
-				)}
-				{!profileUploaded && (
-					<Message.List>
-						<Message.Item>
-							Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
-							</Message.Item>
-						<Message.Item>
-							There is no private information included in the player profile; information being shared is limited to:{' '}
-							<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
-						</Message.Item>
-					</Message.List>
-				)}
-				{profileUploaded && (
-					<p>
-						Your profile was uploaded. Share the link:{' '}
-						<a
-							href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
-							target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
-					</p>
-				)}
-			</Message.Content>
-		</Message>
-	);
 
 	function shareProfile() {
 		setProfileUploading(true);
@@ -298,16 +314,12 @@ const PlayerToolsShare = (props: PlayerToolsShareProps) => {
 			},
 			body: jsonBody
 		}).then(() => {
-			window.open(`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`, '_blank');
+			if (!profileAutoUpdate) window.open(`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`, '_blank');
 			setProfileUploading(false);
 			setProfileUploaded(true);
 		});
 	}
-
-	function handleDismiss() {
-		setShowShare(false);
-	}
-};
+}
 
 type PlayerToolsFormProps = {
 	setValidInput: fn;
