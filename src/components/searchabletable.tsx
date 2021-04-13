@@ -3,7 +3,7 @@ import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semanti
 
 import * as SearchString from 'search-string';
 import * as localForage from 'localforage';
-import { CrewSearchBar } from '../components/searchbar';
+import { CrewSearchBar } from './crewsearchbar';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -34,13 +34,13 @@ type SearchableTableState = {
 	data: any[];
 	pagination_rows: number;
 	pagination_page: number;
-    searchBar: CrewSearchBar;
+  searchBar: CrewSearchBar;
 };
 
 export class SearchableTable extends Component<SearchableTableProps, SearchableTableState> {
 	constructor(props) {
 		super(props);
-		
+
 		this.state = {
 			column: null,
 			direction: null,
@@ -126,15 +126,16 @@ export class SearchableTable extends Component<SearchableTableProps, SearchableT
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+		var onChangeFilter = this._onChangeFilter.bind(this);
 		return (
 			<div>
-                <CrewSearchBar 
-                            data= {props.data} 
+                <CrewSearchBar
+                            data= {props.data}
                             explanation = { props.explanation }
                             searchExt = { props.searchExt }
-                            onChange = {this._onChangeFilter}
+                            onChange = {onChangeFilter}
                         />
-				
+
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{this.renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map(row => this.props.renderTableRow(row))}</Table.Body>
