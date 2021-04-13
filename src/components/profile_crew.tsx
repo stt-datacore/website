@@ -13,12 +13,12 @@ import { useStateWithStorage } from '../utils/storage';
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
-	{ width: 1, column: 'command_skill', title: 'Command' },
-	{ width: 1, column: 'science_skill', title: 'Science' },
-	{ width: 1, column: 'security_skill', title: 'Security' },
-	{ width: 1, column: 'engineering_skill', title: 'Engineering' },
-	{ width: 1, column: 'diplomacy_skill', title: 'Diplomacy' },
-	{ width: 1, column: 'medicine_skill', title: 'Medicine' }
+	{ width: 1, column: 'command_skill.core', title: 'Command' },
+	{ width: 1, column: 'science_skill.core', title: 'Science' },
+	{ width: 1, column: 'security_skill.core', title: 'Security' },
+	{ width: 1, column: 'engineering_skill.core', title: 'Engineering' },
+	{ width: 1, column: 'diplomacy_skill.core', title: 'Diplomacy' },
+	{ width: 1, column: 'medicine_skill.core', title: 'Medicine' }
 ];
 
 type ProfileCrewProps = {
@@ -32,18 +32,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	const [showFrozen, setShowFrozen] = useStateWithStorage('showFrozen', true);
 	const [findDupes, setFindDupes] = useStateWithStorage('findDupes', false);
 
-	const data = initCrewData();
-
-	function initCrewData(): [] {
-		let crew = [...props.playerData.player.character.crew];
-		// Add dummy fields for sorting to work
-		crew.forEach(crew => {
-			CONFIG.SKILLS_SHORT.forEach(skill => {
-				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
-			});
-		});
-		return crew;
-	}
+	const data = [...props.playerData.player.character.crew];
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
 		if (!showFrozen && crew.immortal > 0) {
