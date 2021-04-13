@@ -530,12 +530,23 @@
 	{
 		"name": "In Plain Sight",
 		"type": "Galaxy",
-		"dates": "Thursday 04/08 until Monday 04/012 at Noon (16.00 UTC)",
+		"dates": "Thursday 04/08 until Monday 04/12 at Noon (16.00 UTC)",
 		"startDate": "2021-04-08T16:00:00Z",
 		"endDate": "2021-04-12T16:00:00Z",
 		"highbonus": ["dsc_saru_human_crew", "dsc_culber_bajoran_crew", "torres_klingon_crew", "darvin_waddle_crew"],
 		"smallbonus": {
 			"traits": ["saru","culber","torres","Costumed"]
+		}
+	},
+	{
+		"name": "A Pied Piper",
+		"type": "Skirmish",
+		"dates": "Thursday 04/15 until Monday 04/19 at Noon (16.00 UTC)",
+		"startDate": "2021-04-15T16:00:00Z",
+		"endDate": "2021-04-19T16:00:00Z",
+		"highbonus": ["dsc_adira_xahean_crew", "dsc_burnham_trill_crew", "sisko_jodmos_crew", "darvin_waddle_crew"],
+		"smallbonus": {
+			"traits": ["adira","burnham","sisko","Costumed"]
 		}
 	}
 ]
