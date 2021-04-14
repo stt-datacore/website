@@ -1,6 +1,23 @@
 import React, { PureComponent } from 'react';
 import { Table, Image } from 'semantic-ui-react'
 
+const factionImageLocations = [
+  'federation',
+  'klingon',
+  'bajoran',
+  'cardassian',
+  'maquis',
+  'ferengialliance',
+  'ferengitraditionalist',
+  'augments',
+  'romulan',
+  'terran',
+  'klingoncardassian',
+  'section31',
+  'hirogen',
+  'dominion',
+  'borg'
+];
 type ShuttleInfoProps =  {
   factionInfo: object
 };
@@ -40,15 +57,15 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
         </Table.Row>
         </Table.Header>
         <Table.Body>
-        {factionInfo.map(faction => {
+        {factionInfo.map((faction, index) => {
           let shuttlesNeededToMaxRep = Math.ceil((1000 - faction.reputation)/10);
           let hoursNeededToMaxRep = Math.ceil(shuttlesNeededToMaxRep/shuttleBays)*3;
           let shuttlesNeededToTank = Math.ceil(faction.completed_shuttle_adventures/1.58);
           let hoursNeededToTank = Math.ceil(shuttlesNeededToTank/shuttleBays)*3;
-          console.log(faction);
+
           return (
             <Table.Row>
-              <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}${faction.imageUrl}`} />{faction.name}</span></Table.Cell>
+              <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[index]}.png`} />{faction.name}</span></Table.Cell>
               <Table.Cell>{this._reputations(faction.reputation)}</Table.Cell>
               <Table.Cell>
                 {faction.reputation < 1000 && <p>You need {shuttlesNeededToMaxRep} successful shuttle missions to achieve honored status.</p>}
