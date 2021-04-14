@@ -8,6 +8,7 @@ import ProfileShips from '../components/profile_ships';
 import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
+import FactionInfo from '../components/factions';
 
 import VoyageCalculator from '../components/voyagecalculator_iap';
 import CrewRetrieval from '../components/crewretrieval';
@@ -186,6 +187,13 @@ class PlayerToolsPage extends Component<PlayerToolsPageProps, PlayerToolsPageSta
 			{
 				menuItem: 'Ships',
 				render: () => <ProfileShips playerData={playerData} />
+			},
+			{
+				menuItem: 'Factions',
+				render: () => <FactionInfo
+												factionInfo={playerData.player.character.factions}
+												shuttleBays={playerData.player.character.shuttle_bays}
+											/>
 			},
 			{
 				menuItem: 'Items',

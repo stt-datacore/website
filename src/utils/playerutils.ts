@@ -135,7 +135,8 @@ export function stripPlayerData(items: any[], p: any): any {
 		name: faction.name,
 		id: faction.id,
 		completed_shuttle_adventures: faction.completed_shuttle_adventures,
-		reputation: faction.reputation
+		reputation: faction.reputation,
+		imageUrl: faction.icon.file.substr(1).replace('/', '_') + '.png'
 	}));
 
 	p.player.character.ships = p.player.character.ships.map(ship => ({
