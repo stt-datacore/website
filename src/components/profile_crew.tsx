@@ -29,8 +29,9 @@ type ProfileCrewProps = {
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const { isTools } = props;
 
-	const [showFrozen, setShowFrozen] = useStateWithStorage('showFrozen', true);
-	const [findDupes, setFindDupes] = useStateWithStorage('findDupes', false);
+	const pageId = isTools ? 'tools' : 'profile';
+	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/crew/showFrozen', true);
+	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/crew/findDupes', false);
 
 	const data = [...props.playerData.player.character.crew];
 

@@ -76,9 +76,6 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 		const data = this.state.data;
 		data.forEach((crew) => {
-			if (crew.symbol == 'martia_crew') {
-				console.log(crew);
-			}
 			Object.keys(crew).forEach((p) => {
 				if(p.substr(-6) === '_skill') {
 					crew[p].proficiency = crew[p].max - crew[p].min;
