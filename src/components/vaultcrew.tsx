@@ -11,6 +11,7 @@ type VaultCrewProps = {
 	size: number;
 	style?: React.CSSProperties;
 	crew: any;
+	itemsReady: boolean;
 };
 
 function formatCrewStats(crew: any): JSX.Element {
@@ -42,7 +43,7 @@ function formatCrewStats(crew: any): JSX.Element {
 
 class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
-		const { crew } = this.props;
+		const { crew, itemsReady } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
@@ -139,11 +140,14 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			display: 'flex'
 		};
 
-		let startlevel = crew.level === 100 ? 36 : Math.ceil(crew.level / 10) * 4;
+		// Dec levels can be either end of one equip range or start of the next (e.g. lvl 20 is 10-20 or 20-30)
+		//	Assume at the start of next range unless has multiple equips
+		let startlevel = Math.floor(crew.level / 10) * 4;
+		if (crew.level % 10 == 0 && crew.equipment.length > 1) startlevel = startlevel - 4;
 		let eqimgs = [];
-		if (!crew.equipment_slots[startlevel]) {
-			console.error(`Missing equipment slots information for crew '${crew.name}'`);
-			console.log(crew);
+		if (!crew.equipment_slots[startlevel] || !itemsReady) {
+			//console.error(`Missing equipment slots information for crew '${crew.name}'`);
+			//console.log(crew);
 			eqimgs = [
 				'items_equipment_box02_icon.png',
 				'items_equipment_box02_icon.png',
