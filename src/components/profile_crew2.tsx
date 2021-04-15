@@ -36,6 +36,7 @@ type ProfileCrewMobileState = {
 	excludeFF: boolean;
 	onlyEvent: boolean;
 	sortKind: SkillSort;
+	itemsReady: boolean;
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
@@ -52,11 +53,13 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			includeFrozen: false,
 			excludeFF: false,
 			onlyEvent: false,
-			sortKind: SkillSort.Base
+			sortKind: SkillSort.Base,
+			itemsReady: false
 		};
 	}
 
 	componentDidMount() {
+		let self = this;
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
@@ -68,6 +71,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}
 					});
 				});
+				this.setState({ itemsReady: true });
 			});
 
 		const data = this.state.data;
@@ -118,7 +122,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 				direction: 'ascending'
 			};
 		}
-		
+
 		if(config.activeItem) {
 			newActiveItem = activeItem === config.activeItem ? defaultColumn : config.activeItem;
 			newColumn = newActiveItem;
@@ -132,7 +136,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			newColumn = column === config.column ? defaultColumn : config.column;
 			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
-		
+
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
 		this.setState({
 			activeItem: newActiveItem || activeItem,
@@ -186,7 +190,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		let { data } = this.state;
+		let { data, itemsReady } = this.state;
 
 		const { isMobile } = this.props;
 
@@ -304,7 +308,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}}
 					>
 						{data.map((crew, idx) => (
-							<VaultCrew key={idx} crew={crew} size={zoomFactor} />
+							<VaultCrew key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
 						))}
 					</div>
 				</Segment>
