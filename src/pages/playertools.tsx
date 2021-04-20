@@ -11,6 +11,7 @@ import ProfileCharts from '../components/profile_charts';
 
 import VoyageCalculator from '../components/voyagecalculator_iap';
 import CrewRetrieval from '../components/crewretrieval';
+import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
@@ -206,6 +207,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		{
 			menuItem: 'Ships',
 			render: () => <ProfileShips playerData={playerData} />
+		},
+		{
+			menuItem: 'Factions',
+			render: () => <FactionInfo
+								factionInfo={playerData.player.character.factions}
+								shuttleBays={playerData.player.character.shuttle_bays}
+							/>
 		},
 		{
 			menuItem: 'Items',
