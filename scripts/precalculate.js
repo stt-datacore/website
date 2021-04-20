@@ -117,13 +117,20 @@ function calculateCrewDemands(crew, items) {
 	};
 }
 
-function calcRank(scoring, field) {
+function calcRank(scoring, field, alias = false) {
 	crewlist
 		.map(crew => ({ crew, score: scoring(crew) }))
 		.sort((a, b) => b.score - a.score)
 		.forEach((entry, idx) => {
 			if (entry.score && entry.score > 0) {
-				entry.crew.ranks[field] = idx + 1;
+				if (alias) {
+					entry.crew.ranks[alias] = {
+						name: field,
+						rank: idx + 1
+					};
+				} else {
+					entry.crew.ranks[field] = idx + 1;
+				}
 			}
 		});
 }
@@ -305,6 +312,21 @@ function main() {
 
 				return Math.ceil(gTotal);
 			}, `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
+
+			for (let k = j + 1; k < skillNames.length; k++) {
+				calcRank(crew => {
+					let vtTotal = 0;
+					for (let skill in SKILLS) {
+						if (crew.base_skills[skill]) {
+							if (crew.base_skills[skillNames[i]] && crew.base_skills[skillNames[j]] && crew.base_skills[skillNames[k]]) {
+								let vtScore = getSkillWithBonus(crew.base_skills, skill, 'core') + (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
+								vtTotal += vtScore;
+							}
+						}
+					}
+					return Math.ceil(vtTotal);
+				}, `${[SKILLS[skillNames[i]], SKILLS[skillNames[j]], SKILLS[skillNames[k]]].sort().join(' / ')}`, 'voyTriplet');
+			}
 		}
 	}
 

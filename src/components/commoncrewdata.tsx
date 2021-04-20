@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Segment, Accordion, Statistic, Grid, Image, Label, Rating } from 'semantic-ui-react';
+import { Header, Segment, Accordion, Statistic, Grid, Image, Label, Rating, StatisticGroup, Divider } from 'semantic-ui-react';
 
 import { graphql, Link } from 'gatsby';
 
@@ -295,7 +295,18 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage pair ranks</Header>
+					<Header as="h5">Voyage skill ranks</Header>
+					{crew.ranks.voyTriplet && (
+						<React.Fragment>
+							<Statistic.Group widths="one" size={'mini'}>
+								<Statistic>
+									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
+									<Statistic.Value>{crew.ranks.voyTriplet.rank}</Statistic.Value>
+								</Statistic>
+							</Statistic.Group>
+							<Divider />
+						</React.Fragment>
+				)}
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{v}
 					</Statistic.Group>
@@ -318,6 +329,10 @@ export const query = graphql`
 		ranks {
 			voyRank
 			gauntletRank
+			voyTriplet {
+				name
+				rank
+			}
 			V_CMD_SCI
 			V_CMD_SEC
 			V_CMD_ENG
