@@ -19,7 +19,7 @@ export function getCoolStats(crew: any, simple: boolean, showMore: boolean = tru
 				}
 			}
 			if (rank === 'voyTriplet') {
-				if (crew.ranks[rank].rank <= 9) {
+				if (crew.ranks[rank] && crew.ranks[rank].rank <= 9) {
 					stats.push(`Voyage #${crew.ranks[rank].rank} ${crew.ranks[rank].name}`);
 				}
 			}
