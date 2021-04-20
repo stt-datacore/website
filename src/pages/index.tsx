@@ -68,7 +68,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<Rating rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (

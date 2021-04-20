@@ -70,7 +70,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<Rating rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
