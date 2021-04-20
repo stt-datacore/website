@@ -35,7 +35,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
     else if (score >= 2000)
       return 'Hostile';
     else
-      return 'Dispised';
+      return 'Despised';
   }
 
   _formatTime(hours) {
@@ -65,7 +65,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
             let hoursNeededToTank = Math.ceil(shuttlesNeededToTank/shuttleBays)*3;
 
             return (
-              <Table.Row>
+              <Table.Row key={index}>
                 <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[index]}.png`} />{faction.name}</span></Table.Cell>
                 <Table.Cell>{this._reputations(faction.reputation)}</Table.Cell>
                 <Table.Cell>

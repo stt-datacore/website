@@ -8,10 +8,10 @@ import ProfileShips from '../components/profile_ships';
 import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
-import FactionInfo from '../components/factions';
 
 import VoyageCalculator from '../components/voyagecalculator_iap';
 import CrewRetrieval from '../components/crewretrieval';
+import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
@@ -209,6 +209,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			render: () => <ProfileShips playerData={playerData} />
 		},
 		{
+			menuItem: 'Factions',
+			render: () => <FactionInfo
+								factionInfo={playerData.player.character.factions}
+								shuttleBays={playerData.player.character.shuttle_bays}
+							/>
+		},
+		{
 			menuItem: 'Items',
 			render: () => <ProfileItems playerData={playerData} />
 		},
@@ -247,52 +254,6 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const ShareMessage = () => {
 		if (!showShare) return (<></>);
 
-	const panes = [
-			{
-				menuItem: 'Voyage Calculator',
-				render: () => <VoyageCalculator playerData={playerData} voyageData={this.state.voyageData} eventData={this.state.eventData} />
-			},
-			{
-				menuItem: 'Crew',
-				render: () => <ProfileCrew playerData={playerData} isTools={true} />
-			},
-			{
-				menuItem: 'Crew (mobile)',
-				render: () => <ProfileCrewMobile playerData={playerData} isMobile={false} />
-			},
-			{
-				menuItem: 'Crew Retrieval',
-				render: () => <CrewRetrieval playerData={playerData} />
-			},
-			{
-				menuItem: 'Ships',
-				render: () => <ProfileShips playerData={playerData} />
-			},
-			{
-				menuItem: 'Factions',
-				render: () => <FactionInfo
-												factionInfo={playerData.player.character.factions}
-												shuttleBays={playerData.player.character.shuttle_bays}
-											/>
-			},
-			{
-				menuItem: 'Items',
-				render: () => <ProfileItems playerData={playerData} />
-			},
-			{
-				menuItem: 'Unneeded Items',
-				render: () => <UnneededItems playerData={playerData} />
-			},
-			{
-				menuItem: 'Other',
-				render: () => <ProfileOther playerData={playerData} />
-			},
-			{
-				menuItem: 'Charts & Stats',
-				render: () => <ProfileCharts playerData={playerData} />
-			}
-		];
-    
 		// The option to auto-share profile only appears after a profile is uploaded or if previously set to auto-update
 		const bShowUploaded = profileUploaded || profileAutoUpdate;
 
