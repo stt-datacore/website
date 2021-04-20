@@ -63,7 +63,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events
+							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events, {crew.collections.length} collections
 						</div>
 					</div>
 				</Table.Cell>
