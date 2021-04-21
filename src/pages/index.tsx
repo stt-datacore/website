@@ -63,12 +63,12 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events
+							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events, {crew.collections.length} collections
 						</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<Rating rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (

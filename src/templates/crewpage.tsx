@@ -129,7 +129,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					<Grid.Row stretched>
 						<Grid.Column width={16}>
 							<Header>
-								{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={5} icon='star' size='large' disabled />
+								{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
 							</Header>
 						</Grid.Column>
 					</Grid.Row>

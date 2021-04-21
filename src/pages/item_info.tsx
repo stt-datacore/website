@@ -133,7 +133,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 				</Message>
 				<Header as="h3">
 					{item_data.item.name}{' '}
-					<Rating rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />
+					<Rating icon='star' rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />
 				</Header>
 				<Image size="small" src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`} />
 

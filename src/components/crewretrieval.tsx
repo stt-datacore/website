@@ -460,7 +460,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 									</div>
 								</Table.Cell>
 								<Table.Cell>
-									<Rating rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
+									<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
 								</Table.Cell>
 								<Table.Cell textAlign="center">
 									<b>{formatTierLabel(crew.bigbook_tier)}</b>
