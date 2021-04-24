@@ -69,7 +69,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	if (verticalLayout) {
 		items.push(
 			<Menu.Item>
-				<Menu.Header key={index++}>Big book</Menu.Header>
+				<Menu.Header key={index++}>Big book (legacy)</Menu.Header>
 				<Menu.Menu>
 					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>
 						Image list (fast)
@@ -85,7 +85,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		);
 	} else {
 		items.push(
-			<Dropdown key={index++} item simple text='Big book'>
+			<Dropdown key={index++} item simple text='Big book (legacy)'>
 				<Dropdown.Menu>
 					<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
 					<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>

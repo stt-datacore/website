@@ -34,7 +34,7 @@ function formatCrewStats(crew: any): JSX.Element {
 	}
 	return (
 		<div>
-			<h4>Tier {formatTierLabel(crew.bigbook_tier)}</h4>
+			<h4>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy)</h4>
 			{skills}
 			<Link to={`/crew/${crew.symbol}/`}>Full details</Link>
 		</div>

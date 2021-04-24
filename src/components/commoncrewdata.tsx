@@ -133,7 +133,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
-						<StatLabel title="Big book tier" value={formatTierLabel(markdownRemark.frontmatter.bigbook_tier)} />
+						<StatLabel title="Big book tier (legacy)" value={formatTierLabel(markdownRemark.frontmatter.bigbook_tier)} />
 						{markdownRemark.frontmatter.events !== null && (
 							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
@@ -149,7 +149,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							</Statistic>
 						)}
 						<Statistic>
-							<Statistic.Label>Tier</Statistic.Label>
+							<Statistic.Label>Tier (Legacy)</Statistic.Label>
 							<Statistic.Value>{formatTierLabel(markdownRemark.frontmatter.bigbook_tier)}</Statistic.Value>
 						</Statistic>
 						{!compact && markdownRemark.frontmatter.in_portal !== null && (

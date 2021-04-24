@@ -356,15 +356,10 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 }
 
 export function formatTierLabel(tier, short = true) {
-	if (!tier) {
+	if (!tier || tier === -1) {
 		if (short) {
-			return '?';
-		} else {
-			return 'not yet determined';
+			return 'none';
 		}
-	}
-	if (tier === -1) {
-		return '¯\\_(ツ)_/¯';
 	}
 	return `${tier}`;
 }

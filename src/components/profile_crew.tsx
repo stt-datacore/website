@@ -99,7 +99,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 				<div>
 					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}, </span>
-					<span>Tier {formatTierLabel(crew.bigbook_tier)}, </span>
+					{crew.bigbook_tier && crew.bigbook_tier > 0 && <span>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </span>}
 					<br />
 					<span>{crew.events} events, </span>
 					<span>{crew.collections.length} collections</span>

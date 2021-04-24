@@ -428,7 +428,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								sorted={column === 'bigbook_tier' ? direction : null}
 								onClick={() => this._handleSort('bigbook_tier', false)}
 							>
-								Tier
+								Tier (Legacy)
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={3}

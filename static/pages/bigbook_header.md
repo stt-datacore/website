@@ -3,6 +3,28 @@ title: "The Big Book of Behold Advice"
 bigbook_section: 1
 ---
 
-This page collates structured crew stats with insightful details from the Big Book of Behold Advice, created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000), content used with his permission, see the original document [here](https://docs.google.com/spreadsheets/d/1CYR5jnqtacbQM9MIsXp6ATs84Q3rbRM3SmKmUtBvlJ0/edit?usp=sharing). Also contributing: OhMy-StarsAndGarters, [ISA]BigMcLargeHuge, =GBP= Plain Simple Garak, DCPilot, AintEverLucky, Jenos Idanian and Captain Idol.
+## The Big Book of Behold Advice has discontinued operation. Thank you for all your support.
 
-Crew are grouped (alphabetically) into tiers based on a completely subjective opinion of their fully fused desirability in a vacuum (Stat strength, usefulness, rare/unique bonuses, event opportunity etc). If you think a crew deserves to be higher or lower, go with your gut. Everybody values differently all the components that make up crew.
+> Years ago, I started the Big Book to teach both myself and others what to look for in crew. The aim was to produce a quality product that looked at characters holistically and their dozens of attributes so that we could learn together the best way to build our rosters and our game. Now, as the number of crew considered is more than tenfold what it was when the Big Book began, the choice between sacrificing quality or hanging it up has become an easy one. 
+
+> Thank you to StarsAndGarters for being with this resource the longest as my right arm. You've put countless hours into strengthening the Big Book and our treasured friendship.
+
+> Thank you to BigMcLargeHuge for giving an abundance of time and energy when you had the least to spare of any of us. I trust your opinion on crew more than anyone's, including my own.
+
+> Thank you to Captain Idol for maintaining the Big Book's infrastructure and offering your insight along the way. No one in our community has a greater passion for this game or for Star Trek.
+
+> Thank you to everyone else who has worked directly with this resource. The Big Book has benefited so much from your keen insights and generously volunteered time.
+
+> ***Automaton_2000***
+
+----------
+
+> I don't think in culmination of resources devoted to this game has there been anything has influential as the Big Book in terms of the games Meta. People quote ""oh yeah Tier 1"" like it's baked into the game, whole events are unearthed by what metric is set on a Wednesday night bender, six shots down trying to make sense of why Erika Hernandez exists. Hours poured over 3 points of difference in voyage score to determined whether Tier 4 or 5 made sense for FTP Spock. It wasn't necessary, but it was fun!
+
+> I came on in Jan 2020 the first time the Book shut down in my small attempt to keep the resource going lest we all perish at the thought of an untiered crew. As I sat among their ranks talking about things like ""event usability"" and ""Art that would make a Kai Cry"" and often felt like the lesser man to the interplay but no one opened up more to my stupid ideas than these guys, and since then moved on to become good friends.
+
+> As the game racks up over thousands of crew, it's nigh impossible for this small rag tag band of mercenaries to keep track of all the collection changes, voyage metrics and one skill meta-upsetters. Anyway they'll all just drop to Tier 9 eventually, as the great band Toto once sung ""You can cite for love, baby!"
+
+> ***Captain Idol***
+
+The original document is still available [here](https://docs.google.com/spreadsheets/d/1CYR5jnqtacbQM9MIsXp6ATs84Q3rbRM3SmKmUtBvlJ0/edit?usp=sharing).
