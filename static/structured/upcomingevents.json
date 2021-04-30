@@ -559,5 +559,15 @@
 		"smallbonus": {
 			"traits": ["mudd","neelix","Costumed"]
 		}
-	}
+	},
+	{
+		"name": "Dirty Rotten Holograms (flashback)",
+		"type": "Galaxy",
+		"dates": "Thursday 04/29 until Monday 05/03 at Noon (16.00 UTC)",
+		"startDate": "2021-04-29T16:00:00Z",
+		"endDate": "2021-05-03T16:00:00Z",
+		"highbonus": ["kira_decoy_crew", "grathon_tolar_crew", "dsc_mudd_takeover_crew"],
+		"smallbonus": {
+			"traits": ["mudd","kira","Hologram"]
+		}
 ]
