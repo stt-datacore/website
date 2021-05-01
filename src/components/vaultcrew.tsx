@@ -17,7 +17,7 @@ type VaultCrewProps = {
 function formatCrewStats(crew: any): JSX.Element {
 	let skills = [];
 	for (let skillName in CONFIG.SKILLS) {
-		let skill = crew.base_skills[skillName];
+		let skill = crew[skillName];
 
 		if (skill && skill.core && skill.core > 0) {
 			let skillShortName = CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short;
@@ -26,7 +26,7 @@ function formatCrewStats(crew: any): JSX.Element {
 					<span>{skillShortName}</span> <b>{skill.core}</b>{' '}
 					<span>
 						{' '}
-						{skill.range_min}-{skill.range_max}
+						{skill.min}-{skill.max}
 					</span>
 				</p>
 			);
