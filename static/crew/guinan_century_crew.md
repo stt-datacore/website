@@ -2,12 +2,14 @@
 name: Century Guinan
 rarity: 4
 series: tng
-memory_alpha: ''
-bigbook_tier:
-events:
+memory_alpha:
+bigbook_tier: -1
+events: 6
 in_portal:
-date:
-obtained:
-mega:
-published: false
+date: 06/05/2021
+obtained: Event
+mega: false
+published: true
 ---
+
+
