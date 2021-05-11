@@ -1,13 +1,13 @@
 ---
-name: Carl, Guardian of Forever
+name: Chuft-Captain
 rarity: 5
-series: tos
+series: tas
 memory_alpha:
 bigbook_tier: -1
-events: 11
+events: 3
 in_portal:
-date: 13/05/2021
-obtained: Event
+date: 11/05/2021
+obtained: Pack
 mega: false
 published: true
 ---
