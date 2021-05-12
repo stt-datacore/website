@@ -7,7 +7,7 @@ interface StorageOptions {
 	rememberForever?: boolean;	// We always store in session; we can also store in local storage if told to remember forever
 	useDefault?: boolean;	// Set to true to use default value as initial value instead of any stored value
 	useAndStoreDefault?: boolean;	// Set to true to use default and store it immediately to avoid render loops
-	onInitialize?: (itemKey: string) => void;	// Callback after value is initialized
+	onInitialize?: (itemKey: string, itemValue: any) => void;	// Callback after value is initialized
 };
 
 const StorageDefaultOptions: StorageOptions = {
@@ -44,16 +44,17 @@ export const useStateWithStorage = (itemKey: string, itemDefault: any, options?:
 		return getStoredItem(itemKey, itemDefault);
 	});
 
-	// On component mount, update from local storage if necessary, then send message that value is done initializing
+	// On component mount, update from local storage if necessary,
+	//	then send message that value is done initializing and what the initial value will be
 	React.useEffect(() => {
 		if (updateWithLocalValue)  {
 			getStoredItemPromise(itemKey, itemDefault).then((storedValue) => {
 				setValue(storedValue);
-				if (options.onInitialize) options.onInitialize(itemKey);
+				if (options.onInitialize) options.onInitialize(itemKey, storedValue);
 			});
 		}
 		else if (options.onInitialize) {
-			options.onInitialize(itemKey);
+			options.onInitialize(itemKey, value);
 		}
 	}, []);
 
@@ -61,7 +62,7 @@ export const useStateWithStorage = (itemKey: string, itemDefault: any, options?:
 	React.useEffect(() => {
 		// Remove from store (or ignore) if new value is undefined or default
 		if (value === undefined || value == itemDefault) {
-			removeStoredItem(itemKey, options.rememberForever);
+			removeStoredItem(itemKey);
 		}
 		else {
 			storeItem(itemKey, value, options.rememberForever);
@@ -75,7 +76,13 @@ export const useStateWithStorage = (itemKey: string, itemDefault: any, options?:
 const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean) => {
 	if (windowGlobal && windowGlobal.sessionStorage)
 		windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
-	if (useLocalStorage) localForage.setItem(itemKey, JSON.stringify(itemValue));
+	if (useLocalStorage) {
+		localForage.setItem(itemKey, JSON.stringify(itemValue));
+	}
+	// Remove locally stored item if local storage no longer needed, but item currently saved there
+	else {
+		localForage.removeItem(itemKey);
+	}
 };
 const getStoredItem = (itemKey: string, itemDefault: any) => {
 	let sessionValue = windowGlobal && windowGlobal.sessionStorage && windowGlobal.sessionStorage.getItem(itemKey);
@@ -98,8 +105,8 @@ const getStoredItemPromise = (itemKey: string, itemDefault: any) => {
 		});
 	});
 };
-const removeStoredItem = (itemKey: string, useLocalStorage: boolean) => {
+const removeStoredItem = (itemKey: string) => {
 	if (windowGlobal && windowGlobal.sessionStorage)
 		windowGlobal.sessionStorage.removeItem(itemKey);
-	if (useLocalStorage) localForage.removeItem(itemKey);
+	localForage.removeItem(itemKey);
 };
