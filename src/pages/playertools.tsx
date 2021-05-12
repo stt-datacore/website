@@ -31,6 +31,7 @@ const PlayerToolsPage = () => {
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
@@ -42,6 +43,7 @@ const PlayerToolsPage = () => {
 					strippedPlayerData={strippedPlayerData}
 					voyageData={voyageData}
 					eventData={eventData}
+					activeCrew={activeCrew}
 					dataSource={dataSource}
 					allCrew={allCrew}
 					allItems={allItems}
@@ -101,12 +103,13 @@ const PlayerToolsPage = () => {
 		// Reset session before storing new variables
 		sessionStorage.clear();
 
-		// Crew on shuttles, voyage data, and event data will be stripped from playerData,
+		// Active crew, voyage data, and event data will be stripped from playerData,
 		//	so keep a copy for voyage calculator here
 		//	Event data is not player-specific, so we should find a way to get that outside of playerData
-		let shuttleCrew = [];
+		let activeCrew = [], shuttleCrew = [];
 		inputPlayerData.player.character.crew.forEach(crew => {
-			if (crew.active_id > 0) {
+			if (crew.active_status > 0) {
+				activeCrew.push({ symbol: crew.symbol, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 				// Stripped data doesn't include crewId, so create pseudoId based on level and equipment
 				let shuttleCrewId = crew.symbol + ',' + crew.level + ',';
 				crew.equipment.forEach(equipment => shuttleCrewId += equipment[0]);
@@ -120,6 +123,7 @@ const PlayerToolsPage = () => {
 		}
 		setVoyageData(voyageData);
 		setEventData([...inputPlayerData.player.character.events]);
+		setActiveCrew(activeCrew);
 
 		let dtImported = new Date();
 
@@ -156,15 +160,16 @@ type PlayerToolsPanesProps = {
 	strippedPlayerData: any;
 	voyageData: any;
 	eventData: any;
+	activeCrew: string[];
 	dataSource: string;
-	allCrew: [];
+	allCrew: any[];
 	allItems?: any;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
-	const { playerData, strippedPlayerData, voyageData, eventData, dataSource,
+	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
 			allCrew, allItems, requestShowForm, requestClearData } = props;
 
 	const [activeIndex, setActiveIndex] = useStateWithStorage('tools/activeIndex', 0);
@@ -192,7 +197,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		},
 		{
 			menuItem: 'Event Planner',
-			render: () => <EventPlanner playerData={playerData} eventData={eventData} />
+			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} />
 		},
 		{
 			menuItem: 'Crew',

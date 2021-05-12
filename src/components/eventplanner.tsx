@@ -14,6 +14,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
+	{ width: 1, column: 'bonus', title: 'Bonus' },
 	{ width: 1, column: 'command_skill.core', title: 'Command' },
 	{ width: 1, column: 'science_skill.core', title: 'Science' },
 	{ width: 1, column: 'security_skill.core', title: 'Security' },
@@ -25,16 +26,31 @@ const tableConfig: ITableConfigRow[] = [
 type EventPlannerProps = {
 	playerData: any;
 	eventData: any;
+	activeCrew: string[];
 };
 
 const EventPlanner = (props: EventPlannerProps) => {
 	const { playerData, eventData } = props;
+	const dbid = playerData.player.dbid;
+	const activeCrew = JSON.parse(JSON.stringify(props.activeCrew));
 
 	let crewlist = [];
 	let fakeID = 1;
 	playerData.player.character.crew.forEach(crew => {
 		let crewman = JSON.parse(JSON.stringify(crew));
 		crewman.id = fakeID++;
+
+		// Re-attach active_status property
+		crewman.active_status = 0;
+		if (crew.immortal === 0) {
+			const isActive = (ac) => ac.symbol == crew.symbol && ac.level == crew.level && ac.equipment.join('') === crew.equipment.join('');
+			let activeCrewIndex = activeCrew.findIndex(isActive);
+			if (activeCrewIndex >= 0) {
+				crewman.active_status = activeCrew[activeCrewIndex].active_status;
+				activeCrew.splice(activeCrewIndex, 1);	// Clear this ID so that dupes are counted properly
+			}
+		}
+
 		crewlist.push(crewman);
 	});
 
@@ -44,11 +60,12 @@ const EventPlanner = (props: EventPlannerProps) => {
 	let buffConfig = calculateBuffConfig(playerData.player);
 
 	return (
-		<EventPicker events={activeEvents} crew={crewlist} buffConfig={buffConfig} />
+		<EventPicker dbid={dbid} events={activeEvents} crew={crewlist} buffConfig={buffConfig} />
 	);
 };
 
 type EventPickerProps = {
+	dbid: string;
 	events: any[];
 	crew: any[];
 	buffConfig: any;
@@ -63,7 +80,7 @@ class EventData {
 };
 
 const EventPicker = (props: EventPickerProps) => {
-	const { events, crew, buffConfig } = props;
+	const { dbid, events, crew, buffConfig } = props;
 
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 
@@ -96,7 +113,7 @@ const EventPicker = (props: EventPickerProps) => {
 				<div>{eventData.description}</div>
 			</Form>
 			<EventCrewTable crew={crew} eventData={eventData} buffConfig={buffConfig} />
-			<EventShuttlers crew={crew} eventData={eventData} />
+			<EventShuttlers dbid={dbid} crew={crew} eventData={eventData} />
 		</React.Fragment>
 	);
 
@@ -122,7 +139,7 @@ const EventPicker = (props: EventPickerProps) => {
 				if (activePhase.crew_bonuses[symbol] == 10) result.featured.push(symbol);
 			}
 		}
-		else if (activePhase.content_type == 'skirmish') {
+		else if (activePhase.content_type == 'skirmish' && activePhase.bonus_crew) {
 			for (let i = 0; i < activePhase.bonus_crew.length; i++) {
 				let symbol = activePhase.bonus_crew[i];
 				result.bonus.push(symbol);
@@ -152,24 +169,24 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const bonusCrew = JSON.parse(JSON.stringify(props.crew));
 	if (applyBonus || showPotential) {
 		bonusCrew.forEach(crew => {
-			let multiplier = 1;
+			crew.bonus = 1;
 			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				multiplier = 3;
+				crew.bonus = 3;
 			}
 			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				multiplier = 2;
+				crew.bonus = 2;
 			}
-			if (multiplier > 1) {
+			if (crew.bonus > 1) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
 						if (showPotential) {
-							crew[skill.name].current = crew[skill.name].core*multiplier;
+							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							if (crew.rarity == crew.max_rarity)
 								crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
 							else
 								crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
-						crew[skill.name].core = crew[skill.name].core*multiplier;
+						crew[skill.name].core = crew[skill.name].core*crew.bonus;
 					}
 				});
 			}
@@ -241,6 +258,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				</Table.Cell>
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{crew.bonus > 1 ? `x${crew.bonus}` : ''}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
@@ -326,36 +346,47 @@ function getSkillSetId(seat: ShuttleSeat): string {
 }
 
 type EventShuttlersProps = {
+	dbid: string;
 	crew: any[];
+	eventData: any;
 };
 
 const EventShuttlers = (props: EventShuttlersProps) => {
-	const [shuttlers, setShuttlers] = useStateWithStorage('eventplanner/shuttlers', new Shuttlers());
-	const [assigned, setAssigned] = useStateWithStorage('eventplanner/assigned', []);
-	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('eventplanner/considerFrozen', false);
-
+	const [shuttlers, setShuttlers] = useStateWithStorage(props.dbid+'/eventplanner/shuttlers', new Shuttlers(), { rememberForever: true });
+	const [assigned, setAssigned] = useStateWithStorage(props.dbid+'/eventplanner/assigned', [], { rememberForever: true });
 	const [skillsets, setSkillSets] = React.useState({});
 	const [crewScores, setCrewScores] = React.useState([]);
 	const [shuttleScores, setShuttleScores] = React.useState(new Array(shuttlers.shuttles.length));
+
+	const [considerActive, setConsiderActive] = useStateWithStorage('eventplanner/considerActive', false);
+	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('eventplanner/considerFrozen', false);
+	const [saveSetups, setSaveSetups] = useStateWithStorage(props.dbid+'/eventplanner/saveSetups', false, { rememberForever: true });
 
 	React.useEffect(() => {
 		updateCrewScores();
 	}, [shuttlers]);
 
-	const DIFFICULTY = 2000;
 	React.useEffect(() => {
-		const newScores = [];
-		assigned.forEach((seated) => {
-			if (!newScores[seated.shuttleNum]) {
-				newScores[seated.shuttleNum] = { chance: 0, scores: [] };
-			}
-			newScores[seated.shuttleNum].scores.push(seated.seatScore);
-			let dAvgSkill = newScores[seated.shuttleNum].scores.reduce((a, b) => (a + b))/newScores[seated.shuttleNum].scores.length;
-			let dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
-			newScores[seated.shuttleNum].chance = dChance;
-		});
-		setShuttleScores(newScores);
+		updateShuttleScores();
 	}, [assigned]);
+
+	React.useEffect(() => {
+		setAssigned([]);
+		updateCrewScores(true);
+	}, [considerActive, considerFrozen]);
+
+	// Shuttle setups and assignments are saved in local storage,
+	//	so we must check whether to clear them on session close
+	React.useEffect(() => {
+		if (typeof window !== 'undefined' && window) {
+			window.onbeforeunload = (e: any) => {
+				if (!saveSetups) {
+					setShuttlers(new Shuttlers());
+					setAssigned([]);
+				}
+			};
+		}
+	}, [saveSetups]);
 
 	return (
 		<React.Fragment>
@@ -413,9 +444,21 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 			<Form.Group grouped>
 				<Form.Field
 					control={Checkbox}
+					label='Consider active (on shuttles or voyage) crew'
+					checked={considerActive}
+					onChange={(e, { checked }) => setConsiderActive(checked)}
+				/>
+				<Form.Field
+					control={Checkbox}
 					label='Consider frozen (vaulted) crew'
 					checked={considerFrozen}
 					onChange={(e, { checked }) => setConsiderFrozen(checked)}
+				/>
+				<Form.Field
+					control={Checkbox}
+					label='Remember shuttle setups'
+					checked={saveSetups}
+					onChange={(e, { checked }) => setSaveSetups(checked)}
 				/>
 			</Form.Group>
 			</div>
@@ -497,9 +540,12 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 		setShuttlers({...shuttlers});
 	}
 
-	function updateCrewScores(): void {
+	function updateCrewScores(resetAll: boolean = false): void {
 		const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
 							'engineering_skill', 'science_skill', 'medicine_skill'];
+
+		let newSkills = resetAll ? {} : {...skillsets};
+		let newScores = resetAll ? [] : [...crewScores];
 
 		let todo = [];
 		for (let shuttleNum = 0; shuttleNum < shuttlers.shuttles.length; shuttleNum++) {
@@ -508,12 +554,15 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 				let skillSet = shuttle.seats[seatNum];
 				if (skillSet.skillA == "" && skillSet.skillB == "") continue;
 				let ssId = getSkillSetId(skillSet);
-				if (!skillsets[ssId]) todo.push(skillSet);
+				if (!newSkills[ssId]) todo.push(skillSet);
 			}
 		}
 		if (todo.length == 0) return;
 
 		for (let i = 0; i < props.crew.length; i++) {
+			if (!considerActive && props.crew[i].active_status > 0)
+				continue;
+
 			if (!considerFrozen && props.crew[i].immortal > 0)
 				continue;
 
@@ -522,7 +571,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 				let primarySkill = skillSet.skillA;
 				let secondarySkill = skillSet.skillB;
 				let ssId = getSkillSetId(skillSet);
-				if (!skillsets[ssId]) skillsets[ssId] = [];
+				if (!newSkills[ssId]) newSkills[ssId] = [];
 
 				let iHigherSkill = 0, iLowerSkill = 0;
 				for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
@@ -560,20 +609,35 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 						score: iSeatScore,
 						ssId
 					};
-					skillsets[ssId].push(crewman);
-					crewScores.push(crewman);
+					newSkills[ssId].push(crewman);
+					newScores.push(crewman);
 				}
 			});
 		}
 
 		todo.forEach((skillSet) => {
 			let ssId = getSkillSetId(skillSet);
-			skillsets[ssId].sort((a, b) => b.score - a.score);
+			newSkills[ssId].sort((a, b) => b.score - a.score);
 		});
-		setSkillSets({...skillsets});
+		setSkillSets({...newSkills});
 
-		crewScores.sort((a, b) => b.score - a.score);
-		setCrewScores([...crewScores]);
+		newScores.sort((a, b) => b.score - a.score);
+		setCrewScores([...newScores]);
+	}
+
+	function updateShuttleScores(): void {
+		const DIFFICULTY = 2000;
+		const newScores = [];
+		assigned.forEach((seated) => {
+			if (!newScores[seated.shuttleNum]) {
+				newScores[seated.shuttleNum] = { chance: 0, scores: [] };
+			}
+			newScores[seated.shuttleNum].scores.push(seated.seatScore);
+			let dAvgSkill = newScores[seated.shuttleNum].scores.reduce((a, b) => (a + b))/newScores[seated.shuttleNum].scores.length;
+			let dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
+			newScores[seated.shuttleNum].chance = dChance;
+		});
+		setShuttleScores(newScores);
 	}
 
 	function recommendShuttlers(): void {
@@ -598,8 +662,8 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 		let iAssigned = 0;
 		while (scores.length > 0 && iAssigned < seats.length) {
 			let testScore = scores.shift();
-			let repeat = seats.find(seat => seat.assignedId == testScore.id);
-			if (repeat) continue;
+			let alreadyAssigned = seats.find(seat => seat.assignedId == testScore.id);
+			if (alreadyAssigned) continue;
 
 			let openSeat = seats.find(seat => seat.ssId == testScore.ssId && seat.assignedId == -1);
 			if (openSeat) {
