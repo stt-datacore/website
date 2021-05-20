@@ -39,7 +39,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
   }
 
   _formatTime(hours) {
-    let retVal = hours > 24 ? `${Math.floor(hours/24)} days ` : ''
+    let retVal = hours >= 24 ? `${Math.floor(hours/24)} days ` : ''
     return retVal + `${hours%24} hours`
   }
 
