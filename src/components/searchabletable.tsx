@@ -24,7 +24,7 @@ const pagingOptions = [
 export interface ITableConfigRow {
 	width: number;
 	column: string;
-	title: string;
+	title: string | JSX.Element;
 	pseudocolumns?: string[];
 }
 

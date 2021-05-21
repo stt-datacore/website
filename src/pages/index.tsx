@@ -10,6 +10,8 @@ import { formatTierLabel } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 
+const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+
 type IndexPageProps = {};
 
 type IndexPageState = {
@@ -20,12 +22,14 @@ type IndexPageState = {
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
-	{ width: 1, column: 'command_skill', title: 'Command' },
-	{ width: 1, column: 'science_skill', title: 'Science' },
-	{ width: 1, column: 'security_skill', title: 'Security' },
-	{ width: 1, column: 'engineering_skill', title: 'Engineering' },
-	{ width: 1, column: 'diplomacy_skill', title: 'Diplomacy' },
-	{ width: 1, column: 'medicine_skill', title: 'Medicine' }
+	{ width: 1, column: 'cab_ov', title: 'CAB' },
+	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
+	{ width: 1, column: 'command_skill', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'science_skill', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'security_skill', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'engineering_skill', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'diplomacy_skill', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'medicine_skill', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ width: '1em' }} /> }
 ];
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
@@ -35,8 +39,8 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		let response = await fetch('/structured/crew.json');
 		const botcrew = await response.json();
 
-		// Add dummy fields for sorting to work
 		botcrew.forEach(crew => {
+			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
 			});
@@ -63,13 +67,22 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							Tier {formatTierLabel(crew.bigbook_tier)}, {crew.events} events, {crew.collections.length} collections
+							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{crew.events} events, {crew.collections.length} collections
 						</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>{crew.cab_ov}</b><br />
+					<small style={{ fontSize: '70%' }}>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>#{crew.ranks.voyRank}</b><br />
+					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+				</Table.Cell>
+
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
 						<Table.Cell key={skill.name} textAlign='center'>
@@ -105,7 +118,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					config={tableConfig}
 					renderTableRow={crew => this.renderTableRow(crew)}
 					filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
-					showFilterOptions="true"
+					showFilterOptions={true}
 				/>
 
 				<p>

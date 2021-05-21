@@ -141,7 +141,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				{!compact && (
-					<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
+					<>
+					<Statistic.Group size="tiny">
 						{markdownRemark.frontmatter.events !== null && (
 							<Statistic>
 								<Statistic.Label>Events</Statistic.Label>
@@ -152,12 +153,22 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Label>Tier (Legacy)</Statistic.Label>
 							<Statistic.Value>{formatTierLabel(markdownRemark.frontmatter.bigbook_tier)}</Statistic.Value>
 						</Statistic>
+						<Statistic>
+							<Statistic.Label>CAB Rating</Statistic.Label>
+							<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
+						</Statistic>
 						{!compact && markdownRemark.frontmatter.in_portal !== null && (
 							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
 								<Statistic.Label>Portal</Statistic.Label>
 								<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
 							</Statistic>
 						)}
+						</Statistic.Group>
+						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
+						<Statistic>
+							<Statistic.Label>CAB Rank</Statistic.Label>
+							<Statistic.Value>{crew.cab_ov_rank ?? 'None'}</Statistic.Value>
+						</Statistic>
 						<Statistic>
 							<Statistic.Label>Voyage Rank</Statistic.Label>
 							<Statistic.Value>{crew.ranks.voyRank}</Statistic.Value>
@@ -167,6 +178,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Value>{crew.ranks.gauntletRank}</Statistic.Value>
 						</Statistic>
 					</Statistic.Group>
+					</>
 				)}
 
 				{crewDemands && (
@@ -326,6 +338,8 @@ export default CommonCrewData;
 
 export const query = graphql`
 	fragment RanksFragment on CrewJson {
+		cab_ov
+		cab_ov_rank
 		ranks {
 			voyRank
 			gauntletRank
