@@ -581,5 +581,38 @@
 		"smallbonus": {
 			"traits": ["guinan","pulaski","Brutal"]
 		}
+	},
+	{
+		"name": "What Lies Beneath",
+		"type": "Skirmish",
+		"dates": "Thursday 05/13 until Monday 05/17 at Noon (16.00 UTC)",
+		"startDate": "2021-05-13T16:00:00Z",
+		"endDate": "2021-05-17T16:00:00Z",
+		"highbonus": ["xindi_aquatic_crew", "antedian_assassin_crew", "archer_prisoner_crew"],
+		"smallbonus": {
+			"traits": ["archer","Exobiology"]
+		}
+	},
+	{
+		"name": "Road to Redemption",
+		"type": "Galaxy",
+		"dates": "Thursday 05/20 until Monday 05/24 at Noon (16.00 UTC)",
+		"startDate": "2021-05-20T16:00:00Z",
+		"endDate": "2021-05-24T16:00:00Z",
+		"highbonus": ["dsc_guardian_carl_crew", "q_archaeologist_crew", "wesley_traveler_crew"],
+		"smallbonus": {
+			"traits": ["wesley","q_jdl"]
+		}
+	},
+	{
+		"name": "The Isthmian Games (rerun)",
+		"type": "Faction",
+		"dates": "Thursday 05/27 until Monday 05/31 at Noon (16.00 UTC)",
+		"startDate": "2021-05-27T16:00:00Z",
+		"endDate": "2021-05-31T16:00:00Z",
+		"highbonus": ["adam_crew", "uhura_dancing_crew", "data_prospero_crew", "jake_author_crew"],
+		"smallbonus": {
+			"traits": ["jake","data","uhura"]
+		}
 	}
 ]
