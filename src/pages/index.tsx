@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Table, Rating, Icon, Dropdown } from 'semantic-ui-react';
+import { Header, Table, Rating, Icon, Dropdown, Popup } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -9,6 +9,7 @@ import CONFIG from '../components/CONFIG';
 import { formatTierLabel } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
+import CABExplanation from '../components/cabexplanation';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -22,7 +23,7 @@ type IndexPageState = {
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
-	{ width: 1, column: 'cab_ov', title: 'CAB' },
+	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span> },
 	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
 	{ width: 1, column: 'command_skill', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ width: '1em' }} /> },
 	{ width: 1, column: 'science_skill', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ width: '1em' }} /> },

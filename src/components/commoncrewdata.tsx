@@ -8,6 +8,7 @@ import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
 import { formatTierLabel } from '../utils/crewutils';
+import CABExplanation from './cabexplanation';
 
 type StatLabelProps = {
 	title: string;
@@ -154,7 +155,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Value>{formatTierLabel(markdownRemark.frontmatter.bigbook_tier)}</Statistic.Value>
 						</Statistic>
 						<Statistic>
-							<Statistic.Label>CAB Rating</Statistic.Label>
+							<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
 							<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
 						</Statistic>
 						{!compact && markdownRemark.frontmatter.in_portal !== null && (
@@ -166,7 +167,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						</Statistic.Group>
 						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
 						<Statistic>
-							<Statistic.Label>CAB Rank</Statistic.Label>
+							<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
 							<Statistic.Value>{crew.cab_ov_rank ?? 'None'}</Statistic.Value>
 						</Statistic>
 						<Statistic>
