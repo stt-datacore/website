@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Image } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Popup, Segment, Image, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../components/CONFIG';
@@ -7,6 +7,8 @@ import ItemDisplay from '../components/itemdisplay';
 import CrewPopup from '../components/crewpopup';
 
 import Worker from 'worker-loader!../workers/unifiedWorker';
+import { ResponsiveLine } from '@nivo/line';
+import themes from './nivo_themes';
 
 type VoyageStatsProps = {
 	voyageData: object,
@@ -38,6 +40,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 		this.config = {
 			others: [],
+			numSims: 5000,
 			startAm: voyageData.max_hp,
 			currentAm: voyageData.hp,
 			elapsedSeconds: voyageData.voyage_duration,
@@ -68,7 +71,80 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 	_formatTime(time: number) {
 		let hours = Math.floor(time);
 		let minutes = Math.floor((time-hours)*60);
+
 		return hours+"h " +minutes+"m";
+	}
+
+	_renderChart(needsRevive: boolean) {
+		const { estimate } = this.state;
+		const names = needsRevive ? ['First refill', 'Second refill']
+															: [ 'No refills', 'One refill', 'Two refills'];
+
+		const rawData = needsRevive ? estimate.refills : estimate.refills.slice(0, 2);
+		// Convert bins to percentages
+		const data = estimate.refills.map((refill, index) => {
+			const total = refill.bins
+													.map(value => value.count)
+													.reduce((acc, value) => acc + value);
+			var aggregate = total;
+			const cumValues = value => {
+				aggregate -= value.count;
+				return {x: value.result, y: (aggregate/total)*100};
+			};
+			const ongoing = value => { return {x: value.result, y: value.count/total}};
+
+			const percentages = refill.bins
+																.sort((bin1, bin2) => bin1.result - bin2.result)
+																.map(cumValues);
+
+			return {
+				id: names[index],
+				data: percentages
+			};
+		});
+
+		return (
+			<div style={{height : 200}}>
+				<ResponsiveLine
+					data={data}
+					xScale= {{type: 'linear', min: data[0].data[0].x}}
+					yScale={{type: 'linear', max: 100 }}
+					theme={themes.dark}
+					axisBottom={{legend : 'Voyage length (hours)', legendOffset: 30, legendPosition: 'middle'}}
+					axisLeft={{legend : 'Chance (%)', legendOffset: -36, legendPosition: 'middle'}}
+					margin={{ top: 50, right: 130, bottom: 50, left: 100 }}
+					enablePoints= {true}
+					pointSize={2}
+					useMesh={true}
+					tooltip={input => {
+						let data = input.point.data;
+						return `${input.point.serieId}: ${data.y.toFixed(2)}% chance of reaching ${this._formatTime(data.x)}`;
+					}}
+					legends={[
+						{
+							dataFrom: 'keys',
+							anchor: 'bottom-right',
+							direction: 'column',
+							justify: false,
+							translateX: 120,
+							translateY: 0,
+							itemsSpacing: 2,
+							itemWidth: 100,
+							itemHeight: 20,
+							symbolSize: 20,
+							effects: [
+								{
+									on: 'hover',
+									style: {
+										itemOpacity: 1,
+									},
+								},
+							],
+						},
+					]}
+				/>
+			</div>
+		);
 	}
 
 	_renderCrew() {
@@ -159,6 +235,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 					{renderEst("2 Refills", refill++)}
 				</tbody></Table>
 				<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
+				{this._renderChart()}
 				<small>Powered by Chewable</small>
 			</div>
 		);
@@ -273,17 +350,20 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		};
 
 		return (
-			<Accordion fluid exclusive={false}>
-				{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
+			<div>
+				<Message>Your voyage has been running for {this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+				<Accordion fluid exclusive={false}>
 				{
 					(voyState === 'started' || voyState === 'pending' || voyState === 'failed') &&
-				 	accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
+					accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
 				}
+				{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
 				{
 					voyState !== 'pending' &&
 					accordionPanel('Rewards', this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
 				}
-			</Accordion>
+				</Accordion>
+			</div>
 		);
 	}
 }

@@ -3,7 +3,7 @@
 
 /* eslint-disable */
 
-function getEstimate(config) {
+function getEstimate(config, reportProgress) {
   // required input (starting numbers)
   var ps = config.ps;
   var ss = config.ss;
@@ -62,6 +62,82 @@ function getEstimate(config) {
   var skillChances = [psChance,ssChance,osChance,osChance,osChance,osChance];
   var dilPerMin = 5;
 
+  var num20hourSims = Math.min(maxNum20hourSims, numSims);
+
+  const formatResults = (finished) => {
+    var refills = [];
+
+    // calculate and display results
+    for (var extend = 0; extend <= numExtends; ++extend) {
+      var exResults = results[extend];
+
+      exResults.sort(function(a,b){return a-b;});
+      var voyTime = exResults[Math.floor(exResults.length/2)];
+
+      // compute other results
+      var safeTime = exResults[Math.floor(exResults.length/10)];
+      var saferTime = exResults[Math.floor(exResults.length/100)];
+      var safestTime = exResults[0];
+
+      // compute last dilemma chance
+      var lastDilemma = 0;
+      var lastDilemmaFails = 0;
+      for(var i = 0; i < exResults.length; i++) {
+        var dilemma = Math.floor(exResults[i]/2);
+        if (dilemma > lastDilemma) {
+          lastDilemma = dilemma;
+          lastDilemmaFails = Math.max(0,i);
+        }
+      }
+
+      var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
+      // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
+      if (dilChance == 0) {
+        lastDilemma--;
+        dilChance = 100;
+      }
+
+      var refill = {
+         'result': voyTime,
+         'safeResult': safeTime,
+         'saferResult': saferTime,
+         'lastDil': lastDilemma*2,
+         'dilChance': dilChance,
+         'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
+      }
+
+      var bins = {};
+      const binSize = 1/45;
+
+      for (result of exResults.sort()) {
+	  		let bin = (Math.floor(result/binSize)+0.5)*binSize;
+
+        try{
+        	++bins[bin].count;
+        }
+        catch {
+          bins[bin] = {result: bin, count: 1};
+        }
+      }
+
+      delete bins[NaN];
+      //console.log(Object.values(bins);
+      refill.bins = Object.values(bins);
+
+      refills.push(refill);
+    } // foreach extend
+
+    estimate['refills'] = refills;
+
+    // calculate 20hr results
+    estimate['20hrdil'] = Math.ceil(results20hrCostTotal/num20hourSims);
+    estimate['20hrrefills'] = Math.round(results20hrRefillsTotal/num20hourSims);
+
+    estimate['final'] = finished;
+
+    return estimate;
+  }; //end formatResults()
+
   // more input
   var elapsedHours = elapsedSeconds/3600;
   var ship = currentAm;
@@ -78,8 +154,6 @@ function getEstimate(config) {
     numSims = 1000;
   }
 
-  var num20hourSims = Math.min(maxNum20hourSims, numSims);
-
   //sizeUi();
 
   var hazSkillVariance = prof/100;
@@ -95,7 +169,7 @@ function getEstimate(config) {
   var resultsRefillCostTotal = [];
   for (var iExtend = 0; iExtend <= numExtends; ++iExtend) {
     results.push([]);
-    results[iExtend].length = numSims;
+    //results[iExtend].length = numSims;
     resultsRefillCostTotal.push(0);
   }
 
@@ -168,7 +242,7 @@ function getEstimate(config) {
         var refillCost = Math.ceil(voyTime*60/dilPerMin);
 
         if (extend <= numExtends) {
-          results[extend][iSim] = tick/ticksPerHour;
+          results[extend].push(tick/ticksPerHour);
           if (extend > 0) {
             resultsRefillCostTotal[extend] += refillCostTotal;
           }
@@ -189,67 +263,12 @@ function getEstimate(config) {
         }
       } // system failure
     } // foreach tick
+
+    if (iSim > 0 && iSim % 100 == 0)
+      reportProgress(formatResults(false));
   } // foreach sim
 
-  var refills = [];
-
-  // calculate and display results
-  for (var extend = 0; extend <= numExtends; ++extend) {
-    var exResults = results[extend];
-
-    exResults.sort(function(a,b){return a-b;});
-    var voyTime = exResults[Math.floor(exResults.length/2)];
-
-    // compute other results
-    var safeTime = exResults[Math.floor(exResults.length/10)];
-    var saferTime = exResults[Math.floor(exResults.length/100)];
-    var safestTime = exResults[0];
-
-    // compute last dilemma chance
-    var lastDilemma = 0;
-    var lastDilemmaFails = 0;
-    for(var i = 0; i < exResults.length; i++) {
-      var dilemma = Math.floor(exResults[i]/hoursBetweenDilemmas);
-      if (dilemma > lastDilemma) {
-        lastDilemma = dilemma;
-        lastDilemmaFails = Math.max(0,i);
-      }
-    }
-
-    var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
-    // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
-    if (dilChance == 0) {
-      lastDilemma--;
-      dilChance = 100;
-    }
-
-	var refill = {
-		'result': voyTime,
-		'safeResult': safeTime,
-		'saferResult': saferTime,
-		'lastDil': lastDilemma*hoursBetweenDilemmas,
-		'dilChance': dilChance,
-		'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/numSims) : 0
-	}
-	refills.push(refill);
-
-    //test.text = maxSkill*(1+hazSkillVariance)/hazSkillPerHour
-    // the threshold here is just a guess
-    if (maxSkill/hazSkillPerHour > voyTime) {
-      var tp = Math.floor(voyTime*hazSkillPerHour);
-      if (currentAm == 0) {
-        //setWarning(extend, "Your highest skill is too high by about " + Math.floor(maxSkill - voyTime*hazSkillPerHour) + ". To maximize voyage time, redistribute more like this: " + tp + "/" + tp + "/" + tp/4 + "/" + tp/4 + "/" + tp/4 + "/" + tp/4 + ".");
-      }
-    }
-  } // foreach extend
-
-  estimate['refills'] = refills;
-
-  // calculate 20hr results
-  estimate['20hrdil'] = Math.ceil(results20hrCostTotal/num20hourSims);
-  estimate['20hrrefills'] = Math.round(results20hrRefillsTotal/num20hourSims);
-
-  return estimate;
+  return formatResults(true, numSims);
 }
 
 function randomInt(min, max)
