@@ -4,7 +4,7 @@ rarity: 5
 series: original
 memory_alpha:
 bigbook_tier: 3
-events: 15
+events: 14
 in_portal:
 date: 16/03/2021
 obtained: Pack
