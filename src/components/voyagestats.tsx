@@ -114,8 +114,9 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 					axisLeft={{legend : 'Chance (%)', legendOffset: -36, legendPosition: 'middle'}}
 					margin={{ top: 50, right: 130, bottom: 50, left: 100 }}
 					enablePoints= {true}
-					pointSize={2}
+					pointSize={0}
 					useMesh={true}
+					crosshairType='none'
 					tooltip={input => {
 						let data = input.point.data;
 						return `${input.point.serieId}: ${data.y.toFixed(2)}% chance of reaching ${this._formatTime(data.x)}`;
