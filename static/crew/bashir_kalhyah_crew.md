@@ -1,14 +1,14 @@
 ---
-name: Party Tilly
+name: Kal’Hyah Bashir
 rarity: 5
-series: dsc
+series: ds9
 memory_alpha:
 bigbook_tier: -1
 events: 0
 in_portal:
-date: 25/05/2021
-obtained: Pack
-mega: false
+date: 03/06/2021
+obtained: Event
+mega: true
 published: true
 ---
 

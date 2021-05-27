@@ -1,14 +1,14 @@
 ---
-name: Lt. Rizzo
+name: EV Suit Garak
 rarity: 4
-series: pic
+series: ds9
 memory_alpha:
 bigbook_tier: -1
 events: 0
 in_portal:
-date: 27/04/2021
-obtained: Pack
-mega: false
+date: 03/06/2021
+obtained: Event
+mega: true
 published: true
 ---
 
