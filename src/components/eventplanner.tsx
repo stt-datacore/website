@@ -176,7 +176,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
 				crew.bonus = 2;
 			}
-			if (crew.bonus > 1) {
+			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
 						if (showPotential) {
@@ -371,7 +371,6 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 	}, [assigned]);
 
 	React.useEffect(() => {
-		setAssigned([]);
 		updateCrewScores(true);
 	}, [considerActive, considerFrozen]);
 
@@ -503,7 +502,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 		}
 
 		let seated = assigned.find(seat => seat.shuttleNum == shuttleNum && seat.seatNum == seatNum);
-		if (!seated) {
+		if (assignedCrew && !seated) {
 			assigned.push({
 				shuttleNum,
 				seatNum,
@@ -554,7 +553,10 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 				let skillSet = shuttle.seats[seatNum];
 				if (skillSet.skillA == "" && skillSet.skillB == "") continue;
 				let ssId = getSkillSetId(skillSet);
-				if (!newSkills[ssId]) todo.push(skillSet);
+				if (!newSkills[ssId]) {
+					newSkills[ssId] = [];
+					todo.push(skillSet);
+				}
 			}
 		}
 		if (todo.length == 0) return;
