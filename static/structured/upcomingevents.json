@@ -621,7 +621,7 @@
 		"dates": "Thursday 06/03 until Monday 06/07 at Noon (16.00 UTC)",
 		"startDate": "2021-06-03T16:00:00Z",
 		"endDate": "2021-06-07T16:00:00Z",
-		"highbonus": ["zyree_crew", "garak_evsuit_crew", "tucker_evsuit_crew", "quark_tribble_crew],
+		"highbonus": ["zyree_crew", "garak_evsuit_crew", "tucker_evsuit_crew", "quark_tribble_crew"],
 		"smallbonus": {
 			"traits": ["garak","tucker","Survivalist"]
 		}
