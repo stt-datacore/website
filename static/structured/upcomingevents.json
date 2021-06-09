@@ -625,5 +625,16 @@
 		"smallbonus": {
 			"traits": ["garak","tucker","Survivalist"]
 		}
+	},
+	{
+		"name": "Playing Hardball",
+		"type": "Skirmish",
+		"dates": "Thursday 06/10 until Monday 06/14 at Noon (16.00 UTC)",
+		"startDate": "2021-06-10T16:00:00Z",
+		"endDate": "2021-06-14T16:00:00Z",
+		"highbonus": ["bashir_kalhyah_crew", "obrien_kalhyah_crew", "odo_cold_weather_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["bashir","obrien","odo","Survivalist"]
+		}
 	}
 ]
