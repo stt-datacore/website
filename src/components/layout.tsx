@@ -28,6 +28,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 							<meta property='og:description' content={data.site.siteMetadata.defaultDescription} />
 							<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
 							<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
+							<script src='https://polyfill.io/v3/polyfill.min.js' type='text/javascript' />
 							<script src={withPrefix('styles/theming.js')} type='text/javascript' />
 						</Helmet>
 					)}
