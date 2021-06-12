@@ -29,6 +29,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 							<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
 							<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
 							<script src={withPrefix('styles/theming.js')} type='text/javascript' />
+							<script src={withPrefix('polyfills.js')} type='text/javascript' />
 						</Helmet>
 					)}
 				/>
