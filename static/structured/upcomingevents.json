@@ -636,5 +636,16 @@
 		"smallbonus": {
 			"traits": ["bashir","obrien","odo","Survivalist"]
 		}
+	},
+	{
+		"name": "The Spotlight's Glare",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 06/17 until Monday 06/21 at Noon (16.00 UTC)",
+		"startDate": "2021-06-17T16:00:00Z",
+		"endDate": "2021-06-21T16:00:00Z",
+		"highbonus": ["kira_comfort_crew", "obrien_molly_crew", "dsc_pike_evsuit_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["kira","pike","sisko","Survivalist"]
+		}
 	}
 ]
