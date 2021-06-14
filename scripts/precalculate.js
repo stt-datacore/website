@@ -352,10 +352,8 @@ function main() {
 		}
 	}
 
-	// Calculate optimised polestars
-	let polestarCombos = {};
-	for (let crew of crewlist) {
-		if (!crew.in_portal) continue;
+	const calcPolestars = (crew, polestarCombos, portalOnly) => {
+		if (portalOnly && !crew.in_portal) return;
 		let polestars = crew.traits.slice();
 		polestars.push('crew_max_rarity_'+crew.max_rarity);
 		for (let skill in crew.base_skills) {
@@ -382,7 +380,15 @@ function main() {
 			polestarCombos[sorted].count = polestarCombos[sorted].count + 1;
 			polestarCombos[sorted].crew.push(crew.symbol);
 		}
-		crew._comboIds = comboIds;	// Attach as temp property
+		return comboIds;
+	}
+
+	// Calculate optimised polestars
+	let polestarCombos = {};
+	let futurePotentialPolestarCombos = {};
+	for (let crew of crewlist) {
+		crew._potentialFutureComboIds = calcPolestars(crew, futurePotentialPolestarCombos, false);
+		crew._comboIds = calcPolestars(crew, polestarCombos, true);
 	}
 
 	const isSuperset = (test, existing) =>
@@ -395,6 +401,16 @@ function main() {
 		);
 
 	for (let crew of crewlist) {
+		let futurePotentialUniqueCombos = [];
+		// Now double check a crew's list of combos to find counts that are still 1
+		crew._potentialFutureComboIds.forEach((pc) => {
+			if (futurePotentialPolestarCombos[pc].count === 1) {
+				// Ignore supersets of already perfect subsets
+				if (!isSuperset(pc, futurePotentialUniqueCombos))
+					futurePotentialUniqueCombos.push(futurePotentialPolestarCombos[pc].polestars);
+			}
+		});
+		crew.future_potential_unique_polestar_combos = futurePotentialUniqueCombos;
 		if (!crew.in_portal) continue;
 		let uniqueCombos = [];
 		// Now double check a crew's list of combos to find counts that are still 1
