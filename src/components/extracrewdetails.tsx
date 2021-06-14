@@ -9,13 +9,15 @@ type ExtraCrewDetailsProps = {
 	base_skills: any,
 	traits: any[],
 	traits_hidden: any[],
-	unique_polestar_combos: any[]
+	unique_polestar_combos: any[],
+	future_potential_unique_polestar_combos: any[]
 };
 
 type ExtraCrewDetailsState = {
 	variants: any[],
 	constellation: any,
 	optimalpolestars: any,
+	futurepotentialoptimalpolestars: any,
 	pagination_rows: number;
 	pagination_page: number;
 };
@@ -98,7 +100,11 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				// Use precalculated unique polestars combos if any, otherwise get best chances
 				let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
 					this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
-					this._findOptimalPolestars(allcrew);
+					this._findOptimalPolestars(allcrew, true);
+
+				let futurepotentialoptimalpolestars = this.props.future_potential_unique_polestar_combos && this.props.future_potential_unique_polestar_combos.length > 0 ?
+					this._optimizeUniquePolestars(this.props.future_potential_unique_polestar_combos) :
+					this._findOptimalPolestars(allcrew, false);
 
 				// Get variants
 				let variants = [];
@@ -116,11 +122,11 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 					}
 				});
 
-				self.setState({ optimalpolestars, variants });
+				self.setState({ optimalpolestars, futurepotentialoptimalpolestars, variants });
 			});
 	}
 
-	_findOptimalPolestars(allcrew: []) {
+	_findOptimalPolestars(allcrew: [], portalOnly) {
 		// Generate crewman's list of polestars (traits + rarity + skills)
 		let polestars = this.props.traits.slice();
 		polestars.push('crew_max_rarity_'+this.props.max_rarity);
@@ -148,7 +154,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		// Find all crew who have any polestars in common
 		for (let i = 0; i < allcrew.length; i++) {
-			if (!allcrew[i].in_portal) continue;
+			if (portalOnly && !allcrew[i].in_portal) continue;
 			let polesInCommon = [];
 			for (let t = 0; t < this.props.traits.length; t++) {
 				if (allcrew[i].traits.indexOf(this.props.traits[t]) >= 0)
@@ -231,7 +237,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	render() {
 		return <div>
 			{this.renderConstellation()}
-			{this.renderOptimalPolestars()}
+			{this.renderOptimalPolestars(false)}
+			{this.renderOptimalPolestars(true)}
 			{this.renderVariants()}
 		</div>;
 	}
@@ -264,19 +271,21 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		);
 	}
 
-	renderOptimalPolestars() {
-		if (!this.state.constellation || !this.state.optimalpolestars) {
+	renderOptimalPolestars(future) {
+		const usedPolestars = future ? this.state.futurepotentialoptimalpolestars : this.state.optimalpolestars;
+		const { constellation, pagination_rows, pagination_page } = this.state;
+
+		if (!usedPolestars || (!future && !constellation)) {
 			return <span />;
 		}
 
-		const { optimalpolestars, constellation, pagination_rows, pagination_page } = this.state;
 
-		let data = JSON.parse(JSON.stringify(optimalpolestars));
+		let data = JSON.parse(JSON.stringify(usedPolestars));
 
-		let crewPolestars = constellation.keystones.concat(constellation.raritystone.concat(constellation.skillstones));
+		let crewPolestars = constellation?.keystones.concat(constellation?.raritystone.concat(constellation?.skillstones));
 		data.forEach((optimal) => {
 			optimal.combos = optimal.polestars.map((trait) =>
-				crewPolestars.find((op) => filterTraits(op, trait))
+				crewPolestars?.find((op) => filterTraits(op, trait)) || { short_name: trait, icon: { file: `/items/keystones/${trait}.png`} }
 			)
 		});
 
@@ -286,8 +295,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		return (
 			<Segment>
-				<Header as='h4'>Optimal Polestars for Crew Retrieval</Header>
-				<div>All the polestars that give the best chance of retrieving this crew</div>
+				<Header as='h4'>{future ? 'Future Potential ' : '' }Optimal Polestars for Crew Retrieval</Header>
+				<div>All the polestars that {future ? 'may ' : '' }give the best chance of retrieving this crew{future ? ' after future portal updates' : ''}</div>
 				<Table celled selectable striped collapsing unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
