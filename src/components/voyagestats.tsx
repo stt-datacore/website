@@ -47,15 +47,14 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		};
 
 		for (let agg of Object.values(voyageData.skill_aggregates)) {
-			let score = Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
 			let skillOdds = 0.1;
 
 			if (agg.skill == voyageData.skills.primary_skill)
-				this.config.ps = score;
+				this.config.ps = agg;
 			else if (agg.skill == voyageData.skills.secondary_skill)
-				this.config.ss = score;
+				this.config.ss = agg;
 			else
-				this.config.others.push(score);
+				this.config.others.push(agg);
 
 			this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 		}
@@ -226,20 +225,32 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			);
 		};
 
-		var refill = 0;
 
-		return (
-			<div>
-				<Table><tbody>
-					{!needsRevive && renderEst("Estimate", refill++)}
-					{renderEst("1 Refill", refill++)}
-					{renderEst("2 Refills", refill++)}
-				</tbody></Table>
-				<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
-				{this._renderChart()}
-				<small>Powered by Chewable</small>
-			</div>
-		);
+		if (estimate.deterministic) {
+			let extendTime = estimate['refills'][1].result - estimate['refills'][0].result;
+
+			return (
+				<div>
+					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
+					Subsequent refills will extend it by {this._formatTime(extendTime)}.
+					For a 20 hour voyage you need {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.
+				</div>
+			);
+		} else {
+			let refill = 0;
+			return (
+				<div>
+					<Table><tbody>
+						{!needsRevive && renderEst("Estimate", refill++)}
+						{renderEst("1 Refill", refill++)}
+						{renderEst("2 Refills", refill++)}
+					</tbody></Table>
+					<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
+					{this._renderChart()}
+					<small>Powered by Chewable C++</small>
+				</div>
+			);
+		}
 	}
 
 	_renderRewardsTitle(rewards) {
@@ -323,6 +334,28 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		);
 	}
 
+	/* Not yet in use
+	_renderReminder() {
+		return (
+			<div>
+				<p>Remind me :-</p>
+				<Form.Field
+					control={Checkbox}
+					label={<label>At the next dilemma.</label>}
+					checked={this.state.dilemmaAlarm}
+					onChange={(e, { checked }) => this.setState({ dilemmaAlarm: checked}) }
+				/>
+				<Form.Field
+					control={Checkbox}
+					label={<label>When the probably of voyage still running reaches {oddsControl}.</label>}
+					checked={this.state.failureAlarm}
+					onChange={(e, {checked}) => this.setState({failureAlarm : checked}) }
+				/>
+			</div>
+		);
+	}
+	*/
+
 	render() {
 		const { voyageData } = this.props;
 		const { activePanels } = this.state;
@@ -352,7 +385,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 		return (
 			<div>
-				<Message>Your voyage has been running for {this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+				<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
 				<Accordion fluid exclusive={false}>
 				{
 					(voyState === 'started' || voyState === 'pending' || voyState === 'failed') &&
