@@ -248,7 +248,7 @@ function getEstimate(config, reportProgress) {
 
         var voyTime = tick/ticksPerHour;
         var refillCost = Math.ceil(voyTime*60/dilPerMin);
-        console.log(`Voyage time: ${voyTime}, Refill cost: ${refillCost}`);
+
         if (extend <= numExtends) {
           results[extend].push(tick/ticksPerHour);
 
@@ -263,7 +263,7 @@ function getEstimate(config, reportProgress) {
 
         if (voyTime > 20) {
           results20hrCostTotal += refillCostTotal;
-          results20hrRefillsTotal = extend - 1;
+          results20hrRefillsTotal += extend - 1;
           break;
         }
 
