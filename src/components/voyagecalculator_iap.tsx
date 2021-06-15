@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
 import * as localForage from 'localforage';
+import { isMobile } from 'react-device-detect';
 
 import ItemDisplay from '../components/itemdisplay';
 import { VoyageStats } from '../components/voyagestats';
@@ -61,7 +62,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			peopleList: undefined,
 			currentSelection: [],
 			activeEvent: undefined,
-			searchDepth: 6,
+			searchDepth: isMobile ? 4 : 6,
 			extendsTarget: 0,
 			telemetryOptOut: false,
 			showCalculator: false,
