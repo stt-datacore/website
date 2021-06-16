@@ -2,12 +2,14 @@
 name: Resigned Picard
 rarity: 4
 series: pic
-memory_alpha: ''
-bigbook_tier:
-events:
+memory_alpha:
+bigbook_tier: -1
+events: 0
 in_portal:
-date:
-obtained:
-mega:
-published: false
+date: 15/06/2021
+obtained: Pack
+mega: false
+published: true
 ---
+
+

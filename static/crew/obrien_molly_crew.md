@@ -1,5 +1,5 @@
 ---
-name: Displaced Molly O’Brien
+name: Displaced Molly O'Brien
 rarity: 4
 series: ds9
 memory_alpha:

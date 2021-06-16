@@ -4,7 +4,7 @@ rarity: 3
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 0
+events: 4
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch
