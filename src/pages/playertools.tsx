@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal } from 'semantic-ui-react';
+import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -313,10 +313,23 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	if (!varsReady)
 		return (<PlayerToolsLoading />);
 
+	const PlayerLevelProgress = () => {
+		const endingValue = playerData.player.character.xp_for_next_level - playerData.player.character.xp_for_current_level;
+		const currentValue = playerData.player.character.xp - playerData.player.character.xp_for_current_level;
+		const percent = (currentValue / endingValue) * 100;
+		return (
+		  <Progress
+			percent={percent.toPrecision(3)}
+			label={`Level ${playerData.player.character.level}: ${playerData.player.character.xp} / ${playerData.player.character.xp_for_next_level}`}
+			progress
+		  />
+		);
+	  };
+
 	return (
 		<Layout title='Player tools'>
 			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
-
+			<PlayerLevelProgress />
 			<StaleMessage />
 
 			<Menu compact stackable>

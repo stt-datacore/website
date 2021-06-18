@@ -1,5 +1,5 @@
 ---
-name: Kal’Hyah Bashir
+name: Kal'Hyah Bashir
 rarity: 5
 series: ds9
 memory_alpha:
