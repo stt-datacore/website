@@ -647,5 +647,16 @@
 		"smallbonus": {
 			"traits": ["kira","pike","sisko","Survivalist"]
 		}
+	},
+	{
+		"name": "Fool's Gold",
+		"type": "Faction",
+		"dates": "Thursday 06/24 until Monday 06/28 at Noon (16.00 UTC)",
+		"startDate": "2021-06-24T16:00:00Z",
+		"endDate": "2021-06-28T16:00:00Z",
+		"highbonus": ["sisko_desert_crew", "jsisko_desert_crew", "mccoy_evsuit_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["sisko","jake","mccoy","Survivalist"]
+		}
 	}
 ]
