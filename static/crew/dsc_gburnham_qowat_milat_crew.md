@@ -1,13 +1,13 @@
 ---
-name: Chuft-Captain
+name: Qowat Milat G. Burnham
 rarity: 5
-series: tas
+series: dsc
 memory_alpha:
 bigbook_tier: -1
-events: 3
+events: 28
 in_portal:
-date: 11/05/2021
-obtained: Pack
+date: 01/07/2021
+obtained: Event
 mega: false
 published: true
 ---
