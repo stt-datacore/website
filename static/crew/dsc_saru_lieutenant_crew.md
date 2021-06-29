@@ -4,7 +4,7 @@ rarity: 2
 series: dsc
 memory_alpha:
 bigbook_tier: 4
-events: 31
+events: 0
 in_portal: true
 date: 20/09/2017
 obtained: Post-Launch

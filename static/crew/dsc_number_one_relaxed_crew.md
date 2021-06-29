@@ -4,7 +4,7 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 7
-events: 17
+events: 0
 in_portal: true
 date: 10/03/2020
 obtained: Pack

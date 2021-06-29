@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 3
-events: 25
+events: 0
 in_portal: true
 date: 26/12/2019
 obtained: Event
