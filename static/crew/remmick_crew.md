@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 0
+events: 3
 in_portal:
 date: 21/01/2021
 obtained: Event

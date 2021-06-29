@@ -4,7 +4,7 @@ rarity: 4
 series: pic
 memory_alpha:
 bigbook_tier: 8
-events: 0
+events: 8
 in_portal:
 date: 03/09/2020
 obtained: Event
