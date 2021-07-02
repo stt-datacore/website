@@ -18,7 +18,76 @@ self.addEventListener('message', message => {
 			self.postMessage(estimate);
 			self.close();
 		});
-	} 
+	} else if (message.data.worker === 'IAmPicard') {
+		voymod().then(mod => {
+			let toDV = result => new DataView(Uint8Array.from(result).buffer);
+			let bestScore = 0;
+			let result = mod.calculate(JSON.stringify(exportVoyageData(message.data)), res => {
+				let result = toDV(res);
+				let score = result.getFloat32(0, true);
+
+				// ignore marginal gains (under 5 minutes)
+				if (score > bestScore + 1/12) {
+					self.postMessage({
+						progressResult : finaliseIAPEstimate(message.data, result, 200)
+					});
+					bestScore = score;
+				}
+			});
+
+			self.postMessage({ result: finaliseIAPEstimate(message.data, toDV(result)) });
+
+			// close this worker
+			self.close();
+		});
+	} else if (message.data.worker === 'USSJohnJay') {
+		// Currently not used
+		let { voyage_description } = message.data;
+
+		// Config is for showing progress (optional)
+		let config = {
+			'progressCallback': false,
+			'debugCallback': false /*(message) => { console.log(message); }*/
+		};
+		// Voyage data is required
+		let voyage = {
+			'skills': voyage_description.skills,
+			'crew_slots': voyage_description.crew_slots,
+			'ship_trait': voyage_description.ship_trait
+		};
+		// Function to filter out crew you don't want to consider (optional)
+		let filter = (crewman) => this._filterConsideredCrew(crewman);
+		// Options modify the calculation algorithm (optional)
+		let options = {
+			'initBoosts': { 'primary': 3.5, 'secondary': 2.5, 'other': 1.0 },
+			'searchVectors': 4,
+			'luckFactor': false,
+			'favorSpecialists': false
+		};
+
+		// Assemble lineups that match input
+		const voyagers = new Voyagers(crew, config);
+		voyagers.assemble(voyage, filter, options)
+			.then((lineups) => {
+				// Now figure out which lineup is "best"
+				const analyzer = new VoyagersAnalyzer(voyage, bestShip, lineups);
+				let estimator = (config) => chewable.getEstimate(config);
+				let sorter = (a, b) => this._chewableSorter(a, b);
+				analyzer.analyze(estimator, sorter)
+					.then(([lineup, estimate, log]) => {
+						self.postMessage({
+							name: options.name,
+							entries: lineup.someFunc(),	// Todo convert to ICalcResult entries
+							estimate: estimate,
+							aggregates, // Todo
+							startAm, // Todo
+						})
+					});
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 });
 
 function finaliseIAPEstimate(data, result, numSims = 5000) {
