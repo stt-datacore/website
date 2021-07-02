@@ -256,7 +256,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							value={this.state.calculationName}
 							onChange={(e, { value }) => this.setState({ calculationName: value })}
 						/>
-						{/* Not yet in use
+
 						<Form.Field
 							control={Select}
 							label='Calculator'
@@ -271,7 +271,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							value={this.state.calculator}
 							onChange={(e, { value }) => this.setState({ calculator: value })}
 						/>
-						*/}
+
 						<Form.Field
 							control={Select}
 							label='Search depth'
@@ -497,7 +497,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	_packVoyageOptions(shipAM: number) {
 		const { voyageData } = this.props;
-		const { calculationName, calculator, crew, searchDepth } = this.state;
+		const { bestShip, calculationName, calculator, crew, searchDepth } = this.state;
 
 		let filteredRoster = crew.filter(crewman => {
 			// Filter out buy-back crew
@@ -524,9 +524,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		return {
 			name: calculationName !== undefined ? calculationName : this._defaultCalculationName(),
 			worker: calculators[calculator].internalName,
-			searchDepth: searchDepth,
+			searchDepth,
 			extendsTarget: this.state.extendsTarget,
 			shipAM: shipAM,
+			bestShip,
 			skillPrimaryMultiplier: 3.5,
 			skillSecondaryMultiplier: 2.5,
 			skillMatchingMultiplier: 1.1,

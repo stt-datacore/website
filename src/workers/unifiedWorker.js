@@ -2,6 +2,7 @@
 
 import voymod from './voymod.js';
 import chewable from './chewable.js';
+import { Voyagers, VoyagersAnalyzer } from './voyagers.js';
 
 const SKILLS = [
 	'command_skill',
@@ -42,7 +43,7 @@ self.addEventListener('message', message => {
 		});
 	} else if (message.data.worker === 'USSJohnJay') {
 		// Currently not used
-		let { voyage_description } = message.data;
+		let { bestShip, extendsTarget, voyage_description, roster } = message.data;
 
 		// Config is for showing progress (optional)
 		let config = {
@@ -55,8 +56,7 @@ self.addEventListener('message', message => {
 			'crew_slots': voyage_description.crew_slots,
 			'ship_trait': voyage_description.ship_trait
 		};
-		// Function to filter out crew you don't want to consider (optional)
-		let filter = (crewman) => this._filterConsideredCrew(crewman);
+
 		// Options modify the calculation algorithm (optional)
 		let options = {
 			'initBoosts': { 'primary': 3.5, 'secondary': 2.5, 'other': 1.0 },
@@ -64,24 +64,27 @@ self.addEventListener('message', message => {
 			'luckFactor': false,
 			'favorSpecialists': false
 		};
-
 		// Assemble lineups that match input
-		const voyagers = new Voyagers(crew, config);
-		voyagers.assemble(voyage, filter, options)
+		const voyagers = new Voyagers(roster, config);
+		voyagers.assemble(voyage, () => false, options)
 			.then((lineups) => {
 				// Now figure out which lineup is "best"
-				const analyzer = new VoyagersAnalyzer(voyage, bestShip, lineups);
-				let estimator = (config) => chewable.getEstimate(config);
-				let sorter = (a, b) => this._chewableSorter(a, b);
-				analyzer.analyze(estimator, sorter)
+				const analyzer = new VoyagersAnalyzer(voyage, {antimatter: bestShip.score, ...bestShip}, lineups);
+				let sorter = (a, b) => chewableSorter(a, b, extendsTarget);
+				analyzer.analyze(chewable.getEstimate, sorter)
 					.then(([lineup, estimate, log]) => {
-						self.postMessage({
+						console.log(lineup.skills);
+						self.postMessage({ result: {
 							name: options.name,
-							entries: lineup.someFunc(),	// Todo convert to ICalcResult entries
+							entries: lineup.crew.map(({id}, idx) => ({
+								slotId: idx,
+								choice: roster.find(c => c.id == id),
+								hasTrait: lineup.traits[idx]
+							})),	// convert to ICalcResult entries
 							estimate: estimate,
-							aggregates, // Todo
-							startAm, // Todo
-						})
+							aggregates: lineup.skills,
+							startAm: bestShip.score + lineup.antimatter
+						}})
 					});
 			})
 			.catch((error) => {
@@ -89,6 +92,22 @@ self.addEventListener('message', message => {
 			});
 	}
 });
+
+function chewableSorter(a, b, refills) {
+		const playItSafe = false;
+
+		let aEstimate = a.estimate.refills[refills];
+		let bEstimate = b.estimate.refills[refills];
+
+		// Return best average (w/ DataCore pessimism) by default
+		let aAverage = (aEstimate.result*3+aEstimate.safeResult)/4;
+		let bAverage = (bEstimate.result*3+bEstimate.safeResult)/4;
+
+		if (playItSafe || aAverage == bAverage)
+			return bEstimate.saferResult - aEstimate.saferResult;
+
+		return bAverage - aAverage;
+}
 
 function finaliseIAPEstimate(data, result, numSims = 5000) {
 	const { voyage_description } = data;
@@ -122,7 +141,6 @@ function finaliseIAPEstimate(data, result, numSims = 5000) {
 
 		entries.push(entry);
 	}
-
 
 	const {primary_skill, secondary_skill } = voyage_description.skills;
 	config.ps = aggregates[primary_skill];
