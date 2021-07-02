@@ -3,7 +3,7 @@
 
 /* eslint-disable */
 
-function getEstimate(config, reportProgress) {
+function getEstimate(config, reportProgress = () => true) {
   // required input (starting numbers)
   var ps = config.ps;
   var ss = config.ss;
@@ -14,14 +14,14 @@ function getEstimate(config, reportProgress) {
   var startAm = config.startAm;
 
   // optional input (proficiency ratio)
-  var prof = config.prof ? config.prof : 20;
+  var prof = config.prof ?? 20;
 
   // optional input (ongoing voyage)
   var elapsedSeconds = config.elapsedSeconds ? config.elapsedSeconds : 0;
-  var currentAm = config.currentAm ? config.currentAm : 0;
+  var currentAm = config.currentAm ?? 0;
 
   // optional input (simulations)
-  var numSims = config.numSims ? config.numSims : 5000;
+  var numSims = config.numSims ?? 5000;
 
   // returned estimate
   var estimate = {};
@@ -120,7 +120,6 @@ function getEstimate(config, reportProgress) {
       }
 
       delete bins[NaN];
-      //console.log(Object.values(bins);
       refill.bins = Object.values(bins);
 
       refills.push(refill);
@@ -201,7 +200,7 @@ function getEstimate(config, reportProgress) {
       if (tick == 10000)
         break;
 
-      // hazard && not dilemma
+      // hazard && not dilemma or reward
       if (tick%hazardTick == 0 && tick%rewardTick != 0 && tick%ticksBetweenDilemmas != 0)
       {
         hazDiff += skillIncPerHaz;
