@@ -404,6 +404,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		if (voyState !== 'pending') {
 			return (
 				<div>
+					<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for ' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
 						voyState !== 'recalled' && voyState !== 'completed' &&

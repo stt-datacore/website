@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
+import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment, Input } from 'semantic-ui-react';
 import * as localForage from 'localforage';
 import { isMobile } from 'react-device-detect';
 
@@ -39,6 +39,11 @@ const searchDepths = [
 	 'for supercomputers', // 9
 ];
 
+const calculators = [
+	{ label: 'Original', internalName: 'IAmPicard'},
+	{ label: 'Experimental', internalName: 'USSJohnJay'}
+];
+
 type VoyageCalculatorState = {
 	bestShip: any;
 	calcState: CalculatorState;
@@ -53,7 +58,9 @@ type VoyageCalculatorState = {
 	extendsTarget: number;
 	telemetryOptOut: boolean;
 	showCalculator: boolean;
-	activeCalculator: number;
+	activeCalculation: number;
+	calculationName: string;
+	calculator: string;
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -74,7 +81,9 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			extendsTarget: 0,
 			telemetryOptOut: false,
 			showCalculator: false,
-			activeCalculator: 0
+			activeCalculation: 0,
+			calculator: 0,
+			calculationName: ''
 		};
 	}
 
@@ -202,7 +211,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	render() {
 		const { playerData, voyageData } = this.props;
-		const { activeCalculator, calcState, showCalculator, bestShip, crew, results } = this.state;
+		const { activeCalculation, calcState, showCalculator, bestShip, crew, results } = this.state;
 
 		if (!showCalculator && voyageData.voyage.length > 0)
 			return (this._renderCurrentVoyage(voyageData.voyage[0]));
@@ -240,6 +249,29 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				</Message>
 				<Form className='attached fluid segment'>
 					<Form.Group inline>
+						<Form.Field
+							control={Input}
+							placeholder={this._defaultCalculationName()}
+							label='Name'
+							value={this.state.calculationName}
+							onChange={(e, { value }) => this.setState({ calculationName: value })}
+						/>
+						{/* Not yet in use
+						<Form.Field
+							control={Select}
+							label='Calculator'
+							options={
+								Array.from(calculators,
+													 (value, idx) => ({
+														 key: idx,
+														 text: value.label,
+														 value: idx
+													 }))
+							}
+							value={this.state.calculator}
+							onChange={(e, { value }) => this.setState({ calculator: value })}
+						/>
+						*/}
 						<Form.Field
 							control={Select}
 							label='Search depth'
@@ -362,8 +394,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 								}))
 							}
 							style={{ marginTop: '1em' }}
-							activeIndex={activeCalculator}
-							onTabChange={(e, { activeIndex }) => this.setState({activeCalculator : activeIndex})}
+							activeIndex={activeCalculation}
+							onTabChange={(e, { activeIndex }) => this.setState({activeCalculation : activeIndex})}
 						/>
 					}
 				<Modal basic size='tiny' open={this.state.calcState === CalculatorState.InProgress}>
@@ -380,6 +412,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		);
 	}
 
+	_defaultCalculationName() {
+		const {calculator, searchDepth} = this.state;
+		return `${calculators[calculator].label} (${searchDepths[searchDepth-4]})`;
+	}
 	_bestVoyageShip(ships: any[], voyageData: any): any[] {
 		let voyage = voyageData.voyage_descriptions[0];
 
@@ -461,7 +497,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	_packVoyageOptions(shipAM: number) {
 		const { voyageData } = this.props;
-		const { crew, searchDepth } = this.state;
+		const { calculationName, calculator, crew, searchDepth } = this.state;
 
 		let filteredRoster = crew.filter(crewman => {
 			// Filter out buy-back crew
@@ -486,8 +522,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		});
 
 		return {
-			name: `Original (${searchDepths[searchDepth-4]})`,
-			worker: 'IAmPicard',
+			name: calculationName !== undefined ? calculationName : this._defaultCalculationName(),
+			worker: calculators[calculator].internalName,
 			searchDepth: searchDepth,
 			extendsTarget: this.state.extendsTarget,
 			shipAM: shipAM,
@@ -502,7 +538,6 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	_calcVoyageData(shipAM: number) {
 		let options = this._packVoyageOptions(shipAM);
-		//let entries  = this.state.result ? this.state.result.entries : [];
 
 		const updateState = (calcResult, finished) => {
 			let added = false;
@@ -517,11 +552,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			if (!added)
 				results = [...this.state.results, calcResult];
 
-
 			this.setState({
 				results: results,
 				calcState: finished ? CalculatorState.Done : CalculatorState.InProgress,
-				activeCalculator: results.length - 1
+				activeCalculation: results.length - 1,
 			});
 		};
 
@@ -531,6 +565,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				//if (entries.every((entry, index) => calcResult.entries[index].id == entry.id)) {
 			calcResult => updateState(calcResult, true)
 		);
+		this.setState({	calculationName: ''});
 	}
 
 	_resultToVoyageData(result, voyage_description) {
