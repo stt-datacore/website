@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Table, Icon } from 'semantic-ui-react';
+import { Header, Table, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -80,6 +80,8 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 	}
 
 	_filterItem(item: any, filters: []): boolean {
+		if (filters.length == 0) return true;
+
 		const matchesFilter = (input: string, searchString: string) =>
 			input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
@@ -143,28 +145,27 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 	render() {
 		return (
 			<Layout title='Items'>
-				<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
-					<Header as="h2">Items</Header>
+				<Header as="h2">Items</Header>
 
-					{!this.state.items && (
-						<div>
-							<Icon loading name="spinner" /> Loading...
-						</div>
-					)}
-					{this.state.items && (
-						<SearchableTable
-							data={this.state.items}
-							explanation={
-								<div>
-									<p>Search for items by name or flavor.</p>
-								</div>
-							}
-							renderTableRow={crew => this.renderTableRow(crew)}
-							filterRow={(crew, filter) => this._filterItem(crew, filter)}
-							config={tableConfig}
-						/>
-					)}
-				</Container>
+				{!this.state.items && (
+					<div>
+						<Icon loading name="spinner" /> Loading...
+					</div>
+				)}
+				{this.state.items && (
+					<SearchableTable
+						id="items"
+						data={this.state.items}
+						explanation={
+							<div>
+								<p>Search for items by name or flavor.</p>
+							</div>
+						}
+						renderTableRow={crew => this.renderTableRow(crew)}
+						filterRow={(crew, filter) => this._filterItem(crew, filter)}
+						config={tableConfig}
+					/>
+				)}
 			</Layout>
 		);
 	}

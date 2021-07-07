@@ -51,7 +51,7 @@ exports.createPages = ({ graphql, actions }) => {
 				}
 			}
 		}
-	`).then(result => {
+	`).then((result) => {
 		result.data.allMarkdownRemark.edges.forEach(({ node }) => {
 			if (/(\/static\/crew\/).*\.md$/.test(node.fileAbsolutePath)) {
 				createPage({
@@ -82,33 +82,18 @@ exports.createPages = ({ graphql, actions }) => {
 	});
 };
 
-/**
- * Generate GraphQL schema.json file to be read by tslint
- * Thanks: https://gist.github.com/kkemple/6169e8dc16369b7c01ad7408fc7917a9
- */
-exports.onPostBootstrap = async ({ store }) => {
-	try {
-		const { schema } = store.getState();
-		const jsonSchema = await graphql(schema, introspectionQuery);
-		const sdlSchema = printSchema(schema);
-
-		write.sync('schema.json', JSON.stringify(jsonSchema.data), {});
-		write.sync('schema.graphql', sdlSchema, {});
-
-		console.log('\n\n[gatsby-plugin-extract-schema] Wrote schema\n'); // eslint-disable-line
-	} catch (error) {
-		console.error('\n\n[gatsby-plugin-extract-schema] Failed to write schema: ', error, '\n');
-	}
-};
-
 exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 	if (stage === 'build-html') {
 		actions.setWebpackConfig({
 			module: {
 				rules: [
 					{
-						test: /wasmWorker\.js$/,
+						test: /unifiedWorker\.js$/,
 						use: { loader: 'worker-loader' }
+					},
+					{
+						test: /exceljs/,
+						use: loaders.null()
 					}
 				]
 			}
@@ -116,6 +101,7 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 	}
 
 	const config = getConfig();
-	config.output.globalObject = 'this';
+	//TODO: more testing
+	//config.output.globalObject = 'this';
 	actions.replaceWebpackConfig(config);
 };

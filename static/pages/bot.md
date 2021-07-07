@@ -2,8 +2,6 @@
 title: DataCore bot
 ---
 
-## DataCore bot
-
 As a companion to this website, I'm hosting a Discord bot which uses the same data. It can give you quick stats about crew, places to farm items as well as help with beholds - using the magic of AI / computer vision to extract the options out of behold screenshots. The bot is available on the (unofficial) [Star Trek Timelines Discord server](https://discord.gg/8Du7ZtJ).
 
 Stats on crew:

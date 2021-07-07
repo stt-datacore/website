@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Container, Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Header, Image, Grid, Popup, Rating } from 'semantic-ui-react';
+import { graphql, Link } from 'gatsby';
 import marked from 'marked';
 import { isMobile } from 'react-device-detect';
 
@@ -8,8 +8,12 @@ import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
 
 import CommonCrewData from '../components/commoncrewdata';
+import { formatTierLabel } from '../utils/crewutils';
 
 type BigBookPageProps = {
+	data: {
+		sections: any;
+	}
 };
 
 type BigBookPageState = {
@@ -111,20 +115,44 @@ class BigBook extends PureComponent<BigBookPageProps, BigBookPageState> {
 
 	render() {
 		const { groupedByTier } = this.state;
+		const header = this.props.data.sections.edges[0];
 
 		return (
 			<Layout title='The Big Book of Behold Advice'>
-				<Container text style={{ paddingTop: '5em', paddingBottom: '3em' }}>
-					{[...groupedByTier.keys()].map((tier, idx) => (
-						<React.Fragment key={idx}>
-							<Header as='h3'>Tier {tier ? tier : 'not yet determined'}</Header>
-							<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
-						</React.Fragment>
-					))}
-				</Container>
+				<div>
+						<Header as='h2' style={{ paddingTop: '1em' }}>
+							{header.node.frontmatter.title}
+						</Header>
+						<div dangerouslySetInnerHTML={{ __html: header.node.html }} />
+				</div>
+				{[...groupedByTier.keys()].map((tier, idx) => (
+					<React.Fragment key={idx}>
+						<Header as='h3'>Tier {formatTierLabel(tier, true)}</Header>
+						<Grid columns={isMobile ? 4 : 6}>{groupedByTier.get(tier).map(entry => this.renderCrew(entry))}</Grid>
+					</React.Fragment>
+				))}
 			</Layout>
 		);
 	}
 }
 
 export default BigBook;
+
+
+export const query = graphql`
+	query {
+		sections: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {ne: null}, title: {eq: "The Big Book of Behold Advice"}}}) {
+			totalCount
+			edges {
+				node {
+					id
+					html
+					frontmatter {
+						title
+						bigbook_section
+					}
+				}
+			}
+		}
+	}
+`;

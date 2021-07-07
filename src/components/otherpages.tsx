@@ -1,38 +1,34 @@
-import React, { PureComponent } from 'react';
-import { Dropdown } from 'semantic-ui-react';
-import { StaticQuery, navigate, graphql } from 'gatsby';
+import { useStaticQuery, graphql } from 'gatsby';
 
-class OtherPages extends PureComponent {
-	render() {
-		return (
-			<StaticQuery
-				query={graphql`
-					query {
-						allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/(/static/pages)/.*\\.md$/"}, frontmatter: {bigbook_section: {eq: null}}}) {
-							edges {
-							  node {
-								frontmatter {
-								  title
-								  bigbook_section
-								}
-								fields {
-								  slug
-								}
-							  }
-							}
-						  }
+export type PageEntry = {
+	slug: string;
+	title: string;
+};
+
+export const useOtherPages = (): PageEntry[] => {
+	const { allMarkdownRemark } = useStaticQuery(graphql`query{
+		allMarkdownRemark(
+			filter: {
+				fileAbsolutePath: { regex: "/(/static/pages)/.*\\.md$/" }
+				frontmatter: { bigbook_section: { eq: null }, hide_in_other: { ne: true } }
+			}
+		) {
+			edges {
+				node {
+					frontmatter {
+						title
+						bigbook_section
+						hide_in_other
 					}
-				`}
-				render={data =>
-					data.allMarkdownRemark.edges.map(({ node }, index) => (
-						<Dropdown.Item as='a' key={index} onClick={() => navigate(node.fields.slug)}>
-							{node.frontmatter.title}
-						</Dropdown.Item>
-					))
+					fields {
+						slug
+					}
 				}
-			/>
-		);
-	}
-}
+			}
+		}
+	}`);
 
-export default OtherPages;
+	return allMarkdownRemark.edges.map(({ node }) => (
+		{ slug: node.fields.slug, title: node.frontmatter.title }
+	));
+}

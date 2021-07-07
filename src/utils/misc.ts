@@ -18,6 +18,11 @@ export function getCoolStats(crew: any, simple: boolean, showMore: boolean = tru
 					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.substr(2).replace('_', ' / ')}`);
 				}
 			}
+			if (rank === 'voyTriplet') {
+				if (crew.ranks[rank] && crew.ranks[rank].rank <= 9) {
+					stats.push(`Voyage #${crew.ranks[rank].rank} ${crew.ranks[rank].name}`);
+				}
+			}
 		}
 	}
 

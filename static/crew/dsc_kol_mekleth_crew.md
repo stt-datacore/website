@@ -3,8 +3,8 @@ name: Kol of House Kor
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 25
+bigbook_tier: 8
+events: 26
 in_portal: true
 date: 31/01/2019
 obtained: Mega
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Mega legendaries are always a sticky topic. If you're just ducking in to see if it's worth adding his last star; that window has passed. He's very similar to former megas Kortar and Thrax and if you read up on them, you'll hear, "Solid, but nothing spectacular." So, too, is Kol. Timelines has a way of providing more of Kol's skill set than you'll ever need, so if you're looking for unique offerings and small edges, look elsewhere. His best attribute is the Disco trait, where he might make the odd requisition shuttle, but with no less than nine better SEC bases in the Disco pool alone, you'll have to be sending out a lot of shuttles to see him do anything heroic. Without variants, collections, or a more useful skill set, he may not age well as a behold choice in the future, but as long as the Disco events continue Kol will be an alright contributor.
+The chapter seemingly closed on Discovery megas, Kol will be seeking a pivot to Klingon for continued weekend relevance. A rewarding collection has already helped his value in that regard, but with his ceaselessly overbloated skill set in tow and few other points of relevance, you're looking primarily at that big Klingon collection and one or two traits to supplement whatever juice is left in his surface level ranks.

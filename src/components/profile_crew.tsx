@@ -1,113 +1,105 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
+
+import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+
+import CONFIG from '../components/CONFIG';
+
+import { crewMatchesSearchFilter } from '../utils/crewsearch';
+import { formatTierLabel } from '../utils/crewutils';
+import { useStateWithStorage } from '../utils/storage';
+
+const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+
+const tableConfig: ITableConfigRow[] = [
+	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
+	{ width: 1, column: 'max_rarity', title: 'Rarity' },
+	{ width: 1, column: 'cab_ov', title: 'CAB' },
+	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
+	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ width: '1em' }} />  },
+	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ width: '1em' }} /> },
+	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ width: '1em' }} /> }
+];
 
 type ProfileCrewProps = {
 	playerData: any;
 	isTools?: boolean;
 };
 
-type ProfileCrewState = {
-	column: any;
-	isTools: boolean;
-	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
-	findDupes: boolean;
-	data: any[];
-	pagination_rows: number;
-	pagination_page: number;
-};
+const ProfileCrew = (props: ProfileCrewProps) => {
+	const { isTools } = props;
 
-const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
-];
+	const pageId = isTools ? 'tools' : 'profile';
+	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/crew/showFrozen', true);
+	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/crew/findDupes', false);
 
-const crewPseudoColumns = ['name', 'level', 'bigbook_tier'];
+	const data = [...props.playerData.player.character.crew];
 
-class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
-	constructor(props: ProfileCrewProps) {
-		super(props);
-
-		this.state = {
-			isTools: this.props.isTools || false,
-			column: null,
-			direction: null,
-			searchFilter: '',
-			findDupes: false,
-			pagination_rows: 10,
-			pagination_page: 1,
-			data: this.props.playerData.player.character.crew
-		};
-	}
-
-	_onChangePage(activePage) {
-		this.setState({ pagination_page: activePage });
-	}
-
-	_compare(a, b) {
-		return (a > b ? 1 : b > a ? -1 : 0);
-	}
-
-	_handleCrewSort() {
-		const { column, direction } = this.state;
-		let { data } = this.state;
-		let sortedData;
-		if (crewPseudoColumns.includes(column) && direction === 'ascending') {
-			this.setState({
-				direction: 'descending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
-		} else {
-			const nextIndex = crewPseudoColumns.indexOf(column) + 1; // Will be 0 if previous column was not a pseudocolumn
-			const nextColumnIndex = nextIndex === crewPseudoColumns.length ? 0 : nextIndex;
-			const newColumn = crewPseudoColumns[nextColumnIndex];
-			sortedData = data.sort((a, b) => this._compare(a[newColumn], b[newColumn]));
-			this.setState({
-				column: newColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
+	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
+		if (!showFrozen && crew.immortal > 0) {
+			return false;
 		}
-	}
 
-	// TODO: share this code with index.tsx
-	_handleSort(clickedColumn, isSkill) {
-		const { column, direction, findDupes } = this.state;
-		let { data } = this.state;
-
-		if (column !== clickedColumn) {
-			let sortedData;
-			if (isSkill) {
-				sortedData = data.sort(
-					(a, b) =>
-						(a.base_skills[clickedColumn] ? a.base_skills[clickedColumn].core : 0) -
-						(b.base_skills[clickedColumn] ? b.base_skills[clickedColumn].core : 0)
-				);
-			} else {
-				sortedData = data.sort((a, b) => this._compare(a[clickedColumn], b[clickedColumn]));
-			}
-
-			this.setState({
-				column: clickedColumn,
-				direction: 'ascending',
-				pagination_page: 1,
-				data: sortedData
-			});
-		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				pagination_page: 1,
-				data: data.reverse()
-			});
+		if (findDupes) {
+			if (data.filter((c) => c.symbol === crew.symbol).length === 1)
+				return false;
 		}
+
+		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	_descriptionLabel(crew: any) {
+	function renderTableRow(crew: any, idx: number): JSX.Element {
+		return (
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
+				<Table.Cell>
+					<div
+						style={{
+							display: 'grid',
+							gridTemplateColumns: '60px auto',
+							gridTemplateAreas: `'icon stats' 'icon description'`,
+							gridGap: '1px'
+						}}
+					>
+						<div style={{ gridArea: 'icon' }}>
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+						</div>
+						<div style={{ gridArea: 'stats' }}>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+						</div>
+						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
+					</div>
+				</Table.Cell>
+				<Table.Cell>
+					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>{crew.cab_ov}</b><br />
+					<small style={{ fontSize: '70%' }}>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>#{crew.ranks.voyRank}</b><br />
+					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+				</Table.Cell>
+				{CONFIG.SKILLS_SHORT.map(skill =>
+					crew[skill.name].core > 0 ? (
+						<Table.Cell key={skill.name} textAlign='center'>
+							<b>{crew[skill.name].core}</b>
+							<br />
+							+({crew[skill.name].min}-{crew[skill.name].max})
+						</Table.Cell>
+					) : (
+						<Table.Cell key={skill.name} />
+					)
+				)}
+			</Table.Row>
+		);
+	}
+
+	function descriptionLabel(crew: any): JSX.Element {
 		if (crew.immortal) {
 			return (
 				<div>
@@ -119,203 +111,43 @@ class ProfileCrew extends Component<ProfileCrewProps, ProfileCrewState> {
 				<div>
 					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}, </span>
-					<span>Tier {crew.bigbook_tier}</span>
+					{crew.bigbook_tier && crew.bigbook_tier > 0 && <span>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </span>}
+					<br />
+					<span>{crew.events} events, </span>
+					<span>{crew.collections.length} collections</span>
 				</div>
 			);
 		}
 	}
 
-	render() {
-		const { column, direction, pagination_rows, pagination_page, findDupes, isTools } = this.state;
-		let { data } = this.state;
-
-		if (findDupes) {
-			data = data.filter((crew) => data.filter((c) => c.symbol === crew.symbol).length > 1);
-		}
-
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
-
-		// Pagination
-		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-
-		return (
-			<>
-				<Form.Group inline hidden={!isTools}>
-						<Form.Field
-							control={Checkbox}
-							label='Only show duplicate crew'
-							checked={this.state.findDupes}
-							onChange={(e, { checked }) => this.setState({ findDupes: checked })}
+	return (
+		<React.Fragment>
+			<div style={{ margin: '.5em 0' }}>
+				<Form.Group grouped>
+					<Form.Field
+						control={Checkbox}
+						label='Show frozen (vaulted) crew'
+						checked={showFrozen}
+						onChange={(e, { checked }) => setShowFrozen(checked)}
+					/>
+					<Form.Field
+						control={Checkbox}
+						label='Only show duplicate crew'
+						checked={findDupes}
+						onChange={(e, { checked }) => setFindDupes(checked)}
 					/>
 				</Form.Group>
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell
-								width={3}
-								sorted={crewPseudoColumns.includes(column) ? direction : null}
-								onClick={() => this._handleCrewSort()}
-							>
-								Crew <br /> {crewPseudoColumns.includes(column) && <small>{column}</small>}
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'max_rarity' ? direction : null}
-								onClick={() => this._handleSort('max_rarity', false)}
-							>
-								Rarity
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'command_skill' ? direction : null}
-								onClick={() => this._handleSort('command_skill', true)}
-							>
-								Command
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'diplomacy_skill' ? direction : null}
-								onClick={() => this._handleSort('diplomacy_skill', true)}
-							>
-								Diplomacy
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'engineering_skill' ? direction : null}
-								onClick={() => this._handleSort('engineering_skill', true)}
-							>
-								Engineering
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'medicine_skill' ? direction : null}
-								onClick={() => this._handleSort('medicine_skill', true)}
-							>
-								Medicine
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'science_skill' ? direction : null}
-								onClick={() => this._handleSort('science_skill', true)}
-							>
-								Science
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'security_skill' ? direction : null}
-								onClick={() => this._handleSort('security_skill', true)}
-							>
-								Security
-							</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{data.map((crew, idx) => (
-							<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}
-									>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-										</div>
-										<div style={{ gridArea: 'description' }}>{this._descriptionLabel(crew)}</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<Rating rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
-								</Table.Cell>
-								{crew.base_skills.command_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.command_skill.core}</b>
-										<br />
-										+({crew.base_skills.command_skill.range_min}-{crew.base_skills.command_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-								{crew.base_skills.diplomacy_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.diplomacy_skill.core}</b>
-										<br />
-										+({crew.base_skills.diplomacy_skill.range_min}-{crew.base_skills.diplomacy_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-								{crew.base_skills.engineering_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.engineering_skill.core}</b>
-										<br />
-										+({crew.base_skills.engineering_skill.range_min}-{crew.base_skills.engineering_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-								{crew.base_skills.medicine_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.medicine_skill.core}</b>
-										<br />
-										+({crew.base_skills.medicine_skill.range_min}-{crew.base_skills.medicine_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-								{crew.base_skills.science_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.science_skill.core}</b>
-										<br />
-										+({crew.base_skills.science_skill.range_min}-{crew.base_skills.science_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-								{crew.base_skills.security_skill ? (
-									<Table.Cell textAlign="center">
-										<b>{crew.base_skills.security_skill.core}</b>
-										<br />
-										+({crew.base_skills.security_skill.range_min}-{crew.base_skills.security_skill.range_max})
-									</Table.Cell>
-								) : (
-									<Table.Cell />
-								)}
-							</Table.Row>
-						))}
-					</Table.Body>
-					<Table.Footer>
-						<Table.Row>
-							<Table.HeaderCell colSpan="8">
-								<Pagination
-									totalPages={totalPages}
-									activePage={pagination_page}
-									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
-								/>
-								<span style={{ paddingLeft: '2em' }}>
-									Crew per page:{' '}
-									<Dropdown
-										inline
-										options={pagingOptions}
-										value={pagination_rows}
-										onChange={(event, { value }) =>
-											this.setState({ pagination_page: 1, pagination_rows: value as number })
-										}
-									/>
-								</span>
-							</Table.HeaderCell>
-						</Table.Row>
-					</Table.Footer>
-				</Table>
-			</>
-		);
-	}
+			</div>
+			<SearchableTable
+				id={isTools ? "tools_crew" : "profile_crew"}
+				data={data}
+				config={tableConfig}
+				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				showFilterOptions="true"
+			/>
+		</React.Fragment>
+	);
 }
 
 export default ProfileCrew;

@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 3
-events: 29
+events: 32
 in_portal: true
 date: 20/11/2018
 obtained: Pack

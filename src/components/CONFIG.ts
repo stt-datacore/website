@@ -111,5 +111,20 @@ export default class CONFIG {
 		28: { symbol: 'medicine_skill_range_max', skill: 'medicine_skill', stat: 'range_max' }
 	};
 
+	static readonly VOYAGE_CREW_SLOTS = [
+		"captain_slot",
+		"first_officer",
+		"chief_communications_officer",
+		"communications_officer",
+		"chief_security_officer",
+		"security_officer",
+		"chief_engineering_officer",
+		"engineering_officer",
+		"chief_science_officer",
+		"science_officer",
+		"chief_medical_officer",
+		"medical_officer"
+	]
+
 	static readonly CITATION_COST = [500, 500, 500, 4500, 18000, 50000];
 }

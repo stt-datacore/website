@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 8
-events: 21
+events: 23
 in_portal:
 date: 16/06/2020
 obtained: Pack

@@ -25,7 +25,6 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.cadet_tickets;
 	delete p.player.character.reroll_descriptions;
 	delete p.player.character.daily_rewards_state;
-	delete p.player.character.cryo_collections;
 	delete p.player.character.location;
 	delete p.player.character.destination;
 	delete p.player.character.video_ad_chroniton_boost_reward;
@@ -140,6 +139,7 @@ export function stripPlayerData(items: any[], p: any): any {
 	}));
 
 	p.player.character.ships = p.player.character.ships.map(ship => ({
+		id: ship.id,
 		level: ship.level,
 		symbol: ship.symbol,
 		antimatter: ship.antimatter,

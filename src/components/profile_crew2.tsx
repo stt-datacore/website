@@ -5,12 +5,20 @@ import VaultCrew from './vaultcrew';
 import DropdownOpts from './dropdownopts';
 
 import { bonusCrewForCurrentEvent } from './../utils/playerutils';
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 enum SkillSort {
-	Base = 1,
-	Proficiency,
-	Combined
+	Base = '.core',
+	Proficiency = '.proficiency',
+	Combined = '.combined'
 }
+
+type HandleSortOptions = {
+	activeItem?: string;
+	column?: string;
+	direction?: string;
+	sortKind?: SkillSort;
+};
 
 type ProfileCrewMobileProps = {
 	playerData: any;
@@ -19,6 +27,7 @@ type ProfileCrewMobileProps = {
 
 type ProfileCrewMobileState = {
 	column: any;
+	defaultColumn: 'bigbook_tier',
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
 	data: any[];
@@ -27,6 +36,7 @@ type ProfileCrewMobileState = {
 	excludeFF: boolean;
 	onlyEvent: boolean;
 	sortKind: SkillSort;
+	itemsReady: boolean;
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
@@ -34,19 +44,22 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		super(props);
 
 		this.state = {
-			column: null,
-			direction: null,
+			column: 'bigbook_tier',
+			defaultColumn: 'bigbook_tier',
+			direction: 'descending',
 			searchFilter: '',
 			activeItem: '',
 			data: this.props.playerData.player.character.crew,
 			includeFrozen: false,
 			excludeFF: false,
 			onlyEvent: false,
-			sortKind: SkillSort.Base
+			sortKind: SkillSort.Base,
+			itemsReady: false
 		};
 	}
 
 	componentDidMount() {
+		let self = this;
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
@@ -58,60 +71,80 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}
 					});
 				});
+				this.setState({ itemsReady: true });
 			});
+
+		const data = this.state.data;
+		data.forEach((crew) => {
+			Object.keys(crew).forEach((p) => {
+				if(p.substr(-6) === '_skill') {
+					crew[p].proficiency = crew[p].max - crew[p].min;
+					crew[p].combined = crew[p].core === 0 ? 0 : crew[p].core + Math.trunc((crew[p].max + crew[p].min) / 2);
+				}
+			});
+		});
+		this.setState({ data });
+		this._handleSortNew({})
 	}
 
-	_handleItemClick(name: string) {
-		if (this.state.activeItem === name) {
-			this.setState({ activeItem: '' });
-			this._handleSort('level', false, SkillSort.Base);
-		} else {
-			this.setState({ activeItem: name });
-			this._handleSort(name, true, SkillSort.Base);
+	_handleSortNew(config: HandleSortOptions) {
+		const { activeItem, column, defaultColumn, direction, sortKind } = this.state;
+		const { data } = this.state;
+		let newActiveItem, newColumn, newDirection, newSortKind;
+
+		const sortConfig: IConfigSortData = {
+			field: column,
+			direction: 'descending',
+			keepSortOptions: true
+		};
+
+		if(
+			((!config.activeItem && !config.sortKind) || config.activeItem === activeItem)
+			&& (!config.column || ['name', 'short_name', 'bigbook_tier'].indexOf(config.column) !== -1)
+		) {
+			sortConfig.direction = 'ascending';
+			sortConfig.secondary = {
+				field: 'max_rarity',
+				direction: 'descending'
+			};
 		}
-	}
-
-	_handleSort(clickedColumn: string, isSkill: boolean, newSortKind: SkillSort) {
-		const { column, direction, sortKind } = this.state;
-		let { data } = this.state;
-
-		if (column !== clickedColumn || sortKind !== newSortKind) {
-			const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0);
-
-			let getVal = (crew: any) => (crew.base_skills[clickedColumn] ? crew.base_skills[clickedColumn].core : 0);
-			if (newSortKind === SkillSort.Proficiency) {
-				getVal = (crew: any) =>
-					crew.base_skills[clickedColumn]
-						? crew.base_skills[clickedColumn].range_max - crew.base_skills[clickedColumn].range_min
-						: 0;
-			} else if (newSortKind === SkillSort.Combined) {
-				getVal = (crew: any) =>
-					crew.base_skills[clickedColumn]
-						? crew.base_skills[clickedColumn].core +
-						  (crew.base_skills[clickedColumn].range_max - crew.base_skills[clickedColumn].range_min) / 2
-						: 0;
-			}
-
-			let sortedData;
-			if (isSkill) {
-				sortedData = data.sort((a, b) => getVal(a) - getVal(b));
-			} else {
-				sortedData = data.sort((a, b) => compare(a[clickedColumn], b[clickedColumn]));
-			}
-
-			this.setState({
-				column: clickedColumn,
-				direction: 'descending',
-				sortKind: newSortKind,
-				data: sortedData.reverse()
-			});
-		} else {
-			this.setState({
-				direction: direction === 'ascending' ? 'descending' : 'ascending',
-				sortKind: newSortKind,
-				data: data.reverse()
-			});
+		if(config.column && config.column === 'level') {
+			sortConfig.direction = 'descending';
+			sortConfig.secondary = {
+				field: 'max_rarity',
+				direction: 'ascending'
+			};
 		}
+		if(config.column && config.column === 'max_rarity') {
+			sortConfig.direction = 'descending';
+			sortConfig.secondary = {
+				field: 'rarity',
+				direction: 'ascending'
+			};
+		}
+
+		if(config.activeItem) {
+			newActiveItem = activeItem === config.activeItem ? defaultColumn : config.activeItem;
+			newColumn = newActiveItem;
+			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+		}
+		if(config.sortKind) {
+			newSortKind = config.sortKind;
+			sortConfig.field = (newColumn || column) + newSortKind;
+		}
+		if(config.column) {
+			newColumn = column === config.column ? defaultColumn : config.column;
+			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+		}
+
+		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+		this.setState({
+			activeItem: newActiveItem || activeItem,
+			column: newColumn || column,
+			data: sorted.result,
+			direction: newDirection || direction,
+			sortKind: newSortKind || sortKind
+		});
 	}
 
 	_onChangeFilter(value: string) {
@@ -119,25 +152,30 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	_onChange(option: string) {
-		if (option === 'Default Sort') {
-			this._handleSort('bigbook_tier', false, SkillSort.Base);
-		} else if (option === 'Crew Level') {
-			this._handleSort('level', false, SkillSort.Base);
-		} else if (option === 'Crew Rarity') {
-			this._handleSort('max_rarity', false, SkillSort.Base);
-		} else if (option === 'Alphabetical') {
-			this._handleSort('name', false, SkillSort.Base);
-		}
-
-		if (this.state.activeItem !== '') {
-			if (option === 'Base Skill') {
-				this._handleSort(this.state.activeItem, true, SkillSort.Base);
-			} else if (option === 'Proficiency Skill') {
-				this._handleSort(this.state.activeItem, true, SkillSort.Proficiency);
-			} else if (option === 'Combined Skill') {
-				this._handleSort(this.state.activeItem, true, SkillSort.Combined);
+		const sortSettings = {
+			'Default Sort': {
+				column: 'bigbook_tier'
+			},
+			'Crew Level': {
+				column: 'level'
+			},
+			'Crew Rarity': {
+				column: 'max_rarity'
+			},
+			'Alphabetical': {
+				column: 'short_name'
+			},
+			'Base Skill': {
+				sortKind: SkillSort.Base
+			},
+			'Proficiency Skill': {
+				sortKind: SkillSort.Proficiency
+			},
+			'Combined Skill': {
+				sortKind: SkillSort.Combined
 			}
-		}
+		};
+		this._handleSortNew(sortSettings[option]);
 	}
 
 	_onSettingChange(setting: string, value: boolean) {
@@ -152,7 +190,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		let { data } = this.state;
+		let { data, itemsReady } = this.state;
 
 		const { isMobile } = this.props;
 
@@ -176,7 +214,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const zoomFactor = isMobile ? 0.65 : 0.85;
 
 		let opts = [];
-		if (activeItem === '') {
+		if (activeItem === '' || activeItem === this.state.defaultColumn) {
 			opts = ['Default Sort', 'Crew Level', 'Crew Rarity', 'Alphabetical'];
 		} else {
 			opts = ['Base Skill', 'Proficiency Skill', 'Combined Skill'];
@@ -199,42 +237,42 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 					<Menu.Item
 						name="command_skill"
 						active={activeItem === 'command_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="diplomacy_skill"
 						active={activeItem === 'diplomacy_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="engineering_skill"
 						active={activeItem === 'engineering_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="security_skill"
 						active={activeItem === 'security_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="medicine_skill"
 						active={activeItem === 'medicine_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="science_skill"
 						active={activeItem === 'science_skill'}
-						onClick={(e, { name }) => this._handleItemClick(name)}
+						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} />
 					</Menu.Item>
@@ -270,7 +308,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}}
 					>
 						{data.map((crew, idx) => (
-							<VaultCrew key={idx} crew={crew} size={zoomFactor} />
+							<VaultCrew key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
 						))}
 					</div>
 				</Segment>

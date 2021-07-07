@@ -1,7 +1,7 @@
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 import CONFIG from '../components/CONFIG';
 
-import ComputeWorker from 'worker-loader!../wasm/wasmWorker';
+import ComputeWorker from 'worker-loader!../workers/unifiedWorker';
 
 export interface IBuffStat {
 	multiplier: number;
@@ -55,7 +55,7 @@ export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
-		
+
 		if (skill && skill.core && (skill.core > 0)) {
 			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
 		}
@@ -244,11 +244,12 @@ export function exportVoyageData(options) {
 	return dataToExport;
 }
 
+var iap_worker = null;
 export function calculateVoyage(options, progressCallback: (result: ICalcResult) => void, doneCallback: (result: ICalcResult) => void) {
 	let dataToExport = exportVoyageData(options);
 
-	const worker = new ComputeWorker();
-	worker.addEventListener('message', message => {
+	iap_worker = new ComputeWorker();
+	iap_worker.addEventListener('message', message => {
 		if (message.data.progressResult) {
 			progressCallback(parseResults(Uint8Array.from(message.data.progressResult)));
 		} else if (message.data.result) {
@@ -256,7 +257,11 @@ export function calculateVoyage(options, progressCallback: (result: ICalcResult)
 		}
 	});
 
-	worker.postMessage(dataToExport);
+	iap_worker.postMessage(dataToExport);
+}
+
+export function abortVoyageCalculation() {
+	if(iap_worker) iap_worker.terminate();
 }
 
 export class BonusCrew {

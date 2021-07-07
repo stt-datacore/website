@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
+import * as localForage from 'localforage';
+import { isMobile } from 'react-device-detect';
+
 import ItemDisplay from '../components/itemdisplay';
+import { VoyageStats } from '../components/voyagestats';
 import {
 	ICalcResult,
 	calculateVoyage,
+	abortVoyageCalculation,
 	formatTimeSeconds,
 	BonusCrew
 } from '../utils/voyageutils';
@@ -39,6 +44,8 @@ type VoyageCalculatorState = {
 	currentSelection: any[];
 	searchDepth: number;
 	extendsTarget: number;
+	telemetryOptOut: boolean;
+	showCalculator: boolean
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -55,8 +62,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			peopleList: undefined,
 			currentSelection: [],
 			activeEvent: undefined,
-			searchDepth: 6,
-			extendsTarget: 0
+			searchDepth: isMobile ? 4 : 6,
+			extendsTarget: 0,
+			telemetryOptOut: false,
+			showCalculator: false,
 		};
 	}
 
@@ -128,17 +137,73 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		this.setState({ bestShip: bestShips[0], crew: crewlist, peopleList });
+
+		localForage.getItem<boolean>('telemetryOptOut', (err, value) => {
+			if (err) {
+				console.error(err);
+			} else {
+				this.setState({ telemetryOptOut: value });
+			}
+		});
+	}
+
+	componentDidUpdate(_, prevState) {
+		try {
+			const { calcState, crew, telemetryOptOut, result } = this.state;
+			if (prevState.calcState === CalculatorState.InProgress && calcState === CalculatorState.Done && result) {
+				if (!telemetryOptOut) {
+					fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+						method: 'post',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							type: 'voyage',
+							data: result.entries.map((entry) => {
+								return crew.find(c => c.id === entry.choice).symbol;
+							})
+						})
+					});
+				}
+			}
+		} catch(err) {
+			console.log('An error occurred while sending telemetry', err);
+		}
+	}
+
+	setTelemetryOptOut(value) {
+		console.log(value);
+		localForage.setItem<boolean>('telemetryOptOut', value);
+		this.setState({ telemetryOptOut: value });
+	}
+
+	_renderCurrentVoyage(data) {
+		return (
+			<div>
+				<VoyageStats
+					voyageData={data}
+					ships={this.props.playerData.player.character.ships}
+					showPanels={['estimate']}
+				/>
+				<br/>
+				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
+			</div>
+		);
 	}
 
 	render() {
 		const { playerData, voyageData } = this.props;
-		const { bestShip, crew } = this.state;
+		const { showCalculator, bestShip, crew } = this.state;
+
+		if (!showCalculator && voyageData.voyage.length > 0)
+			return (this._renderCurrentVoyage(voyageData.voyage[0]));
 
 		if (!bestShip)
 			return (<></>);
 
-		let curVoy = '';
 		let currentVoyage = false;
+		let curVoy = '';
+
 		if (voyageData.voyage_descriptions && voyageData.voyage_descriptions.length > 0) {
 			curVoy = `${CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.primary_skill]} primary / ${
 				CONFIG.SKILLS[voyageData.voyage_descriptions[0].skills.secondary_skill]
@@ -155,7 +220,11 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		return (
 			<div style={{ margin: '5px' }}>
-				{currentVoyage && <p>It looks like you already have a voyage started!</p>}
+				{currentVoyage &&
+					<p>
+						It looks like you already have a voyage started!
+					</p>
+				}
 				<Message attached>
 					VOYAGE CALCULATOR! Configure the settings below, then click on the "Calculate" button to see the recommendations. Current voyage
 					is <b>{curVoy}</b>.
@@ -233,6 +302,13 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							checked={this.state.includeFrozen}
 							onChange={(e, { checked }) => this.setState({ includeFrozen: checked })}
 						/>
+
+						<Form.Field
+							control={Checkbox}
+							label={<label>Collect anonymous stats <small>(Statistics are used to improve DataCore and power our Voyage Hall of Fame)</small></label>}
+							checked={!this.state.telemetryOptOut}
+							onChange={(e, { checked }) => this.setTelemetryOptOut(!checked) }
+						/>
 					</Form.Group>
 
 					{this.state.result && (
@@ -271,7 +347,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
                     </Modal.Content>
                     <Modal.Description>
                         <Segment basic textAlign={"center"}>
-                            <Button onClick={e => this.setState({calcState : CalculatorState.Done})}>Abort</Button>
+                            <Button onClick={e => { abortVoyageCalculation(), this.setState({calcState : CalculatorState.Done})}}>Abort</Button>
                         </Segment>
                     </Modal.Description>
                 </Modal>
@@ -284,16 +360,18 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 		let consideredShips: any[] = [];
 		ships.forEach((ship: any) => {
-			let entry = {
-				ship: ship,
-				score: ship.antimatter
-			};
+			if (ship.owned) {
+				let entry = {
+					ship: ship,
+					score: ship.antimatter
+				};
 
-			if (ship.traits.find((trait: any) => trait == voyage.ship_trait)) {
-				entry.score += 150; // TODO: where is this constant coming from (Config)?
+				if (ship.traits.find((trait: any) => trait == voyage.ship_trait)) {
+					entry.score += 150; // TODO: where is this constant coming from (Config)?
+				}
+
+				consideredShips.push(entry);
 			}
-
-			consideredShips.push(entry);
 		});
 
 		consideredShips = consideredShips.sort((a, b) => b.score - a.score);

@@ -3,8 +3,8 @@ name: Tee Time Doctor
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 20
+bigbook_tier: 2
+events: 25
 in_portal: true
 date: 19/03/2020
 obtained: Event
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-As Jimmy Demaret said "Golf and sex are about the only things you can enjoy without being good at" well he clearly forgot about rating images of holographic golfers for a mobile game. In the Super Rare leagues it's always refreshing to get more MED and his combination of DIP/MED is #1 for SR voyagers both in the pair and for DIP/MED/SEC. Nothing overly spectacular about his numbers but for newer rosters it's enough of the right combination to be a boon on any voyage.
+As Jimmy Demaret said "Golf and sex are about the only things you can enjoy without being good at". Well, he clearly forgot about tiering images of holographic golfers for a mobile game. In the Super Rare leagues it's always refreshing to get more MED and his combination of DIP/MED is #1 for SR voyagers both in the pair and triplet.
 
-He's also close to dethroning Mintakan Troi's domination of the DIP/MED pairings however she still has him beat on shuttles, even if it is a slim margin. No doubt that those who have been cherry picking MED crew over the last year will put him on a straight line for the freezer but those who run a tighter wallet could grab a contender to Captive Bashirs domination of that skill set. Now where did I leave my nine iron...
+As for the classic long term value pairing of events and collections for super rares, Doc birdies there too. His spot in the massive Costume Party collection bolsters his portfolio for late game players who previously were only seeing a spot in the Physician collection which is long overdue for expansion. And while Doc has never been a strong Faction name historically, he will catch events and has a handful of traits to pair with his strong DIP base that will always find a seat. Now where did I leave my nine iron...

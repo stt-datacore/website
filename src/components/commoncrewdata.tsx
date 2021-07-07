@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Segment, Accordion, Statistic, Grid, Image, Label, Rating } from 'semantic-ui-react';
+import { Header, Segment, Accordion, Statistic, Grid, Image, Label, Rating, StatisticGroup, Divider } from 'semantic-ui-react';
 
 import { graphql, Link } from 'gatsby';
 
@@ -7,6 +7,8 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
+import { formatTierLabel } from '../utils/crewutils';
+import CABExplanation from './cabexplanation';
 
 type StatLabelProps = {
 	title: string;
@@ -97,8 +99,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								content: {
 									content: (
 										<Segment.Group raised>
-											{crew.skill_data.map((sk: any) => (
-												<Segment>
+											{crew.skill_data.map((sk: any, idx: number) => (
+												<Segment key={idx}>
 													<Rating
 														defaultRating={sk.rarity}
 														maxRating={crew.max_rarity}
@@ -132,9 +134,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
-						{markdownRemark.frontmatter.bigbook_tier !== null && (
-							<StatLabel title="Big book tier" value={markdownRemark.frontmatter.bigbook_tier} />
-						)}
+						<StatLabel title="Big book tier (legacy)" value={formatTierLabel(markdownRemark.frontmatter.bigbook_tier)} />
 						{markdownRemark.frontmatter.events !== null && (
 							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
@@ -142,25 +142,34 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				{!compact && (
-					<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
+					<>
+					<Statistic.Group size="tiny">
 						{markdownRemark.frontmatter.events !== null && (
 							<Statistic>
 								<Statistic.Label>Events</Statistic.Label>
 								<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
 							</Statistic>
 						)}
-						{markdownRemark.frontmatter.bigbook_tier !== null && (
-							<Statistic>
-								<Statistic.Label>Tier</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.bigbook_tier}</Statistic.Value>
-							</Statistic>
-						)}
+						<Statistic>
+							<Statistic.Label>Tier (Legacy)</Statistic.Label>
+							<Statistic.Value>{formatTierLabel(markdownRemark.frontmatter.bigbook_tier)}</Statistic.Value>
+						</Statistic>
+						<Statistic>
+							<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
+							<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
+						</Statistic>
 						{!compact && markdownRemark.frontmatter.in_portal !== null && (
 							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
 								<Statistic.Label>Portal</Statistic.Label>
 								<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
 							</Statistic>
 						)}
+						</Statistic.Group>
+						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
+						<Statistic>
+							<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
+							<Statistic.Value>{crew.cab_ov_rank ?? 'None'}</Statistic.Value>
+						</Statistic>
 						<Statistic>
 							<Statistic.Label>Voyage Rank</Statistic.Label>
 							<Statistic.Value>{crew.ranks.voyRank}</Statistic.Value>
@@ -170,6 +179,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Value>{crew.ranks.gauntletRank}</Statistic.Value>
 						</Statistic>
 					</Statistic.Group>
+					</>
 				)}
 
 				{crewDemands && (
@@ -298,13 +308,24 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage combo ranks</Header>
+					<Header as="h5">Voyage skill ranks</Header>
+					{crew.ranks.voyTriplet && (
+						<React.Fragment>
+							<Statistic.Group widths="one" size={'mini'}>
+								<Statistic>
+									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
+									<Statistic.Value>{crew.ranks.voyTriplet.rank}</Statistic.Value>
+								</Statistic>
+							</Statistic.Group>
+							<Divider />
+						</React.Fragment>
+				)}
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{v}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Gauntlet combo ranks</Header>
+					<Header as="h5">Gauntlet pair ranks</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
 					</Statistic.Group>
@@ -318,9 +339,15 @@ export default CommonCrewData;
 
 export const query = graphql`
 	fragment RanksFragment on CrewJson {
+		cab_ov
+		cab_ov_rank
 		ranks {
 			voyRank
 			gauntletRank
+			voyTriplet {
+				name
+				rank
+			}
 			V_CMD_SCI
 			V_CMD_SEC
 			V_CMD_ENG

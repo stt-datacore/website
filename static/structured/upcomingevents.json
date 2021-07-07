@@ -482,5 +482,181 @@
 		"smallbonus": {
 			"traits": ["data", "chekov", "tucker"]
 		}
+	},
+	{
+		"name": "Baby Boom",
+		"type": "Galaxy",
+		"dates": "Thursday 03/11 until Monday 03/15 at noon (16.00 UTC)",
+		"startDate": "2021-03-11T17:00:00Z",
+		"endDate": "2021-03-15T16:00:00Z",
+		"highbonus": ["crusher_century_nurse_crew", "worf_midwife_crew", "laforge_doctor_crew"],
+		"smallbonus": {
+			"traits": ["crusher", "worf", "laforge"]
+		}
+	},
+	{
+		"name": "Under New Management",
+		"type": "Skirmish",
+		"dates": "Thursday 03/18 until Monday 03/22 at Noon (16.00 UTC)",
+		"startDate": "2021-03-18T16:00:00Z",
+		"endDate": "2021-03-22T16:00:00Z",
+		"highbonus": ["dsc_culber_mirror_crew", "scott_mirror_crew", "orion_slaver_crew"],
+		"smallbonus": {
+			"traits": ["culber","scott","Mirror Universe"]
+		}
+	},
+	{
+		"name": "Guiding Principles (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 03/25 until Monday 03/29 at Noon (16.00 UTC)",
+		"startDate": "2021-03-25T16:00:00Z",
+		"endDate": "2021-03-29T16:00:00Z",
+		"highbonus": ["spock_reunion_crew", "kira_commander_crew", "tpol_captain_crew", "wesley_formal_dress_crew"],
+		"smallbonus": {
+			"traits": ["spock","kira","tpol","wesley"]
+		}
+	},
+	{
+		"name": "The First Hours",
+		"type": "Faction",
+		"dates": "Thursday 04/01 until Monday 04/05 at Noon (16.00 UTC)",
+		"startDate": "2021-04-01T16:00:00Z",
+		"endDate": "2021-04-05T16:00:00Z",
+		"highbonus": ["dexa_crew", "chakotay_amal_crew", "troi_mintakan_crew"],
+		"smallbonus": {
+			"traits": ["chakotay","troi","Costumed"]
+		}
+	},
+	{
+		"name": "In Plain Sight",
+		"type": "Galaxy",
+		"dates": "Thursday 04/08 until Monday 04/12 at Noon (16.00 UTC)",
+		"startDate": "2021-04-08T16:00:00Z",
+		"endDate": "2021-04-12T16:00:00Z",
+		"highbonus": ["dsc_saru_human_crew", "dsc_culber_bajoran_crew", "torres_klingon_crew", "darvin_waddle_crew"],
+		"smallbonus": {
+			"traits": ["saru","culber","torres","Costumed"]
+		}
+	},
+	{
+		"name": "A Pied Piper",
+		"type": "Skirmish",
+		"dates": "Thursday 04/15 until Monday 04/19 at Noon (16.00 UTC)",
+		"startDate": "2021-04-15T16:00:00Z",
+		"endDate": "2021-04-19T16:00:00Z",
+		"highbonus": ["dsc_adira_xahean_crew", "dsc_burnham_trill_crew", "sisko_jodmos_crew", "darvin_waddle_crew"],
+		"smallbonus": {
+			"traits": ["adira","burnham","sisko","Costumed"]
+		}
+	},
+	{
+		"name": "By Any Other Name",
+		"type": "Faction",
+		"dates": "Thursday 04/22 until Monday 04/26 at Noon (16.00 UTC)",
+		"startDate": "2021-04-22T16:00:00Z",
+		"endDate": "2021-04-26T16:00:00Z",
+		"highbonus": ["west_klingon_crew", "dsc_mudd_android_crew", "neelix_human_crew", "darvin_waddle_crew"],
+		"smallbonus": {
+			"traits": ["mudd","neelix","Costumed"]
+		}
+	},
+	{
+		"name": "Dirty Rotten Holograms (flashback)",
+		"type": "Galaxy",
+		"dates": "Thursday 04/29 until Monday 05/03 at Noon (16.00 UTC)",
+		"startDate": "2021-04-29T16:00:00Z",
+		"endDate": "2021-05-03T16:00:00Z",
+		"highbonus": ["kira_decoy_crew", "grathon_tolar_crew", "dsc_mudd_takeover_crew"],
+		"smallbonus": {
+			"traits": ["mudd","kira","Hologram"]
+		}
+	},
+	{
+		"name": "The Wrong Time",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 05/06 until Monday 05/10 at Noon (16.00 UTC)",
+		"startDate": "2021-05-06T16:00:00Z",
+		"endDate": "2021-05-10T16:00:00Z",
+		"highbonus": ["dsc_osyraa_crew", "guinan_century_crew", "pulaski_victorian_crew"],
+		"smallbonus": {
+			"traits": ["guinan","pulaski","Brutal"]
+		}
+	},
+	{
+		"name": "What Lies Beneath",
+		"type": "Skirmish",
+		"dates": "Thursday 05/13 until Monday 05/17 at Noon (16.00 UTC)",
+		"startDate": "2021-05-13T16:00:00Z",
+		"endDate": "2021-05-17T16:00:00Z",
+		"highbonus": ["xindi_aquatic_crew", "antedian_assassin_crew", "archer_prisoner_crew"],
+		"smallbonus": {
+			"traits": ["archer","Exobiology"]
+		}
+	},
+	{
+		"name": "Road to Redemption",
+		"type": "Galaxy",
+		"dates": "Thursday 05/20 until Monday 05/24 at Noon (16.00 UTC)",
+		"startDate": "2021-05-20T16:00:00Z",
+		"endDate": "2021-05-24T16:00:00Z",
+		"highbonus": ["dsc_guardian_carl_crew", "q_archaeologist_crew", "wesley_traveler_crew"],
+		"smallbonus": {
+			"traits": ["wesley","q_jdl"]
+		}
+	},
+	{
+		"name": "The Isthmian Games (rerun)",
+		"type": "Faction",
+		"dates": "Thursday 05/27 until Monday 05/31 at Noon (16.00 UTC)",
+		"startDate": "2021-05-27T16:00:00Z",
+		"endDate": "2021-05-31T16:00:00Z",
+		"highbonus": ["adam_crew", "uhura_dancing_crew", "data_prospero_crew", "jake_author_crew"],
+		"smallbonus": {
+			"traits": ["jake","data","uhura"]
+		}
+	},
+	{
+		"name": "A Good Lead",
+		"type": "Galaxy",
+		"dates": "Thursday 06/03 until Monday 06/07 at Noon (16.00 UTC)",
+		"startDate": "2021-06-03T16:00:00Z",
+		"endDate": "2021-06-07T16:00:00Z",
+		"highbonus": ["zyree_crew", "garak_evsuit_crew", "tucker_evsuit_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["garak","tucker","Survivalist"]
+		}
+	},
+	{
+		"name": "Playing Hardball",
+		"type": "Skirmish",
+		"dates": "Thursday 06/10 until Monday 06/14 at Noon (16.00 UTC)",
+		"startDate": "2021-06-10T16:00:00Z",
+		"endDate": "2021-06-14T16:00:00Z",
+		"highbonus": ["bashir_kalhyah_crew", "obrien_kalhyah_crew", "odo_cold_weather_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["bashir","obrien","odo","Survivalist"]
+		}
+	},
+	{
+		"name": "The Spotlight's Glare",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 06/17 until Monday 06/21 at Noon (16.00 UTC)",
+		"startDate": "2021-06-17T16:00:00Z",
+		"endDate": "2021-06-21T16:00:00Z",
+		"highbonus": ["kira_comfort_crew", "obrien_molly_crew", "dsc_pike_evsuit_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["kira","pike","sisko","Survivalist"]
+		}
+	},
+	{
+		"name": "Fool's Gold",
+		"type": "Faction",
+		"dates": "Thursday 06/24 until Monday 06/28 at Noon (16.00 UTC)",
+		"startDate": "2021-06-24T16:00:00Z",
+		"endDate": "2021-06-28T16:00:00Z",
+		"highbonus": ["sisko_desert_crew", "jsisko_desert_crew", "mccoy_evsuit_crew", "quark_tribble_crew"],
+		"smallbonus": {
+			"traits": ["sisko","jake","mccoy","Survivalist"]
+		}
 	}
 ]

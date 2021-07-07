@@ -19,7 +19,6 @@ const SKILLS = {
 	medicine_skill: 'MED'
 };
 
-const THIRD_SKILL_MULTIPLIER = 0.25;
 const RNGESUS = 1.8; // Used for chron cost calculation
 
 function demandsPerSlot(es, items, dupeChecker, demands) {
@@ -118,13 +117,20 @@ function calculateCrewDemands(crew, items) {
 	};
 }
 
-function calcRank(scoring, field) {
+function calcRank(scoring, field, alias = false) {
 	crewlist
 		.map(crew => ({ crew, score: scoring(crew) }))
 		.sort((a, b) => b.score - a.score)
 		.forEach((entry, idx) => {
 			if (entry.score && entry.score > 0) {
-				entry.crew.ranks[field] = idx + 1;
+				if (alias) {
+					entry.crew.ranks[alias] = {
+						name: field,
+						rank: idx + 1
+					};
+				} else {
+					entry.crew.ranks[field] = idx + 1;
+				}
 			}
 		});
 }
@@ -286,7 +292,7 @@ function main() {
 					}
 				}
 
-				return Math.ceil(vTotal + vTertiary * THIRD_SKILL_MULTIPLIER);
+				return Math.ceil(vTotal);
 			}, `V_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
 
 			calcRank(crew => {
@@ -306,6 +312,21 @@ function main() {
 
 				return Math.ceil(gTotal);
 			}, `G_${SKILLS[skillNames[i]]}_${SKILLS[skillNames[j]]}`);
+
+			for (let k = j + 1; k < skillNames.length; k++) {
+				calcRank(crew => {
+					let vtTotal = 0;
+					for (let skill in SKILLS) {
+						if (crew.base_skills[skill]) {
+							if (crew.base_skills[skillNames[i]] && crew.base_skills[skillNames[j]] && crew.base_skills[skillNames[k]]) {
+								let vtScore = getSkillWithBonus(crew.base_skills, skill, 'core') + (getSkillWithBonus(crew.base_skills, skill, 'range_min') + getSkillWithBonus(crew.base_skills, skill, 'range_max')) / 2;
+								vtTotal += vtScore;
+							}
+						}
+					}
+					return Math.ceil(vtTotal);
+				}, `${[SKILLS[skillNames[i]], SKILLS[skillNames[j]], SKILLS[skillNames[k]]].sort().join(' / ')}`, 'voyTriplet');
+			}
 		}
 	}
 
@@ -439,7 +460,7 @@ function main() {
 		let crewLine = `"${crew.name.replace(/"/g, '')}",`;
 
 		let mdData = getCrewMarkDown(crew.symbol);
-		if (mdData && mdData.meta && mdData.meta.bigbook_tier && mdData.meta.bigbook_tier < 20) {
+		if (mdData && mdData.meta && mdData.meta.bigbook_tier && mdData.meta.bigbook_tier < 20 && mdData.meta.bigbook_tier > 0) {
 			crewLine += `${mdData.meta.bigbook_tier},`;
 		} else {
 			crewLine += '0,';

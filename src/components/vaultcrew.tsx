@@ -5,17 +5,19 @@ import * as TinyColor from 'tinycolor2';
 import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
+import { formatTierLabel } from '../utils/crewutils';
 
 type VaultCrewProps = {
 	size: number;
 	style?: React.CSSProperties;
 	crew: any;
+	itemsReady: boolean;
 };
 
 function formatCrewStats(crew: any): JSX.Element {
 	let skills = [];
 	for (let skillName in CONFIG.SKILLS) {
-		let skill = crew.base_skills[skillName];
+		let skill = crew[skillName];
 
 		if (skill && skill.core && skill.core > 0) {
 			let skillShortName = CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short;
@@ -24,7 +26,7 @@ function formatCrewStats(crew: any): JSX.Element {
 					<span>{skillShortName}</span> <b>{skill.core}</b>{' '}
 					<span>
 						{' '}
-						{skill.range_min}-{skill.range_max}
+						{skill.min}-{skill.max}
 					</span>
 				</p>
 			);
@@ -32,7 +34,7 @@ function formatCrewStats(crew: any): JSX.Element {
 	}
 	return (
 		<div>
-			<h4>Tier {crew.bigbook_tier}</h4>
+			<h4>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy)</h4>
 			{skills}
 			<Link to={`/crew/${crew.symbol}/`}>Full details</Link>
 		</div>
@@ -41,7 +43,7 @@ function formatCrewStats(crew: any): JSX.Element {
 
 class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
-		const { crew } = this.props;
+		const { crew, itemsReady } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
@@ -138,11 +140,14 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			display: 'flex'
 		};
 
-		let startlevel = crew.level === 100 ? 36 : Math.ceil(crew.level / 10) * 4;
+		// Dec levels can be either end of one equip range or start of the next (e.g. lvl 20 is 10-20 or 20-30)
+		//	Assume at the start of next range unless has multiple equips
+		let startlevel = Math.floor(crew.level / 10) * 4;
+		if (crew.level % 10 == 0 && crew.equipment.length > 1) startlevel = startlevel - 4;
 		let eqimgs = [];
-		if (!crew.equipment_slots[startlevel]) {
-			console.error(`Missing equipment slots information for crew '${crew.name}'`);
-			console.log(crew);
+		if (!crew.equipment_slots[startlevel] || !itemsReady) {
+			//console.error(`Missing equipment slots information for crew '${crew.name}'`);
+			//console.log(crew);
 			eqimgs = [
 				'items_equipment_box02_icon.png',
 				'items_equipment_box02_icon.png',

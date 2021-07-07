@@ -4,7 +4,7 @@ rarity: 3
 series: tng
 memory_alpha:
 bigbook_tier: 1
-events: 21
+events: 24
 in_portal: true
 date: 02/04/2020
 obtained: Pack

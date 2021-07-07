@@ -354,3 +354,12 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 	playerData.player.character.crew = ownedCrew;
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
+
+export function formatTierLabel(tier, short = true) {
+	if (!tier || tier === -1) {
+		if (short) {
+			return 'none';
+		}
+	}
+	return `${tier}`;
+}
