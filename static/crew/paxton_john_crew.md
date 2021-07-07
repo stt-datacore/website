@@ -1,13 +1,13 @@
 ---
-name: Countess Regina Bartholomew
+name: John Frederick Paxton
 rarity: 5
-series: tng
+series: ent
 memory_alpha:
 bigbook_tier: -1
-events: 11
+events: 14
 in_portal:
-date: 06/07/2021
-obtained: Pack
+date: 15/07/2021
+obtained: Event
 mega: false
 published: true
 ---
