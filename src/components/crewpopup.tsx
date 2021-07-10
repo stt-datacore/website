@@ -4,11 +4,13 @@ import { formatCrewStats } from '../utils/voyageutils';
 
 type CrewPopupProps = {
 	crew: any;
+	useBase?: boolean;
 };
 
 class CrewPopup extends Component<CrewPopupProps> {
 	render() {
-		const { crew } = this.props;
+		const { crew, useBase } = this.props;
+		//console.log(crew);
 		if (!crew || !crew.symbol) {
 			return <span>ERROR!</span>;
 		}
@@ -19,7 +21,7 @@ class CrewPopup extends Component<CrewPopupProps> {
 				<Popup.Content>
 					<Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 					<Rating icon='star' defaultRating={crew.rarity} maxRating={crew.max_rarity} />
-					<p>{formatCrewStats(crew, true)}</p>
+					<p>{formatCrewStats(crew, useBase ?? true)}</p>
 				</Popup.Content>
 			</Popup>
 		);

@@ -9,8 +9,8 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
+import VoyageCalculator from '../components/voyagecalculator';
 import EventPlanner from '../components/eventplanner';
-import VoyageCalculator from '../components/voyagecalculator_iap';
 import CrewRetrieval from '../components/crewretrieval';
 import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
@@ -564,6 +564,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		fReader.readAsText(event.target.files[0]);
 	}
 };
+
 
 const PlayerToolsLoading = () => {
 	return (
