@@ -14,11 +14,15 @@ const SKILLS = [
 ];
 
 self.addEventListener('message', message => {
+	const postResult = (result, inProgress) => {
+		self.postMessage({result, inProgress});
+		if (!inProgress) self.close();
+	};
+
 	if (message.data.worker === 'chewable') {
-		chewableEstimate(message.data.config, progressResult => self.postMessage(progressResult)).then(estimate => {
-			self.postMessage(estimate);
-			self.close();
-		});
+		chewableEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+			postResult(estimate, false)
+		);
 	} else if (message.data.worker === 'IAmPicard') {
 		voymod().then(mod => {
 			let toDV = result => new DataView(Uint8Array.from(result).buffer);
@@ -29,21 +33,16 @@ self.addEventListener('message', message => {
 
 				// ignore marginal gains (under 5 minutes)
 				if (score > bestScore + 1/12) {
-					self.postMessage({
-						progressResult : finaliseIAPEstimate(message.data, result, 200)
-					});
+					postResult(finaliseIAPEstimate(message.data, result, 200), true);
 					bestScore = score;
 				}
 			});
 
-			self.postMessage({ result: finaliseIAPEstimate(message.data, toDV(result)) });
-
-			// close this worker
-			self.close();
+			postResult(finaliseIAPEstimate(message.data, toDV(result)), false);
 		});
 	} else if (message.data.worker === 'USSJohnJay') {
 		// Currently not used
-		let { bestShip, extendsTarget, voyage_description, roster } = message.data;
+		let { bestShip, extendsTarget, voyage_description, roster, searchDepth } = message.data;
 
 		// Config is for showing progress (optional)
 		let config = {
@@ -60,7 +59,7 @@ self.addEventListener('message', message => {
 		// Options modify the calculation algorithm (optional)
 		let options = {
 			'initBoosts': { 'primary': 3.5, 'secondary': 2.5, 'other': 1.0 },
-			'searchVectors': 4,
+			'searchVectors': searchDepth,
 			'luckFactor': false,
 			'favorSpecialists': false
 		};
@@ -73,9 +72,7 @@ self.addEventListener('message', message => {
 				let sorter = (a, b) => chewableSorter(a, b, extendsTarget);
 				analyzer.analyze(chewable.getEstimate, sorter)
 					.then(([lineup, estimate, log]) => {
-						console.log(lineup.skills);
-						self.postMessage({ result: {
-							name: options.name,
+						postResult({
 							entries: lineup.crew.map(({id}, idx) => ({
 								slotId: idx,
 								choice: roster.find(c => c.id == id),
@@ -83,8 +80,8 @@ self.addEventListener('message', message => {
 							})),	// convert to ICalcResult entries
 							estimate: estimate,
 							aggregates: lineup.skills,
-							startAm: bestShip.score + lineup.antimatter
-						}})
+							startAM: bestShip.score + lineup.antimatter
+						}, false);
 					});
 			})
 			.catch((error) => {
@@ -151,7 +148,6 @@ function finaliseIAPEstimate(data, result, numSims = 5000) {
 					.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
 
 	return {
-		name: data.name,
 		estimate: chewable.getEstimate(config),
 		entries,
 		aggregates,

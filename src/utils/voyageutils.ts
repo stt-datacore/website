@@ -55,11 +55,13 @@ const remapSkills = skills =>
 	Object.fromEntries(Object.entries(skills)
 		.map(([key, value]) =>
 			[{core: 'core', min: 'range_min', max: 'range_max'}[key], value]));
+
 export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
+
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = use_base ? crew.base_skills[skillName]
-												 : remapSkills(crew[skillName]);
+												 : crew.skills ? crew.skills : remapSkills(crew[skillName]);
 
 		if (skill && skill.core && (skill.core > 0)) {
 			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
@@ -136,23 +138,21 @@ export interface ICalcResult {
 	startAM: number;
 }
 
+export function calculateVoyage(options, progressCallback: (result: ICalcResult) => void, doneCallback: (result: ICalcResult) => void) : ComputeWorker {
+	let worker = new ComputeWorker();
 
-var iap_worker = null;
-export function calculateVoyage(options, progressCallback: (result: ICalcResult) => void, doneCallback: (result: ICalcResult) => void) {
-	iap_worker = new ComputeWorker();
-	iap_worker.addEventListener('message', message => {
-		if (message.data.progressResult) {
-			progressCallback({name: options.name, ...message.data.progressResult });
-		} else if (message.data.result) {
-			doneCallback({name: options.name, ...message.data.result});
+	worker.addEventListener('message', message => {
+		let calcResult = {name: options.name, ...message.data.result };
+
+		if (message.data.inProgress) {
+			progressCallback(calcResult);
+		} else {
+			doneCallback(calcResult);
 		}
 	});
 
-	iap_worker.postMessage(options);
-}
-
-export function abortVoyageCalculation() {
-	if(iap_worker) iap_worker.terminate();
+	worker.postMessage(options);
+	return worker;
 }
 
 export class BonusCrew {

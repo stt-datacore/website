@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment, Input } from 'semantic-ui-react';
+import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment, Input, Confirm } from 'semantic-ui-react';
 import * as localForage from 'localforage';
 import { isMobile } from 'react-device-detect';
-
 import ItemDisplay from '../components/itemdisplay';
 import { VoyageStats } from '../components/voyagestats';
 import {
@@ -18,17 +17,17 @@ import { mergeShips } from '../utils/shiputils';
 
 import CONFIG from './CONFIG';
 
+enum CalculatorState {
+	Pending,
+	InProgress,
+	Done
+};
+
 type VoyageCalculatorProps = {
 	playerData: any;
 	voyageData: any;
 	eventData: any;
 };
-
-enum CalculatorState {
-	NotStarted,
-	InProgress,
-	Done
-}
 
 const searchDepths = [
 	 'fastest', // 4
@@ -168,21 +167,28 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	componentDidUpdate(_, prevState) {
 		try {
 			const { calcState, crew, telemetryOptOut, results } = this.state;
-			if (prevState.calcState === CalculatorState.InProgress && calcState === CalculatorState.Done && results.length > 0) {
-				if (!telemetryOptOut) {
-					fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
-						method: 'post',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							type: 'voyage',
-							data: results[results.length - 1].entries.map((entry) => {
-								return entry.choice.symbol;
+
+			if (!telemetryOptOut &&
+				results.filter(r => r.state == CalculatorState.Done && !r.telemetrySent).length > 0) {
+				let newResults = results.map(result => {
+					if (result.state == CalculatorState.Done && !result.telemetrySent) {
+						fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+							method: 'post',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								type: 'voyage',
+								data: result.entries.map((entry) => {
+									return entry.choice.symbol;
+								})
 							})
-						})
-					});
-				}
+						});
+						result.telemetrySent = true;
+					}
+					return result;
+				});
+				this.setState({results: newResults});
 			}
 		} catch(err) {
 			console.log('An error occurred while sending telemetry', err);
@@ -211,7 +217,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	render() {
 		const { playerData, voyageData } = this.props;
-		const { activeCalculation, calcState, showCalculator, bestShip, crew, results } = this.state;
+		const { activeCalculation, calculationName, showCalculator, bestShip, crew, results } = this.state;
 
 		if (!showCalculator && voyageData.voyage.length > 0)
 			return (this._renderCurrentVoyage(voyageData.voyage[0]));
@@ -235,6 +241,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 		}
 
 		let peopleListStyle = this.state.includeFrozen ? 'all' : 'default';
+		let nonPendingResults = results.filter(r => r.state != CalculatorState.Pending);
 
 		return (
 			<div style={{ margin: '5px' }}>
@@ -247,6 +254,9 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					VOYAGE CALCULATOR! Configure the settings below, then click on the "Calculate" button to see the recommendations. Current voyage
 					is <b>{curVoy}</b>.
 				</Message>
+				{results.some(r => r.name == calculationName) &&
+					<Message error attached>Error! Name already in use.</Message>
+				}
 				<Form className='attached fluid segment'>
 					<Form.Group inline>
 						<Form.Field
@@ -256,7 +266,6 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							value={this.state.calculationName}
 							onChange={(e, { value }) => this.setState({ calculationName: value })}
 						/>
-
 						<Form.Field
 							control={Select}
 							label='Calculator'
@@ -355,67 +364,60 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 					<Form.Group>
 						<Form.Button
 							primary
-							onClick={() => this._calcVoyageData(bestShip.score)}
-							disabled={this.state.calcState === CalculatorState.InProgress}>
+							onClick={() => this._calcVoyageData(bestShip.score)}>
 							Calculate best crew selection
 						</Form.Button>
 						{currentVoyage &&
 							<Form.Button
-								onClick={() => this.setState({ showCalculator : false })}
-								disabled={this.state.calcState === CalculatorState.InProgress}>
+								onClick={() => this.setState({ showCalculator : false })}>
 								Return to current voyage
 							</Form.Button>
 						}
 					</Form.Group>
 				</Form>
-					{results.length === 1 &&
-						<VoyageStats
-							voyageData={this._resultToVoyageData(results[0])}
-							estimate={results[0].estimate}
-							ships={[bestShip]}
-							showPanels={['crew']}
-						/>
-					}
-					{
-						results.length > 1 &&
-						<Tab
-							menu={{ attached: 'bottom', secondary: true, pointing: true }}
-							panes={Array.from(results, result => ({
-									menuItem: result.name,
-									render: () => {
-										return (
-											<VoyageStats
-												voyageData={this._resultToVoyageData(result)}
-												estimate={result.estimate}
-												ships={[bestShip]}
-												showPanels={['crew']}
-												/>);
-									}
-								}))
-							}
-							style={{ marginTop: '1em' }}
-							activeIndex={activeCalculation}
-							onTabChange={(e, { activeIndex }) => this.setState({activeCalculation : activeIndex})}
-						/>
-					}
-				<Modal basic size='tiny' open={this.state.calcState === CalculatorState.InProgress}>
-                    <Modal.Content image>
-                        <Image centered src='/media/voyage-wait-icon.gif' />
-                    </Modal.Content>
-                    <Modal.Description>
-                        <Segment basic textAlign={"center"}>
-                            <Button onClick={e => { abortVoyageCalculation(), this.setState({calcState : CalculatorState.Done})}}>Abort</Button>
-                        </Segment>
-                    </Modal.Description>
-                </Modal>
+				{nonPendingResults.length === 1 &&
+					<VoyageStats
+						voyageData={this._resultToVoyageData(results[0])}
+						estimate={results[0].estimate}
+						ships={[bestShip]}
+						showPanels={['crew']}
+					/>
+				}
+				{
+					nonPendingResults.length > 1 &&
+					<Tab
+						menu={{ attached: 'bottom', secondary: true, pointing: true }}
+						panes={results.map(result => ({
+								menuItem: `${result.name} ${result.state == CalculatorState.InProgress ? ' (in progress)' : ''}`,
+								render: () => (
+										<VoyageStats
+											voyageData={this._resultToVoyageData(result)}
+											estimate={result.estimate}
+											ships={[bestShip]}
+											showPanels={['crew']}
+											/>)
+							}))
+						}
+						style={{ marginTop: '1em' }}
+						activeIndex={activeCalculation}
+						onTabChange={(e, { activeIndex }) => this.setState({activeCalculation : activeIndex})}
+					/>
+				}
 			</div>
 		);
 	}
 
 	_defaultCalculationName() {
-		const {calculator, searchDepth} = this.state;
-		return `${calculators[calculator].label} (${searchDepths[searchDepth-4]})`;
+		const {calculator, results, searchDepth} = this.state;
+		let origCalcName = `${calculators[calculator].label} (${searchDepths[searchDepth-4]})`;
+		let calcName = origCalcName;
+		let calcNumber = 0;
+
+		while (results.map(r => r.name).includes(calcName))
+			calcName = origCalcName + ` (${++calcNumber})`;
+			return calcName;
 	}
+
 	_bestVoyageShip(ships: any[], voyageData: any): any[] {
 		let voyage = voyageData.voyage_descriptions[0];
 
@@ -497,7 +499,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	_packVoyageOptions(shipAM: number) {
 		const { voyageData } = this.props;
-		const { bestShip, calculationName, calculator, crew, searchDepth } = this.state;
+		const { bestShip, calculationName, calculator, crew, results, searchDepth } = this.state;
 
 		let filteredRoster = crew.filter(crewman => {
 			// Filter out buy-back crew
@@ -521,8 +523,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			return true;
 		});
 
+		let calcName = calculationName !== '' ? calculationName : this._defaultCalculationName();
+
 		return {
-			name: calculationName !== undefined ? calculationName : this._defaultCalculationName(),
+			name: calcName,
 			worker: calculators[calculator].internalName,
 			searchDepth,
 			extendsTarget: this.state.extendsTarget,
@@ -538,35 +542,42 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_calcVoyageData(shipAM: number) {
+		let { calculationName, results } = this.state;
 		let options = this._packVoyageOptions(shipAM);
 
+		if (results.some(r => r.name == options.name)) {
+			return;
+		}
+
 		const updateState = (calcResult, finished) => {
-			let added = false;
 			let results = this.state.results.map(result => {
-				if (result.name == options.name) {
-					added = true;
+				calcResult.state = finished ? CalculatorState.Done : CalculatorState.InProgress;
+				if (result.name == options.name)
 					return calcResult;
-				} else
+				else
 					return result;
 			});
 
-			if (!added)
-				results = [...this.state.results, calcResult];
-
 			this.setState({
 				results: results,
-				calcState: finished ? CalculatorState.Done : CalculatorState.InProgress,
 				activeCalculation: results.length - 1,
 			});
 		};
 
-		calculateVoyage(
+		let worker = calculateVoyage(
 			options,
 			calcResult => updateState(calcResult, false),
-				//if (entries.every((entry, index) => calcResult.entries[index].id == entry.id)) {
 			calcResult => updateState(calcResult, true)
 		);
-		this.setState({	calculationName: ''});
+
+		this.setState({
+			calculationName: '',
+			results: [...this.state.results, {
+				name: options.name,
+				worker: worker,
+				state: CalculatorState.Pending,
+				telemetrySent: false
+			}]});
 	}
 
 	_resultToVoyageData(result, voyage_description) {
@@ -574,10 +585,12 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			let { crew, bestShip } = this.state;
 			let data = { ...this.props.voyageData.voyage_descriptions[0] };
 
-			result.entries.forEach((entry, idx) => {
-				let acrew = playerData.player.character.crew.find(c => c.symbol === entry.choice.symbol);
-				data.crew_slots[entry.slotId].crew = acrew;
-			});
+			if (result.entries) {
+				result.entries.forEach((entry, idx) => {
+					let acrew = playerData.player.character.crew.find(c => c.symbol === entry.choice.symbol);
+					data.crew_slots[entry.slotId].crew = acrew;
+				});
+			}
 
 			data.skill_aggregates = result.aggregates;
 			data.max_hp = result.startAM;

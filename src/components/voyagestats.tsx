@@ -7,7 +7,7 @@ import ItemDisplay from '../components/itemdisplay';
 import CrewPopup from '../components/crewpopup';
 
 import Worker from 'worker-loader!../workers/unifiedWorker';
-import { ResponsiveLine } from '@nivo/line';
+import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from './nivo_themes';
 
 type VoyageStatsProps = {
@@ -32,6 +32,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			estimate: estimate,
 			activePanels: showPanels ? showPanels : []
 		};
+
+		if (!voyageData)
+			return;
 
 		if (ships.length == 1) {
 			this.ship = ships[0].ship;
@@ -67,7 +70,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			}
 
 			this.worker = new Worker();
-			this.worker.addEventListener('message', message => this.setState({ estimate: message.data }));
+			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
 			this.worker.postMessage({ worker: 'chewable', config: this.config });
 		}
 	}
@@ -115,7 +118,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		return (
 			<div style={{height : 200}}>
-				<ResponsiveLine
+				<ResponsiveLineCanvas
 					data={data}
 					xScale= {{type: 'linear', min: data[0].data[0].x}}
 					yScale={{type: 'linear', max: 100 }}
@@ -189,19 +192,24 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							<ul>
 								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
 									const agg = voyageData.skill_aggregates[entry];
-									const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
 
-									return (
-										<li key={idx}>
-											{CONFIG.SKILLS[entry]}
-											{' : '}
-											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-												<Popup.Content>
-													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-												</Popup.Content>
-											</Popup>
-										</li>
-									);
+									if (typeof(agg) === 'number') {
+										return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
+									} else {
+										const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
+
+										return (
+											<li key={idx}>
+												{CONFIG.SKILLS[entry]}
+												{' : '}
+												<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
+													<Popup.Content>
+														{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
+													</Popup.Content>
+												</Popup>
+											</li>
+										);
+									}
 								})}
 							</ul>
 						</Grid.Column>
@@ -236,7 +244,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				</tr>
 			);
 		};
-
 
 		if (estimate.deterministic) {
 			let extendTime = estimate['refills'][1].result - estimate['refills'][0].result;
@@ -371,6 +378,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	render() {
 		const { voyageData } = this.props;
+
+		if (!voyageData)
+			return (<Dimmer active>
+        <Loader>Calculating...</Loader>
+      </Dimmer>);
+
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
 		const rewards = {
@@ -380,7 +393,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			'recalled': () => voyageData.pending_rewards.loot,
 			'completed': () => voyageData.granted_rewards.loot
 		}[voyState]();
-		//console.log(rewards);
+
+		// Adds/Removes panels from the active list
 		const flipItem = (items, item) => items.includes(item)
 			? items.filter(i => i != item)
 			: items.concat(item);
@@ -428,6 +442,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			);
 		}
 	}
+
 }
 
 export default VoyageStats;
