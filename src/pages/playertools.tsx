@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
+import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -10,6 +10,7 @@ import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
 import VoyageCalculator from '../components/voyagecalculator';
+import EventPlanner from '../components/eventplanner';
 import CrewRetrieval from '../components/crewretrieval';
 import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
@@ -30,6 +31,7 @@ const PlayerToolsPage = () => {
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
@@ -41,6 +43,7 @@ const PlayerToolsPage = () => {
 					strippedPlayerData={strippedPlayerData}
 					voyageData={voyageData}
 					eventData={eventData}
+					activeCrew={activeCrew}
 					dataSource={dataSource}
 					allCrew={allCrew}
 					allItems={allItems}
@@ -63,19 +66,11 @@ const PlayerToolsPage = () => {
 			else
 				fetchAllCrew();
 		}
-		return renderSpinner();
+		return (<PlayerToolsLoading />);
 	}
 
 	// No data available, show input form
 	return (<PlayerToolsForm setValidInput={setValidInput} />);
-
-	function renderSpinner() {
-		return (
-			<Layout title='Player tools'>
-				<Icon loading name='spinner' /> Loading...
-			</Layout>
-		);
-	}
 
 	function setValidInput(inputData : any) {
 		setPlayerData(undefined);
@@ -105,12 +100,16 @@ const PlayerToolsPage = () => {
 	}
 
 	function prepareProfileDataFromInput() {
-		// Crew on shuttles, voyage data, and event data will be stripped from playerData,
+		// Reset session before storing new variables
+		sessionStorage.clear();
+
+		// Active crew, voyage data, and event data will be stripped from playerData,
 		//	so keep a copy for voyage calculator here
 		//	Event data is not player-specific, so we should find a way to get that outside of playerData
-		let shuttleCrew = [];
+		let activeCrew = [], shuttleCrew = [];
 		inputPlayerData.player.character.crew.forEach(crew => {
-			if (crew.active_id > 0) {
+			if (crew.active_status > 0) {
+				activeCrew.push({ symbol: crew.symbol, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 				// Stripped data doesn't include crewId, so create pseudoId based on level and equipment
 				let shuttleCrewId = crew.symbol + ',' + crew.level + ',';
 				crew.equipment.forEach(equipment => shuttleCrewId += equipment[0]);
@@ -124,6 +123,7 @@ const PlayerToolsPage = () => {
 		}
 		setVoyageData(voyageData);
 		setEventData([...inputPlayerData.player.character.events]);
+		setActiveCrew(activeCrew);
 
 		let dtImported = new Date();
 
@@ -160,24 +160,27 @@ type PlayerToolsPanesProps = {
 	strippedPlayerData: any;
 	voyageData: any;
 	eventData: any;
+	activeCrew: string[];
 	dataSource: string;
-	allCrew: [];
+	allCrew: any[];
 	allItems?: any;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
-	const { playerData, strippedPlayerData, voyageData, eventData, dataSource,
+	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
 			allCrew, allItems, requestShowForm, requestClearData } = props;
 
 	const [activeIndex, setActiveIndex] = useStateWithStorage('tools/activeIndex', 0);
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
-	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true });
+	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid+'/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [profileUploaded, setProfileUploaded] = React.useState(false);
 	const [profileUploading, setProfileUploading] = React.useState(false);
+
+	const [varsReady, setVarsReady] = React.useState(false);
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
@@ -191,6 +194,10 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		{
 			menuItem: 'Voyage Calculator',
 			render: () => <VoyageCalculator playerData={playerData} voyageData={voyageData} eventData={eventData} />
+		},
+		{
+			menuItem: 'Event Planner',
+			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} />
 		},
 		{
 			menuItem: 'Crew',
@@ -303,6 +310,9 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		);
 	};
 
+	if (!varsReady)
+		return (<PlayerToolsLoading />);
+
 	const PlayerLevelProgress = () => {
 		const endingValue = playerData.player.character.xp_for_next_level - playerData.player.character.xp_for_current_level;
 		const currentValue = playerData.player.character.xp - playerData.player.character.xp_for_current_level;
@@ -336,12 +346,18 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 				<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
 			</Menu>
 
-			<ShareMessage />
+			<React.Fragment>
+				<ShareMessage />
 
-			<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }}
-				activeIndex={activeIndex} onTabChange={handleTabChange} />
+				<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }}
+					activeIndex={activeIndex} onTabChange={handleTabChange} />
+			</React.Fragment>
 		</Layout>
 	);
+
+	function variableReady(keyName: string) {
+		setVarsReady(true);
+	}
 
 	function shareProfile() {
 		setProfileUploading(true);
@@ -397,59 +413,57 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 	}, [inputPlayerData]);
 
 	return (
-		<Layout>
-			<Container style={{ paddingBottom: '2em' }}>
-				<Header as='h2'>Player tools</Header>
-				<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
-				<p>If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials, making it easier to change accounts.</p>
-				<ul>
-					<li>
-						Open this page in your browser:{' '}
-						<a href={PLAYERLINK} target='_blank'>
-							https://stt.disruptorbeam.com/player
-							</a>
+		<Layout title='Player tools'>
+			<Header as='h2'>Player tools</Header>
+			<p>You can access some of your player data from the game's website and import it here to calculate optimal voyage lineups, identify unnecessary items, export your crew list as a CSV, or share your profile with other players, among other tools. This website cannot make direct requests to the game's servers due to security configurations and unclear terms of service interpretations, so there are a few manual steps required to import your data.</p>
+			<p>If you have multiple accounts, we recommend using your browser in InPrivate mode (Edge) or Incognito mode (Firefox / Chrome) to avoid caching your account credentials, making it easier to change accounts.</p>
+			<ul>
+				<li>
+					Open this page in your browser:{' '}
+					<a href={PLAYERLINK} target='_blank'>
+						https://stt.disruptorbeam.com/player
+						</a>
+				</li>
+				<li>
+					Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+					<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
 					</li>
-					<li>
-						Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-						<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-						</li>
-					<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-					<li>Paste it (Ctrl+V) in the text box below. Note that only the first few lines may be displayed</li>
-					<li>Click the 'Import data' button</li>
-				</ul>
+				<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
+				<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
+				<li>Click the 'Import data' button</li>
+			</ul>
 
-				<Form>
-					<TextArea
-						placeholder='Paste your player data here'
-						value={displayedInput}
-						onChange={(e, { value }) => setDisplayedInput(value)}
-						onPaste={(e) => { return onInputPaste(e) }}
-					/>
-					<input
-						type='file'
-						onChange={(e) => { handleFileUpload(e) }}
-						style={{ display: 'none' }}
-						ref={e => inputUploadFile = e}
-					/>
-				</Form>
-
-				<Button
-					onClick={() => parseInput()}
-					style={{ marginTop: '1em' }}
-					content='Import data'
-					icon='paste'
-					labelPosition='right'
+			<Form>
+				<TextArea
+					placeholder='Paste your player data here'
+					value={displayedInput}
+					onChange={(e, { value }) => setDisplayedInput(value)}
+					onPaste={(e) => { return onInputPaste(e) }}
 				/>
+				<input
+					type='file'
+					onChange={(e) => { handleFileUpload(e) }}
+					style={{ display: 'none' }}
+					ref={e => inputUploadFile = e}
+				/>
+			</Form>
 
-				{errorMessage && (
-					<Message negative>
-						<Message.Header>Error</Message.Header>
-						<p>{errorMessage}</p>
-					</Message>
-				)}
-			</Container>
+			<Button
+				onClick={() => parseInput()}
+				style={{ marginTop: '1em' }}
+				content='Import data'
+				icon='paste'
+				labelPosition='right'
+			/>
 
-			<p>To circumvent the long text copy limitations on mobile devices, download{' '}
+			{errorMessage && (
+				<Message negative>
+					<Message.Header>Error</Message.Header>
+					<p>{errorMessage}</p>
+				</Message>
+			)}
+
+			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
 				<a href={PLAYERLINK} target='_blank'>
 					your player data
 						</a>
@@ -491,13 +505,22 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		try {
 			let testData = JSON.parse(testInput as string);
 
-			if (testData && testData.player && testData.player.display_name) {
-				if (testData.player.character && testData.player.character.crew && (testData.player.character.crew.length > 0)) {
-					setInputPlayerData(testData);
-					setDisplayedInput('');
-					setErrorMessage(undefined);
-				} else {
-					setErrorMessage('Failed to parse player data from the text you pasted. Make sure you are logged in with the correct account.');
+			if (testData) {
+				// Test for playerData array glitch
+				if (Array.isArray(testData)) {
+					testData = {...testData[0]};
+				}
+				if (testData.player && testData.player.display_name) {
+					if (testData.player.character && testData.player.character.crew && (testData.player.character.crew.length > 0)) {
+						setInputPlayerData(testData);
+						setDisplayedInput('');
+						setErrorMessage(undefined);
+					} else {
+						setErrorMessage('Failed to parse player data from the text you pasted. Make sure you are logged in with the correct account.');
+					}
+				}
+				else {
+					setErrorMessage('Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!');
 				}
 			} else {
 				setErrorMessage('Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!');
@@ -519,7 +542,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		if (paste) {
 			let fullPaste = paste.getData('text');
 			setFullInput(fullPaste);
-			setDisplayedInput(fullPaste.substr(0, 500)+' [ ... ]');
+			setDisplayedInput(`${fullPaste.substr(0, 300)} [ ... ] ${fullPaste.substr(-100)}\n/* Note that DataCore is intentionally displaying less data here to speed up the process */`);
 			event.preventDefault();
 			return false;
 		}
@@ -540,6 +563,15 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		};
 		fReader.readAsText(event.target.files[0]);
 	}
+};
+
+
+const PlayerToolsLoading = () => {
+	return (
+		<Layout title='Player tools'>
+			<Icon loading name='spinner' /> Loading...
+		</Layout>
+	);
 };
 
 export default PlayerToolsPage;
