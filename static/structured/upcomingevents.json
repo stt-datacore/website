@@ -658,5 +658,16 @@
 		"smallbonus": {
 			"traits": ["sisko","jake","mccoy","Survivalist"]
 		}
+	},
+	{
+		"name": "Biological Imperatives",
+		"type": "Galaxy",
+		"dates": "Thursday 07/22 until Monday 07/26 at Noon (16.00 UTC)",
+		"startDate": "2021-07-22T16:00:00Z",
+		"endDate": "2021-07-26T16:00:00Z",
+		"highbonus": ["paxton_john_crew", "kim_alternate_crew", "tpol_commander_crew"],
+		"smallbonus": {
+			"traits": ["tpol","kim"]
+		}
 	}
 ]
