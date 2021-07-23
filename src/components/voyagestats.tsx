@@ -7,7 +7,7 @@ import ItemDisplay from '../components/itemdisplay';
 import CrewPopup from '../components/crewpopup';
 
 import Worker from 'worker-loader!../workers/unifiedWorker';
-import { ResponsiveLine } from '@nivo/line';
+import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from './nivo_themes';
 
 type VoyageStatsProps = {
@@ -104,7 +104,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 		return (
 			<div style={{height : 200}}>
-				<ResponsiveLine
+				<ResponsiveLineCanvas
 					data={data}
 					xScale= {{type: 'linear', min: data[0].data[0].x}}
 					yScale={{type: 'linear', max: 100 }}
