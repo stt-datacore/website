@@ -669,5 +669,16 @@
 		"smallbonus": {
 			"traits": ["tpol","kim"]
 		}
+	},
+	{
+		"name": "The Captain's Oath (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 07/29 until Monday 08/02 at Noon (16.00 UTC)",
+		"startDate": "2021-07-29T16:00:00Z",
+		"endDate": "2021-08-02T16:00:00Z",
+		"highbonus": ["dsc_saru_captain_crew", "bateson_captain_crew", "sulu_captain_crew","harriman_captain_crew"],
+		"smallbonus": {
+			"traits": ["saru","sulu","Inspiring","Explorer"]
+		}
 	}
 ]
