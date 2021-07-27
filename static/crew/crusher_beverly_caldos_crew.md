@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 3
 events: 14
-in_portal:
+in_portal: true
 date: 28/01/2021
 obtained: Event
 mega: true
