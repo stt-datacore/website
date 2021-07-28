@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 8
-events: 25
+events: 26
 in_portal: true
 date: 16/05/2016
 obtained: Event
