@@ -32,15 +32,20 @@ const ownedFilterOptions = [
     { key: '0', value: 'Show all crew', text: 'Show all crew' },
     { key: '1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
     { key: '2', value: 'Only show owned crew', text: 'Only show owned crew (not FF)' },
-    { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'}
+    { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'},
+		{ key: '4', value: 'Show all crew not FF', text: 'Show all crew (not FF)'}
 ];
 
 const ownedFilters = {
     'Show all crew': data => crew => true,
     'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol),
     'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
-    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol)
+    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol),
+		'Show all crew not FF': data => crew => !data.some((c) => crew.symbol === c.symbol && c.rarity === c.max_rarity),
 };
+
+// TODO: Remove duplication
+const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -217,14 +222,14 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			)
 		).map((upc) => upc.map((trait) => this.state.ownedPolestars.find((op) => filterTraits(op, trait))));
 		return (
-			<div className="ui accordion" onClick={() => this.setState({ activeCrew: this.state.activeCrew === crew.symbol ? null : crew.symbol })}>
+			<div className="ui accordion fluid" onClick={() => this.setState({ activeCrew: this.state.activeCrew === crew.symbol ? null : crew.symbol })}>
 				<div className={`title ${this.state.activeCrew === crew.symbol ? 'active' : ''}`}>View</div>
 				<div className={`content ${this.state.activeCrew === crew.symbol ? 'active' : ''}`}>
 						<div className="ui four column grid">
 							{combos.map((combo) => (
 								<div className="row">
 									{combo.map((polestar) => (
-											<div className="column"><img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} /><br />{polestar.name.replace(' Polestar', '').replace(' Skill', '')}</div>
+											<div className="column"><img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} /><br />{polestar.name.replace(' Polestar', '').replace(' Skill', '')}<br /><small>({polestar.quantity})</small></div>
 									))
 									}
 								</div>
@@ -427,8 +432,25 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 								width={1}
 								sorted={column === 'bigbook_tier' ? direction : null}
 								onClick={() => this._handleSort('bigbook_tier', false)}
+								textAlign="center"
 							>
 								Tier (Legacy)
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								width={1}
+								sorted={column === 'cab_ov' ? direction : null}
+								onClick={() => this._handleSort('cab_ov', false)}
+								textAlign="center"
+							>
+								CAB
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								width={1}
+								sorted={column === 'ranks.voyRank' ? direction : null}
+								onClick={() => this._handleSort('ranks.voyRank', false)}
+								textAlign="center"
+							>
+								Voyage
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								width={3}
@@ -459,13 +481,21 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 										<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
 									</div>
 								</Table.Cell>
-								<Table.Cell>
+								<Table.Cell style={{display: this.state.activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 									<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
 								</Table.Cell>
-								<Table.Cell textAlign="center">
+								<Table.Cell textAlign="center" style={{display: this.state.activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 									<b>{formatTierLabel(crew.bigbook_tier)}</b>
 								</Table.Cell>
-								<Table.Cell textAlign="center">
+								<Table.Cell textAlign="center" style={{display: this.state.activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
+									<b>{crew.cab_ov}</b><br />
+									<small style={{ fontSize: '70%' }}>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+								</Table.Cell>
+								<Table.Cell textAlign="center" style={{display: this.state.activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
+									<b>#{crew.ranks.voyRank}</b><br />
+									{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+								</Table.Cell>
+								<Table.Cell textAlign="center" colSpan={this.state.activeCrew === crew.symbol ? 8 : undefined}>
 									{this._findCombosForCrew(crew)}
 								</Table.Cell>
 							</Table.Row>
