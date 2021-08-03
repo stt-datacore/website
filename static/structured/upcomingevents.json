@@ -680,5 +680,16 @@
 		"smallbonus": {
 			"traits": ["saru","sulu","Inspiring","Explorer"]
 		}
+	},
+	{
+		"name": "The Mad Lieutenant - Mega Event Part 1",
+		"type": "Faction",
+		"dates": "Thursday 08/05 until Monday 08/09 at Noon (16.00 UTC)",
+		"startDate": "2021-08-05T16:00:00Z",
+		"endDate": "2021-08-09T16:00:00Z",
+		"highbonus": ["mccoy_tribble_crew", "larkin_underwear_crew", "dsc_lucero_captain_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["mccoy","larkin","Tribbled","Exobiology"]
+		}
 	}
 ]
