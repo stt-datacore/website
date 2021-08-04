@@ -33,11 +33,31 @@ type CommonCrewDataProps = {
 	markdownRemark: any;
 	compact?: boolean;
 	crewDemands?: any;
+	roster?: any[];
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
 	render() {
-		const { markdownRemark, crew, compact, crewDemands } = this.props;
+		const { markdownRemark, crew, compact, crewDemands, roster } = this.props;
+
+		let panels = [
+			{
+				index: 0,
+				key: 0,
+				title: getCoolStats(crew, false),
+				content: { content: <div style={{ paddingBottom: '1em' }}>{this.renderOtherRanks(crew)}</div> }
+			}
+		];
+
+		if (roster && roster.length > 0) {
+			panels.push(
+				{
+					index: 1,
+					key: 1,
+					title: this.rosterComparisonTitle(crew, roster),
+					content: { content: <div style={{ paddingBottom: '1em' }}>{this.renderOtherRanks(crew, roster)}</div> }
+				});
+		}
 
 		return (
 			<React.Fragment>
@@ -199,15 +219,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				<Accordion
-					defaultActiveIndex={-1}
-					panels={[
-						{
-							index: 0,
-							key: 0,
-							title: getCoolStats(crew, false),
-							content: { content: <div style={{ paddingBottom: '1em' }}>{this.renderOtherRanks(crew)}</div> }
-						}
-					]}
+					exclusive={false}
+					panels={panels}
 				/>
 
 				<p>
@@ -267,33 +280,49 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		);
 	}
 
-	renderOtherRanks(crew) {
+	rosterComparisonTitle(crew, roster) {
+		let rank = roster.filter(c => c.ranks['voyTriplet'] &&
+													   c.ranks['voyTriplet'].name == crew.ranks['voyTriplet'].name &&
+													   crew.ranks['voyTriplet'].rank > c.ranks['voyTriplet'].rank).length + 1;
+
+		return `#${rank} ${crew.ranks['voyTriplet'].name} on your roster`;
+	}
+
+	renderOtherRanks(crew, roster = false) {
 		let v = [];
 		let g = [];
 		let b = [];
 
 		const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
+		const rankHandler = rank => roster
+			? roster.filter(c => c.ranks[rank] && crew.ranks[rank] > c.ranks[rank]).length + 1
+			: crew.ranks[rank];
+		const tripletHandler = rank => roster
+			? roster.filter(c => c.ranks[rank] &&
+													 c.ranks[rank].name == crew.ranks[rank].name &&
+													 crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
+			: crew.ranks[rank].rank;
 
 		for (let rank in crew.ranks) {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank]}</Statistic.Value>
+						<Statistic.Value>{rankHandler(rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank]}</Statistic.Value>
+						<Statistic.Value>{rankHandler(rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank]}</Statistic.Value>
+						<Statistic.Value>{rankHandler(rank)}</Statistic.Value>
 					</Statistic>
 				);
 			}
@@ -314,7 +343,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
 									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
-									<Statistic.Value>{crew.ranks.voyTriplet.rank}</Statistic.Value>
+									<Statistic.Value>{tripletHandler('voyTriplet')}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
 							<Divider />
