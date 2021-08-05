@@ -285,25 +285,31 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		const rankHandler = prefix => {
 			let [name, rank] = Object.entries(crew.ranks)
 															 .filter(([k, v]) => k.startsWith(prefix))
-															 .sort(([k1, v1], [k2, v2]) => v2 - v1)[0];
+															 .map(([k, v]) => [k, roster.filter(c => c.ranks[k] < crew.ranks[k]).length + 1])
+															 .sort(([k1, v1], [k2, v2]) => v1 - v2)[0];
 			return [
 				name.substr(2).replace('_', '/'),
-				roster.filter(c => crew.ranks[rank] > c.ranks[rank]).length + 1
+				rank
 			];
 		}
 
 		if (skillCount == 3) {
-			let rank = rankHandler('voyTriplet')[1];
+			let rank = roster.filter(c =>
+													 c.ranks['voyTriplet'] &&
+													 c.ranks['voyTriplet'].name == crew.ranks['voyTriplet'].name &&
+													 crew.ranks['voyTriplet'].rank > c.ranks['voyTriplet'].rank).length + 1
 
 			return `#${rank} ${crew.ranks['voyTriplet'].name} on your roster`;
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
 
-			if (voyRank >= gauntRank)
+			if (voyRank < gauntRank)
 				return `#${voyRank} ${voyRankName} voyage pair in your roster`;
-			else
+			else if (voyRank > gauntRank)
 				return `#${gauntRank} ${gauntRankName} gauntlet pair in your roster`;
+			else
+				return `#${voyRank} ${voyRankName} voyage/gauntlet pair in your roster`;
 		} else {
 			let [baseName, baseRank] = rankHandler('B');
 			return `#${baseRank} ${baseName} base in your roster`;
