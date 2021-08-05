@@ -1,21 +1,10 @@
-export function getCoolStats(crew: any, simple: boolean, showMore: boolean = true, roster = false): string {
+export function getCoolStats(crew: any, simple: boolean, showMore: boolean = true): string {
 	let stats = [];
 
 	const rankType = rank => {
-		let retVal = rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
-		retVal += roster ? ' in roster' : '';
-		return retVal;
+		return rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
 	};
 	const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
-	const rankHandler = rank => roster
-		? roster.filter(c => c.ranks[rank] && crew.ranks[rank] < c.ranks[rank]).length + 1
-		: crew.ranks[rank];
-	const tripletHandler = (rank) => roster
-		? roster.filter(c => c.ranks['rank'] &&
-												 c.ranks[rank].name == crew.ranks[rank].name &&
-												 crew.ranks[rank].rank < c.ranks[rank].rank).length + 1
-		: crew.ranks[rank].rank;
-
 
 	for (let rank in crew.ranks) {
 		if (simple) {
@@ -26,14 +15,13 @@ export function getCoolStats(crew: any, simple: boolean, showMore: boolean = tru
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
-				if (crew.ranks[rank] && rankHandler(rank) <= 9) {
-					stats.push(`${rankType(rank)} #${rankHandler(rank)} ${rank.substr(2).replace('_', ' / ')}`);
+				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
+					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.substr(2).replace('_', ' / ')}`);
 				}
 			}
 			if (rank === 'voyTriplet') {
-				if (crew.ranks[rank] && tripletHandler(rank) <= 9) {
-					stats.push(`Voyage #${tripletHandler(rank)} ${crew.ranks[rank].name}`);
-				}
+				if (crew.ranks[rank] && crew.ranks[rank].rank <= 9)
+					stats.push(`Voyage #${crew.ranks[rank].rank} ${crew.ranks[rank].name}`);
 			}
 		}
 	}
