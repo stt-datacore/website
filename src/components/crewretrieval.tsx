@@ -29,11 +29,11 @@ type CrewRetrievalState = {
 };
 
 const ownedFilterOptions = [
-    { key: '0', value: 'Show all crew', text: 'Show all crew' },
-    { key: '1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
-    { key: '2', value: 'Only show owned crew', text: 'Only show owned crew (not FF)' },
-    { key: '3', value: 'Show all owned crew', text: 'Show all owned crew'},
-		{ key: '4', value: 'Show all crew not FF', text: 'Show all crew (not FF)'}
+    { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
+    { key: 'ofo1', value: 'Only show unowned crew', text: 'Only show unowned crew' },
+    { key: 'ofo2', value: 'Only show owned crew', text: 'Only show owned crew (not FF)' },
+    { key: 'ofo3', value: 'Show all owned crew', text: 'Show all owned crew'},
+	{ key: 'ofo4', value: 'Show all crew not FF', text: 'Show all crew (not FF)'}
 ];
 
 const ownedFilters = {
@@ -48,23 +48,23 @@ const ownedFilters = {
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
 const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
+	{ key: 'po0', value: '10', text: '10' },
+	{ key: 'po1', value: '25', text: '25' },
+	{ key: 'po2', value: '50', text: '50' },
+	{ key: 'po3', value: '100', text: '100' }
 ];
 
 const rarityOptions = [
-	{ key: null, value: null, text: 'Any' },
-	{ key: '1', value: '1', text: '1' },
-	{ key: '2', value: '2', text: '2' },
-	{ key: '3', value: '3', text: '3' },
-	{ key: '4', value: '4', text: '4' },
-	{ key: '5', value: '5', text: '5' }
+	{ key: 'ro0', value: null, text: 'Any' },
+	{ key: 'ro1', value: '1', text: '1' },
+	{ key: 'ro2', value: '2', text: '2' },
+	{ key: 'ro3', value: '3', text: '3' },
+	{ key: 'ro4', value: '4', text: '4' },
+	{ key: 'ro5', value: '5', text: '5' }
 ];
 
 const collectionsOptions = [
-	{ key: null, value: null, text: 'Any' }
+	{ key: 'co0', value: null, text: 'Any' }
 ];
 
 const filterTraits = (polestar, trait) => {
@@ -113,8 +113,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
                     ownedPolestars.forEach((p) => { p.quantity = this.props.playerData.forte_root.items.find(k => k.id === p.id).quantity });
                     this.setState({ ownedPolestars });
                 });
-        
-        
+
+
             fetch('/structured/crew.json')
                 .then(response => response.json())
             .   then(allCrew => this.setState({ allCrew }));
@@ -134,12 +134,14 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			)
 		);
 		data.forEach(crew => { crew.highest_owned_rarity = this._findHighestOwnedRarityForCrew(crew.symbol, false) });
-		
+
 		if(this.state.recalculateCombos && this.state.column) {
 			data = this._reSort(data);
 		}
 		this.setState({ data: data, recalculateCombos: false });
 
+		// Reset collections options; otherwise options dupe on filter changes
+		collectionsOptions.splice(1);
 		let cArr = [...new Set(data.map(a => a.collections).flat())].sort();
 		cArr.forEach(c => {
 			let pc = { progress: 'n/a', milestone: { goal: 'n/a' }};
@@ -151,7 +153,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			}
 			let kv = cArr.indexOf(c) + 1;
 			collectionsOptions.push({
-				key: kv,
+				key: 'co'+kv,
 				value: c,
 				text: c,
 				content: (
@@ -168,7 +170,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 	_handleSort(clickedColumn, keepSortOptions) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
-		
+
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
 			direction: column === clickedColumn ? direction : null
@@ -186,7 +188,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 				direction: 'ascending'
 			};
 		}
-		
+
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
 		this.setState({
 			column: sorted.field,
@@ -195,7 +197,7 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			data: sorted.result
 		});
 	}
-	
+
 	_reSort(data) {
 		const sortConfig: IConfigSortData = {
 			field: this.state.column,
@@ -225,16 +227,17 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 			<div className="ui accordion fluid" onClick={() => this.setState({ activeCrew: this.state.activeCrew === crew.symbol ? null : crew.symbol })}>
 				<div className={`title ${this.state.activeCrew === crew.symbol ? 'active' : ''}`}>View</div>
 				<div className={`content ${this.state.activeCrew === crew.symbol ? 'active' : ''}`}>
-						<div className="ui four column grid">
-							{combos.map((combo) => (
-								<div className="row">
-									{combo.map((polestar) => (
-											<div className="column"><img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} /><br />{polestar.name.replace(' Polestar', '').replace(' Skill', '')}<br /><small>({polestar.quantity})</small></div>
-									))
-									}
-								</div>
-							))}
-					</div>
+					<Grid columns='equal'>
+						{combos.map((combo, cdx) => (
+							<Grid.Row key={'combo'+cdx}>
+								{combo.map((polestar, pdx) => (
+									<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
+										<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} /><br />{polestar.name.replace(' Polestar', '').replace(' Skill', '')}<br /><small>({polestar.quantity})</small>
+									</Grid.Column>
+								))}
+							</Grid.Row>
+						))}
+					</Grid>
 				</div>
 			</div>
 		)
@@ -336,26 +339,36 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
                         return (
                 <div>
                     <h2>Crew Retrieval Unavailable</h2>
-                    <p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file. 
+                    <p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file.
                        Please follow the link and copy the correct version to paste.</p>
                 </div>
             )
         }
-        
+
+		const energy = playerData.crew_crafting_root.energy;
+		let energyMessage = "You can retrieve a legendary crew now!";
+		if (energy.quantity < 900) {
+			let seconds = ((900-energy.quantity)*energy.regeneration.seconds)+energy.regenerated_at;
+			let d = Math.floor(seconds/(3600*24)),
+				h = Math.floor(seconds%(3600*24)/3600),
+				m = Math.floor(seconds%3600/60);
+			energyMessage = "You will regenerate enough quantum to retrieve a legendary crew in "+d+"d, "+h+"h, "+m+"m.";
+		}
+
         if (!data) {
             return null;
         }
-        
+
         data = data.filter(ownedFilters[ownedFilter](playerData.player.character.crew));
-		
+
 		if (minRarity) {
 			data = data.filter((crew) => crew.max_rarity >= minRarity);
 		}
-		
+
 		if (collection) {
 			data = data.filter((crew) => crew.collections.indexOf(collection) !== -1);
 		}
-		
+
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
@@ -363,7 +376,8 @@ class CrewRetrieval extends Component<CrewRetrievalProps, CrewRetrievalState> {
 
 		return (
 			<>
-				<Header as='h4'>Here are all the crew who you can perform a 100% guaranteed Crew Retrieval for, using the polestars currently in your inventory:</Header>
+				<p>Quantum: {energy.quantity}. {energyMessage}</p>
+				<p>Here are all the crew who you can perform a 100% guaranteed Crew Retrieval for, using the polestars currently in your inventory:</p>
 				<Form>
 					<Form.Group inline>
 						<Modal
