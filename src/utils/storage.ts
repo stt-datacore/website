@@ -84,7 +84,7 @@ const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean) =>
 		localForage.removeItem(itemKey);
 	}
 };
-const getStoredItem = (itemKey: string, itemDefault: any) => {
+export const getStoredItem = (itemKey: string, itemDefault: any) => {
 	let sessionValue = windowGlobal && windowGlobal.sessionStorage && windowGlobal.sessionStorage.getItem(itemKey);
 	if (!sessionValue) {
 		return itemDefault;
