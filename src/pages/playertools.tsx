@@ -280,7 +280,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 							</p>
 							<Message.List>
 								<Message.Item>
-									Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
+									Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
 									</Message.Item>
 								<Message.Item>
 									There is no private information included in the player profile; information being shared is limited to:{' '}
