@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Input, Button, Grid } from 'semantic-ui-react';
+import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Input, Button, Grid, Image } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
 import CONFIG from './CONFIG';
@@ -15,12 +15,12 @@ const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity' },
 	{ width: 1, column: 'bonus', title: 'Bonus' },
-	{ width: 1, column: 'command_skill.core', title: 'Command' },
-	{ width: 1, column: 'science_skill.core', title: 'Science' },
-	{ width: 1, column: 'security_skill.core', title: 'Security' },
-	{ width: 1, column: 'engineering_skill.core', title: 'Engineering' },
-	{ width: 1, column: 'diplomacy_skill.core', title: 'Diplomacy' },
-	{ width: 1, column: 'medicine_skill.core', title: 'Medicine' }
+	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} /> },
+	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} /> },
+	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} /> },
+	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} /> },
+	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} /> },
+	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} /> }
 ];
 
 type EventPlannerProps = {
@@ -72,7 +72,9 @@ type EventPickerProps = {
 };
 
 class EventData {
+	symbol: string = '';
     name: string = '';
+	image: string = '';
 	description: string = '';
 	content_types: string[] = [];	/* shuttles, gather, etc. */
     bonus: string[] = [];	/* ALL bonus crew by symbol */
@@ -83,21 +85,40 @@ const EventPicker = (props: EventPickerProps) => {
 	const { dbid, events, crew, buffConfig } = props;
 
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
+	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
 
 	const eventsList = [];
-	let eventId = 0;
-	events.forEach((activeEvent) => {
+	events.forEach((activeEvent, eventId) => {
 		eventsList.push(
 			{
-				key: eventId,
+				key: activeEvent.symbol,
 				value: eventId,
 				text: activeEvent.name
 			}
 		);
-		eventId++;
 	});
 
 	const eventData = getEventData(events[eventIndex]);
+
+	const EVENT_TYPES = {
+		'shuttles': 'Faction',
+		'gather': 'Galaxy',
+		'skirmish': 'Skirmish'
+	};
+
+	const phaseList = [];
+	eventData.content_types.forEach((contentType, phaseId) => {
+		if (!phaseList.find((phase) => phase.key == contentType)) {
+			phaseList.push(
+				{
+					key: contentType,
+					value: phaseId,
+					text: EVENT_TYPES[contentType]
+				}
+			);
+		}
+	});
+
 	const bonusCrew = crew.filter(crewman => eventData.bonus.indexOf(crewman.symbol) >= 0);
 
 	return (
@@ -110,20 +131,27 @@ const EventPicker = (props: EventPickerProps) => {
 					value={eventIndex}
 					onChange={(e, { value }) => setEventIndex(value) }
 				/>
+				<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${eventData.image}`} />
 				<div>{eventData.description}</div>
+				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value) } /></div>)}
 			</Form>
-			<EventCrewTable crew={crew} eventData={eventData} buffConfig={buffConfig} />
-			<EventShuttlers dbid={dbid} crew={crew} eventData={eventData} />
+			<EventCrewTable crew={crew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} />
+			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttlers dbid={dbid} crew={crew} eventData={eventData} />)}
 		</React.Fragment>
 	);
 
 	function getEventData(activeEvent: any): EventData | undefined {
 		let result = new EventData();
+		result.symbol = activeEvent.symbol;
 		result.name = activeEvent.name;
 		result.description = activeEvent.description;
 		result.content_types = activeEvent.content_types;
 
+		// We can get event image more definitively by fetching from events/instance_id.json rather than player data
+		result.image = activeEvent.phases[0].splash_image.file.substr(1).replace(/\//g, '_') + '.png';
+
 		// Content is active phase of started event or first phase of unstarted event
+		//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
 		let activePhase = activeEvent.content;
 		if (activePhase.content_type == 'shuttles') {
 			activePhase.shuttles.forEach((shuttle: any) => {
@@ -155,26 +183,31 @@ const EventPicker = (props: EventPickerProps) => {
 type EventCrewTableProps = {
 	crew: any[];
 	eventData: any;
+	phaseIndex: number;
 	buffConfig: any;
 };
 
 const EventCrewTable = (props: EventCrewTableProps) => {
-	const { eventData, buffConfig } = props;
+	const { eventData, phaseIndex, buffConfig } = props;
 
 	const [showBonus, setShowBonus] = useStateWithStorage('eventplanner/showBonus', true);
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 
+	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
+
 	const bonusCrew = JSON.parse(JSON.stringify(props.crew));
 	if (applyBonus || showPotential) {
 		bonusCrew.forEach(crew => {
 			crew.bonus = 1;
 			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				crew.bonus = 3;
+				if (phaseType == 'gather') crew.bonus = 10;
+				else if (phaseType == 'shuttles') crew.bonus = 3;
 			}
 			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				crew.bonus = 2;
+				if (phaseType == 'gather') crew.bonus = 5;
+				else if (phaseType == 'shuttles') crew.bonus = 2;
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
@@ -359,6 +392,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 	const [shuttleScores, setShuttleScores] = React.useState(new Array(shuttlers.shuttles.length));
 
 	const [considerActive, setConsiderActive] = useStateWithStorage('eventplanner/considerActive', false);
+	const [considerVoyage, setConsiderVoyage] = useStateWithStorage('eventplanner/considerVoyage', false);
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('eventplanner/considerFrozen', false);
 	const [saveSetups, setSaveSetups] = useStateWithStorage(props.dbid+'/eventplanner/saveSetups', false, { rememberForever: true });
 
@@ -372,7 +406,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 
 	React.useEffect(() => {
 		updateCrewScores(true);
-	}, [considerActive, considerFrozen]);
+	}, [considerActive, considerVoyage, considerFrozen]);
 
 	// Shuttle setups and assignments are saved in local storage,
 	//	so we must check whether to clear them on session close
@@ -443,9 +477,15 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 			<Form.Group grouped>
 				<Form.Field
 					control={Checkbox}
-					label='Consider active (on shuttles or voyage) crew'
+					label='Consider crew on active shuttles'
 					checked={considerActive}
 					onChange={(e, { checked }) => setConsiderActive(checked)}
+				/>
+				<Form.Field
+					control={Checkbox}
+					label='Consider crew on active voyage'
+					checked={considerVoyage}
+					onChange={(e, { checked }) => setConsiderVoyage(checked)}
 				/>
 				<Form.Field
 					control={Checkbox}
@@ -562,7 +602,10 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 		if (todo.length == 0) return;
 
 		for (let i = 0; i < props.crew.length; i++) {
-			if (!considerActive && props.crew[i].active_status > 0)
+			if (!considerActive && props.crew[i].active_status == 2)
+				continue;
+
+			if (!considerVoyage && props.crew[i].active_status == 3)
 				continue;
 
 			if (!considerFrozen && props.crew[i].immortal > 0)
