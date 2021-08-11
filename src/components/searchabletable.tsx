@@ -35,27 +35,33 @@ type SearchableTableProps = {
 	config: ITableConfigRow[];
 	renderTableRow: (row: any, idx?: number) => JSX.Element;
 	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
+	initOptions?: any;
     showFilterOptions: boolean;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
-	const tableId = props.id ? props.id : '';
+	const tableId = props.id ?? '';
 
-	// Ignore stored searchFilter if search parameter found
-	let defaultSearch = '', useAndStoreDefault = false;
-	let urlParams = new URLSearchParams(window.location.search);
-	if (urlParams.has('search')) {
-		defaultSearch = urlParams.get('search');
-		useAndStoreDefault = true;
-	}
-
-	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', defaultSearch, {useAndStoreDefault});
+	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
-	const [column, setColumn] = useStateWithStorage(tableId+'column', null);
-	const [direction, setDirection] = useStateWithStorage(tableId+'direction', null);
+	const [column, setColumn] = useStateWithStorage(tableId+'column', 'date_added');
+	const [direction, setDirection] = useStateWithStorage(tableId+'direction', 'descending');
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
+
+	// Override stored values with custom initial options and reset all others to defaults
+	//	Previously stored values will be rendered before an override triggers a re-render
+	React.useEffect(() => {
+		if (props.initOptions) {
+			setSearchFilter(props.initOptions['searchFilter'] ?? '');
+			setFilterType(props.initOptions['filterType'] ?? 'Any match');
+			setColumn(props.initOptions['column'] ?? 'date_added');
+			setDirection(props.initOptions['direction'] ?? 'descending');
+			setPaginationRows(props.initOptions['paginationRows'] ?? 10);
+			setPaginationPage(props.initOptions['paginationPage'] ?? 1);
+		}
+	}, [props.initOptions]);
 
 	// We only sort here to store requested column and direction in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
@@ -100,7 +106,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						width={cell.width as any}
 						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
 						onClick={() => handleSort(cell.column, cell.pseudocolumns)}
-						textAlign={cell.width == 1 ? 'center' : 'left'}
+						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
 						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
 					</Table.HeaderCell>

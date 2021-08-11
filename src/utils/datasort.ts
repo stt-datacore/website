@@ -25,7 +25,7 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 	if(!keepSortOptions) {
 		direction = setDirection(direction);
 	}
-	
+
 	if(config.secondary) {
 		config.secondary.direction = config.secondary.direction === null ? setDirection(null) : config.secondary.direction;
 		config.secondary.direction = keepSortOptions === true ? config.secondary.direction : setDirection(config.secondary.direction);
@@ -44,11 +44,11 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 			getValueFromPath(config.secondary.direction === 'ascending' ? b : a, config.secondary.field)
 		));
 	}
-	
+
 	if(direction === 'descending') {
 		result.reverse();
 	}
-	
+
 	return {
 		field,
 		direction,
@@ -75,6 +75,8 @@ function compare(a, b) {
 	if(!isNaN(a) && !isNaN(b)) {
 		return a - b;
 	}
+	if (isNaN(a) && !isNaN(b)) return 1;
+	if (!isNaN(a) && isNaN(b)) return -1;
 	return (a > b ? 1 : b > a ? -1 : 0);
 }
 
