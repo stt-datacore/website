@@ -691,5 +691,16 @@
 		"smallbonus": {
 			"traits": ["mccoy","larkin","Tribbled","Exobiology"]
 		}
+	},
+	{
+		"name": "It's the Fuzz - Mega Event Part 2",
+		"type": "Galaxy",
+		"dates": "Thursday 08/12 until Monday 08/16 at Noon (16.00 UTC)",
+		"startDate": "2021-08-12T16:00:00Z",
+		"endDate": "2021-08-16T16:00:00Z",
+		"highbonus": ["uhura_tribble_crew", "spock_tribble_crew", "dax_jadzia_tos_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["uhura","spock","Dax","Tribbled","Exobiology"]
+		}
 	}
 ]
