@@ -332,9 +332,11 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 			: crew.ranks[rank].rank;
 
 		// Need to filter by skills first before sorting by voyage triplet
-		const tripletFilter = crew.ranks.voyTriplet.name.split('/')
-								.map(s => 'skill:'+s.trim())
-								.reduce((prev, curr) => prev+' '+curr);
+		const tripletFilter = crew.ranks.voyTriplet
+								? crew.ranks.voyTriplet.name.split('/')
+									.map(s => 'skill:'+s.trim())
+									.reduce((prev, curr) => prev+' '+curr)
+								: '';
 
 		for (let rank in crew.ranks) {
 			if (rank.startsWith('V_')) {
@@ -398,7 +400,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 }
 
 const rankLinker = (roster: any, rank: number, symbol: string, column: string, direction: string, searchFilter: string) => {
-	if (!roster) return (<>{rank}</>);
+	if (roster) return (<>{rank}</>);
 	const linkState = {
 		searchFilter: searchFilter ?? '',
 		column: column,
