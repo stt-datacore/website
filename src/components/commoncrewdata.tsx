@@ -188,15 +188,15 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
 						<Statistic>
 							<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
-							<Statistic.Value>{crew.cab_ov_rank ? linkHandler(crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending') : 'None'}</Statistic.Value>
+							<Statistic.Value>{crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}</Statistic.Value>
 						</Statistic>
 						<Statistic>
 							<Statistic.Label>Voyage Rank</Statistic.Label>
-							<Statistic.Value>{linkHandler(crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}</Statistic.Value>
+							<Statistic.Value>{rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}</Statistic.Value>
 						</Statistic>
 						<Statistic>
 							<Statistic.Label>Gauntlet Rank</Statistic.Label>
-							<Statistic.Value>{linkHandler(crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}</Statistic.Value>
+							<Statistic.Value>{rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}</Statistic.Value>
 						</Statistic>
 					</Statistic.Group>
 					</>
@@ -331,42 +331,31 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 													 crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
 			: crew.ranks[rank].rank;
 
-		// Can't easily sort by voyage triplet, so use this hack to filter and sort
-		const tripletLinker = rank => {
-			const linkState = {
-				searchFilter: crew.ranks.voyTriplet.name.split('/')
-									.map(s => 'skill:'+s.trim())
-									.reduce((prev, curr) => prev+' '+curr),
-				column: 'ranks.voyRank',
-				direction: 'ascending',
-				paginationPage: Math.ceil(rank/10),
-				highlights: [crew.symbol]
-			};
-			return (
-				<Link to="/" state={linkState}>{rank}</Link>
-			);
-		};
+		// Need to filter by skills first before sorting by voyage triplet
+		const tripletFilter = crew.ranks.voyTriplet.name.split('/')
+								.map(s => 'skill:'+s.trim())
+								.reduce((prev, curr) => prev+' '+curr);
 
 		for (let rank in crew.ranks) {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{linkHandler(rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{linkHandler(rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
-						<Statistic.Value>{linkHandler(rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.substr(2)).name, 'descending')}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.substr(2)).name, 'descending')}</Statistic.Value>
 					</Statistic>
 				);
 			}
@@ -387,7 +376,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
 									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
-									<Statistic.Value>{tripletLinker(tripletHandler('voyTriplet'))}</Statistic.Value>
+									<Statistic.Value>{rankLinker(roster, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
 							<Divider />
@@ -408,8 +397,10 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 	}
 }
 
-const linkHandler = (rank: number, symbol: string, column: string, direction: string) => {
+const rankLinker = (roster: any, rank: number, symbol: string, column: string, direction: string, searchFilter: string) => {
+	if (!roster) return (<>{rank}</>);
 	const linkState = {
+		searchFilter: searchFilter ?? '',
 		column: column,
 		direction: direction ?? 'ascending',
 		paginationPage: Math.ceil(rank/10),
