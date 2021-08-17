@@ -15,7 +15,7 @@ const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'max_rarity', 'level'] },
 	{ width: 1, column: 'bonus', title: 'Bonus' },
 	{ width: 1, column: 'bestSkill.score', title: 'Best' },
-	{ width: 1, column: 'bestCombo.score', title: 'Combo' },
+	{ width: 1, column: 'bestPair.score', title: 'Pair' },
 	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} /> },
 	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} /> },
 	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} /> },
@@ -236,7 +236,17 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
-	let bestCombos = {};
+	let bestPairs = {};
+
+	const zeroCombos = {};
+	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
+		let firstSkill = CONFIG.SKILLS_SHORT[first];
+		zeroCombos[firstSkill.name] = 0;
+		for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+			let secondSkill = CONFIG.SKILLS_SHORT[second];
+			zeroCombos[firstSkill.name+','+secondSkill.name] = 0;
+		}
+	}
 
 	let myCrew = JSON.parse(JSON.stringify(props.crew));
 
@@ -272,48 +282,48 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			}
 		}
 		// Then calculate skill combination scores
-		let combos = [];
-		let bestCombo = { score: 0 };
+		let combos = {...zeroCombos};
+		let bestPair = { score: 0 };
 		let bestSkill = { score: 0 };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			let firstSkill = CONFIG.SKILLS_SHORT[first];
 			if (crew[firstSkill.name].core > 0) {
-				let combo = {
+				let pair = {
 					score: crew[firstSkill.name].core,
 					skillA: firstSkill.name,
 					skillB: ''
 				};
-				combos.push(combo);
-				if (combo.score > bestCombo.score) bestCombo = combo;
-				if (combo.score > bestSkill.score) bestSkill = { score: combo.score, skill: combo.skillA };
-				if (!bestCombos[firstSkill.name] || combo.score > bestCombos[firstSkill.name].score)
-					bestCombos[firstSkill.name] = { id: crew.id, score: combo.score };
+				combos[firstSkill.name] = pair.score;
+				if (pair.score > bestPair.score) bestPair = pair;
+				if (pair.score > bestSkill.score) bestSkill = { score: pair.score, skill: pair.skillA };
+				if (!bestPairs[firstSkill.name] || pair.score > bestPairs[firstSkill.name].score)
+					bestPairs[firstSkill.name] = { id: crew.id, score: pair.score };
 				for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
 					let secondSkill = CONFIG.SKILLS_SHORT[second];
 					if (crew[secondSkill.name].core > 0) {
-						combo = {
+						pair = {
 							score: crew[firstSkill.name].core+(crew[secondSkill.name].core/4),
 							skillA: firstSkill.name,
 							skillB: secondSkill.name
 						}
 						if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
-							combo = {
+							pair = {
 								score: crew[secondSkill.name].core+(crew[firstSkill.name].core/4),
 								skillA: secondSkill.name,
 								skillB: firstSkill.name
 							}
 						}
-						combos.push(combo);
-						if (combo.score > bestCombo.score) bestCombo = combo;
-						let comboId = firstSkill.name+secondSkill.name;
-						if (!bestCombos[comboId] || combo.score > bestCombos[comboId].score)
-							bestCombos[comboId] = { id: crew.id, score: combo.score };
+						combos[firstSkill.name+','+secondSkill.name] = pair.score;
+						if (pair.score > bestPair.score) bestPair = pair;
+						let pairId = firstSkill.name+secondSkill.name;
+						if (!bestPairs[pairId] || pair.score > bestPairs[pairId].score)
+							bestPairs[pairId] = { id: crew.id, score: pair.score };
 					}
 				}
 			}
 		}
-		//crew.combos = combos;	// Not used now, but can uncomment if needed later
-		crew.bestCombo = bestCombo;
+		//crew.combos = combos;	// Not used yet. Can be added as columns to searchabletable or passed to shuttlers
+		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
 	});
 
@@ -356,7 +366,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 				showFilterOptions="true"
 			/>
-			{phaseType != "skirmish" && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} />)}
+			{phaseType != "skirmish" && (<EventCrewMatrix crew={myCrew} bestPairs={bestPairs} />)}
 		</React.Fragment>
 	);
 
@@ -389,9 +399,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 					<br /><img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<b>{Math.floor(crew.bestCombo.score)}</b>
-					<br /><img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestCombo.skillA}.png`} style={{ height: '1em' }} />
-					{crew.bestCombo.skillB != '' && (<span>+<img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestCombo.skillB}.png`} style={{ height: '1em' }} /></span>)}
+					<b>{Math.floor(crew.bestPair.score)}</b>
+					<br /><img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
+					{crew.bestPair.skillB != '' && (<span>+<img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
@@ -430,15 +440,15 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 
 type EventCrewMatrixProps = {
 	crew: any[];
-	bestCombos: any;
+	bestPairs: any;
 };
 
 const EventCrewMatrix = (props: EventCrewMatrixProps) => {
-	const {crew, bestCombos} = props;
+	const {crew, bestPairs} = props;
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Skill Combo Matrix</Header>
+			<Header as='h4'>Skill Matrix</Header>
 			<p>This table shows your best crew for each possible skill combination. Use this table to identify your best crew for this event and the best candidates to share in a faction event if you are a squad leader.</p>
 			<Table definition celled striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -465,28 +475,53 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 
 	function renderCell(skillA: string, skillB: string) : JSX.Element {
 		let key = skillA+skillB;
-		let bestCombo = bestCombos[skillA] ?? {score: 0};
-		if (bestCombos[skillB] && bestCombos[skillB].score > bestCombo.score) {
-			bestCombo = bestCombos[skillB];
+		let bestPair = bestPairs[skillA] ?? {score: 0};
+		if (bestPairs[skillB] && bestPairs[skillB].score > bestPair.score) {
+			bestPair = bestPairs[skillB];
 		}
-		if (bestCombos[skillA] && bestCombos[skillB]) {
-			if (bestCombos[skillA+skillB] && bestCombos[skillA+skillB].score > bestCombo.score) bestCombo = bestCombos[skillA+skillB];
-			if (bestCombos[skillB+skillA] && bestCombos[skillB+skillA].score > bestCombo.score) bestCombo = bestCombos[skillB+skillA];
+		if (bestPairs[skillA] && bestPairs[skillB]) {
+			if (bestPairs[skillA+skillB] && bestPairs[skillA+skillB].score > bestPair.score) bestPair = bestPairs[skillA+skillB];
+			if (bestPairs[skillB+skillA] && bestPairs[skillB+skillA].score > bestPair.score) bestPair = bestPairs[skillB+skillA];
 		}
-		if (bestCombo.score > 0) {
-			let bestCrew = crew.find(c => c.id == bestCombo.id);
+		if (bestPair.score > 0) {
+			let bestCrew = crew.find(c => c.id == bestPair.id);
 			let icon = (<></>);
 			if (bestCrew.immortal) icon = (<Icon name='snowflake' />);
 			if (bestCrew.prospect) icon = (<Icon name='add user' />);
 			return (
 				<Table.Cell key={key} textAlign='center'>
-					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({Math.floor(bestCombo.score)})</small>
+					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({Math.floor(bestPair.score)})</small>
 				</Table.Cell>
 			);
 		}
 		return (
 			<Table.Cell key={key} textAlign='center'>-</Table.Cell>
 		);
+	}
+
+	// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
+	//	Not used yet
+	function calculateGalaxyChance(skillValue: number) : number {
+		const craft_config = {
+			specialist_chance_formula: {
+				steepness: 0.3,
+				midpoint: 5.5
+			},
+			specialist_challenge_rating: 1050,
+			specialist_failure_bonus: 0.05,
+			specialist_maximum_success_chance: 0.99
+		};
+
+		let midpointOffset = skillValue / craft_config.specialist_challenge_rating;
+		let val = Math.floor(
+			100 /
+			(1 +
+				Math.exp(
+					-craft_config.specialist_chance_formula.steepness *
+					(midpointOffset - craft_config.specialist_chance_formula.midpoint)
+					))
+			);
+		return Math.min(val / 100, craft_config.specialist_maximum_success_chance);
 	}
 };
 
