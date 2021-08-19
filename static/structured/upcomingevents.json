@@ -702,5 +702,16 @@
 		"smallbonus": {
 			"traits": ["uhura","spock","Dax","Tribbled","Exobiology"]
 		}
+	},
+	{
+		"name": "Furred Up - Mega Event Part 3",
+		"type": "Faction",
+		"dates": "Thursday 08/19 until Monday 08/23 at Noon (16.00 UTC)",
+		"startDate": "2021-08-19T16:00:00Z",
+		"endDate": "2021-08-23T16:00:00Z",
+		"highbonus": ["odo_tos_crew", "sulu_tribble_crew", "sato_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["sato","odo","sulu","Tribbled","Exobiology"]
+		}
 	}
 ]
