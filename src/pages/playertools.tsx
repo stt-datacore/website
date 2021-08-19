@@ -557,7 +557,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.
-				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}') + 2);
+				data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('}}') + 2);
 			}
 			setFullInput(data);
 		};
