@@ -2,12 +2,14 @@
 name: Tribble Phlox
 rarity: 4
 series: ent
-memory_alpha: ''
-bigbook_tier:
-events:
+memory_alpha:
+bigbook_tier: -1
+events: 17
 in_portal:
-date:
-obtained:
-mega:
-published: false
+date: 26/08/2021
+obtained: Event
+mega: true
+published: true
 ---
+
+
