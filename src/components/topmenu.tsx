@@ -1,10 +1,11 @@
 import React, { PureComponent, useState } from 'react';
-import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
+import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar, Image } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-
+import { playerTools } from '../pages/playertools';
 import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
+import { useStateWithStorage } from '../utils/storage';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
@@ -22,6 +23,7 @@ const MainContent = ({ children, narrowLayout }) =>
 
 const NavBarMobile = ({ children, leftItems, rightItems }) => {
 	const [visible, setVisible] = useState(false);
+	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
 
 	return (
 		<Sidebar.Pushable>
@@ -96,9 +98,15 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	}
 
 	items.push(
-		<Menu.Item key={index++} onClick={() => navigate('/playertools')}>
-			Player tools
-		</Menu.Item>
+		<Dropdown key={index++} item simple text ='Player tools'>
+			<Dropdown.Menu>
+				{Object.entries(playerTools).map(([key, value]) =>
+					<Dropdown.Item onClick={() => navigate(`/playertools?tool=${key}`)}>
+						{value.title}
+					</Dropdown.Item>
+				)}
+			</Dropdown.Menu>
+		</Dropdown>
 	);
 	items.push(
 		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
@@ -167,8 +175,26 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	}
 };
 
-const useRightItems = ({ onMessageClicked }) => (
-	<>
+const useRightItems = ({ onMessageClicked }) => {
+	const [playerData, setPlayerData] = React.useState(undefined);
+	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
+
+	const [allCrew, setAllCrew] = React.useState(undefined);
+	const [allItems, setAllItems] = React.useState(undefined);
+
+	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
+	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
+	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const clearPlayerData = () => {
+		sessionStorage.clear();	// also clears form data for all subcomponents
+		[setPlayerData, setInputPlayerData, setStrippedPlayerData, setVoyageData, setEventData, setActiveCrew]
+			.forEach(setFn => { setFn(undefined); });
+	}
+	const profileLink = action => `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`;
+	const profileIcon = <Image src='/media/logo.png' size='mini' />;
+
+	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 			<Icon name='adjust' />
 		</Menu.Item>
@@ -189,8 +215,18 @@ const useRightItems = ({ onMessageClicked }) => (
 		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 			<Icon name='github' />
 		</Menu.Item>
-	</>
-);
+		{strippedPlayerData &&
+			<Dropdown items simple trigger = {profileIcon}>
+				<Dropdown.Item onClick={() => navigate('/playertools?update=true')}>Update profile</Dropdown.Item>
+				<Dropdown.Item onClick={() => navigate(profileLink)}>Share/View profile</Dropdown.Item>
+				<Dropdown.Item>Clear profile data</Dropdown.Item>
+			</Dropdown>
+		}
+		{!strippedPlayerData &&
+			<MenuItem>{profileIcon}</MenuItem>
+		}
+	</>);
+}
 
 type NavBarProps = {
 	children: React.ReactNode;
