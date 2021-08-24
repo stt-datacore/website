@@ -713,5 +713,16 @@
 		"smallbonus": {
 			"traits": ["sato","odo","sulu","Tribbled","Exobiology"]
 		}
+	},
+	{
+		"name": "A Bed of Mushrooms - Mega Event Finale",
+		"type": "Skirmish",
+		"dates": "Thursday 08/26 until Monday 08/30 at Noon (16.00 UTC)",
+		"startDate": "2021-08-26T16:00:00Z",
+		"endDate": "2021-08-30T16:00:00Z",
+		"highbonus": ["chekov_tribble_crew", "phlox_tribble_crew", "quark_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["chekov","phlox","quark","Tribbled","Exobiology"]
+		}
 	}
 ]
