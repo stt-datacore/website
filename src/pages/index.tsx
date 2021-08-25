@@ -23,15 +23,15 @@ type IndexPageState = {
 
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
-	{ width: 1, column: 'max_rarity', title: 'Rarity' },
-	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span> },
+	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
+	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true },
 	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-	{ width: 1, column: 'command_skill', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} /> },
-	{ width: 1, column: 'science_skill', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} /> },
-	{ width: 1, column: 'security_skill', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} /> },
-	{ width: 1, column: 'engineering_skill', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} /> },
-	{ width: 1, column: 'diplomacy_skill', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} /> },
-	{ width: 1, column: 'medicine_skill', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} /> }
+	{ width: 1, column: 'command_skill', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'science_skill', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'security_skill', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'engineering_skill', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'diplomacy_skill', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'medicine_skill', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
 ];
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
@@ -107,7 +107,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{formattedCounts}
+							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </>}{formattedCounts}
 						</div>
 					</div>
 				</Table.Cell>

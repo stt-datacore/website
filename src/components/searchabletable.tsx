@@ -65,7 +65,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// We only sort here to store requested column and direction in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
-	function handleSort(clickedColumn, pseudocolumns) {
+	function handleSort(clickedColumn, pseudocolumns, reverse) {
+		if (!clickedColumn) return;
+
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
 			direction: direction
@@ -81,7 +83,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		} else {
 			if(clickedColumn !== column) {
 				// sort rarity and skills descending first by default
-				sortConfig.direction = 'ascending';
+				sortConfig.direction = reverse ? 'ascending' : 'descending';
 			}
 		}
 
@@ -105,7 +107,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						key={idx}
 						width={cell.width as any}
 						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
-						onClick={() => handleSort(cell.column, cell.pseudocolumns)}
+						onClick={() => handleSort(cell.column, cell.pseudocolumns, cell.reverse)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
 						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
