@@ -724,5 +724,16 @@
 		"smallbonus": {
 			"traits": ["chekov","phlox","quark","Tribbled","Exobiology"]
 		}
+	},
+	{
+		"name": "For Charity (Flashback)",
+		"type": "Galaxy",
+		"dates": "Thursday 09/02 until Monday 09/06 at Noon (16.00 UTC)",
+		"startDate": "2021-09-02T16:00:00Z",
+		"endDate": "2021-09-06T16:00:00Z",
+		"highbonus": ["riker_littlejohn_crew", "bashir_dress_uniform_crew", "quark_klingon_armor_crew"],
+		"smallbonus": {
+			"traits": ["riker","bashir","quark"]
+		}
 	}
 ]
