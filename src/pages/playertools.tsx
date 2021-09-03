@@ -197,7 +197,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		},
 		{
 			menuItem: 'Event Planner',
-			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} />
+			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew} />
 		},
 		{
 			menuItem: 'Crew',
