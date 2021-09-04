@@ -43,10 +43,16 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
 	const tableId = props.id ?? '';
 
+	const hasDate = data.length > 0 && data[0].date_added;
+	const defaultSort = {
+		column: data.length > 0 && hasDate ? 'date_added' : 'name',
+		direction: data.length > 0 && hasDate ? 'descending' : 'ascending'
+	};
+
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
-	const [column, setColumn] = useStateWithStorage(tableId+'column', 'date_added');
-	const [direction, setDirection] = useStateWithStorage(tableId+'direction', 'descending');
+	const [column, setColumn] = useStateWithStorage(tableId+'column', defaultSort.column);
+	const [direction, setDirection] = useStateWithStorage(tableId+'direction', defaultSort.direction);
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
@@ -56,41 +62,41 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		if (props.initOptions) {
 			setSearchFilter(props.initOptions['searchFilter'] ?? '');
 			setFilterType(props.initOptions['filterType'] ?? 'Any match');
-			setColumn(props.initOptions['column'] ?? 'date_added');
-			setDirection(props.initOptions['direction'] ?? 'descending');
+			setColumn(props.initOptions['column'] ?? defaultSort.column);
+			setDirection(props.initOptions['direction'] ?? defaultSort.direction);
 			setPaginationRows(props.initOptions['paginationRows'] ?? 10);
 			setPaginationPage(props.initOptions['paginationPage'] ?? 1);
 		}
 	}, [props.initOptions]);
 
-	// We only sort here to store requested column and direction in state
+	// Update column and/or toggle direction, and store new values in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
-	function handleSort(clickedColumn, pseudocolumns, reverse) {
-		if (!clickedColumn) return;
+	function onHeaderClick(newColumn) {
+		if (!newColumn.column) return;
 
-		const sortConfig: IConfigSortData = {
-			field: clickedColumn,
-			direction: direction
+		const lastColumn = column, lastDirection = direction;
+
+		const sortConfig = {
+			field: newColumn.column,
+			direction: lastDirection === 'ascending' ? 'descending' : 'ascending'
 		};
-
-		if(pseudocolumns) {
-			if(pseudocolumns.includes(column)) {
-				sortConfig.field = column;
-			} else {
-				sortConfig.direction = null;
+		if (newColumn.pseudocolumns && newColumn.pseudocolumns.includes(lastColumn)) {
+			if (direction === 'descending') {
+				const nextIndex = newColumn.pseudocolumns.indexOf(lastColumn) + 1; // Will be 0 if previous column was not a pseudocolumn
+				sortConfig.field = newColumn.pseudocolumns[nextIndex === newColumn.pseudocolumns.length ? 0 : nextIndex];
+				sortConfig.direction = 'ascending';
 			}
-			sortConfig.rotateFields = pseudocolumns;
-		} else {
-			if(clickedColumn !== column) {
-				// sort rarity and skills descending first by default
-				sortConfig.direction = reverse ? 'ascending' : 'descending';
+			else {
+				sortConfig.field = lastColumn;
+				sortConfig.direction = 'descending';
 			}
 		}
+		else if (newColumn.column !== lastColumn) {
+			sortConfig.direction = newColumn.reverse ? 'descending' : 'ascending';
+		}
 
-		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
-
-		setColumn(sorted.field);
-		setDirection(sorted.direction);
+		setColumn(sortConfig.field);
+		setDirection(sortConfig.direction);
 		setPaginationPage(1);
 	}
 
@@ -107,7 +113,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						key={idx}
 						width={cell.width as any}
 						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
-						onClick={() => handleSort(cell.column, cell.pseudocolumns, cell.reverse)}
+						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
 						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
@@ -124,6 +130,20 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			direction: direction,
 			keepSortOptions: true
 		};
+
+		// Define tiebreaker rules with names in alphabetical order as default
+		//	Hack here to sort rarity in the same direction as max_rarity
+		let subsort = [];
+		const columnConfig = props.config.find(col => col.column === column);
+		if (columnConfig && columnConfig.tiebreakers) {
+			subsort = columnConfig.tiebreakers.map(subfield => {
+				const subdirection = subfield == 'rarity' ? direction : 'ascending';
+				return { field: subfield, direction: subdirection };
+			});
+		}
+		if (column != 'name') subsort.push({ field: 'name', direction: 'ascending' });
+		sortConfig.subsort = subsort;
+
 		// Use original dataset for sorting
 		const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
 		data = sorted.result;
