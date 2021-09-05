@@ -99,7 +99,7 @@ class GauntletsPage extends PureComponent {
 										</Item.Header>
 										<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
 										<Item.Description>
-											<Grid>
+											<Grid stackable>
 											{matchedCrew.map(({ node: crew }) => (
 													<Grid.Column width={1} style={{textAlign: 'center'}}>
 														<a href={`/crew/${crew.symbol}`}>
@@ -111,7 +111,9 @@ class GauntletsPage extends PureComponent {
 														borderColor: CONFIG.RARITIES[crew.max_rarity].color,
 														borderWidth: '1px',
 														borderRadius: '4px',
-														borderStyle: 'solid'
+														borderStyle: 'solid',
+														marginLeft: 'auto',
+														marginRight: 'auto'
 													}}
 												/>
 												</a>
