@@ -209,7 +209,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		},
 		{
 			menuItem: 'Crew Retrieval',
-			render: () => <CrewRetrieval playerData={playerData} />
+			render: () => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
 		},
 		{
 			menuItem: 'Ships',
