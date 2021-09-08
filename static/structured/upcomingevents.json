@@ -742,7 +742,7 @@
 		"dates": "Thursday 09/09 until Monday 09/13 at Noon (16.00 UTC)",
 		"startDate": "2021-09-09T16:00:00Z",
 		"endDate": "2021-09-13T16:00:00Z",
-		"highbonus": ["spock_platonian_crew", "mccoy_julepmint_crew", "mccoy_julepmint_crew"],
+		"highbonus": ["spock_platonian_crew", "salt_vampire_crew", "mccoy_julepmint_crew"],
 		"smallbonus": {
 			"traits": ["spock","mccoy"]
 		}
