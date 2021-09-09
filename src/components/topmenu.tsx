@@ -6,6 +6,7 @@ import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
 import { useStateWithStorage } from '../utils/storage';
+import { doShareProfile } from '../utils/playerutils';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
@@ -23,7 +24,6 @@ const MainContent = ({ children, narrowLayout }) =>
 
 const NavBarMobile = ({ children, leftItems, rightItems }) => {
 	const [visible, setVisible] = useState(false);
-	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
 
 	return (
 		<Sidebar.Pushable>
@@ -176,23 +176,19 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-	const [playerData, setPlayerData] = React.useState(undefined);
-	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
-
-	const [allCrew, setAllCrew] = React.useState(undefined);
-	const [allItems, setAllItems] = React.useState(undefined);
-
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [profileShared, _] = useStateWithStorage('tools/profileShared', false);
+
 	const clearPlayerData = () => {
 		sessionStorage.clear();	// also clears form data for all subcomponents
-		[setPlayerData, setInputPlayerData, setStrippedPlayerData, setVoyageData, setEventData, setActiveCrew]
+		[setStrippedPlayerData, setVoyageData, setEventData, setActiveCrew]
 			.forEach(setFn => { setFn(undefined); });
 	}
-	const profileLink = action => `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`;
-	const profileIcon = <Image src='/media/logo.png' size='mini' />;
+	const profileIcon = <Image src='/media/badge.png' />;
+	const shareUrl = strippedPlayerData ? `/${process.env.GATSBY_DATACORE_URL}profile/?dbid=${strippedPlayerData.player.dbid}` : '';
 
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
@@ -216,14 +212,18 @@ const useRightItems = ({ onMessageClicked }) => {
 			<Icon name='github' />
 		</Menu.Item>
 		{strippedPlayerData &&
-			<Dropdown items simple trigger = {profileIcon}>
-				<Dropdown.Item onClick={() => navigate('/playertools?update=true')}>Update profile</Dropdown.Item>
-				<Dropdown.Item onClick={() => navigate(profileLink)}>Share/View profile</Dropdown.Item>
-				<Dropdown.Item>Clear profile data</Dropdown.Item>
+			<Dropdown simple item trigger = {profileIcon}>
+				<Dropdown.Menu>
+					<Dropdown.Item key={0} onClick={() => navigate(`/playertools?update=${Math.floor(Math.random()*100)}`)}>Update profile</Dropdown.Item>
+					{profileShared &&
+						<Dropdown.Item key={1} onClick={() => navigate(shareUrl)}>View profile</Dropdown.Item>
+					}
+					<Dropdown.Item key={2} onClick={clearPlayerData}>Clear profile data</Dropdown.Item>
+				</Dropdown.Menu>
 			</Dropdown>
 		}
 		{!strippedPlayerData &&
-			<MenuItem>{profileIcon}</MenuItem>
+			<Menu.Item onClick={() => navigate('/playertools')}>{profileIcon}</Menu.Item>
 		}
 	</>);
 }

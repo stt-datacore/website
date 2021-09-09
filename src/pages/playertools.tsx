@@ -16,7 +16,7 @@ import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
-import { stripPlayerData } from '../utils/playerutils';
+import { stripPlayerData, doShareProfile } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
 
 export const playerTools = {
@@ -85,7 +85,7 @@ const PlayerToolsPage = () => {
 
 	const urlParams = new URLSearchParams(window.location.search);
 	const [dataSource, setDataSource] = React.useState(undefined);
-	const [showForm, setShowForm] = React.useState(urlParams.has('data') && urlParams.get('data') == 'update');
+	const [showForm, setShowForm] = React.useState(urlParams.has('update'));
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -362,6 +362,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	}
 
 	function shareProfile() {
+		const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 		setProfileUploading(true);
 
 		let jsonBody = JSON.stringify({
@@ -379,6 +380,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			if (!profileAutoUpdate) window.open(`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`, '_blank');
 			setProfileUploading(false);
 			setProfileUploaded(true);
+			setProfileShared(true);
 		});
 	}
 
