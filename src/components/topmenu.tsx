@@ -182,11 +182,6 @@ const useRightItems = ({ onMessageClicked }) => {
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 	const [profileShared, _] = useStateWithStorage('tools/profileShared', false);
 
-	const clearPlayerData = () => {
-		sessionStorage.clear();	// also clears form data for all subcomponents
-		[setStrippedPlayerData, setVoyageData, setEventData, setActiveCrew]
-			.forEach(setFn => { setFn(undefined); });
-	}
 	const profileIcon = <Image src='/media/badge.png' />;
 	const shareUrl = strippedPlayerData ? `/${process.env.GATSBY_DATACORE_URL}profile/?dbid=${strippedPlayerData.player.dbid}` : '';
 
@@ -218,7 +213,7 @@ const useRightItems = ({ onMessageClicked }) => {
 					{profileShared &&
 						<Dropdown.Item key={1} onClick={() => navigate(shareUrl)}>View profile</Dropdown.Item>
 					}
-					<Dropdown.Item key={2} onClick={clearPlayerData}>Clear profile data</Dropdown.Item>
+					<Dropdown.Item key={2} onClick={() => navigate('/playertools?clear')}>Clear profile data</Dropdown.Item>
 				</Dropdown.Menu>
 			</Dropdown>
 		}

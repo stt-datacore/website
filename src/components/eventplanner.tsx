@@ -124,13 +124,13 @@ const EventPicker = (props: EventPickerProps) => {
 		}
 	});
 
-	const allBonusCrew = allCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
+	const allBonusCrew = allCrew ? allCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0) : [];
 	allBonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 
 	const myCrew = JSON.parse(JSON.stringify(crew));
 
 	prospects.forEach((p) => {
-		let prospect = allCrew.find((c) => c.symbol == p.symbol);
+		let prospect = allCrew ? allCrew.find((c) => c.symbol == p.symbol) : false;
 		if (prospect) {
 			prospect = JSON.parse(JSON.stringify(prospect));
 			prospect.id = myCrew.length+1;

@@ -69,7 +69,7 @@ export const playerTools = {
 	}
 };
 
-const PlayerToolsPage = () => {
+const PlayerToolsPage = () =>  {
 	const [playerData, setPlayerData] = React.useState(undefined);
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 
@@ -83,9 +83,15 @@ const PlayerToolsPage = () => {
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 
-	const urlParams = new URLSearchParams(window ? window.location.search : 'tool=voyage');
 	const [dataSource, setDataSource] = React.useState(undefined);
-	const [showForm, setShowForm] = React.useState(urlParams.has('update'));
+	const [showForm, setShowForm] = React.useState(false);
+
+	React.useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		setShowForm(urlParams.has('update'));
+		if (urlParams.has('clear'))
+			clearPlayerData();
+	}, [window.location.search]);
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -231,6 +237,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const [profileUploading, setProfileUploading] = React.useState(false);
 
 	const [varsReady, setVarsReady] = React.useState(false);
+	const [activeTool, setActiveTool] = React.useState('voyage');
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
@@ -239,12 +246,12 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		}
 	}, [profileAutoUpdate, strippedPlayerData]);
 
-
-
 	const tools = playerTools;
-	const urlParams = new URLSearchParams(window ? window.location.search : 'tool=voyage');
-	const activeTool =
-		urlParams.has('tool') && tools[urlParams.get('tool')] ? urlParams.get('tool') : 'voyage';
+	React.useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('tool') && tools[urlParams.get('tool')])
+			setActiveTool(urlParams.get('tool'));
+	}, [window.location.search]);
 
 	const StaleMessage = () => {
 		const STALETHRESHOLD = 3;	// in hours
