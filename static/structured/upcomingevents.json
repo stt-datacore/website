@@ -691,5 +691,60 @@
 		"smallbonus": {
 			"traits": ["mccoy","larkin","Tribbled","Exobiology"]
 		}
+	},
+	{
+		"name": "It's the Fuzz - Mega Event Part 2",
+		"type": "Galaxy",
+		"dates": "Thursday 08/12 until Monday 08/16 at Noon (16.00 UTC)",
+		"startDate": "2021-08-12T16:00:00Z",
+		"endDate": "2021-08-16T16:00:00Z",
+		"highbonus": ["uhura_tribble_crew", "spock_tribble_crew", "dax_jadzia_tos_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["uhura","spock","Dax","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "Furred Up - Mega Event Part 3",
+		"type": "Faction",
+		"dates": "Thursday 08/19 until Monday 08/23 at Noon (16.00 UTC)",
+		"startDate": "2021-08-19T16:00:00Z",
+		"endDate": "2021-08-23T16:00:00Z",
+		"highbonus": ["odo_tos_crew", "sulu_tribble_crew", "sato_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["sato","odo","sulu","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "A Bed of Mushrooms - Mega Event Finale",
+		"type": "Skirmish",
+		"dates": "Thursday 08/26 until Monday 08/30 at Noon (16.00 UTC)",
+		"startDate": "2021-08-26T16:00:00Z",
+		"endDate": "2021-08-30T16:00:00Z",
+		"highbonus": ["chekov_tribble_crew", "phlox_tribble_crew", "quark_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["chekov","phlox","quark","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "For Charity (Flashback)",
+		"type": "Galaxy",
+		"dates": "Thursday 09/02 until Monday 09/06 at Noon (16.00 UTC)",
+		"startDate": "2021-09-02T16:00:00Z",
+		"endDate": "2021-09-06T16:00:00Z",
+		"highbonus": ["riker_littlejohn_crew", "bashir_dress_uniform_crew", "quark_klingon_armor_crew"],
+		"smallbonus": {
+			"traits": ["riker","bashir","quark"]
+		}
+	},
+	{
+		"name": "Health Insurance",
+		"type": "Faction",
+		"dates": "Thursday 09/09 until Monday 09/13 at Noon (16.00 UTC)",
+		"startDate": "2021-09-09T16:00:00Z",
+		"endDate": "2021-09-13T16:00:00Z",
+		"highbonus": ["spock_platonian_crew", "salt_vampire_crew", "mccoy_julepmint_crew"],
+		"smallbonus": {
+			"traits": ["spock","mccoy"]
+		}
 	}
 ]

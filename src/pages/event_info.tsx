@@ -235,7 +235,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{event.threshold_rewards.map((reward, idx) => (
+						{event.threshold_rewards.filter(reward => reward.rewards && reward.rewards.length > 0).map((reward, idx) => (
 							<Table.Row key={idx}>
 								<Table.Cell>{reward.points}</Table.Cell>
 								<Table.Cell>

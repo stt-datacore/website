@@ -100,6 +100,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						width={cell.width as any}
 						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
 						onClick={() => handleSort(cell.column, cell.pseudocolumns)}
+						textAlign={cell.width == 1 ? 'center' : 'left'}
 					>
 						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
 					</Table.HeaderCell>
