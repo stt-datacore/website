@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 19
+events: 22
 in_portal: true
 date: 06/06/2018
 obtained: Event
