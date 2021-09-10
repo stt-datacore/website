@@ -83,7 +83,7 @@ const PlayerToolsPage = () => {
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 
-	const urlParams = new URLSearchParams(window.location.search);
+	const urlParams = new URLSearchParams(window ? window.location.search : 'tool=voyage');
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(urlParams.has('update'));
 
@@ -241,7 +241,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 
 	const tools = playerTools;
-	const urlParams = new URLSearchParams(window.location.search);
+	const urlParams = new URLSearchParams(window ? window.location.search : 'tool=voyage');
 	const activeTool =
 		urlParams.has('tool') && tools[urlParams.get('tool')] ? urlParams.get('tool') : 'voyage';
 
