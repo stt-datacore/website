@@ -605,8 +605,12 @@ class Shuttlers {
 }
 
 class Shuttle {
+	id: string = '';
 	name: string = '';
 	seats: ShuttleSeat[] = [];
+	constructor (id: string) {
+		this.id = id ?? 'shuttle-'+Date.now();
+	}
 }
 
 class ShuttleSeat {
@@ -683,7 +687,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 				</Table.Header>
 				<Table.Body>
 					{shuttlers.shuttles.map((shuttle, shuttleNum) => (
-						<Table.Row key={shuttleNum}>
+						<Table.Row key={shuttle.id ?? shuttleNum}>
 							<Table.Cell>
 								<EventShuttlersRenamer shuttleNum={shuttleNum} shuttleName={shuttle.name} updateCallback={updateShuttleName} />
 								<Button icon color='red' onClick={() => deleteShuttle(shuttleNum)}><Icon name='trash' /></Button>
