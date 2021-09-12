@@ -1,5 +1,6 @@
 import React from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -89,9 +90,15 @@ const PlayerToolsPage = () =>  {
 	React.useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 		setShowForm(urlParams.has('update'));
-		if (urlParams.has('clear'))
+	}, [showForm]);
+
+	React.useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('clear')) {
 			clearPlayerData();
-	}, [window.location.search]);
+			navigate(urlParams.get('from'));
+		}
+	});
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -235,6 +242,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid+'/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [profileUploaded, setProfileUploaded] = React.useState(false);
 	const [profileUploading, setProfileUploading] = React.useState(false);
+	const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 
 	const [varsReady, setVarsReady] = React.useState(false);
 	const [activeTool, setActiveTool] = React.useState('voyage');
@@ -370,7 +378,6 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	}
 
 	function shareProfile() {
-		const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 		setProfileUploading(true);
 
 		let jsonBody = JSON.stringify({

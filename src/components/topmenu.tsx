@@ -176,14 +176,12 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
-	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
-	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
-	const [profileShared, _] = useStateWithStorage('tools/profileShared', false);
+	const [strippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
+	const [profileShared] = useStateWithStorage('tools/profileShared', false);
 
 	const profileIcon = <Image src='/media/badge.png' />;
 	const shareUrl = strippedPlayerData ? `/${process.env.GATSBY_DATACORE_URL}profile/?dbid=${strippedPlayerData.player.dbid}` : '';
+	const clearUrl = `/playertools?clear=true&from=${window.location}`;
 
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
@@ -213,7 +211,7 @@ const useRightItems = ({ onMessageClicked }) => {
 					{profileShared &&
 						<Dropdown.Item key={1} onClick={() => navigate(shareUrl)}>View profile</Dropdown.Item>
 					}
-					<Dropdown.Item key={2} onClick={() => navigate('/playertools?clear')}>Clear profile data</Dropdown.Item>
+					<Dropdown.Item key={2} onClick={() => navigate(clearUrl)}>Clear profile data</Dropdown.Item>
 				</Dropdown.Menu>
 			</Dropdown>
 		}
