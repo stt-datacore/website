@@ -27,7 +27,7 @@ export const playerTools = {
 	},
 	'event-planner': {
 		title: 'Event Planner',
-		render: ({playerData, eventData, activeCrew}) => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} />
+		render: ({playerData, eventData, activeCrew, allCrew}) => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew}/>
 	},
 	'crew': {
 		title: 'Crew',
