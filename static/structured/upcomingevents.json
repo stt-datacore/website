@@ -746,5 +746,16 @@
 		"smallbonus": {
 			"traits": ["spock","mccoy"]
 		}
+	},
+	{
+		"name": "Forests of Forever",
+		"type": "Galaxy",
+		"dates": "Thursday 09/16 until Monday 09/20 at Noon (16.00 UTC)",
+		"startDate": "2021-09-16T16:00:00Z",
+		"endDate": "2021-09-20T16:00:00Z",
+		"highbonus": ["burnham_captain_crew", "kyheem_steward_crew", "flotter_crew"],
+		"smallbonus": {
+			"traits": ["burnham"]
+		}
 	}
 ]
