@@ -1,13 +1,13 @@
 ---
-name: Dealer Data
+name: Borg Queen Seven
 rarity: 5
-series: tng
+series: pic
 memory_alpha:
 bigbook_tier: -1
-events: 22
+events: 20
 in_portal:
-date: 07/09/2021
-obtained: Pack
+date: 14/09/2021
+obtained: Honor Hall
 mega: false
 published: true
 ---
