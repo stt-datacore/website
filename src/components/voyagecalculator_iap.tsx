@@ -158,13 +158,10 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							'Content-Type': 'application/json'
 						},
 						body: JSON.stringify({
-							type: 'voyageCalc',
-							data: {
-								voyagers: result.entries.map((entry) => {
-									return crew.find(c => c.id === entry.choice).symbol;
-								}),
-								estimatedDuration: result.score * 60 * 60,
-							}
+							type: 'voyage',
+							data: result.entries.map((entry) => {
+								return crew.find(c => c.id === entry.choice).symbol;
+							})
 						})
 					});
 				}
