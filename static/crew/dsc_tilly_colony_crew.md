@@ -4,8 +4,8 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 9
-events: 18
-in_portal:
+events: 19
+in_portal: true
 date: 10/12/2020
 obtained: Event
 mega: true

@@ -197,7 +197,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		},
 		{
 			menuItem: 'Event Planner',
-			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} />
+			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew} />
 		},
 		{
 			menuItem: 'Crew',
@@ -280,7 +280,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 							</p>
 							<Message.List>
 								<Message.Item>
-									Once shared, the profile will be publicly accessible by anyone that has the link (or knows your DBID)
+									Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
 									</Message.Item>
 								<Message.Item>
 									There is no private information included in the player profile; information being shared is limited to:{' '}
@@ -557,7 +557,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.
-				data = data.substring(data.indexOf('{'), data.lastIndexOf('}}') + 2);
+				data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('}}') + 2);
 			}
 			setFullInput(data);
 		};

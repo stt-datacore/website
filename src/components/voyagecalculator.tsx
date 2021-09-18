@@ -166,29 +166,25 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 
 	componentDidUpdate(_, prevState) {
 		try {
-			const { calcState, crew, telemetryOptOut, results } = this.state;
-
-			if (!telemetryOptOut &&
-				results.filter(r => r.state == CalculatorState.Done && !r.telemetrySent).length > 0) {
-				let newResults = results.map(result => {
-					if (result.state == CalculatorState.Done && !result.telemetrySent) {
-						fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
-							method: 'post',
-							headers: {
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify({
-								type: 'voyage',
-								data: result.entries.map((entry) => {
-									return entry.choice.symbol;
-								})
-							})
-						});
-						result.telemetrySent = true;
-					}
-					return result;
-				});
-				this.setState({results: newResults});
+			const { calcState, crew, telemetryOptOut, result } = this.state;
+			if (prevState.calcState === CalculatorState.InProgress && calcState === CalculatorState.Done && result) {
+				if (!telemetryOptOut) {
+					fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+						method: 'post',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							type: 'voyageCalc',
+							data: {
+								voyagers: result.entries.map((entry) => {
+									return crew.find(c => c.id === entry.choice).symbol;
+								}),
+								estimatedDuration: result.score * 60 * 60,
+							}
+						})
+					});
+				}
 			}
 		} catch(err) {
 			console.log('An error occurred while sending telemetry', err);

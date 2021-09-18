@@ -4,7 +4,7 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 3
-events: 20
+events: 24
 in_portal:
 date: 04/08/2020
 obtained: Honor Hall
