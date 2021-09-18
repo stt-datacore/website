@@ -1,8 +1,84 @@
-// Voyage lineup generator inspired by TemporalAgent7 and IAmPicard before that
+// Voyage calculation inspired by TemporalAgent7 and IAmPicard before that
 //  https://github.com/stt-datacore/website
 //  https://github.com/iamtosk/StarTrekTimelinesSpreadsheet
 
-export class Voyagers {
+const forDataCore = (input, output, chewable) => {
+	const SKILLS = [
+		'command_skill',
+		'science_skill',
+		'security_skill',
+		'engineering_skill',
+		'diplomacy_skill',
+		'medicine_skill'
+	];
+
+	// Config is for showing progress (optional)
+	let config = {
+		progressCallback: input.progressCallback,
+		debugCallback: input.debugCallback
+	};
+
+	// Voyage data is required
+	let voyage = {
+		skills: input.voyage_description.skills,
+		crew_slots: input.voyage_description.crew_slots,
+		ship_trait: input.voyage_description.ship_trait
+	};
+
+	// DataCore has already filtered roster by this point
+	let filter = false;
+
+	// Options modify the calculation algorithm (optional)
+	let options = {
+		estimatorThreshold: input.estimatorThreshold ?? 0.75,
+		luckFactor: input.luckFactor,
+		favorSpecialists: input.favorSpecialists
+	};
+
+	const datacoreEstimator = (lineup) => {
+		let ps, ss, others = [];
+		for (let iSkill = 0; iSkill < SKILLS.length; iSkill++) {
+			let aggregate = lineup.skills[SKILLS[iSkill]];
+			if (SKILLS[iSkill] == voyage.skills.primary_skill)
+				ps = aggregate;
+			else if (SKILLS[iSkill] == voyage.skills.secondary_skill)
+				ss = aggregate;
+			else
+				others.push(aggregate);
+		}
+		let config = {
+			ps, ss, others,
+			'startAm': input.bestShip.score + lineup.antimatter,
+			'prof': lineup.proficiency
+		};
+		return new Promise((resolve, reject) => {
+			let estimate = chewable(config, () => false);
+			// Add antimatter prop here to allow for post-sorting by AM
+			estimate.antimatter = input.bestShip.score + lineup.antimatter;
+			resolve({ estimate, 'key': lineup.key });
+		});
+	};
+
+	// Assemble a few lineups that match input
+	const voyagers = new Voyagers(input.roster, config);
+	voyagers.assemble(voyage, filter, options)
+		.then((lineups) => {
+			// Now estimate all the lineups within the threshold
+			const estimator = new VoyagersEstimates(lineups, config);
+			estimator.estimate(datacoreEstimator, options.estimatorThreshold)
+				.then((estimates) => {
+					// Finally pass all lineups and estimates back to DataCore and figure out which is "best" there
+					const result = { lineups, estimates };
+					output(JSON.parse(JSON.stringify(result)), false);
+				});
+		})
+		.catch((error) => {
+			debugCallback(error);
+		});
+}
+
+// Generate lots of unique lineups of potential voyagers
+class Voyagers {
 	constructor(crew, config = {}) {
 		this.crew = crew;	// Required: { name, traits, skills }
 		this.config = config;
@@ -16,7 +92,7 @@ export class Voyagers {
 	}
 
 	// Prime roster by primary_ and secondary_skills
-	// Do X vectors w/ different starting boosts:
+	// Do 6 vectors w/ different starting boosts:
 	//	Do 10 attempts:
 	//		Get scores of primed roster, adjusted by boosts
 	//		Do 12 slots:
@@ -32,18 +108,15 @@ export class Voyagers {
 
 		let self = this;
 		return new Promise((resolve, reject) => {
-			const searchVectors = options.searchVectors ? options.searchVectors : 2;
+			let origins = [ { 'primary': 3.5, 'secondary': 2.5, 'other': 1 },
+							{ 'primary': 3.0, 'secondary': 2.5, 'other': 1 },
+							{ 'primary': 2.5, 'secondary': 2.5, 'other': 1 },
+							{ 'primary': 2.0, 'secondary': 2.0, 'other': 1 },
+							{ 'primary': 1.5, 'secondary': 1.5, 'other': 1 },
+							{ 'primary': 1.0, 'secondary': 1.0, 'other': 1 } ];
 
-			let origins = [];
-			if (options.initBoosts)
-				origins.push(options.initBoosts);
-			else
-				origins.push({ 'primary': 3.5, 'secondary': 2.5, 'other': 1 });
-			if (searchVectors > 1) origins.push({ 'primary': 1.0, 'secondary': 1.0, 'other': 1 });
-			if (searchVectors > 2) origins.push({ 'primary': 2.0, 'secondary': 2.0, 'other': 1 });
-			if (searchVectors > 3) origins.push({ 'primary': 3.0, 'secondary': 3.0, 'other': 1 });
-			if (searchVectors > 4) origins.push({ 'primary': 1.5, 'secondary': 1.5, 'other': 1 });
-			if (searchVectors > 5) origins.push({ 'primary': 2.5, 'secondary': 2.5, 'other': 1 });
+			if (options.customBoosts)
+				origins.push(options.customBoosts);
 
 			const promises = origins.map((boosts, index) =>
 				self.doVector(index+1, voyage, primedRoster, boosts)
@@ -151,44 +224,47 @@ export class Voyagers {
 					//	We'll use promixity to narrow the lineups for which to calculate estimates
 					let deviations = self.getDeviations(
 											lineup.score,
-											lineup.skills[voyage.skills.primary_skill],
-											lineup.skills[voyage.skills.secondary_skill]
+											lineup.skills[voyage.skills.primary_skill].voyage,
+											lineup.skills[voyage.skills.secondary_skill].voyage
 										);
-					let proximity = Math.abs(deviations.primary)+Math.abs(deviations.secondary);
+					let proximity = Math.abs(deviations.primary)+Math.abs(deviations.secondary)+Math.abs(deviations.other);
+					let proximityAlt = deviations.primary+deviations.secondary+deviations.other;	// Not used: might be better than absolute proximity?
 					lineup.vector = {
 						'id': vectorId,
 						'attempt': iAttempts+1,
 						'boosts': boosts,
 						'deviations': deviations,
-						'proximity': proximity
+						'proximity': proximity,
+						'proximityAlt': proximityAlt
 					};
 
 					// Only keep track of unique lineups, but use lineup with higher AM if available
 					let existing = self.uniques.find((unique) => unique.uniqueId == lineup.key);
 					if (existing) {
-						// Proximity might be better on existing lineup (is this necessary?)
-						//if (proximity > existing.bestProximity)
-						//	lineup.proximity = existing.bestProximity;
+						if (proximity < existing.bestProximity)
+							existing.bestProximity = lineup.proximity;
 						if (lineup.antimatter > existing.bestAntimatter) {
 							existing.bestAntimatter = lineup.antimatter;
 							existing.lineup = lineup;
 						}
 					}
 					else {
-						let lineupIndex = self.uniques.length+1;
-						self.sendProgress("Found "+lineupIndex+" potential lineups so far...");
+						self.sendProgress("Found "+(self.uniques.length+1)+" potential lineups so far...");
 						if (debug) {
 							let sLineup = "";
 							for (let i = 0; i < lineup.crew.length; i++) {
 								if (sLineup != "") sLineup += ", ";
 								sLineup += lineup.crew[i].name + " (" + lineup.crew[i].score.toFixed(1) + ")";
 							}
-							debug("Lineup #"+lineupIndex+": "+sLineup);
-							debug("Boosts: "+boosts.primary.toFixed(2)+"+"+boosts.secondary.toFixed(2)+"+"+boosts.other.toFixed(2));
-							debug("Scores: "+lineup.skills.command_skill+", "+lineup.skills.diplomacy_skill+", " +
-									lineup.skills.security_skill+", "+lineup.skills.engineering_skill+", " +
-									lineup.skills.science_skill+", "+lineup.skills.medicine_skill);
-							debug("Prime Deviations: "+deviations.primary.toFixed(2)+", "+deviations.secondary.toFixed(2));
+							debug(
+								"===== Vector "+lineup.vector.id+"-"+lineup.vector.attempt+" =====" +
+								"\n* Lineup: "+sLineup +
+								"\n* Boosts: "+boosts.primary.toFixed(2)+"+"+boosts.secondary.toFixed(2)+"+"+boosts.other.toFixed(2) +
+								"\n* Scores: "+lineup.skills.command_skill.voyage+", "+lineup.skills.diplomacy_skill.voyage+", " +
+									lineup.skills.security_skill.voyage+", "+lineup.skills.engineering_skill.voyage+", " +
+									lineup.skills.science_skill.voyage+", "+lineup.skills.medicine_skill.voyage +
+								"\n* Prime Deviations: "+deviations.primary.toFixed(2)+", "+deviations.secondary.toFixed(2)
+							);
 						}
 						self.uniques.push({
 							'uniqueId': lineup.key,
@@ -390,9 +466,11 @@ export class Voyagers {
 	getDeviations(totalScore, primaryScore, secondaryScore) {
 		let baseTarget = totalScore/10;
 
-		// These base target values were determined from simulation results
+		// These base target values were determined from Chewable simulation results
 		let primaryFactor = 3.5;	// Default factors match initial boosts
-		if (baseTarget >= 5800)
+		if (baseTarget >= 9800)
+			primaryFactor = 2.0;
+		else if (baseTarget >= 5800)
 			primaryFactor = 2.25;
 		else if (baseTarget >= 4000)
 			primaryFactor = 2.5;
@@ -414,9 +492,13 @@ export class Voyagers {
 		let secondaryTarget = secondaryFactor*baseTarget;
 		let secondaryDeviation = (secondaryScore-secondaryTarget)/baseTarget;
 
+		let otherTarget = (10-primaryFactor-secondaryFactor)*baseTarget;
+		let otherDeviation = (totalScore-primaryScore-secondaryScore-otherTarget)/otherTarget;
+
 		return {
 			'primary': primaryDeviation,
-			'secondary': secondaryDeviation
+			'secondary': secondaryDeviation,
+			'other': otherDeviation
 		};
 	}
 
@@ -448,8 +530,12 @@ class VoyagersLineup {
 		let crew = [];
 		let traitsMatched = [];
 		let skillScores = {
-			'command_skill': 0, 'diplomacy_skill': 0, 'security_skill': 0,
-			'engineering_skill': 0, 'science_skill': 0, 'medicine_skill': 0
+			command_skill: { skill: 'command_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
+			diplomacy_skill: { skill: 'diplomacy_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
+			security_skill: { skill: 'security_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
+			engineering_skill: { skill: 'engineering_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
+			science_skill: { skill: 'science_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
+			medicine_skill: { skill: 'medicine_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 }
 		};
 		let dTotalScore = 0, dTotalProficiency = 0;
 		let iBonusTraits = 0;
@@ -467,7 +553,10 @@ class VoyagersLineup {
 				let skill = assignments[i].skills[SKILL_IDS[iSkill]];
 				let dProficiency = skill.range_min+(skill.range_max-skill.range_min)/2;
 				let dSkillScore = skill.core+dProficiency;
-				skillScores[SKILL_IDS[iSkill]] += dSkillScore;
+				skillScores[SKILL_IDS[iSkill]].voyage += dSkillScore;
+				skillScores[SKILL_IDS[iSkill]].core += skill.core;
+				skillScores[SKILL_IDS[iSkill]].range_min += skill.range_min;
+				skillScores[SKILL_IDS[iSkill]].range_max += skill.range_max;
 				dTotalScore += dSkillScore;
 				dTotalProficiency += dProficiency;
 			}
@@ -475,9 +564,8 @@ class VoyagersLineup {
 
 		let lineupKey = "";
 		for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
-			let dSkillScore = skillScores[SKILL_IDS[iSkill]];
+			let dSkillScore = skillScores[SKILL_IDS[iSkill]].voyage;
 			lineupKey += Math.floor(dSkillScore)+',';
-			skillScores[SKILL_IDS[iSkill]] = dSkillScore;
 		}
 
 		this.key = lineupKey;
@@ -491,39 +579,38 @@ class VoyagersLineup {
 	}
 }
 
-export class VoyagersAnalyzer {
-	constructor(voyage, ship, lineups) {
-		this.voyage = voyage;
-		this.ship = ship;
+// Generate estimates of the best lineups
+class VoyagersEstimates {
+	constructor(lineups, config = {}) {
 		this.lineups = lineups;
+		this.config = config;
 	}
 
-	analyze(calculator, sorter) {
+	sendProgress(message) {
+		if (this.config.debugCallback)
+			this.config.debugCallback(message);
+		if (this.config.progressCallback)
+			this.config.progressCallback(message);
+	}
+
+	estimate(estimator, proximityThreshold) {
 		let self = this;
 		return new Promise((resolve, reject) => {
-			// Estimating lineup runtimes is the bottleneck
-			//	Best lineups usually have low proximities relative to others, so we can reasonably limit estimates here
-			const maxEstimates = Math.min(5, self.lineups.length);
-			let lineups = self.lineups.sort((a, b) => a.vector.proximity - b.vector.proximity).slice(0, maxEstimates);
+			let iConsider = self.lineups.length;
+			if (proximityThreshold > 0) {
+				const minConsidered = 2;
+				let iSubThreshold = self.lineups.filter((lineup) => lineup.vector.proximity < proximityThreshold).length;
+				iConsider = Math.min(Math.max(iSubThreshold, minConsidered), self.lineups.length);
+			}
+			let considered = self.lineups.sort((a, b) => a.vector.proximity - b.vector.proximity).slice(0, iConsider);
 
-			const estimator = new VoyagersEstimator(calculator);
-			const promises = lineups.map((lineup) =>
-				estimator.estimate(lineup, self.voyage.skills.primary_skill, self.voyage.skills.secondary_skill, self.ship.antimatter)
+			self.sendProgress('Estimating '+considered.length+' lineups...');
+			const promises = considered.map((lineup) =>
+				estimator(lineup)
 			);
 			Promise.all(promises).then((estimates) => {
-				let sorted = estimates.sort(sorter);
-				let best = lineups.find((lineup) => lineup.key == sorted[0].lineupKey);
-				let estimate = sorted[0].estimate.refills[0];
-				let log = {
-					'UniqueCount': self.lineups.length,
-					'Vector': best.vector.id,
-					'Attempt': best.vector.attempt,
-					'PromixityIndex': self.lineups.filter((lineup) => lineup.vector.proximity < best.vector.proximity).length,
-					'BestEstimate': (estimate.result*3+estimate.safeResult)/4,
-					'Chewable': estimate.result,
-					'SaferResult': estimate.saferResult
-				};
-				resolve([best, sorted[0].estimate, log]);
+				resolve(estimates);
+				self.sendProgress('Done estimating!');
 			})
 			.catch((error) => {
 				reject(error);
@@ -532,45 +619,4 @@ export class VoyagersAnalyzer {
 	}
 }
 
-export class VoyagersEstimator {
-	constructor(calculator) {
-		this.calculator = calculator;
-	}
-
-	estimate(lineup, primarySkill, secondarySkill, shipAntimatter) {
-		let self = this;
-		return new Promise((resolve, reject) => {
-			const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
-								'engineering_skill', 'science_skill', 'medicine_skill'];
-
-			let ps, ss, os = 0, others = [];
-			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
-				if (SKILL_IDS[iSkill] == primarySkill)
-					ps = lineup.skills[SKILL_IDS[iSkill]];
-				else if (SKILL_IDS[iSkill] == secondarySkill)
-					ss = lineup.skills[SKILL_IDS[iSkill]];
-				else {
-					os += lineup.skills[SKILL_IDS[iSkill]];
-					others.push(lineup.skills[SKILL_IDS[iSkill]]);
-				}
-			}
-
-			let config = {
-				'startAm': shipAntimatter + lineup.antimatter,
-				'ps': ps,
-				'ss': ss,
-				'os': os,
-				'others': others,
-				'prof': lineup.proficiency
-			};
-
-			setTimeout(() => {
-				let estimatedLineup = {
-					'lineupKey': lineup.key ? lineup.key : "",
-					'estimate': self.calculator(config)
-				};
-				resolve(estimatedLineup);
-			});
-		});
-	}
-}
+module.exports.forDataCore = forDataCore;

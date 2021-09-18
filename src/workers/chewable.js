@@ -76,6 +76,7 @@ function getEstimate(config, reportProgress = () => true) {
       var safeTime = exResults[Math.floor(exResults.length/10)];
       var saferTime = exResults[Math.floor(exResults.length/100)];
       var safestTime = exResults[0];
+      var moonshotTime = exResults[exResults.length-Math.floor(exResults.length/100)];
 
       // compute last dilemma chance
       var lastDilemma = 0;
@@ -100,6 +101,7 @@ function getEstimate(config, reportProgress = () => true) {
          'result': voyTime,
          'safeResult': safeTime,
          'saferResult': saferTime,
+         'moonshotResult': moonshotTime,
          'lastDil': lastDilemma*2,
          'dilChance': dilChance,
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
