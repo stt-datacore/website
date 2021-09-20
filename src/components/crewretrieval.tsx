@@ -118,19 +118,10 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		}
 	});
 
-	const energy = playerData.crew_crafting_root.energy;
-	let energyMessage = "You can guarantee a legendary crew retrieval now!";
-	if (energy.quantity < 900) {
-		let seconds = ((900-energy.quantity)*energy.regeneration.seconds)+energy.regenerated_at;
-		let d = Math.floor(seconds/(3600*24)),
-			h = Math.floor(seconds%(3600*24)/3600),
-			m = Math.floor(seconds%3600/60);
-		energyMessage = `You will regenerate enough quantum to guarantee a legendary crew retrieval in ${d}d, ${h}h, ${m}m.`;
-	}
 
 	return (
 		<React.Fragment>
-			<p>Quantum: <strong>{energy.quantity}</strong>. {energyMessage}</p>
+			<RetrievalEnergy energy={playerData.crew_crafting_root.energy} />
 			<RetrievalForm
 				ownedPolestars={ownedPolestars}
 				allCrew={allCrew}
@@ -139,6 +130,48 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 			/>
 		</React.Fragment>
 	);
+};
+
+type RetrievalEnergyProps = {
+	energy: any;
+};
+
+const RetrievalEnergy = (props: RetrievalEnergyProps) => {
+	const { energy } = props;
+
+	const qTarget = 900;
+	const qPerFullDay = (24*60*60)/energy.regeneration.seconds; // 48
+	const qPerBoost = 50;
+
+	let energyMessage = "You can guarantee a legendary crew retrieval now!";
+	if (energy.quantity < qTarget) {
+		const regenerationTime = getSecondsRemaining(qTarget, energy.quantity);
+		energyMessage = `You will regenerate enough quantum to reach ${qTarget} in ${formatTime(regenerationTime)};`;
+		let daysCanBoost = 0, qTotal = energy.quantity;
+		while (qTotal < qTarget) {
+			daysCanBoost++;
+			qTotal += qPerBoost+qPerFullDay;
+		}
+		const timeBoosted = getSecondsRemaining(qTarget, energy.quantity+(daysCanBoost*qPerBoost));
+		energyMessage += ` spend 90 dilithium ${daysCanBoost > 1 ? 'daily' : ''} to reach ${qTarget}`
+			+ ` ${timeBoosted <= 0 ? 'immediately' : `in ${formatTime(timeBoosted)}`}.`;
+	}
+
+	return (
+		<p>Quantum: <strong>{energy.quantity}</strong>. {energyMessage}</p>
+	);
+
+	function getSecondsRemaining(target: number, quantity: number): number {
+		return ((target-quantity)*energy.regeneration.seconds)+energy.regenerated_at;
+	}
+
+	function formatTime(seconds: number): string {
+		let d = Math.floor(seconds/(3600*24)),
+			h = Math.floor(seconds%(3600*24)/3600),
+			m = Math.floor(seconds%3600/60);
+		if (d == 0) return `${h}h ${m}m`;
+		return `${d}d ${h}h ${m}m`;
+	}
 };
 
 type RetrievalFormProps = {
@@ -854,41 +887,54 @@ type CrewPickerProps = {
 }
 
 const CrewPicker = (props: CrewPickerProps) => {
-	const { crew, updateCrew } = props;
+	const { updateCrew } = props;
 
-	const [activeCrew, setActiveCrew] = React.useState('');
-	const [crewList, setCrewList] = React.useState(getPlaceholder(props.value));
+	const [options, setOptions] = React.useState(undefined);
 
 	React.useEffect(() => {
-		setActiveCrew(props.value);
-	}, [crewList, props.value]);
+		if (props.value != '' && options && !options.initialized)
+			populatePlaceholders();
+	}, [props.value]);
+
+	if (!options) {
+		populatePlaceholders();
+		return (<></>);
+	}
 
 	return (
 		<Dropdown
 			placeholder='Search for desired crew'
+			noResultsMessage='No unretrievable crew found.'
 			style={{ minWidth: '20em' }}
 			search
 			selection
 			clearable
-			options={crewList}
-			value={activeCrew}
-			onFocus={() => populateCrewList()}
+			options={options.list}
+			value={props.value}
+			onFocus={() => { if (!options.initialized) populateOptions(); }}
 			onChange={(e, { value }) => updateCrew(value) }
 		/>
 	);
 
-	function getPlaceholder(value: string): any[] {
-		if (value == '') return [];
-		const c = crew.find(c => c.symbol === value);
-		return [{ key: c.symbol, value: c.symbol, text: c.name, image: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }];
+	function populatePlaceholders(): void {
+		const options = { initialized: false, list: [] };
+		if (props.value != '') {
+			const c = props.crew.find(c => c.symbol === props.value);
+			options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
+		}
+		else {
+			options.list = [{ key: 0, value: 0, text: 'Loading...' }];
+		}
+		setOptions({...options});
 	}
 
-	function populateCrewList(): void {
-		if (crewList.length > 1) return;
-		const options = crew.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-			return { key: c.symbol, value: c.symbol, text: c.name, image: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` };
+	function populateOptions(): void {
+		let crewList = [...props.crew];
+		options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
+			return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
 		});
-		setCrewList([...options]);
+		options.initialized = true;
+		setOptions({...options});
 	}
 };
 
@@ -1149,7 +1195,7 @@ const ComboGrid = ((props: ComboGridProps) => {
 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
 									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
 									<br />{polestar.short_name}
-									<br /><small>({polestar.loaned && fuseIndex > polestar.quantity-polestar.loaned ? `Have ${polestar.quantity-polestar.loaned}, Need ${Math.min(polestar.loaned, fuseIndex)}` : polestar.quantity})</small>
+									<br /><small>({polestar.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar.quantity})</small>
 								</Grid.Column>
 							))}
 						</Grid.Row>
