@@ -746,5 +746,16 @@
 		"smallbonus": {
 			"traits": ["spock","mccoy"]
 		}
+	},
+	{
+		"name": "Eye of the Storm",
+		"type": "Skirmish",
+		"dates": "Thursday 09/23 until Monday 09/27 at Noon (16.00 UTC)",
+		"startDate": "2021-09-23T16:00:00Z",
+		"endDate": "2021-09-27T16:00:00Z",
+		"highbonus": ["picard_evsuit_crew", "data_sacrifice_crew", "fesek_crew"],
+		"smallbonus": {
+			"traits": ["picard","data"]
+		}
 	}
 ]
