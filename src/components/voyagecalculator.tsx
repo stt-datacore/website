@@ -128,37 +128,39 @@ const VoyageMain = (props: VoyageMainProps) => {
 
 	return (
 		<React.Fragment>
-			<Grid columns={2} stackable>
-				<Grid.Column width={14}>
-					<Card.Group>
-						<Card>
-							<Card.Content>
-								<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.primary_skill}.png`} style={{ height: '2em' }} />
-								<Card.Header>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</Card.Header>
-								<p>primary</p>
-							</Card.Content>
-						</Card>
-						<Card>
-							<Card.Content>
-								<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.secondary_skill}.png`} style={{ height: '2em' }} />
-								<Card.Header>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</Card.Header>
-								<p>secondary</p>
-							</Card.Content>
-						</Card>
-						<Card>
-							<Card.Content>
-								<Card.Header>{allTraits.ship_trait_names[voyageConfig.ship_trait]}</Card.Header>
-								<p>ship trait</p>
-							</Card.Content>
-						</Card>
-					</Card.Group>
-				</Grid.Column>
-				<Grid.Column width={2} textAlign='right'>
-					<VoyageEditConfigModal voyageConfig={voyageConfig} updateConfig={updateConfig} />
-				</Grid.Column>
-			</Grid>
-			{voyageState != 'input' && (<VoyageExisting voyageConfig={voyageConfig} allShips={allShips} />)}
-			{voyageState == 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} allShips={allShips} />)}
+			{voyageState == 'input' &&
+				<Grid columns={2} stackable>
+					<Grid.Column width={14}>
+						<Card.Group>
+							<Card>
+								<Card.Content>
+									<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.primary_skill}.png`} style={{ height: '2em' }} />
+									<Card.Header>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</Card.Header>
+									<p>primary</p>
+								</Card.Content>
+							</Card>
+							<Card>
+								<Card.Content>
+									<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.secondary_skill}.png`} style={{ height: '2em' }} />
+									<Card.Header>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</Card.Header>
+									<p>secondary</p>
+								</Card.Content>
+							</Card>
+							<Card>
+								<Card.Content>
+									<Card.Header>{allTraits.ship_trait_names[voyageConfig.ship_trait]}</Card.Header>
+									<p>ship trait</p>
+								</Card.Content>
+							</Card>
+						</Card.Group>
+					</Grid.Column>
+					<Grid.Column width={2} textAlign='right'>
+						<VoyageEditConfigModal voyageConfig={voyageConfig} updateConfig={updateConfig} />
+					</Grid.Column>
+				</Grid>
+			}
+			{voyageState != 'input' && (<VoyageExisting voyageConfig={voyageConfig} allShips={allShips} useCalc={() => setVoyageState('input')} />)}
+			{voyageState == 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} allShips={allShips} useInVoyage={() => setVoyageState(voyageConfig.state)} />)}
 		</React.Fragment>
 	);
 
@@ -373,15 +375,16 @@ type VoyageExistingProps = {
 };
 
 const VoyageExisting = (props: VoyageExistingProps) => {
-	const { voyageConfig, allShips } = props;
+	const { voyageConfig, allShips,  useCalc} = props;
 
 	return (
 		<div style={{ marginTop: '1em' }}>
 			<VoyageStats
 				voyageData={voyageConfig}
 				ships={allShips}
-				showPanels={['estimate']}
+				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
 			/>
+			<Button onClick={() => useCalc()}>Return to calculator</Button>
 		</div>
 	)
 };
@@ -393,7 +396,7 @@ type VoyageInputProps = {
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { voyageConfig, myCrew, allShips } = props;
+	const { voyageConfig, myCrew, allShips, useInVoyage } = props;
 
 	const [bestShip, setBestShip] = React.useState(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState([]);
@@ -478,6 +481,11 @@ const VoyageInput = (props: VoyageInputProps) => {
 					<Form.Button primary onClick={() => startCalculation()}>
 						Calculate best crew selection
 					</Form.Button>
+					{voyageConfig.state &&
+						<Form.Button onClick={()=> useInVoyage()}>
+							Return to in voyage calculator
+						</Form.Button>
+					}
 				</Form.Group>
 			</Form>
 			<Message style={{ marginTop: '2em' }}>
