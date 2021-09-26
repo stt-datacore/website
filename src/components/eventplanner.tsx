@@ -124,13 +124,13 @@ const EventPicker = (props: EventPickerProps) => {
 		}
 	});
 
-	const allBonusCrew = allCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
+	const allBonusCrew = allCrew ? allCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0) : [];
 	allBonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 
 	const myCrew = JSON.parse(JSON.stringify(crew));
 
 	prospects.forEach((p) => {
-		let prospect = allCrew.find((c) => c.symbol == p.symbol);
+		let prospect = allCrew ? allCrew.find((c) => c.symbol == p.symbol) : false;
 		if (prospect) {
 			prospect = JSON.parse(JSON.stringify(prospect));
 			prospect.id = myCrew.length+1;
@@ -605,8 +605,12 @@ class Shuttlers {
 }
 
 class Shuttle {
+	id: string = '';
 	name: string = '';
 	seats: ShuttleSeat[] = [];
+	constructor (id: string) {
+		this.id = id ?? 'shuttle-'+Date.now();
+	}
 }
 
 class ShuttleSeat {
@@ -683,7 +687,7 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 				</Table.Header>
 				<Table.Body>
 					{shuttlers.shuttles.map((shuttle, shuttleNum) => (
-						<Table.Row key={shuttleNum}>
+						<Table.Row key={shuttle.id ?? shuttleNum}>
 							<Table.Cell>
 								<EventShuttlersRenamer shuttleNum={shuttleNum} shuttleName={shuttle.name} updateCallback={updateShuttleName} />
 								<Button icon color='red' onClick={() => deleteShuttle(shuttleNum)}><Icon name='trash' /></Button>
