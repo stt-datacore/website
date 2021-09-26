@@ -13,26 +13,26 @@ const forDataCore = (input, output, chewable) => {
 	];
 
 	// Config is for showing progress (optional)
-	let config = {
-		progressCallback: input.progressCallback,
-		debugCallback: input.debugCallback
+	const config = {
+		progressCallback: false,
+		debugCallback: false//(message) => console.log(message)
 	};
 
 	// Voyage data is required
-	let voyage = {
+	const voyage = {
 		skills: input.voyage_description.skills,
 		crew_slots: input.voyage_description.crew_slots,
 		ship_trait: input.voyage_description.ship_trait
 	};
 
 	// DataCore has already filtered roster by this point
-	let filter = false;
+	const filter = false;
 
 	// Options modify the calculation algorithm (optional)
-	let options = {
-		estimatorThreshold: input.estimatorThreshold ?? 0.75,
-		luckFactor: input.luckFactor,
-		favorSpecialists: input.favorSpecialists
+	const options = {
+		estimatorThreshold: input.estimatorThreshold ?? 0,
+		luckFactor: input.luckFactor ?? false,
+		favorSpecialists: input.favorSpecialists ?? false
 	};
 
 	const datacoreEstimator = (lineup) => {
@@ -46,13 +46,13 @@ const forDataCore = (input, output, chewable) => {
 			else
 				others.push(aggregate);
 		}
-		let config = {
+		const config = {
 			ps, ss, others,
 			'startAm': input.bestShip.score + lineup.antimatter,
 			'prof': lineup.proficiency
 		};
 		return new Promise((resolve, reject) => {
-			let estimate = chewable(config, () => false);
+			const estimate = chewable(config, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
 			estimate.antimatter = input.bestShip.score + lineup.antimatter;
 			resolve({ estimate, 'key': lineup.key });
@@ -64,7 +64,7 @@ const forDataCore = (input, output, chewable) => {
 	voyagers.assemble(voyage, filter, options)
 		.then((lineups) => {
 			// Now estimate all the lineups within the threshold
-			const estimator = new VoyagersEstimates(lineups, config);
+			const estimator = new VoyagersEstimates(voyage, lineups, config);
 			estimator.estimate(datacoreEstimator, options.estimatorThreshold)
 				.then((estimates) => {
 					// Finally pass all lineups and estimates back to DataCore and figure out which is "best" there
@@ -73,9 +73,9 @@ const forDataCore = (input, output, chewable) => {
 				});
 		})
 		.catch((error) => {
-			debugCallback(error);
+			throw(error);
 		});
-}
+};
 
 // Generate lots of unique lineups of potential voyagers
 class Voyagers {
@@ -92,8 +92,9 @@ class Voyagers {
 	}
 
 	// Prime roster by primary_ and secondary_skills
-	// Do 6 vectors w/ different starting boosts:
-	//	Do 10 attempts:
+	// Determine primeFactor from your best voyage lineup without boosts
+	// Do 5 vectors scaling primeFactor by a range of deltas:
+	//	Do X attempts:
 	//		Get scores of primed roster, adjusted by boosts
 	//		Do 12 slots:
 	//			Assign crew with best score to lineup
@@ -108,22 +109,32 @@ class Voyagers {
 
 		let self = this;
 		return new Promise((resolve, reject) => {
-			let origins = [ { 'primary': 3.5, 'secondary': 2.5, 'other': 1 },
-							{ 'primary': 3.0, 'secondary': 2.5, 'other': 1 },
-							{ 'primary': 2.5, 'secondary': 2.5, 'other': 1 },
-							{ 'primary': 2.0, 'secondary': 2.0, 'other': 1 },
-							{ 'primary': 1.5, 'secondary': 1.5, 'other': 1 },
-							{ 'primary': 1.0, 'secondary': 1.0, 'other': 1 } ];
+			let boosts = { 'primary': 1, 'secondary': 1, 'other': 1 };
+			const control = self.getBoostedLineup(primedRoster, boosts);
+			const controlFactor = self.getPrimeFactor(control.score);
 
-			if (options.customBoosts)
-				origins.push(options.customBoosts);
-
-			const promises = origins.map((boosts, index) =>
-				self.doVector(index+1, voyage, primedRoster, boosts)
-			);
+			const deltas = [0, 0.1, -0.1, 0.25, -0.25];
+			const promises = deltas.map((delta, index) => {
+				let primeFactor = controlFactor+delta;
+				if (options.customBoosts) {
+					boosts = options.customBoosts;
+				}
+				else {
+					boosts = {
+						'primary': control.score/10*primeFactor/control.skills[voyage.skills.primary_skill].voyage,
+						'secondary': control.score/10*primeFactor/control.skills[voyage.skills.secondary_skill].voyage,
+						'other': 1
+					};
+				}
+				return self.doVector(index+1, voyage, primedRoster, boosts, primeFactor);
+			});
 			Promise.all(promises).then((vectorIds) => {
 				self.sendProgress(self.uniques.length + " potential lineups assembled!");
-				let lineups = self.uniques.map((unique) => unique.lineup);
+				let lineups = self.uniques.map((unique) => {
+					let lineup = unique.lineup;
+					lineup.vectors = unique.vectors;
+					return lineup;
+				});
 				resolve(lineups);
 			})
 			.catch((error) => {
@@ -199,57 +210,90 @@ class Voyagers {
 		return primedRoster;
 	}
 
-	doVector(vectorId, voyage, primedRoster, boosts) {
-		const maxAttempts = 10;
+	// These base target values were determined from simulations using Joshurtree's revised Chewable
+	getPrimeFactor(totalScore) {
+		let baseTarget = totalScore/10;
+		let primeFactor = 3.5;
+		if (baseTarget >= 9100)
+			primeFactor = 2.0;
+		else if (baseTarget >= 6200)
+			primeFactor = 2.25;
+		else if (baseTarget >= 4100)
+			primeFactor = 2.5;
+		else if (baseTarget >= 3200)
+			primeFactor = 2.75;
+		else if (baseTarget >= 2500)
+			primeFactor = 3;
+		else if (baseTarget >= 2000)
+			primeFactor = 3.25;
+		return primeFactor;
+	}
+
+	doVector(vectorId, voyage, primedRoster, boosts, primeFactor) {
+		// Number of attempts and desired lineups should scale to roster size
+		const minAttempts = 10;
+		const maxAttempts = Math.max(Math.floor(primedRoster.length/5), minAttempts); // 20% of roster length
+		const minUniques = Math.max(Math.floor(maxAttempts/5), 5); // 20% of maxAttempts
+
 		let self = this;
 		let debug = this.config.debugCallback;
-		return new Promise((resolve, reject) => {
-			let iAttempts = 0;
-
+		return new Promise((resolveVector, rejectVector) => {
+			let doneWithVector = false;
 			let sequence = Promise.resolve();
+			let iAttempts = 0, iUniques = 0;
 			for (let i = 0; i < maxAttempts; i++) {
 				sequence = sequence.then(() => {
-					return new Promise((resolve, reject) => {
+					if (doneWithVector) return;
+					return new Promise((resolveLineup, rejectLineup) => {
 						setTimeout(() => {
+							iAttempts++;
 							let lineup = self.getBoostedLineup(primedRoster, boosts);
 							if (lineup)
-								resolve(lineup);
+								resolveLineup(lineup);
 							else
-								reject("You don't have enough crew for this voyage!");
+								rejectLineup("You don't have enough crew for this voyage!");
+
+							// Stop looking for lineups if vector has generated enough uniques or reached max attempts
+							if ((iAttempts >= minAttempts && iUniques >= minUniques) || iAttempts == maxAttempts) {
+								resolveVector(vectorId);
+								doneWithVector = true;
+							}
 						}, 0);
 					});
 				})
 				.then((lineup) => {
-					// Proximity is how close a lineup is to hitting its target scores, lower is better
-					//	We'll use promixity to narrow the lineups for which to calculate estimates
-					let deviations = self.getDeviations(
-											lineup.score,
-											lineup.skills[voyage.skills.primary_skill].voyage,
-											lineup.skills[voyage.skills.secondary_skill].voyage
-										);
-					let proximity = Math.abs(deviations.primary)+Math.abs(deviations.secondary)+Math.abs(deviations.other);
-					let proximityAlt = deviations.primary+deviations.secondary+deviations.other;	// Not used: might be better than absolute proximity?
-					lineup.vector = {
+					if (doneWithVector) return;
+
+					let baseTarget = lineup.score/10;
+					let primeTarget = baseTarget*primeFactor;
+
+					// Deltas compare actual primeFactors to expected primeFactor
+					let deltas = {
+						'primary': (lineup.skills[voyage.skills.primary_skill].voyage-primeTarget)/baseTarget,
+						'secondary': (lineup.skills[voyage.skills.secondary_skill].voyage-primeTarget)/baseTarget
+					};
+					// Other delta is primaryDelta+secondaryDelta*-1
+
+					let vector = {
 						'id': vectorId,
-						'attempt': iAttempts+1,
+						'attempt': iAttempts,
 						'boosts': boosts,
-						'deviations': deviations,
-						'proximity': proximity,
-						'proximityAlt': proximityAlt
+						'primeFactor': primeFactor,
+						'deltas': deltas
 					};
 
-					// Only keep track of unique lineups, but use lineup with higher AM if available
+					// Only track unique lineups, but also track all vectors that generate them
 					let existing = self.uniques.find((unique) => unique.uniqueId == lineup.key);
 					if (existing) {
-						if (proximity < existing.bestProximity)
-							existing.bestProximity = lineup.proximity;
+						existing.vectors.push(vector);
+						// Use lineup order with higher AM if available
 						if (lineup.antimatter > existing.bestAntimatter) {
 							existing.bestAntimatter = lineup.antimatter;
 							existing.lineup = lineup;
 						}
 					}
 					else {
-						self.sendProgress("Found "+(self.uniques.length+1)+" potential lineups so far...");
+						this.sendProgress("Found "+(self.uniques.length+1)+" potential lineups so far...");
 						if (debug) {
 							let sLineup = "";
 							for (let i = 0; i < lineup.crew.length; i++) {
@@ -257,39 +301,41 @@ class Voyagers {
 								sLineup += lineup.crew[i].name + " (" + lineup.crew[i].score.toFixed(1) + ")";
 							}
 							debug(
-								"===== Vector "+lineup.vector.id+"-"+lineup.vector.attempt+" =====" +
+								"===== Vector "+vector.id+"-"+vector.attempt+" =====" +
 								"\n* Lineup: "+sLineup +
-								"\n* Boosts: "+boosts.primary.toFixed(2)+"+"+boosts.secondary.toFixed(2)+"+"+boosts.other.toFixed(2) +
-								"\n* Scores: "+lineup.skills.command_skill.voyage+", "+lineup.skills.diplomacy_skill.voyage+", " +
+								"\n* Total Score: "+lineup.score +
+								"\n* Skills: "+lineup.skills.command_skill.voyage+", "+lineup.skills.diplomacy_skill.voyage+", " +
 									lineup.skills.security_skill.voyage+", "+lineup.skills.engineering_skill.voyage+", " +
 									lineup.skills.science_skill.voyage+", "+lineup.skills.medicine_skill.voyage +
-								"\n* Prime Deviations: "+deviations.primary.toFixed(2)+", "+deviations.secondary.toFixed(2)
+								"\n* Boosts: "+boosts.primary.toFixed(2)+"+"+boosts.secondary.toFixed(2)+"+"+boosts.other.toFixed(2) +
+								"\n* Prime Factor: "+primeFactor +
+								"\n* Deltas: "+deltas.primary.toFixed(2)+", "+deltas.secondary.toFixed(2)
 							);
 						}
 						self.uniques.push({
 							'uniqueId': lineup.key,
 							'bestAntimatter': lineup.antimatter,
-							'bestProximity': proximity,
+							'vectors': [vector],
 							lineup
 						});
+						iUniques++;
 					}
 
-					if (iAttempts+1 < maxAttempts) {
-						// Finetune by smaller increments as attempts increase
-						let finetuneRatio = 1/(iAttempts+1);
-						if (finetuneRatio < 0.1) finetuneRatio = 0.1;
-						boosts = self.adjustBoosts(boosts, deviations, finetuneRatio);
-					}
-
-					iAttempts++;
-
-					// We're done with this vector
-					if (!boosts || iAttempts == maxAttempts)
-						resolve(vectorId);
+					// Use deltas to reweight boosts for next attempt
+					//	Finetune by smaller increments as attempts increase with a min adjust of 0.1
+					let finetuneRatio = Math.max(1/iAttempts, 0.1);
+					let primaryAdjustment = deltas.primary*finetuneRatio*-1;
+					let secondaryAdjustment = deltas.secondary*finetuneRatio*-1;
+					// Primary, secondary boost adjustments should be enough that adjustment to other not needed
+					boosts = {
+						'primary': boosts.primary+primaryAdjustment > 0 ? boosts.primary+primaryAdjustment : 0,
+						'secondary': boosts.secondary+secondaryAdjustment > 0 ? boosts.secondary+secondaryAdjustment : 0,
+						'other': boosts.other
+					};
 				});
 			}
 			sequence.catch((error) => {
-				reject(error);
+				rejectVector(error);
 			});
 		});
 	}
@@ -461,65 +507,6 @@ class Voyagers {
 
 		return false;
 	}
-
-	// Determine how far off targets are based on total scores of a given lineup
-	getDeviations(totalScore, primaryScore, secondaryScore) {
-		let baseTarget = totalScore/10;
-
-		// These base target values were determined from Chewable simulation results
-		let primaryFactor = 3.5;	// Default factors match initial boosts
-		if (baseTarget >= 9800)
-			primaryFactor = 2.0;
-		else if (baseTarget >= 5800)
-			primaryFactor = 2.25;
-		else if (baseTarget >= 4000)
-			primaryFactor = 2.5;
-		else if (baseTarget >= 3000)
-			primaryFactor = 2.75;
-		else if (baseTarget >= 2400)
-			primaryFactor = 3;
-		else if (baseTarget >= 2200)
-			primaryFactor = 3.25;
-
-		// Secondary target should be as close to primary target as possible,
-		//	except when primary factor is higher than default secondary factor
-		//	 (Maybe? Need to do more simulations to confirm secondary factor ceiling)
-		let secondaryFactor = primaryFactor > 2.5 ? 2.5 : primaryFactor;
-
-		let primaryTarget = primaryFactor*baseTarget;
-		let primaryDeviation = (primaryScore-primaryTarget)/baseTarget;
-
-		let secondaryTarget = secondaryFactor*baseTarget;
-		let secondaryDeviation = (secondaryScore-secondaryTarget)/baseTarget;
-
-		let otherTarget = (10-primaryFactor-secondaryFactor)*baseTarget;
-		let otherDeviation = (totalScore-primaryScore-secondaryScore-otherTarget)/otherTarget;
-
-		return {
-			'primary': primaryDeviation,
-			'secondary': secondaryDeviation,
-			'other': otherDeviation
-		};
-	}
-
-	// Reweight boosts to balance skill scores
-	adjustBoosts(boosts, deviations, finetuneRatio) {
-		let primaryAdjustment = deviations.primary*finetuneRatio*-1;
-		let secondaryAdjustment = deviations.secondary*finetuneRatio*-1;
-
-		// Primary, secondary boost adjustments should be enough that other adjustments not needed
-		let newBoosts = {
-			'primary': boosts.primary+primaryAdjustment > 0 ? boosts.primary+primaryAdjustment : 0,
-			'secondary': boosts.secondary+secondaryAdjustment > 0 ? boosts.secondary+secondaryAdjustment : 0,
-			'other': boosts.other
-		};
-
-		// No adjustments made, so stop trying to optimize
-		if (primaryAdjustment == 0 && secondaryAdjustment == 0)
-			return false;
-
-		return newBoosts;
-	}
 }
 
 class VoyagersLineup {
@@ -581,7 +568,8 @@ class VoyagersLineup {
 
 // Generate estimates of the best lineups
 class VoyagersEstimates {
-	constructor(lineups, config = {}) {
+	constructor(voyage, lineups, config = {}) {
+		this.voyage = voyage;
 		this.lineups = lineups;
 		this.config = config;
 	}
@@ -596,13 +584,50 @@ class VoyagersEstimates {
 	estimate(estimator, proximityThreshold) {
 		let self = this;
 		return new Promise((resolve, reject) => {
-			let iConsider = self.lineups.length;
+			self.lineups.forEach((lineup) => {
+				lineup.vector = self.getBestVector(lineup);
+			});
+
+			// Only consider lineups with proximity below 1; lineups above that are 99% useless
+			let considered = self.lineups.filter((lineup) => lineup.vector.proximity < 1)
+				.sort((a, b) => a.vector.proximity - b.vector.proximity);
+			self.sendProgress((self.lineups.length-considered.length)+' lineups immediately eliminated from consideration...');
+
 			if (proximityThreshold > 0) {
-				const minConsidered = 2;
-				let iSubThreshold = self.lineups.filter((lineup) => lineup.vector.proximity < proximityThreshold).length;
-				iConsider = Math.min(Math.max(iSubThreshold, minConsidered), self.lineups.length);
+				considered = considered.filter((lineup) => lineup.vector.proximity < proximityThreshold);
 			}
-			let considered = self.lineups.sort((a, b) => a.vector.proximity - b.vector.proximity).slice(0, iConsider);
+			else {
+				// Calculate aggregates before filtering further
+				const proximityAverage = considered.reduce((prev, curr) => prev + curr.vector.proximity, 0)/considered.length;
+				const scores = considered.map((lineup) => lineup.score);
+				const scoreAverage = scores.reduce((prev, curr) => prev + curr, 0)/scores.length;
+				const scoreDeviation = self.getStandardDeviation(scores);
+
+				// The more lineups attempted, the more confident we can be in aggregates
+				//	With more confidence, we can lower the ideal estimate count
+				const attempts = considered.reduce((prev, curr) => prev + curr.vectors.length, 0);
+				const idealEstimateCount = attempts > 100 ? 3 : 5;
+
+				// Narrow lineups by average proximity
+				if (considered.length > idealEstimateCount) {
+					considered = considered.filter((lineup) => lineup.vector.proximity < proximityAverage);
+					self.sendProgress('Proximity threshold set to '+proximityAverage.toFixed(2)+'...');
+				}
+				// Use deviation from average score to narrow lineups further
+				if (considered.length > idealEstimateCount) {
+					considered = considered.filter((lineup) =>
+						lineup.score > scoreAverage-scoreDeviation && lineup.score < scoreAverage+scoreDeviation);
+					self.sendProgress('Narrowing lineups further by score deviation...');
+				}
+				// Still too many lineups? Just do the ideal count
+				if (considered.length > idealEstimateCount) {
+					considered = considered.slice(0, idealEstimateCount);
+					self.sendProgress('Narrowing lineups to the ideal count ('+idealEstimateCount+')...');
+				}
+			}
+
+			// If no lineups left after filtering, use the lineup with best proximity
+			if (considered.length == 0) considered = [self.lineups[0]];
 
 			self.sendProgress('Estimating '+considered.length+' lineups...');
 			const promises = considered.map((lineup) =>
@@ -611,11 +636,81 @@ class VoyagersEstimates {
 			Promise.all(promises).then((estimates) => {
 				resolve(estimates);
 				self.sendProgress('Done estimating!');
+				self._logEstimates(estimates);
 			})
 			.catch((error) => {
 				reject(error);
 			});
 		});
+	}
+
+	getBestVector(lineup) {
+		const baseTarget = lineup.score/10;
+		const primaryScore = lineup.skills[this.voyage.skills.primary_skill].voyage;
+		const secondaryScore = lineup.skills[this.voyage.skills.secondary_skill].voyage;
+
+		let bestVector, bestProximity = 100;
+		lineup.vectors.forEach((vector) => {
+			const primeTarget = baseTarget*vector.primeFactor;
+			const otherTarget = (lineup.score-primeTarget-primeTarget)/4;
+			const otherAverage = (lineup.score-primaryScore-secondaryScore)/4;
+			const deviations = {
+				'primary': this.getStandardDeviation([primaryScore, primeTarget]),
+				'secondary': this.getStandardDeviation([secondaryScore, primeTarget]),
+				'other': this.getStandardDeviation([otherAverage, otherTarget]),
+				'prime': this.getStandardDeviation([primaryScore, secondaryScore])
+			};
+			// Proximity is how close an actual lineup is to its prime targets (lower is better)
+			const proximity = (deviations.primary+deviations.secondary+deviations.prime)/baseTarget;
+			if (proximity < bestProximity) {
+				bestProximity = proximity;
+				bestVector = {...vector, deviations, proximity};
+			}
+		});
+
+		return bestVector;
+	}
+
+	getStandardDeviation(array) {
+		const n = array.length;
+		const mean = array.reduce((a, b) => a + b) / n;
+		return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
+	}
+
+	_logEstimates(estimates) {
+		if (!this.config.debugCallback) return;
+		const fields = [
+			'id', 'estimate', 'proximity', 'score', 'vector count', 'prime factor',
+			'primary score', 'secondary score', 'primary delta', 'secondary delta',
+			'primary deviation', 'secondary deviation', 'other deviation', 'prime deviation'
+		];
+		let log = "===== Estimates =====";
+		let csv = fields.join("\t");
+		estimates.forEach(estimate => {
+			const lineup = this.lineups.find(l => l.key == estimate.key);
+			log += "\n* "+lineup.vector.id+"-"+lineup.vector.attempt+": " +
+				estimate.estimate.refills[0].result.toFixed(3) +
+				" "+lineup.vector.proximity.toFixed(3);
+			const values = [
+				lineup.vector.id+"-"+lineup.vector.attempt,
+				estimate.estimate.refills[0].result.toFixed(3),
+				lineup.vector.proximity.toFixed(3),
+				lineup.score,
+				lineup.vectors.length,
+				lineup.vector.primeFactor,
+				lineup.skills[this.voyage.skills.primary_skill].voyage,
+				lineup.skills[this.voyage.skills.secondary_skill].voyage,
+				lineup.vector.deltas.primary.toFixed(3),
+				lineup.vector.deltas.secondary.toFixed(3),
+				lineup.vector.deviations.primary.toFixed(3),
+				lineup.vector.deviations.secondary.toFixed(3),
+				lineup.vector.deviations.other.toFixed(3),
+				lineup.vector.deviations.prime.toFixed(3)
+			];
+			csv += "\n"+values.join("\t");
+		});
+		this.config.debugCallback(log);
+		this.config.debugCallback(csv);
 	}
 }
 

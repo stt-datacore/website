@@ -56,13 +56,13 @@ export const CALCULATORS = {
 			description: 'Estimator threshold',
 			control: 'select',
 			options: [
-				{ key: '0.5', text: '0.5 (fastest)', value: 0.5 },
-				{ key: '0.75', text: '0.75 (recommended)', value: 0.75 },
-				{ key: '1', text: '1.0', value: 1 },
-				{ key: '2', text: '2.0', value: 2 },
-				{ key: 'none', text: 'No threshold (slowest)', value: 0 }
+				{ key: '0', text: 'Auto (recommended)', value: 0 },
+				{ key: '0.1', text: '0.1 (fastest)', value: 0.1 },
+				{ key: '0.25', text: '0.25', value: 0.25 },
+				{ key: '0.5', text: '0.5', value: 0.5 },
+				{ key: '1', text: '1.0 (slowest)', value: 1 }
 			],
-			default: 0.75
+			default: 0
 		}
 	]
 };
@@ -89,6 +89,7 @@ interface ICalcResult {
 		medicine_skill: ICrewSkill;
 	};
 	startAM: number;
+	explanation?: string;
 }
 
 interface ICrewSkill {
@@ -363,7 +364,7 @@ class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			estimatorThreshold: props.calcOptions.estimatorThreshold ?? .75
+			estimatorThreshold: props.calcOptions.estimatorThreshold ?? 0
 		};
 	}
 
@@ -378,8 +379,6 @@ class USSJohnJayHelper extends Helper {
 			estimatorThreshold: this.calcOptions.estimatorThreshold,
 			luckFactor: false,
 			favorSpecialists: false,
-			progressCallback: false,
-			debugCallback: (debug) => console.log(debug),
 			worker: 'ussjohnjay'
 		};
 
@@ -400,6 +399,9 @@ class USSJohnJayHelper extends Helper {
 	_estimatesToResults(lineups: any[], estimates: any[]): ICalcResult[] {
 		const results = [];
 
+		const bestNames = [
+			'median runtime', 'guaranteed runtime', 'moonshot runtime', 'dilemma chance', 'starting antimatter'
+		];
 		const bestKeys = [];
 		[0, 1, 2, 3, 4].forEach(sort => {
 			const best = estimates.sort((a, b) => this._chewableSort(a, b, sort))[0];
@@ -411,6 +413,9 @@ class USSJohnJayHelper extends Helper {
 		bestKeys.forEach((bestKey, idx) => {
 			const best = estimates.find(estimate => estimate.key == bestKey);
 			let bestLineup = lineups.find((lineup) => lineup.key == bestKey);
+			let postscript = bestLineup.best.length < 5
+				? '('+(idx+1)+'/'+bestKeys.length+') Recommended for '+bestLineup.best.map(sort => bestNames[sort]).join(', ')
+				: '';
 			let result = {
 				entries: bestLineup.crew.map(({id}, idx) => ({
 					slotId: idx,
@@ -419,7 +424,8 @@ class USSJohnJayHelper extends Helper {
 				})),	// convert to ICalcResult entries
 				estimate: best.estimate,
 				aggregates: bestLineup.skills,
-				startAM: this.bestShip.score + bestLineup.antimatter
+				startAM: this.bestShip.score + bestLineup.antimatter,
+				postscript
 			};
 			results.push(result);
 		});
@@ -428,6 +434,8 @@ class USSJohnJayHelper extends Helper {
 	}
 
 	_chewableSort(a: any, b: any, sortOption: number = 0): number {
+		const DIFFERENCE = 0.02; // ~1 minute
+
 		let aEstimate = a.estimate.refills[0];
 		let bEstimate = b.estimate.refills[0];
 
@@ -435,7 +443,7 @@ class USSJohnJayHelper extends Helper {
 		let aScore = aEstimate.result;
 		let bScore = bEstimate.result;
 
-		let timeComparison = true;
+		let compareCloseTimes = false;
 
 		// Best Guaranteed Runtime
 		//	Compare 99% worst case times (saferResult)
@@ -446,17 +454,17 @@ class USSJohnJayHelper extends Helper {
 		// Best Moonshot Runtime
 		//	Compare best case times (moonshotResult)
 		else if (sortOption == 2 && aEstimate.moonshotResult) {
+			compareCloseTimes = true;
 			aScore = aEstimate.moonshotResult;
 			bScore = bEstimate.moonshotResult;
-			// If times are close enough (< 1m), use the one with the better median result
-			if (Math.abs(bScore - aScore) <= 0.02) {
+			// If times are close enough, use the one with the better median result
+			if (Math.abs(bScore - aScore) <= DIFFERENCE) {
 				aScore = aEstimate.result;
 				bScore = bEstimate.result;
 			}
 		}
 		// Best Dilemma Chance
 		else if (sortOption == 3 && aEstimate.lastDil) {
-			timeComparison = false;
 			aScore = aEstimate.lastDil;
 			bScore = bEstimate.lastDil;
 			if (aScore == bScore) {
@@ -465,26 +473,25 @@ class USSJohnJayHelper extends Helper {
 			}
 			// If dilemma chance is the same, use the one with the better median result
 			if (aScore == bScore) {
-				timeComparison = true;
+				compareCloseTimes = true;
 				aScore = aEstimate.result;
 				bScore = bEstimate.result;
 			}
 		}
 		// Highest Antimatter
 		else if (sortOption == 4 && a.estimate.antimatter) {
-			timeComparison = false;
 			aScore = a.estimate.antimatter;
 			bScore = b.estimate.antimatter;
 			// If antimatter is the same, use the one with the better median result
 			if (aScore == bScore) {
-				timeComparison = true;
+				compareCloseTimes = true;
 				aScore = aEstimate.result;
 				bScore = bEstimate.result;
 			}
 		}
 
-		// If times are close enough (< 1m), use the one with the better safer result
-		if (timeComparison && Math.abs(bScore - aScore) <= 0.02) {
+		// If times are close enough, use the one with the better safer result
+		if (compareCloseTimes && Math.abs(bScore - aScore) <= DIFFERENCE) {
 			aScore = aEstimate.saferResult;
 			bScore = bEstimate.saferResult;
 		}

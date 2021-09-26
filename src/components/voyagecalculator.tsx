@@ -239,7 +239,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 			// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
 			const knownShipTraits = ['andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
 				'dominion','emp','explorer','federation','ferengi','freighter','historic','hologram',
-				'klingon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
+				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
 				'scout','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
 			const knownCrewTraits = ['android','astrophysicist','bajoran','borg','brutal',
 				'cardassian','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
@@ -372,10 +372,11 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 type VoyageExistingProps = {
 	voyageConfig: any;
 	allShips: any[];
+	useCalc: () => void;
 };
 
 const VoyageExisting = (props: VoyageExistingProps) => {
-	const { voyageConfig, allShips,  useCalc} = props;
+	const { voyageConfig, allShips, useCalc } = props;
 
 	return (
 		<div style={{ marginTop: '1em' }}>
@@ -393,6 +394,7 @@ type VoyageInputProps = {
 	voyageConfig: any;
 	myCrew: any[];
 	allShips: any[];
+	useInVoyage: () => void;
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
@@ -440,7 +442,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 	const calculators = CALCULATORS.helpers.map(helper => {
 		return { key: helper.id, value: helper.id, text: helper.name };
 	});
-	calculators.push({ key: 'all', value: 'all', text: 'All calculators' });
+	calculators.push({ key: 'all', value: 'all', text: 'All calculators (slower)' });
 
 	return (
 		<React.Fragment>
@@ -517,7 +519,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 					<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${bestShip.ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 					<Card.Header>{bestShip.ship.name}</Card.Header>
 					<p>best ship{bestShip.traited && (<span style={{ marginLeft: '1em' }}>{` +`}{allTraits.ship_trait_names[voyageConfig.ship_trait]}</span>)}</p>
-					<p style={{ marginTop: '.5em' }}>Tap <Icon name={`arrow alternate circle outline ${direction}`} />{index} time{index != 1 ? 's' : ''} on your voyage ship selection screen to select {bestShip.ship.name}.</p>
+					<p style={{ marginTop: '.5em' }}>Tap <Icon name={`arrow ${direction}`} />{index} time{index != 1 ? 's' : ''} on your voyage ship selection screen to select {bestShip.ship.name}.</p>
 				</Card.Content>
 			</Card>
 		);
@@ -629,6 +631,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 	function sendTelemetry(requestId: string, result: any): void {
 		if (telemetryOptOut) return;
 		const request = requests.find(r => r.id == requestId);
+		const estimatedDuration = result.estimate.refills[0].result*60*60;
 		try {
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
 				method: 'post',
@@ -638,10 +641,8 @@ const VoyageInput = (props: VoyageInputProps) => {
 				body: JSON.stringify({
 					type: 'voyageCalc',
 					data: {
-						voyagers: result.entries.map((entry) => {
-							return crew.find(c => c.id === entry.choice).symbol;
-						}),
-						estimatedDuration: result.score * 60 * 60,
+						voyagers: result.entries.map((entry) => entry.choice.symbol),
+						estimatedDuration,
 						calculator: request ? request.calculator : ''
 					}
 				})
@@ -873,6 +874,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 			<>
 				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
 				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
+				{result.postscript && (<div>{result.postscript}</div>)}
 			</>
 		);
 	};
