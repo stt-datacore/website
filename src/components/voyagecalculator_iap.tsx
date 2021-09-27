@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
 import * as localForage from 'localforage';
 import { isMobile } from 'react-device-detect';
-
 import ItemDisplay from '../components/itemdisplay';
 import { VoyageStats } from '../components/voyagestats';
 import {
@@ -12,6 +11,7 @@ import {
 	formatTimeSeconds,
 	BonusCrew
 } from '../utils/voyageutils';
+import { getEstimate } from '../workers/chewable.js';
 
 import { applyCrewBuffs} from '../utils/crewutils';
 import { mergeShips } from '../utils/shiputils';
@@ -181,6 +181,32 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_renderCurrentVoyage(data) {
+		const toDuration = (startTime, endTime) => {
+			console.log(startTime);
+			console.log(endTime);
+			let seconds = endTime.getTime() - startTime.getTime();
+			let hours = Math.floor(seconds/3600);
+			return `${hours}:${Math.floor((seconds - hours*3600)/60)}`;
+		};
+
+		const exportData = () => {
+			let estimate = getEstimate({
+				startAm: data.max_hp,
+				ps: data.skill_aggregates[data.skills['primary_skill']],
+				ss: data.skill_aggregates[data.skills['secondary_skill']],
+				others: Object.values(data.skill_aggregates).filter(s => !Object.values(data.skills).includes(s)),
+			}, () => true).refills[0].result;
+
+			let values = [
+				new Date().toLocaleDateString(),
+				`${Math.floor(estimate)}:${Math.floor((estimate-Math.floor(estimate))/60)}`,
+				toDuration(new Date(data.created_at), new Date(data.state == 'failed' ? data.failed_at : data.recalled_at))
+			];
+
+			values = values.concat(data.crew_slots.map(s => s.crew.name));
+			navigator.clipboard.writeText(values.join('\n'));
+		};
+
 		return (
 			<div>
 				<VoyageStats
@@ -190,6 +216,9 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				/>
 				<br/>
 				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
+				{(data.state == 'recalled' || data.state == 'failed' || data.state == 'completed') &&
+					<Button onClick={() => exportData()}>Export to CIVAS</Button>
+				}
 			</div>
 		);
 	}
