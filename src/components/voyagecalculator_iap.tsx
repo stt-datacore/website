@@ -213,7 +213,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				/>
 				<br/>
 				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
-				{(data.state == 'recalled' || data.state == 'failed' || data.state == 'completed') &&
+				{(data.state == 'recalled' || data.state == 'failed') &&
 					<Button onClick={() => exportData()}>Export to CIVAS</Button>
 				}
 			</div>
