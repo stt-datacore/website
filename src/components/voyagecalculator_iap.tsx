@@ -181,26 +181,23 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_renderCurrentVoyage(data) {
-		const toDuration = (startTime, endTime) => {
-			console.log(startTime);
-			console.log(endTime);
-			let seconds = endTime.getTime() - startTime.getTime();
-			let hours = Math.floor(seconds/3600);
-			return `${hours}:${Math.floor((seconds - hours*3600)/60)}`;
-		};
+		const hoursToTime = hours => {
+			let wholeHours = Math.floor(hours);
+			return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
+		}
 
 		const exportData = () => {
 			let estimate = getEstimate({
 				startAm: data.max_hp,
 				ps: data.skill_aggregates[data.skills['primary_skill']],
 				ss: data.skill_aggregates[data.skills['secondary_skill']],
-				others: Object.values(data.skill_aggregates).filter(s => !Object.values(data.skills).includes(s)),
+				others: Object.values(data.skill_aggregates).filter(s => !Object.values(data.skills).includes(s.skill)),
 			}, () => true).refills[0].result;
 
 			let values = [
 				new Date().toLocaleDateString(),
-				`${Math.floor(estimate)}:${Math.floor((estimate-Math.floor(estimate))/60)}`,
-				toDuration(new Date(data.created_at), new Date(data.state == 'failed' ? data.failed_at : data.recalled_at))
+				hoursToTime(estimate),
+				hoursToTime(data.log_index/180)
 			];
 
 			values = values.concat(data.crew_slots.map(s => s.crew.name));
