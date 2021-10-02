@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment } from 'semantic-ui-react';
+import { Header, Button, Message, Grid, Icon, Form, Tab, Select, Dropdown, Checkbox, Modal, Image, Segment, Popup } from 'semantic-ui-react';
 import * as localForage from 'localforage';
 import { isMobile } from 'react-device-detect';
 import ItemDisplay from '../components/itemdisplay';
@@ -45,7 +45,8 @@ type VoyageCalculatorState = {
 	searchDepth: number;
 	extendsTarget: number;
 	telemetryOptOut: boolean;
-	showCalculator: boolean
+	showCalculator: boolean;
+	CIVASExportFailed: boolean;
 };
 
 class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculatorState> {
@@ -66,6 +67,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			extendsTarget: 0,
 			telemetryOptOut: false,
 			showCalculator: false,
+			CIVASExportFailed: false,
+			doingCIVASExport: false
 		};
 	}
 
@@ -181,12 +184,14 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 	}
 
 	_renderCurrentVoyage(data) {
+		const {CIVASExportFailed, doingCIVASExport} = this.state;
 		const hoursToTime = hours => {
 			let wholeHours = Math.floor(hours);
 			return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
 		}
 
-		const exportData = () => {
+		const exportData = () => new Promise((resolve, reject) => {
+			this.setState({doingCIVASExport: true});
 			let estimate = getEstimate({
 				startAm: data.max_hp,
 				ps: data.skill_aggregates[data.skills['primary_skill']],
@@ -201,8 +206,8 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			];
 
 			values = values.concat(data.crew_slots.map(s => s.crew.name));
-			navigator.clipboard.writeText(values.join('\n'));
-		};
+			navigator.clipboard.writeText(values.join('\n')).then(resolve, reject);
+		});
 
 		return (
 			<div>
@@ -213,8 +218,34 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 				/>
 				<br/>
 				<Button onClick={() => this.setState({showCalculator : true})}>Continue to calculator</Button>
-				{(data.state == 'recalled' || data.state == 'failed') &&
-					<Button onClick={() => exportData()}>Export to CIVAS</Button>
+				{(data.state == 'recalled' || data.state == 'failed') && navigator.clipboard &&
+					<React.Fragment>
+						<Button loading={doingCIVASExport} onClick={() => exportData().then(
+							() => this.setState({doingCIVASExport: false}),
+							() => {
+								this.setState({doingCIVASExport: false, Failed: true });
+
+								let timeout = setTimeout(() => {
+									this.setState({CIVASExportFailed: false});
+									clearTimeout(timeout);
+								}, 5000);
+							})}>
+							Export to CIVAS
+						</Button>
+						<Popup
+							trigger={<Icon name='help' />}
+							content={
+								<>
+									Copies details of the voyage to the clipboard so that it can be pasted into
+									<a href='https://docs.google.com/spreadsheets/d/1nbnD2WvDXAT9cxEWep0f78bv6_hOaP51tmRjmY0oT1k' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
+								</>
+							}
+							mouseLeaveDelay={1000}
+						/>
+						{CIVASExportFailed &&
+							<Message negative>Export to clipboard failed'</Message>
+						}
+					</React.Fragment>
 				}
 			</div>
 		);
