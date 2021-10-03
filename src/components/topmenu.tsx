@@ -53,10 +53,39 @@ const NavBarDesktop = ({ children, leftItems, narrowLayout, rightItems }) => (
 	</React.Fragment>
 );
 
+// const playerToolsMenu = {
+// 	title: 'Player tools',
+// 	items: playerTools.map([key, value]) => ({onClick: text: value})
+// }
+
 // TODO: we do all this weird functional dance because we want Gatsby to SSR the "other pages" via GraphQL
 // If we switch to a hard-coded list of "other pages", this can be simplified significantly
 const useMainMenuItems = (verticalLayout: boolean) => {
 	const otherPages = useOtherPages();
+	const createSubMenu (title, children) => {
+		if (verticalLayout) {
+			return (
+				<Menu.Item>
+					<Menu.Header key={index++}>{title}</Menu.Header>
+					<Menu.Menu>
+						children.map(item => (
+							<Menu.Item key={index++} onClick={item.onClick}>
+								{item.title}
+							</Menu.Item>
+						));
+					</Menu.Menu>
+				</Menu.Item>
+			);
+		} else {
+			return (
+				<Dropdown key={index++} item simple text={title}>
+					children.map(item => (
+						<Dropdown.Item onClick={item.onClick}>item.title</Dropdown.Item>
+					));
+				</Dropdown>
+			);
+		}
+	};
 
 	let index = 0;
 	let items = [
@@ -169,7 +198,17 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	}
 
 	if (verticalLayout) {
-		return items;
+		return items.map(menu => {
+			if (menu instanceof Dropdown)
+				return (
+					<Menu.Item>
+					 	<Menu.Header {...menu.props} />
+						<Menu.Menu>
+							{menu.children.map(child => (<Menu.Item {...child.props}>{child.children}</Menu.Item>))}
+						</Menu.Menu>
+					</Menu.Item>
+				)
+		});
 	} else {
 		return <Container>{items}</Container>;
 	}
@@ -181,7 +220,7 @@ const useRightItems = ({ onMessageClicked }) => {
 
 	const profileIcon = <Image src='/media/badge.png' />;
 	const shareUrl = strippedPlayerData ? `/${process.env.GATSBY_DATACORE_URL}profile/?dbid=${strippedPlayerData.player.dbid}` : '';
-	
+
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 			<Icon name='adjust' />
