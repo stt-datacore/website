@@ -62,26 +62,30 @@ const NavBarDesktop = ({ children, leftItems, narrowLayout, rightItems }) => (
 // If we switch to a hard-coded list of "other pages", this can be simplified significantly
 const useMainMenuItems = (verticalLayout: boolean) => {
 	const otherPages = useOtherPages();
-	const createSubMenu (title, children) => {
+	const createSubMenu = (title, children) => {
 		if (verticalLayout) {
 			return (
 				<Menu.Item>
 					<Menu.Header key={index++}>{title}</Menu.Header>
 					<Menu.Menu>
-						children.map(item => (
-							<Menu.Item key={index++} onClick={item.onClick}>
+						{children.map(item => (
+							<Menu.Item key={index++} onClick={() => navigate(item.link)}>
 								{item.title}
 							</Menu.Item>
-						));
+						))}
 					</Menu.Menu>
 				</Menu.Item>
 			);
 		} else {
 			return (
 				<Dropdown key={index++} item simple text={title}>
-					children.map(item => (
-						<Dropdown.Item onClick={item.onClick}>item.title</Dropdown.Item>
-					));
+					<Dropdown.Menu>
+						{children.map(item => (
+							<Dropdown.Item onClick={() => navigate(item.link)}>
+								{item.title}
+							</Dropdown.Item>
+						))}
+					</Dropdown.Menu>
 				</Dropdown>
 			);
 		}
@@ -97,45 +101,17 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		</Menu.Item>
 	];
 
-	if (verticalLayout) {
-		items.push(
-			<Menu.Item>
-				<Menu.Header key={index++}>Big book (legacy)</Menu.Header>
-				<Menu.Menu>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>
-						Image list (fast)
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook')}>
-						Complete (slow)
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bb')}>
-						Text only
-					</Menu.Item>
-				</Menu.Menu>
-			</Menu.Item>
-		);
-	} else {
-		items.push(
-			<Dropdown key={index++} item simple text='Big book (legacy)'>
-				<Dropdown.Menu>
-					<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
-				</Dropdown.Menu>
-			</Dropdown>
-		);
-	}
+	items.push(createSubMenu('Big book (legacy)', [
+			{title: 'Image list (fast)', link: '/bigbook2'},
+			{title: 'Complete (slow)', link: '/bigbook'},
+			{title: 'Text only', link: '/bb'}
+		])
+	);
 
-	items.push(
-		<Dropdown key={index++} item simple text ='Player tools'>
-			<Dropdown.Menu>
-				{Object.entries(playerTools).map(([key, value]) =>
-					<Dropdown.Item onClick={() => navigate(`/playertools?tool=${key}`)}>
-						{value.title}
-					</Dropdown.Item>
-				)}
-			</Dropdown.Menu>
-		</Dropdown>
+	items.push(createSubMenu('Player tools', Object.entries(playerTools).map(([key, value]) => ({
+			title: value.title,
+			link: `/playertools?tool=${key}`
+		})))
 	);
 	items.push(
 		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
@@ -198,17 +174,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	}
 
 	if (verticalLayout) {
-		return items.map(menu => {
-			if (menu instanceof Dropdown)
-				return (
-					<Menu.Item>
-					 	<Menu.Header {...menu.props} />
-						<Menu.Menu>
-							{menu.children.map(child => (<Menu.Item {...child.props}>{child.children}</Menu.Item>))}
-						</Menu.Menu>
-					</Menu.Item>
-				)
-		});
+		return items;
 	} else {
 		return <Container>{items}</Container>;
 	}
