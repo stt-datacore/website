@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Her huge DIP base will earn her a shuttle spot into the mid-game and K'Ehleyr/Klingon events pop up from time to time. But even while she's in stasis, K'Ehleyr's a mandatory collection notch on the trek toward completing all of the skill boost thresholds for Klingon crew.
+Her huge DIP base should earn her a shuttle spot if fused early on and K'Ehleyr/Klingon events pop up from time to time. But even while she's in stasis, K'Ehleyr's a mandatory notch on the trek toward completing all of the skill boost thresholds for the Klingon collection.

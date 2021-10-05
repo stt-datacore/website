@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-CMD/SEC rarely needs help from players to burgeon on a roster and with a sinking voyage rank beside, that area of the game is not a big part of Tuvok's value any longer. Still of note are double collections and some steady event work punctuated by a few traits headlined by Borg. If fused early, his substantial attack boost on ships can be of benefit for the Arena and Skirmishes, even considering a slow activation time.
+Tuvok's wings have been clipped compared to his soaring heights on release. Voyages are beyond his capabilities if you have comparable skill set/fuse level options and his powerful attack boost on ships is slow enough that you can generally find (or retrieve) better options.
+
+But there's good value in a multi-collection piece who also enjoys an event mèlange of Tuvok, Vulcan, and Borg events while sporting the right shuttle skills to boot. There are reasons for almost every roster to snag stars on Tuvok in a behold, even if he does more of his heavy lifting post-cryo these days.
