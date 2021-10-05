@@ -783,7 +783,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 
 	function identifyActiveEvent(): void {
 		// Get event data from recently uploaded playerData
-		if (eventData) {
+		if (eventData && eventData.length > 0) {
 			const currentEvent = getEventData(eventData.sort((a, b) => (a.seconds_to_start - b.seconds_to_start))[0]);
 			setActiveEvent({...currentEvent});
 		}

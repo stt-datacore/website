@@ -11,8 +11,6 @@ export class EventData {
 };
 
 export function getEventData(activeEvent: any): EventData | undefined {
-	getCurrentStartEndTimes();
-
 	let result = new EventData();
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
@@ -69,10 +67,10 @@ export function guessCurrentEvent(): EventData {
 	// Otherwise use ultimate event
 	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
 	const index = start < 24*60*60 ? 2 : 1;
-	const activeId = allEvents[allEvents.length-index].instance_id;
+	const eventId = allEvents[allEvents.length-index].instance_id;
 
 	return new Promise((resolve, reject) => {
-		fetch('/structured/events/'+activeId+'.json').then(response =>
+		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
 				const activeEvent = getEventData(json);
 				activeEvent.seconds_to_start = start;
@@ -86,10 +84,11 @@ export function guessCurrentEvent(): EventData {
 // Get seconds to event start, end from current time
 function getCurrentStartEndTimes(): { start: 0, end: 0 } {
 	const currentTime = new Date();
-	const utcDay = currentTime.getDay(), utcHour = currentTime.getUTCHours();
+	const utcDay = currentTime.getUTCDay(), utcHour = currentTime.getUTCHours();
 
 	// Event "week" starts and ends on Monday at Noon ET
-	const eventDay = [6, 0, 1, 2, 3, 4, 5][utcHour-16 < 0 ? (utcDay-1 < 0 ? 6 : utcDay-1) : utcDay];
+	let eventDay = [6, 0, 1, 2, 3, 4, 5][utcDay];
+	eventDay = utcHour < 16 ? (eventDay-1 < 0 ? 6 : eventDay-1) : eventDay;
 
 	// Event end time is Monday Noon ET (Event Day "7", 0:00:00)
 	let endTime = new Date();
