@@ -236,8 +236,7 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 							trigger={<Icon name='help' />}
 							content={
 								<>
-									Copies details of the voyage to the clipboard so that it can be pasted into 
-									<a href='https://docs.google.com/spreadsheets/d/1nbnD2WvDXAT9cxEWep0f78bv6_hOaP51tmRjmY0oT1k' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
+									Copies details of the voyage to the clipboard so that it can be pasted into <a href='https://docs.google.com/spreadsheets/d/1nbnD2WvDXAT9cxEWep0f78bv6_hOaP51tmRjmY0oT1k' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
 								</>
 							}
 							mouseLeaveDelay={1000}
