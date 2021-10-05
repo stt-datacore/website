@@ -8,6 +8,7 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
+import { guessCurrentEvent, getEventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
@@ -26,14 +27,24 @@ const tableConfig: ITableConfigRow[] = [
 
 type EventPlannerProps = {
 	playerData: any;
-	eventData: any;
 	activeCrew: string[];
 	allCrew: any;
 };
 
 const EventPlanner = (props: EventPlannerProps) => {
-	const { playerData, eventData, allCrew } = props;
+	const { playerData, allCrew } = props;
 	const dbid = playerData.player.dbid;
+
+	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [activeEvents, setActiveEvents] = React.useState(undefined);
+
+	if (!activeEvents) {
+		identifyActiveEvents();
+		return (<></>);
+	}
+
+	if (activeEvents.length == 0)
+		return (<p>Event data currently not available.</p>);
 
 	const activeCrew = JSON.parse(JSON.stringify(props.activeCrew));
 
@@ -57,14 +68,27 @@ const EventPlanner = (props: EventPlannerProps) => {
 		myCrew.push(crewman);
 	});
 
-	let activeEvents = eventData.filter((ev) => ev.seconds_to_end > 0);
-	activeEvents.sort((a, b) => (a.seconds_to_start - b.seconds_to_start));
-
 	let buffConfig = calculateBuffConfig(playerData.player);
 
 	return (
 		<EventPicker dbid={dbid} events={activeEvents} crew={myCrew} buffConfig={buffConfig} allCrew={allCrew} />
 	);
+
+	function identifyActiveEvents(): void {
+		// Get event data from recently uploaded playerData
+		if (eventData) {
+			let currentEvents = eventData.map((ev) => getEventData(ev))
+				.filter((ev) => ev.seconds_to_end > 0)
+				.sort((a, b) => (a.seconds_to_start - b.seconds_to_start));
+			setActiveEvents([...currentEvents]);
+		}
+		// Otherwise guess event from autosynced events
+		else {
+			guessCurrentEvent().then(currentEvent => {
+				setActiveEvents([currentEvent]);
+			});
+		}
+	}
 };
 
 type EventPickerProps = {
@@ -73,16 +97,6 @@ type EventPickerProps = {
 	crew: any[];
 	buffConfig: any;
 	allCrew: any[];
-};
-
-class EventData {
-	symbol: string = '';
-    name: string = '';
-	image: string = '';
-	description: string = '';
-	content_types: string[] = [];	/* shuttles, gather, etc. */
-    bonus: string[] = [];	/* ALL bonus crew by symbol */
-	featured: string[] = [];	/* ONLY featured crew by symbol */
 };
 
 const EventPicker = (props: EventPickerProps) => {
@@ -103,7 +117,7 @@ const EventPicker = (props: EventPickerProps) => {
 		);
 	});
 
-	const eventData = getEventData(events[eventIndex]);
+	const eventData = events[eventIndex];
 
 	const EVENT_TYPES = {
 		'shuttles': 'Faction',
@@ -172,51 +186,6 @@ const EventPicker = (props: EventPickerProps) => {
 			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttlers dbid={dbid} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
 	);
-
-	function getEventData(activeEvent: any): EventData | undefined {
-		let result = new EventData();
-		result.symbol = activeEvent.symbol;
-		result.name = activeEvent.name;
-		result.description = activeEvent.description;
-		result.content_types = activeEvent.content_types;
-
-		// We can get event image more definitively by fetching from events/instance_id.json rather than player data
-		result.image = activeEvent.phases[0].splash_image.file.substr(1).replace(/\//g, '_') + '.png';
-
-		// Content is active phase of started event or first phase of unstarted event
-		//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
-		let activePhase = activeEvent.content;
-		if (activePhase.content_type == 'shuttles') {
-			activePhase.shuttles.forEach((shuttle: any) => {
-				for (let symbol in shuttle.crew_bonuses) {
-					if (result.bonus.indexOf(symbol) < 0) {
-						result.bonus.push(symbol);
-						if (shuttle.crew_bonuses[symbol] == 3) result.featured.push(symbol);
-					}
-				}
-			});
-		}
-		else if (activePhase.content_type == 'gather') {
-			for (let symbol in activePhase.crew_bonuses) {
-				if (result.bonus.indexOf(symbol) < 0) {
-					result.bonus.push(symbol);
-					if (activePhase.crew_bonuses[symbol] == 10) result.featured.push(symbol);
-				}
-			}
-		}
-		else if (activePhase.content_type == 'skirmish' && activePhase.bonus_crew) {
-			for (let i = 0; i < activePhase.bonus_crew.length; i++) {
-				let symbol = activePhase.bonus_crew[i];
-				if (result.bonus.indexOf(symbol) < 0) {
-					result.bonus.push(symbol);
-					result.featured.push(symbol);
-				}
-			}
-			// Skirmish also uses activePhase.bonus_traits to identify smaller bonus event crew
-		}
-
-		return result;
-	}
 };
 
 type EventCrewTableProps = {
@@ -233,6 +202,13 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
+
+	if (eventData.bonus.length == 0)
+		return (
+			<div style={{ marginTop: '1em' }}>
+				Featured crew not yet identified for this event.
+			</div>
+		);
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
@@ -535,6 +511,8 @@ const EventProspects = (props: EventProspectsProps) => {
 	const {crew, prospects, setProspects} = props;
 
 	const [selection, setSelection] = React.useState('');
+
+	if (crew.length == 0) return (<></>);
 
 	const crewList = crew.map((c) => (
 		{
@@ -934,6 +912,8 @@ const EventShuttlers = (props: EventShuttlersProps) => {
 		let seats = [];
 		for (let shuttleNum = 0; shuttleNum < shuttlers.shuttles.length; shuttleNum++) {
 			let shuttle = shuttlers.shuttles[shuttleNum];
+			// Undocumented feature: ignore shuttles prefixed with hyphen
+			if (shuttle.name.substr(0, 1) == "-") continue;
 			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
 				let ssId = getSkillSetId(shuttle.seats[seatNum]);
 				seats.push({
