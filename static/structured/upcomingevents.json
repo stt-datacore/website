@@ -768,5 +768,16 @@
 		"smallbonus": {
 			"traits": ["odo","Dominion"]
 		}
+	},
+	{
+		"name": "The Miracles They Deserve - Mega Pt 1",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 10/07 until Monday 10/11 at Noon (16.00 UTC)",
+		"startDate": "2021-10-07T16:00:00Z",
+		"endDate": "2021-10-11T16:00:00Z",
+		"highbonus": ["dsc_straal_crew", "photonic_alien_crew", "laforge_doctor_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["laforge","Innovator"]
+		}
 	}
 ]
