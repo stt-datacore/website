@@ -5,6 +5,7 @@ export interface IConfigSortData {
 		field: string;
 		direction: 'descending' | 'ascending' | null;
 	};
+	subsort?: any[]; // rules for tiebreakers e.g. { field, direction }
 	rotateFields?: any[];
 	keepSortOptions?: boolean; // if set to true, don't advance direction or rotateFields
 }
@@ -23,32 +24,37 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 		field = getNextFieldInRotation(field, config.rotateFields);
 	}
 	if(!keepSortOptions) {
-		direction = setDirection(direction);
-	}
-	
-	if(config.secondary) {
-		config.secondary.direction = config.secondary.direction === null ? setDirection(null) : config.secondary.direction;
-		config.secondary.direction = keepSortOptions === true ? config.secondary.direction : setDirection(config.secondary.direction);
+		direction = toggleDirection(direction);
 	}
 
-	if(!config.secondary) {
-		result = result.sort((a, b) => compare(
+	config.subsort = config.subsort ?? [];
+
+	// Convert secondary prop to subsort array; try to use subsort instead of secondary from now on
+	if(config.secondary) {
+		config.secondary.direction = config.secondary.direction ?? 'ascending';
+		if (!keepSortOptions) config.secondary.direction = toggleDirection(config.secondary.direction);
+		config.subsort = [{ field: config.secondary.field, direction: config.secondary.direction }];
+	}
+
+	const sortFactor = direction === 'descending' ? -1 : 1;
+	result = result.sort((a, b) => {
+		let sortValue = sortFactor*compare(
 			getValueFromPath(a, field),
 			getValueFromPath(b, field)
-		));
-	} else {
-		result = result.sort((a, b) => compareWithSecondary(
-			getValueFromPath(a, field),
-			getValueFromPath(b, field),
-			getValueFromPath(config.secondary.direction === 'ascending' ? a : b, config.secondary.field),
-			getValueFromPath(config.secondary.direction === 'ascending' ? b : a, config.secondary.field)
-		));
-	}
-	
-	if(direction === 'descending') {
-		result.reverse();
-	}
-	
+		);
+		let tiebreaker = 0;
+		while (sortValue == 0 && tiebreaker < config.subsort.length) {
+			const nextSort = config.subsort[tiebreaker];
+			const nextFactor = nextSort.direction === 'descending' ? -1 : 1;
+			sortValue = nextFactor*compare(
+				getValueFromPath(a, nextSort.field),
+				getValueFromPath(b, nextSort.field)
+			);
+			tiebreaker++;
+		}
+		return sortValue;
+	});
+
 	return {
 		field,
 		direction,
@@ -67,7 +73,7 @@ function getNextFieldInRotation(field, rotateFields) {
 	return newField;
 }
 
-function setDirection(direction) {
+function toggleDirection(direction) {
 	return direction === 'ascending' ? 'descending' : 'ascending';
 }
 
@@ -75,12 +81,7 @@ function compare(a, b) {
 	if(!isNaN(a) && !isNaN(b)) {
 		return a - b;
 	}
+	if (isNaN(a) && !isNaN(b)) return 1;
+	if (!isNaN(a) && isNaN(b)) return -1;
 	return (a > b ? 1 : b > a ? -1 : 0);
-}
-
-function compareWithSecondary(a, b, c, d) {
-	if(!isNaN(a) && !isNaN(b) && !isNaN(c) && !isNaN(d)) {
-		return a - b || c - d;
-	}
-	return (a > b ? 1 : b > a ? -1 : 0) || (c > d ? 1 : d > c ? -1 : 0);
 }

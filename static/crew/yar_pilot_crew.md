@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Yar's great Faction event rate plus some juicy traits keep her afloat on the weekends, but it's not 2016 anymore and 'dual 1k bases' doesn't cut it - she won't be piloting many shuttles without a bonus. But the bigger shift in her value was the dump truck of ENG/SEC crew that was backed up to our rosters in 2019, sending her tumbling down the ranks of a formerly difficult voyage skill combo.
+Yar's great Faction event rate and pair of variant-best bases present her as a viable weekend tool for your arsenal, but it's her traits that have compensated for the understandable decline in power from this 2016 card. Several years of almost nothing but trait events have kept her relevant while her 1-2 punch of collections current and yet to come make her a tantalizing behold choice, especially against crew that may be stronger statistically, but are as boring as unbuttered toast.
 
-There's still a 1-star node unlock (Pilot/SEC) and 45% gauntlet opportunities to help out newer players as well as a fairly exclusive collection spot for veteran players. Yar remains well-rounded, but without power to offer in any single area.
+There's also a 1-star node unlock (Pilot/SEC) and pair of 45% gauntlet opportunities to help out newer players as well. Yar remains well-rounded, but without top flight power to offer in any single area.
