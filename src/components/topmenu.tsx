@@ -111,7 +111,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 			link: `/playertools?tool=${key}`
 		})))
   );
-  
+
 	items.push(
 		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
 			Behold
@@ -207,8 +207,8 @@ const useRightItems = ({ onMessageClicked }) => {
 		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 			<Icon name='github' />
 		</Menu.Item>
-	</>
-);
+	</>);
+};
 
 type NavBarProps = {
 	children: React.ReactNode;
