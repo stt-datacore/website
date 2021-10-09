@@ -182,12 +182,6 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-	const [strippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
-	const [profileShared] = useStateWithStorage('tools/profileShared', false);
-
-	const profileIcon = <Image src='/media/badge.png' />;
-	const shareUrl = strippedPlayerData ? `/${process.env.GATSBY_DATACORE_URL}profile/?dbid=${strippedPlayerData.player.dbid}` : '';
-
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 			<Icon name='adjust' />

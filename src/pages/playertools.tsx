@@ -87,18 +87,6 @@ const PlayerToolsPage = () =>  {
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
 
-	React.useEffect(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		setShowForm(urlParams.has('update'));
-	}, [showForm]);
-
-	React.useEffect(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('clear')) {
-			clearPlayerData();
-			navigate(urlParams.get('from'));
-		}
-	});
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
