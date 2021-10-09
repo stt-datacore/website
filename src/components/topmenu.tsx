@@ -5,11 +5,8 @@ import { navigate } from 'gatsby';
 import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
-<<<<<<< HEAD
 import { useStateWithStorage} from '../utils/storage';
 import { playerTools } from '../pages/playertools';
-=======
->>>>>>> 254417b2b0463aaa4868c0aa959b105e7cf88163
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
