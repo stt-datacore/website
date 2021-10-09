@@ -1,12 +1,12 @@
 import React, { PureComponent, useState } from 'react';
-import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar, Image } from 'semantic-ui-react';
+import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-import { playerTools } from '../pages/playertools';
+
 import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
-import { useStateWithStorage } from '../utils/storage';
-import { doShareProfile } from '../utils/playerutils';
+import { useStateWithStorage} from '../utils/storage';
+import { playerTools } from '../pages/playertools';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
@@ -112,7 +112,8 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 			title: value.title,
 			link: `/playertools?tool=${key}`
 		})))
-	);
+  );
+
 	items.push(
 		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
 			Behold
@@ -208,22 +209,8 @@ const useRightItems = ({ onMessageClicked }) => {
 		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 			<Icon name='github' />
 		</Menu.Item>
-		{strippedPlayerData &&
-			<Dropdown simple item trigger = {profileIcon}>
-				<Dropdown.Menu>
-					<Dropdown.Item key={0} onClick={() => navigate(`/playertools?update=${Math.floor(Math.random()*100)}`)}>Update profile</Dropdown.Item>
-					{profileShared &&
-						<Dropdown.Item key={1} onClick={() => navigate(shareUrl)}>View profile</Dropdown.Item>
-					}
-					<Dropdown.Item key={2} onClick={() => navigate(`/playertools?clear=true&from=${window.location}`)}>Clear profile data</Dropdown.Item>
-				</Dropdown.Menu>
-			</Dropdown>
-		}
-		{!strippedPlayerData &&
-			<Menu.Item onClick={() => navigate('/playertools')}>{profileIcon}</Menu.Item>
-		}
 	</>);
-}
+};
 
 type NavBarProps = {
 	children: React.ReactNode;

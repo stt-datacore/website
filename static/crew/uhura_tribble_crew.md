@@ -20,6 +20,6 @@ And that's why female astronauts, Oh, very female astronauts wait terrified and 
 
 Oh, girls in space, be wary, be wary, be wary, girls in space, be wary. We know not what WRG will do.
 
-Now from a mega event place, she comes with variant-best base. A-seeking out her Faction race, she fills shuttles for you.
+Now from a mega event place, she comes with variant-best base. A-seeking out her Faction place, she fills shuttles for you.
 
 Oh, Tribble's our new darling, our darling, our darling. Tribble's our new darling. We know how well she'll do. 🎵

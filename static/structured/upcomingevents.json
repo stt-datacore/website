@@ -746,5 +746,38 @@
 		"smallbonus": {
 			"traits": ["spock","mccoy"]
 		}
+	},
+	{
+		"name": "Eye of the Storm",
+		"type": "Skirmish",
+		"dates": "Thursday 09/23 until Monday 09/27 at Noon (16.00 UTC)",
+		"startDate": "2021-09-23T16:00:00Z",
+		"endDate": "2021-09-27T16:00:00Z",
+		"highbonus": ["picard_evsuit_crew", "data_sacrifice_crew", "fesek_crew"],
+		"smallbonus": {
+			"traits": ["picard","data"]
+		}
+	},
+	{
+		"name": "A Changeling in Time (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 09/30 until Monday 10/04 at Noon (16.00 UTC)",
+		"startDate": "2021-09-30T16:00:00Z",
+		"endDate": "2021-10-04T16:00:00Z",
+		"highbonus": ["mitchell_crew", "dehner_elizabeth_crew", "antaak_crew", "odo_chaplain_crew"],
+		"smallbonus": {
+			"traits": ["odo","Dominion"]
+		}
+	},
+	{
+		"name": "The Miracles They Deserve - Mega Event Pt1",
+		"type": "Faction",
+		"dates": "Thursday 10/07 until Monday 10/11 at Noon (16.00 UTC)",
+		"startDate": "2021-10-07T16:00:00Z",
+		"endDate": "2021-10-11T16:00:00Z",
+		"highbonus": ["dsc_straal_crew", "photonic_alien_crew", "laforge_doctor_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["laforge","Innovator"]
+		}
 	}
 ]

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Triple collections and a handful of events, including three features. Not a daily use crew, but he offers exactly what you want from a Super Rare 2-skiller; long term value.
+Doc's event history is decidedly unfriendly toward Faction action, so although trait events have been very kind to him so far, his thawpertunities may not be frequent outside of any more big bonus features.
+
+No, this is a collection piece first and foremost. Children of all ages flock to Doc for his post-cryo goodness and the remainder of his traits may not have stayed untapped by the time you read this. I guess new guys aren't ready for Doc yet, but your kids are gonna love him.

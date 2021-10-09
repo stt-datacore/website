@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Janeway is not an event name you need to worry about, even if she's had her ups and downs, but that's about all you're getting from the former Section 31 recruit. Her voyage power is missing in action and her traits' pools would seem to be either too large or too small to support much weekend work out of left field. A #2 variant SEC base just ahead of former mega Determined Janeway is just about all she can hang her hat on for contributions to your roster.
+Janeway is not an event name you need to worry about, even if she's had her ups and downs. Despite Agent's weak bases, she will have ample opportunity for both weekend bonuses and good skill seating, though her traits aren't particularly generous for future event possibilities.
+
+Her power otherwise is a dud and definitely shows the card's age, both on voyages and even in her 45% gauntlets. A big collection plus steady event work is one of the more bankable value combos in the game, so even though you may not use Agent often, there are reasons to behold her.

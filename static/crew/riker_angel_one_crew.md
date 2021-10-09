@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Steady Eddy has had at least two variant events each calendar year and triple features. Worth owning for the long haul and rug of love, but no daily contributions.
+The Riker name is good for a few events yearly and this man candy variant does boast a handful of big bonus features as well. While a couple of his traits have sprinkled in event chances in spurts, they could certainly deliver more as well as being prime future collection candidates. Worth owning for the long haul and for his rug of love, but no daily contributions.

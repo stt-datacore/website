@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-O'Brien events are about as in vogue as the Tamagotchi and his offering there is bookended by bad bases and poor traits for weekend thawpertunities. A chance at relevance twice per year is more than some crew can boast, but it's best to think of him as a popsicle stick with collections attached.
+The Chief's best days are clearly behind him, both as the character this crew represents and as the card in game. The No Vacancy sign is lit on Miles' collectionable traits unless the dreaded HFS trio gains traction, but that's ok. Double collections are primo value for an older crew who some might freeze and forget. The only other point of interest here is a modest O'Brien event history which has seen him featured at least once a year, but his bases may be too poor for many players to consider thawing him.
