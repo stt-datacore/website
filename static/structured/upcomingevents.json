@@ -779,5 +779,16 @@
 		"smallbonus": {
 			"traits": ["laforge","Innovator"]
 		}
+	},
+	{
+		"name": "Renegade Wishes - Mega Event Pt2",
+		"type": "Skirmish",
+		"dates": "Thursday 10/14 until Monday 10/18 at Noon (16.00 UTC)",
+		"startDate": "2021-10-07T16:00:00Z",
+		"endDate": "2021-10-11T16:00:00Z",
+		"highbonus": ["sisko_kalhyah_crew", "iden_crew", "archer_cowboy_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["sisko","archer","Innovator"]
+		}
 	}
 ]
