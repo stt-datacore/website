@@ -39,7 +39,7 @@ export const playerTools = {
 	},
 	'crew-retrieval': {
 		title: 'Crew Retrieval',
-		render: ({playerData}) => <CrewRetrieval playerData={playerData} />
+		render: ({playerData, allCrew}) => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
 	},
 	'ships': {
 		title: 'Ships',
