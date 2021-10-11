@@ -20,6 +20,21 @@ import CrewPopup from '../components/crewpopup';
 
 import CONFIG from './CONFIG';
 
+const VOYAGE_SEATS = [
+	'captain_slot',
+	'first_officer',
+	'chief_communications_officer',
+	'communications_officer',
+	'chief_security_officer',
+	'security_officer',
+	'chief_engineering_officer',
+	'engineering_officer',
+	'chief_science_officer',
+	'science_officer',
+	'chief_medical_officer',
+	'medical_officer'
+];
+
 type VoyageCalculatorProps = {
 	playerData: any;
 	voyageData: any;
@@ -200,12 +215,17 @@ class VoyageCalculator extends Component<VoyageCalculatorProps, VoyageCalculator
 			}, () => true).refills[0].result;
 
 			let values = [
-				new Date().toLocaleDateString(),
+				new Date(data.created_at).toLocaleDateString(),
 				hoursToTime(estimate),
-				hoursToTime(data.log_index/180)
+				hoursToTime(data.log_index/180),
+				data.hp
 			];
 
-			values = values.concat(data.crew_slots.map(s => s.crew.name));
+			values = values.concat(data
+				.crew_slots
+				.sort((s1, s2) => VOYAGE_SEATS.indexOf(s1.symbol) - VOYAGE_SEATS.indexOf(s2.symbol))
+				.map(s => s.crew.name)
+			);
 			navigator.clipboard.writeText(values.join('\n')).then(resolve, reject);
 		});
 
