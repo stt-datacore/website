@@ -116,7 +116,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ')}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
@@ -137,7 +137,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const columnConfig = props.config.find(col => col.column === column);
 		if (columnConfig && columnConfig.tiebreakers) {
 			subsort = columnConfig.tiebreakers.map(subfield => {
-				const subdirection = subfield == 'rarity' ? direction : 'ascending';
+				const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? direction : 'ascending';
 				return { field: subfield, direction: subdirection };
 			});
 		}
