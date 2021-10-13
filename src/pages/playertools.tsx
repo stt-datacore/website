@@ -10,6 +10,7 @@ import ProfileItems from '../components/profile_items';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
+import CiteOptimizer from '../components/citeoptimizer';
 import EventPlanner from '../components/eventplanner';
 import VoyageCalculator from '../components/voyagecalculator_iap';
 import CrewRetrieval from '../components/crewretrieval';
@@ -40,6 +41,10 @@ export const playerTools = {
 	'crew-retrieval': {
 		title: 'Crew Retrieval',
 		render: ({playerData, allCrew}) => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
+	},
+	'cite-optimizer': {
+		title: 'Cite Optimizer',
+		render: ({playerData, allCrew}) => <CiteOptimizer playerData={playerData} allCrew={allCrew} />
 	},
 	'ships': {
 		title: 'Ships',
