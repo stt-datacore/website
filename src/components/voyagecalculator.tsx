@@ -1,6 +1,6 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import { Icon, Modal, Form, Button, Dropdown, Table, Message, Checkbox, Select, Segment, Header, Image, Tab, Grid, Card } from 'semantic-ui-react';
+import { Icon, Modal, Form, Button, Dropdown, Table, Message, Checkbox, Select, Segment, Header, Image, Tab, Grid, Card, Popup } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
@@ -12,6 +12,22 @@ import { guessCurrentEvent, getEventData } from '../utils/events';
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { CALCULATORS, CalculatorState } from '../utils/voyagehelpers';
+import { getEstimate } from '../workers/chewable.js';
+
+const VOYAGE_SEATS = [
+	'captain_slot',
+	'first_officer',
+	'chief_communications_officer',
+	'communications_officer',
+	'chief_security_officer',
+	'security_officer',
+	'chief_engineering_officer',
+	'engineering_officer',
+	'chief_science_officer',
+	'science_officer',
+	'chief_medical_officer',
+	'medical_officer'
+];
 
 type VoyageCalculatorProps = {
 	playerData: any;
@@ -377,6 +393,39 @@ type VoyageExistingProps = {
 
 const VoyageExisting = (props: VoyageExistingProps) => {
 	const { voyageConfig, allShips, useCalc } = props;
+	const [CIVASExportFailed, setCIVASExportFailed] = React.useState(false);
+	const [doingCIVASExport, setDoingCIVASExport] = React.useState(false);
+
+	const hoursToTime = hours => {
+		let wholeHours = Math.floor(hours);
+		return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
+	}
+
+	const exportData = () => new Promise((resolve, reject) => {
+		setDoingCIVASExport(true);
+
+		let estimate = getEstimate({
+			startAm: voyageConfig.max_hp,
+			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
+			ss: voyageConfig.skill_aggregates[voyageConfig.skills['secondary_skill']],
+			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill)),
+		}, () => true).refills[0].result;
+
+		let values = [
+			new Date(voyageConfig.created_at).toLocaleDateString(),
+			hoursToTime(estimate),
+			hoursToTime(voyageConfig.log_index/180),
+			voyageConfig.hp
+		];
+
+		values = values.concat(voyageConfig
+			.crew_slots
+			.sort((s1, s2) => VOYAGE_SEATS.indexOf(s1.symbol) - VOYAGE_SEATS.indexOf(s2.symbol))
+			.map(s => s.crew.name)
+		);
+
+		navigator.clipboard.writeText(values.join('\n')).then(resolve, reject);
+	});
 
 	return (
 		<div style={{ marginTop: '1em' }}>
@@ -386,6 +435,35 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
 			/>
 			<Button onClick={() => useCalc()}>Return to calculator</Button>
+			{(voyageConfig.state == 'recalled' || voyageConfig.state == 'failed') && navigator.clipboard &&
+				<React.Fragment>
+					<Button loading={doingCIVASExport} onClick={() => exportData().then(
+						() => setDoingCIVASExport(false),
+						() => {
+							setDoingCIVASExport(false);
+							setCIVASExportFailed(true);
+
+							let timeout = setTimeout(() => {
+								setCIVASExportFailed(false);
+								clearTimeout(timeout);
+							}, 5000);
+						})}>
+						Export to CIVAS
+					</Button>
+					<Popup
+						trigger={<Icon name='help' />}
+						content={
+							<>
+								Copies details of the voyage to the clipboard so that it can be pasted into <a href='https://docs.google.com/spreadsheets/d/1nbnD2WvDXAT9cxEWep0f78bv6_hOaP51tmRjmY0oT1k' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
+							</>
+						}
+						mouseLeaveDelay={1000}
+					/>
+					{CIVASExportFailed &&
+						<Message negative>Export to clipboard failed</Message>
+					}
+				</React.Fragment>
+			}
 		</div>
 	)
 };
@@ -529,8 +607,9 @@ const VoyageInput = (props: VoyageInputProps) => {
 		if (results.length == 0)
 			return (<></>);
 
+		const showPopup = (result) => <Popup basic content={<p>{result.result.postscript}</p>} trigger={<p>{result.name}</p>} />
 		const panes = results.map(result => ({
-			menuItem: { key: result.id, content: result.name },
+			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
 			render: () => (
 				<VoyageResultPane result={result.result}
 					requests={requests} requestId={result.requestId}

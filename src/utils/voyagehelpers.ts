@@ -343,7 +343,8 @@ class IAmPicardHelper extends Helper {
 					estimate: message.data.result,
 					entries,
 					aggregates,
-					startAM: config.startAm
+					startAM: config.startAm,
+					postscript: 'Recommended for median runtime'
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
