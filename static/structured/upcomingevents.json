@@ -790,5 +790,16 @@
 		"smallbonus": {
 			"traits": ["sisko","archer","Innovator"]
 		}
+	},
+	{
+		"name": "The Dream Machine - Mega Event Pt3",
+		"type": "Galaxy",
+		"dates": "Thursday 10/21 until Monday 10/25 at Noon (16.00 UTC)",
+		"startDate": "2021-10-21T16:00:00Z",
+		"endDate": "2021-10-25T16:00:00Z",
+		"highbonus": ["zimmerman_ds9_crew", "barclay_firstcontact_crew", "lefler_robin_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["zimmerman","barclay","Innovator"]
+		}
 	}
 ]
