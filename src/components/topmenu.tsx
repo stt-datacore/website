@@ -58,18 +58,16 @@ const NavBarDesktop = ({ children, leftItems, narrowLayout, rightItems }) => (
 // 	items: playerTools.map([key, value]) => ({onClick: text: value})
 // }
 
-// TODO: we do all this weird functional dance because we want Gatsby to SSR the "other pages" via GraphQL
-// If we switch to a hard-coded list of "other pages", this can be simplified significantly
 const useMainMenuItems = (verticalLayout: boolean) => {
-	const otherPages = useOtherPages();
 	const createSubMenu = (title, children) => {
+		const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		if (verticalLayout) {
 			return (
-				<Menu.Item>
-					<Menu.Header key={index++}>{title}</Menu.Header>
+				<Menu.Item key={`/${menuKey}`}>
+					<Menu.Header>{title}</Menu.Header>
 					<Menu.Menu>
 						{children.map(item => (
-							<Menu.Item key={index++} onClick={() => navigate(item.link)}>
+							<Menu.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link)}>
 								{item.title}
 							</Menu.Item>
 						))}
@@ -78,10 +76,10 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 			);
 		} else {
 			return (
-				<Dropdown key={index++} item simple text={title}>
+				<Dropdown key={`/${menuKey}`} item simple text={title}>
 					<Dropdown.Menu>
 						{children.map(item => (
-							<Dropdown.Item onClick={() => navigate(item.link)}>
+							<Dropdown.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link)}>
 								{item.title}
 							</Dropdown.Item>
 						))}
@@ -91,15 +89,29 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		}
 	};
 
-	let index = 0;
 	let items = [
-		<Menu.Item key={index++} onClick={() => navigate('/')}>
+		<Menu.Item key='/' onClick={() => navigate('/')}>
 			Crew stats
 		</Menu.Item>,
-		<Menu.Item key={index++} onClick={() => navigate('/about')}>
-			About
+		<Menu.Item key='/behold' onClick={() => navigate('/behold')}>
+			Behold
 		</Menu.Item>
 	];
+
+	items.push(createSubMenu('Player tools', Object.entries(playerTools).map(([key, value]) => ({
+			title: value.title,
+			link: `/playertools?tool=${key}`
+		})))
+	);
+
+	const pages = [
+		{ title: 'Collections', link: '/collections' },
+		{ title: 'Items', link: '/items' },
+		{ title: 'Misc stats', link: '/stats' },
+		{ title: 'Episodes', link: '/episodes' },
+		{ title: 'Hall of Fame', link: '/hall_of_fame' }
+	];
+	items.push(createSubMenu('Pages', pages));
 
 	items.push(createSubMenu('Big book (legacy)', [
 			{title: 'Image list (fast)', link: '/bigbook2'},
@@ -108,71 +120,18 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		])
 	);
 
-	items.push(createSubMenu('Player tools', Object.entries(playerTools).map(([key, value]) => ({
-			title: value.title,
-			link: `/playertools?tool=${key}`
-		})))
-  );
-
-	items.push(
-		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
-			Behold
-		</Menu.Item>
-	);
-
-	if (verticalLayout) {
-		items.push(
-			<Menu.Item>
-				<Menu.Header key={index++}>Pages</Menu.Header>
-				<Menu.Menu>
-					<Menu.Item key={index++} onClick={() => navigate('/collections')}>
-						Collections
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/items')}>
-						Items
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/stats')}>
-						Misc stats
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/episodes')}>
-						Episodes
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/hall_of_fame')}>
-						Hall of Fame
-					</Menu.Item>
-				</Menu.Menu>
-			</Menu.Item>,
-			<Menu.Item>
-				<Menu.Header key={index++}>All other pages</Menu.Header>
-				<Menu.Menu>
-					{otherPages.map((page) => (
-						<Menu.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
-							{page.title}
-						</Menu.Item>
-					))}
-				</Menu.Menu>
-			</Menu.Item>
+	const about = [
+		{ title: 'About DataCore', link: '/about' },
+		{ title: 'Announcements', link: '/announcements' }
+	];
+	// Show other markdowns as discovered by Gatsby in About menu
+	const otherPages = useOtherPages();
+	otherPages.map((page) => {
+		about.push(
+			{ title: page.title, link: page.slug }
 		);
-	} else {
-		items.push(
-			<Dropdown key={index++} item simple text='Pages'>
-				<Dropdown.Menu>
-					<Dropdown.Item onClick={() => navigate('/collections')}>Collections</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/items')}>Items</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/stats')}>Misc stats</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/episodes')}>Episodes</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/hall_of_fame')}>Hall of Fame</Dropdown.Item>
-					<Dropdown.Divider />
-					<Dropdown.Header>All other pages</Dropdown.Header>
-					{otherPages.map((page) => (
-						<Dropdown.Item as='a' key={page.slug} onClick={() => navigate(page.slug)}>
-							{page.title}
-						</Dropdown.Item>
-					))}
-				</Dropdown.Menu>
-			</Dropdown>
-		);
-	}
+	});
+	items.push(createSubMenu('About', about));
 
 	if (verticalLayout) {
 		return items;
