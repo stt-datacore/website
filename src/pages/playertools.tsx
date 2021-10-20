@@ -1,5 +1,6 @@
 import React from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -16,10 +17,60 @@ import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
-import { stripPlayerData } from '../utils/playerutils';
+import { stripPlayerData, doShareProfile } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
 
-const PlayerToolsPage = () => {
+export const playerTools = {
+	'voyage': {
+		title: 'Voyage Calculator',
+		render: ({playerData, voyageData, eventData}) => <VoyageCalculator playerData={playerData} voyageData={voyageData} eventData={eventData} />
+	},
+	'event-planner': {
+		title: 'Event Planner',
+		render: ({playerData, eventData, activeCrew, allCrew}) => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew}/>
+	},
+	'crew': {
+		title: 'Crew',
+		render: ({playerData}) => <ProfileCrew playerData={playerData} isTools={true} />
+	},
+	'crew-mobile': {
+		title: 'Crew (mobile)',
+		render: ({playerData}) => <ProfileCrewMobile playerData={playerData} isMobile={false} />
+	},
+	'crew-retrieval': {
+		title: 'Crew Retrieval',
+		render: ({playerData, allCrew}) => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
+	},
+	'ships': {
+		title: 'Ships',
+		render: ({playerData}) => <ProfileShips playerData={playerData} />
+	},
+	'factions': {
+		title: 'Factions',
+		render: ({playerData}) => <FactionInfo
+							factionInfo={playerData.player.character.factions}
+							shuttleBays={playerData.player.character.shuttle_bays}
+						/>
+	},
+	'items': {
+		title: 'Items',
+		render: ({playerData}) => <ProfileItems playerData={playerData} />
+	},
+	'unneeded': {
+		title: 'Unneeded Items',
+		render: ({playerData}) => <UnneededItems playerData={playerData} />
+	},
+	'other': {
+		title: 'Other',
+		render: ({playerData}) => <ProfileOther playerData={playerData} />
+	},
+	'charts': {
+		title: 'Charts & Stats',
+		render: ({playerData}) => <ProfileCharts playerData={playerData} />
+	}
+};
+
+const PlayerToolsPage = () =>  {
 	const [playerData, setPlayerData] = React.useState(undefined);
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 
@@ -35,6 +86,7 @@ const PlayerToolsPage = () => {
 
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
+
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -172,15 +224,16 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
 			allCrew, allItems, requestShowForm, requestClearData } = props;
 
-	const [activeIndex, setActiveIndex] = useStateWithStorage('tools/activeIndex', 0);
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
 	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid+'/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [profileUploaded, setProfileUploaded] = React.useState(false);
 	const [profileUploading, setProfileUploading] = React.useState(false);
+	const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 
 	const [varsReady, setVarsReady] = React.useState(false);
+	const [activeTool, setActiveTool] = React.useState('voyage');
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
@@ -189,56 +242,12 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		}
 	}, [profileAutoUpdate, strippedPlayerData]);
 
-	const handleTabChange = (e, { activeIndex }) => setActiveIndex(activeIndex);
-	const panes = [
-		{
-			menuItem: 'Voyage Calculator',
-			render: () => <VoyageCalculator playerData={playerData} voyageData={voyageData} eventData={eventData} />
-		},
-		{
-			menuItem: 'Event Planner',
-			render: () => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew} />
-		},
-		{
-			menuItem: 'Crew',
-			render: () => <ProfileCrew playerData={playerData} isTools={true} />
-		},
-		{
-			menuItem: 'Crew (mobile)',
-			render: () => <ProfileCrewMobile playerData={playerData} isMobile={false} />
-		},
-		{
-			menuItem: 'Crew Retrieval',
-			render: () => <CrewRetrieval playerData={playerData} />
-		},
-		{
-			menuItem: 'Ships',
-			render: () => <ProfileShips playerData={playerData} />
-		},
-		{
-			menuItem: 'Factions',
-			render: () => <FactionInfo
-								factionInfo={playerData.player.character.factions}
-								shuttleBays={playerData.player.character.shuttle_bays}
-							/>
-		},
-		{
-			menuItem: 'Items',
-			render: () => <ProfileItems playerData={playerData} />
-		},
-		{
-			menuItem: 'Unneeded Items',
-			render: () => <UnneededItems playerData={playerData} />
-		},
-		{
-			menuItem: 'Other',
-			render: () => <ProfileOther playerData={playerData} />
-		},
-		{
-			menuItem: 'Charts & Stats',
-			render: () => <ProfileCharts playerData={playerData} />
-		}
-	];
+	const tools = playerTools;
+	React.useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('tool') && tools[urlParams.get('tool')])
+			setActiveTool(urlParams.get('tool'));
+	}, [window.location.search]);
 
 	const StaleMessage = () => {
 		const STALETHRESHOLD = 3;	// in hours
@@ -324,14 +333,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			progress
 		  />
 		);
-	  };
+	 };
 
 	return (
 		<Layout title='Player tools'>
 			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
 			<PlayerLevelProgress />
 			<StaleMessage />
-
 			<Menu compact stackable>
 				<Menu.Item>
 					Last imported: {playerData.calc.lastModified.toLocaleString()}
@@ -348,9 +356,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 			<React.Fragment>
 				<ShareMessage />
-
-				<Tab menu={{ secondary: true, pointing: true }} panes={panes} style={{ marginTop: '1em' }}
-					activeIndex={activeIndex} onTabChange={handleTabChange} />
+				{tools[activeTool].render(props)}
 			</React.Fragment>
 		</Layout>
 	);
@@ -377,6 +383,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			if (!profileAutoUpdate) window.open(`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`, '_blank');
 			setProfileUploading(false);
 			setProfileUploaded(true);
+			setProfileShared(true);
 		});
 	}
 

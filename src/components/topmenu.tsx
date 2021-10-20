@@ -5,6 +5,8 @@ import { navigate } from 'gatsby';
 import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
+import { useStateWithStorage} from '../utils/storage';
+import { playerTools } from '../pages/playertools';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
@@ -51,10 +53,43 @@ const NavBarDesktop = ({ children, leftItems, narrowLayout, rightItems }) => (
 	</React.Fragment>
 );
 
+// const playerToolsMenu = {
+// 	title: 'Player tools',
+// 	items: playerTools.map([key, value]) => ({onClick: text: value})
+// }
+
 // TODO: we do all this weird functional dance because we want Gatsby to SSR the "other pages" via GraphQL
 // If we switch to a hard-coded list of "other pages", this can be simplified significantly
 const useMainMenuItems = (verticalLayout: boolean) => {
 	const otherPages = useOtherPages();
+	const createSubMenu = (title, children) => {
+		if (verticalLayout) {
+			return (
+				<Menu.Item>
+					<Menu.Header key={index++}>{title}</Menu.Header>
+					<Menu.Menu>
+						{children.map(item => (
+							<Menu.Item key={index++} onClick={() => navigate(item.link)}>
+								{item.title}
+							</Menu.Item>
+						))}
+					</Menu.Menu>
+				</Menu.Item>
+			);
+		} else {
+			return (
+				<Dropdown key={index++} item simple text={title}>
+					<Dropdown.Menu>
+						{children.map(item => (
+							<Dropdown.Item onClick={() => navigate(item.link)}>
+								{item.title}
+							</Dropdown.Item>
+						))}
+					</Dropdown.Menu>
+				</Dropdown>
+			);
+		}
+	};
 
 	let index = 0;
 	let items = [
@@ -66,40 +101,19 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		</Menu.Item>
 	];
 
-	if (verticalLayout) {
-		items.push(
-			<Menu.Item>
-				<Menu.Header key={index++}>Big book (legacy)</Menu.Header>
-				<Menu.Menu>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook2')}>
-						Image list (fast)
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bigbook')}>
-						Complete (slow)
-					</Menu.Item>
-					<Menu.Item key={index++} onClick={() => navigate('/bb')}>
-						Text only
-					</Menu.Item>
-				</Menu.Menu>
-			</Menu.Item>
-		);
-	} else {
-		items.push(
-			<Dropdown key={index++} item simple text='Big book (legacy)'>
-				<Dropdown.Menu>
-					<Dropdown.Item onClick={() => navigate('/bigbook2')}>Image list (fast)</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/bigbook')}>Complete (slow)</Dropdown.Item>
-					<Dropdown.Item onClick={() => navigate('/bb')}>Text only</Dropdown.Item>
-				</Dropdown.Menu>
-			</Dropdown>
-		);
-	}
-
-	items.push(
-		<Menu.Item key={index++} onClick={() => navigate('/playertools')}>
-			Player tools
-		</Menu.Item>
+	items.push(createSubMenu('Big book (legacy)', [
+			{title: 'Image list (fast)', link: '/bigbook2'},
+			{title: 'Complete (slow)', link: '/bigbook'},
+			{title: 'Text only', link: '/bb'}
+		])
 	);
+
+	items.push(createSubMenu('Player tools', Object.entries(playerTools).map(([key, value]) => ({
+			title: value.title,
+			link: `/playertools?tool=${key}`
+		})))
+  );
+
 	items.push(
 		<Menu.Item key={index++} onClick={() => navigate('/behold')}>
 			Behold
@@ -167,8 +181,8 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	}
 };
 
-const useRightItems = ({ onMessageClicked }) => (
-	<>
+const useRightItems = ({ onMessageClicked }) => {
+	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 			<Icon name='adjust' />
 		</Menu.Item>
@@ -189,8 +203,8 @@ const useRightItems = ({ onMessageClicked }) => (
 		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 			<Icon name='github' />
 		</Menu.Item>
-	</>
-);
+	</>);
+};
 
 type NavBarProps = {
 	children: React.ReactNode;

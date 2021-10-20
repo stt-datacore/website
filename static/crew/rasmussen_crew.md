@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Max Headroom is an early-mid game performer with a usable SEC base and a SEC/SCI skill set for voyages that has a longer shelf life than most. Q3 2019 brought him his first trait mega, but with a primary base barely inside the top fifteen bonus crew, that’s not the sort of payoff you’d expect for a pricier than average build cost.
+The Big Book is old enough to have spoken about Max Headroom's voyage work in the past, but sadly he's not much of a voyager any longer. In fact, he's not much of anything outside of the collection shelf which is completely understandable for a super rare crew included at the game's launch. The ruins of his daily use are still visible such as good voyage AM traits, but his usage there will come down to fusion level more than anything else.

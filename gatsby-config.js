@@ -62,6 +62,13 @@ module.exports = {
 			}
 		},
 		{
+			resolve: 'gatsby-source-filesystem',
+			options: {
+				name: 'announcements',
+				path: `${__dirname}/static/announcements/`
+			}
+		},
+		{
 			resolve: `gatsby-plugin-manifest`,
 			options: {
 				name: `Star Trek Timelines DataCore`,

@@ -12,6 +12,13 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 			name: `slug`,
 			value: slug
 		});
+		const parent = getNode(node.parent);
+		let source = parent.sourceInstanceName;
+		createNodeField({
+			node,
+			name: `source`,
+			value: source,
+		});
 	} else if (node.internal.type === `EpisodesJson`) {
 		createNodeField({
 			node,

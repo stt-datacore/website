@@ -39,8 +39,8 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 	const sortFactor = direction === 'descending' ? -1 : 1;
 	result = result.sort((a, b) => {
 		let sortValue = sortFactor*compare(
-			getValueFromPath(a, field),
-			getValueFromPath(b, field)
+			field === 'bigbook_tier' ? getTier(a, direction) : getValueFromPath(a, field),
+			field === 'bigbook_tier' ? getTier(b, direction) : getValueFromPath(b, field)
 		);
 		let tiebreaker = 0;
 		while (sortValue == 0 && tiebreaker < config.subsort.length) {
@@ -62,6 +62,12 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 	};
 }
 
+// Hack to always move a crew without a tier rating to the back of a tier sort
+function getTier(obj, direction) {
+	if (obj.bigbook_tier > 0) return obj.bigbook_tier;
+	return direction === 'ascending' ? 100 : -1;
+}
+
 function getValueFromPath(obj, path) {
 	return path.split('.').reduce((a, b) => (a || {b: 0})[b], obj);
 }
@@ -81,7 +87,7 @@ function compare(a, b) {
 	if(!isNaN(a) && !isNaN(b)) {
 		return a - b;
 	}
-	if (isNaN(a) && !isNaN(b)) return 1;
-	if (!isNaN(a) && isNaN(b)) return -1;
+	if (isNaN(a) && !isNaN(b)) return -1;
+	if (!isNaN(a) && isNaN(b)) return 1;
 	return (a > b ? 1 : b > a ? -1 : 0);
 }

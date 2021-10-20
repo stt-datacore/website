@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Let's not bury the lede - arena evasion at one second is the only notable thing about a crew who is, aptly, dry as Vulcan. But needing a full contingent of stars just to protect a small credit investment doesn't make Soval worth the behold capital. Vulcan and a handful of untapped event traits aren't supported by bases strong enough to justify selecting him for that area either.
+Soval's arena evasion at one second is fairly unique, but needing a full contingent of stars just to protect a small credit investment doesn't by itself make Soval worth the behold capital.
+
+Vulcan and a handful of untapped event traits aren't supported by bases strong enough to justify selecting him for that area either. As we work collection value into the mix, it becomes possible to see a path to value on some rosters, but most of his attributes can be found tied to stronger crew who will justify their roster spot much more frequently than Soval.

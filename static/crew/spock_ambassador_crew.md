@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-We'd all love to snag his double collections and massive event count, but lowish base and voyage numbers are not the payoff you'd expect for a torturous build which includes 64 2* IDICs and 150+ faction items overall. Even if/when he reaches a third event feature, small bonus legendary crew may come close to his effectiveness.
+We'd all love to snag his collections and massive event count, but bad base and voyage numbers are not the payoff you'd expect for a torturous build which includes sixty-four 2* IDICs and 150+ faction items overall. Even if/when he reaches a third event feature, small bonus legendary crew may come close to or surpass his effectiveness.
+
+The collection era of Timelines makes Spock a somewhat necessary crew to acquire, but it doesn't have to be at the expense of options who you might be able to use day to day.
