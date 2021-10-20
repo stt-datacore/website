@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-The age old and fittingly Honorable question; is Kahless worth his price tag? The investment was worth it for this author and for purposes of gauntlet, many players tend to agree. In the gauntlet, he owns the #1 CMD proficiency and still has a lock on a #1 gauntlet pair (four ranked pairs), though crit numbers may fudge the math from time to time. Thankfully, Kahless can bring plenty of crit strength to bear as well with six different sets at 45% or better. Power creep and lizards are the only things that travel faster than warp 10, so it's remarkable that this four year old card remains as useful as he is.
+The age old and fittingly Honorable question; is Kahless worth his price tag? For the first time since the Big Book began, the answer has gone from 'conditional yes' to 'conditional maybe'.
 
-The next question is should I cite? The answer will depend on who you ask, but as it stands he's a top 100 voyager with a spot in a massive collection that currently would require you to finish far worse legendary crew than big K. In either case, he remains a wonderfully valuable choice; another option for your honor.
+His primary point of interest, the gauntlet, now provides his greatest competition for free. Gauntlet exclusive Balok matches Kahless' average CMD roll exactly while sporting better overall power and flat out dumb amounts of big crit gauntlets. While their differing skill order buffets Kahless against Balok's dominance slightly, it inarguably dings him. Still, a half dozen 45%+ gauntlets for Kahless himself gives him plenty of leeway and he's still a clear cut above all other CMD primary gauntleteers. 
+
+The next question is 'should I cite?'. The answer will depend on who you ask, but with a few collections to his name and voyage power that's 'good for everyone except CMD/DIP/SEC', he can at least make an argument. In either case, he remains a wonderfully valuable choice; another option for your honor.
