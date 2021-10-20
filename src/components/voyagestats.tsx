@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Table, Grid, Header, Accordion, Popup, Segment, Image, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
@@ -11,60 +11,73 @@ import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from './nivo_themes';
 
 type VoyageStatsProps = {
-	voyageData: object,
-	ships: [],
-	showPanels: []
+	voyageData: any;
+	numSims?: number;
+	ships: [];
+	showPanels: [];
+	estimate?: any;
 };
 
 type VoyageStatsState = {
-	estimate: [],
-	baseline: [],
-	activePanels: []
+	estimate: any;
+	activePanels: [];
 };
 
-export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsState> {
+export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	constructor(props) {
 		super(props);
+		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
 
 		this.state = {
-			estimate: undefined,
-			baseline: undefined,
-			activePanels: this.props.showPanels ? this.props.showPanels : []
-		};
-	}
-
-	async componentDidMount() {
-		const {voyageData} = this.props;
-		const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
-		let ship = this.props.ships.find(s => s.id == this.props.voyageData.ship_id);
-
-		this.config = {
-			others: [],
-			numSims: 5000,
-			startAm: voyageData.max_hp,
-			currentAm: voyageData.hp,
-			elapsedSeconds: voyageData.voyage_duration,
+			estimate: estimate,
+			activePanels: showPanels ? showPanels : []
 		};
 
-		for (let agg of Object.values(voyageData.skill_aggregates)) {
-			let skillOdds = 0.1;
+		if (!voyageData)
+			return;
 
-			if (agg.skill == voyageData.skills.primary_skill)
-				this.config.ps = agg;
-			else if (agg.skill == voyageData.skills.secondary_skill)
-				this.config.ss = agg;
-			else
-				this.config.others.push(agg);
-
-			this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
+		if (ships.length == 1) {
+			this.ship = ships[0].ship;
+		} else {
+			let ship = ships.find(s => s.id == voyageData.ship_id);
+			fetch('/structured/ship_schematics.json').then(ships => ships.json().then(allShips => {
+				this.ship = allShips.find(s => s.ship.symbol == ship.symbol).ship
+			}));
 		}
 
-		const worker = new Worker();
-		worker.addEventListener('message', message => this.setState({ estimate: message.data }));
-		worker.postMessage({ worker: 'chewable', config: this.config });
+		if (!estimate) {
+			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
 
-		let allShips = await (await fetch('/structured/ship_schematics.json')).json();
-		this.setState({ship: allShips.find(s => s.ship.symbol == ship.symbol).ship});
+			this.config = {
+				others: [],
+				numSims: numSims ?? 5000,
+				startAm: voyageData.max_hp,
+				currentAm: voyageData.hp ?? voyageData.max_hp,
+				elapsedSeconds: voyageData.voyage_duration ?? 0,
+			};
+
+			for (let agg of Object.values(voyageData.skill_aggregates)) {
+				let skillOdds = 0.1;
+
+				if (agg.skill == voyageData.skills.primary_skill)
+					this.config.ps = agg;
+				else if (agg.skill == voyageData.skills.secondary_skill)
+					this.config.ss = agg;
+				else
+					this.config.others.push(agg);
+
+				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
+			}
+
+			this.worker = new Worker();
+			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
+			this.worker.postMessage({ worker: 'chewable', config: this.config });
+		}
+	}
+
+	componentWillUnmount() {
+		if (this.worker)
+			this.worker.terminate();
 	}
 
 	_formatTime(time: number) {
@@ -75,7 +88,8 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 	}
 
 	_renderChart(needsRevive: boolean) {
-		const { estimate } = this.state;
+		const estimate = this.props.estimate ?? this.state.estimate;
+
 		const names = needsRevive ? ['First refill', 'Second refill']
 															: [ 'No refills', 'One refill', 'Two refills'];
 
@@ -84,7 +98,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 		const data = estimate.refills.map((refill, index) => {
 			const total = refill.bins
 													.map(value => value.count)
-													.reduce((acc, value) => acc + value);
+													.reduce((acc, value) => acc + value, 0);
 			var aggregate = total;
 			const cumValues = value => {
 				aggregate -= value.count;
@@ -149,7 +163,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 	_renderCrew() {
 		const {voyageData} = this.props;
-		const { ship } = this.state;
+		const  ship  = this.ship;
 
 		return (
 			<div>
@@ -168,7 +182,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 									<li key={idx}>
 										{name}
 										{'  :  '}
-										<CrewPopup crew={crew} />
+										<CrewPopup crew={crew} useBase={false} />
 										</li>
 									);
 								})}
@@ -178,19 +192,24 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 							<ul>
 								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
 									const agg = voyageData.skill_aggregates[entry];
-									const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
 
-									return (
-										<li key={idx}>
-											{CONFIG.SKILLS[entry]}
-											{' : '}
-											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-												<Popup.Content>
-													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-												</Popup.Content>
-											</Popup>
-										</li>
-									);
+									if (typeof(agg) === 'number') {
+										return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
+									} else {
+										const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
+
+										return (
+											<li key={idx}>
+												{CONFIG.SKILLS[entry]}
+												{' : '}
+												<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
+													<Popup.Content>
+														{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
+													</Popup.Content>
+												</Popup>
+											</li>
+										);
+									}
 								})}
 							</ul>
 						</Grid.Column>
@@ -200,14 +219,15 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
-		const { estimate } = this.state;
+		const estimate  = this.props.estimate ?? this.state.estimate;
+
 		return needsRevive || !estimate
 			?	'Estimate'
 			: 'Estimate: ' + this._formatTime(estimate['refills'][0].result);
 	}
 
 	_renderEstimate(needsRevive: boolean = false) {
-		let { estimate } = this.state;
+		const estimate  = this.props.estimate ?? this.state.estimate;
 
 		if (!estimate)
 			return (<div>Calculating estimate. Please wait...</div>);
@@ -225,7 +245,6 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			);
 		};
 
-
 		if (estimate.deterministic) {
 			let extendTime = estimate['refills'][1].result - estimate['refills'][0].result;
 
@@ -238,6 +257,7 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			);
 		} else {
 			let refill = 0;
+
 			return (
 				<div>
 					<Table><tbody>
@@ -358,11 +378,23 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 
 	render() {
 		const { voyageData } = this.props;
+
+		if (!voyageData)
+			return (<Dimmer active>
+        <Loader>Calculating...</Loader>
+      </Dimmer>);
+
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
-		const rewards = voyageData.pending_rewards
-			? voyageData.pending_rewards.loot
-			: voyageData.granted_rewards.loot;
+		const rewards = {
+			'pending': () => [],
+			'started': () => voyageData.pending_rewards.loot,
+			'failed': () => voyageData.pending_rewards.loot,
+			'recalled': () => voyageData.pending_rewards.loot,
+			'completed': () => voyageData.granted_rewards.loot
+		}[voyState]();
+
+		// Adds/Removes panels from the active list
 		const flipItem = (items, item) => items.includes(item)
 			? items.filter(i => i != item)
 			: items.concat(item);
@@ -383,23 +415,34 @@ export class VoyageStats extends PureComponent<VoyageStatsProps, VoyageStatsStat
 			);
 		};
 
-		return (
-			<div>
-				<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
-				<Accordion fluid exclusive={false}>
-				{
-					(voyState === 'started' || voyState === 'pending' || voyState === 'failed') &&
-					accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
-				}
-				{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
-				{
-					voyState !== 'pending' &&
-					accordionPanel('Rewards', this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
-				}
-				</Accordion>
-			</div>
-		);
+		if (voyState !== 'pending') {
+			return (
+				<div>
+					<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for ' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+					<Accordion fluid exclusive={false}>
+					{
+						voyState !== 'recalled' && voyState !== 'completed' &&
+						accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
+					}
+					{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
+					{
+						accordionPanel('Rewards', this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
+					}
+					</Accordion>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					<Accordion fluid exclusive={false}>
+						{ accordionPanel('Voyage estimate', this._renderEstimate(false), 'estimate', this._renderEstimateTitle()) }
+						{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
+					</Accordion>
+				</div>
+			);
+		}
 	}
+
 }
 
 export default VoyageStats;
