@@ -1,5 +1,5 @@
 ---
-name: Kal'Hyah Sisko
+name: Kal’hyah Sisko
 rarity: 5
 series: ds9
 memory_alpha:

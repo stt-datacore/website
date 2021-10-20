@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-T’Pol’s (lack of) power won’t offer much to your roster day to day, leaving her handful of events and collection traits as her only relevant attributes. Generally uncompetitive bases might merit a look for variant events, but often get buried in the shuffle of larger mega bonus pools.
+T’Pol’s power won’t offer much to your roster day to day, leaving her handful of events and a very easy to complete token collection spot. Considering the ease of completing the Vulcan collection and her overall stats, she offers very little past the early/mid game.
