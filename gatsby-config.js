@@ -8,12 +8,17 @@ module.exports = {
 		siteUrl: 'https://datacore.app'
 	},
 	plugins: [
-		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
 		`gatsby-plugin-remove-fingerprints`,
 		`gatsby-plugin-sitemap`,
 		`gatsby-plugin-typescript`,
+		{
+			resolve: 'gatsby-transformer-remark',
+			options: {
+				excerpt_separator: `<!-- end -->`,
+			}
+		},
 		{
 			resolve: 'gatsby-plugin-purge-cloudflare-cache',
 			options: {
