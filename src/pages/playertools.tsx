@@ -353,9 +353,9 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 				</Dropdown>
 				<Button.Group>
 					<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
-			    <Dropdown className='button icon' floating trigger={<></>}>
+			    <Dropdown className='button icon' trigger={<></>}>
 						<Dropdown.Menu>
-							<Dropdown.Item className='button' onClick={() => exportCrewToClipboard()} content='Export to clipboard' />
+							<Dropdown.Item button onClick={() => exportCrewToClipboard()} content='Export to clipboard' />
 						</Dropdown.Menu>
 					</Dropdown>
 		  </Button.Group>
