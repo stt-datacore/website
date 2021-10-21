@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Header, Table, Rating, Icon, Dropdown, Popup, Message } from 'semantic-ui-react';
-import { navigate, graphql } from 'gatsby';
+import { Header, Table, Rating, Icon, Dropdown, Popup } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
 import { formatTierLabel } from '../utils/crewutils';
@@ -13,9 +14,7 @@ import CABExplanation from '../components/cabexplanation';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
-type IndexPageProps = {
-	data: {};
-};
+type IndexPageProps = {};
 
 type IndexPageState = {
 	botcrew: any[];
@@ -147,28 +146,6 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		);
 	}
 
-	renderAnnouncements() {
-		const expireInDays = 3;
-		const dtNow = new Date();
-		let announcements = this.props.data.allMarkdownRemark.edges;
-		announcements = announcements.filter(({ node }) => {
-			const dtThreshold = new Date(node.frontmatter.date);
-			dtThreshold.setDate(dtThreshold.getDate()+expireInDays);
-			return dtThreshold > dtNow;
-		});
-		if (announcements.length == 0) return (<></>);
-		const announcement = announcements[0].node;
-		return (
-			<Message icon className={announcement.frontmatter.class ?? ''}>
-				<Icon name={announcement.frontmatter.icon ?? 'info'} />
-				<Message.Content>
-					<Message.Header>{announcement.frontmatter.title ?? 'Message from the DataCore Team'}</Message.Header>
-					<div dangerouslySetInnerHTML={{ __html: announcement.html }} />
-				</Message.Content>
-			</Message>
-		);
-	}
-
 	render() {
 		const { botcrew, initOptions } = this.state;
 		if (!botcrew || botcrew.length === 0) {
@@ -181,7 +158,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 
 		return (
 			<Layout>
-				{this.renderAnnouncements()}
+				<Announcement />
 
 				<Header as='h2'>Crew stats</Header>
 
@@ -204,25 +181,3 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 }
 
 export default IndexPage;
-
-export const query = graphql`
-	query AnnouncementQuery {
-	  allMarkdownRemark(
-		limit: 1
-		sort: {fields: frontmatter___date, order: DESC}
-		filter: {fields: {source: {eq: "announcements"}}}
-	  ) {
-		edges {
-		  node {
-			html
-			frontmatter {
-			  title
-			  date
-			  class
-			  icon
-			}
-		  }
-		}
-	  }
-	}
-`;
