@@ -43,10 +43,10 @@ export interface ExportField {
 	value: (row: any) => any;
 }
 
-export function simplejson2csv(data: any[], fields: ExportField[]) {
+export function simplejson2csv(data: any[], fields: ExportField[], delimeter = ',') {
 	const escape = val => '"' + String(val).replace(/"/g, '""') + '"';
 
-	let csv = fields.map(f => escape(f.label)).join(',');
+	let csv = fields.map(f => escape(f.label)).join(delimeter);
 	for (let row of data) {
 		let rowData = [];
 		for (let field of fields) {
@@ -58,7 +58,7 @@ export function simplejson2csv(data: any[], fields: ExportField[]) {
 			}
 		}
 
-		csv += '\r\n' + rowData.join(',');
+		csv += '\r\n' + rowData.join(delimeter);
 	}
 
 	return csv;

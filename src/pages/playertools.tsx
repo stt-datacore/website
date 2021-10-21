@@ -351,7 +351,14 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 						<Dropdown.Item onClick={() => requestClearData()}>Clear player data</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
-				<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
+				<Button.Group>
+					<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
+			    <Dropdown className='button icon' floating trigger={<></>}>
+						<Dropdown.Menu>
+							<Dropdown.Item className='button' onClick={() => exportCrewToClipboard()} content='Export to clipboard' />
+						</Dropdown.Menu>
+					</Dropdown>
+		  </Button.Group>
 			</Menu>
 
 			<React.Fragment>
@@ -390,6 +397,11 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	function exportCrewTool() {
 		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
+	}
+
+	function exportCrewToClipboard() {
+		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t');
+		navigator.clipboard.writeText(text);
 	}
 }
 
