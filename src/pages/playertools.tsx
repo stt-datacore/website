@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress } from 'semantic-ui-react';
+import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -351,7 +351,16 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 						<Dropdown.Item onClick={() => requestClearData()}>Clear player data</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
-				<Button onClick={() => exportCrewTool()} content='Export crew spreadsheet...' />
+			  <Dropdown item text='Export'>
+				<Dropdown.Menu>
+					<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
+						<Dropdown.Item button onClick={() => exportCrewTool()} content='Download CSV...' />
+					} />
+					<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
+						<Dropdown.Item button onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
+					} />
+				</Dropdown.Menu>
+			</Dropdown>
 			</Menu>
 
 			<React.Fragment>
@@ -390,6 +399,11 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	function exportCrewTool() {
 		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
+	}
+
+	function exportCrewToClipboard() {
+		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t');
+		navigator.clipboard.writeText(text);
 	}
 }
 

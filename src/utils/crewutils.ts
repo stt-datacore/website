@@ -227,8 +227,8 @@ export function exportCrewFields(): ExportField[] {
 	];
 }
 
-export function exportCrew(crew): string {
-	return simplejson2csv(crew, exportCrewFields());
+export function exportCrew(crew, delimeter = '\t'): string {
+	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
 export function applyCrewBuffs(crew: any, buffConfig: any) {
