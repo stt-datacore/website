@@ -20,7 +20,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		this.state = {
 			fleet_id: undefined,
-			fleet_data: undefined
+			fleet_data: undefined,
+			errorMessage: "Due to changes by the game developers, DataCore can no longer load fleet info."
 		};
 	}
 
@@ -38,7 +39,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			});
 
 		let urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('fleetid')) {
+		if (urlParams.has('fleetid') && false) {
 			let fleet_id = urlParams.get('fleetid');
 			this.setState({ fleet_id });
 
