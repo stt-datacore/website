@@ -49,11 +49,6 @@ export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
 
 	for (let skillName in CONFIG.SKILLS) {
-		if (!use_base) {
-			if (!crew.skills) {
-				console.log(crew[skillName]);
-			}
-		}
 		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
 
 		if (skill && skill.core && (skill.core > 0)) {
