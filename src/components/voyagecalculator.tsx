@@ -434,7 +434,7 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				ships={allShips}
 				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
 			/>
-			<Button onClick={() => useCalc()}>Return to calculator</Button>
+			<Button onClick={() => useCalc()}>Return to crew calculator</Button>
 			{(voyageConfig.state == 'recalled' || voyageConfig.state == 'failed') && navigator.clipboard &&
 				<React.Fragment>
 					<Button loading={doingCIVASExport} onClick={() => exportData().then(
