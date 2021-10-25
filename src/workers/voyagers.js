@@ -232,8 +232,8 @@ class Voyagers {
 	doVector(vectorId, voyage, primedRoster, boosts, primeFactor) {
 		// Number of attempts and desired lineups should scale to roster size
 		const minAttempts = 10;
-		const maxAttempts = Math.max(Math.floor(primedRoster.length/5), minAttempts); // 20% of roster length
-		const minUniques = Math.max(Math.floor(maxAttempts/5), 5); // 20% of maxAttempts
+		const maxAttempts = Math.max(Math.floor(primedRoster.length/4), minAttempts); // 25% of roster length
+		const minUniques = Math.max(Math.floor(maxAttempts/4), 5); // 25% of maxAttempts
 
 		let self = this;
 		let debug = this.config.debugCallback;
