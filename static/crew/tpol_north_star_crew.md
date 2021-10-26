@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Let me give you a little bit of insight into how we write up crew in the Big Book of Behold Advice. Generally speaking, we get the raw stats, we get an event count, we get an idea of how rare the skill set is, how Gauntlet viable they are, go through the collections, see if they have any Arena utility, and then go from there. With this T'Pol, I've got to be honest with you, I didn't think that hard about it. My thought process was thus:
+One of the few ENT crew to get much love from WRG, T'Pol does well for herself in the realm of events. A steady drip feed of variant bonuses interweave with several eligible traits to provide North Star plenty of opportunities to show up to work with a big shuttle score.
 
-"She's worse than Twilight T'Pol, but better than Alternate Future T'Pol, so she goes here." It's rare that a crew slots so neatly into a tier based on its counterparts, but North Star T'Pol warrants it based on just how commonplace her offerings are nowadays. Same skill stack, different order (please read in the key of same shit, different day) to Pupcard, acting as an inferior, less free Tenavik, and basically being a straight upgrade to Alternate Future T'Pol with a vanity attached, make it hard to be excited about her. She's just good. And yes, that is meant to be damning with faint praise. The expansion to the Vulcan collection makes her slightly more appetising than when she first debuted, but how citeable she is for that purpose will depend heavily on your roster.
+On the back nine of her voyage lifespan, the power isn't there to help the very common CMD/DIP/SCI skill set shine, but she's not dead in the water yet and a few off-beat traits like Costumed or Telepath will extend her opportunities there.
+
+NS T'Pol is also one of several crew to benefit from the shift toward collections and her value there has helped offset drooping stat ranks and gives her yet another angle of contribution. With a respectable shipboard evasion ability as well, T'Pol sports underrated utility and something to appeal to just about everyone.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Slim daily value and long term benefits, but he can unlock a handful of nodes and his one outstanding offering is a strong +9 arena EV at 4 seconds.
+As far as launch cards go, it's a 'mild shock' :O that Wes still has some fringe benefits. His arena evasion activates quickly enough and lasts long enough for most situations while his SCI/Prodigy combination can unlock a handful of nodes on the galaxy screen. Good for just one or two events yearly, his only real shot to improve in value would be his non-HFS traits hitting on a collection.

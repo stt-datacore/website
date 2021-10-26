@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Despite variant-best CMD and SCI bases, snagging only one event per year won't help Officer Finger Guns waporize too many of your opponents. His calling card had previously been an uncommon CMD/SCI voyage stack, but with several such crew being introduced over the last year, you may find it easier than before to find an upgrade to him. His power is waning and Cheekoof is perilously close to event-only territory.
+The family of Chekovs often get shafted on traits (as in, you should throw them down the turbolift shaft), so for most of his variants to pick up an unexpected Resourceful collection is a huge boon. Wretched in every conceivable area save for one or two variant events per year, the only path to improvement that seems within the realm of possibility for Finger Gun Cheekoof would be the rather large Tactician collection.

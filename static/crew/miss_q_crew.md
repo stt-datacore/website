@@ -12,4 +12,8 @@ mega: true
 published: true
 ---
 
-A deceptively thin trait set has mostly been tapped for events, but worthy voyage power and a somewhat exclusive stat-boosting collection spot gives her something to offer rosters of all ages. Perhaps the best Suzie Plakson representation in game, surely worth a few points in her favor.
+"Fan favorite Suzie Plakson" is all some people need to hear, but let's go over her gameplay considerations anyways.
+
+Suzie Q is usable on voyages for a while longer, though she likely won't unseat your influx of fused event super rares until she herself is immortalized. Event work is somewhat tricky to forecast as well - her bases are fine to thaw with a bonus, but her traits have mostly provided events in spurts thus far and she could easily be the victim of bonus droughts at any time.
+
+The safety blanket fallback here is her collection value. All bets have been off since Resourceful hit, so even her larger traits like Crafty are in play and make her a must-have to fill in the collection stat boosts as your roster ages and you graduate to legendary crew to staff all of your away teams.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-She’s not the classic T’Pau we need, but because of ongoing rights issues, she’s the T’Pau we deserve right now. The Raider of the Lost Kir’Shara makes up for any disappointment with a strong CMD base and CMD/SCI voyage total, and has a couple of event-catching traits up her sleeves that could help her find occasional weekend work. With position ships like the Shenzhou now available in Dabo, abilities like T’Pau’s +10 damage at 8 seconds become more usable and can make her a strong Arena/Skirmish piece in certain combos.
+She’s not the classic T’Pau we need, but because of ongoing rights issues, she’s the T’Pau we deserve right now. The Raider of the Lost Kir’Shara does alright as a starter-type crew thanks to ability on voyages, shuttles, and in the arena. With position ships like the Shenzhou available in Dabo, T’Pau’s +10 attack at eight seconds become more usable and can make her a worthwhile Arena/Skirmish asset for newer players.
+
+While base and voyage numbers fall off faster at the super rare level than with golds, T'Pau has enough juice there to find a few months' work for Young rosters that can fuse her early. And if not, Vulcan and a couple other collectable traits should soften the blow down the line.

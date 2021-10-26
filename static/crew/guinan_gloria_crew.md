@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-Being accessible is never good for a crew's value and with Gloria (from Cleveland) not being a power card to begin with, her stint as a campaign crew and the lost bit of exclusivity hurts. One struggles to describe this crew's strengths, but she's (barely) a plus voyager considering her rare skill set including a splash of MED and has the potential to hit 45% in a few different gauntlets. Granted, she'll face many more mirror matchups there now, but can at least turn a steamrolling from big sister Bartender Guinan into a glancing blow with her secondary CMD skill.
+Adjust your expectations for a 3-skill MED/CMD crew; Gloria (from Cleveland) is essentially a niche gauntleteer with strong trait potential for future collections and events. She benefits from the same tailored gauntlet sets that her older sister Bartender Guinan does with proficiency just strong enough to be useful when she catches some crit value.
 
-Gloria's vanity collection and intriguing arena ability gives her something to offer to most kinds of players, but the lack of power, event relevance, and now exclusivity means you may need to try harder than with most crew to find spots for her to contribute to your roster.
+Gloria's collections and intriguing arena ability gives her something to offer to most kinds of players, but the lack of power and event relevance means you may need to try harder than with some crew to find spots for her to contribute to your roster.

@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Providing the all important +1 Cockatoo to your roster, the good Lady Beverly has amazing art, but a mediocre event tally without Crusher’s usual Physician collection to soften the blow. Hologram may net you some events, though the trait’s best days are behind it. MED scarcity means you might hold on to her for longer than similarly stock crew, but she’s just not special in any area.
+The Lady is theoretically an event/collection combo platter, though the back half of that hasn't appeared (yet). Her non-human traits all seem likely collection candidates and in the meantime they boost an otherwise underperforming event history for Crusher who saw her variant event tally double during just the course of 2021. She's more speculative than many low-level super rares, but one can easily see a path to improvement for her.

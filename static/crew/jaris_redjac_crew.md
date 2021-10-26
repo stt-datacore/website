@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Let's talk about this particular wolf in the fold. Rather reminiscent of Colonel Q, but what a difference 400% instant damage makes to your long term prospects, eh? A cookie cutter skill set, +1 Diplomat, and base/voyage ranks that just about skirt in the good-to-useable range - very much in the mould of almost everyone that's been released this year, which makes it harder and harder to pick between them, but if your set-up lacks a +Acc and you don't want to go with the meta of Ardra/Scott and co., Jaris is an easily justified quick shot that will find a home with you. Just don't expect him to put in any event work - his best shot is Villain, and unless you start hearing maniacal laughs in the distance, there are better crew to chase.
+Jaris' claim to fame, aside from being Piglet's boss, is the arena. The accuracy version of Killy or Kes, Jaris metes out punishment to your enemies at six seconds and can replace other staples like Ardra if you wish to freeze them instead.
+
+It's quickly downhill outside of ships, however. A painfully thin trait set has produced some collection value, but that obviously has a limit as does his opportunity for weekend bonuses. He's frankly forgettable without that arena hammer, but if you need to wield one, he's a worthwhile investment.

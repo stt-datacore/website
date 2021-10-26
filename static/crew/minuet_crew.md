@@ -12,4 +12,8 @@ mega: true
 published: true
 ---
 
-Nearly indistinguishable from Changeling Founder, and thus ranked alongside her. If you covered up the name plates, it would be hard to tell the difference. Even in the arena, she's similarly usable as a quick defensive option. If you've heard good things about her anywhere but the gauntlet or ships before, it's only because she was performing with a star advantage over other crew thanks to her Mega event.
+Very similar to Changeling Founder (gauntlet, arena, skills), Minuet has a bit more oomph in her engine. A strong trait lineup has resulted in better collection value than her comp and grants her many more gauntlet crit sets, including a handful of 45%ers.
+
+Without a ton of experience in a world of full Balok walls yet, it's hard to give an exact determination of her efficacy in a formerly competitive CMD/DIP matchup. As a 2-skiller, she obviously operates best with large crit values, but can often be frustrating to attack into on defense. Regardless, she's a 'sometimes' option there and strong, quick defensive option in the arena as well. 
+
+It's possible to envision a world where she becomes a 5+ collection horse down the line, so a few speculative behold stars wouldn't go amiss if the options across from her aren't particularly appealing or are hamstrung by poor traits.

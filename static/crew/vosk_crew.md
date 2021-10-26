@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Nazis. I hate these guys. What I don’t hate, however, is a CMD/ENG voyager with stats as purdy as this fellow. A top ten CMD base (which may not matter with traits like Na'kuhl), top ten voyage numbers, and a relatively unique skill set elevate Vosk beyond his one-off status. Perhaps not particularly eventable, but for daily use, you’re going to be hard pressed to find someone who offers quite what he does on voyages within even spitting distance of this potency.
+Vosk (esq) spawned as a strong voyage/base daily use type of super rare, but after a couple years of tap dancing on the big stage, he can't rely on his looks to get by anymore. If you have all four stars, he's still a usable voyager on a young roster for a while longer ('Just retrieve Braxton!'), but there isn't much meat on the bone otherwise.
+
+A handful of traits whose pools are mostly huge or tiny likely disqualify him from ever becoming a collection must-have and the same holds true for events. Until, say, the Villain mega/collection, Vosk can remain untouched on the behold screen or in your cryostasis.

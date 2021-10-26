@@ -12,4 +12,22 @@ mega: false
 published: true
 ---
 
-Data's variants in Timelines are a fascinating study. They're both quite similar and yet Rock, Paper, Scissors at the same time. Having looked at what each offers, Pinafore stands out as one of the best. A #1 variant ENG, usable CMD, and ENG/CMD voyage work that only just slid out of the top ten at the very least have him near the top of the pack, even if he's missing the trait benefits that a handful of others have. Data's perennial event work should rebound from a slow 2019 to buoy otherwise unimpressive stat ranks. Close your eyes and throw at a dartboard of Datas and you'll never come away disappointed.
+A skittish star for collection holes
+To call cites free is absurd
+His wonderful trait list could be easily dismissed
+For those not quite a nerd
+
+ENG seating scant, voyage metrics swirl
+Around the toilet and they'll make you hurl
+His event count heaves, then his base will grow
+And his agent ever-ready for a spin-off show
+
+His traits support, should you e'er require,
+Collections both huge and unsung
+He ne'er should be around, lest your voyages break down
+Then your revival dil is flung
+
+His bases are ample and on the prowl
+To fill in some shuttles with Adira Towel
+His tally of bonuses have quite accrued
+A reputation for a crew with aptitude
