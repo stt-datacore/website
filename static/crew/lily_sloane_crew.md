@@ -3,8 +3,8 @@ name: Lily Sloane
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 2
+bigbook_tier: -1
+events: 0
 in_portal: true
 date: 20/10/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The fact that she has "variants" now predisposes her to the possibility of future events, but traits are likely to exceed them in a single month. And although her voyage numbers don't look great on the whole, ENG primary/DIP secondary can be difficult to find so she may sneak into the rotation there in the early game. Her #1 ENG/DIP super rare pair in the gauntlet will struggle for wins against walls of crew with monster DIP scores despite several advantageous crit traits leaving Jury Rigger as her most valuable attribute, despite theoretical value elsewhere.
+
