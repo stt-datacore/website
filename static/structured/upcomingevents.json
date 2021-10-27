@@ -801,5 +801,16 @@
 		"smallbonus": {
 			"traits": ["zimmerman","barclay","Innovator"]
 		}
+	},
+	{
+		"name": "The Surface of Dashed Hopes - Mega Event Pt4",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 10/28 until Monday 11/01 at Noon (16.00 UTC)",
+		"startDate": "2021-10-28T16:00:00Z",
+		"endDate": "2021-11-01T16:00:00Z",
+		"highbonus": ["rurigan_crew", "brother_rom_crew", "dsc_burnham_pistol_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["rom","burnham","Innovator"]
+		}
 	}
 ]
