@@ -344,7 +344,7 @@ class IAmPicardHelper extends Helper {
 					entries,
 					aggregates,
 					startAM: config.startAm,
-					postscript: 'Recommended for median runtime'
+					postscript: 'Recommended for median runtime ('+formatTime(message.data.result.refills[0].result)+')'
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
@@ -400,9 +400,6 @@ class USSJohnJayHelper extends Helper {
 	_estimatesToResults(lineups: any[], estimates: any[]): ICalcResult[] {
 		const results = [];
 
-		const bestNames = [
-			'median runtime', 'guaranteed runtime', 'moonshot runtime', 'dilemma chance', 'starting antimatter'
-		];
 		const bestKeys = [];
 		[0, 1, 2, 3, 4].forEach(sort => {
 			const best = estimates.sort((a, b) => this._chewableSort(a, b, sort))[0];
@@ -415,8 +412,8 @@ class USSJohnJayHelper extends Helper {
 			const best = estimates.find(estimate => estimate.key == bestKey);
 			let bestLineup = lineups.find((lineup) => lineup.key == bestKey);
 			let postscript = bestLineup.best.length < 5
-				? '('+(idx+1)+'/'+bestKeys.length+') Recommended for '+bestLineup.best.map(sort => bestNames[sort]).join(', ')
-				: '';
+				? '['+(idx+1)+'/'+bestKeys.length+'] Recommended for '+bestLineup.best.map(sort => this._showRecommendedValue(sort, best.estimate)).join(', ')
+				: 'Recommended for all criteria';
 			let result = {
 				entries: bestLineup.crew.map(({id}, idx) => ({
 					slotId: idx,
@@ -499,4 +496,36 @@ class USSJohnJayHelper extends Helper {
 
 		return bScore - aScore;
 	}
+
+	_showRecommendedValue(sortOption: number, estimate: any): string {
+		const sortNames = [
+			'median runtime', 'guaranteed runtime', 'moonshot runtime', 'dilemma chance', 'starting antimatter'
+		];
+		let sortValue = "";
+		switch (sortOption) {
+			case 0:
+				sortValue = formatTime(estimate.refills[0].result);
+				break;
+			case 1:
+				sortValue = formatTime(estimate.refills[0].saferResult);
+				break;
+			case 2:
+				sortValue = formatTime(estimate.refills[0].moonshotResult);
+				break;
+			case 3:
+				sortValue = estimate.refills[0].dilChance+'% to reach '+estimate.refills[0].lastDil+'h';
+				break;
+			case 4:
+				sortValue = estimate.antimatter;
+				break;
+		}
+		if (sortValue != '') sortValue = ' ('+sortValue+')';
+		return sortNames[sortOption]+sortValue;
+	}
+};
+
+const formatTime: string = (time: number) => {
+	let hours = Math.floor(time);
+	let minutes = Math.floor((time-hours)*60);
+	return hours+"h " +minutes+"m";
 };

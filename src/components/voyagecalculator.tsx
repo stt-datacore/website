@@ -434,7 +434,7 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				ships={allShips}
 				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
 			/>
-			<Button onClick={() => useCalc()}>Return to calculator</Button>
+			<Button onClick={() => useCalc()}>Return to crew calculator</Button>
 			{(voyageConfig.state == 'recalled' || voyageConfig.state == 'failed') && navigator.clipboard &&
 				<React.Fragment>
 					<Button loading={doingCIVASExport} onClick={() => exportData().then(
@@ -495,11 +495,16 @@ const VoyageInput = (props: VoyageInputProps) => {
 			let entry = {
 				ship: ship,
 				score: ship.antimatter + (traited ? 150 : 0),
-				traited: traited
+				traited: traited,
+				bestIndex: Math.min(ship.index.left, ship.index.right)
 			};
 			consideredShips.push(entry);
 		});
-		setBestShip(consideredShips.sort((a, b) => b.score - a.score)[0]);
+		consideredShips.sort((a, b) => {
+			if (a.score === b.score) return a.bestIndex - b.bestIndex;
+			return b.score - a.score;
+		});
+		setBestShip(consideredShips[0]);
 		setRequests([]);
 		setResults([]);
 	}, [voyageConfig]);

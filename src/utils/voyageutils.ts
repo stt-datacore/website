@@ -39,6 +39,7 @@ export function calculateBuffConfig(playerData: any): { [index: string]: IBuffSt
 }
 
 /* TODO: move remapSkills, formatCrewStats to crewpopup.tsx (only used in that component) */
+// 	When is remapSkills needed?
 const remapSkills = skills =>
 	Object.fromEntries(Object.entries(skills)
 		.map(([key, value]) =>
@@ -48,8 +49,7 @@ export function formatCrewStats(crew: any, use_base:boolean = false): string {
 	let result = '';
 
 	for (let skillName in CONFIG.SKILLS) {
-		let skill = use_base ? crew.base_skills[skillName]
-												 : crew.skills ? crew.skills : remapSkills(crew[skillName]);
+		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
 
 		if (skill && skill.core && (skill.core > 0)) {
 			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;

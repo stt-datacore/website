@@ -354,10 +354,10 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			  <Dropdown item text='Export'>
 				<Dropdown.Menu>
 					<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
-						<Dropdown.Item button onClick={() => exportCrewTool()} content='Download CSV...' />
+						<Dropdown.Item onClick={() => exportCrewTool()} content='Download CSV...' />
 					} />
 					<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
-						<Dropdown.Item button onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
+						<Dropdown.Item onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
 					} />
 				</Dropdown.Menu>
 			</Dropdown>
@@ -365,6 +365,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 			<React.Fragment>
 				<ShareMessage />
+				<Header as='h3'>{tools[activeTool].title}</Header>
 				{tools[activeTool].render(props)}
 			</React.Fragment>
 		</Layout>

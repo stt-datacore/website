@@ -232,8 +232,8 @@ class Voyagers {
 	doVector(vectorId, voyage, primedRoster, boosts, primeFactor) {
 		// Number of attempts and desired lineups should scale to roster size
 		const minAttempts = 10;
-		const maxAttempts = Math.max(Math.floor(primedRoster.length/5), minAttempts); // 20% of roster length
-		const minUniques = Math.max(Math.floor(maxAttempts/5), 5); // 20% of maxAttempts
+		const maxAttempts = Math.max(Math.floor(primedRoster.length/4), minAttempts); // 25% of roster length
+		const minUniques = Math.max(Math.floor(maxAttempts/4), 5); // 25% of maxAttempts
 
 		let self = this;
 		let debug = this.config.debugCallback;
@@ -322,14 +322,20 @@ class Voyagers {
 					}
 
 					// Use deltas to reweight boosts for next attempt
-					//	Finetune by smaller increments as attempts increase with a min adjust of 0.1
-					let finetuneRatio = Math.max(1/iAttempts, 0.1);
+					//	Finetune by smaller increments as attempts increase with a min adjust of 0.05
+					let finetuneRatio = Math.max(1/iAttempts, 0.05);
 					let primaryAdjustment = deltas.primary*finetuneRatio*-1;
 					let secondaryAdjustment = deltas.secondary*finetuneRatio*-1;
 					// Primary, secondary boost adjustments should be enough that adjustment to other not needed
+
+					const limitBoost = (boost) => {
+						if (boost < 0.5) return 0.5;
+						if (boost > 3.5) return 3.5;
+						return boost;
+					};
 					boosts = {
-						'primary': boosts.primary+primaryAdjustment > 0 ? boosts.primary+primaryAdjustment : 0,
-						'secondary': boosts.secondary+secondaryAdjustment > 0 ? boosts.secondary+secondaryAdjustment : 0,
+						'primary': limitBoost(boosts.primary+primaryAdjustment),
+						'secondary': limitBoost(boosts.secondary+secondaryAdjustment),
 						'other': boosts.other
 					};
 				});
@@ -587,21 +593,25 @@ class VoyagersEstimates {
 			self.lineups.forEach((lineup) => {
 				lineup.vector = self.getBestVector(lineup);
 			});
+			self.lineups.sort((a, b) => a.vector.proximity - b.vector.proximity);
 
-			// Only consider lineups with proximity below 1; lineups above that are 99% useless
-			let considered = self.lineups.filter((lineup) => lineup.vector.proximity < 1)
-				.sort((a, b) => a.vector.proximity - b.vector.proximity);
-			self.sendProgress((self.lineups.length-considered.length)+' lineups immediately eliminated from consideration...');
-
+			let considered;
 			if (proximityThreshold > 0) {
-				considered = considered.filter((lineup) => lineup.vector.proximity < proximityThreshold);
+				considered = self.lineups.filter((lineup) => lineup.vector.proximity < proximityThreshold);
 			}
+			// Auto threshold
 			else {
-				// Calculate aggregates before filtering further
-				const proximityAverage = considered.reduce((prev, curr) => prev + curr.vector.proximity, 0)/considered.length;
-				const scores = considered.map((lineup) => lineup.score);
-				const scoreAverage = scores.reduce((prev, curr) => prev + curr, 0)/scores.length;
-				const scoreDeviation = self.getStandardDeviation(scores);
+				// Lineups with proximity under 1 are considered good initial candidates for estimates;
+				//	Lineups above that proximity are 99% useless
+				considered = self.lineups.filter((lineup) => lineup.vector.proximity < 1);
+				if (considered.length > 0) {
+					self.sendProgress(considered.length+' lineups identified as good initial candidates for estimation');
+				}
+				// If no good candidates, consider all lineups; this will likely be a bad recommendation
+				else {
+					considered = self.lineups;
+					self.sendProgress('No good initial candidates found; this will likely be a bad recommendation');
+				}
 
 				// The more lineups attempted, the more confident we can be in aggregates
 				//	With more confidence, we can lower the ideal estimate count
@@ -610,19 +620,26 @@ class VoyagersEstimates {
 
 				// Narrow lineups by average proximity
 				if (considered.length > idealEstimateCount) {
+					const proximityAverage = considered.reduce((prev, curr) => prev + curr.vector.proximity, 0)/considered.length;
 					considered = considered.filter((lineup) => lineup.vector.proximity < proximityAverage);
 					self.sendProgress('Proximity threshold set to '+proximityAverage.toFixed(2)+'...');
-				}
-				// Use deviation from average score to narrow lineups further
-				if (considered.length > idealEstimateCount) {
-					considered = considered.filter((lineup) =>
-						lineup.score > scoreAverage-scoreDeviation && lineup.score < scoreAverage+scoreDeviation);
-					self.sendProgress('Narrowing lineups further by score deviation...');
-				}
-				// Still too many lineups? Just do the ideal count
-				if (considered.length > idealEstimateCount) {
-					considered = considered.slice(0, idealEstimateCount);
-					self.sendProgress('Narrowing lineups to the ideal count ('+idealEstimateCount+')...');
+
+					// Narrow lineups further using combination of proximity and deviation from average score
+					if (considered.length > idealEstimateCount) {
+						const scores = considered.map((lineup) => lineup.score);
+						const scoreAverage = scores.reduce((prev, curr) => prev + curr, 0)/scores.length;
+						considered.forEach((lineup) => {
+							const proximityRank = considered.filter((l) => l.vector.proximity < lineup.vector.proximity).length+1;
+							const deviationRank = considered.filter((l) =>
+								Math.abs(scoreAverage-l.score) < Math.abs(scoreAverage-lineup.score)
+							).length + 1;
+							lineup.rank = proximityRank+deviationRank;
+						});
+						considered = considered.sort((a, b) => a.rank - b.rank);
+						const idealRank = considered[idealEstimateCount-1].rank;
+						considered = considered.filter((lineup) => lineup.rank <= idealRank);
+						self.sendProgress('Rank threshold set to '+idealRank+'...');
+					}
 				}
 			}
 
