@@ -3,8 +3,8 @@ name: Vulcan Wedding T'Pol
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: -1
-events: 0
+bigbook_tier: 4
+events: 27
 in_portal: true
 date: 12/04/2018
 obtained: Event
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-
+Aces in most areas of the game. The #2 and 3 DIP proficiency rolls behind her belong to voyage exclusives and her voyage/voyage DIP numbers are stellar. A healthy +8 arena EV at 4 seconds will help thwart almost any instant damage crew in the arena. You can knock her for poor bases, but she has the chance to pitch in on Faction events and brings a tremendous amount of daily use value to the table.

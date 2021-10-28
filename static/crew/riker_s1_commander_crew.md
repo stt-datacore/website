@@ -3,8 +3,8 @@ name: Will Riker
 rarity: 1
 series: tng
 memory_alpha:
-bigbook_tier: -1
-events: 0
+bigbook_tier: 10
+events: 17
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-
+Top 1* CMD stat with a poor SEC score won’t be putting him any lists anytime soon. CMD/SEC is an extremely common pairing so you will no doubt have someone better. His ship ability might get some use with a +500 crit rating but don’t expect him to help in the Arena. No extra collection bonuses means you can move him on or find a superior bearded version.
