@@ -812,5 +812,16 @@
 		"smallbonus": {
 			"traits": ["rom","burnham","Innovator"]
 		}
+	},
+	{
+		"name": "Barren Heat (flashback)",
+		"type": "Skirmish",
+		"dates": "Thursday 10/28 until Monday 11/01 at Noon (16.00 UTC)",
+		"startDate": "2021-11-04T16:00:00Z",
+		"endDate": "2021-11-08T16:00:00Z",
+		"highbonus": ["kirk_wrathful_crew", "wesley_cadet_crew", "sisko_jodmos_crew"],
+		"smallbonus": {
+			"traits": ["kirk","sisko","wesley"]
+		}
 	}
 ]
