@@ -56,7 +56,7 @@ const Announcement = () => {
 			if (dateDismissed > datePosted) return (<></>);
 		}
 
-		const dateExpires = new Date();
+		const dateExpires = new Date(datePosted);
 		dateExpires.setDate(datePosted.getDate()+DAYS_TO_EXPIRE);
 		if (dateExpires < dateNow) return (<></>);
 
