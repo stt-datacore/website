@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-With CMD/SCI having blown up in frequency and potency in 2019 (recurring 5* Tenavik says hello), Garrett will struggle to find voyage work on all but the most barren of rosters. Traits (including invisible ones) have graced her with around a dozen events, but it’s hard to see many more in the future.
+If you're a glass half full player, Captain Garrett may not look as bad to you as some. Five non-HFS traits is a bounty and though a few seem less likely to garner WRG's attention than others, the Resourceful collection has taught us, 'Eyes open, Veer.'
+
+Until that happens, she's unfortunately a total dud who won't sniff daily work and offers only infrequent, sporadic event chances.

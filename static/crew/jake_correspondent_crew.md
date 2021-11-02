@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Just a step behind in too many areas to be particularly strong choice. DIP/SEC is a dime-a-dozen skill set and even with a reasonably strong primary base, he's only averaged just over one event per year. His MED and eventual collection are something to look forward to, but he'll never be near the top of any citation lists.
+Of all of the older event/collection combo crew, this is certainly one of them. Jake simultaneously has a poor and surprisingly high number of variant events, but you'll be counting on an uptick in his trait usage as well if you're considering taking a stab at this card. He does have a few traits that could add to his collection value and trigger a mega at the same time, but there are plenty of other cards that the same can be said about. 
+
+Jake is not without a few avenues to a brighter future, but he'll need to avoid more than a few landmines to escape the 'Bees Jake' derision he usually garners.

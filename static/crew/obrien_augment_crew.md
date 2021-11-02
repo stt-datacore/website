@@ -12,4 +12,8 @@ mega: true
 published: true
 ---
 
-A fairly well-rounded 2-skiller, including a bevy of traits to enhance his gauntlet and event potential. His proficiency pair is #1 in the gauntlet and he has two usable bases for event work. Non-Jury Rigger collections generally aren't a consideration for legendary crew, but finding three in one package including a vanity spot is still a nice perk. 2019 flooded the landscape with SEC/ENG voyagers, all but eliminating O'Brien's possibilities there, despite numbers that are strong for a 2-skiller. Missing a third skill is the only thing keeping O'Brien from vaulting up the ranks.
+Maybe the most well-rounded 2-skill legendary in the game could remain that way for a while as WRG has dialed back those types of releases, presumably for sales reasons. 
+
+His SEC/ENG proficiency pair is number one in the gauntlet and he has two usable bases for event work. A rich and intriguing trait list augments both as Auggie's event history is more machine than man and a whopping five 45% gauntlet sets give him a legitimate claim for gauntlet consideration. His single SEC roll can pick up plenty of wins with that amount of crit while some 2-for-1 situations against Caretaker or Gary Seven will be a cakewalk. 
+
+The sizeable cherry on top is his collection value, again powered by that great lineup of traits. With a spot in the Originals collection all sewn up, he has a massive value ceiling in this area and is more than worth the behold capital if your other options don't include daily use mainstays.

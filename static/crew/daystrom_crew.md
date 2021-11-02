@@ -12,4 +12,10 @@ mega: false
 published: true
 ---
 
-The venerable creator of the M-5 computer and namesake for the Daystrom Institute and award has long had an equally deferential following among players, but his time in the sun is pretty much over. A top five SCI roll and SCI/ENG pair _was _fantastic, but hasn't been nearly as powerful since the propagation gauntlet exclusives Caretaker and Armus. His (lack of) bases and event work have no business stealing more stars from other crew, even if there are two stat-boosting collections at the end of the rainbow. He still outperforms this ranking with his first star, but investing any more than that is bordering on foolhardy.
+You know, I knew good ol' Dick Daystrom back in college. Guy was a whizz with numbers. Pulled a lot of tail, too. All-American halfback for the SpacePatriots...shifty sonuvabitch used to juke those android defenders right outta their moon boots. We rode him all the way to State finals. Sorry...where was I?
+
+The venerable creator of the M-5 computer and namesake for the Daystrom Institute and award has a longer list of accomplishments in universe than he does in game, but at least has some wiggle room on his behold value.
+
+His first star will net you a premier ENG/SCI bench warmer. Two superior crew in that stack exist as gauntlet exclusives and crowd him out to a huge extent, though a handful of 45% gauntlets (none of which feature SCI) will still be a boon to fresh rosters and allow you a chance to win with your favorites.
+
+Traits are the rest of the story here as they give Daystrom multi-collection value and a shot at requisition shuttles once immortalized. Stars two through four are a big bullet to bite, but he's not a total dud of a card.

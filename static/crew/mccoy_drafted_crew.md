@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Bases that only a Faction mother could love, but lays claim to a collection spot and semi-regular events. His arena work is almost viable, but it shouldn’t be difficult to find better.
+To Whom It May Concern, Mr. Natural here is something of a Tragedy. I Can't See Nobody like this doing much for any roster, aside from some token collection and event value. I know that Size Isn't Everything, but we're more than 2 Years On from his release with his only significant metric being event count. The only way he's Stayin' Alive is if he lives his Life In A Tin Can cryo.

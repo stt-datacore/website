@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Saved by her skill set, she's merely okay for early game voyages and gauntlet, but will quickly become just another notch on your Physician belt. Considering the ease of that collection, she makes for fine airlock material. How do you like it when someone plays fast and loose with YOUR life, jerk?
+If there's one thing that Grey's Anatomy has taught me, it's that you can't be a great surgeon without being a massive prick. That being said, Dr. Russell should be the number one MED crew until the end of time.
+
+Her favorable skill set is the most edge case of edge case usable for gauntlet, but until more of her traits turn into collections, she's hard to justify as a slot-stealer on rosters that need space and makes for fine airlock material. Hey Toby! How do you like it when someone plays fast and loose with YOUR life, jerk?

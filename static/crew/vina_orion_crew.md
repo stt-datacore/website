@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-This 60s bombshell may have some untapped potential with a couple eventable traits, but if we're going by track record, she's simply a non-event shuttle crew who doesn't come online for an established roster before 4/5.
+This 60s bombshell should have a little wiggle room with her untapped trait potential for events and collections, but if we're going by track record, she's simply a once a year shuttle stuffer doesn't come online for most rosters before star four.

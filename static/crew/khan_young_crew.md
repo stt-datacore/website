@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Young Khan, get outta my mind and take that song with you. Dreamy mid-century Montalban is a hell of a vintage and you’ll certainly want to scoop up this version for his event potential and collection spot. An event count which is modest at a glance is overripe with trait mega possibilities and should have him making the thaw list several times with two usable-when-bonus bases.
+Young Khan, get outta my mind and take that song with you. Dreamy mid-century Montalban is a hell of a vintage and you’ll probably want to scoop up this version for his event and collection potential. An event tally which is modest at a glance is overripe for trait mega possibilities, while our official Big Book shot in the dark forecast has Khan sitting at between three and six collections before WRG's card collecting push is over.

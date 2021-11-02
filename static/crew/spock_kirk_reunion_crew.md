@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 1
-events: 45
+events: 46
 in_portal:
 date: 22/03/2021
 obtained: Fusion

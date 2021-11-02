@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Pah-wraith jokes aside, where we feel the love is Dukat's event potential. He had a strong 2018 (4 events) to highlight double 1k bases, but his best year(s) may be ahead of him. Cardassian, Bajoran, Cultural Figure, and Villain could all potentially be mega traits and even hitting on one would be a significant boost to his desirability. With very little to offer elsewhere, you're essentially selecting Dukat as a 2-skiller with average event work, but the potential to make multi-week contributions in the future.
+Pah-wraith jokes aside, where we feel the love is Dukat's trait potential. A theoretical seven collection ceiling would be monumental value that would have Dukat demanding that, well...you build a monument to him on Cardassia. 
+
+His only other area of contribution is event shuttles. While he'll likely never reach that spirited 2018 level of variant event love, his traits have actually underperformed for bonuses and should be in line for several megas down the line.

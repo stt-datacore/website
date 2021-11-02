@@ -12,4 +12,8 @@ mega: true
 published: true
 ---
 
-Just what we want in our 2-skill crew - a big base and big event potential. Missing a few frills that elite 2-skillers offer, but he'll come pre-loaded on your Disco event shuttles where, true to form, you’re going to see his pool of variants multiply like particularly fruitful fungi. Just beware, if Disco events drop off, so does this card’s usefulness.
+Who has two thumbs and laughable value? This guuuyyyy!
+
+One of the more precipitous falls from grace at the super rare level, Stamets was once an unfreezable name with the inevitability of Discovery megas threatening to permanently alter card value and laugh in the name of balance.
+
+In their wake, Stamets is left with a sad event clip and equally sad traits that didn't get the message about the collection era. Don't bother beholding this crew until his Prodigy trait gets picked, perhaps in concert with some events themed around the animated show.

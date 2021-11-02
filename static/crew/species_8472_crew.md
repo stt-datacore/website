@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Bases strongly reminiscent of One, but thankfully a better card. His #2 SEC/SCI gauntlet pair is strong enough to hold off the coming wave of Armuses (Armi?) and his proficiency rolls are good enough to make him both the best gauntlet total for 2-skill crew and the #1 2-skill voyager. While his first star is obviously the most important, if you happen to stumble upon some stars for him in otherwise poor beholds, he can be a voyage player for one of the tougher skill combos. His highs are high, but he sports too many handicaps outside of his proficiencies to be worth a five behold investment.
+8472's offerings are at odds. His first star holds the bulk of his value, stars 2-4 are essentially useless, and his last star unlocks the only other thing you should want him for; collections. While it's possible we see his collection count added to alongside an introductory mega, shuttles really shouldn't be much of a consideration when beholding this crew.
+
+His highs are high, but he sports too many handicaps outside of his proficiencies to be worth a five star investment until we see that collection count grow.

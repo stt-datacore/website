@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Even in the age of wacky trait megas, David’s only real shot may be Gambler. Kirk’s son is fortunate to escape the drawing board with two collections, including the still-tough Jury Rigger, which comprise 99% of his value.
+Kirk's resentful son was an early adopter of the multi-collection formation, but that's become commonplace and he's since been eclipsed by a few big collection studs. Still absolutely worth immortalizing in the late game, he simply doesn't offer anything else for early-to-mid game players aside from some very spotty event work tied to bad bases.

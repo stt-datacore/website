@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 25
+events: 26
 in_portal: true
 date: 27/02/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His build is on the tricky side; requiring a dozen 4* components and myriad faction items, but he eventually pays it off through Kirk events, a couple eventable traits, and a spot in the Inspiring collection. Strong +Acc/Crit Bonus arena ability at six seconds makes him Ardra lite there, if you haven’t come across her yet. No notable bases, especially among the CMD/DIP/SEC set, but voyage numbers on the borderline of top 1/3rd might find use on younger rosters if you happen across several copies of him early.
+His build is on the tricky side, requiring a dozen super rare components and myriad faction items and science experiments, but he eventually pays it off through Kirk events, a couple eventable traits, and some collection value. His arena ability might be in some players' rotation if not for Ardra's existence, but you can make do with him in a pinch. Given his low utility in areas of daily use, don't feel bad about de-prioritizing this Kirk and picking him up at a later date.

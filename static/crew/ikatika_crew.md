@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-“All I can do is kill him . . . and that no longer holds my interest.” Dominion events may give this two skiller a chance at greater relevance outside of daily shuttles every now and then, but his +1 Veteran and top Dominion super rare SEC are the only tangible benefits he’s likely to yield in the long run.
+“All I can do is kill him...and that no longer holds my interest.” 
+
+Ikat'ika has the right skill set for shuttles, but his bonuses are mostly reliant on some flimsy traits outside of Dominion. A pair of event features probably aren't his last ones - at least, let's hope not as his only other tangible, non-collection use is as an Ardra replacement in the arena akin to Pel or Platonian Kirk.

@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Brutally ineffective in every area of the game. Not worth a crew slot unless you’re playing collector. If her debut event is re-run, it would be the very first time for any mega event weekend.
+Brutally ineffective in every area of the game through her first several years, her only value reprieve will come from a fairly modest trait list. Any of the three Cs could and very well may trigger down the line, which would bump up her value slightly and at least put her on players' radars as a perfunctory freeze and forget crew to notch some collections.

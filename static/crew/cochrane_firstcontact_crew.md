@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Players have gotten years of use out of Zefram's strong ENG base, but as happens over time, it's begun slipping down the ranks. Now dwarfed by three different mega legendaries, its chances for use are shrinking by the week. His strong showing in the pilot mega gave him a spark of life and is a good reminder to acquire traits when possible, but the future is not likely to be as kind to him as the past has been, especially since the 2020 Caregiver/Warp Theorist mega taps out his last viable trait - so far as we can tell, at least. A great skill set languishes near the bottom of the voyage power ranks and is more of a desperation asset if your roster is overrun with CMD/DIP/SEC. His double collections are a tempting carrot, but poor overall numbers make the trek to five stars less worthwhile than for almost any new option.
+An old crew who's popped up as a giveaway multiple times in the past, if you're one of those players who have a few stars on him already, don't feel bad about tacking one more on. A fairly strong trait set has performed admirably for event opportunities thus far and grants him a worthwhile mix of immediate and potential collection value.
+
+If you're staring at his first star, however, don't expect much usability day to day outside of some replaceable arena evasion. If you're in the market for a crew you can actually use rather than set on the collection shelf to gather dust, Cochrane's numbers will let you down.
