@@ -12,6 +12,8 @@ mega: true
 published: true
 ---
 
-DB has been generous to the engineering landscape since Etana's appearance which, in conjunction with not having collected a bonus since then, renders her dual 1k bases rather pedestrian. She does have one of the more intriguing trait sets with a few of them sitting in the right size range for a mega, but her shuttle work to date remains on a downhill trajectory.
+Fairly forgettable for a mega recurring crew, Etana won't reclaim daily use status going forward, but a pot of percolating traits have been simmering for a while and may be soon ready to serve.
 
-Still quite viable, however, is her top ten ENG/DIP voyage work. Event and campaign names may have bumped her down the list for some players, but in an extraordinary turn of events, you DO get to use more than one crew on voyages. (Very) Early game gauntlet work driven by a top ten ENG proficiency and an awkward-but-strong arena ability (where do I put my hands during Position?) give her shades of value on the periphery.
+The first crack in that dam was the addition of a 65% gauntlet post-release. That may be the only unique gauntlet where established rosters bring her along, but considering the absolute dearth of ENG options among non-exclusive crew, she makes for fine one-star help to newer rosters.
+
+Her non-Ktarian traits have been thrown out there in the past as viable collection or event traits and it wouldn't be a surprise to see any or all of them hit in the future. Until they do, and considering her twilight power elsewhere, approach with caution.

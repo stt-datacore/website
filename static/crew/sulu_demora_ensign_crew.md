@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-“I was never that young.” No, you were younger - and more useful. Sulu supplied her sole sweet spot to close out 2018, but with a list of thoroughly crowded and uneventable traits, that’s likely to be her last chance to help you outside of a Pilot/SEC node unlock.
+Sulu supplied her sole sweet spot in the pilot mega that closed out 2018 and with a list of crowded and uneventable traits, that may be her last chance to help you outside of a Pilot/SEC node unlock in the Celestial Temple distress call. The least likely of her three non-HFS traits did find her some collection value and though the others may follow, her ceiling is limited.
