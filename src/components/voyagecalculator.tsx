@@ -14,21 +14,6 @@ import { useStateWithStorage } from '../utils/storage';
 import { CALCULATORS, CalculatorState } from '../utils/voyagehelpers';
 import { getEstimate } from '../workers/chewable.js';
 
-const VOYAGE_SEATS = [
-	'captain_slot',
-	'first_officer',
-	'chief_communications_officer',
-	'communications_officer',
-	'chief_security_officer',
-	'security_officer',
-	'chief_engineering_officer',
-	'engineering_officer',
-	'chief_science_officer',
-	'science_officer',
-	'chief_medical_officer',
-	'medical_officer'
-];
-
 type VoyageCalculatorProps = {
 	playerData: any;
 };
@@ -228,6 +213,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 		{ symbol: 'medical_officer', name: 'Ship\'s Counselor', skill: 'medicine_skill', trait: '' }
 	];
 	const crewSlots = voyageConfig.crew_slots ?? defaultSlots;
+	crewSlots.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol));
 
 	return (
 		<Modal
@@ -420,7 +406,7 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 
 		values = values.concat(voyageConfig
 			.crew_slots
-			.sort((s1, s2) => VOYAGE_SEATS.indexOf(s1.symbol) - VOYAGE_SEATS.indexOf(s2.symbol))
+			.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol))
 			.map(s => s.crew.name)
 		);
 
@@ -967,9 +953,9 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 		<React.Fragment>
 			{calcState == CalculatorState.Done && (
 				<Message attached>
-					Median runtime: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
+					Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
 					(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
-						{formatTime(result.estimate.refills[0].moonshotResult)}).
+						{formatTime(result.estimate.refills[0].moonshotResult)})
 				</Message>
 			)}
 			<Tab.Pane>

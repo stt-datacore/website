@@ -307,8 +307,7 @@ class IAmPicardHelper extends Helper {
 				slotId: i,
 				choice: crew,
 				hasTrait: crew
-					.traits_named
-					.map(trait => trait.toLowerCase())
+					.traits
 					.includes(this.voyageConfig.crew_slots[i].trait)
 			};
 
@@ -344,7 +343,7 @@ class IAmPicardHelper extends Helper {
 					entries,
 					aggregates,
 					startAM: config.startAm,
-					postscript: 'Recommended for median runtime ('+formatTime(message.data.result.refills[0].result)+')'
+					postscript: 'Recommended for estimated runtime ('+formatTime(message.data.result.refills[0].result)+')'
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
@@ -499,7 +498,7 @@ class USSJohnJayHelper extends Helper {
 
 	_showRecommendedValue(sortOption: number, estimate: any): string {
 		const sortNames = [
-			'median runtime', 'guaranteed runtime', 'moonshot runtime', 'dilemma chance', 'starting antimatter'
+			'estimated runtime', 'guaranteed minimum', 'moonshot', 'dilemma chance', 'starting antimatter'
 		];
 		let sortValue = "";
 		switch (sortOption) {

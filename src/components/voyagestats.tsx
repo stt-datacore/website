@@ -167,7 +167,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		return (
 			<div>
-			  {ship && `Ship: ${ship.name} (${voyageData.max_hp} Antimatter)`}
+			  {ship && (<span>Ship : <b>{ship.name}</b></span>)}
 				<Grid columns={isMobile ? 1 : 2}>
 					<Grid.Column>
 						<ul>
@@ -189,6 +189,13 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							</ul>
 						</Grid.Column>
 						<Grid.Column verticalAlign="middle">
+							<ul>
+								<li>
+									Antimatter
+									{' : '}
+									<b>{voyageData.max_hp}</b>
+								</li>
+							</ul>
 							<ul>
 								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
 									const agg = voyageData.skill_aggregates[entry];
