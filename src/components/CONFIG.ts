@@ -30,20 +30,20 @@ export default class CONFIG {
 
 	static readonly SKILLS: { [index: string]: string } = {
 		command_skill: 'Command',
-		diplomacy_skill: 'Diplomacy',
-		engineering_skill: 'Engineering',
+		science_skill: 'Science',
 		security_skill: 'Security',
-		medicine_skill: 'Medicine',
-		science_skill: 'Science'
+		engineering_skill: 'Engineering',
+		diplomacy_skill: 'Diplomacy',
+		medicine_skill: 'Medicine'
 	};
 
 	static readonly SKILLS_SHORT = [
 		{ name: 'command_skill', short: 'CMD' },
-		{ name: 'diplomacy_skill', short: 'DIP' },
-		{ name: 'engineering_skill', short: 'ENG' },
+		{ name: 'science_skill', short: 'SCI' },
 		{ name: 'security_skill', short: 'SEC' },
-		{ name: 'medicine_skill', short: 'MED' },
-		{ name: 'science_skill', short: 'SCI' }
+		{ name: 'engineering_skill', short: 'ENG' },
+		{ name: 'diplomacy_skill', short: 'DIP' },
+		{ name: 'medicine_skill', short: 'MED' }
 	];
 
 	static readonly REWARDS_ITEM_TYPE: { [index: number]: string } = {
