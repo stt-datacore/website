@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Owner of a top five MED base and cruising past double-digit events; he’s the quintessential super rare faction contributor. Now watch this drive.
+After some first year jitters, Holonovel has been a consistent weekend warrior with a base worth thawing. While there's not much else to his 'use' profile, all four of his non-HFS traits should find homes in their respective collections before too long. Now watch this drive.

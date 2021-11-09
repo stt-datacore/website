@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Holo-barc lives in the ugly middle ground between inconsistent events and stats not suitable for daily use. His collection spot comprises the bulk of his value and you’re waiting for either Barclay or Hologram trait events to squeeze some value out of two usable-when-bonus bases.
+Three traits have done a tremendous amount of heavy lifting for a card in Holo Barclay who desperately needs them. With no daily use and awful bases that many players won't bother thawing, his value hinges on those three little words and their collection and event opportunities in the future.
+
+Don't feel bad passing on this crew for someone you'd be able to use a little more often, or at least one not standing in front of an impossibly strong neon light.
