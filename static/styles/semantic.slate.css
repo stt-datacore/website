@@ -26531,7 +26531,7 @@ Floated Menu / Item
 
 .ui.message a {
   text-decoration: underline;
-  color: #fff;
+  color: inherit;
 }
 
 /*******************************
