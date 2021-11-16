@@ -88,13 +88,7 @@ function getEstimate(config, reportProgress = () => true) {
           lastDilemmaFails = Math.max(0,i);
         }
       }
-
       var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
-      // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
-      if (dilChance == 0) {
-        lastDilemma--;
-        dilChance = 100;
-      }
 
       var refill = {
          'all': exResults,

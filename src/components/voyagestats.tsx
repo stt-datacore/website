@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Table, Grid, Header, Accordion, Popup, Segment, Image, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
-import CONFIG from '../components/CONFIG';
-import ItemDisplay from '../components/itemdisplay';
-import CrewPopup from '../components/crewpopup';
+import CONFIG from './CONFIG';
+import ItemDisplay from './itemdisplay';
+import CrewPopup from './crewpopup';
 
 import Worker from 'worker-loader!../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
@@ -239,7 +239,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<td>{label}: {this._formatTime(est.result)}</td>
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
-					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
+					<td>Chance of {est.lastDil} hour dilemma: {est.dilChance == 100 ? 100 : est.dilChance.toPrecision(2)}%</td>
 					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
 				</tr>
 			);
@@ -416,12 +416,21 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		};
 
 		if (voyState !== 'pending') {
+			const msgTypes = {
+				started: ' has been running for ',
+				failed: ' failed at ',
+				recalled: ' ran for '
+			};
+			const voyagePriSec = Object.values(voyageData.skills)
+																 .map(s1 => CONFIG.SKILLS_SHORT.filter(s2 => s2.name === s1)[0].short)
+																 .join('/');
+
 			return (
 				<div>
-					<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for ' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + this._formatTime(voyageData.log_index/180)}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
-						voyState !== 'recalled' && voyState !== 'completed' &&
+						voyState !== 'recalled' &&
 						accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
 					}
 					{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
