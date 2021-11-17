@@ -834,5 +834,16 @@
 		"smallbonus": {
 			"traits": ["vash","Merchant"]
 		}
+	},
+	{
+		"name": "A Measure of Valor",
+		"type": "Faction/Skirmish Hybrid",
+		"dates": "Thursday 11/18 until Monday 11/22 at Noon (17.00 UTC)",
+		"startDate": "2021-11-18T17:00:00Z",
+		"endDate": "2021-11-22T17:00:00Z",
+		"highbonus": ["li_nalas_crew", "sam_lavelle_crew", "dsc_mudd_takeover_crew"],
+		"smallbonus": {
+			"traits": ["mudd","Maverick"]
+		}
 	}
 ]
