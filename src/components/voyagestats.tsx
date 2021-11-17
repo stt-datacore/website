@@ -239,7 +239,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<td>{label}: {this._formatTime(est.result)}</td>
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
-					<td>Chance of {est.lastDil} hour dilemma: {est.dilChance == 100 ? 100 : est.dilChance.toPrecision(2)}%</td>
+					<td>Chance of {est.lastDil} hour dilemma: {est.dilChance > 10 ? Math.floor(est.dilChance) : est.dilChance.toPrecision(2)}%</td>
 					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
 				</tr>
 			);

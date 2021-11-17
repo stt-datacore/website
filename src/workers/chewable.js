@@ -268,7 +268,7 @@ function getEstimate(config, reportProgress = () => true) {
       } // system failure
     } // foreach tick
 
-    if (iSim > 0 && iSim % 100 == 0)
+    if (config.progressCallback && iSim > 0 && iSim % 100 == 0)
       reportProgress(formatResults(false));
   } // foreach sim
 
