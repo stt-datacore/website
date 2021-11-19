@@ -26,6 +26,8 @@ export interface ITableConfigRow {
 	column: string;
 	title: string | JSX.Element;
 	pseudocolumns?: string[];
+	reverse?: boolean;
+	tiebreakers?: string[];
 }
 
 type SearchableTableProps = {
@@ -60,12 +62,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions['searchFilter'] ?? '');
-			setFilterType(props.initOptions['filterType'] ?? 'Any match');
+			setSearchFilter(props.initOptions['search'] ?? '');
+			setFilterType(props.initOptions['filter'] ?? 'Any match');
 			setColumn(props.initOptions['column'] ?? defaultSort.column);
 			setDirection(props.initOptions['direction'] ?? defaultSort.direction);
-			setPaginationRows(props.initOptions['paginationRows'] ?? 10);
-			setPaginationPage(props.initOptions['paginationPage'] ?? 1);
+			setPaginationRows(props.initOptions['rows'] ?? 10);
+			setPaginationPage(props.initOptions['page'] ?? 1);
 		}
 	}, [props.initOptions]);
 
@@ -147,6 +149,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		// Use original dataset for sorting
 		const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
 		data = sorted.result;
+
+		// Sorting by pre-calculated ranks should filter out crew without matching skills
+		//	Otherwise crew without skills show up first (because 0 comes before 1)
+		if (column.substr(0, 5) === 'ranks') {
+			const rank = column.split('.')[1];
+			data = data.filter(row => row.ranks[rank] > 0);
+		}
 	}
 
 	// Filtering
@@ -224,7 +233,36 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			</Table>
 		</div>
 	);
-}
+};
+
+// Check for custom initial table options from URL or <Link state>
+export const initSearchableOptions = (location: any) => {
+	let initOptions = false;
+	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page', 'highlights'];
+
+	// Always use URL parameters if found
+	if (location?.search) {
+		const urlParams = new URLSearchParams(location.search);
+		OPTIONS.forEach((option) => {
+			if (urlParams.has(option)) {
+				if (!initOptions) initOptions = {};
+				initOptions[option] = urlParams.get(option);
+			}
+		});
+	}
+	// Otherwise check <Link state>
+	else if (location?.state) {
+		const linkState = location.state;
+		OPTIONS.forEach((option) => {
+			if (linkState[option]) {
+				if (!initOptions) initOptions = {};
+				initOptions[option] = linkState[option];
+			}
+		});
+	}
+
+	return initOptions;
+};
 
 function renderDefaultExplanation() {
 	return (

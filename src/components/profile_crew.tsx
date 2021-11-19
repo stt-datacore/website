@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table, Icon, Rating, Pagination, Dropdown, Form, Checkbox } from 'semantic-ui-react';
-import { navigate } from 'gatsby';
+import { Table, Icon, Rating, Dropdown, Form, Checkbox, Header, Popup } from 'semantic-ui-react';
+import { Link, navigate } from 'gatsby';
 
-import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
@@ -10,35 +10,67 @@ import CABExplanation from '../components/cabexplanation';
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
-
-const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
-	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
-	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
-];
 
 type ProfileCrewProps = {
 	playerData: any;
 	isTools?: boolean;
+	allCrew?: any[];
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const { isTools } = props;
-
 	const pageId = isTools ? 'tools' : 'profile';
+	const myCrew = [...props.playerData.player.character.crew];
+	const buffConfig = calculateBuffConfig(props.playerData.player);
+	return (
+		<React.Fragment>
+			<ProfileCrewTable pageId={pageId} crew={myCrew} />
+			{isTools && <SkillDepth myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />}
+		</React.Fragment>
+	);
+};
+
+type ProfileCrewTableProps = {
+	pageId: string;
+	crew: any[];
+};
+
+const ProfileCrewTable = (props: ProfileCrewTableProps) => {
+	const { pageId } = props;
 	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/crew/showFrozen', true);
 	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/crew/findDupes', false);
+	const [initOptions, setInitOptions] = React.useState(undefined);
 
-	const data = [...props.playerData.player.character.crew];
+	React.useEffect(() => {
+		// Check for custom initial table options from URL or <Link state>
+		const options = initSearchableOptions(window.location);
+		// Clear history state now so that new stored values aren't overriden by outdated parameters
+		if (window.location.state && options)
+			window.history.replaceState(null, '');
+		setInitOptions({...options});
+	}, []);
+
+	if (!initOptions) return (<><Icon loading name='spinner' /> Loading...</>);
+
+	const myCrew = JSON.parse(JSON.stringify(props.crew));
+
+	const tableConfig: ITableConfigRow[] = [
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
+		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
+		{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
+	];
+	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		tableConfig.push({
+			width: 1,
+			column: `${skill.name}.core`,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			reverse: true
+		});
+	});
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
 		if (!showFrozen && crew.immortal > 0) {
@@ -46,7 +78,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 
 		if (findDupes) {
-			if (data.filter((c) => c.symbol === crew.symbol).length === 1)
+			if (myCrew.filter((c) => c.symbol === crew.symbol).length === 1)
 				return false;
 		}
 
@@ -54,8 +86,12 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	}
 
 	function renderTableRow(crew: any, idx: number): JSX.Element {
+		const highlighted = {
+			positive: initOptions.highlights?.indexOf(crew.symbol) >= 0
+		};
+
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...highlighted}>
 				<Table.Cell>
 					<div
 						style={{
@@ -69,7 +105,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>
@@ -147,15 +183,249 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 				</Form.Group>
 			</div>
 			<SearchableTable
-				id={isTools ? "tools_crew" : "profile_crew"}
-				data={data}
+				id={`${pageId}_crew`}
+				data={myCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				initOptions={initOptions}
 				showFilterOptions="true"
 			/>
 		</React.Fragment>
 	);
 }
+
+type SkillDepthProps = {
+	myCrew: any[];
+	allCew: any[];
+	buffConfig: any;
+};
+
+const SkillDepth = (props: SkillDepthProps) => {
+	const { buffConfig } = props;
+
+	const [scoreOption, setScoreOption] = React.useState('core');
+
+	const scoreOptions = [
+		{ key: 'core', value: 'core', text: 'Core' },
+		{ key: 'shuttles', value: 'shuttles', text: 'Shuttles' },
+		{ key: 'gauntlet', value: 'gauntlet', text: 'Gauntlet' },
+		{ key: 'voyage', value: 'voyage', text: 'Voyage' }
+	];
+
+	const myCrew = JSON.parse(JSON.stringify(props.myCrew));
+
+	const data = [];
+	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
+		let firstSkill = CONFIG.SKILLS_SHORT[first].name;
+		data.push(getSkillData([firstSkill]));
+		if (scoreOption != 'core') {
+			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+				let secondSkill = CONFIG.SKILLS_SHORT[second].name;
+				data.push(getSkillData([firstSkill, secondSkill]));
+				if (scoreOption != 'shuttles') {
+					for (let third = second+1; third < CONFIG.SKILLS_SHORT.length; third++) {
+						let thirdSkill = CONFIG.SKILLS_SHORT[third].name;
+						data.push(getSkillData([firstSkill, secondSkill, thirdSkill]));
+					}
+				}
+			}
+		}
+	}
+
+	return (
+		<React.Fragment>
+			<Header as='h4'>Skill Depth</Header>
+			<p>This table shows the depth and strength of your roster at various areas of the game for every relevant skill combination.</p>
+			<div style={{ marginTop: '1em' }}>
+				Score: <Dropdown selection options={scoreOptions} value={scoreOption} onChange={(e, { value }) => setScoreOption(value) } />
+			</div>
+			<SkillDepthTable data={data} />
+		</React.Fragment>
+	);
+
+	function getSkillData(skills: string[]) {
+		const skillScore = (crew) => {
+			const scores = [];
+			skills.forEach(skill => {
+				if (crew[skill].core > 0) scores.push(crew[skill]);
+			});
+			if (scores.length < skills.length) return 0;
+			return getSkillScore(scores);
+		};
+		const crewBySkill = myCrew.filter(crew => skillScore(crew) > 0).sort((a, b) => skillScore(b) - skillScore(a));
+		const skillAverage = crewBySkill.length > 0 ? crewBySkill.reduce((prev, curr) => prev + skillScore(curr), 0)/crewBySkill.length : 0;
+		const myBestTen = crewBySkill.slice(0, Math.min(10, crewBySkill.length));
+		const myBestTenAverage = myBestTen.length > 0 ? myBestTen.reduce((prev, curr) => prev + skillScore(curr), 0)/myBestTen.length : 0;
+		return {
+			key: skills.join(','),
+			skills: skills,
+			count: crewBySkill.length,
+			average: skillAverage,
+			best: {
+				score: crewBySkill.length > 0 ? skillScore(crewBySkill[0]) : 0,
+				name: crewBySkill.length > 0 ? crewBySkill[0].name : 'None'
+			},
+			tenAverage: myBestTenAverage,
+			percentile: myBestTen.length > 0 ? getPercentile(skills, myBestTen.length, myBestTenAverage) : 0
+		};
+	}
+
+	function getPercentile(skills: string[], myBestCount: number, myBestAverage: number): number {
+		const skillScore = (crew) => {
+			const scores = [];
+			skills.forEach(skill => {
+				if (crew.base_skills[skill]) scores.push(applySkillBuff(buffConfig, skill, crew.base_skills[skill]));
+			});
+			if (scores.length < skills.length) return 0;
+			return getSkillScore(scores);
+		};
+		let crewBySkill = props.allCrew.filter(crew => skillScore(crew) > 0)
+			.sort((a, b) => skillScore(b) - skillScore(a));
+		// If crew pool is small, limit comparison to best X (where X = my best count size)
+		const sliceSize = crewBySkill.length < 10 ? myBestCount : 10;
+		crewBySkill = crewBySkill.slice(0, sliceSize);
+		const allAverage = crewBySkill.reduce((prev, curr) => prev + skillScore(curr), 0)/crewBySkill.length;
+		return myBestAverage/allAverage;
+	}
+
+	function getSkillScore(scores: any[]): number {
+		if (scoreOption === 'voyage')
+			return scores.reduce((prev, curr) => prev + curr.core+(curr.min+curr.max)/2, 0);
+		if (scoreOption === 'gauntlet')
+			return scores.reduce((prev, curr) => prev + curr.max, 0)/scores.length;
+		if (scores.length > 1) {
+			if (scores[0].core > scores[1].core)
+				return scores[0].core+(scores[1].core/4);
+			return scores[1].core+(scores[0].core/4);
+		}
+		return scores[0].core;
+	}
+
+	function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
+		const getMultiplier = (skill: string, stat: string) => {
+			return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+		};
+		return {
+			core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
+			min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
+			max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+		};
+	}
+};
+
+type SkillDepthTableProps = {
+	data: any[];
+};
+
+const SkillDepthTable = (props: SkillDepthTableProps) => {
+	const skillsMap = CONFIG.SKILLS_SHORT.map(skill => skill.name);
+
+	const [state, dispatch] = React.useReducer(reducer, {
+		column: null,
+		data: props.data,
+		direction: null
+	});
+	const { column, data, direction } = state;
+
+	React.useEffect(() => {
+		dispatch({ type: 'UPDATE_DATA', data: props.data });
+	}, [props.data]);
+
+	const tableConfig = [
+		{ column: 'skills', title: 'Skill', center: false },
+		{ column: 'count', title: 'Crew count', center: true, reverse: true },
+		{ column: 'average', title: 'Average', center: true, reverse: true },
+		{ column: 'best', title: 'Best', center: false, reverse: true },
+		{ column: 'tenAverage', title: <span>Ten Best <Popup trigger={<Icon name="help" />} content='The average score of your ten best crew at this skill' /></span>, center: true, reverse: true },
+		{ column: 'percentile', title: <span>Percentile <Popup trigger={<Icon name="help" />} content='How your best crew compare to all crew in the game with this skill' /></span>, center: true, reverse: true }
+	];
+
+	return (
+		<Table sortable celled selectable striped unstackable compact="very">
+			<Table.Header>
+				<Table.Row>
+					{tableConfig.map((cell, idx) => (
+						<Table.HeaderCell key={idx}
+							sorted={column === cell.column ? direction : null}
+							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
+							textAlign={cell.center ? 'center' : 'left'}
+						>
+							{cell.title}
+						</Table.HeaderCell>
+					))}
+				</Table.Row>
+			</Table.Header>
+			<Table.Body>
+				{data.map(row => (
+					<Table.Row key={row.key}>
+						<Table.Cell>
+							{row.skills.map(skill => (
+								<img key={skill} alt={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', padding: '0 2px' }} />
+							))}
+						</Table.Cell>
+						<Table.Cell textAlign='center'>{row.count}</Table.Cell>
+						<Table.Cell textAlign='center'>{row.average.toFixed(1)}</Table.Cell>
+						<Table.Cell>{Math.floor(row.best.score)} ({row.best.name})</Table.Cell>
+						<Table.Cell textAlign='center'>{row.tenAverage.toFixed(1)}</Table.Cell>
+						<Table.Cell textAlign='center'>{(row.percentile*100).toFixed(1)}</Table.Cell>
+					</Table.Row>
+				))}
+			</Table.Body>
+		</Table>
+	);
+
+	function reducer(state, action) {
+		switch (action.type) {
+			case 'UPDATE_DATA':
+				const updatedData = action.data.slice();
+				firstSort(updatedData, 'skills', false);
+				return {
+					column: 'skills',
+					data: updatedData,
+					direction: 'ascending'
+				};
+			case 'CHANGE_SORT':
+				if (state.column === action.column) {
+					return {
+						...state,
+						data: state.data.slice().reverse(),
+						direction: state.direction === 'ascending' ? 'descending' : 'ascending'
+					};
+				}
+				else {
+					const data = state.data.slice();
+					firstSort(data, action.column, action.reverse);
+					return {
+						column: action.column,
+						data: data,
+						direction: action.reverse ? 'descending' : 'ascending'
+					};
+				}
+			default:
+				throw new Error();
+		}
+	}
+
+	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
+		data.sort((a, b) => {
+			if (column === 'skills') {
+				if (a.skills.length === b.skills.length) {
+					let index = 0;
+					while (a.skills[index] === b.skills[index] && index < a.skills.length) {
+						index++;
+					}
+					return skillsMap.indexOf(a.skills[index]) - skillsMap.indexOf(b.skills[index]);
+				}
+				return a.skills.length - b.skills.length;
+			}
+			else if (column === 'best')
+				return b.best.score - a.best.score;
+			else if (reverse)
+				return b[column] - a[column];
+			return a[column] - b[column];
+		});
+	}
+};
 
 export default ProfileCrew;

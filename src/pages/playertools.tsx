@@ -32,7 +32,7 @@ export const playerTools = {
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({playerData}) => <ProfileCrew playerData={playerData} isTools={true} />
+		render: ({playerData, allCrew}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
