@@ -12,8 +12,9 @@ mega: true
 published: true
 ---
 
-Classic DB. There was no way they were going to let Runaway Po's reign as #1 Purple Disco ENG last longer than a hiccup. Since the comparison is there and hanging low for us already, the collections and ENG base line up, but Saru's voyage efficacy and trait set are steps down.
+Collection roads take me home
+To the place I belooong
 
-Still an excellent crew on his own merits and perhaps the better event bet going forward, Saru contributes two stat-boosting collections, solid base power, and good-not-great voyage work with ENG/SCI being a very common pairing. Discovery's event eligibility has been the talk around town since the show began, but until proven otherwise, it's a plus attribute for crew, provided you're not overloaded with options.
+A four+ collection super rare is an automatic acquire, full stop. Even if WRG's crazy train of collections claims as many victims as they can, you're still paying a nominal equip cost to make progress toward boosting all of your gold and six star übergold crew (I'm from the future. London Kings in six games).
 
-With a seemingly uneventable group of traits, you'll be looking for an uptick in variant events if the megas stop. Speculation aside, Saru is the rare collection jewel with the daily stats to back it up and certainly worth fusing if your Jury Rigger collection is incomplete.
+Beyond that, you're mostly looking at a somewhat surprising event crew. The end of Disco megas left a lot of niche crew in the ditch, but Kaminar has done pretty darn well for himself in the years since, notching plenty of bonuses and a handful of Saru features too. While not the picture of daily use, this is still a crew that you (and everyone) should acquire.

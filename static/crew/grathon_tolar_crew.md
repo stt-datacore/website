@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-It doesn’t end well for the prisoner of a thousand data rods, but that doesn’t mean he can’t be of use to us before his unceremonious end. He’s a daily workhorse for early to mid-game rosters, with the #1 ENG base, a usable (if pedestrian) ENG/SCI Voyage total, and a vanilla but un-handicapped +9 Accuracy ship ability that initializes quickly enough to have a chance to matter in Arena. He's a total zero in Gauntlet, and his big base numbers won’t get many chances to play on the weekend, but when he does, he's worth the thaw.
+It doesn’t end well for the prisoner of a thousand data rods, but that doesn’t mean he's dead on arrival for your roster. Despite Tolar's less than prolific event history, his handful of features have been worth more to him than the average super rare, owing to his huge ENG base. Until more of his traits hit on collection and event opportunities, young roster who acquired multiple stars at once may lean on his serviceable arena accuracy and daily shuttle work.

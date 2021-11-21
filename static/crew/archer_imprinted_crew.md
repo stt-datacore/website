@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-It is still baffling that the first MED primary ENG/MED crew the game ever gave us was the legendary doctor...Archer? Mother Hen Jonathan is bugging out in a big way, but the avenues he has to make a real impact are shrinking over time.
+It's tempting to make this space the 'hard to swallow pills' meme with the words "It takes more than a skill set to make a good voyager." Mama Hen Archer was the worst voyage rank debut in history when he first came out...*years* ago. These days he'd thank his lucky stars to latch on to only a MED/ENG voyage, but if that happens, it's also a clear sign that you should be looking to upgrade that part of your roster.
 
-Like his sweet babies, each ENG/MED crew is precious, and he's still guaranteed to make voyage runs for just about any roster, but with crew like Indulgent Seven and especially Medic Reno encroaching on his territory, it gets harder and harder to forgive a voyage total worse than luminaries like Judge Q and Revolutionary Damar.
+So as a functional two skiller, what does he have to offer? Very little. WRG didn't bother inviting Archer to the event party until year three of Timelines and even then, his variant event clip in the time since has been modest. With MED seating so sparse on most faction weekends, it's conceivable that he's utilized in ENG seats or not at all.
 
-Archer's event history has shown a bit more life than we originally gave him credit for, but he is far from anyone's idea of an event powerhouse. Still, when the stars align and Archer's number is called for a Faction event, Bug Brain will bring variant-best MED and ENG to the table. But if you think that's very likely, you're really sniffing Xindi slime.
+With only three viable traits to pop for collections and events (and Desperate is a generous inclusion), Archer's best role may be as a teacher about skill sets, power levels, and all things crew eval to those with stars in their eyes upon seeing his MED/ENG combo.

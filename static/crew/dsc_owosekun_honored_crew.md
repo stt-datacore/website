@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Flying under the radar for her lack of an on-screen presence, OwO (what's this?) still brings the thunder with a top shelf event/voyage pairing that would garner her universal praise if it were attached to a Kirk or Dax. Nevertheless, we will continue to be showered with weekend bonuses for Discovery crew and Owo should be safe even if DB trims down the bonus list. After all, she DOES sit on the bridge.
-
-On voyages, she dodges the deluge of SCI/CMD crew with a tertiary ENG that only Mountaineer Spock shares. Her trait list is a bit thin, but with Disco dominance in one hand and fantastic daily numbers in the other, she's as safe as it gets for a crew not on the cover of your DVD box set, especially since her single collection is liable to be expanded and net you some extra goodies down the line a la Vulcan and Diplomat.
+Flying under the radar for her lack of an on-screen presence, OwO (what's this?) still brings the goods with a few more years of voyage ability and multiple collections which should reach (and stop at) three. The end of the Discovery deluge predictably torpedoed her weekend usability, but worthwhile bases will provide spot use on shuttles and shine with a rare bonus.

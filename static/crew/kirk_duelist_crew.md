@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-With Kal-if-fee and Mirror Kirks dueling for the honor of 'worst variant for cost', you'll want to steer clear of both if possible. Kirk is guaranteed events until the end of Timelines and Kal-if-fee's SEC is still usable for events, but that's about where his usefulness ends. There's theoretical value in his +1 Inspiring and top 50 proficiency total, but his rolls are spread too evenly to be effective and he's not someone that's likely to crack your daily use rotation, even with stars. His best case behold scenario is against two redundant or useless options.
+To not mince words, this card is old and weak. But he's also a reasonable investment the earlier you are in the game. At that point, his gauntlet ability should still play and help you get a foothold in that area, despite later being stomped by superior crew in a loaded skill set. And it would also give his collection slow cooker time to reach fork-tender status as the odds are good he'll end up with three of them before too long.
+
+A relatively highly rated event crew off the back of Kirk's impressive event (and Faction) tally, you may not plug him into shuttles until his final star or two, but he's as good a bet as any to avoid long droughts with zero event relevance. Kal-if-fee is an inverse bell curve for value and a name to avoid if you're in the mid-to-late game just looking to acquire and star up strong daily use options.
