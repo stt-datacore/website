@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Dropdown, Form, Checkbox, Header, Popup } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Header, Popup, Select } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
@@ -205,6 +205,8 @@ const SkillDepth = (props: SkillDepthProps) => {
 	const { buffConfig } = props;
 
 	const [scoreOption, setScoreOption] = React.useState('core');
+	const [comboOption, setComboOption] = React.useState('all');
+	const [preferVersatile, setPreferVersatile] = React.useState(false);
 
 	const scoreOptions = [
 		{ key: 'core', value: 'core', text: 'Core' },
@@ -213,20 +215,35 @@ const SkillDepth = (props: SkillDepthProps) => {
 		{ key: 'voyage', value: 'voyage', text: 'Voyage' }
 	];
 
+	const comboOptions = [
+		{ key: 'all', value: 'all', text: 'All skill combos', excludes: [] },
+		{ key: 'singles', value: 'singles', text: 'Single skills only', excludes: [] },
+		{ key: 'pairs', value: 'pairs', text: 'Pairs only', excludes: ['core', 'shuttles'] },
+		{ key: 'triplets', value: 'triplets', text: 'Triplets only', excludes: ['core', 'shuttles'] }
+	];
+	CONFIG.SKILLS_SHORT.forEach(skill => {
+		comboOptions.push({
+			key: skill.name, value: skill.name, text: `${CONFIG.SKILLS[skill.name]} only`, excludes: ['core']
+		});
+	});
+
 	const myCrew = JSON.parse(JSON.stringify(props.myCrew));
 
 	const data = [];
 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 		let firstSkill = CONFIG.SKILLS_SHORT[first].name;
-		data.push(getSkillData([firstSkill]));
+		if (comboOption == 'all' || comboOption == 'singles' || [firstSkill].includes(comboOption))
+			data.push(getSkillData([firstSkill]));
 		if (scoreOption != 'core') {
 			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
 				let secondSkill = CONFIG.SKILLS_SHORT[second].name;
-				data.push(getSkillData([firstSkill, secondSkill]));
+				if (comboOption == 'all' || comboOption == 'pairs' || [firstSkill, secondSkill].includes(comboOption))
+					data.push(getSkillData([firstSkill, secondSkill]));
 				if (scoreOption != 'shuttles') {
 					for (let third = second+1; third < CONFIG.SKILLS_SHORT.length; third++) {
 						let thirdSkill = CONFIG.SKILLS_SHORT[third].name;
-						data.push(getSkillData([firstSkill, secondSkill, thirdSkill]));
+						if (comboOption == 'all' || comboOption == 'triplets' || [firstSkill, secondSkill, thirdSkill].includes(comboOption))
+							data.push(getSkillData([firstSkill, secondSkill, thirdSkill]));
 					}
 				}
 			}
@@ -238,7 +255,38 @@ const SkillDepth = (props: SkillDepthProps) => {
 			<Header as='h4'>Skill Depth</Header>
 			<p>This table shows the depth and strength of your roster at various areas of the game for every relevant skill combination.</p>
 			<div style={{ marginTop: '1em' }}>
-				Score: <Dropdown selection options={scoreOptions} value={scoreOption} onChange={(e, { value }) => setScoreOption(value) } />
+				<Form>
+					<Form.Group inline>
+						<Form.Field
+							control={Select}
+							label='Score'
+							options={scoreOptions}
+							value={scoreOption}
+							onChange={(e, { value }) => { setScoreOption(value); setComboOption('all'); setPreferVersatile(false); }}
+							placeholder='Score'
+						/>
+						{scoreOption !== 'core' &&
+							<React.Fragment>
+								<Form.Field
+									control={Select}
+									label='Filter skills'
+									options={comboOptions.filter(combo => !combo.excludes.includes(scoreOption))}
+									value={comboOption}
+									onChange={(e, { value }) => setComboOption(value)}
+									placeholder='Filter skills'
+								/>
+								{scoreOption != 'core' && scoreOption != 'shuttles' &&
+									<Form.Field
+										control={Checkbox}
+										label='Only consider 3-skill crew'
+										checked={preferVersatile}
+										onChange={(e, { checked }) => setPreferVersatile(checked)}
+									/>
+								}
+							</React.Fragment>
+						}
+					</Form.Group>
+				</Form>
 			</div>
 			<SkillDepthTable data={data} />
 		</React.Fragment>
@@ -246,6 +294,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 
 	function getSkillData(skills: string[]) {
 		const skillScore = (crew) => {
+			if (preferVersatile && Object.entries(crew.base_skills).length != 3) return 0;
 			const scores = [];
 			skills.forEach(skill => {
 				if (crew[skill].core > 0) scores.push(crew[skill]);
@@ -256,7 +305,8 @@ const SkillDepth = (props: SkillDepthProps) => {
 		const crewBySkill = myCrew.filter(crew => skillScore(crew) > 0).sort((a, b) => skillScore(b) - skillScore(a));
 		const skillAverage = crewBySkill.length > 0 ? crewBySkill.reduce((prev, curr) => prev + skillScore(curr), 0)/crewBySkill.length : 0;
 		const myBestTen = crewBySkill.slice(0, Math.min(10, crewBySkill.length));
-		const myBestTenAverage = myBestTen.length > 0 ? myBestTen.reduce((prev, curr) => prev + skillScore(curr), 0)/myBestTen.length : 0;
+		const myBestTenSum = myBestTen.reduce((prev, curr) => prev + skillScore(curr), 0);
+		const myBestTenAverage = myBestTen.length > 0 ? myBestTenSum/myBestTen.length : 0;
 		return {
 			key: skills.join(','),
 			skills: skills,
@@ -267,12 +317,13 @@ const SkillDepth = (props: SkillDepthProps) => {
 				name: crewBySkill.length > 0 ? crewBySkill[0].name : 'None'
 			},
 			tenAverage: myBestTenAverage,
-			percentile: myBestTen.length > 0 ? getPercentile(skills, myBestTen.length, myBestTenAverage) : 0
+			maxRatio: myBestTen.length > 0 ? getMaxRatio(skills, myBestTen.length, myBestTenSum) : 0
 		};
 	}
 
-	function getPercentile(skills: string[], myBestCount: number, myBestAverage: number): number {
+	function getMaxRatio(skills: string[], myBestCount: number, myBestSum: number): number {
 		const skillScore = (crew) => {
+			if (preferVersatile && Object.entries(crew.base_skills).length != 3) return 0;
 			const scores = [];
 			skills.forEach(skill => {
 				if (crew.base_skills[skill]) scores.push(applySkillBuff(buffConfig, skill, crew.base_skills[skill]));
@@ -280,13 +331,11 @@ const SkillDepth = (props: SkillDepthProps) => {
 			if (scores.length < skills.length) return 0;
 			return getSkillScore(scores);
 		};
-		let crewBySkill = props.allCrew.filter(crew => skillScore(crew) > 0)
+		const crewBySkill = props.allCrew.filter(crew => skillScore(crew) > 0)
 			.sort((a, b) => skillScore(b) - skillScore(a));
-		// If crew pool is small, limit comparison to best X (where X = my best count size)
-		const sliceSize = crewBySkill.length < 10 ? myBestCount : 10;
-		crewBySkill = crewBySkill.slice(0, sliceSize);
-		const allAverage = crewBySkill.reduce((prev, curr) => prev + skillScore(curr), 0)/crewBySkill.length;
-		return myBestAverage/allAverage;
+		const allBestTen = crewBySkill.slice(0, Math.min(10, crewBySkill.length));
+		const allBestTenSum = allBestTen.reduce((prev, curr) => prev + skillScore(curr), 0);
+		return myBestSum/allBestTenSum;
 	}
 
 	function getSkillScore(scores: any[]): number {
@@ -338,7 +387,7 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 		{ column: 'average', title: 'Average', center: true, reverse: true },
 		{ column: 'best', title: 'Best', center: false, reverse: true },
 		{ column: 'tenAverage', title: <span>Ten Best <Popup trigger={<Icon name="help" />} content='The average score of your ten best crew at this skill' /></span>, center: true, reverse: true },
-		{ column: 'percentile', title: <span>Percentile <Popup trigger={<Icon name="help" />} content='How your best crew compare to all crew in the game with this skill' /></span>, center: true, reverse: true }
+		{ column: 'maxRatio', title: <span>% of Max <Popup trigger={<Icon name="help" />} content='How your ten best crew compare to all crew in the game with this skill' /></span>, center: true, reverse: true }
 	];
 
 	return (
@@ -368,7 +417,7 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 						<Table.Cell textAlign='center'>{row.average.toFixed(1)}</Table.Cell>
 						<Table.Cell>{Math.floor(row.best.score)} ({row.best.name})</Table.Cell>
 						<Table.Cell textAlign='center'>{row.tenAverage.toFixed(1)}</Table.Cell>
-						<Table.Cell textAlign='center'>{(row.percentile*100).toFixed(1)}</Table.Cell>
+						<Table.Cell textAlign='center'>{(row.maxRatio*100).toFixed(1)}</Table.Cell>
 					</Table.Row>
 				))}
 			</Table.Body>
