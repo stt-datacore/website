@@ -287,8 +287,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const honor = honorReward.length == 0 ? 0 : honorReward[0].quantity;
 		return (
 			<span>
-				{`Rewards: ${bestCrewCount} ${bestRarity}* `}&nbsp;
-				{` ${chrons} `}
+				Rewards: {bestCrewCount ? `${bestCrewCount} ${bestRarity}*` : ''}&nbsp;
+				{`${chrons}`}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
@@ -386,13 +386,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
-		const rewards = {
-			'pending': () => [],
-			'started': () => voyageData.pending_rewards.loot,
-			'failed': () => voyageData.pending_rewards.loot,
-			'recalled': () => voyageData.pending_rewards.loot,
-			'completed': () => voyageData.granted_rewards.loot
-		}[voyState]();
+		const rewards = voyState == 'pending' ? [] : voyageData.pending_rewards.loot;
 
 		// Adds/Removes panels from the active list
 		const flipItem = (items, item) => items.includes(item)
@@ -419,7 +413,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			const msgTypes = {
 				started: ' has been running for ',
 				failed: ' failed at ',
-				recalled: ' ran for '
+				recalled: ' ran for ',
+				completed: ' ran for '
 			};
 			const voyagePriSec = Object.values(voyageData.skills)
 																 .map(s1 => CONFIG.SKILLS_SHORT.filter(s2 => s2.name === s1)[0].short)
