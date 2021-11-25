@@ -1214,6 +1214,27 @@ const Optimizer = {
     return totalVoyageEV;
   },
   findEVContributionOfCrewToCite() {
+    Optimizer.topCrewToCite = Object.fromEntries(
+      Object.entries(Optimizer.topCrewToCite).map(([citationCandidateName, value]) => {
+        let candidate = Optimizer.rosterLibrary[citationCandidateName];
+
+        value.evAdded =
+          Array.from({length: candidate.maxRarity - candidate.rarity + 1}, (_, i) => i+candidate.rarity)
+            .map(rarity =>
+              value.voyagesImproved.map(skillPairing => {
+                const voyageRanking = Optimizer.createCandidateRarityRankingArray(candidate.name, rarity, skillPairing);
+                const voyageCrew = Optimizer.findBestCrewWithRarityDependentCandidate(voyageRanking, candidate.name);
+                return Optimizer.findEVofVoyageCrewWithRarityDependentCandidate(voyageCrew, skillPairing, candidate.name, rarity);
+              }).reduce((total, ev) => total + ev, 0) // Gives total ev of all skill pairings at given rarity
+            )
+            .map((voyageEV, i, self) => i !== 0 ? voyageEV - self[i-1] : 0)
+            .slice(1);
+      value.totalEVFullyCited = value.evAdded.reduce((total, ev) => total + ev, 0);
+      value.totalEVPerCitation = value.totalEVFullyCited/(candidate.maxRarity-candidate.rarity);
+      console.log(value.evAdded);
+      return [citationCandidateName, value];
+    }));
+    /*
     for (var citationCandidateName in Optimizer.topCrewToCite) {
       let candidate = Optimizer.rosterLibrary[citationCandidateName];
       Optimizer.topCrewToCite[candidate.name].voyagesImproved.forEach(skillPairing => {
@@ -1247,7 +1268,7 @@ const Optimizer = {
 
         Optimizer.topCrewToCite[candidate.name].totalEVPerCitation += (voyageEVWithCandidateAtMaxRarity - voyageEVWithCandidateAtCurrentRarity)/(candidate.maxRarity - candidate.rarity);
       });
-    }
+    }*/
   },
   sortCrewToCite() {
     let sortingArray = [];

@@ -47,14 +47,13 @@ const citeOptimizer = (playerData, allCrew) => {
     Optimizer.findBestForRarity();
     Optimizer.findCrewToTrain();
     Optimizer.findEVContributionOfCrewToTrain();
-    Optimizer.sortCrewToTrain();
     Optimizer.findBestCitedCrew();
     Optimizer.findCrewToCite();
     Optimizer.findEVContributionOfCrewToCite();
-    Optimizer.sortCrewToCite();
+
 		resolve({
-			crewToCite: Optimizer.rankedCrewToCite,
-			crewToTrain: Optimizer.rankedCrewToTrain
+			crewToCite: Optimizer.topCrewToCite,
+			crewToTrain: Optimizer.topCrewToTrain
 		});
 	});
 };
