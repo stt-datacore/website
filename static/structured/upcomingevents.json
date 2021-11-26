@@ -845,5 +845,16 @@
 		"smallbonus": {
 			"traits": ["mudd","Maverick"]
 		}
+	},
+	{
+		"name": "Leisure Time (rerun)",
+		"type": "Galaxy",
+		"dates": "Thursday 11/25 until Monday 11/29 at Noon (17.00 UTC)",
+		"startDate": "2021-11-25T17:00:00Z",
+		"endDate": "2021-11-29T17:00:00Z",
+		"highbonus": ["obrien_racquetball_crew", "scott_claymore_crew", "emh_caddy_crew", "kira_niners_crew"],
+		"smallbonus": {
+			"traits": ["emh","kira","obrien"]
+		}
 	}
 ]
