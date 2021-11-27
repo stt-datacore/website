@@ -19992,7 +19992,7 @@ ol.ui.horizontal.list li:before,
 .ui.ordered.steps .step.completed:before {
   font-family: 'Step';
   content: '\e800';
-  /* '' 
+  /* ''
 }
 
 /*******************************
@@ -40424,3 +40424,17 @@ body.pushable > .pusher {
 /*******************************
          Site Overrides
 *******************************/
+
+/* Specify icons to invert for light mode */
+img.skillIcon,
+img.traitIcon,
+/* Also catch unspecified skill icons by matching filename */
+img[src$="icon_command_skill.png"],
+img[src$="icon_diplomacy_skill.png"],
+img[src$="icon_engineering_skill.png"],
+img[src$="icon_medicine_skill.png"],
+img[src$="icon_science_skill.png"],
+img[src$="icon_security_skill.png"] {
+	-webkit-filter: invert(100%) grayscale(1);
+	filter: invert(100%) grayscale(1);
+}
