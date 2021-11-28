@@ -78,17 +78,9 @@ function getEstimate(config, reportProgress = () => true) {
       var safestTime = exResults[0];
       var moonshotTime = exResults[exResults.length-Math.floor(exResults.length/100)];
 
-      // compute last dilemma chance
-      var lastDilemma = 0;
-      var lastDilemmaFails = 0;
-      for(var i = 0; i < exResults.length; i++) {
-        var dilemma = Math.floor(exResults[i]/2);
-        if (dilemma > lastDilemma) {
-          lastDilemma = dilemma;
-          lastDilemmaFails = Math.max(0,i);
-        }
-      }
-      var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
+      // compute chance of dilemma closest to median
+      const lastDilemma = Math.max(Math.floor(elapsedSeconds/7200)*2+2, Math.round(voyTime/2)*2);
+      const lastDilemmaSuccesses = exResults.filter(r => r >= lastDilemma).length;
 
       var refill = {
          'all': exResults,
@@ -96,16 +88,16 @@ function getEstimate(config, reportProgress = () => true) {
          'safeResult': safeTime,
          'saferResult': saferTime,
          'moonshotResult': moonshotTime,
-         'lastDil': lastDilemma*2,
-         'dilChance': dilChance,
+         'lastDil': lastDilemma,
+         'dilChance': 100*lastDilemmaSuccesses/exResults.length,
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
       }
 
       var bins = {};
-      const binSize = 1/45;
+      const binSize = 1/30;
 
       for (result of exResults.sort()) {
-	  		let bin = (Math.floor(result/binSize)+0.5)*binSize;
+	  		const bin = Math.floor(result/binSize)*binSize+binSize/2;
 
         try{
         	++bins[bin].count;
@@ -268,7 +260,7 @@ function getEstimate(config, reportProgress = () => true) {
       } // system failure
     } // foreach tick
 
-    if (config.progressCallback && iSim > 0 && iSim % 100 == 0)
+    if (iSim > 0 && iSim % 100 == 0)
       reportProgress(formatResults(false));
   } // foreach sim
 

@@ -422,7 +422,14 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 			return (
 				<div>
-					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + this._formatTime(voyageData.log_index/180)}.</Message>
+					{Math.floor(voyageData.log_index/360) < Math.floor(voyageData.voyage_duration/7200) &&
+						<Message warning>
+							WARNING!!! A potential problem with the reported voyage duration has been detected.
+							The estimate is likely to be inaccurate.
+							Load the game then return to Datacore with a fresh copy of your player file to get an accurate estimate.
+						</Message>
+					}
+					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
 						voyState !== 'recalled' &&
@@ -446,7 +453,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			);
 		}
 	}
-
 }
 
 export default VoyageStats;
