@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The “worst variant for cost" would be an insult to most characters, but not Burnham. This version still manages to pick up a collection alongside fistfuls of Burnham and Disco events to make even average bases useful. Her usable +Attack in arena may be a consideration for some players.
+We attached the “worst variant for cost" moniker to Tac Burnham for a quite a while, but her depth as a card has served her well over time. Plenty of event work (even post-Disco megas), multi-collection status, fine early game attack booster on ships...there's something for everyone here, even if the raw base and voyage numbers reveal her age.

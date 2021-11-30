@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Both of Shran's features have overlapped with Andorian events and that number is likely to slow with the Andorian mega behind us. His numbers would need a much rarer skill set to garner any voyage work, which leaves the arena as his chance for a regular contribution.
+All of Shran's features have overlapped with trait events as of this writing; a terrible waste of Jeffery Combs' talents. With essentially no daily usability left in his base or proficiency numbers, cherish the moments when you do get to level/thaw him for events.
 
-Above average passive numbers meet six second attack power and even though he needs a number of stars to avoid having to use a supplementary attack crew, Jeffery Combs fans usually have no problem collecting stars on his many wonderful characters.
+His one chance to be of use on a consistent basis - he's a 'win with your favorites' type of option on ships. A fast-activating attack boost with elite offensive passives are useful enough to slot into the first seat for skirmishes or in the arena. And, oh yea, he makes a hell of a bridge crew photo op next to Ushaan Archer.

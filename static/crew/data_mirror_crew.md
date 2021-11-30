@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-The Mr. Potato Head of Trek characters, many of Data's variants seem to have the same solid core with just some external tweaks from crew to crew. That's not a bad thing; they're all pretty reliable and Data is too popular a name for his downward event trend to continue. Mirror's voyage power reflects his three years in the game and ENG/SEC is no longer an uncommon pairing, but he's recently picked up a collection spot to supplement his value, which is still worth considering despite his age.
+The Mr. Potato Head of Trek characters, many of Data's variants seem to have the same event-y, ENG-y core with just some external tweaks from crew to crew. This particular Mirror variant has caught the collection bug early on, nearly reaching his full potential in that area and in combination with the aforementioned event value is one of the easier crew to behold from the aged, low-power set of names.
+
+Reliable may be underselling Data's event history to date. Heavily skewed toward faction events more than makes up for ENG's sparse seating opportunities, though Data features do tend to provide more options there. His traits have picked up their share of the bonus pie as well and although the mirror trait has already had a few megas, there's no reason to believe Mirror Data's proficiency in this area will dry up any time soon.

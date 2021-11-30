@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-A fugitive from Easter Island, this encephalitic enigma does a great job delivering in the areas that a one-off should. Keeper's huge SCI roll pairs with a respectable MED to keep him from butting heads with previous gauntlet exclusives while delivering voyage power that punches above its numbers with a useful skill set. His unique lineup of traits helps augment both areas while also affording him occasional chances at weekend relevance for a dash of added value. The surface numbers don't wow, but The Keeper remains a great chess piece going into his third year, especially on younger rosters.
+A fugitive from Easter Island, this encephalitic enigma shows up in a few areas off the beaten path from your traditional behold options. 
+
+Gauntlet is generally Keeper's headline. Worthwhile overall proficiency and laughably small CMD roll seem at odds, but his (hidden male trait) top two pairs of SCI/MED and SCI/CMD rarely face walls of overpowered exclusive crew and he has a handful of 45% gauntlets that will have opponents thinking twice about attacking into you. Obviously Keeper's chances to ride in your Fave Five diminish as your roster grows, but he's a capable inclusion at almost any player level.
+
+Those some crit-enabling traits make for a tantalizing lineup of collection potential. Owning only one spot as of this writing, Keeper's theoretical ceiling of six or seven collections is surely worth the behold dart throw in an era of off the wall collections ranging from Primal to Resourceful.

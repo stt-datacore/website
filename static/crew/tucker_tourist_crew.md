@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-I'm experiencing a bit of nIb'poH - we just had this crew last week and his name then was Human Torres. I recommend reading her note and the Sergey and Helena Rozhenko comparison as it's still relevant. In this case, Trip trades in the useful Jury Rigger trait for Casual (not ideal) and his primary, DIP, is continually hammered and the most common "New top X rank!". In most scenarios this is a crew whose bases will make a tangible difference twice a year; just often enough to remind you that he's on your roster. The rest of the time it's advisable to seek investment in crew who offer better power or more utility.
+Stripped and tied up in a basement by a coupla dudes? That's tier 10.
+
+Trip wasted his shore leave, but at least he's squeezing the most out of his limited trait set thanks to the Resourceful collection. To say his value is scant would be an understatement, but he does have the possibility to end up as a triple collection crew with a few events per year, which is about all you can ask for from 2-skillers who are a few years old. Keep an eye on that collection counter and budget your behold capital accordingly.

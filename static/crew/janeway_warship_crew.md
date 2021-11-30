@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Her event tally is massive; combining Hologram and Janeway weekends, but with bases so poor that she may not make the thaw list for some players. Tertiary SCI and above average voyage numbers can find her a seat there in the early-to-mid game, but she’s an event piece first and foremost.
+Janeway's event tally is substantial; combining Hologram and Janeway variant weekends, but with bases so poor that she may not make the thaw list for many rosters. Not as traity as some other Janeway counterparts, she'll need the long ballyhooed Hologram or Villain traits to achieve collection status before established players will give her a second look.
