@@ -856,5 +856,16 @@
 		"smallbonus": {
 			"traits": ["emh","kira","obrien"]
 		}
+	},
+	{
+		"name": "Scars of History - Mega Pt 1",
+		"type": "Faction",
+		"dates": "Thursday 12/02 until Monday 12/06 at Noon (17.00 UTC)",
+		"startDate": "2021-12-02T17:00:00Z",
+		"endDate": "2021-12-06T17:00:00Z",
+		"highbonus": ["kira_prophet_crew", "quarren_kyrian_crew", "archer_founder_crew", "sahil_lieutenant_crew"],
+		"smallbonus": {
+			"traits": ["kira","archer","Cultural Figure"]
+		}
 	}
 ]
