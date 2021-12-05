@@ -16,6 +16,12 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+const sorters = {
+		voyagesImproved: v => v.voyagesImproved.length,
+		evPerCitation: v => v.totalEVPerCitation,
+		finalCitationEV: v => v.evAdded[v.evAdded.length - 1],
+		totalCitationEV: v => v.totalEVFullyCited
+};
 
 type CiteOptimizerProps = {
 	playerData: any;
@@ -39,7 +45,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			trainingPage: 1,
 			paginationRows: 20,
 			citeData: undefined,
-			sorter: v => v.totalEVPerCitation
+			sorter: 'evPerCitation'
 		};
 	}
 
@@ -63,11 +69,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [ otherPaginationPage, setOtherPaginationPage ] = createStateAccessors(training ? 'citePage' : 'trainingPage');
 		const [ paginationRows, setPaginationRows ] = createStateAccessors('paginationRows');
 		const [ sorter, setSorter ] = createStateAccessors('sorter');
-
 		const data = Object.entries(citeData).map(([k, v]) => ({ name: k, ...v}))
-																				 .sort((d1, d2) =>  sorter(d2) - sorter(d1));
+																				 .sort((d1, d2) =>  sorters[sorter](d2) - sorters[sorter](d1));
 		const baseRow = (paginationPage-1)*paginationRows;
 		const totalPages = Math.ceil(data.length/paginationRows);
+		const sortedHeader = (name, content) => (
+			<Table.HeaderCell onClick={() => setSorter(name)}>
+				{content}
+				{sorter == name && <Icon name='caret down' />}
+			</Table.HeaderCell>
+		);
 
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -76,78 +87,22 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.HeaderCell>Rank</Table.HeaderCell>
 						<Table.HeaderCell>Crew</Table.HeaderCell>
 						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell onClick={() => setSorter(v => v.voyagesImproved.length)}>Voyages improved</Table.HeaderCell>
+						<Table.HeaderCell>Skills</Table.HeaderCell>
+						{sortedHeader('voyagesImproved', 'Voyages improved')}
 						{training && <Table.HeaderCell>EV when trained</Table.HeaderCell>}
 						{!training &&
 							<>
-								<Table.HeaderCell onClick={() => setSorter(v => v.totalEVPerCitation)}>EV per cite</Table.HeaderCell>
-								<Table.HeaderCell onClick={() => setSorter(v => v.evAdded[v.evAdded.length - 1])}>EV of final cite</Table.HeaderCell>
-								<Table.HeaderCell onClick={() => setSorter(v => v.totalEVFullyCited)}>Fully Cited EV</Table.HeaderCell>
+								{sortedHeader('evPerCitation', 'EV per cite')}
+								{sortedHeader('finalCitationEV', 'EV of final citation')}
+								{sortedHeader('totalEVAdded', 'Fully Cited EV')}
 							</>
 						}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{data.slice(baseRow, baseRow+paginationRows).map((row, idx) => {
-						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
-
-						return (
-							<Table.Row>
-								<Table.Cell>{baseRow+idx+1}</Table.Cell>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-										</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
-								</Table.Cell>
-								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
-								</Table.Cell>
-								{training &&
-									<Table.Cell>
-										{row.totalEVAdded.toFixed(1)}
-									</Table.Cell>
-								}
-								{!training &&
-									<>
-										<Table.Cell>
-											<Dropdown text={row.totalEVPerCitation.toFixed(1)}>
-												<Dropdown.Menu>
-													{row.evAdded.map((ev, i) =>
-														<Dropdown.Item>
-															<span>
-																<Rating icon='star' rating={crew.rarity + i + 1} maxRating={crew.max_rarity} size='medium' disabled />
-																{` ${ev.toFixed(1)}`}
-															</span>
-														</Dropdown.Item>
-													)}
-												</Dropdown.Menu>
-											</Dropdown>
-										</Table.Cell>
-										<Table.Cell>
-											{row.evAdded[row.evAdded.length - 1].toFixed(1)}
-										</Table.Cell>
-										<Table.Cell>
-											{row.totalEVFullyCited.toFixed(1)}
-										</Table.Cell>
-									</>
-								}
-							</Table.Row>
-						);
-					})}
+					{data.slice(baseRow, baseRow+paginationRows).map((row, idx) =>
+						this._renderRow(row, training, baseRow+idx+1)
+					)}
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
@@ -175,6 +130,78 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Footer>
 			</Table>
 		);
+	}
+
+	_renderRow(row, training, rowNum) {
+		const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
+		const voyScore = skill => skill.core + (skill.min + skill.max)/2;
+
+		return (
+			<Table.Row>
+				<Table.Cell>{rowNum}</Table.Cell>
+				<Table.Cell>
+					<div
+						style={{
+							display: 'grid',
+							gridTemplateColumns: '60px auto',
+							gridTemplateAreas: `'icon stats' 'icon description'`,
+							gridGap: '1px'
+						}}>
+						<div style={{ gridArea: 'icon' }}>
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+						</div>
+						<div style={{ gridArea: 'stats' }}>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+						</div>
+					</div>
+				</Table.Cell>
+				<Table.Cell>
+					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
+				</Table.Cell>
+				<Table.Cell>
+				<>
+					{
+						CONFIG.SKILLS_SHORT
+							.filter(s => crew[s.name].core > 0)
+							.sort((s1, s2) => voyScore(crew[s2.name]) - voyScore(crew[s1.name]))
+							.map(s => s.short)
+							.join('/')
+					}
+				</>
+				</Table.Cell>
+				<Table.Cell>
+					<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
+				</Table.Cell>
+				{training &&
+					<Table.Cell>
+						{row.totalEVAdded.toFixed(1)}
+					</Table.Cell>
+				}
+				{!training &&
+					<>
+						<Table.Cell>
+							<Dropdown text={row.totalEVPerCitation.toFixed(1)}>
+								<Dropdown.Menu>
+									{row.evAdded.map((ev, i) =>
+										<Dropdown.Item>
+											<span>
+												<Rating icon='star' rating={crew.rarity + i + 1} maxRating={crew.max_rarity} size='medium' disabled />
+												{` ${ev.toFixed(1)}`}
+											</span>
+										</Dropdown.Item>
+									)}
+								</Dropdown.Menu>
+							</Dropdown>
+						</Table.Cell>
+						<Table.Cell>
+							{row.evAdded[row.evAdded.length - 1].toFixed(1)}
+						</Table.Cell>
+						<Table.Cell>
+							{row.totalEVFullyCited.toFixed(1)}
+						</Table.Cell>
+					</>
+				}
+			</Table.Row>);
 	}
 
 	render() {

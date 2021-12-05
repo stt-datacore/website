@@ -94,8 +94,8 @@ const Optimizer = {
             let voyagePairingKey = `${skillPairingKeyArray[0]}/${skillPairingKeyArray[1]}`;
             skillPairingKeyArray.sort();
             let gauntletPairingKey = `${skillPairingKeyArray[0]}/${skillPairingKeyArray[1]}`;
-            console.log(`Processing Combinations ${voyagePairingKey} for voyages and ${gauntletPairingKey} for gauntlet`);
-            console.log(`We are working with the base_skill keys: ${primarySkill}, ${secondarySkill}`);
+            ////console.log(`Processing Combinations ${voyagePairingKey} for voyages and ${gauntletPairingKey} for gauntlet`);
+            ////console.log(`We are working with the base_skill keys: ${primarySkill}, ${secondarySkill}`);
             let voyagePairingEV = 0;
             let gauntletPairingEV = 0
             for (var skill in crew.base_skills) {
@@ -111,18 +111,18 @@ const Optimizer = {
             }
 
             if (voyagePairingEV > Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV) {
-              console.log(`${crew.name} is better than ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].name} at ${voyagePairingKey} voyages with ${voyagePairingEV} over ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV}`);
+              ////console.log(`${crew.name} is better than ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].name} at ${voyagePairingKey} voyages with ${voyagePairingEV} over ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV}`);
               Optimizer.bestPossibleCrew.voyages[voyagePairingKey].name = crew.name;
               Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV = voyagePairingEV;
             } else {
-              console.log(`${crew.name} is not as good as ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].name} at ${voyagePairingKey} voyages with ${voyagePairingEV} instead of ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV}`);
+              ////console.log(`${crew.name} is not as good as ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].name} at ${voyagePairingKey} voyages with ${voyagePairingEV} instead of ${Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV}`);
             }
             if (gauntletPairingEV > Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV) {
-              console.log(`${crew.name} is better than ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].name} at ${gauntletPairingKey} gauntlets with ${gauntletPairingEV} over ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV}`);
+              ////console.log(`${crew.name} is better than ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].name} at ${gauntletPairingKey} gauntlets with ${gauntletPairingEV} over ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV}`);
               Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].name = crew.name;
               Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV = gauntletPairingEV;
             } else {
-              console.log(`${crew.name} is not as good as ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].name} at ${gauntletPairingKey} gauntlets with ${gauntletPairingEV} instead of ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV}`);
+              ////console.log(`${crew.name} is not as good as ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].name} at ${gauntletPairingKey} gauntlets with ${gauntletPairingEV} instead of ${Optimizer.bestPossibleCrew.gauntlet[gauntletPairingKey].gauntletPairingEV}`);
             }
           }
         });
@@ -300,19 +300,19 @@ const Optimizer = {
 
     });
 
-    console.log("Crew Library:");
-    console.log(Optimizer.rosterLibrary);
-    console.log("Crew Array:");
-    console.log(Optimizer.rosterArray);
+    ////console.log("Crew Library:");
+    ////console.log(Optimizer.rosterLibrary);
+    ////console.log("Crew Array:");
+    ////console.log(Optimizer.rosterArray);
   },
   populateSortingArray(sortingArray) {
     sortingArray = [];
     Optimizer.rosterArray.forEach(crew => {
       sortingArray.push(crew.name);
     });
-    //console.log(sortingArray);
-    console.log("Populated Roster");
-    console.log(sortingArray);
+    //////console.log(sortingArray);
+    ////console.log("Populated Roster");
+    ////console.log(sortingArray);
   },
   sortVoyageRankings() {
     let sortingArray = [];
@@ -365,14 +365,14 @@ const Optimizer = {
     }
   },
   assignCrewToPools(pool, crewName) {
-    //console.log(`Assigning ${crewName} to pool:`);
-    //console.log(pool);
+    //////console.log(`Assigning ${crewName} to pool:`);
+    //////console.log(pool);
     if (!pool.assignedCrew.includes(crewName)) {
       pool.assignedCrew.push(crewName);
       if (pool.assignedCrew.length > pool.seats) {
-        console.log(`Assigning ${crewName} to pool:`);
-        console.log(pool);
-        console.log(`Error! Pool has too many crew! Length is ${pool.assignedCrew.length} and seats is ${pool.seats}`);
+        ////console.log(`Assigning ${crewName} to pool:`);
+        ////console.log(pool);
+        ////console.log(`Error! Pool has too many crew! Length is ${pool.assignedCrew.length} and seats is ${pool.seats}`);
       } else if (pool.assignedCrew.length == pool.seats) {
         pool.full = true;
         Optimizer.fillSubSets(pool);
@@ -393,8 +393,8 @@ const Optimizer = {
     });
   },
   assessPoolVacancies(pool) {
-    console.log(`Assessing vacancy of pool`);
-    console.log(pool);
+    ////console.log(`Assessing vacancy of pool`);
+    ////console.log(pool);
     if (pool.full) {
       pool.subSets.forEach(subSetSignature => {
         Optimizer.voyageSkillPools[subSetSignature].full = true;
@@ -484,17 +484,17 @@ const Optimizer = {
       } else if (crewWith3RelevantSkills.length > 0) {
         leastSkillsPerCrew = crewWith3RelevantSkills;
       } else {
-        console.log("You broke something somewhere");
+        ////console.log("You broke something somewhere");
       }
       //copy-paste migration from static relevant idenity counts
       let leastKnownSkill = 'indecisive';
       let leastKnownSkillCount = 13;
       let nextCrewSeated = ''
-      console.log(`Least skills per crew is`);
-      console.log(leastSkillsPerCrew);
-      console.log(`But relevant skills counts are`);
+      ////console.log(`Least skills per crew is`);
+      ////console.log(leastSkillsPerCrew);
+      ////console.log(`But relevant skills counts are`);
       for (var skill in relevantSkillCounts) {
-        console.log(relevantSkillCounts[skill]);
+        ////console.log(relevantSkillCounts[skill]);
       }
       for (var skill in relevantSkillCounts) {
         if (relevantSkillCounts[skill].length < leastKnownSkillCount && leastSkillsPerCrew.includes(relevantSkillCounts[skill][0])) {
@@ -505,25 +505,25 @@ const Optimizer = {
           leastKnownSkillCount = relevantSkillCounts[skill].length;
         }
       }
-      console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
+      ////console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
       for (var skill in relevantSkillCounts) {
-        console.log(relevantSkillCounts[skill]);
+        ////console.log(relevantSkillCounts[skill]);
       }
-      console.log(`Status at ${skillPairing} voyages`);
-      console.log(Optimizer.topVoyageCrews.currentBest);
+      ////console.log(`Status at ${skillPairing} voyages`);
+      ////console.log(Optimizer.topVoyageCrews.currentBest);
       nextCrewSeated = relevantSkillCounts[leastKnownSkill][0];
-      console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.currentBest[skillPairing].seatAssignments[leastKnownSkill]}`);
+      ////console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.currentBest[skillPairing].seatAssignments[leastKnownSkill]}`);
       //Optimizer.topVoyageCrews.currentBest[skillPairing].seatAssignments[leastKnownSkill].push(nextCrewSeated);
       seatedCrew.push(nextCrewSeated);
-      console.log(`Seated crew during ${skillPairing} is:`);
-      console.log(seatedCrew);
+      ////console.log(`Seated crew during ${skillPairing} is:`);
+      ////console.log(seatedCrew);
       assignedSeats[leastKnownSkill].push(nextCrewSeated);
-      console.log("And the assigned Seats are:");
+      ////console.log("And the assigned Seats are:");
       for (skill in assignedSeats) {
-        console.log(assignedSeats[skill]);
+        ////console.log(assignedSeats[skill]);
       }
-      console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
-      console.log(seatedCrew);
+      ////console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
+      ////console.log(seatedCrew);
     };
   },
   //Focusing on the crew at their current rarity which need no more chroniton investment
@@ -546,22 +546,22 @@ const Optimizer = {
       while (!skillPools.voyageCrew.full) {
         let crewName = rankArray[rankIndex];
         let crew = Optimizer.rosterLibrary[crewName];
-        console.log(`${crewName} is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
-        //console.log(crew);
+        ////console.log(`${crewName} is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
+        //////console.log(crew);
         //If there is room in the immediate seats available and if they're already invested
-        console.log(`Assessing Skill Pools:`);
-        console.log(skillPools);
-        console.log(`Assessing signature ${crew.skillSet.signature}`);
+        ////console.log(`Assessing Skill Pools:`);
+        ////console.log(skillPools);
+        ////console.log(`Assessing signature ${crew.skillSet.signature}`);
         if (!skillPools[crew.skillSet.signature].full && crew.chronsInvested) {
           Optimizer.assignCrewToPools(skillPools[crew.skillSet.signature], crew.name);
           //Optimizer.assessPoolVacancies(Optimizer.voyageSkillPools.voyageCrew);
           rankIndex++;
-          //console.log(`${crewName} was added to the ${skillPairing} voyage`);
+          //////console.log(`${crewName} was added to the ${skillPairing} voyage`);
         } else if (!crew.chronsInvested) {
-          //console.log(`${crewName} is not trained!`);
+          //////console.log(`${crewName} is not trained!`);
           rankIndex++;
         } else if (skillPools[crew.skillSet.signature].full) {
-          //console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
+          //////console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
           rankIndex++;
         }
       }
@@ -578,23 +578,23 @@ const Optimizer = {
         Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].voyageMetrics[skillPairing];
       });
       /*
-      console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
-      console.log(seatedCrew);
-      console.log(`Assigned Seats at the end of ${skillPairing} is`);
+      ////console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
+      ////console.log(seatedCrew);
+      ////console.log(`Assigned Seats at the end of ${skillPairing} is`);
       for (skill in assignedSeats) {
-        console.log(assignedSeats.skill);
+        ////console.log(assignedSeats.skill);
       }
-      console.log(assignedSeats);
+      ////console.log(assignedSeats);
       for (skill in assignedSeats) {
         assignedSeats[skill].forEach(crewName => {
           Optimizer.topVoyageCrews.currentBest[skillPairing].seatAssignments[skill].push(crewName);
         });
       }
       */
-      //console.log(`After completing ${skillPairing} is:`);
-      //console.log(Optimizer.voyageSkillPools);
-      //console.log(Optimizer.topVoyageCrews);
-      //console.log(`Best Current Crew for ${skillPairing} found`);
+      //////console.log(`After completing ${skillPairing} is:`);
+      //////console.log(Optimizer.voyageSkillPools);
+      //////console.log(Optimizer.topVoyageCrews);
+      //////console.log(`Best Current Crew for ${skillPairing} found`);
     });
   },
   findBestForRarity() {
@@ -627,19 +627,19 @@ const Optimizer = {
       while (!skillPools.voyageCrew.full) {
         let crewName = rankArray[rankIndex];
         let crew = Optimizer.rosterLibrary[crewName];
-        //console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
-        //console.log(crew);
+        //////console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
+        //////console.log(crew);
         //If there is room in the immediate seats available and if they're already invested
-        //console.log(`Assessing Skill Pools:`);
-        //console.log(skillPools);
-        //console.log(`Assessing signature ${crew.skillSet.signature}`);
+        //////console.log(`Assessing Skill Pools:`);
+        //////console.log(skillPools);
+        //////console.log(`Assessing signature ${crew.skillSet.signature}`);
         if (!skillPools[crew.skillSet.signature].full) {
           Optimizer.assignCrewToPools(skillPools[crew.skillSet.signature], crew.name);
           //Optimizer.assessPoolVacancies(Optimizer.voyageSkillPools.voyageCrew);
           rankIndex++;
-          //console.log(`${crewName} was added to the ${skillPairing} voyage`);
+          //////console.log(`${crewName} was added to the ${skillPairing} voyage`);
         } else if (skillPools[crew.skillSet.signature].full) {
-          //console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
+          //////console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
           rankIndex++;
         }
       }
@@ -732,17 +732,17 @@ const Optimizer = {
         } else if (crewWith3RelevantSkills.length > 0) {
           leastSkillsPerCrew = crewWith3RelevantSkills;
         } else {
-          console.log("You broke something somewhere");
+          ////console.log("You broke something somewhere");
         }
         //copy-paste migration from static relevant idenity counts
         let leastKnownSkill = 'indecisive';
         let leastKnownSkillCount = 13;
         let nextCrewSeated = ''
-        console.log(`Least skills per crew is`);
-        console.log(leastSkillsPerCrew);
-        console.log(`But relevant skills counts are`);
+        ////console.log(`Least skills per crew is`);
+        ////console.log(leastSkillsPerCrew);
+        ////console.log(`But relevant skills counts are`);
         for (var skill in relevantSkillCounts) {
-          console.log(relevantSkillCounts[skill]);
+          ////console.log(relevantSkillCounts[skill]);
         }
         for (var skill in relevantSkillCounts) {
           if (relevantSkillCounts[skill].length < leastKnownSkillCount && leastSkillsPerCrew.includes(relevantSkillCounts[skill][0])) {
@@ -753,43 +753,43 @@ const Optimizer = {
             leastKnownSkillCount = relevantSkillCounts[skill].length;
           }
         }
-        console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
+        ////console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
         for (var skill in relevantSkillCounts) {
-          console.log(relevantSkillCounts[skill]);
+          ////console.log(relevantSkillCounts[skill]);
         }
-        console.log(`Status at ${skillPairing} voyages`);
-        console.log(Optimizer.topVoyageCrews.rarityBest);
+        ////console.log(`Status at ${skillPairing} voyages`);
+        ////console.log(Optimizer.topVoyageCrews.rarityBest);
         nextCrewSeated = relevantSkillCounts[leastKnownSkill][0];
-        console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill]}`);
+        ////console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill]}`);
         //Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill].push(nextCrewSeated);
         seatedCrew.push(nextCrewSeated);
-        console.log(`Seated crew during ${skillPairing} is:`);
-        console.log(seatedCrew);
+        ////console.log(`Seated crew during ${skillPairing} is:`);
+        ////console.log(seatedCrew);
         assignedSeats[leastKnownSkill].push(nextCrewSeated);
-        console.log("And the assigned Seats are:");
+        ////console.log("And the assigned Seats are:");
         for (skill in assignedSeats) {
-          console.log(assignedSeats[skill]);
+          ////console.log(assignedSeats[skill]);
         }
-        console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
-        console.log(seatedCrew);
+        ////console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
+        ////console.log(seatedCrew);
       };
-      console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
-      console.log(seatedCrew);
-      console.log(`Assigned Seats at the end of ${skillPairing} is`);
+      ////console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
+      ////console.log(seatedCrew);
+      ////console.log(`Assigned Seats at the end of ${skillPairing} is`);
       for (skill in assignedSeats) {
-        console.log(assignedSeats.skill);
+        ////console.log(assignedSeats.skill);
       }
-      console.log(assignedSeats);
+      ////console.log(assignedSeats);
       for (skill in assignedSeats) {
         assignedSeats[skill].forEach(crewName => {
           Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[skill].push(crewName);
         });
       }
       */
-      //console.log(`After completing ${skillPairing} is:`);
-      //console.log(Optimizer.voyageSkillPools);
-      //console.log(Optimizer.topVoyageCrews);
-      //console.log(`Best ${skillPairing} crew for current rarity found`);
+      //////console.log(`After completing ${skillPairing} is:`);
+      //////console.log(Optimizer.voyageSkillPools);
+      //////console.log(Optimizer.topVoyageCrews);
+      //////console.log(`Best ${skillPairing} crew for current rarity found`);
     });
   },
   findCrewToTrain() {
@@ -839,31 +839,31 @@ const Optimizer = {
         */
         //Used to find the best crew, but not seat them. These crew have been observed to have a valid seat waiting for them, even with the automated seating code failing
         while (!skillPools.voyageCrew.full) {
-          //console.log(`While loop trying to process ${traineeName} in ${skillPairing} voyages`);
+          //////console.log(`While loop trying to process ${traineeName} in ${skillPairing} voyages`);
           let crewName = rankArray[rankIndex];
           let crew = Optimizer.rosterLibrary[crewName];
-          //console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
-          //console.log(crew);
+          //////console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
+          //////console.log(crew);
           //If there is room in the immediate seats available and if they're already invested
-          //console.log(`Assessing Skill Pools:`);
-          //console.log(skillPools);
-          //console.log(`Assessing signature ${crew.skillSet.signature}`);
+          //////console.log(`Assessing Skill Pools:`);
+          //////console.log(skillPools);
+          //////console.log(`Assessing signature ${crew.skillSet.signature}`);
           if (!skillPools[crew.skillSet.signature].full) {
-            //console.log(`Entering the skillset Signature check! chronsInvested(${crew.chronsInvested}), crew.name(${crew.name}), traineeName(${traineeName})`);
+            //////console.log(`Entering the skillset Signature check! chronsInvested(${crew.chronsInvested}), crew.name(${crew.name}), traineeName(${traineeName})`);
             if (crew.chronsInvested || crew.name === traineeName) {
-              //console.log("Entering the invested or trainee loop");
+              //////console.log("Entering the invested or trainee loop");
               Optimizer.assignCrewToPools(skillPools[crew.skillSet.signature], crew.name);
               //Optimizer.assessPoolVacancies(Optimizer.voyageSkillPools.voyageCrew);
               rankIndex++;
             } else {
               rankIndex++;
             }
-            //console.log(`${crewName} was added to the ${skillPairing} voyage`);
+            //////console.log(`${crewName} was added to the ${skillPairing} voyage`);
           } else if (skillPools[crew.skillSet.signature].full) {
-            //console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
+            //////console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
             rankIndex++;
           } else {
-            console.log("We're still stuck in an infinite while loop?!");
+            ////console.log("We're still stuck in an infinite while loop?!");
           }
         }
 
@@ -877,23 +877,23 @@ const Optimizer = {
         });
         Optimizer.topCrewToTrain[traineeName].totalEVAdded += voyageEVWithTrainee - Optimizer.topVoyageCrews.currentBest[skillPairing].totalEV;
         /*
-        console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
-        console.log(seatedCrew);
-        console.log(`Assigned Seats at the end of ${skillPairing} is`);
+        ////console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
+        ////console.log(seatedCrew);
+        ////console.log(`Assigned Seats at the end of ${skillPairing} is`);
         for (skill in assignedSeats) {
-          console.log(assignedSeats.skill);
+          ////console.log(assignedSeats.skill);
         }
-        console.log(assignedSeats);
+        ////console.log(assignedSeats);
         for (skill in assignedSeats) {
           assignedSeats[skill].forEach(crewName => {
             Optimizer.topVoyageCrews.currentBest[skillPairing].seatAssignments[skill].push(crewName);
           });
         }
         */
-        //console.log(`After completing ${skillPairing} is:`);
-        //console.log(Optimizer.voyageSkillPools);
-        //console.log(Optimizer.topVoyageCrews);
-        //console.log(`Best Current Crew for ${skillPairing} found`);
+        //////console.log(`After completing ${skillPairing} is:`);
+        //////console.log(Optimizer.voyageSkillPools);
+        //////console.log(Optimizer.topVoyageCrews);
+        //////console.log(`Best Current Crew for ${skillPairing} found`);
       });
     }
   },
@@ -922,7 +922,7 @@ const Optimizer = {
           voyagesImproved: highestContributedVoyages,
         });
       } else {
-        console.log(`Error! Can't find crew: '${highestContribingTrainee}' in the roster`);
+        ////console.log(`Error! Can't find crew: '${highestContribingTrainee}' in the roster`);
       }
       sortingArray.splice(sortingArray.indexOf(highestContribingTrainee), 1);
     }
@@ -960,19 +960,19 @@ const Optimizer = {
       while (!skillPools.voyageCrew.full) {
         let crewName = rankArray[rankIndex];
         let crew = Optimizer.rosterLibrary[crewName];
-        //console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
-        //console.log(crew);
+        //////console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
+        //////console.log(crew);
         //If there is room in the immediate seats available and if they're already invested
-        //console.log(`Assessing Skill Pools:`);
-        //console.log(skillPools);
-        //console.log(`Assessing signature ${crew.skillSet.signature}`);
+        //////console.log(`Assessing Skill Pools:`);
+        //////console.log(skillPools);
+        //////console.log(`Assessing signature ${crew.skillSet.signature}`);
         if (!skillPools[crew.skillSet.signature].full) {
           Optimizer.assignCrewToPools(skillPools[crew.skillSet.signature], crew.name);
           //Optimizer.assessPoolVacancies(Optimizer.voyageSkillPools.voyageCrew);
           rankIndex++;
-          //console.log(`${crewName} was added to the ${skillPairing} voyage`);
+          //////console.log(`${crewName} was added to the ${skillPairing} voyage`);
         } else if (skillPools[crew.skillSet.signature].full) {
-          //console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
+          //////console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
           rankIndex++;
         }
       }
@@ -1065,17 +1065,17 @@ const Optimizer = {
         } else if (crewWith3RelevantSkills.length > 0) {
           leastSkillsPerCrew = crewWith3RelevantSkills;
         } else {
-          console.log("You broke something somewhere");
+          ////console.log("You broke something somewhere");
         }
         //copy-paste migration from static relevant idenity counts
         let leastKnownSkill = 'indecisive';
         let leastKnownSkillCount = 13;
         let nextCrewSeated = ''
-        console.log(`Least skills per crew is`);
-        console.log(leastSkillsPerCrew);
-        console.log(`But relevant skills counts are`);
+        ////console.log(`Least skills per crew is`);
+        ////console.log(leastSkillsPerCrew);
+        ////console.log(`But relevant skills counts are`);
         for (var skill in relevantSkillCounts) {
-          console.log(relevantSkillCounts[skill]);
+          ////console.log(relevantSkillCounts[skill]);
         }
         for (var skill in relevantSkillCounts) {
           if (relevantSkillCounts[skill].length < leastKnownSkillCount && leastSkillsPerCrew.includes(relevantSkillCounts[skill][0])) {
@@ -1086,43 +1086,43 @@ const Optimizer = {
             leastKnownSkillCount = relevantSkillCounts[skill].length;
           }
         }
-        console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
+        ////console.log(`Least known skill is ${leastKnownSkill} when the skill counts are`);
         for (var skill in relevantSkillCounts) {
-          console.log(relevantSkillCounts[skill]);
+          ////console.log(relevantSkillCounts[skill]);
         }
-        console.log(`Status at ${skillPairing} voyages`);
-        console.log(Optimizer.topVoyageCrews.rarityBest);
+        ////console.log(`Status at ${skillPairing} voyages`);
+        ////console.log(Optimizer.topVoyageCrews.rarityBest);
         nextCrewSeated = relevantSkillCounts[leastKnownSkill][0];
-        console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill]}`);
+        ////console.log(`Seating ${nextCrewSeated} to ${Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill]}`);
         //Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[leastKnownSkill].push(nextCrewSeated);
         seatedCrew.push(nextCrewSeated);
-        console.log(`Seated crew during ${skillPairing} is:`);
-        console.log(seatedCrew);
+        ////console.log(`Seated crew during ${skillPairing} is:`);
+        ////console.log(seatedCrew);
         assignedSeats[leastKnownSkill].push(nextCrewSeated);
-        console.log("And the assigned Seats are:");
+        ////console.log("And the assigned Seats are:");
         for (skill in assignedSeats) {
-          console.log(assignedSeats[skill]);
+          ////console.log(assignedSeats[skill]);
         }
-        console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
-        console.log(seatedCrew);
+        ////console.log(`We are at the end of the ${skillPairing} seating with the seated Array:`);
+        ////console.log(seatedCrew);
       };
-      console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
-      console.log(seatedCrew);
-      console.log(`Assigned Seats at the end of ${skillPairing} is`);
+      ////console.log(`Seated array at the end of the ${skillPairing} voyage is somehow:`);
+      ////console.log(seatedCrew);
+      ////console.log(`Assigned Seats at the end of ${skillPairing} is`);
       for (skill in assignedSeats) {
-        console.log(assignedSeats.skill);
+        ////console.log(assignedSeats.skill);
       }
-      console.log(assignedSeats);
+      ////console.log(assignedSeats);
       for (skill in assignedSeats) {
         assignedSeats[skill].forEach(crewName => {
           Optimizer.topVoyageCrews.rarityBest[skillPairing].seatAssignments[skill].push(crewName);
         });
       }
       */
-      //console.log(`After completing ${skillPairing} is:`);
-      //console.log(Optimizer.voyageSkillPools);
-      //console.log(Optimizer.topVoyageCrews);
-      //console.log(`Best ${skillPairing} crew for current rarity found`);
+      //////console.log(`After completing ${skillPairing} is:`);
+      //////console.log(Optimizer.voyageSkillPools);
+      //////console.log(Optimizer.topVoyageCrews);
+      //////console.log(`Best ${skillPairing} crew for current rarity found`);
     });
   },
   findCrewToCite() {
@@ -1170,31 +1170,31 @@ const Optimizer = {
     let skillPools = Optimizer.voyageSkillPools;
     let rankIndex = 0;
     while (!skillPools.voyageCrew.full) {
-      //console.log(`While loop trying to process ${citationCandidate} in ${skillPairing} voyages`);
+      //////console.log(`While loop trying to process ${citationCandidate} in ${skillPairing} voyages`);
       let crewName = rankArray[rankIndex];
       let crew = Optimizer.rosterLibrary[crewName];
-      //console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
-      //console.log(crew);
+      //////console.log(`${crewName}is rank ${rankIndex + 1} for ${skillPairing} voyages. Assessing.`);
+      //////console.log(crew);
       //If there is room in the immediate seats available and if they're already invested
-      //console.log(`Assessing Skill Pools:`);
-      //console.log(skillPools);
-      //console.log(`Assessing signature ${crew.skillSet.signature}`);
+      //////console.log(`Assessing Skill Pools:`);
+      //////console.log(skillPools);
+      //////console.log(`Assessing signature ${crew.skillSet.signature}`);
       if (!skillPools[crew.skillSet.signature].full) {
-        //console.log(`Entering the skillset Signature check! chronsInvested(${crew.chronsInvested}), crew.name(${crew.name}), citationCandidate(${citationCandidate})`);
+        //////console.log(`Entering the skillset Signature check! chronsInvested(${crew.chronsInvested}), crew.name(${crew.name}), citationCandidate(${citationCandidate})`);
         if (crew.chronsInvested || crew.name === candidateName) {
-          //console.log("Entering the invested or trainee loop");
+          //////console.log("Entering the invested or trainee loop");
           Optimizer.assignCrewToPools(skillPools[crew.skillSet.signature], crew.name);
           //Optimizer.assessPoolVacancies(Optimizer.voyageSkillPools.voyageCrew);
           rankIndex++;
         } else {
           rankIndex++;
         }
-        //console.log(`${crewName} was added to the ${skillPairing} voyage`);
+        //////console.log(`${crewName} was added to the ${skillPairing} voyage`);
       } else if (skillPools[crew.skillSet.signature].full) {
-        //console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
+        //////console.log(`${crewName} is not good enough for ${skillPairing} voyages`);
         rankIndex++;
       } else {
-        console.log("We're still stuck in an infinite while loop?!");
+        ////console.log("We're still stuck in an infinite while loop?!");
       }
     }
     let voyageCrew = skillPools.voyageCrew.assignedCrew;
@@ -1231,7 +1231,7 @@ const Optimizer = {
             .slice(1);
       value.totalEVFullyCited = value.evAdded.reduce((total, ev) => total + ev, 0);
       value.totalEVPerCitation = value.totalEVFullyCited/(candidate.maxRarity-candidate.rarity);
-      console.log(value.evAdded);
+      ////console.log(value.evAdded);
       return [citationCandidateName, value];
     }));
     /*
@@ -1246,25 +1246,25 @@ const Optimizer = {
         //To get the EV of the crew with candidate at current rarity. It is possible that a candidate which is relevant at max rarity will not get picked at their current rarity
         //This will correctly reduce their EV/citation, reflecting a true increase of potential while fully cited while also properly suggesting that they might not be the best next choice
         let voyageRankingWithCandidateAtCurrentRarity = Optimizer.createCandidateRarityRankingArray(candidate.name, candidate.rarity, skillPairing);
-        //console.log(`${skillPairing} voyage ranking array with ${candidate.name} at current rarity:`);
-        //console.log(voyageRankingWithCandidateAtCurrentRarity);
+        //////console.log(`${skillPairing} voyage ranking array with ${candidate.name} at current rarity:`);
+        //////console.log(voyageRankingWithCandidateAtCurrentRarity);
         let voyageCrewWithCandidateAtCurrentRarity = Optimizer.findBestCrewWithRarityDependentCandidate(voyageRankingWithCandidateAtCurrentRarity, candidate.name);
-        //console.log(`${skillPairing} voyage crew with ${candidate.name} at current rarity`);
-        //console.log(voyageCrewWithCandidateAtCurrentRarity);
+        //////console.log(`${skillPairing} voyage crew with ${candidate.name} at current rarity`);
+        //////console.log(voyageCrewWithCandidateAtCurrentRarity);
         let voyageEVWithCandidateAtCurrentRarity = Optimizer.findEVofVoyageCrewWithRarityDependentCandidate(voyageCrewWithCandidateAtCurrentRarity, skillPairing, candidate.name, candidate.rarity);
-        //console.log(`${skillPairing} voyage EV with ${candidate.name} at current rarity`);
-        //console.log(voyageEVWithCandidateAtCurrentRarity);
+        //////console.log(`${skillPairing} voyage EV with ${candidate.name} at current rarity`);
+        //////console.log(voyageEVWithCandidateAtCurrentRarity);
 
         //Get the EV of crew with candidate at max rarity
         let voyageRankingWithCandidateAtMaxRarity = Optimizer.createCandidateRarityRankingArray(candidate.name, candidate.maxRarity, skillPairing);
-        //console.log(`${skillPairing} voyage ranking array with ${candidate.name} at max rarity:`);
-        //console.log(voyageRankingWithCandidateAtMaxRarity);
+        //////console.log(`${skillPairing} voyage ranking array with ${candidate.name} at max rarity:`);
+        //////console.log(voyageRankingWithCandidateAtMaxRarity);
         let voyageCrewWithCandidateAtMaxRarity = Optimizer.findBestCrewWithRarityDependentCandidate(voyageRankingWithCandidateAtMaxRarity, candidate.name);
-        //console.log(`${skillPairing} voyage crew with ${candidate.name} at max rarity`);
-        //console.log(voyageCrewWithCandidateAtMaxRarity);
+        //////console.log(`${skillPairing} voyage crew with ${candidate.name} at max rarity`);
+        //////console.log(voyageCrewWithCandidateAtMaxRarity);
         let voyageEVWithCandidateAtMaxRarity = Optimizer.findEVofVoyageCrewWithRarityDependentCandidate(voyageCrewWithCandidateAtMaxRarity, skillPairing, candidate.name, candidate.maxRarity);
-        //console.log(`${skillPairing} voyage EV with ${candidate.name} at max rarity`);
-        //console.log(voyageEVWithCandidateAtMaxRarity);
+        //////console.log(`${skillPairing} voyage EV with ${candidate.name} at max rarity`);
+        //////console.log(voyageEVWithCandidateAtMaxRarity);
 
         Optimizer.topCrewToCite[candidate.name].totalEVPerCitation += (voyageEVWithCandidateAtMaxRarity - voyageEVWithCandidateAtCurrentRarity)/(candidate.maxRarity - candidate.rarity);
       });
