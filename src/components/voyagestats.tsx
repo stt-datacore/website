@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Image, Message } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
-import CONFIG from './CONFIG';
-import ItemDisplay from './itemdisplay';
-import CrewPopup from './crewpopup';
+import CONFIG from '../components/CONFIG';
+import ItemDisplay from '../components/itemdisplay';
+import CrewPopup from '../components/crewpopup';
 
 import Worker from 'worker-loader!../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
@@ -16,6 +16,8 @@ type VoyageStatsProps = {
 	ships: [];
 	showPanels: [];
 	estimate?: any;
+	roster?: any[];
+	playerItems?: any[];
 };
 
 type VoyageStatsState = {
@@ -23,37 +25,50 @@ type VoyageStatsState = {
 	activePanels: [];
 };
 
+const POSITION_POSTFIX = [
+	'th',
+	'st',
+	'nd',
+	'rd',
+	'th',
+	'th',
+	'th',
+	'th',
+	'th',
+	'th'
+];
+
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+	static defaultProps = {
+		roster: [],
+	};
+
 	constructor(props) {
 		super(props);
 		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
 
 		this.state = {
 			estimate: estimate,
-			activePanels: showPanels ? showPanels : []
+			activePanels: showPanels ? showPanels : [],
+			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360)
 		};
 
 		if (!voyageData)
 			return;
 
-		if (ships.length == 1) {
-			this.ship = ships[0].ship;
-		} else {
-			let ship = ships.find(s => s.id == voyageData.ship_id);
-			fetch('/structured/ship_schematics.json').then(ships => ships.json().then(allShips => {
-				this.ship = allShips.find(s => s.ship.symbol == ship.symbol).ship
-			}));
-		}
+		this.ship = ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
+			const duration = voyageData.voyage_duration ?? 0;
+			const correctedDuration = this.state.voyageBugDetected ? duration : duration - duration%7200;
 
 			this.config = {
 				others: [],
 				numSims: numSims ?? 5000,
 				startAm: voyageData.max_hp,
 				currentAm: voyageData.hp ?? voyageData.max_hp,
-				elapsedSeconds: voyageData.voyage_duration ?? 0,
+				elapsedSeconds: correctedDuration,
 			};
 
 			for (let agg of Object.values(voyageData.skill_aggregates)) {
@@ -162,17 +177,39 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const {voyageData} = this.props;
-		const  ship  = this.ship;
+		const { voyageData, roster } = this.props;
+		const ship  = this.ship;
+		const voyScore = v => Math.floor(v.core + (v.range_min + v.range_max)/2);
+		const getTopSkill = crew => Object.entries(crew.skills)
+																			.reduce((best, e) => voyScore(e[1]) > voyScore(best[1]) ? e : best)[0];
+		const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
+			skill,
+			roster: roster.filter(c => Object.keys(c.skills).includes(skill))
+										.filter(c => c.skills[skill].core > 0)
+										.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
+		}));
+
 
 		return (
 			<div>
-			  {ship && `Ship: ${ship.name} (${voyageData.max_hp} Antimatter)`}
+			  {ship && (<span>Ship : <b>{ship.name}</b></span>)}
 				<Grid columns={isMobile ? 1 : 2}>
 					<Grid.Column>
 						<ul>
 							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
-								let { crew, name }  = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry);
+								const { crew, name, trait, skill }  = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry);
+
+								const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
+								const topRank = roster ?
+									skillRankings.filter(r => Object.keys(crew.skills).includes(r.skill))
+															 .reduce((best, ranking) => {
+										const rank = ranking.roster.findIndex(c => crew.symbol === c.symbol) + 1;
+										return rank < best.rank || (ranking.skill == entry && rank <= best.rank)
+											? {skill: ranking.skill, rank} : best;
+									}, { rank: 1000 })
+									: {skill: 'None, rank: 0'};
+								const skillContent = topRank.rank == 1 ? 'Top' : `Select ${addPostfix(topRank.rank)} crew from top in ${CONFIG.SKILLS[topRank.skill]}`;
+								const skillIcon = <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${topRank.skill}.png`} style={{ height: '1em', width: '1em'}} />;
 
 								if (!crew.imageUrlPortrait)
 									crew.imageUrlPortrait =
@@ -183,39 +220,50 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										{name}
 										{'  :  '}
 										<CrewPopup crew={crew} useBase={false} />
+										{'\t'}
+										{crew.immortal > 0 && <Popup content={`${crew.immortal} frozen`} trigger={<Icon name="snowflake" />} />}
+										{crew.traits.includes(trait.toLowerCase()) && <Popup content='+25 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', width: '1em'}}/>}/>}
+										{roster.length > 0 && <Popup content={skillContent} trigger={skillIcon} />}
+									</li>
+								);
+							})}
+						</ul>
+					</Grid.Column>
+					<Grid.Column verticalAlign="middle">
+						<ul>
+							<li>
+								Antimatter
+								{' : '}
+								<b>{voyageData.max_hp}</b>
+							</li>
+						</ul>
+						<ul>
+							{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
+								const agg = voyageData.skill_aggregates[entry];
+
+								if (typeof(agg) === 'number') {
+									return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
+								} else {
+									const score = voyScore(agg);
+
+									return (
+										<li key={idx}>
+											{CONFIG.SKILLS[entry]}
+											{' : '}
+											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
+												<Popup.Content>
+													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
+												</Popup.Content>
+											</Popup>
 										</li>
 									);
-								})}
-							</ul>
-						</Grid.Column>
-						<Grid.Column verticalAlign="middle">
-							<ul>
-								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
-									const agg = voyageData.skill_aggregates[entry];
-
-									if (typeof(agg) === 'number') {
-										return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
-									} else {
-										const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
-
-										return (
-											<li key={idx}>
-												{CONFIG.SKILLS[entry]}
-												{' : '}
-												<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-													<Popup.Content>
-														{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-													</Popup.Content>
-												</Popup>
-											</li>
-										);
-									}
-								})}
-							</ul>
-						</Grid.Column>
-					</Grid>
-				</div>
-			);
+								}
+							})}
+						</ul>
+					</Grid.Column>
+				</Grid>
+			</div>
+		);
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -239,7 +287,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<td>{label}: {this._formatTime(est.result)}</td>
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
-					<td>Chance of {est.lastDil} hour dilemma: {est.dilChance > 10 ? Math.floor(est.dilChance) : est.dilChance.toPrecision(2)}%</td>
+					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
 					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
 				</tr>
 			);
@@ -287,8 +335,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const honor = honorReward.length == 0 ? 0 : honorReward[0].quantity;
 		return (
 			<span>
-				Rewards: {bestCrewCount ? `${bestCrewCount} ${bestRarity}*` : ''}&nbsp;
-				{`${chrons}`}
+				{`Rewards: ${bestCrewCount} ${bestRarity}* `}&nbsp;
+				{` ${chrons} `}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
@@ -303,6 +351,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewards(rewards) {
+		const { playerItems,roster } = this.props;
+
 		rewards = rewards.sort((a, b) => {
 			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
 				return a.full_name.localeCompare(b.full_name);
@@ -328,25 +378,44 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return `${process.env.GATSBY_ASSETS_URL}${url}`;
 		};
 
+		const itemsOwned = item => {
+			const pItem = playerItems.find(i => i.symbol == item.symbol);
+			return `(Have ${pItem ? pItem.quantity > 1000 ? `${Math.floor(pItem.quantity/1000)}k+` : pItem.quantity : 0})`;
+		};
+		const ownedFuncs = [
+			item => '',
+			item => {
+				const owned = roster.filter(c => c.symbol == item.symbol);
+
+				for (const c of owned)
+					if (c.rarity < c.max_rarity)
+						return '(Fusable)';
+
+				return  owned.length > 0 ? '(Duplicate)' : '(Unowned)';
+			},
+			itemsOwned,
+			item => '',
+		];
+
 		return (
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
 					{rewards.map((entry, idx) => (
 						<Grid.Column key={idx}>
-								<Header
-									style={{ display: 'flex' }}
-									icon={
-										<ItemDisplay
-											src={assetURL(entry.icon.file)}
-											size={48}
-											rarity={rarity(entry)}
-											maxRarity={entry.rarity}
-											hideRarity={hideRarity(entry)}
-										/>
-									}
-									content={entry.name}
-									subheader={`Got ${entry.quantity}`}
-								/>
+							<Header
+								style={{ display: 'flex' }}
+								icon={
+									<ItemDisplay
+										src={assetURL(entry.icon.file)}
+										size={48}
+										rarity={rarity(entry)}
+										maxRarity={entry.rarity}
+										hideRarity={hideRarity(entry)}
+									/>
+								}
+								content={entry.name}
+								subheader={`Got ${entry.quantity} ${ownedFuncs[entry.type](entry)}`}
+							/>
 						</Grid.Column>
 					))}
 				</Grid>
@@ -386,7 +455,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
-		const rewards = voyState == 'pending' ? [] : voyageData.pending_rewards.loot;
+		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
 
 		// Adds/Removes panels from the active list
 		const flipItem = (items, item) => items.includes(item)
@@ -419,20 +488,22 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			const voyagePriSec = Object.values(voyageData.skills)
 																 .map(s1 => CONFIG.SKILLS_SHORT.filter(s2 => s2.name === s1)[0].short)
 																 .join('/');
+			const timeDiscrepency = Math.floor(voyageData.voyage_duration/7200) - Math.floor(voyageData.log_index/360);
+			const voyageDuration = this._formatTime(voyageData.state == 'started' ? voyageData.voyage_duration/3600 : voyageData.log_index/180);
 
 			return (
 				<div>
-					{Math.floor(voyageData.log_index/360) < Math.floor(voyageData.voyage_duration/7200) &&
+					{(voyageData.state === 'started' && timeDiscrepency > 0) &&
 						<Message warning>
 							WARNING!!! A potential problem with the reported voyage duration has been detected.
-							The estimate is likely to be inaccurate.
-							Load the game then return to Datacore with a fresh copy of your player file to get an accurate estimate.
+							We have attemped to correct this but estimate may be inaccurate.
+							Open the game then return to Datacore with a fresh copy of your player file to guarrentee an accurate estimate.
 						</Message>
 					}
-					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + voyageDuration}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
-						voyState !== 'recalled' &&
+						voyState !== 'recalled' && voyState !== 'completed' &&
 						accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
 					}
 					{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
@@ -453,6 +524,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			);
 		}
 	}
+
 }
 
 export default VoyageStats;

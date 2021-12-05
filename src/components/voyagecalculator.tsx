@@ -85,7 +85,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
 	return (
-		<VoyageMain myCrew={myCrew} allShips={allShips} />
+		<VoyageMain myCrew={myCrew} allShips={allShips} playerItems={playerData.player.character.items}/>
 	);
 
 	async function fetchAllShips() {
@@ -114,10 +114,11 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 type VoyageMainProps = {
 	myCrew: any[];
 	allShips: any[];
+	playerItems: any[];
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
-	const { myCrew, allShips } = props;
+	const { myCrew, allShips, playerItems } = props;
 
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [voyageConfig, setVoyageConfig] = React.useState(undefined);
@@ -175,7 +176,8 @@ const VoyageMain = (props: VoyageMainProps) => {
 					</Grid.Column>
 				</Grid>
 			}
-			{voyageState != 'input' && (<VoyageExisting voyageConfig={voyageConfig} allShips={allShips} useCalc={() => setVoyageState('input')} />)}
+
+			{voyageState != 'input' && (<VoyageExisting voyageConfig={voyageConfig} allShips={allShips} useCalc={() => setVoyageState('input')} playerItems={playerItems} roster={myCrew} />)}
 			{voyageState == 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} allShips={allShips} useInVoyage={() => setVoyageState(voyageConfig.state)} />)}
 		</React.Fragment>
 	);
@@ -288,6 +290,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 					key: trait,
 					value: trait,
 					text: allTraits.trait_names[trait]
+
 				};
 			});
 			crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));
@@ -389,10 +392,12 @@ type VoyageExistingProps = {
 	voyageConfig: any;
 	allShips: any[];
 	useCalc: () => void;
+	playerItems: any[];
+	roster: any[];
 };
 
 const VoyageExisting = (props: VoyageExistingProps) => {
-	const { voyageConfig, allShips, useCalc } = props;
+	const { voyageConfig, allShips, useCalc, playerItems, roster } = props;
 	const [CIVASExportFailed, setCIVASExportFailed] = React.useState(false);
 	const [doingCIVASExport, setDoingCIVASExport] = React.useState(false);
 
@@ -433,6 +438,8 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				voyageData={voyageConfig}
 				ships={allShips}
 				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
+				playerItems={playerItems}
+				roster={roster}
 			/>
 			<Button onClick={() => useCalc()}>Return to crew calculator</Button>
 			{(voyageConfig.state == 'recalled' || voyageConfig.state == 'failed') && navigator.clipboard &&
@@ -480,7 +487,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 
 	const [bestShip, setBestShip] = React.useState(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState([]);
-	const [calculator, setCalculator] = React.useState(isMobile ? 'ussjohnjay' : 'iampicard');
+	const [calculator, setCalculator] = React.useStateWithStorage('voyageCalculator', isMobile ? 'ussjohnjay' : 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = React.useState({});
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState([]);
@@ -568,7 +575,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 					</Form.Button>
 					{voyageConfig.state &&
 						<Form.Button onClick={()=> useInVoyage()}>
-							Return to in voyage calculator
+							Return to current voyage
 						</Form.Button>
 					}
 				</Form.Group>
@@ -619,6 +626,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 				<VoyageResultPane result={result.result}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
+					roster={myCrew}
 				/>
 			)
 		}));
@@ -911,10 +919,11 @@ type VoyageResultPaneProps = {
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
+	roster: any[];
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
-	const { result, requests, requestId, calcState, abortCalculation } = props;
+	const { result, requests, requestId, calcState, abortCalculation, roster } = props;
 
 	const request = requests.find(r => r.id == requestId);
 	if (!request) return (<></>);
@@ -977,6 +986,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 					voyageData={data}
 					estimate={result.estimate}
 					ships={[request.bestShip]}
+					roster={roster}
 					showPanels={['crew']}
 				/>
 				<div style={{ marginTop: '1em' }}>

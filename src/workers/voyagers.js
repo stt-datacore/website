@@ -15,7 +15,9 @@ const forDataCore = (input, output, chewable) => {
 	// Config is for showing progress (optional)
 	const config = {
 		progressCallback: false,
-		debugCallback: false//(message) => console.log(message)
+		debugCallback: false,//(message) => console.log(message)
+		noExtends: true,
+		noBins: true
 	};
 
 	// Voyage data is required

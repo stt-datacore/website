@@ -27,9 +27,9 @@ function getEstimate(config, reportProgress = () => true) {
   var estimate = {};
 
   // output
-  var numExtends = 2;
-  var maxExtends = 100;
-  var maxNum20hourSims = 100;
+  var numExtends = config.noExtends ? 0 : 2;
+  var maxExtends = config.noExtends ? 0 : 100;
+  var maxNum20hourSims = config.noExtends ? 0 : 100;
 
   // variables
   var allSkills = [ps, ss, o1, o2, o3, o4];
@@ -93,28 +93,29 @@ function getEstimate(config, reportProgress = () => true) {
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
       }
 
-      var bins = {};
-      const binSize = 1/30;
+      if (config.noBins) {
+        var bins = {};
+        const binSize = 1/30;
 
-      for (result of exResults.sort()) {
-	  		const bin = Math.floor(result/binSize)*binSize+binSize/2;
+        for (result of exResults.sort()) {
+  	  		const bin = Math.floor(result/binSize)*binSize+binSize/2;
 
-        try{
-        	++bins[bin].count;
+          try{
+          	++bins[bin].count;
+          }
+          catch {
+            bins[bin] = {result: bin, count: 1};
+          }
         }
-        catch {
-          bins[bin] = {result: bin, count: 1};
-        }
+
+        delete bins[NaN];
+        refill.bins = Object.values(bins);
       }
-
-      delete bins[NaN];
-      refill.bins = Object.values(bins);
 
       refills.push(refill);
     } // foreach extend
 
     estimate['refills'] = refills;
-
 
     // calculate 20hr results
     let num20hrSims = deterministic ? 1 : num20hourSims;
