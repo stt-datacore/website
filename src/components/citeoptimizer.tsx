@@ -94,7 +94,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<>
 								{sortedHeader('evPerCitation', 'EV per cite')}
 								{sortedHeader('finalCitationEV', 'EV of final citation')}
-								{sortedHeader('totalEVAdded', 'Fully Cited EV')}
+								{sortedHeader('totalCitationEV', 'Fully Cited EV')}
 							</>
 						}
 					</Table.Row>
@@ -183,9 +183,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<Dropdown text={row.totalEVPerCitation.toFixed(1)}>
 								<Dropdown.Menu>
 									{row.evAdded.map((ev, i) =>
-										<Dropdown.Item>
+										<Dropdown.Item key={crew.rarity}>
 											<span>
-												<Rating icon='star' rating={crew.rarity + i + 1} maxRating={crew.max_rarity} size='medium' disabled />
+												<Rating icon='star' rating={crew.rarity + i + 1} maxRating={crew.max_rarity} disabled />
 												{` ${ev.toFixed(1)}`}
 											</span>
 										</Dropdown.Item>
