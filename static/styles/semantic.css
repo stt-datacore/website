@@ -40426,8 +40426,7 @@ body.pushable > .pusher {
 *******************************/
 
 /* Specify icons to invert for light mode */
-img.skillIcon,
-img.traitIcon,
+img.invertibleIcon,
 /* Also catch unspecified skill icons by matching filename */
 img[src$="icon_command_skill.png"],
 img[src$="icon_diplomacy_skill.png"],
@@ -40435,6 +40434,6 @@ img[src$="icon_engineering_skill.png"],
 img[src$="icon_medicine_skill.png"],
 img[src$="icon_science_skill.png"],
 img[src$="icon_security_skill.png"] {
-	-webkit-filter: invert(100%) grayscale(1);
-	filter: invert(100%) grayscale(1);
+	-webkit-filter: invert(1) grayscale(1);
+	filter: invert(1) grayscale(1);
 }
