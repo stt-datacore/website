@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Late bloomer Archer will never be a major event player, but after his slow start has picked up a few events per year including a pair of 2020 Factions. No longer a serious consideration on voyages, EV Archer is in the 'toolbox' phase of his career - a fine base for a smattering of variant and trait events, along with dual collections which don't currently need him, but may in the future.
+Late bloomer Archer will never be a major event player, but once WRG remembered that he's the Captain, he's had a fairly reliable number of variant events since. EV Suit is plainly a low power option, but with a good potential collection ceiling and the right skills to merit a thaw a few times per year.
+
+He's in the mix as a low end behold option for the foreseeable future and could end up being a retrieval target in the late game to finish a handful of collections if things break right for him.
