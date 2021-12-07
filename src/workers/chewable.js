@@ -93,7 +93,7 @@ function getEstimate(config, reportProgress = () => true) {
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
       }
 
-      if (config.noBins) {
+      if (!config.noBins) {
         var bins = {};
         const binSize = 1/30;
 

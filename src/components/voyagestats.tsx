@@ -314,7 +314,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{renderEst("2 Refills", refill++)}
 					</tbody></Table>
 					<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
-					{this._renderChart()}
+					{estimate.final && this._renderChart()}
 					<small>Powered by Chewable C++</small>
 				</div>
 			);
@@ -473,7 +473,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					active={isActive}
 					index={key}
 					onTitleClick={handleClick}
-					title={isActive ? {icon: 'caret down', content: title} : {icon: 'caret right', content: collapsedTitle}}
+					title={isActive ? {icon: 'caret down', content: collapsedTitle} : {icon: 'caret right', content: collapsedTitle}}
 					content={{content: <Segment>{content}</Segment>}}/>
 			);
 		};

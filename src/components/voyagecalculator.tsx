@@ -487,7 +487,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 
 	const [bestShip, setBestShip] = React.useState(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState([]);
-	const [calculator, setCalculator] = React.useStateWithStorage('voyageCalculator', isMobile ? 'ussjohnjay' : 'iampicard', { rememberForever: true });
+	const [calculator, setCalculator] = useStateWithStorage('voyageCalculator', isMobile ? 'ussjohnjay' : 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = React.useState({});
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState([]);
