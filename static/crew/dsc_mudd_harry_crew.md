@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Harcourt is on thin ice, and not just with Stella. If future Disco megas shift to bridge-crew-only, this pill peddler is out of a job. His trait mega event chances may be falling like tin cans on a fence line, but his bases are still cocked and loaded to make an impact when bonuses do come along. If you need him to pitch in outside of daily shuttles, his +10 attack @ 6 seconds in the arena is a fantastic boost for fast activating crew and can bring even super rare damage options to relevance.
+Most players thought this pill peddler would be out of a job when Disco megas folded their tents, but not only have Mudd's traits proven out since then, he's also caught a respectable number of variant events. The safe bet is still to expect ups and downs, but he's shown that he'll still give you opportunities to flex his bases on shuttles from time to time.
+
+Unless you're a schrute, I mean shrewd arena-goer looking for an attack boost, the other area of interest with this card is the collections tab. Already a multi-collection offering, his smattering of Q-adjacent traits are as likely as any to be called upon to expand his influence there while continuing to compile event bonuses along the way.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Who would have thought that a former Miss America would be a part of your geeky roster...strange days. Best DIP/CMD shuttle pilot would be her top accolade if it weren't for a trait set low on potential. As bonus pools for her traits balloon out of control, Arandis will likely be forgotten in cryostasis. Should you end up with a complete set of four she might get a small amount of work on shuttles while your heavy hitters are out on a CMD/DIP voyage but with a non-existent event count don’t expect her to do much more than add another tick on the Inspiring collection.
+Who would have thought that a former Miss America would be a part of your geeky card collection...strange days. Arandis' traits didn't trigger much of a reaction on release, but as we're now adrift in the eye of WRG's collection hurricane, her handful of non-HFS offerings look that much more attractive.
+
+Multi-collection value is an easy way to tempt veteran players and her shuttle metrics are still good enough to merit the thaw if her traits, large though they are, were to catch bonuses in the future. There's certainly a limit to Arandis' utility, but the value is there in specific areas.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Ripper's value is highly volatile and is event and roster dependent. Until the all-Disco megas cease, Ripper holds exceptional value. A 2x event bonus coupled with its huge base would put it on par with featured event crew in many cases. But if that sort of blanket bonus is all in the past then you have a crew who, while great for daily shuttles even at 1/5, may struggle for weekend consistency if you have a healthy number of super rares to thaw for events.
+This poster child for British dentistry was a much more sympathetic figure in Discovery than we all initially thought. Which makes it that much more tragic to see him left high and dry by the same onslaught of mega Faction Action that made him a desirable name in the first place.
 
-I'm not enamored with non-event bases, but Ripper's SEC is within thirty points of #1 Sisko and so will perform similarly for faction events in non-bonus situations. Flying under the radar is an uncommon skill pair that doesn't mesh well for shuttles, but can find voyage work on the right roster.
+Now reduced to part time event/collection combo piece, he at least has enough possibilities flowing through his traits to keep him an occasionally enticing name with a base that can still play. If Ripper ends up reaching three, four, five traits, you'll probably end up with him on your roster regardless and be happy to employ his shuttle gun for event help a few times per year.

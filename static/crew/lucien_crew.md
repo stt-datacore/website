@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-As with a lot of voyage-only crew, Lucien is someone to keep on side mostly for the cool factor. Although he brings handy voyage numbers to the table, by the time you star him up, you won't need them. He clearly lacks in all other areas except the possibility of a couple trait megas where he’ll probably be flying your requisition shuttles. You know what they say - the Devil finds work for idle hands.
+A voyage exclusive crew from a two-parter, Lucien was an easy name to avoid until recently. His pair of expansive collections means that you should at least check the wiki to find out which dilemma options lead you to him and he could and very well may double that collection count before too long.
+
+He clearly lacks in all other areas except for the possibility of a trait mega here and there where he’ll probably be flying your thirteenth requisition shuttle. You know what they say - the Devil finds work for idle hands.

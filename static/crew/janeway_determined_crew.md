@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-First things first; yes, cite her last star if you haven't. Outside of her mega, Janeway will continue to perform well on voyages, shuttles, and weekends for a long time to come. She's worth the investment and stacks up well alongside the rest of the numerous ENG/SEC crew DB released in 2019. For the price of a single star, she hits on two collections including everybody's favorite Jury Rigger.
+The natural predator to coffee cups and sonic showers everywhere, this steely Janeway variant has aged better than perhaps anyone thought. Outfitted with the megaphone for years at the bow of your voyage row boat, her ranks aren't really keeping up with newer releases anymore, but players whose fully fused legendary crew are mainly megas should still be able to enjoy her there for a while longer thanks to a strong skill order and a row boatload of anti-matter traits.
 
-If you're coming to her new in a behold, you can expect a fairly complete package. A base/event pairing you can set your replicated watch by, bolstered by a bevy of traits tied for the most among Janeway variants, second tier ENG/SEC voyage power, and double collections. Considering the plethora of statistically weak Janeways, Determined stands out as one to target if you have too many basic coffees in your inventory.
+Meanwhile her base metrics have held strong and though Janeway events are oddly stop-and-start, there's zero chance WRG cuts her loose permanently. With front-loaded collection potential, her small room for growth in that area takes a back seat to a slew of collections which are just begging to be finished with fantastic all-round crew like Detway.

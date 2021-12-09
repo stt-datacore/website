@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-First, Kirk's event history. Besides boasting more events than any other character, he's coming off a hellacious 2019, notching seven events during the year, tying him with the only other names to have matched that mark; Jadzia (7) and Janeway (7) back in 2017. Even though his Faction rate has cooled after going nine for his first nine, he's still a slam dunk lock for events until the end of time(lines). Paired with a fat DIP score, he may be someone worth duplicating if the opportunity arises.
+Learn to be fully erect with this ONE WEIRD TRICK - Chiropractors HATE him!
 
-I would squeeze in a mention about a passable arena ability if his note needed fleshing out, but it really doesn't, thanks to his other monstrous attribute - the best super rare voyage score. In all likelihood, the next purple to top his #1 ranking there is going to end up pipping one or more legendary crew as well since Kirk sits single digit points behind formerly noteworthy gauntlet crew Ambassador Troi and the rest of the legendaries. You may not need more of his skill set, but since he performs for voyages like a 3/5 legendary would, here's your chance to replace and freeze another super rare if you're still using them in that part of the game.
+Despite Kirk's disappearing act in 2021, he remains one of the premier event names in Timelines and Roman slots into a huge blind spot in Kirk's skill portfolio; DIP (at least where Orions aren't concerned). Even without much trait help, this variant is a viable candidate for duping if you're a Faction event connoisseur or, at minimum, the first crew you grab out of cryo.
+
+But before he makes it to Rura Penthe, newer players will enjoy his prodigious voyage power. Bad skill set or no, Roman offers a huge score (having debuted at #1 overall and piercing the bottom of the legendary ranks) and a handful of anti-matter traits to enable usage the mimics a partially fused gold crew. With a passable arena ability, Roman offers a little something to everyone and is elite in multiple areas.
