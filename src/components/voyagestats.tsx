@@ -56,7 +56,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		if (!voyageData)
 			return;
 
-		this.ship = ships.find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
@@ -111,7 +111,24 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const rawData = needsRevive ? estimate.refills : estimate.refills.slice(0, 2);
 		// Convert bins to percentages
 		const data = estimate.refills.map((refill, index) => {
-			const total = refill.bins
+			var bins = {};
+			const binSize = 1/30;
+
+			for (var result of refill.all.sort()) {
+				const bin = Math.floor(result/binSize)*binSize+binSize/2;
+
+			  try{
+				++bins[bin].count;
+			  }
+			  catch {
+				bins[bin] = {result: bin, count: 1};
+			  }
+			}
+
+			delete bins[NaN];
+			var refillBins = Object.values(bins);
+
+			const total = refillBins
 													.map(value => value.count)
 													.reduce((acc, value) => acc + value, 0);
 			var aggregate = total;
@@ -121,7 +138,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			};
 			const ongoing = value => { return {x: value.result, y: value.count/total}};
 
-			const percentages = refill.bins
+			const percentages = refillBins
 																.sort((bin1, bin2) => bin1.result - bin2.result)
 																.map(cumValues);
 
@@ -209,7 +226,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 									}, { rank: 1000 })
 									: {skill: 'None, rank: 0'};
 								const skillContent = topRank.rank == 1 ? 'Top' : `Select ${addPostfix(topRank.rank)} crew from top in ${CONFIG.SKILLS[topRank.skill]}`;
-								const skillIcon = <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${topRank.skill}.png`} style={{ height: '1em', width: '1em'}} />;
+								const skillIcon = <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${topRank.skill}.png`} style={{ height: '1em' }} />;
 
 								if (!crew.imageUrlPortrait)
 									crew.imageUrlPortrait =
@@ -222,7 +239,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										<CrewPopup crew={crew} useBase={false} />
 										{'\t'}
 										{crew.immortal > 0 && <Popup content={`${crew.immortal} frozen`} trigger={<Icon name="snowflake" />} />}
-										{crew.traits.includes(trait.toLowerCase()) && <Popup content='+25 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', width: '1em'}}/>}/>}
+										{crew.traits.includes(trait.toLowerCase()) && <Popup content='+25 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />}/>}
 										{roster.length > 0 && <Popup content={skillContent} trigger={skillIcon} />}
 									</li>
 								);
@@ -281,6 +298,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (<div>Calculating estimate. Please wait...</div>);
 
 		const renderEst = (label, refills) => {
+			if (refills >= estimate['refills'].length) return (<></>);
 			const est = estimate['refills'][refills];
 			return (
 				<tr>

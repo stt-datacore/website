@@ -28,8 +28,8 @@ function getEstimate(config, reportProgress = () => true) {
 
   // output
   var numExtends = config.noExtends ? 0 : 2;
-  var maxExtends = config.noExtends ? 0 : 100;
-  var maxNum20hourSims = config.noExtends ? 0 : 100;
+  var maxExtends = 100;
+  var maxNum20hourSims = 100;
 
   // variables
   var allSkills = [ps, ss, o1, o2, o3, o4];
@@ -91,25 +91,6 @@ function getEstimate(config, reportProgress = () => true) {
          'lastDil': lastDilemma,
          'dilChance': 100*lastDilemmaSuccesses/exResults.length,
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
-      }
-
-      if (!config.noBins) {
-        var bins = {};
-        const binSize = 1/30;
-
-        for (result of exResults.sort()) {
-  	  		const bin = Math.floor(result/binSize)*binSize+binSize/2;
-
-          try{
-          	++bins[bin].count;
-          }
-          catch {
-            bins[bin] = {result: bin, count: 1};
-          }
-        }
-
-        delete bins[NaN];
-        refill.bins = Object.values(bins);
       }
 
       refills.push(refill);

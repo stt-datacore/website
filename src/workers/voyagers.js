@@ -15,9 +15,7 @@ const forDataCore = (input, output, chewable) => {
 	// Config is for showing progress (optional)
 	const config = {
 		progressCallback: false,
-		debugCallback: false,//(message) => console.log(message)
-		noExtends: true,
-		noBins: true
+		debugCallback: false//(message) => console.log(message)
 	};
 
 	// Voyage data is required
@@ -51,7 +49,8 @@ const forDataCore = (input, output, chewable) => {
 		const config = {
 			ps, ss, others,
 			'startAm': input.bestShip.score + lineup.antimatter,
-			'prof': lineup.proficiency
+			'prof': lineup.proficiency,
+			noExtends: false // Set to true to show estimate with no refills
 		};
 		return new Promise((resolve, reject) => {
 			const estimate = chewable(config, () => false);
