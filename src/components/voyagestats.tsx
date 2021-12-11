@@ -23,6 +23,8 @@ type VoyageStatsProps = {
 type VoyageStatsState = {
 	estimate: any;
 	activePanels: [];
+	currentAm: number;
+	currentDuration: number;
 };
 
 const POSITION_POSTFIX = [
@@ -205,7 +207,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										.filter(c => c.skills[skill].core > 0)
 										.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
 		}));
-
+		let usedCrew = [];
 
 		return (
 			<div>
@@ -218,16 +220,20 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 								const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
 								const topRank = roster ?
-									skillRankings.filter(r => Object.keys(crew.skills).includes(r.skill))
+									skillRankings.filter(c => Object.keys(crew.skills).includes(c.skill))
+															 .filter(c => !usedCrew.includes(c))
 															 .reduce((best, ranking) => {
-										const rank = ranking.roster.findIndex(c => crew.symbol === c.symbol) + 1;
+										const rank = ranking.roster
+																				.filter(c => Object.keys(c.base_skills).includes(skill))
+																				.findIndex(c => crew.symbol === c.symbol) + 1;
 										return rank < best.rank || (ranking.skill == entry && rank <= best.rank)
 											? {skill: ranking.skill, rank} : best;
 									}, { rank: 1000 })
 									: {skill: 'None, rank: 0'};
-								const skillContent = topRank.rank == 1 ? 'Top' : `Select ${addPostfix(topRank.rank)} crew from top in ${CONFIG.SKILLS[topRank.skill]}`;
+								const skillContent =  `Select ${topRank.rank == 1 ? 'top crew in' : addPostfix(topRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[topRank.skill]}`;
 								const skillIcon = <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${topRank.skill}.png`} style={{ height: '1em' }} />;
 
+								usedCrew.push(crew);
 								if (!crew.imageUrlPortrait)
 									crew.imageUrlPortrait =
 										`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
@@ -240,7 +246,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										{'\t'}
 										{crew.immortal > 0 && <Popup content={`${crew.immortal} frozen`} trigger={<Icon name="snowflake" />} />}
 										{crew.traits.includes(trait.toLowerCase()) && <Popup content='+25 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />}/>}
-										{roster.length > 0 && <Popup content={skillContent} trigger={skillIcon} />}
+										{voyageData.state == 'pending' && <Popup content={skillContent} trigger={skillIcon} />}
 									</li>
 								);
 							})}
