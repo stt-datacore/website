@@ -878,5 +878,16 @@
 		"smallbonus": {
 			"traits": ["data","Cultural Figure"]
 		}
+	},
+	{
+		"name": "Problems of the Present - Mega Pt 3",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 12/16 until Monday 12/20 at Noon (16.00 UTC)",
+		"startDate": "2021-12-16T16:00:00Z",
+		"endDate": "2021-12-20T16:00:00Z",
+		"highbonus": ["kmpec_crew", "dsc_sukal_crew", "bareil_vedek_crew", "sahil_lieutenant_crew"],
+		"smallbonus": {
+			"traits": ["Cultural Figure"]
+		}
 	}
 ]
