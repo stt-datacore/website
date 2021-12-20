@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Hey, champ, what has two thumbs and is totally forgettable? Paul Stubbs. How ya doing? The best we can say is he will be fine as a warm body on a Skirmish ship. Beyond that, SCI and ENG are the bacon-and-eggs skill duo of any Trek scientist-of-the-week, and a handful of nondescript or overloaded traits mean his chances for post-mega work are pretty slim. If you do choose to freeze and forget him, he will nab a spot in the Daystrom Award collection, if you need it. Think of it as your reward to yourself. For patience.
+Hey, champ, what has two thumbs and is totally forgettable? Paul Stubbs. How ya doing? The best we can say about this self-proclaimed wunderkind is that he has, uh, traits. Which might lead to, uh, collections.
+
+Does he recreate them in the holodeck? No. In here. In his mind. With the knowledge of traits, bonus pools, events and shuttles, times thawed, anti-matter traits. Men like Stubbs do not need holodecks, reader. He has launched collections in his mind. It was his reward to himself for patience. Knowing his turn would come. Call your shot. Point to a star. One great blast and the crowd rises. A brand new era in stat-boosters. Postponed one hundred and ninety-six years...on account of rain.
