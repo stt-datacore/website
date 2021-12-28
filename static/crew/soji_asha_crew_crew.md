@@ -3,7 +3,7 @@ name: Soji Asha
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 6
 events: 7
 in_portal: true
 date: 09/04/2020
@@ -12,8 +12,10 @@ mega: true
 published: true
 ---
 
-Well, here we are, the Destr - Spoiler herself. What can I say without spoiling things for those of you who have yet to see Picard? For one thing, I can tell you that you can get a month free of CBS All Access using the codes GIFT and ENJOY, so if you're looking for something to binge while we're all locked inside, hopefully I've just done you a solid.
+She makes, like, a gazillion voyages for me' - but we must strive to be less encumbered with horse blinders here at the Large Tome. 
 
-For another, Soji is good. Damn good. We're about at the point where MED primaries are tipping over into common enough where I can't just give instant credit for them, especially what with her being the fourth MED primary mega character, but she's one of the best, so you'll have to endure my favouritism a little while longer. And for those of you who have somehow managed to avoid building up strong DIP bases, she'll help you out a little there, too.
+A former mega recurring rarely gets bad reviews because more stars = more good. And it's true that Soji hit the spot on release and gave everyone a nice, juicy MED voyager. But what else did it give us? Not a gauntlet option or an event piece (crossed fingers for a show mega notwithstanding) or an arena option or much of a collection magnet, though she may end up average there over time.
 
-Her traits outside of the invisible Picard show label aren't astounding, there's little to be found in the Gauntlet or the Arena for her, and there's no collection value to her, but her numbers are quite simply just that good. Absolutely worth citing up, which I'm sure is the question you came here looking for an answer to. See, I managed to make you read the whole note! That's how you keep engagement.
+As for her voyage ability, it's still cruisin' on rosters who FF'd her from her introductory mega, just keep in mind that her skill set is far from uncommon and the voyage power on the label is not what you're getting when you behold her first or second star - it will take a while to rev her up. Three anti-matter traits don't exactly inspire confidence against other MED-led options in her neighborhood either. 
+
+Are we telling you to not behold her? Well, no, just weigh her same-day stats against the fantastic tales that usually accompany recurring mega crew. Soji is far from a dead end, but her edges are more sanded down now than they ever were.
