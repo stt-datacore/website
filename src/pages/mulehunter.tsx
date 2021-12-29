@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Dropdown, Form, Header, Icon, Popup, Rating, Table } from 'semantic-ui-react';
+import { Checkbox, Divider, Dropdown, Form, Grid, Header, Icon, Popup, Rating, Table } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../components/CONFIG';
@@ -10,21 +10,15 @@ import { demandsPerSlot } from '../utils/equipment';
 import { getStoredItem } from '../utils//storage'
 import Worker from 'worker-loader!../workers/unifiedWorker';
 
-const rarityOptions = Array.from({ length: 5 }, (_, i) => ({key: i+1, value: i+1, text: `${i+1}`}));
-const RARITIES = [ 'Basic', 'Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary' ];
-
-const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
-	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
-	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
+const RARITIES = [
+	'',
+	'\u2605',
+	'\u2605\u2605',
+	'\u2605\u2605\u2605',
+	'\u2605\u2605\u2605\u2605',
+	'\u2605\u2605\u2605\u2605\u2605'
 ];
+
 
 type MuleHunterState = {
   itemList: Dropdown.Item[];
@@ -121,18 +115,25 @@ class MuleHunter extends React.Component<MuleHunterState> {
   }
 
   _selectionChanged(value: string[]) {
-    const { allcrew, allitems } = this.state;
+    const { allcrew, allitems, maxRarity, inPortal } = this.state;
 		let params = new URLSearchParams();
+		value.forEach(item => params.append('item', item));
 
-    const entries = allcrew.reduce((targets, crew) =>
-      targets.concat(crew.itemsPerUpgrade
-        .map(ipu => ({
-          crew,
-          items: ipu.items.filter(item => value.includes(item))
-                          .map(symbol => allitems.find(item => item.symbol == symbol)),
-          level: ipu.level
-        })))
-        .filter(ipu => ipu.items.length > 0), []);
+    const entries = allcrew
+			.filter(crew => crew.max_rarity <= maxRarity)
+			.filter(crew => !inPortal || crew.inPortal)
+			.reduce((targets, crew) => {
+	      return targets.concat(crew
+					.itemsPerUpgrade
+	        .map(ipu => ({
+	          crew,
+	          items: ipu.items.filter(item => value.includes(item))
+	                          .map(symbol => allitems.find(item => item.symbol == symbol)),
+	          level: ipu.level
+	        }))
+					.filter(ipu => ipu.items.length > 0)
+	        .reduce((best, ipu) => best.items && ipu.items.length <= best.items.length ?  best : ipu, []));
+			}, []);
 
 		this.setState({ entries, currentSelectedItems: value });
 
@@ -141,17 +142,16 @@ class MuleHunter extends React.Component<MuleHunterState> {
 	}
 
   _createDropdownItem(item) {
-    const rarity = Array.from({length: item.rarity}, _ => '\u2605').join('');
     return {
       value: item.symbol,
       image: `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`,
-      text: `${rarity} ${item.name}`
+      text: `${RARITIES[item.rarity]} ${item.name}`
     };
   }
 
   render() {
     const { allitems, entries, itemList, loaded } = this.state;
-
+		const rarityOptions = Array.from(RARITIES.slice(1), (text, i) => ({key: i+1, value: i+1, text }))
     if (!loaded)
       return <div><Icon loading />Loading...</div>;
 
@@ -174,17 +174,23 @@ class MuleHunter extends React.Component<MuleHunterState> {
           onChange={(e, { value }) => this._selectionChanged(value)}
         />
         </div>
-        <div>
-        <span>Crew filter:</span>
-        <Dropdown
-          compact
-          placeholder={this.state.maxRarity ? `Max rarity: ${this.state.mxnRarity}` : `Maximum rarity`}
-          selection
-          options={rarityOptions}
-          value={this.state.maxRarity}
-          onChange={(e, { value }) => this.setState({ maxRarity: value })}
-        />
-        </div>
+				<Grid columns={2}>
+        	<Grid.Column>
+		        <span>Max crew rarity: </span>
+		        <Dropdown
+		          compact
+		          placeholder={this.state.maxRarity ? `Max rarity: ${this.state.mxnRarity}` : `Maximum rarity`}
+		          selection
+		          options={rarityOptions}
+		          value={this.state.maxRarity}
+		          onChange={(e, { value }) => this.setState({ maxRarity: value })}
+		        />
+					</Grid.Column>
+					<Grid.Column>
+						<Checkbox defaultChecked label='In Portal' onChange={(e, { value }) => this.setState({inPortal: value})} />
+					</Grid.Column>
+				</Grid>
+
       </Form>
 
       <Divider horizontal hidden />
@@ -192,7 +198,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
       {entries.length == 0 && <p>No mules available</p>}
 
       {entries.length > 0 &&
-      <PagedTable sortable striped>
+      <PagedTable striped>
         <PagedTable.Header>
             <PagedTable.Row>
               <PagedTable.HeaderCell>Crew</PagedTable.HeaderCell>
@@ -202,7 +208,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
             </PagedTable.Row>
           </PagedTable.Header>
           <PagedTable.Body>
-            {entries.map(entry =>
+            {entries.sort((e1, e2) => e2.items.length - e1.items.length).map(entry =>
               <PagedTable.Row>
                 <PagedTable.Cell>
                 <div
