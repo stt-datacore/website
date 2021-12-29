@@ -70,9 +70,8 @@ export class PagedTable extends React.Component {
 
     render() {
       const { paginationPage, paginationRows } = this.context;
-      this.context.changeRowNum(this.props.children.length);
+			this.context.changeRowNum(this.props.children.length);
       const baseRow = (paginationPage-1)*paginationRows;
-      console.log(this.props.children);
 
       return (
         <Table.Body {...this.props}>

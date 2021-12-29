@@ -25,6 +25,7 @@ type MuleHunterState = {
   currentSelectedItems: string[];
   allcrew: object[];
   maxRarity: number;
+	inPortal: boolean;
   entries: object[];
   roster: object[];
   allitems: object[];
@@ -39,6 +40,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
       itemList: [],
       currentSelectedItems: [],
       allcrew: [],
+			inPortal: true,
       maxRarity: 4,
       entries: [],
       roster: [],
@@ -99,7 +101,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
 		this.setState({ allcrew, allitems, itemList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('item')) {
-				this._selectionChanged(urlParams.getAll('item'));
+				this._updateTable({...this.state, currentSelectedItems: urlParams.getAll('item') });
 			}
 		});
 
@@ -114,20 +116,20 @@ class MuleHunter extends React.Component<MuleHunterState> {
     this.setState({loaded : true });
   }
 
-  _selectionChanged(value: string[]) {
-    const { allcrew, allitems, maxRarity, inPortal } = this.state;
+  _updateTable(newState: object) {
+    const { allcrew, allitems, currentSelectedItems, maxRarity, inPortal } = newState;
 		let params = new URLSearchParams();
-		value.forEach(item => params.append('item', item));
+		currentSelectedItems.forEach(item => params.append('item', item));
 
     const entries = allcrew
 			.filter(crew => crew.max_rarity <= maxRarity)
-			.filter(crew => !inPortal || crew.inPortal)
+			.filter(crew => !inPortal || crew.in_portal)
 			.reduce((targets, crew) => {
 	      return targets.concat(crew
 					.itemsPerUpgrade
 	        .map(ipu => ({
 	          crew,
-	          items: ipu.items.filter(item => value.includes(item))
+	          items: ipu.items.filter(item => currentSelectedItems.includes(item))
 	                          .map(symbol => allitems.find(item => item.symbol == symbol)),
 	          level: ipu.level
 	        }))
@@ -135,7 +137,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
 	        .reduce((best, ipu) => best.items && ipu.items.length <= best.items.length ?  best : ipu, []));
 			}, []);
 
-		this.setState({ entries, currentSelectedItems: value });
+		this.setState({ entries, currentSelectedItems, inPortal, maxRarity });
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);
@@ -150,8 +152,10 @@ class MuleHunter extends React.Component<MuleHunterState> {
   }
 
   render() {
-    const { allitems, entries, itemList, loaded } = this.state;
+    const { allitems, currentSelectedItems, entries, inPortal, itemList, loaded, maxRarity, updateTable } = this.state;
 		const rarityOptions = Array.from(RARITIES.slice(1), (text, i) => ({key: i+1, value: i+1, text }))
+		const updateState = newState => this._updateTable({...this.state, ...newState });
+
     if (!loaded)
       return <div><Icon loading />Loading...</div>;
 
@@ -171,7 +175,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
           placeholder='Select or search for items'
           label='Required items'
           value={this.state.currentSelectedItems}
-          onChange={(e, { value }) => this._selectionChanged(value)}
+          onChange={(e, { value }) => updateState({currentSelectedItems: value})}
         />
         </div>
 				<Grid columns={2}>
@@ -179,15 +183,15 @@ class MuleHunter extends React.Component<MuleHunterState> {
 		        <span>Max crew rarity: </span>
 		        <Dropdown
 		          compact
-		          placeholder={this.state.maxRarity ? `Max rarity: ${this.state.mxnRarity}` : `Maximum rarity`}
+		          placeholder={maxRarity ? `Max rarity: ${maxRarity}` : `Maximum rarity`}
 		          selection
 		          options={rarityOptions}
-		          value={this.state.maxRarity}
-		          onChange={(e, { value }) => this.setState({ maxRarity: value })}
+		          value={maxRarity}
+		          onChange={(e, { value }) => updateState({ maxRarity: value })}
 		        />
 					</Grid.Column>
 					<Grid.Column>
-						<Checkbox defaultChecked label='In Portal' onChange={(e, { value }) => this.setState({inPortal: value})} />
+						<Checkbox checked={inPortal} label='In Portal' onChange={(e, { checked }) => updateState({inPortal: checked})} />
 					</Grid.Column>
 				</Grid>
 
