@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 26
+events: 27
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Tempted was ironically the Soong prototype for all the ENG primary Datas that have come after him. In his heyday he was special and even though Father Time is undefeated, Tempted still has some juice in his legs yet. Due to the logjam among Datas in the ENG base ranks, Tempted will perform similarly to other variants for his numerous events. ENG/DIP additions to the game have unfortunately caused his sinking voyage score to feel more accurate, but that same skill set also helps him maintain two mid-level gauntlet pairs. Statistically weak, but with more versatility than most, including better than average event chances.
+Tempted was ironically the Soong prototype for all the ENG primary Datas that have come after him. In his heyday he was special, but it's been 0.68 seconds since his card was released and Father Time is undefeated.
+
+While nothing to write home about, his bases should catch adequate shuttle seating on the weekends thanks to the household name brand of Data and it's likely that we'll see three of his five traits blossom into collection value down the road.
+
+Unfortunately his only shot at day to day usage is as a gauntlet fifth (or new player stalwart. Damn the ENG ranks), but even there his short trait list caps his chances at elevated crit and he can't measure up to Red Angel's DIP/ENG pair even with a crit advantage. Tempted's power level has him in the rank doldrums, but he's not a total dud despite his age.

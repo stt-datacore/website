@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-It's easy to confuse Umpire and Jazz Odo, but this is definitely the one you want. He's suitable for daily use as early as 3/5 for most rosters and is far and away the best Odo CMD for his couple of events per year. +1 Vanity may break a tie in an otherwise poor behold.
+A 2017 2-skiller - most players should know right off the bat what to expect from that. A fine pinch hitter on shuttles, Odo's plate is rarely crowded, but owns a modest event tally and might even catch a curveball in the form of a constable one-off event.
+
+Already with two leadoff collections, Odo could improve that count and sit juuuuust a bit outside the kind of tempting choices that save you from an ugly behold. It's easy to balk at an older 2-skill crew, but Ump offers enough to avoid a total strike out.

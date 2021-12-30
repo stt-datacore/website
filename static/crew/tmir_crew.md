@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Infamous throughout the Captain division of arena for her instant damage at four seconds with hefty passive EV. Outside of that, Vulcan events and +1 to their collection aren't bad pickups if your other behold choices are uninspiring.
+Infamous throughout the Captain division of arena for her instant damage at four seconds with hefty passive evasion, T'Mir is also becoming something of a collection Kwik-E-Mart. With a handful in the holster already and a surprisingly steady event history, she should be attractive to rosters at every level.

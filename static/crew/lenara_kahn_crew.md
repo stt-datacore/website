@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Kahn (no relation) is in trouble. With one of her three traits already tapped for mega action and another one likely too large to be called upon, Lenara is little more than a naked base. The first non-Dax Trill may signal an expansion of that subset of characters (Odan, oh boy!), or it may be a blip on the radar. With only a hair slow arena ability to offer on the periphery, she's at the mercy of a painfully thin trait set to give her periods of relevance. If you're here to see if she's worth the campaign investment, then the answer should be obvious.
+Kahn (no relation) is in trouble. She's got trait envy and only WRG's dartboard can save her now. The first non-Dax Trill heralded an expansion of that subset of characters (Odan, oh boy!), but without a collection or event attached to that growth, it may have only angered the Jadzia faithful.
+
+Our advice: ignore this crew until she has at least two collections and then try to find a behold in which she has more than the other options.

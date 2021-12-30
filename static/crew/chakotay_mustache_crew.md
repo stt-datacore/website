@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-The stats aren’t shabby, but Commander Generic makes variant number seven (of eight) with a CMD/DIP/SEC skill set. We welcome the unforeseen uptick in events (three in seven months), but beyond that there’s not much to recommend about the disheveled first officer. His art may be a shade off, but I must admit that a fairly bland character is represented accurately in this case. No fringe benefits so if you’re not using him for shuttles or voyages, freeze and forget until his event number is called.
+Commander Generic debuted as a daily use option, but now that the bloom is off the rose, there's just scattershot event opportunities and a somewhat low collection ceiling left standing. Having at least one collection should save him from the first wave of low-on-space airlocks and give him some appeal to veteran players, but you could go years without saying the phrase "Gee, I'm glad I have Resolute to thaw for this run of Chakotay events!"

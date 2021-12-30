@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A near-copy of Vosk, Detmer trades a bit of his Voyage power for a stronger CMD base and the all-important Disco trait, which means she walks in the door with a healthy event count and the #1 CMD and #4 ENG base for Disco purples. Throw in a few potentially eventable traits, and a stat-boosting collection that she puts on the precipice of no longer needing any Legendaries to complete, and you've got a recipe for a crew just about every roster can find a use for.
+Keyla joined the party shortly before the last Discovery mega and if those had continued, she'd have been sitting pretty. But if you take a look at her event history, you'll notice the precipitous drop in bonus availability once those smothering piles of show bonuses dried up. Between a handful of viable traits and her role in CBS' flagship Trek show, she could and should continue to find work in spurts, just not as a cornerstone piece that we once thought Discovery crew could be.
+
+Having fallen out of voyage consideration for most players, it's become a waiting game to see how many of her traits become those juicy collection/mega combo platters that give older crew big bumps in value.

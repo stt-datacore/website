@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-🎵Dancing Queen...young and green...such a libertine.🎵 That's not a hue of envy, it's nausea. To cut to the chase, this crew absolutely sucks. Her selling points are the Green Girls' ensemble and some superfluous shuttle ranking for the...Orion mega? She's only had as many event bonuses as she has legs, which is surprisingly not two. The trait mega era will give some duds brief periods of relevance (usually only for six days), but beyond that she should really only be rostered for the sweet bridge crew pictures you share with friends.
+🎵Dancing Queen...young and green...such a libertine.🎵 That's not a hue of envy, it's nausea. To cut to the chase, this crew absolutely sucks. Her selling points are the Green Girls' ensemble and some superfluous shuttle ranking for the...Orion mega? 
+
+In all seriousness, it's traits or nothin' for Maras. We've eased up on dunking on these type of crew, because useless though she may be as of this writing, she could also be a four collection piece by the time you're reading this - the game just moves a lot faster now. Approach with caution in beholds and consult her collection value before considering her in any type of behold.

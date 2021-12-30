@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-NEO is a crew without holes. If we accept that only a very few crew hold esteemed spots in the gauntlet and shuttle rankings, then we're glad to welcome aboard the new #1 Discovery super rare SEC without reservation. The Disco mega freight train is still chugging along and Owo will be manning shuttles there several times a year if you can spare her from voyage duty. SEC/SCI doesn't have strong representation among legendary crew and so her satisfactory power there meets a useful skill set for some pre-freezer work on early to mid-game rosters. Her arena numbers speak of Ardra-lite usability for new players and a spot in a stat-boosting collection is the cherry on top.
+One of the exciting aspects of Timelines' shift toward new collections is not knowing how much better formerly discarded or underwhelming crew might get. In this case, NEO is the opposite - a crew who has 'peaked', but as the saying goes, a bird in the hand is worth two in the bush.
+
+Owo's collection trio is very unlikely to expand outside of a rarity collection and the waves of Discovery megas have calmed as well. But she also stands as bankable collection value with a little early game arena work and a strong base for trait events or the rare Owo feature.

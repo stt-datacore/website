@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-As my mother used to say “A Strong DIP Base Will Get You Far In Life” but then she was a strange woman. Whilst long term players with established rosters will probably freeze Chekov with only his bi-annual events to consider, newer players will get good use out of his strong DIP base and high performing voyage rank.
+With shuttle and voyage metrics leading the way on this Chekov, he's a card that newer rosters would ideally like to see as a featured event crew that they can fuse several stars at a time on. Chekov's events (and poor traits) are scattershot at best, so a player doing the slow fuse one star at a time through beholds should be focused on his collections.
 
-The future of Chekov is probably on the wane, however, with future events more likely to be Discovery or Picard focused - don’t be surprised if Chekov nets fewer weekend appearances in the future without a robust trait set to break his fall.
+Extremely lucky to grab spots in the EV Suit and Resourceful collections (which Nobody had on their Bingo cards beforehand), a Tactician collection would be a humorous way for him to pick up the hat trick, but at this point we should just be grateful to have a relevant Chekov and gladly snag his multi-collection value where possible.
