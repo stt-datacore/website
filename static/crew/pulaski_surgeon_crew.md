@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-I'm notoriously tough on non-event 2-skillers which you know Pulaski is when freakin' Chakotay doubles her features. And while her MED lead over the former mega Bashir is significant, her tumble down the base ranks throughout 2019 is very, very concerning as those now besting her, including former mega Qod, are all competent voyagers to boot. Unless you're desperate for a MED base, it's advisable to seek Pulaski's peers who also offer more utility.
+Turn your head and cough' jokes and All Red Everything bridge crew photos are the upper limit for this former 6-packer. Once coveted, kinda, for her huge MED base, she now sits ranked in the double digits. With that skill seating so scarce in faction events and Pulaski rarely catching a bonus...I'm afraid I've got some bad news, Doctor.
+
+Kathy's lone 45% gauntlet and reasonable MED/SCI proficiency pair might make the cut for fledgling rosters and she does have *a* viable trait, leading to most behold selectors muttering, "At least she's a Physician". We've sounded caution on this crew for a long time due to her self-apparent trajectory and she hasn't deviated from it. Only behold this card if she sits across from Portal 63 and Cadet Sylvia Tilly.

@@ -60,7 +60,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
     let shuttles = 0;
 
     while (reputation <= 38) {
-      if (score >= 32)
+      if (reputation >= 32)
         reputation += 8;
       else
         reputation += 5;
