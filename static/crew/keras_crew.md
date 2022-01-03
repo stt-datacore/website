@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Double collections, A good base CMD among Romulans, and some usable arena EV. The Romulan mega has passed, but we’ve seen a standalone event for them since then and Keras is the best Romulan CMD option outside of a 4/5 Vreenak. Nicely well-rounded for a 2-skiller, though mostly desirable for his collections.
+Keras was an early adopter to the collection bonanza, but his limited reach in that area could have him falling further behind over time. With very little to offer elsewhere, feel free to pass on him in beholds if you're a newcomer to the game; his only beneficial attributes unlock post-cryo.

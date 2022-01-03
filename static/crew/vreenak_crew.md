@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-No, I won't say it. And Vreenak isn't a fake, though perhaps underpowered. We're unlikely to see too many Senator or Tal Shiar events, so if you're looking to put his stats to work, you're banking on Romulan events, of which there's only been one standalone. For more such weekends in the future, he's the #3 Romulan DIP behind the far more useful Romulan Picard and that one guy who definitely doesn't kiss his sister when the camera isn't on him. He's really more of a character choice, but at least he hits two collections if you take him to max for sentimental reasons.
+No, I won't say it. And Vreenak isn't a fake, though certainly underpowered. We're unlikely to see too many Tal Shiar events, but his other traits have still underperformed in terms of bonuses and he may find some weekend shuttle work when you least expect it. Not that you'd want him flying your shuttles for...reasons. Vreenak is more of a character choice, but at least he hits a few collections and has a reasonable ceiling there if you take him to max for sentimental reasons.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Voyage power around the top 50 at the time of the first Big Book has dropped tremendously since then as have the ranks of his now embarrassing bases. Unfortunately, the only thing Moriarty really offers most rosters is unrealized event potential via a handful of traits. Not the worst crew statistically, but someone you can easily do without.
+Stuck on Stat Island alongside numbskull Gilligan, The Professor's one chance off that hellhole is traits. One of the top ranked crew by collection potential, that metric will either hold solid or transition to tangible, stat-boosting goodness. In the meantime, feel free to pass on him for more immediately beneficial crew or freeze him if you've immortalized Moriarty since power creep has swallowed up any semblance of daily usefulness.

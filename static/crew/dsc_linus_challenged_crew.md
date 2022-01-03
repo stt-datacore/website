@@ -6,10 +6,10 @@ memory_alpha:
 bigbook_tier: -1
 events: 18
 in_portal:
-date: 06/12/2021
+date: 06/01/2022
 obtained: Event
 mega: false
 published: true
 ---
 
-
+Less of a flash in the pan, more of a sparkle. Without the backbone of Discovery megas, Linus is a voyage-only option with thin collection potential. A fine card for new players to snag in an event, but a low priority behold option that won't age well.

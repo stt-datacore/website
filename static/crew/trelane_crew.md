@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-His bases aren't worth considering until/unless one of his several juicy traits hit the Mega lottery, and even then, it'd have to be a pretty thin pool a la Warp Theorist to make a splash, but the plucky Trelane has the skill set and proficiency to earn voyage and gauntlet work. His single gauntlet pair definitely has a half-life on it with current reward Armus besting him there and a couple non-portal options bound to join us in 2019, but he still hits 65% crit from time to time. His voyage appearances will come thanks to his skill set which is Trelane's saving grace is the face of rapidly sinking stat ranks. Just be wary of taking him on as a citation project - all it would take is one SEC/SCI mega crew to completely capsize him.
+A pretty fleshy, non-standard trait set is the main value driver with Trelane. The weakest table leg is events; between his poor base power and large trait pools, you may have to get several requisition shuttles deep before he pops up as an option.
+
+Elsewhere, however, there's value. A multi-collection piece with a strong ceiling in that area can generally beat out plenty of older dud cards in a bad behold and he does earn some gauntlet play once in a blue moon. His 65% gauntlet (A.K.A. the Q Continuum set) has him as a fine inclusion and he's the #1 SEC/SCI option for all but one of his 45%+ sets.

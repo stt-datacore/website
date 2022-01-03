@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Wesley's creepy friend has had a great run of almost two years and while he's not quite dead in the water, several other options have begun crowding him out. After joining the game as the #1 base ENG, he now finds himself dwarfed by former Megas Ru'afo and Janeway and is nearly equalled by recent Mega Etana Jol. That makes a non-event base far less valuable than it would be in a skill without that sort of ubiquitous competition. With his weekend chances contingent on a lucky trait mega and a daily effectiveness that's sinking fast, Traveler's arrow is firmly pointing down.
+Wesley's creepy friend had a reasonable run as a top ENG option on release, but if you want to have anything to do with him now, go read his arena quote and then head on over to his trait list. Offering almost as many collections as he has fingers, that number should grow moving forward. Considering his  complete lack of other offerings, you may wish to wait until that count grows to four or five before you spend any behold or retrieval capital here.
