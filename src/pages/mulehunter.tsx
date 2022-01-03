@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Divider, Dropdown, Form, Grid, Header, Icon, Popup, Rating, Table } from 'semantic-ui-react';
+import { Checkbox, Divider, Dropdown, Form, Grid, Header, Icon, Label, Popup, Rating, Table } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../components/CONFIG';
@@ -24,9 +24,11 @@ type MuleHunterState = {
   itemList: Dropdown.Item[];
   currentSelectedItems: string[];
   allcrew: object[];
-  maxRarity: number;
 	inPortal: boolean;
-  entries: object[];
+  maxLevel: number;
+  maxRarity: number;
+	ownedCrew: boolean;
+	entries: object[];
   roster: object[];
   allitems: object[];
   loaded: boolean;
@@ -40,10 +42,12 @@ class MuleHunter extends React.Component<MuleHunterState> {
       itemList: [],
       currentSelectedItems: [],
       allcrew: [],
+			ownedCrew : false,
 			inPortal: true,
+			maxLevel: 100,
       maxRarity: 4,
       entries: [],
-      roster: [],
+      roster: undefined,
       allitems: [],
       loaded: false
     };
@@ -71,7 +75,6 @@ class MuleHunter extends React.Component<MuleHunterState> {
 
         });
 
-
         return {
           items: Array.from(crewEquipment),
           level: (i+1)*10
@@ -91,10 +94,6 @@ class MuleHunter extends React.Component<MuleHunterState> {
     });
 
     const itemList = allitems
-      // .filter(item => !item.recipe)
-      // .filter(item => item.rarity < 5)
-      // .filter(item => [2, 3].includes(item.type))
-      // .filter(item => !item.imageUrl.startsWith('crew'))
       .filter(item => crewItemUse[item.symbol].length > 0 )
       .map(item => this._createDropdownItem(item));
 
@@ -106,10 +105,10 @@ class MuleHunter extends React.Component<MuleHunterState> {
 		});
 
 		if (playerData) {
-			let roster = playerData.player.character.crew;
-			roster = roster.concat(playerData.player.character.stored_immortals);
-			roster = roster.map(c1 => allcrew.find(c2 => c1.symbol == c2.symbol))
-										 .filter(c => c != undefined);
+			const roster = playerData
+										.player.character.crew
+										.concat(playerData.player.character.stored_immortals)
+										.map(c => ({ symbol: c.symbol, level: c.level }));
 			this.setState({ roster });
 		}
 
@@ -117,7 +116,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
   }
 
   _updateTable(newState: object) {
-    const { allcrew, allitems, currentSelectedItems, maxRarity, inPortal } = newState;
+    const { allcrew, allitems, currentSelectedItems, inPortal, maxLevel, maxRarity, ownedCrew, roster } = newState;
 		let params = new URLSearchParams();
 		currentSelectedItems.forEach(item => params.append('item', item));
 
@@ -135,9 +134,12 @@ class MuleHunter extends React.Component<MuleHunterState> {
 	        }))
 					.filter(ipu => ipu.items.length > 0)
 	        .reduce((best, ipu) => best.items && ipu.items.length <= best.items.length ?  best : ipu, []));
-			}, []);
+			}, [])
+			.filter(crew => !ownedCrew || (roster.includes(crew.symbol) && crew.level <= roster.find(crew.symbol).level))
+			.sort((e1, e2) => e1.level - e2.level)
+			.sort((e1, e2) => e2.items.length - e1.items.length);
 
-		this.setState({ entries, currentSelectedItems, inPortal, maxRarity });
+		this.setState(newState);
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);
@@ -152,8 +154,9 @@ class MuleHunter extends React.Component<MuleHunterState> {
   }
 
   render() {
-    const { allitems, currentSelectedItems, entries, inPortal, itemList, loaded, maxRarity, updateTable } = this.state;
-		const rarityOptions = Array.from(RARITIES.slice(1), (text, i) => ({key: i+1, value: i+1, text }))
+    const { allitems, currentSelectedItems, entries, inPortal, itemList, loaded, maxLevel, maxRarity, ownedCrew, roster, updateTable } = this.state;
+		const rarityOptions = Array.from(RARITIES.slice(1), (text, i) => ({key: i+1, value: i+1, text }));
+		const levelOptions = Array.from({length : 10}, (_, i) => ({key: i, value: (i+1)*10, text: ((i+1)*10).toString()}));
 		const updateState = newState => this._updateTable({...this.state, ...newState });
 
     if (!loaded)
@@ -178,21 +181,43 @@ class MuleHunter extends React.Component<MuleHunterState> {
           onChange={(e, { value }) => updateState({currentSelectedItems: value})}
         />
         </div>
-				<Grid columns={2}>
+				<Grid columns={4} style={{marginTop: '0.5em'}}>
         	<Grid.Column>
-		        <span>Max crew rarity: </span>
-		        <Dropdown
-		          compact
-		          placeholder={maxRarity ? `Max rarity: ${maxRarity}` : `Maximum rarity`}
-		          selection
-		          options={rarityOptions}
-		          value={maxRarity}
-		          onChange={(e, { value }) => updateState({ maxRarity: value })}
-		        />
+						<Form.Field>
+			        <Label>Max crew rarity</Label>
+			        <Dropdown
+			          compact
+			          placeholder={maxRarity ? `Max rarity: ${maxRarity}` : `Maximum rarity`}
+			          selection
+								closeOnChange
+			          options={rarityOptions}
+			          value={maxRarity}
+			          onChange={(e, { value }) => updateState({ maxRarity: value })}
+			        />
+						</Form.Field>
 					</Grid.Column>
 					<Grid.Column>
-						<Checkbox checked={inPortal} label='In Portal' onChange={(e, { checked }) => updateState({inPortal: checked})} />
+						<Form.Field>
+							<Label>Max crew level</Label>
+							<Dropdown
+								compact
+								placeholder={maxLevel ? `Max level: ${maxLevel}` : 'Maximum level'}
+								selection
+								closeOnChange
+								options={levelOptions}
+								value={maxLevel}
+								onChange={(e, { value }) => updateState({ maxLevel: value})}
+							/>
+						</Form.Field>
 					</Grid.Column>
+					<Grid.Column>
+						<Checkbox style={{position: 'absolute', top: '50%'}} checked={inPortal} label='In portal only' onChange={(e, { checked }) => updateState({inPortal: checked})} />
+					</Grid.Column>
+					{roster &&
+						<Grid.Column>
+							<Checkbox style={{position: 'absolute', top: '50%'}} checked={ownedCrew} label='Crew owned' onChange={(e, { checked }) => updateState({ownedCrew: checked})} />
+						</Grid.Column>
+					}
 				</Grid>
 
       </Form>
@@ -212,7 +237,7 @@ class MuleHunter extends React.Component<MuleHunterState> {
             </PagedTable.Row>
           </PagedTable.Header>
           <PagedTable.Body>
-            {entries.sort((e1, e2) => e2.items.length - e1.items.length).map(entry =>
+            {entries.map(entry =>
               <PagedTable.Row>
                 <PagedTable.Cell>
                 <div
