@@ -9,7 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run Cypress tests
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Run cypress tests
         env:
           GATSBY_DATACORE_URL: https://datacore.app/
           GATSBY_ASSETS_URL: https://assets.datacore.app/
