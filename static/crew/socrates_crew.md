@@ -4,8 +4,8 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 3
-events: 12
-in_portal:
+events: 22
+in_portal: true
 date: 29/12/2020
 obtained: Pack
 mega: false

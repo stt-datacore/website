@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 9
-events: 2
+events: 3
 in_portal: true
 date: 29/11/2018
 obtained: Event
@@ -12,4 +12,10 @@ mega: false
 published: true
 ---
 
-Layna, I'm begging, darling, please. With desolate event chances tied solely to traits, her bases are likely to be stuck hauling the odd daily shuttle and even then, not until higher star counts given the ubiquity of DIP characters. Her shot at earning a roster spot falls mainly on her voyage contributions. The DIP/SCI pairing is not at all uncommon, but above average numbers will earn her at least some play unless you’ve targeted the numerous similar skill sets from top voyagers. On ships, her 30% attack speed ability is the maximum amount available in game, but more than likely activates too late to give it time to make a difference.
+Layna, I'm begging, darling, please.
+
+The late Kellie Waymire's role on Voyager was made into a crew with reasonable daily use value, but now years later, power creep has left this card as a traits-only proposition.
+
+A half dozen traits without Human, Federation, or Starfleet among them is just what we want to see. Even though most of them are quite large pools of crew, they all have a shot at relevance given WRG's concerted push toward highlighting traits and collections.
+
+On ships, her 30% attack speed ability is the maximum amount available in game, but more than likely activates too late unless you just want to win with your favorites and are looking to make a tribute to crewman Cutler.

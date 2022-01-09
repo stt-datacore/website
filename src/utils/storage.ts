@@ -1,47 +1,112 @@
 import React from 'react';
 import * as localForage from 'localforage';
 
+const windowGlobal = typeof window !== 'undefined' && window;
+
 interface StorageOptions {
-	rememberForever?: boolean;	// We store in session unless told to remember forever
-	useDefault?: boolean;	// Use default value as initial value instead of any stored value
-	useAndStoreDefault?: boolean;	// Use default and store it immediately to avoid render loops
-}
+	rememberForever?: boolean;	// We always store in session; we can also store in local storage if told to remember forever
+	useDefault?: boolean;	// Set to true to use default value as initial value instead of any stored value
+	useAndStoreDefault?: boolean;	// Set to true to use default and store it immediately to avoid render loops
+	onInitialize?: (itemKey: string, itemValue: any) => void;	// Callback after value is initialized
+};
 
 const StorageDefaultOptions: StorageOptions = {
 	rememberForever: false,
 	useDefault: false,
-	useAndStoreDefault: false
-}
+	useAndStoreDefault: false,
+	onInitialize: undefined
+};
 
 export const useStateWithStorage = (itemKey: string, itemDefault: any, options?: StorageOptions) => {
 	if (!options) options = StorageDefaultOptions;
 
-	// Set initial value (either from storage or default value) in state
+	// Set initial value in state
+	let updateWithLocalValue = false;
 	const [value, setValue] = React.useState(() => {
-			if (options.useAndStoreDefault) {
-				storeItem(itemKey, itemDefault, options.rememberForever);
+		// Use default value if requested
+		if (options.useAndStoreDefault) {
+			storeItem(itemKey, itemDefault, options.rememberForever);
+			return itemDefault;
+		}
+		if (options.useDefault) return itemDefault;
+		if (options.rememberForever) {
+			// Always use session value if set, even if set to remember forever
+			let sessionValue = getStoredItem(itemKey, undefined);
+			if (sessionValue != undefined) {
+				return sessionValue;
+			}
+			// Otherwise use default value with the intent to update from local storage when ready
+			else {
+				updateWithLocalValue = true;
 				return itemDefault;
 			}
-			if (options.useDefault) return itemDefault;
-			return getItem(itemKey, itemDefault, options.rememberForever);
 		}
-	);
+		return getStoredItem(itemKey, itemDefault);
+	});
+
+	// On component mount, update from local storage if necessary,
+	//	then send message that value is done initializing and what the initial value will be
+	React.useEffect(() => {
+		if (updateWithLocalValue)  {
+			getStoredItemPromise(itemKey, itemDefault).then((storedValue) => {
+				setValue(storedValue);
+				if (options.onInitialize) options.onInitialize(itemKey, storedValue);
+			});
+		}
+		else if (options.onInitialize) {
+			options.onInitialize(itemKey, value);
+		}
+	}, []);
 
 	// Update stored value when value changed in state
-	React.useEffect(() => { storeItem(itemKey, value, options.rememberForever); }, [value]);
+	React.useEffect(() => {
+		// Remove from store (or ignore) if new value is undefined or default
+		if (value === undefined || value == itemDefault) {
+			removeStoredItem(itemKey);
+		}
+		else {
+			storeItem(itemKey, value, options.rememberForever);
+		}
+	}, [value]);
 
 	return [value, setValue];
 };
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
-const storeItem = (itemKey: string, itemValue: any, rememberForever: boolean) => {
-	if (rememberForever)
+const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean) => {
+	if (windowGlobal && windowGlobal.sessionStorage)
+		windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
+	if (useLocalStorage) {
 		localForage.setItem(itemKey, JSON.stringify(itemValue));
-	else
-		sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
+	}
+	// Remove locally stored item if local storage no longer needed, but item currently saved there
+	else {
+		localForage.removeItem(itemKey);
+	}
 };
-const getItem = (itemKey: string, itemDefault: any, rememberForever: boolean) => {
-	let storedValue = rememberForever ? localForage.getItem(itemKey) : sessionStorage.getItem(itemKey);
-	if (!storedValue) return itemDefault;
-	return JSON.parse(storedValue);
+export const getStoredItem = (itemKey: string, itemDefault: any) => {
+	let sessionValue = windowGlobal && windowGlobal.sessionStorage && windowGlobal.sessionStorage.getItem(itemKey);
+	if (!sessionValue) {
+		return itemDefault;
+	}
+	else {
+		return JSON.parse(sessionValue);
+	}
+};
+const getStoredItemPromise = (itemKey: string, itemDefault: any) => {
+	return new Promise((resolve, reject) => {
+		localForage.getItem(itemKey).then((localValue) => {
+			if (!localValue) {
+				resolve(itemDefault);
+			}
+			else {
+				resolve(JSON.parse(localValue));
+			}
+		});
+	});
+};
+const removeStoredItem = (itemKey: string) => {
+	if (windowGlobal && windowGlobal.sessionStorage)
+		windowGlobal.sessionStorage.removeItem(itemKey);
+	localForage.removeItem(itemKey);
 };

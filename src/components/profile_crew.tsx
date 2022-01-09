@@ -5,20 +5,25 @@ import { navigate } from 'gatsby';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
+import CABExplanation from '../components/cabexplanation';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 
+const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+
 const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
-	{ width: 1, column: 'max_rarity', title: 'Rarity' },
-	{ width: 1, column: 'command_skill', title: 'Command' },
-	{ width: 1, column: 'science_skill', title: 'Science' },
-	{ width: 1, column: 'security_skill', title: 'Security' },
-	{ width: 1, column: 'engineering_skill', title: 'Engineering' },
-	{ width: 1, column: 'diplomacy_skill', title: 'Diplomacy' },
-	{ width: 1, column: 'medicine_skill', title: 'Medicine' }
+	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
+	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
+	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
+	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
 ];
 
 type ProfileCrewProps = {
@@ -29,21 +34,11 @@ type ProfileCrewProps = {
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const { isTools } = props;
 
-	const [showFrozen, setShowFrozen] = useStateWithStorage('showFrozen', true);
-	const [findDupes, setFindDupes] = useStateWithStorage('findDupes', false);
+	const pageId = isTools ? 'tools' : 'profile';
+	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/crew/showFrozen', true);
+	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/crew/findDupes', false);
 
-	const data = initCrewData();
-
-	function initCrewData(): [] {
-		let crew = [...props.playerData.player.character.crew];
-		// Add dummy fields for sorting to work
-		crew.forEach(crew => {
-			CONFIG.SKILLS_SHORT.forEach(skill => {
-				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
-			});
-		});
-		return crew;
-	}
+	const data = [...props.playerData.player.character.crew];
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
 		if (!showFrozen && crew.immortal > 0) {
@@ -80,14 +75,22 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<Rating rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>{crew.cab_ov}</b><br />
+					<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>#{crew.ranks.voyRank}</b><br />
+					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
-					crew.base_skills[skill.name] ? (
+					crew[skill.name].core > 0 ? (
 						<Table.Cell key={skill.name} textAlign='center'>
-							<b>{crew.base_skills[skill.name].core}</b>
+							<b>{crew[skill.name].core}</b>
 							<br />
-							+({crew.base_skills[skill.name].range_min}-{crew.base_skills[skill.name].range_max})
+							+({crew[skill.name].min}-{crew[skill.name].max})
 						</Table.Cell>
 					) : (
 						<Table.Cell key={skill.name} />
@@ -105,11 +108,21 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 				</div>
 			);
 		} else {
+			const counts = [
+				{ name: 'event', count: crew.events },
+				{ name: 'collection', count: crew.collections.length }
+			];
+			const formattedCounts = counts.map((count, idx) => (
+				<span key={idx} style={{ whiteSpace: 'nowrap' }}>
+					{count.count} {count.name}{count.count != 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
+				</span>
+			)).reduce((prev, curr) => [prev, ' ', curr]);
+
 			return (
 				<div>
 					{crew.favorite && <Icon name="heart" />}
 					<span>Level {crew.level}, </span>
-					<span>Tier {formatTierLabel(crew.bigbook_tier)}</span>
+					{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </>}{formattedCounts}
 				</div>
 			);
 		}

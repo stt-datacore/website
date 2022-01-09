@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 27
+events: 31
 in_portal: true
 date: 19/07/2016
 obtained: Event
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-I'm reminded of a Tolian Soran quote, "Aren't you beginning to feel time gaining on you? It's like a predator. It's stalking you." As Detective ages, his torturous equipping cost becomes less palatable. Nevertheless, we rarely cast aside SEC/SCI crew, let alone those with the massive event count that Data owns. His SEC base is still tops for those events and only a half dozen SEC/SCI crew can best his voyage total, which helps him secure a seat far more often than an equivalent CMD/DIP/SEC. Few others can unlock the Investigator/SEC story node, including former mega crew Thrax.
+I'm reminded of a Tolian Soran quote, "Aren't you beginning to feel time gaining on you? It's like a predator. It's stalking you." As Detective ages, his torturous equipping cost becomes less palatable.
+
+Nevertheless, Data's name brand and oft-accompanying traits form a reasonable mix of event and collection usefulness. As a SEC-led option with a reliable event history to date, his 'bad' base rank can more or less be ignored - he will ride shuttles with a bonus.
+
+Already a multi-collection crew, Data should add to that count before too long and has a fairly forecastable value floor, at least as far as 2016 crew go. As a cherry on top, few others can unlock the Investigator/SEC story node in the Celestial Temple.

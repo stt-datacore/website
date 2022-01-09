@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 10
+events: 11
 in_portal: true
 date: 15/11/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-This note originally only said “It’s Combs, baby!”, but we’ve let that writer go. Perhaps the least well known of Jeffrey Combs’ many faces, this scoundrel is missing out on regular events or collections, but offers respectable overall utilIty. Between a 200% instant damage attack and a top ten ENG base, he certainly has the stats to justify daily use, though older rosters may find themselves freezing him sooner rather than later. If he’s lucky, one of his fanny-pack’s worth of traits will end up being the next surprise mega theme. Otherwise - that’s Tsunkatse, baby.
+This note originally read simply: “It’s Combs, baby!”, but we’ve since let that writer go.
+
+Perhaps the least well known of Jeffrey Combs’ many faces, this scoundrel is missing out on regular events or much daily work, but still offers a little utility. Triggerless arena damage is a one-star perk for beginning players and a trait list refreshingly absent of Human, Federation, or Starfleet is about all you can hope for when rolling the dice for future collection or event possibilities.

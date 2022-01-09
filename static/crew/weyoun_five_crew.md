@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 8
-events: 10
+events: 11
 in_portal: true
 date: 15/11/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Aptly named, Weyoun Clone is a clone of the ranked reward that came just a few weeks earlier; Musketeer Picard. Sadly, his event number isn't called nearly as often and his daily offerings are several shades south of solid. Double stat-boosting collections are certainly a consideration, but unless you're on the precipice of finishing both, you're better off looking for a crew who excels at something, rather than being average in all corners as Weyoun is.
+A slower Ardra with trigger required. Ah yes, that's what we'll use him for. It's hard to find a ton of equity hiding in this clone's Magic Eye outfit (I think I see a sailboat), but almost any crew offers something in the realms of collections and events.
+
+Weyoun's best case scenario in those areas won't blow anyone away, but at least he already has multiple collections and he does technically have variants to help bolster, however slightly, possible event work. This card is more of a pick for Combs' Clan fanatics, though he may save your bacon in a particularly poor behold.

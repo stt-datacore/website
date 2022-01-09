@@ -4,7 +4,7 @@ rarity: 4
 series: dsc
 memory_alpha: dsc
 bigbook_tier: 9
-events: 27
+events: 36
 in_portal: true
 date: 10/10/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-A usable SCI base paired with an event clip that has been unbelievable thus far. He may find a home as a rare 2-skill voyager thanks to huge voyage SCI and #1 CMD+SCI total, but only if you catch him fused early from an event. Now we’re on our third Disco mega, Mr. Shape of Water’s value is well proven, and looks set to continue thanks to his bridge crew status.
+It's a relatively safe bet to say that Mr. Shape of Water has peaked - his two best collection chances have hit and Disco megas are presumably finished. While Saru has gotten a shocking amount of event work from those two little traits in the time since, one would expect their summer seasons to cool as well. Still a worthwhile super rare to behold for the aforementioned reasons, just not one likely to increase in value any time soon.

@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-There was a time when the T'Pucker love child's note read top five for base and voyage. Then top ten. Now he sits outside the top twenty for both and even though he still enjoys a strong reputation, the numbers would advise caution on a ground-up investment.
+There was a time when the T'Pucker love child's note read top five for base and voyage. Then top ten. Now he sits outside the top thirty for both and in most areas, the numbers would advise caution on a ground-up investment.
 
-Lorian's event rate predictably slowed as Vulcan, accounting for most of his bonuses, has been M.I.A. for two years and Saboteur seems to be his only other wacky trait mega option. You're probably not using him much on shuttles anymore either with a few megas and plenty of event crew ahead of him. The voyage work is still mostly intact as he's a fringe top ten ENG/CMD option, but with another piece of his utility, Jury Rigger, taking a hit, he may not be much more than mid-level voyager going forward. If you've lucked into a few stars and are close to a Vulcan collection tier, he's a relatively guilt-free option for Honor, but by now, you'll be happier to see him frozen.
+As you'd expect, voyages and shuttles were his attributes du jour for the first few years in service, but the former is nearly dead in the water and the latter is predictably unpredictable. He has a few non-bloated traits that will allow him chances at weekend relevance, but no one can say when they'll come and ENG seating is rare in many Faction events.
 
-If you want a laugh, check out his arena page where an odd mix of crit rating and +EV activate after a Solar Beam-esque 18 seconds.
+Collections might be his best offering now. Though more crew offer multiple collections spot with each passing month, his being paired with some borderline usability in other areas gives Lorian an argument to be a mid-level behold choice, especially against poorer options.
+
+If you want a laugh, check out his arena page where an odd mix of crit rating and evasion activate after a Solar Beam-esque 18 seconds.

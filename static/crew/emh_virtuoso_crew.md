@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 18
+events: 22
 in_portal: true
 date: 10/05/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Crew with any substantial amount of MED almost never have trouble finding a home on rosters. His events are frequent enough to elevate a variant-best DIP base and a serviceable gauntlet pair collects 45% crit from time to time. The MEDaissaince has left him singing a little out of tune,  though, thanks to his voyage credentials being, to put it bluntly, kicked in the nads by no less than two fantastic mega crew fairly close to each other. Useful in spurts, if unspectacular.
+Cocky Doc is a mid-level event/collection crew who, unlike scores of crew ranked lower, has a shot at some daily use if you're a fresh roster and looking at a pretty nasty behold.
+
+A trio of 45% gauntlets and usable DIP roll affords you a few chances to cosplay as KLAW, the Murderous Master of Sound and annihilate your enemies with Doc's powerful sonic vibrations. Beyond that, check his event and collection tabs to see what you can expect; it's not hard to picture Virtuoso as a four+ collection piece with occasional usability sometime in the future.

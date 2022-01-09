@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 12
+events: 13
 in_portal: true
 date: 31/07/2018
 obtained: Pack
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-First off, let's all take a moment to appreciate the best crew name this game has ever produced. Fetishists rejoice for a tier 1 name. Her bases are a game of good news, bad news. They're great by the numbers - two over 1100 and both variant-best. But Bev has never exceeded one event feature in a calendar year. If we dig into the big bag of traits, 'costumed' or 'physician' may trigger in the future, but she'll likely have to settle for very sporadic weekend work.
+First off, let's all take a moment to appreciate the best crew name this game has ever produced. Fetishists rejoice for a tier 1 name. Her bases are an interesting tale - she's the only appreciable Bev SEC with worthwhile MED as well. That hasn't mattered much for years, but a strong 2021 in concert with WRG's concerted effort to feature collection traits may give her more than the one (or no) event(s) per year she suffered through previously.
 
-Voyages are a reverse story - a disappointing total that will often be eclipsed by new crew. But all permutations of her skill set are low on options, meaning that she'll regularly catch a ride over better ranked crew. With some tweaks to her numbers, she could be a megastar. But as power creep catches up the field and not her event count, she's more of an interesting crew who has the potential to stopgap multiple holes at once.
+Speaking of collections, Bev is worth the dive for a lot of players. We can't possibly imagine her picking up another trait-based collection from Human, Federation, or Starfleet, but even if her collection of collections doesn't increase, she'll be good value there and enjoy a soft descent from atop the collection value rankings.

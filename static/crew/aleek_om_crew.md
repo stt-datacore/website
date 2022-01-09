@@ -4,7 +4,7 @@ rarity: 4
 series: tas
 memory_alpha:
 bigbook_tier: 7
-events: 3
+events: 7
 in_portal: true
 date: 17/07/2019
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Word to Big Bird! If you’re a new player, I hope you’ve been saving for this debut Galaxy event. A collection piece with good-not-great numbers and a SCI/MED stack that will stick around your voyage runs for a while, Aleek-Om is just the kind of crew you’d love to get four copies of early on. Unfortunately, the lack of events and a shallow trait pool means that once frozen, he’ll stay frozen. Those who have the Innovator collection done and/or certain allergies can pass, but newer players should tap tap tap this weekend.
+Flappy Bird (please don't sue) was a pretty strong daily use candidate when he launched as an event reward in 2019. This is what daily use super rares tend to look like after a few years.
+
+While still an edge case for voyages if a new player manages to acquire several stars at once (note that he has multiple features), the most likely trajectory for for Aleek-Om is relevancy solely reliant on a single trait; Innovator. It will power almost all of his event and collection value moving forward barring unpredictable event features or a sweeping trait audit.

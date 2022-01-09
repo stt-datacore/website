@@ -19,12 +19,18 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
       # Runs a single command using the runners shell
       - name: Build project
         env:
           GATSBY_DATACORE_URL: https://datacore.app/
           GATSBY_ASSETS_URL: https://assets.datacore.app/
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         run: |
           npm install
           npm run build

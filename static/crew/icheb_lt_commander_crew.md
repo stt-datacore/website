@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 4
-events: 15
+events: 19
 in_portal: true
 date: 20/02/2020
 obtained: Event
@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-Itchy's surface-level numbers are not particularly noteworthy for a 2020 crew (which still leaves him above average overall), but he ranks well for his voyage skill set and has some volatile trait value; most notably Borg, which isn't overflowing with SCI options.
+Itchy's surface level numbers weren't great on release and thus he's aged faster than the sort of crew you'd feel good about investing in. Now in his twilight years (or months) as a voyager, he at least offers a smattering of event and collection possibilities with mid-range value.
 
-Strong arena evasion is another blip of value if you take Icheb to max for his time-travel-done-right episode or if you're anticipating a killer bridge crew photo alongside Adult Wesley in the future.
+Strong arena evasion is another blip of utility if you take Icheb to max for his time-travel-done-right episode or if you're anticipating a killer bridge crew photo alongside Adult Wesley in the future.

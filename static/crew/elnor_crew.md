@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 8
-events: 12
+events: 17
 in_portal: true
 date: 09/04/2020
 obtained: Event
@@ -12,6 +12,8 @@ mega: true
 published: true
 ---
 
-Elnor is pretty much the textbook definition of an empty calories base - and yet, weirdly enough, even there, he's somewhat disappointing for a musketeer. Out of the entire SEC top ten, he and Ripper make for the only two skillers - and even in that competition, he's edged out by Discovery's barn-storming tardigrade by a two whole points. Somewhat strange that Ripper is being preserved from power creep so fastidiously, but here we are, left with a choice.
+Oh man, this guy's got everything. He has, uh, bases...and and he's got...traits. Just about everything you need in a crew. 
 
-As with any Picard crew, you'll undoubtedly get use out of Elnor  - more than most event dross, I'd wager, given his Romulan, Spiritual, Duelist and Survivalist traits. But there are very few fringe benefits to be found here, and I foresee only so many character variants for Space Legolas that won't be the same skill set, just with face-lifted numbers. Personally, I would definitely regret the choice.
+In truth, the lack of a third skill doesn't hurt too much for crew who don't voyage or gauntlet anyways, so despite missing a little shuttle flexibility, Elnor (which is Elvish for 'jumped the shark') floats among dozens if not hundreds of low end behold options who will fill an event shuttle with a bonus or tick a few collection boxes.
+
+Shuttle friendly bases even give him a better chance to ride shotgun on the weekend than an equivalent power ENG or MED option and future show bonuses aren't entirely outside the realm of possibility. A longtime punchline among Timelines elitists (hey, that's us!), take solace in knowing that Elnor has his uses, even if he's a card that you're generally forced into taking.

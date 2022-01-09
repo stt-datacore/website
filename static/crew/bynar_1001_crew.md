@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-You can find something nice to say about every crew in the game. Almost every crew. Not a single stray event, no middling gauntlet pair, no shot at voyage work here. In fact, the Bynar pair sits outside the top ten super rare voyagers which is something that among legendary crew only one-skill Captain Scott can claim. The only remotely usable attribute this card has is +9 arena EV at six seconds (short duration). Fusing cards to create a legendary has long been requested and is a neat concept, but whether or not you think mashing up all those poor super rares to produce a legendary is worth it, in this case it is not. This is the worst legendary crew in the game.
+Once considered the worst legendary crew in the game, the Bynars have vaulted up the charts to, like, the fifth-worst. WRG's collection bonanza has given them some level of reprieve and the fact that players can build them lego brick by lego brick from otherwise frozen beholds is certainly a unique value in itself.
+
+Their handsful of viable traits give them a little room for value expansion, but since their only competition for choice is citations and not beholds, you will always have better options for your honor. So I guess that sort of makes this crew note pointless. What are we even doing here? When's lunch?

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Reminiscent of North Star Archer (good voyage and SEC base numbers), but without long term perks. When he's bumped from your active roster, his thawpertunities rely solely on four traits. If you can star him up early, enjoy his strong daily performance. If your roster is more established, he’s a trait mega dice roll.
+Lurch no longer buttles your voyages or daily shuttles due to age, but at least he had the foresight to snag a few non-bloated traits to ensure event and collection potential when the wheel of fortune stops outside his cave. The Android collection is Geoffrey's retirement nest egg, meaning everyone has at least some reason to behold and immortalize Ferguson and waiting on the rest of his traits to hit is just playing with house money.

@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 3
-events: 31
+events: 36
 in_portal: true
 date: 22/05/2019
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The bulk of T’Pol’s value will come from voyages and she ranks quite well there, holding on to the best SEC/SCI voyage score, beating out former #1 Fugitive Spock by a fairly significant margin. In a skill combo that is always difficult to fill adequately, that sort of voyage accolade is useful, even for super rares. T’Pol also has a solid event count, and brings a variant-best SEC base to her weekends on duty, which means she ought to find a shuttle seat more often than not, even if her bases tend toward good-not-great.
+Still fairly well rounded, T'Pol is a worthwhile option for voyages, events, and collections. The first, voyages, is owing in part to a SEC/SCI stack that isn't terribly accessible at the legendary level, at least not among crew that you'd actively want to fuse up.
+
+When she inevitably falls from usage there, consider a prodigious event history littered with a few traits that seem to have caught WRG's eye in the past and may again in the future. Those traits have also made her a multi-collection piece with a small avenue for value expansion in that area.

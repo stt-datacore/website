@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-With MED/ENG being shored up throughout 2020 and the baseline power of new cards only rising, Travis' mom should have dropped from service on most levels of roster. It's still a juicy skill set if you can fuse her up early on, but realistically you're looking at a collection piece only beyond the 6-8 month range.
+Travis' mom has a scintillating skill set, but don't be suckered in. There's no power behind the skills and, in fact, little to no daily use whatsoever. This is a pure collection card who, should she hit on a few trait megas, will likely not find enough shuttle seats to contribute due to a general lack of MED and ENG seats during events.

@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 7
-events: 35
+events: 40
 in_portal: true
 date: 04/04/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Kolinahr's wheelhouse is events. His DIP base nearly doubles the next closest variant and Spock's event count includes character-wide traits like Vulcan, Musician, and Exobiology to provide a good deal of weekend work. Unfortunately, his daily usage will not match his weekend effectiveness; he's merely average for shuttles, voyages, and gauntlet.
+Kolinahr's wheelhouse is events. DIP and CMD seats are ubiquitous and Spock's event count includes character-wide traits like Vulcan, Musician, and Exobiology to provide a good deal of weekend work. His daily usage will not match his weekend effectiveness; he's merely average for shuttles, voyages, and gauntlet, but the flip side of this compliment sandwich profile is in the collections tab.
+
+WRG's 'collection era' is catnip to characters like Spock who are always swimming in traits. Timelines has run the full gamut of collections from tiny to massive and almost any trait is up for grabs going forward. Spock could absolutely end up with a half dozen collections before it's all said and done.

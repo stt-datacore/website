@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 7
+events: 11
 in_portal: true
 date: 03/11/2016
 obtained: Post-Launch
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-There's a Broccoli/vegetable joke somewhere in here… Since his 2016 release, Mr. Broccoli had built up a lot of goodwill early on in his STT career. But as the crew pool grows and his event work doesn't, there are better options out there if you want to replicate his skill set credentials - Braxton for voyage power, Data for events, or Paris for rare skill set.
+There's a Broccoli/vegetable joke somewhere in here… For a 2016 crew, it's nice to see Reg with a bit of usability still. He won't pop up on the weekends very often, but can still maneuver on thrusters and already lays claim to multiple collections.
 
-Naturally we can't always pick and choose our crew and though he may not be as desirable a name as he previously was, he still offers some versatility for the average roster. Barclay owns a couple low ranked gauntlet pairs which, while not particularly strong, are bolstered by four different 45% set. He won't pop up on the weekends very often, but can still maneuver on thrusters.
+His best and maybe only shot at usage day-to-day comes in the gauntlet. A quartet of 45% crit sets and less common skill set should give him plenty of 2-for-1 opportunities and makes him a fantastic stepping stone and/or rotational piece in the land of dice rolls.

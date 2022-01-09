@@ -4,6 +4,7 @@ export function getCoolStats(crew: any, simple: boolean, showMore: boolean = tru
 	const rankType = rank => {
 		return rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
 	};
+	const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
 
 	for (let rank in crew.ranks) {
 		if (simple) {
@@ -17,6 +18,10 @@ export function getCoolStats(crew: any, simple: boolean, showMore: boolean = tru
 				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
 					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.substr(2).replace('_', ' / ')}`);
 				}
+			}
+			if (rank === 'voyTriplet') {
+				if (crew.ranks[rank] && crew.ranks[rank].rank <= 9)
+					stats.push(`Voyage #${crew.ranks[rank].rank} ${crew.ranks[rank].name}`);
 			}
 		}
 	}
@@ -38,10 +43,10 @@ export interface ExportField {
 	value: (row: any) => any;
 }
 
-export function simplejson2csv(data: any[], fields: ExportField[]) {
+export function simplejson2csv(data: any[], fields: ExportField[], delimeter = ',') {
 	const escape = val => '"' + String(val).replace(/"/g, '""') + '"';
 
-	let csv = fields.map(f => escape(f.label)).join(',');
+	let csv = fields.map(f => escape(f.label)).join(delimeter);
 	for (let row of data) {
 		let rowData = [];
 		for (let field of fields) {
@@ -53,7 +58,7 @@ export function simplejson2csv(data: any[], fields: ExportField[]) {
 			}
 		}
 
-		csv += '\r\n' + rowData.join(',');
+		csv += '\r\n' + rowData.join(delimeter);
 	}
 
 	return csv;

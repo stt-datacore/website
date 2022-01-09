@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 15
+events: 16
 in_portal: true
 date: 20/03/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Another simple tailor who we can curiously take at face value. He's almost a strict downgrade from Obsidian Garak and his only particularly notable attributes are a variant-best (but weak) CMD and a vanity collection spot. His only daily contributions are likely to come as the result of a star advantage. Garak's trait pool is ripe for future mega events, but taking stars on an otherwise poor crew on the back of a hunch is playing Cardassian roulette.
+Another simple tailor who we can surely take at face value. Elim's previous note sounded caution chasing traits with no daily use attached, but that's very nearly become the game these days. Boasting an elite theoretical maximum to his collection value and spot-filler shuttle status for an event tally that has underperformed thus far relative to his traits, this is about as good as it gets for cards of Garak's age.

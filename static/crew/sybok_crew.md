@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 13
+events: 14
 in_portal: true
 date: 03/04/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His badass villain name isn't even the best thing about this guy. No longer a worthy voyage piece, he still sports an 800+ DIP base, double collections, intriguing traits for events, and usable arena EV as the cherry on top. His biggest drawbacks are not having variant events and an expensive build consisting of the typical Vulcan faction items and nearly twenty 4* components. He may not get you to Sha-Ka-Ree, but he’ll help you pass the Great Collection Barrier
+This horse trader's biggest drawbacks are a lack of daily work and an expensive build consisting of the typical Vulcan faction items and nearly twenty super rare components. But his base would play in most trait events he encounters and he's already a multi-collection piece with strong untapped traits. Sybok may not get you to Sha Ka Ree, but he’ll help you pass the Great Collection Barrier

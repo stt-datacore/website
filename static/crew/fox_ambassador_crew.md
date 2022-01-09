@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Good DIP and CMD stats means The Fantastic Mr Fox here gets some use on voyages and with two additional collections fulfilled he certainly shouldn’t be your first choice out of the airlock. However he is easily beaten by other easily available crew and will serve no use at the weekend. Keep if you don’t have any better Diplomats but send him to the freezer when you do.
+No cadet work takes Foxy out at the knees, while the lack of a third skill dings any possible voyage or gauntlet dreams. His collection value is the headliner and rightfully so. He's not a recommended crew to level too early, but will be one that every roster finishes sooner or later.

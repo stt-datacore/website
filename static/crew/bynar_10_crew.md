@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Let’s make one thing clear ↓ And as choices for the first 4* fusion to form a unique 5* go ↓ Unfortunately, this is not the same as making them good. ↓ and that rule holds just as true here. ↓ they are quite simply bad. ↓ which bizarrely means that the Bynars actually work better on their own than as a pair. ↓ and even then, only the freezer of the most devout collector. In fact, one could say that this entry is a perfect metaphor for the Bynars ↓.
+"Does it matter? You get the one, you get that other one. Personally, I think the whole arrangement's a little..."
+
+This is whimsy done right and fusion done wrong. The Bynars, a years-long punchline, may be having the last laugh during WRG's 'collection era'. All three having picked up a spot in the massive Resourceful collection already makes them worth acquiring to some extent and they have room for growth in that area.
+
+The resultant legendary Bynar being, well, boiled ass means that you don't need to rush to finish them and can instead treat these purple purples as some handy frozen behold insurance and continue to select the pair in an otherwise dead-end behold.

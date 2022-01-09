@@ -4,7 +4,7 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 7
+events: 8
 in_portal: true
 date: 31/07/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-Another James Sloyan masterpiece. Not quite as gripping in game with a bad skill set and bases with limited (Romulan) event potential. But useful gauntlet numbers for young rosters and double collections should make him one of the first crew to level if you have a backlog.
+Jarok is another James Sloyan masterpiece. He's not quite as gripping in game with bad bases and skill set, but useful gauntlet numbers for young rosters and his collections are fine value. He'll need crit to help him rise above a very competitive skill set in gauntlet and once replaced from there, likely won't be seen again until an event feature.

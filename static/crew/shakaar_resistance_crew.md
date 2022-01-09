@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Lucky to escape the drawing board with the Veteran trait, Shakaar’s ~800 CMD base is reliant on stray trait (mega) events, such as the mid 2019 Bajoran weekend. Even his lone tangible benefit, the Veteran trait, qualifies him for one of the easier collections to complete which includes four previous mega event crew.
+Lucky to escape the drawing board with some non-standard traits, Shakaar’s CMD base is reliant on stray trait (mega) events, or perhaps another re-run of his feature. With zero daily value, we can really only hope that his traits slowly push him up the rungs of different value metrics as he becomes a multi-collection offering.

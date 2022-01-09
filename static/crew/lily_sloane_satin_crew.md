@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Miss Lily does have "variants" and an "event count", but with neither being impressive, you'll most often be leveraging her DIPlomacy for some part time daily shuttle work. A tertiary ENG has saved many a voyage crew and that's the case here where it meets an above average voyage score for favorable results. I won't oversell her gauntlet ability to you, but being one of a handful of crew who can 2-for-1 The Caretaker is worth at least something, especially to new players. She displays some of the hallmarks of aging poorly (DIP primary, no events) and won't find many situations where she really pops, but if you're a collection fiend, you could certainly do worse for a vanity crew.
+Miss Lily does have "variants" and an "event count", but with neither being impressive, nor her aged voyage power, the gauntlet is perhaps her best chance for 'real' usage. We won't oversell her dice rolling ability to you, but DIP/ENG really only has The Red Angel as competition and Lily's seven (!!!) 45% gauntlets give her more chances to perform than most edge case gauntleteers. 
+
+Beyond that she's pure, distilled collection goodness. A few humongous stat-boosters and a vanity makes her an easy choice over perhaps hundreds of older, bit part legendaries and gives her some security in that area even if WRG decides to stop updating collection thresholds. With a handful of untapped traits (mostly large pools[read:many stat boosts]), Lily has the *potential* to be one of the most valuable collection crew in the game moving forward.

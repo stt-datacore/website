@@ -8,11 +8,25 @@ module.exports = {
 		siteUrl: 'https://datacore.app'
 	},
 	plugins: [
-		`gatsby-transformer-remark`,
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
+		`gatsby-plugin-remove-fingerprints`,
 		`gatsby-plugin-sitemap`,
 		`gatsby-plugin-typescript`,
+		{
+			resolve: 'gatsby-transformer-remark',
+			options: {
+				excerpt_separator: `<!-- end -->`,
+			}
+		},
+		{
+			resolve: 'gatsby-plugin-purge-cloudflare-cache',
+			options: {
+				token: process.env.CLOUDFLARE_TOKEN,
+				zoneId: process.env.CLOUDFLARE_ZONE_ID,
+				condition: (api, options) => process.env.GITHUB_REF === 'refs/heads/master',
+			}
+		},
 		{
 			resolve: 'gatsby-source-filesystem',
 			options: {
@@ -50,6 +64,13 @@ module.exports = {
 					'**/ship_schematics.json',
 					'**/upcomingevents.json'
 				]
+			}
+		},
+		{
+			resolve: 'gatsby-source-filesystem',
+			options: {
+				name: 'announcements',
+				path: `${__dirname}/static/announcements/`
 			}
 		},
 		{

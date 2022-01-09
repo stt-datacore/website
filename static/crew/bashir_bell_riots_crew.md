@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 20
+events: 22
 in_portal: true
 date: 30/05/2018
 obtained: Mega
@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-Like rings on a tree, BR Bashir marks the 2018 era of power creep; he's hundreds of points better on voyages than older MED options, but hundreds below new ones. Similarly for base, he's no longer the low water mark for event competition thanks to a handful of megas and giveaways since then. His best days behind him, BR Bashir has drifted out of the powerful set and landed in the 'merely' good group with moderate voyage power for a MED primary and a useful base/event pairing.
+Darth Bashir is sure to elicit a few "Back in my day"s as a former mega crew, so double check his current metrics to make sure you have a fresh perspective. Jules is no longer a competitive voyage option and shouldn't be running any shuttles without a bonus for you, but strong collections and fairly steady events are still worth taking home from the portal.
+
+It's safe to say that Bashir's value has peaked (save for that niggling little potential Desperate collection), so while he's still a fine crew to acquire, do so for his long term benefits and accept any daily use you may come across as a bonus.

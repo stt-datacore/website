@@ -4,8 +4,8 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 9
-in_portal:
+events: 15
+in_portal: true
 date: 30/06/2020
 obtained: Pack
 mega: false

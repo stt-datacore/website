@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-His time in the sun came and went during the Dominion mega, but if you didn’t have him, then you weren’t missing much. An unimpressive base CMD and voyage score that just doesn’t play with his skill set make this cookie cutter crew more of a hassle than he’s really worth. Depending on your luck with Dilemmas, you may need to spend some campaign citations to unlock his best offering; two useful collection spots.
+A voyage exclusive crew from a two-parter, Thot Gor was an easy name to avoid for a long time with his single collection spot as a Diplomat. These days his reach in that area is much greater and should send you scurrying to the wiki to find out which dilemma options lead you to him.
+
+There's little else of note here besides a slow-activating attack boost which will probably be obsolete by the time you fuse him, but his CMD base should at least merit the occasional thaw when his traits deign to break off a crumb of event bonuses on the weekend.

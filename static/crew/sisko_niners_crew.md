@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 17
+events: 28
 in_portal: true
 date: 20/11/2017
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Two 1k+ shuttle bases for a crew that just hit double-digit events. He needs stars to claim daily shuttle work from your super rares, but the fused stats measure up. There's not much more to him than that beyond collections, but he's squarely above average for a vanity or 2-skill crew.
+This Sisko has floated around the bottom tiers for a while, but WRG's landscape shift to focus on traits and collections should help him out going forward. Six viable traits (to varying degrees) and a great skill set for event shuttles are a juicy pairing for crew, especially older crew and 2-skill crew.
+
+While there's obviously a ceiling on cards who have no voyage, gauntlet, or arena ability, Niners is already a name that established rosters should keep an eye out for and he has room to grow into his traits, both in the collection tab and for weekend bonuses.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The standard bearer for Disco excellence, Culber's stats read like a crew released a few months from now, despite being two and a half years old. He almost pulls off the Mirror Phlox for voyages by beating out the voyage score of a few 3-skill crew, but despite some excellent voyage metrics, the lack of a third skill does hurt when making long runs and caps his value there to situational-at-best. 
+Kids these days have no idea about the OG Titan Hugh Culber. The first draft of the Big Book discussed his legitimate voyage potential and obscene shuttle lead over the field with Discovery megas stretching out as far as the eye can see. Now it's "Oh, he's in the Physician collection."
 
-Nevertheless, we're after his big ol' bases. Disco dominance has been his calling card since his debut and it's safe to assume that his screen time would keep the Culber name safe if Discovery megas were to switch to bridge-crew-only. In conjunction with with a hint of arena value, Culber remains a versatile and powerful 2-skill crew among the very best, despite additions to the Discovery and MED/SCI scenes.
+He is indeed and in one of our few accurate crystal ball moments, WRG has provided Culbs a few bonuses yearly in the wake of Discovery's event disappearance. He will still hold down some non-bonus shuttle work on weekends, especially if you're missing the 1-skill Bones, but barring an unforeseen return to those endless show megas, Culber's value can only increase via the Romantic collection and/or one of his two eventable traits.

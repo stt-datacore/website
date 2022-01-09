@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 7
-events: 14
+events: 23
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Combine a few variant and trait events with double 1k bases and Khan is essentially a usable shuttle crew _augmented _(eh? eh?) with a scoop of ENG. His primary changes from base to voyage, but that doesn't affect his voyage potential as much as his critical tertiary ENG. 250% instant damage in arena is Super Rare levels of power, but with +9 accuracy and great passive values, he's still fairly effective there for younger rosters. Wrathful toes the line between workhorse and bit player, but the odds are good that an average roster will find work for him.
+Once upon a time Khan had "events", but even without them, his lush trait trappings have carried launch-day bases to relevance thanks in part to a skill set that's in demand on shuttles. Most of the rest of this card smells very 2016, from his slow arena damage to his bottom barrel voyage power.
+
+Except for collections, where his ceiling is higher than that of most other crew. He may have to luck into some larger trait pools to get there, but the Resourceful collection has at least made that a distinct possibility. Outside of some very early gauntlet work for fresh rosters (seven [!!!] 45% gauntlets), Khan skips over the working man's roster and goes straight to luxury pick for trait prospectors who are working on stacking up collection skill boosts to put the finishing touches on their rosters.

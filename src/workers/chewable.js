@@ -3,7 +3,7 @@
 
 /* eslint-disable */
 
-function getEstimate(config) {
+function getEstimate(config, reportProgress = () => true) {
   // required input (starting numbers)
   var ps = config.ps;
   var ss = config.ss;
@@ -14,14 +14,14 @@ function getEstimate(config) {
   var startAm = config.startAm;
 
   // optional input (proficiency ratio)
-  var prof = config.prof ? config.prof : 20;
+  var prof = config.prof ?? 20;
 
   // optional input (ongoing voyage)
   var elapsedSeconds = config.elapsedSeconds ? config.elapsedSeconds : 0;
-  var currentAm = config.currentAm ? config.currentAm : 0;
+  var currentAm = config.currentAm ?? 0;
 
   // optional input (simulations)
-  var numSims = config.numSims ? config.numSims : 5000;
+  var numSims = config.numSims ?? 5000;
 
   // returned estimate
   var estimate = {};
@@ -32,35 +32,114 @@ function getEstimate(config) {
   var maxNum20hourSims = 100;
 
   // variables
-  var ticksPerCycle = 28;
-  var secondsPerTick = 20;
-  var secondsInMinute = 60;
-  var minutesInHour = 60;
-  var hazardTick = 4;
-  var rewardTick = 7;
-  var hazardAsRewardTick = 28;
-  var ticksPerMinute = secondsInMinute/secondsPerTick;
-  var ticksPerHour = ticksPerMinute*minutesInHour;
-  var cycleSeconds = ticksPerCycle*secondsPerTick;
-  var cyclesPerHour = minutesInHour*secondsInMinute/cycleSeconds;
-  var hazPerCycle = 6;
-  var amPerActivity = 1;
-  var activityPerCycle = 18;
-  var hoursBetweenDilemmas = 2;
-  var dilemmasPerHour = 1/hoursBetweenDilemmas;
-  var ticksBetweenDilemmas = hoursBetweenDilemmas*minutesInHour*ticksPerMinute;
-  var hazPerHour = hazPerCycle*cyclesPerHour-dilemmasPerHour;
-  var hazSkillPerHour = 1260;
-  var hazSkillPerTick = hazSkillPerHour/ticksPerHour; // 7
-  var hazAmPass = 5;
-  var hazAmFail = 30;
-  var activityAmPerHour = activityPerCycle*cyclesPerHour*amPerActivity;
-  var minPerHour = 60;
-  var psChance = 0.35;
-  var ssChance = 0.25;
-  var osChance = 0.1;
-  var skillChances = [psChance,ssChance,osChance,osChance,osChance,osChance];
-  var dilPerMin = 5;
+  var allSkills = [ps, ss, o1, o2, o3, o4];
+  const ticksPerCycle = 28;
+  const secondsPerTick = 20;
+  const secondsInMinute = 60;
+  const minutesInHour = 60;
+  const hazardTick = 4;
+  const rewardTick = 7;
+  const hazardAsRewardTick = 28;
+  const ticksPerMinute = secondsInMinute/secondsPerTick;
+  const ticksPerHour = ticksPerMinute*minutesInHour;
+  const cycleSeconds = ticksPerCycle*secondsPerTick;
+  const cyclesPerHour = minutesInHour*secondsInMinute/cycleSeconds;
+  const hazPerCycle = 6;
+  const amPerActivity = 1;
+  const hoursBetweenDilemmas = 2;
+  const dilemmasPerHour = 1/hoursBetweenDilemmas;
+  const ticksBetweenDilemmas = hoursBetweenDilemmas*minutesInHour*ticksPerMinute;
+  const skillIncPerHaz = 32;
+  const hazPerHour = hazPerCycle*cyclesPerHour-dilemmasPerHour;
+  const ticksPerHazard = 4;
+  const hazAmPass = 5;
+  const hazAmFail = 30;
+  const minPerHour = 60;
+  const psChance = 0.35;
+  const ssChance = 0.25;
+  const osChance = 0.1;
+  const skillChances = [psChance,ssChance,osChance,osChance,osChance,osChance];
+  const dilPerMin = 5;
+  const num20hourSims = Math.min(maxNum20hourSims, numSims);
+
+  const formatResults = (finished) => {
+    var refills = [];
+
+    // calculate and display results
+    for (var extend = 0; extend <= numExtends; ++extend) {
+      var exResults = results[extend];
+
+      exResults.sort(function(a,b){return a-b;});
+      var voyTime = exResults[Math.floor(exResults.length/2)];
+
+      // compute other results
+      var safeTime = exResults[Math.floor(exResults.length/10)];
+      var saferTime = exResults[Math.floor(exResults.length/100)];
+      var safestTime = exResults[0];
+      var moonshotTime = exResults[exResults.length-Math.floor(exResults.length/100)];
+
+      // compute last dilemma chance
+      var lastDilemma = 0;
+      var lastDilemmaFails = 0;
+      for(var i = 0; i < exResults.length; i++) {
+        var dilemma = Math.floor(exResults[i]/2);
+        if (dilemma > lastDilemma) {
+          lastDilemma = dilemma;
+          lastDilemmaFails = Math.max(0,i);
+        }
+      }
+
+      var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
+      // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
+      if (dilChance == 0) {
+        lastDilemma--;
+        dilChance = 100;
+      }
+
+      var refill = {
+         'all': exResults,
+         'result': voyTime,
+         'safeResult': safeTime,
+         'saferResult': saferTime,
+         'moonshotResult': moonshotTime,
+         'lastDil': lastDilemma*2,
+         'dilChance': dilChance,
+         'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
+      }
+
+      var bins = {};
+      const binSize = 1/45;
+
+      for (result of exResults.sort()) {
+	  		let bin = (Math.floor(result/binSize)+0.5)*binSize;
+
+        try{
+        	++bins[bin].count;
+        }
+        catch {
+          bins[bin] = {result: bin, count: 1};
+        }
+      }
+
+      delete bins[NaN];
+      refill.bins = Object.values(bins);
+
+      refills.push(refill);
+    } // foreach extend
+
+    estimate['refills'] = refills;
+
+
+    // calculate 20hr results
+    let num20hrSims = deterministic ? 1 : num20hourSims;
+    estimate['20hrdil'] = Math.ceil(results20hrCostTotal/num20hrSims);
+    estimate['20hrrefills'] = Math.round(results20hrRefillsTotal/num20hrSims);
+
+    estimate['final'] = finished;
+    estimate['deterministic'] = deterministic;
+
+    return estimate;
+  }; //end formatResults()
 
   // more input
   var elapsedHours = elapsedSeconds/3600;
@@ -78,24 +157,30 @@ function getEstimate(config) {
     numSims = 1000;
   }
 
-  var num20hourSims = Math.min(maxNum20hourSims, numSims);
-
   //sizeUi();
 
   var hazSkillVariance = prof/100;
   var skills = [ps,ss,o1,o2,o3,o4];
 
-  var elapsedHazSkill = elapsedHours*hazSkillPerHour;
+  var elapsedTicks = Math.floor(elapsedSeconds/secondsPerTick);
+  var elapsedCycles = Math.floor(elapsedTicks/ticksPerCycle);
+  var dilemmaForHazards = Math.floor(elapsedHours/hoursBetweenDilemmas);
+  var elapsedHazCount =
+    elapsedCycles*hazPerCycle+Math.floor(elapsedTicks%ticksPerCycle/ticksPerHazard)-dilemmaForHazards;
+  var elapsedHazSkill = elapsedHazCount*skillIncPerHaz;
+  var deterministic = false;
+  var maxSkill = Number.isFinite(ps) ? Math.max(ps,ss,o1,o2,o3,o4)*(1+hazSkillVariance)
+                                      : Math.max(...[ps, ss, o1, o2, o3, o4].map(s => s.core + s.range_max));
+  deterministic = maxSkill < elapsedHazSkill;
 
-  var maxSkill = Math.max(ps,ss,o1,o2,o3,o4);
-  maxSkill = Math.max(0, maxSkill - elapsedHazSkill);
-  var endVoySkill = maxSkill*(1+hazSkillVariance);
+  if (deterministic)
+    numSims = 1;   // With no more skill checks there can only be one voyage length
 
   var results = [];
   var resultsRefillCostTotal = [];
   for (var iExtend = 0; iExtend <= numExtends; ++iExtend) {
     results.push([]);
-    results[iExtend].length = numSims;
+    //results[iExtend].length = numSims;
     resultsRefillCostTotal.push(0);
   }
 
@@ -109,6 +194,7 @@ function getEstimate(config) {
     var am = ship;
     var refillCostTotal = 0;
     var extend = 0;
+    var hazDiff = elapsedHazSkill;
 
     while (0<1) {
       ++tick;
@@ -116,12 +202,10 @@ function getEstimate(config) {
       if (tick == 10000)
         break;
 
-      // hazard && not dilemma
-      if (tick%hazardTick == 0
-          && tick%hazardAsRewardTick != 0
-          && tick%ticksBetweenDilemmas != 0)
+      // hazard && not dilemma or reward
+      if (tick%hazardTick == 0 && tick%rewardTick != 0 && tick%ticksBetweenDilemmas != 0)
       {
-        var hazDiff = tick*hazSkillPerTick;
+        hazDiff += skillIncPerHaz;
 
         // pick the skill
         var skillPickRoll = Math.random();
@@ -135,16 +219,18 @@ function getEstimate(config) {
         }
 
         // check (roll if necessary)
-        var skillVar = hazSkillVariance*skill;
-        var skillMin = skill-skillVar;
-        if (hazDiff < skillMin) { // automatic success
+        var skillVar =  hazSkillVariance*skill ;
+        var skillMin = Number.isFinite(skill) ? skill-skillVar : skill.core + skill.range_min;
+
+        if (hazDiff <= skillMin) { // automatic success
           am += hazAmPass;
         } else {
-          var skillMax = skill+skillVar;
-          if (hazDiff >= skillMax) { // automatic fail
+          var skillMax = Number.isFinite(skill) ? skill+skillVar : skill.core + skill.range_max;
+
+          if (hazDiff > skillMax) { // automatic fail
             am -= hazAmFail;
           } else { // roll for it
-            var skillRoll = randomRange(skillMin, skillMax);
+            var skillRoll = randomInt(skillMin, skillMax);
             //test.text += minSkill + "-" + maxSkill + "=" + skillRoll + " "
             if (skillRoll >= hazDiff) {
               am += hazAmPass;
@@ -153,10 +239,7 @@ function getEstimate(config) {
             }
           }
         }
-      } else if (tick%rewardTick != 0
-                 && tick%hazardAsRewardTick != 0
-                 && tick%ticksBetweenDilemmas != 0)
-      {
+      } else if (tick%ticksBetweenDilemmas != 0) {
         am -= amPerActivity;
       }
 
@@ -168,7 +251,8 @@ function getEstimate(config) {
         var refillCost = Math.ceil(voyTime*60/dilPerMin);
 
         if (extend <= numExtends) {
-          results[extend][iSim] = tick/ticksPerHour;
+          results[extend].push(tick/ticksPerHour);
+
           if (extend > 0) {
             resultsRefillCostTotal[extend] += refillCostTotal;
           }
@@ -180,7 +264,7 @@ function getEstimate(config) {
 
         if (voyTime > 20) {
           results20hrCostTotal += refillCostTotal;
-          results20hrRefillsTotal += extend;
+          results20hrRefillsTotal += extend - 1;
           break;
         }
 
@@ -189,67 +273,12 @@ function getEstimate(config) {
         }
       } // system failure
     } // foreach tick
+
+    if (iSim > 0 && iSim % 100 == 0)
+      reportProgress(formatResults(false));
   } // foreach sim
 
-  var refills = [];
-
-  // calculate and display results
-  for (var extend = 0; extend <= numExtends; ++extend) {
-    var exResults = results[extend];
-
-    exResults.sort(function(a,b){return a-b;});
-    var voyTime = exResults[Math.floor(exResults.length/2)];
-
-    // compute other results
-    var safeTime = exResults[Math.floor(exResults.length/10)];
-    var saferTime = exResults[Math.floor(exResults.length/100)];
-    var safestTime = exResults[0];
-
-    // compute last dilemma chance
-    var lastDilemma = 0;
-    var lastDilemmaFails = 0;
-    for(var i = 0; i < exResults.length; i++) {
-      var dilemma = Math.floor(exResults[i]/hoursBetweenDilemmas);
-      if (dilemma > lastDilemma) {
-        lastDilemma = dilemma;
-        lastDilemmaFails = Math.max(0,i);
-      }
-    }
-
-    var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
-    // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
-    if (dilChance == 0) {
-      lastDilemma--;
-      dilChance = 100;
-    }
-
-	var refill = {
-		'result': voyTime,
-		'safeResult': safeTime,
-		'saferResult': saferTime,
-		'lastDil': lastDilemma*hoursBetweenDilemmas,
-		'dilChance': dilChance,
-		'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/numSims) : 0
-	}
-	refills.push(refill);
-
-    //test.text = maxSkill*(1+hazSkillVariance)/hazSkillPerHour
-    // the threshold here is just a guess
-    if (maxSkill/hazSkillPerHour > voyTime) {
-      var tp = Math.floor(voyTime*hazSkillPerHour);
-      if (currentAm == 0) {
-        //setWarning(extend, "Your highest skill is too high by about " + Math.floor(maxSkill - voyTime*hazSkillPerHour) + ". To maximize voyage time, redistribute more like this: " + tp + "/" + tp + "/" + tp/4 + "/" + tp/4 + "/" + tp/4 + "/" + tp/4 + ".");
-      }
-    }
-  } // foreach extend
-
-  estimate['refills'] = refills;
-
-  // calculate 20hr results
-  estimate['20hrdil'] = Math.ceil(results20hrCostTotal/num20hourSims);
-  estimate['20hrrefills'] = Math.round(results20hrRefillsTotal/num20hourSims);
-
-  return estimate;
+  return formatResults(true);
 }
 
 function randomInt(min, max)
@@ -259,7 +288,7 @@ function randomInt(min, max)
 
 function randomRange(min, max)
 {
-  return min + Math.random()*(max-min);
+  return Math.floor(min + Math.random()*(max-min+1));
 }
 
 module.exports.getEstimate = getEstimate;

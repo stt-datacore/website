@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 2
-events: 21
+events: 25
 in_portal: true
 date: 03/01/2019
 obtained: Event
@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Trekkies who adore good ol' Doc now have a proper vessel to channel their love into. The ignorant Kyrians unwittingly gave us a couple more event chances to play with thanks to Android and several other villainous traits. The EMA promises to make good use of them with not only a fat MED base, but a SECondary that's 622 points better than the next Doc option.
+A true all-rounder, EMA runs the gamut from starter crew to late game anchor. Let's start with two of his underappreciated attributes for the newbies - triggerless (slow) arena damage and some gauntlet maneuverability. Four 45% gauntlets and a ton of elevated crit gauntlets overall join up with a gorgeous skill set to give him coverage over two of the rarer skill pairs and helps him snatch a few 2-for-1 wins for midgame rosters.
 
-As potent as that all sounds, his voyage work is even better and may rival ENG/MED as the combo that nobody talks about. There are only a handful of MED/CMD or MED/SEC voyagers and EMA is the only one to cover both (Troi is SEC/CMD, don't @ me). He's not just one of two legendaries with his skill set, he's also top five for voyage MED, MED/SEC, MED/CMD and is guaranteed a voyage seat for a long, long time until at least two handfuls of crew are added above his power level. If you were happy with Katrina Cornwell, you'll fall in love with Doctor Evil.
+His juicy skill set/trait combo carries through to voyages where he punches way above his power level and has aged and will age better than almost any other crew. He's the only legendary MED primary to offer both SEC and CMD and supports it with a half dozen anti-matter traits to write his own ticket for priority seating.
+
+In one of his few weak spots, Doc variant events have been a wasteland for Faction action over the past several years. While his slew of traits have helped supplement that, MED seating can be hard to come by and so he will rarely ride shuttles without a bonus. Those helpful traits (Gee, it's almost like traits matter) also grant him multi-collection status with room for more. He should be among the first names you immortalize for every one of them.

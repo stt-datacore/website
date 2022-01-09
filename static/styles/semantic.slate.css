@@ -26531,7 +26531,7 @@ Floated Menu / Item
 
 .ui.message a {
   text-decoration: underline;
-  color: #fff;
+  color: inherit;
 }
 
 /*******************************
@@ -36280,8 +36280,8 @@ a.ui.nag {
   width: 1.25em;
   height: auto;
   background: transparent;
-  color: rgba(0, 0, 0, 0.15);
-  text-shadow: none;
+  color: rgba(0, 0, 0, 0.75);
+  text-shadow: 0px -1px 0px #DDC507, -1px 0px 0px #DDC507, 0px 1px 0px #DDC507, 1px 0px 0px #DDC507 !important;
 }
 
 /* Active Star */
@@ -36309,8 +36309,8 @@ a.ui.nag {
   width: 1.4em;
   height: auto;
   background: transparent;
-  color: rgba(0, 0, 0, 0.15);
-  text-shadow: none !important;
+  color: rgba(0, 0, 0, 0.75);
+  text-shadow: 0px -1px 0px #CD0707, -1px 0px 0px #CD0707, 0px 1px 0px #CD0707, 1px 0px 0px #CD0707 !important;
 }
 
 /* Active Heart */

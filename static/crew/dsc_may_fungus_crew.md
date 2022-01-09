@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 8
-events: 34
+events: 38
 in_portal: true
 date: 13/08/2019
 obtained: Pack
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Seeing this peppy two skiller appear on your Behold screen isn’t going to be much fun(gus), but it could be worse - you could have invested in her mid-2019 six pack, then quickly watched her SEC base fall out of the top ten, go into free fall, and smack down in the high twenties. All while Disco megas dried up and you realised one of her two traits, Survivalist, had already had its mega two months before she debuted. Oops.
+May has often been a punchline for Timelines players and while it's true that non-main cast 2-skiller is not a portfolio you should be drooling over, there's still value here, especially for the veteran player.
 
-To soften the blow, a collection has mushroomed around her - yes, she does count as Mirror (#2 SEC/#5 SCI base), that’s not a mistake on her trait readout - but we really can’t recommend you take her at 1/5 unless the other options are truly diabolical.
+Good collections and common shuttle seating for events automatically keeps her off of the no-fly list, but if you take a stroll through her event history, it's easy to understand why one would be hesitant to take the plunge. If there was ever a "They've already had their mega" crew, this is it. Only approach May as a behold choice if you know what you're getting into and are ok playing the long game.

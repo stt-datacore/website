@@ -4,7 +4,7 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 8
-events: 2
+events: 6
 in_portal: true
 date: 08/08/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: true
 published: true
 ---
 
-A fan favourite among Starfleet admirals, Ross is, by all accounts, better than he should be, with +1 Diplomat, a zippy 6s +7 Attack boost, and a relatively painless equip softening the blow when you inevitably freeze him. With the bulk of his traits being wholly non-eventable, he may be looking at a Cultural Figure mega as his one chance to be thawed once displaced from daily shuttles.
+Despite being a fan favorite among Starfleet admirals, Ross doesn't have terribly much depth as a card. By the way, if you're looking for the gauntlet-y one, that's Admiral Owen Paris. I know, I mix them up too.
+
+Ross' event work is on a break, but a good PIVOT, PIVOT should be his collection value where all three of his non-HFS traits are viable and may even trigger some weekend work if paired with a collection-themed mega as has been done so often in the past. There's not much else to this card, but at least he's very light on faction items and should be an easy equip to knock out during a skirmish.

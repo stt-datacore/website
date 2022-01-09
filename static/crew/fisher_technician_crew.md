@@ -4,8 +4,8 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 5
-events: 1
-in_portal:
+events: 2
+in_portal: true
 date: 30/07/2020
 obtained: Event
 mega: false

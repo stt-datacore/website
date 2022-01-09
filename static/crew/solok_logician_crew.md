@@ -3,8 +3,8 @@ name: Logician Solok
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 17
+bigbook_tier: 7
+events: 18
 in_portal: true
 date: 24/03/2020
 obtained: Pack
@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-The textbook definition of a manufactured triumph, Solok's only possible value to even young rosters has to be his (we hope) eventual addition to the Play Ball vanity collection, and even then, he's probably one of the worst cards there. 
-
-At some point, you have to ask yourself what you're collecting two skill, non-event crew for, and honestly, you're going to run out of good answers for that question. If we ever get an Athlete mega, he will be . . . a pilot. Yessiree, he certainly will be a pilot.
+Dry as Vulcan' would be a little too on the nose here and not entirely true anyways. Solok's big CMD base is worth thawing for his yearly handful of events and with already three collection home runs on the board, there's locked-in long term value here. It remains to be seen if WRG ever says anything other than "Eh, just use Vulcan" for the Telepath trait, but Solok should still be a fine mid-to-low end freezer bound crew who can save you from much worse behold options.

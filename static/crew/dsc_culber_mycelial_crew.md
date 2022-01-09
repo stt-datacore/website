@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-A card so useful you’ll think that you’re tripping on mycelium! Culber combines monster voyage potential with Disco event work and splashes of gauntlet usefulness. If you find yourself having trouble pumping up your MED/CMD voyages [literally everyone], Hugh is a hard card to pass up.
+Long heralded as the best MED voyager in the game, Culbs flew that flag at a time when he was the only primary of that sort in the top fifty voyage scores. And while there's a bit more to him in other areas, that remains his primary point of interest. Great debut power and contributing to the MED/CMD stack, Culber could see use in that area on rosters through the year 2024.
 
-The top voyage medic is a huge piece in the quest to churn out consistently long runs for a skill that offers few elite names. And while his gauntlet stats are not as grand as the big hitters in the field, his trait combinations should match up once in a while to wield a scalpel to the proficiency jugular. Citation worthy, interesting art...an all round fun-guy!
+Workable proficiencies make him an occasional rotational option in the gauntlet for more complete rosters, but certainly a nice get for new players. His skill pairs rarely face walls there and he catches elevated crit in enough gauntlets to 2-for-1 bigger and meaner crew that show up with single SCI, MED, or CMD rolls.
+
+Great voyager, citation worthy, superb art...Mycelial is an all round fun-guy!

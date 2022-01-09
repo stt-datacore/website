@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-An event count we can work with, but freezer bound after he unlocks a node for you. A big chunk of value is his spot in the Diplomat collection.
+An episode eight reward, it wouldn't hurt to select Weyoun early on if you don't want Karr for the gauntlet - Weyoun (and a few others) can unlock a Dominion/DIP node in that same episode. There's not a ton of value beyond that outside of collections. Despite appearing in a few dozen episodes of DS9, Weyoun doesn't get much event love. And although, theoretically, any of his traits not starting with the letter V could pop for a few bonuses in the future, Weyoun doesn't really have bases worth thawing.

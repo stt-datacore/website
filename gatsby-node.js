@@ -12,6 +12,13 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 			name: `slug`,
 			value: slug
 		});
+		const parent = getNode(node.parent);
+		let source = parent.sourceInstanceName;
+		createNodeField({
+			node,
+			name: `source`,
+			value: source,
+		});
 	} else if (node.internal.type === `EpisodesJson`) {
 		createNodeField({
 			node,
@@ -31,6 +38,7 @@ exports.createPages = ({ graphql, actions }) => {
 						fileAbsolutePath
 						fields {
 							slug
+							source
 						}
 						frontmatter {
 							published
@@ -60,9 +68,13 @@ exports.createPages = ({ graphql, actions }) => {
 					context: { slug: node.fields.slug, symbol: node.fields.slug.replace(/\//g, '') }
 				});
 			} else {
-				if (node.frontmatter && node.frontmatter.bigbook_section && node.frontmatter.bigbook_section > 0) {
+				if (node.fields.source === 'announcements') {
+					// Announcements are rendered inline on announcements page, not as separate pages
+				}
+				else if (node.frontmatter && node.frontmatter.bigbook_section && node.frontmatter.bigbook_section > 0) {
 					// Sections of the big book just get rendered inline with the bigbook page, not as separate pages
-				} else {
+				}
+				else {
 					createPage({
 						path: node.fields.slug,
 						component: path.resolve(`./src/templates/page.tsx`),

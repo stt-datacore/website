@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 2
+events: 0
 in_portal: true
 date: 20/08/2019
 obtained: Pack
@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Sporting stats that would have made him merely okay crew this time last year, Jellico is a classic example of all base, no trousers. Let's run it down, shall we? A duo of events, unlikely to be duplicated, originating from his Acting Captaincy, and almost completely uneventable traits. A voyage score surrounded by superior bases and bridge crew with quintuple the event count, coupled with a real stinker of a skill set. The only things that are even remotely attractive are a strong (but sliding) CMD base, his newly relevant collection where his stats are at least passable amongst the 'and the rest crowd,' and a measly 300% instant damage ability. On a 12 second timer. With a Position trigger. Localised entirely within your space kitchen.
-
-Can I see it working out? No. In his episode, Jellico told others to get it done, and regardless of your feelings about him, they got it done. But if you're looking for a card to get it done, this ain't it, chief.
+Regardless of what the scorecard and various metrics say, Jellico is and always will be pure collection fodder. You don't want him on voyages no matter how many hundreds of crew may rank lower and you shouldn't feel a pang of regret when that Maverick mega hits and you don't have him. Maybe he would have been an intriguing arena option without the trigger and about an eight second faster initialization, but as it stands, Jellico just won't ... Get it done. 😎

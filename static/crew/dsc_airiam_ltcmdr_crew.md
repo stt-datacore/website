@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-One of the more mediocre Disco crew unless you have a particularly fledgling roster, Airiam does at least contribute +1 Engineered and a snappy Attack boost at four seconds, as well as the relatively uncommon SCI/CMD stack. This bionic bod will do just fine on voyages and the occasional event, but she may be an intermittent thaw once she’s discovered your vault.
+Following Discovery megas, Airiam is living trait to trait on the weekends, where her value has taken a big dip. Voyages and gauntlet are out of the question too, leaving a fast-activating arena boost as her only significant avenue for daily contributions and even then, only for a short time.
+
+In the meantime, collections have become the name of the game and her four non-FHS traits could all be called upon at some point. For collection value alone, feel free to star up and freeze hairyarm at your leisure and wait for scattershot event bonuses to spring her from cryo jail.
