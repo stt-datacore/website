@@ -3,12 +3,12 @@ name: Executive Director Hugh
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 23/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

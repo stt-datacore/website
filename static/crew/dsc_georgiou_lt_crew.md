@@ -3,7 +3,7 @@ name: Lieutenant Georgiou
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 6
 events: 22
 in_portal: true
 date: 25/08/2020

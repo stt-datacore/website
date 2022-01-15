@@ -3,8 +3,8 @@ name: Risa Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: -1
-events: 19
+bigbook_tier: 3
+events: 20
 in_portal:
 date: 18/05/2021
 obtained: Pack

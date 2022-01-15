@@ -3,7 +3,7 @@ name: Science Officer Spock
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 5
 events: 54
 in_portal: true
 date: 30/05/2019

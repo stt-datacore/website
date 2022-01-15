@@ -3,7 +3,7 @@ name: Chief O'Brien
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 10
 events: 11
 in_portal: true
 date: 01/01/2016

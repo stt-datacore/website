@@ -3,7 +3,7 @@ name: Admiral Maxwell Forrest
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 5
 in_portal: true
 date: 15/01/2020

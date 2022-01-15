@@ -3,12 +3,12 @@ name: Tribble Sato
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 5
 events: 13
 in_portal:
 date: 19/08/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

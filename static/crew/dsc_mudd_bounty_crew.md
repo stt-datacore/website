@@ -3,12 +3,12 @@ name: Bounty Hunter Mudd
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 37
 in_portal: true
 date: 09/10/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

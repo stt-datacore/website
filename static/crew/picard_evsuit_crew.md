@@ -3,7 +3,7 @@ name: EV Suit Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 5
 events: 21
 in_portal:
 date: 17/09/2021

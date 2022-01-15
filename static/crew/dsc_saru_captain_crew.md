@@ -3,7 +3,7 @@ name: Captain Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 8
 events: 27
 in_portal:
 date: 22/07/2021

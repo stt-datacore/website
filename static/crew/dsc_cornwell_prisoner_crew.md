@@ -3,8 +3,8 @@ name: Prisoner Katrina Cornwell
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 21
+bigbook_tier: 5
+events: 22
 in_portal: true
 date: 01/02/2018
 obtained: Mega

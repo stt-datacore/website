@@ -3,7 +3,7 @@ name: Profiteer Vash
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 8
 events: 4
 in_portal:
 date: 11/11/2021

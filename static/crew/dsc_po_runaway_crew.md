@@ -3,12 +3,12 @@ name: Runaway Po
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 28
 in_portal: true
 date: 10/10/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

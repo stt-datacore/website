@@ -3,8 +3,8 @@ name: Profitable Ishka
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 7
+bigbook_tier: 7
+events: 8
 in_portal: true
 date: 03/05/2018
 obtained: Event

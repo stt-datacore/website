@@ -3,7 +3,7 @@ name: Lonzak
 rarity: 5
 series:
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 13
 in_portal: true
 date: 08/01/2019

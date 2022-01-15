@@ -3,12 +3,12 @@ name: Ancient Humanoid
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 2
 events: 24
 in_portal:
 date: 02/12/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

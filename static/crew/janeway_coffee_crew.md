@@ -3,7 +3,7 @@ name: Captain Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 7
 events: 19
 in_portal: true
 date: 01/01/2016

@@ -3,7 +3,7 @@ name: Apollo
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 4
 events: 15
 in_portal: true
 date: 27/02/2017

@@ -3,7 +3,7 @@ name: Sutra
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 8
 events: 13
 in_portal:
 date: 28/09/2021

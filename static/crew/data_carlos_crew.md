@@ -3,7 +3,7 @@ name: Carlos Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 26
 in_portal: true
 date: 19/11/2020

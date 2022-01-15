@@ -3,7 +3,7 @@ name: Commander Demos
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 3
 events: 6
 in_portal:
 date: 04/01/2022

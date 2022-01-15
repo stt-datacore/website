@@ -3,12 +3,12 @@ name: Suus Mahna Sarek
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 36
 in_portal: true
 date: 15/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

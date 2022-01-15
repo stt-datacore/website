@@ -3,7 +3,7 @@ name: Pernaia Prime T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 6
 events: 27
 in_portal:
 date: 03/08/2021

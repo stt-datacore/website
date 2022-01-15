@@ -3,12 +3,12 @@ name: Commander Ellen Landry
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 20
 in_portal: true
 date: 21/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

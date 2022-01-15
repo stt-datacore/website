@@ -3,8 +3,8 @@ name: Vice Admiral Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 24
+bigbook_tier: 5
+events: 25
 in_portal: true
 date: 12/09/2019
 obtained: Event

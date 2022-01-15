@@ -3,7 +3,7 @@ name: Polaric Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 20
 in_portal: true
 date: 12/01/2021

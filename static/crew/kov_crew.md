@@ -3,8 +3,8 @@ name: Kov
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: -1
-events: 22
+bigbook_tier: 4
+events: 16
 in_portal:
 date: 11/01/2022
 obtained: Pack

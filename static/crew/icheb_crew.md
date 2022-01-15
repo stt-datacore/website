@@ -8,7 +8,7 @@ events: 19
 in_portal: true
 date: 22/05/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

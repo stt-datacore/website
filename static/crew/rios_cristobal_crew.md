@@ -3,15 +3,17 @@ name: Cristóbal Rios
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 4
+events: 24
 in_portal: true
 date: 30/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-I was tempted, writing this note, to simply tell you that he's not very good and that you should wait for the better hologram versions to roll in. But that's not the Big Book way, so let's go by the numbers.
+Some people just have “it”. And oh Mama, Santiago Cabrera has “it”. Rakish art, with belt buckle askew, might lull you into thinking more of Rios than what this card offers. But before we wake up, let’s wax lyrical about his traits.
 
-Sub-par voyage ranking for the most common skill set in the game: check. CMD base that doesn't break top ten: check. Event count inflated by trait megas that we likely won't see hit again except for the occasional one-off: check. Honestly, the only reason we're talking about him is Picard events, where he'll be useable to obtain better crew. It's a shame such a fun character has been rendered so hol-low (geddit?), but ah well. Maybe he'll be redeemed with a hunky shirtless upgrade somewhere down the line.
+A handful of megas and standalone events derived solely from traits is your best bet for use here and his skills will receive favorable shuttle seating to bump him up the thaw list on certain weekends. Traits have also landed him spots in a few large collections with a couple other likely bullets left in his collection six-shooter. 
+
+That being said, this is not a crew you should be using very often without the frost still on his jacket from being pulled out of cryo. Flat power levels in most areas and a few notable drawbacks like voyage skill set or short arena ability duration blunt his usefulness in the early game and relegate him to an asset whose value unlocks after immortalization. Now if we could only get that shirtless Cristóbal variant…

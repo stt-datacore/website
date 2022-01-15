@@ -3,12 +3,12 @@ name: Courier Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 33
+bigbook_tier: 6
+events: 34
 in_portal: true
 date: 03/12/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

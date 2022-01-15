@@ -3,8 +3,8 @@ name: The Traveler
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 5
+bigbook_tier: 10
+events: 6
 in_portal: true
 date: 25/01/2017
 obtained: Post-Launch

@@ -3,7 +3,7 @@ name: Minuet
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 11
 in_portal: true
 date: 03/10/2018

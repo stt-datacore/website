@@ -3,12 +3,12 @@ name: Lt. Commander Icheb
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 19
 in_portal: true
 date: 20/02/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

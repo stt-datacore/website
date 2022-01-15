@@ -3,12 +3,12 @@ name: K'mtar
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 5
 events: 10
 in_portal: true
 date: 27/12/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

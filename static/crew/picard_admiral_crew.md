@@ -3,12 +3,12 @@ name: Admiral Picard
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 26
 in_portal: true
 date: 29/05/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

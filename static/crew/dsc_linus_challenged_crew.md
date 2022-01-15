@@ -3,7 +3,7 @@ name: Badge-Challenged Linus
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 6
 events: 18
 in_portal:
 date: 06/01/2022

@@ -3,7 +3,7 @@ name: Layna
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 3
 in_portal: true
 date: 29/11/2018

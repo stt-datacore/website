@@ -3,12 +3,12 @@ name: Assimilated Tuvok
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 5
 events: 25
 in_portal: true
 date: 22/05/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

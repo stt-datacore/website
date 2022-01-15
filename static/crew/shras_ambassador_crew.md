@@ -3,12 +3,12 @@ name: Ambassador Shras
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 5
 in_portal: true
 date: 14/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

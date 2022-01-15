@@ -3,7 +3,7 @@ name: Fierce Guinan
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 7
 events: 13
 in_portal:
 date: 20/10/2017

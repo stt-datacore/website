@@ -3,7 +3,7 @@ name: Imprinted Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 10
 events: 18
 in_portal: true
 date: 07/05/2019

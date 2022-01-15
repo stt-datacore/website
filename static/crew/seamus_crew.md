@@ -3,7 +3,7 @@ name: Seamus
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 15
 in_portal: true
 date: 17/03/2020
