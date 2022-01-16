@@ -1,10 +1,11 @@
 const write = require('write');
+const fs = require('fs');
 const path = require('path');
 const { introspectionQuery, graphql, printSchema } = require('gatsby/graphql');
 const { createFilePath } = require('gatsby-source-filesystem');
 
-exports.onCreateNode = ({ node, getNode, actions }) => {
-	const { createNodeField } = actions;
+exports.onCreateNode = ({ node, getNode, actions, createContentDigest, createNodeId }) => {
+	const { createNode, createNodeField } = actions;
 	if (node.internal.type === `MarkdownRemark`) {
 		const slug = createFilePath({ node, getNode, basePath: `pages` });
 		createNodeField({
@@ -24,6 +25,21 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 			node,
 			name: `slug`,
 			value: `/${node.symbol}/`
+		});
+	} else if (node.internal.type === `CrewJson`) {
+		const newNode = {
+			name: node.name,
+			symbol: node.symbol,
+			imageUrlPortrait: node.imageUrlPortrait,
+			max_rarity: node.max_rarity
+		};
+		createNode({
+			id: createNodeId(node.name),
+			...newNode,
+			internal: {
+				type: 'SimpleCrew',
+				contentDigest: createContentDigest(newNode)
+			}
 		});
 	}
 };
@@ -59,7 +75,7 @@ exports.createPages = ({ graphql, actions }) => {
 				}
 			}
 		}
-	`).then((result) => {
+`).then((result) => {
 		result.data.allMarkdownRemark.edges.forEach(({ node }) => {
 			if (/(\/static\/crew\/).*\.md$/.test(node.fileAbsolutePath)) {
 				createPage({
@@ -67,6 +83,11 @@ exports.createPages = ({ graphql, actions }) => {
 					component: path.resolve(`./src/templates/crewpage.tsx`),
 					context: { slug: node.fields.slug, symbol: node.fields.slug.replace(/\//g, '') }
 				});
+				// createPage({
+				// 	path: `/structured/crew/${node.fields.slug.replace(/\//g, '')}`,
+				// 	component: path.resolve('./src/templates/crewjson.tsx'),
+				// 	context: { symbol: node.fields.slug.replace(/\//g, '') }
+				// })
 			} else {
 				if (node.fields.source === 'announcements') {
 					// Announcements are rendered inline on announcements page, not as separate pages
@@ -116,4 +137,17 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 	//TODO: more testing
 	//config.output.globalObject = 'this';
 	actions.replaceWebpackConfig(config);
+};
+
+exports.onPostBootstrap = async (props) =>  {
+	const crewPath = '/structured/crew/';
+	fs.readFile('./static/structured/crew.json', 'utf-8', (err, json) => {
+			//console.log(json);
+			const data = JSON.parse(json);
+			const publicCrewPath = `./public${crewPath}`;
+			if (!fs.existsSync(publicCrewPath)) fs.mkdirSync(publicCrewPath);
+
+			data.forEach(crew => fs.writeFileSync(`${publicCrewPath}${crew.symbol}.json`, JSON.stringify(crew)));
+
+		});
 };

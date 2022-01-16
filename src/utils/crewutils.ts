@@ -365,3 +365,7 @@ export function formatTierLabel(tier, short = true) {
 	}
 	return `${tier}`;
 }
+
+export async function fetchCrewData(symbol) {
+	return (await fetch(`./structured/crew/${symbol}.json`)).json();
+}
