@@ -147,7 +147,7 @@ exports.onPostBootstrap = async (props) =>  {
 			const publicCrewPath = `./public${crewPath}`;
 			if (!fs.existsSync(publicCrewPath)) fs.mkdirSync(publicCrewPath);
 
-			data.forEach(crew => fs.writeFileSync(`${publicCrewPath}${crew.symbol}.json`, JSON.stringify(crew)));
+			data.forEach(crew => fs.writeFileSync(path.resolve(`${publicCrewPath}${crew.symbol}.json`), JSON.stringify(crew)));
 
 		});
 };
