@@ -123,7 +123,9 @@ class MuleHunter extends React.Component<MuleHunterState> {
     const entries = allcrew
 			.filter(crew => crew.max_rarity <= maxRarity)
 			.filter(crew => !inPortal || crew.in_portal)
+			.filter(crew => !ownedCrew || (roster.includes(crew.symbol) && crew.level <= roster.find(crew.symbol).level))
 			.reduce((targets, crew) => {
+				console.log(crew);
 	      return targets.concat(crew
 					.itemsPerUpgrade
 	        .map(ipu => ({
@@ -135,11 +137,10 @@ class MuleHunter extends React.Component<MuleHunterState> {
 					.filter(ipu => ipu.items.length > 0)
 	        .reduce((best, ipu) => best.items && ipu.items.length <= best.items.length ?  best : ipu, []));
 			}, [])
-			.filter(crew => !ownedCrew || (roster.includes(crew.symbol) && crew.level <= roster.find(crew.symbol).level))
 			.sort((e1, e2) => e1.level - e2.level)
 			.sort((e1, e2) => e2.items.length - e1.items.length);
 
-		this.setState(newState);
+		this.setState({ ...newState, entries});
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);
