@@ -3,12 +3,12 @@ name: Protomorphosis Worf
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 26
 in_portal: true
 date: 17/07/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

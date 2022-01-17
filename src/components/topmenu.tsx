@@ -115,13 +115,8 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		{ title: 'Hall of Fame', link: '/hall_of_fame' }
 	];
 	items.push(createSubMenu('Pages', pages));
-
-	items.push(createSubMenu('Big book (legacy)', [
-			{title: 'Image list (fast)', link: '/bigbook2'},
-			{title: 'Complete (slow)', link: '/bigbook'},
-			{title: 'Text only', link: '/bb'}
-		])
-	);
+	
+	items.push(<Menu.Item key='bigbook' onClick={() => navigate('https://bigbook.app')}>Big book</Menu.Item>);
 
 	const about = [
 		{ title: 'About DataCore', link: '/about' },

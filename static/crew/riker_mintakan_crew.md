@@ -3,7 +3,7 @@ name: Mintakan Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 39
 in_portal: true
 date: 17/04/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His event contributions look quite good on paper - top three Riker SEC with a fistful of eventable traits and a steady two+ Riker bonuses in each calendar year. Considering his dreary voyage, gauntlet, and arena power, he's best thought of as a luxury 2-skill event choice with more gas in the tank for weekends.
+His event history is rock solid on paper - ever-present SEC seating for Riker events with a fistful of eventable traits. Considering his dreary voyage, gauntlet, and arena power, he's best thought of as a luxury choice for late game players with more gas in the tank for weekends and reasonable collection value.

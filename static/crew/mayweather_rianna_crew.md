@@ -3,7 +3,7 @@ name: Rianna Mayweather
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 4
 in_portal: true
 date: 29/07/2016

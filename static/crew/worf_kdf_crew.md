@@ -3,8 +3,8 @@ name: Civil War Worf
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 24
+bigbook_tier: 8
+events: 25
 in_portal: true
 date: 15/06/2016
 obtained: Post-Launch

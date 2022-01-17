@@ -3,8 +3,8 @@ name: Commander Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 14
+bigbook_tier: 10
+events: 15
 in_portal: true
 date: 01/01/2016
 obtained: Launch

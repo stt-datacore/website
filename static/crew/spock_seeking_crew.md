@@ -3,12 +3,12 @@ name: Seeking Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 31
 in_portal: true
 date: 05/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

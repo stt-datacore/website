@@ -12,6 +12,10 @@ mega: true
 published: true
 ---
 
-He no longer owns a sterling #1 gauntlet pair, but thanks to his availability as a mega event crew, the Walls of Surak (my band's name) still echo in the gauntlet. Besides being unavoidable there, a healthy SCI base and even better voyage total have him contributing from multiple angles. With Vulcan unlikely to be his last trait mega, it would be only logical to behold him if you have the chance.
+Kids these days are going to see a juicy collection piece and never know what an all-star Surak was on release. A top five voyage and gauntlet option then, he's still held on well thanks to his exceptional debut power. 
 
-He's one of the best daily use crew in the game and excellent right from star one, with the addition of extra tiers to the Vulcan collection making him arguably even more useful than when he first debuted. With names like Picard and Number One now on everyone's rosters, seemingly crowding him out in certain areas, you might think twice about him, but trust in logic, and let Vulcan Jesus help you find what you're looking for.
+Remaining a voyage option despite the poor skill set, Surak's fistful of anti-matter traits meet power that should be viable through 2023 on some rosters. With a healthy portion of stats allocated to proficiencies, he's also a great if not overpowering gauntlet pick.
+
+Twenty-plus elevated crit sets including a trio of 45%ers is plenty of crit to bring to bear in combination with three healthy proficiency rolls. His skill set shoots the gap between Balok's CMD/DIP, Armus' CMD/SCI, and Loco's DIP/SCI, displaying the dominance of none of those exclusives, but offering plus versatility if you're still trying to make inroads in that competitive area of the game.
+
+With a lovely capstone in the form of a collection quartet and a few more viable traits in hand, Surak remains among the best cards in the game and taken for granted due to his former mega status.

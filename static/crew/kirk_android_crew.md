@@ -3,7 +3,7 @@ name: Android Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 28
 in_portal: true
 date: 31/03/2020

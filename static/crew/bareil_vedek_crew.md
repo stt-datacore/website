@@ -3,7 +3,7 @@ name: Vedek Bareil Antos
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 5
 events: 19
 in_portal: true
 date: 12/06/2017

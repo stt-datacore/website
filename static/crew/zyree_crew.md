@@ -3,12 +3,12 @@ name: Zyree
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: -1
-events: 1
+bigbook_tier: 7
+events: 2
 in_portal:
 date: 27/05/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

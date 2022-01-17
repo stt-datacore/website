@@ -3,7 +3,7 @@ name: Breen Disguise Dukat
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 3
 events: 13
 in_portal: true
 date: 11/07/2018

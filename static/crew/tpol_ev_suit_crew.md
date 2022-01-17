@@ -3,12 +3,12 @@ name: EV Suit T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 27
 in_portal: true
 date: 05/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

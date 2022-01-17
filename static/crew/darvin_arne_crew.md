@@ -3,7 +3,7 @@ name: Arne Darvin
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 6
 events: 22
 in_portal:
 date: 04/05/2021

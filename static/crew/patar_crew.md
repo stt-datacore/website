@@ -3,12 +3,12 @@ name: Patar
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 5
-events: 16
+bigbook_tier: 4
+events: 32
 in_portal:
 date: 09/12/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

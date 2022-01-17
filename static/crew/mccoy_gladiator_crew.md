@@ -3,8 +3,8 @@ name: Gladiator McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 27
+bigbook_tier: 8
+events: 28
 in_portal: true
 date: 17/01/2018
 obtained: Event

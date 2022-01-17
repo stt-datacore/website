@@ -3,7 +3,7 @@ name: Little John Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 21
 in_portal: true
 date: 14/11/2019

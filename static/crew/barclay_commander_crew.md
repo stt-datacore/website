@@ -3,12 +3,12 @@ name: Commander Barclay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 11
 in_portal: true
 date: 10/10/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

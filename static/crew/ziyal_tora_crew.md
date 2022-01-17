@@ -3,7 +3,7 @@ name: Tora Ziyal
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 4
 in_portal: true
 date: 20/02/2018

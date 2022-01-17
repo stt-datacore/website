@@ -3,12 +3,12 @@ name: Kaminar Saru
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 5
 events: 36
 in_portal: true
 date: 24/10/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

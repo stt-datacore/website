@@ -3,7 +3,7 @@ name: Admiral Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 19
 in_portal: true
 date: 01/01/2016

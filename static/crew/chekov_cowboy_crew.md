@@ -3,7 +3,7 @@ name: Claiborne Chekov
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 15
 in_portal: true
 date: 06/06/2016

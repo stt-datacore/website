@@ -3,7 +3,7 @@ name: Dr. Edward La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 7
 in_portal: true
 date: 23/07/2020

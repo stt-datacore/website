@@ -8,7 +8,7 @@ events: 14
 in_portal: true
 date: 15/10/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

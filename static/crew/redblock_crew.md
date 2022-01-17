@@ -3,7 +3,7 @@ name: Cyrus Redblock
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 4
 events: 10
 in_portal: true
 date: 22/05/2017

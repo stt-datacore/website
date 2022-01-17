@@ -3,8 +3,8 @@ name: Usurper Lorca
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 31
+bigbook_tier: 9
+events: 32
 in_portal: true
 date: 19/03/2019
 obtained: Pack

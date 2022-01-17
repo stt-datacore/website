@@ -3,7 +3,7 @@ name: Ba'ku Worf
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 24
 in_portal: true
 date: 06/03/2017

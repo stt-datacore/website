@@ -3,7 +3,7 @@ name: Rogue Harry Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 25
 in_portal: true
 date: 15/08/2016

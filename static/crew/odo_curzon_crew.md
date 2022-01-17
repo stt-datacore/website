@@ -3,8 +3,8 @@ name: Zhian'tara Odo
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 29
+bigbook_tier: 8
+events: 32
 in_portal: true
 date: 18/09/2017
 obtained: Event

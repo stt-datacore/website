@@ -3,8 +3,8 @@ name: Quinn
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 12
+bigbook_tier: 5
+events: 13
 in_portal:
 date: 10/07/2019
 obtained: Missions

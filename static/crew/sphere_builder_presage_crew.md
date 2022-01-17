@@ -3,12 +3,12 @@ name: Sphere-Builder Presage
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 17
 in_portal: true
 date: 13/12/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

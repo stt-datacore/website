@@ -3,7 +3,7 @@ name: Command Hologram
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 10
 events: 18
 in_portal: true
 date: 08/09/2016

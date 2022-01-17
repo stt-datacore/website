@@ -3,7 +3,7 @@ name: Young T'Pau
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 17
 in_portal: true
 date: 25/07/2019
