@@ -14,6 +14,6 @@ published: true
 
 Thisa Narissa is the trouble with quibbles. Her art ain't right. She should be a SEC primary. Why is she a super rare?
 
-Now, if Narissa had given us something else to be excited about, such nitpicks would be squelched. Instead, we're left with a bland might-as-well-be 2-skiller with thin event potential, barring a Picard-a-thon streak of megas to rival the Disco inferno.
+Now, if Narissa had given us something else to be excited about, such nitpicks would have been squelched. Instead, we're left with a bland might-as-well-be 2-skiller with thin event potential, barring a Picard-a-thon streak of megas to rival the Disco inferno.
 
-Scoop up the Romulan collection notch, if you still need it, courtesy of the Galaxy hybrid she comes from and cross your fingers for her traits to trigger before too long.
+As with most crew not suitable for daily use, Narissa’s traits are going to dictate her value going forward. A lone collection and 50/50 chance for a Faction bonus in any given year isn’t going to cut it, but as long as monthly collections (and their attached mega bonuses) keep rolling, there’s reason to expect her name to come up from time to time in the future.

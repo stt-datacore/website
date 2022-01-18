@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-Kamin and listen... A much requested variant of Picard whistles his way into the higher end of the SCI/DIP spectrum, offering a respectable powerup in all three of his skill pairs. His ability to weave iron obviously renders him with an inscrutable MED ability, but I’m not going to quibble for the sake of a more versatile Picard. Whilst he is a great asset on sheer numbers, there are a few considerations to keep an eye on should you ponder citing him.
+Kamin was something of a breather during a period where WRG released gold Picards at a clip exceeding three per year with a handful of them being top ten voyagers. Perhaps predicting that this version from a fan favorite episode would sell well on its own, Kamin wasn’t granted any absurd power notes to have players drooling to obtain him.
 
-He is no doubt a good straightforward voyager. However he has nothing to give him an extra event edge outside of Picard events, for his traits are hollow and he has touched the sky. I don’t think the Botanist mega is happening anytime soon. While he sports a top 10 Gauntlet, his traits make it unlikely he ever sees more than a 5% bonus in that area.
+It may sound elitist to say that Kamin is on the wrong side of desirable for voyages considering a raw score rank still in double digits as of this writing, but his skill set is more populated than most players realize and the essential spice to separate crew in crowded skill sets, traits, sees Picard with but a single anti-matter trigger. If the legendary crew on your roster consist mostly of mega and campaign names, Kamin should still find work for you, but he’s not a competitive long-term prospect for established players.
 
-Picard is as main cast as they come and combined with strong numbers and a skill set off the beaten path for this crew, he'll get everyday use on most rosters, especially those who didn’t participate in Pupcard’s and Soji Asha’s mega events or are missing out on Boothby’s superior skill set.
+What young rosters might also appreciate is Picard’s reasonable proficiency power. Again, he’s not a competitive late game option and his poor traits limit the number of times he shows up to work with elevated crit values, but as a one star proposition, there can be use there for folks with few of the top options. 
+
+The bulk of Kamin’s lasting value is going to be Picard and assorted trait event bonuses. His limited, but reliable event history should see him grabbing a few bonuses per year and help soften the stat blow if you’re looking to acquire him for sentimental reasons.

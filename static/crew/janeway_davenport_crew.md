@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 24
+events: 20
 in_portal:
 date: 23/10/2018
 obtained: Missions
