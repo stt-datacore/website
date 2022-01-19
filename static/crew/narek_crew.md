@@ -3,7 +3,7 @@ name: Narek
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 14
 in_portal: true
 date: 14/04/2020
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Listen, if you had the hots for an artificial scientist and your overbearing sister was leaning just a little too close to your face for comfort, you would have some performance issues, too. It's hard to imagine what Narek can do for an experienced roster in this well established skill set, which contains every legendary Captain, Klingon and Q, even if he holds up in the upper echelons with enough DIP proficiency to nearly outclass some of the more uninspired two skillers in that field.
+I can't watch Narek and not think Eddie Redmayne, so I guess we'll title this one 'Fantastic Traits and Where to Find Them'. A half dozen non-HFS traits is plenty to work with and has granted Narek multi-collection status already with nice growth potential in that area. 
 
-However, aside from a collection bonus and few useful traits, Narek brings nothing new to the table that the dozens of DIP/SEC/CMD 1/5 crew hanging around the lower decks of your crew quarters cannot provide, and they likely have better fringe utility, too. It's hard to say if a proper Picard event or Romulan mega will provide a decent use for him, but for now consider him a commonly strong entry in the DIP/CMD leagues, then pick someone else.
+It also makes him the Romulan du jour on voyages where, despite his awful skill set, Romulans absolutely suck, leaving him as the de facto trait match if that's your bag. Some reasonable base metrics may have him just outside of daily use with the likes of Anniversaru floating around, but should easily earn him shuttle seating when one of his traits catches a (mega's worth of) bonus(es).

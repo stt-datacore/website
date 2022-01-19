@@ -3,8 +3,8 @@ name: Tieran Possessed Kes
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 10
+bigbook_tier: 7
+events: 9
 in_portal: true
 date: 17/05/2018
 obtained: Event

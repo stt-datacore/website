@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Input, Button, Grid, Image } from 'semantic-ui-react';
-import { navigate } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 
 import CONFIG from './CONFIG';
 
@@ -11,19 +11,6 @@ import { formatTierLabel } from '../utils/crewutils';
 import { guessCurrentEvent, getEventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
-
-const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'max_rarity', 'level'] },
-	{ width: 1, column: 'bonus', title: 'Bonus', reverse: true },
-	{ width: 1, column: 'bestSkill.score', title: 'Best', reverse: true },
-	{ width: 1, column: 'bestPair.score', title: 'Pair', reverse: true },
-	{ width: 1, column: 'command_skill.core', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'science_skill.core', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'security_skill.core', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'engineering_skill.core', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'diplomacy_skill.core', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'medicine_skill.core', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
-];
 
 type EventPlannerProps = {
 	playerData: any;
@@ -54,15 +41,24 @@ const EventPlanner = (props: EventPlannerProps) => {
 		let crewman = JSON.parse(JSON.stringify(crew));
 		crewman.id = fakeID++;
 
-		// Re-attach active_status property
 		crewman.active_status = 0;
 		if (crew.immortal === 0) {
+			// Re-attach active_status property
 			const isActive = (ac) => ac.symbol == crew.symbol && ac.level == crew.level && ac.equipment.join('') === crew.equipment.join('');
 			let activeCrewIndex = activeCrew.findIndex(isActive);
 			if (activeCrewIndex >= 0) {
 				crewman.active_status = activeCrew[activeCrewIndex].active_status;
 				activeCrew.splice(activeCrewIndex, 1);	// Clear this ID so that dupes are counted properly
 			}
+
+			// Add immortalized skill numbers to skill_data
+			//	allCrew stores immortalized numbers as base_skills,
+			//	but playerData base_skills of unleveled crew are unbuffed skills at current level
+			const ff = allCrew.find((c) => c.symbol == crew.symbol);
+			crewman.skill_data.push({
+				rarity: crew.max_rarity,
+				base_skills: ff.base_skills
+			});
 		}
 
 		myCrew.push(crewman);
@@ -210,6 +206,21 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			</div>
 		);
 
+	const tableConfig: ITableConfigRow[] = [
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'max_rarity', 'level'] },
+		{ width: 1, column: 'bonus', title: 'Bonus', reverse: true },
+		{ width: 1, column: 'bestSkill.score', title: 'Best', reverse: true },
+		{ width: 1, column: 'bestPair.score', title: 'Pair', reverse: true }
+	];
+	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		tableConfig.push({
+			width: 1,
+			column: `${skill.name}.core`,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			reverse: true
+		});
+	});
+
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
 	let bestPairs = {};
@@ -245,12 +256,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
-						if (showPotential) {
+						if (showPotential && crew.immortal === 0) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
-							if (crew.rarity == crew.max_rarity)
-								crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
-							else
-								crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
+							crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
 						crew[skill.name].core = crew[skill.name].core*crew.bonus;
 					}
@@ -362,7 +370,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

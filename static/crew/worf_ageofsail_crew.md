@@ -3,12 +3,12 @@ name: Age of Sail Worf
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 28
 in_portal: true
 date: 19/02/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

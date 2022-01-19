@@ -3,8 +3,8 @@ name: Archer and Porthos
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 18
+bigbook_tier: 6
+events: 19
 in_portal: true
 date: 26/05/2020
 obtained: Pack

@@ -3,12 +3,12 @@ name: Laborer Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 27
 in_portal: true
 date: 26/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

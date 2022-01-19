@@ -3,7 +3,7 @@ name: The Hansens
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 8
 events: 15
 in_portal:
 date: 17/08/2021

@@ -8,7 +8,7 @@ events: 3
 in_portal:
 date: 11/02/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

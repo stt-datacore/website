@@ -3,7 +3,7 @@ name: Young Khan
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 15
 in_portal: true
 date: 19/09/2016

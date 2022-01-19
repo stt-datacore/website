@@ -3,7 +3,7 @@ name: Queen Guinevere Kira
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 28
 in_portal: true
 date: 05/07/2018
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-There are a couple avenues for Guinevere to excel; as the #1 Kira SEC, the #2 Bajoran SEC, a big proficiency roll, or perhaps as a skirmish piece. But each perk has a downside. That Bajoran trait has popped up on the weekend just twice, her arena damage has a Position trigger, and her gauntlet pair isn't good enough to be ranked. Her bases are just high enough to be great when bonus, but not good enough the rest of the time. If you don't have use for her on ship battles, she's just a bit player waiting for her event number to be called.
+There are a couple avenues for Guinevere to excel; as a pair of shuttle friendly bases for Kira's reliable event history, as some arena damage tucked behind a benign trigger, or as a nice set of non-HFS traits.
+
+Despite not owning an eye-popping base rank, CMD and SEC are always in fashion for event seating and Kira is the most stable character in Timelines when it comes to variant bonuses. Her traits haven't even inflated her event history as much as they could in the future, making her a safe option there as well as a pretty strong speculative collection grab with a few having already materialized.
+
+The aforementioned arena damage may be her only route to daily use, but she's still on the well rounded side for a 2-skill crew and worth a dart throw in low end beholds.

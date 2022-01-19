@@ -3,7 +3,7 @@ name: Covert Operative Leland
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 20
 in_portal: true
 date: 30/10/2018

@@ -3,12 +3,12 @@ name: Romulan Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 24
+bigbook_tier: 6
+events: 25
 in_portal: true
 date: 26/03/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

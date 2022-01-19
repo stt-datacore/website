@@ -3,7 +3,7 @@ name: Protomorphosis Barclay
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 8
 events: 15
 in_portal: true
 date: 25/01/2018

@@ -3,8 +3,8 @@ name: Commander Chapel
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 7
+bigbook_tier: 9
+events: 10
 in_portal: true
 date: 04/12/2017
 obtained: Event

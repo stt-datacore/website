@@ -3,12 +3,12 @@ name: Doctor Paul Stubbs
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 11
 in_portal: true
 date: 07/02/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

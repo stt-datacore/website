@@ -3,8 +3,8 @@ name: Sord
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 6
-events: 10
+bigbook_tier: 5
+events: 11
 in_portal:
 date: 09/02/2021
 obtained: Pack

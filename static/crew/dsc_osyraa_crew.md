@@ -3,7 +3,7 @@ name: Osyraa
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 7
 events: 18
 in_portal:
 date: 29/04/2021

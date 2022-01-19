@@ -3,8 +3,8 @@ name: Mirror Montgomery Scott
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 3
-events: 20
+bigbook_tier: 5
+events: 21
 in_portal:
 date: 18/03/2021
 obtained: Event

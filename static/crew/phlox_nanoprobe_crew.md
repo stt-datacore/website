@@ -3,7 +3,7 @@ name: Nanoprobe Phlox
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 5
 events: 24
 in_portal:
 date: 04/08/2020

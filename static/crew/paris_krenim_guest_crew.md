@@ -3,12 +3,12 @@ name: Krenim Guest Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 23
+bigbook_tier: 6
+events: 24
 in_portal: true
 date: 04/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

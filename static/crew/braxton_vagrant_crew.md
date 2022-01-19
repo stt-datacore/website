@@ -3,7 +3,7 @@ name: Vagrant Braxton
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 11
 in_portal: true
 date: 21/05/2020
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Considering the charges of vagrancy, this particular Braxton does in fact have a home - a special place and a warm bed, right here in tier 10. With event chances as pitiable as these (Temporal Agent has about 4 crew, so don't expect a mega out of that), any two skiller would struggle to find relevance, but the SCI/CMD stack is a horse that isn't so much beaten as it is turned into a fine pulp. It may not be the future's end, but it certainly is an ignominious one for poor ol' Braxton.
+Ironically, considering the charges of vagrancy, this particular Braxton does in fact have a home - a warm bed and hot meal waiting for him right here in tier 10. That joke worked better before dynamic tiering. Uh, just fiddle with the tier sliders or something.
+
+Traits as threadbare as his jacket are looking dire for Braxton’s future value. If not for Survivalist trying its little heart out to bring him value, he’d be on the super short list of worst crew in the game. Late game rosters will take him for the collection tick, the rest of you can safely ignore his Creation of Adam-esque face whenever it pops up in a behold.

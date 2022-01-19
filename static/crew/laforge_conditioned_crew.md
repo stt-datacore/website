@@ -3,12 +3,12 @@ name: Conditioned La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 24
+bigbook_tier: 6
+events: 25
 in_portal: true
 date: 17/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

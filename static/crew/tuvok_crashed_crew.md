@@ -3,7 +3,7 @@ name: Crashed Tuvok
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 4
 events: 20
 in_portal:
 date: 22/06/2021

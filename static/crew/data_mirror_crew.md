@@ -3,12 +3,12 @@ name: Mirror Data
 rarity: 5
 series:
 memory_alpha:
-bigbook_tier: 6
-events: 32
+bigbook_tier: 7
+events: 33
 in_portal: true
 date: 18/12/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

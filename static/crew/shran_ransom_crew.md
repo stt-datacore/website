@@ -3,12 +3,12 @@ name: Ransom Shran
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 6
 events: 13
 in_portal: true
 date: 27/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -3,7 +3,7 @@ name: Flustered Jett Reno
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 6
 events: 17
 in_portal: true
 date: 17/11/2020
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Storing up Disco SCI bases is not unlike trying to get a drink of water from a waterfall - it's worth doing, but then you drown. Reno is the #20 (count it, #20) ranked Disco SCI base, behind some very common names, and even in a Faction heavy mega, you'd struggle to use her on anything but requisition shuttles unless you either determinedly ignored, or weren't here for, a lot of those names.
+Whoa baby, triple collections and ENG/MED, Jett must be a home run! Well, kinda. Most first year players would get run out of Flustered on voyages, just beware that with the portal sized as it is, your roster may mature past what she offers by the time you snag all four copies. If she were to ever be offered as a featured event reward, choo choo!
 
-That being said, she has quite the resume to take the sting out of that slightly clunky primary, including dual collections, the still uncommon MED/ENG pairing, a voyage ranking on the right side of useable for the skill set, and the possibility of variants ahead. This is one instance where you don't want to be flustered - take a cool, even headed look at your roster, at your Disco bases, at your MED/ENG crew, and decide if she's about to become your next cornerstone, or just a luxury pick.
+Her trio of collections does make her an auto pick for veteran players, but she faces the spectre of never improving that count with Desperate as her fitting last gasp. She can be a pot of gold for certain players, but without a breadth of utility, a player who's not in the market for one of her two notable attributes may find her value somewhat diminished.

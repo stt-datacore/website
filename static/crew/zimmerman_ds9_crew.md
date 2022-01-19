@@ -3,12 +3,12 @@ name: Holo-Engineer Zimmerman
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 2
 events: 9
 in_portal:
 date: 14/10/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

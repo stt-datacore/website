@@ -3,8 +3,8 @@ name: Evolved Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 20
+bigbook_tier: 7
+events: 16
 in_portal:
 date: 19/03/2019
 obtained: Fuse

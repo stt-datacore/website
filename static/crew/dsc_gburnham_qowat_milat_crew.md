@@ -3,8 +3,8 @@ name: Qowat Milat G. Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
-events: 30
+bigbook_tier: 7
+events: 23
 in_portal:
 date: 01/07/2021
 obtained: Event

@@ -3,7 +3,7 @@ name: Ephraim and Dot
 rarity: 5
 series:
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 6
 events: 4
 in_portal:
 date: 12/10/2021

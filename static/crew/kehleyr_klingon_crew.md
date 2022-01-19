@@ -3,7 +3,7 @@ name: Klingon K'Ehleyr
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 13
 in_portal: true
 date: 31/12/2020
