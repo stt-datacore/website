@@ -3,8 +3,8 @@ name: Augment Riker
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 5
-events: 33
+bigbook_tier: 4
+events: 34
 in_portal: true
 date: 20/03/2017
 obtained: Event
