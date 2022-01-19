@@ -3,10 +3,10 @@ name: Explorer Cutler
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 22
 in_portal:
-date: 20/01/2022
+date: 12/01/2022
 obtained: Event
 mega: false
 published: true

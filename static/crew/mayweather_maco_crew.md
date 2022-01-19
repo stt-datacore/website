@@ -3,9 +3,9 @@ name: Tactical MACO Mayweather
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 21
-in_portal:
+in_portal: true
 date: 23/02/2021
 obtained: Pack
 mega: false

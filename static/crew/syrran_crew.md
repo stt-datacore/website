@@ -3,7 +3,7 @@ name: Syrran
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 30
 in_portal:
 date: 16/12/2021

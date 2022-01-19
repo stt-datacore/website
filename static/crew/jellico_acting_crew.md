@@ -3,7 +3,7 @@ name: Acting Captain Jellico
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 1
 in_portal: true
 date: 20/08/2019
