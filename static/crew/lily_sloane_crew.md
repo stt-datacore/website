@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The fact that she has "variants" now predisposes her to the possibility of future events, but traits are likely to exceed them in a single month. And although her voyage numbers don't look great on the whole, ENG primary/DIP secondary can be difficult to find so she may sneak into the rotation there in the early game. Her #1 ENG/DIP super rare pair in the gauntlet will struggle for wins against walls of crew with monster DIP scores despite several advantageous crit traits leaving Jury Rigger as her most valuable attribute, despite theoretical value elsewhere.
+The fact that she has "variants" now predisposes Lily to the possibility of future events, but two events in six years tells you all you need to know about that. A weak ENG primary that hurts for event seating also diminishes the chance of her even making it out of cryo for a sudden uptick in trait events.
+
+The highlight, and justifiable reason to behold her, is her strong set of collections. There’s even theoretical room for expansion, though most of it hinges on another WRG ‘oopsie’ that would bring us the likes of Desperate or Civilian megacollections.

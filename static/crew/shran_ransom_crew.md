@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-I can see you over there, running a fine-toothed Comb through Ransom Shran's stats in the vague hope of finding long lasting worth. I could quote the esteemed Lieutenant Commander Tuvok and exclaim, we ain't found shit! But that wouldn't be quite true, not to mention vulgar, so let's parse out what little is here.
+I’m going to tell my kids this is the Mayor of Smurf Village. 
 
-Shran, and to a slightly more fun extent, Combs variants do get event play, so a DIP base of this strength will see use eventually, even if you might be scratching your head and wondering why we're still getting Caregivers now and not, say, during the Caregiver mega. Beyond that, extremely early game players will find him a merely OK voyager until he's replaced by the inevitable mega crew CMD/DIP/SEC refresh, and . . . well, now we come back to the fine toothed Comb.
+Co-headlining the “Let it Snow” campaign a mere three months after his debut might have been Shran’s notable high point thus far. Providing usable base and voyage metrics at the time, Shran has aged out of voyages by now due to skill set and is hopefully near the low point in terms of value. 
 
-For those of you looking to create a 'people with boxes' bridge crew, or who may be waiting for Rios variants to have a line of Trek pimps, you'll get some laughs out of his art, but the rest of us are decidedly po-faced. Come on, Wicked Realms - isn't it time for a decent Shran? I implore you, reconsider your thoughts and actions . . . before the Andorian Mining Consortium reconsiders them for you.
+While his bases will never be better than they are now, a rosy future forecast could compensate for stat droopage with a few more collections and continued smattering of megas. Shran’s only a bit player, even for a super rare, but has the right skills to warrant the thaw for events and has a reasonable collection outlook for crew on the short end of tiers.

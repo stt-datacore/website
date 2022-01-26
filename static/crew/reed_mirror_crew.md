@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-David Duchovny has the good fortune of collecting the Mirror trait (and associated traits) to boost his event count up into double-digits. With Mirror SEC stacked with equally unappealing options, you'd technically not be wrong to take him in a pinch for that reason, since it's not like the other cards are much better or worse.
+David Duchovny has the good fortune of collecting the Mirror trait (and associated traits) to boost his event count, since just being Malcom ain’t doing him any favors in the eyes of WRG. 
 
-On ships, 375% instant damage is a big torpedo, but getting to twelve seconds alive is increasingly difficult these days. Perhaps his best attribute, a spot in the newly minted Mirror collection, comes years after his release and is a nice value add if you want to finish perhaps the only worthwhile event piece that Reed has to offer.
+Flashing a few other niche uses, his 375% instant damage on ships is a big torpedo, but getting to twelve seconds alive is increasingly difficult these days. And his trio of 45% gauntlets combined with something vaguely reminiscent of a strong gauntlet pair might help balm the wound of having to take him early on in a bad behold. 
+
+Realistically, you’re going to forget you own this card after your first couple months in the game, but you have plenty of company in that regard.

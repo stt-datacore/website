@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-We're not as hard on Mirror Kirk as many players. No, he's not suitable for daily use, but an impressive event count and #2/4 bases among variants means that when his number is called (every other month), he'll perform fine. Kirk currently leads all other characters in variant events, making him one of the better names to consider when looking to fuse the requisite number of legendary crew to finish the Mirror collection.
+Essentially a launch card, Mirror Kirk’s woeful bases are understandable, though it doesn’t make his card any better. A weak option in almost every area, he can at least claim a vigorous event tally on the back of the Kirk brand and fistfuls of Mirror events. Considering the commonality of CMD and SEC seating, this variant should be fine to ship out on some of your later shuttles.
+
+If you’ve had the misfortune of selecting Kirk as the best choice in a bad behold early on in your Timelines journey, his trio of 45% gauntlets could allow him to make a dent in CMD/SEC matchups - then again, maybe we’re blowing smoke up your rear while Balok laughs in the distance.

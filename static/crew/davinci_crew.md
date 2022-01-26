@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Saluti! Allow me to regale you with the story of Leonardo da Timelines. The first legendary to sport the ENG/SCI/MED skill set is not far off from turning three years old, yet he remains among the more effective crew in the game. His delicious trait mélange has afforded him enough cracks at the event wheel for our purposes as more should continue to trickle in from megas and one-offs. Fringe collection and gauntlet offerings add a bit of garnish to his main course; voyages. Though crew wearing his skill set now number in the double digits, the blessed union of skill set and raw stat total allow him to mantain his mantle of key voyage cog.
+Saluti! Allow me to regale you with the story of Leonardo da Timelines. The first legendary to sport the ENG/SCI/MED skill set is *old* in game terms, yet he remains more valuable than almost any crew his age.
+
+Leo’s delicious trait mélange has afforded him plenty of cracks at the event piñata and more should continue to trickle in from trait megas and one-offs. It also gives him superb collection value with a handful of potential traits waiting to add to an already strong set of large collections.
+
+Also fantastic for voyage anti-matter, some niche traits like Hologram and Prodigy give him priority seating and boost up an already desirable skill set to an overall efficacy that blows past hordes of CMD/DIP/WHATEVER also-rans. With a huge number of elevated crit sets in the gauntlet and reasonable ENG/MED proficiency pair, there’s something of value here for players at every level of the game.

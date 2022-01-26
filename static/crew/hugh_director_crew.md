@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-Like the faceless drone he used to be, Hugh is the definition of "solid but unspectacular." Thankfully, his skill set is just rare enough and his voyage total is just high enough to give him value relative to the many, many other SCI/CMD cards out there.
+A Jonathan del Awesome character that for many long time Trek fans was one of the highlights of Picard’s first season. Hugh debuted as merely OK statistically, which doesn’t usually cut it after the laundry machine agitator of power creep has taken a crew through a few spin cycles, but there’s mid-level usage in a few areas.
 
-His event count doesn't leap off the page, but if we had to guess, it certainly looks like the Borg trait has as good a chance as any trait of landing future weekend work, along with landing him a collection spot that no longer needs legendaries to complete, but is a nice bonus.
+Both Hugh’s skill set and Borg anti-matter trait don’t get a ton of love in terms of voyage power options, so he may see usage there for a while longer on your average roster, but won’t reach the heights of fellow Borg icons Hawk or Cheesecake. 
 
-As for the rest, pitiful auxiliary rolls pull down a #12 SCI proficiency that can net a 45% crit bonus in Gauntlet, so his viability there will vary wildly depending on your existing options, and the less said about his non-event ship ability, the better, though a bit of shield repair will make him a marginally useful warm body for Skirmish purposes.
-
-We had hopes that Hugh would be the answer to some of the unicorn skill combos still left to be filled in the game (CMD/MED/ENG, among others) but, alas, Hugh can't always get what you want.
+Well rounded to a respectable degree between collections, stray event bonuses, and even a few ‘screw it’ 45% gauntlets, Hugh falls right into the Retrieve for Fun *and* Money section of crew.

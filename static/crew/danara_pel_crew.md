@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Danara is saved by her collection spot (and the Dashing Doc), but it's one of the easiest ones to complete. Her Hologram-boosted event count is somewhat deceiving; she’s most likely to make a real impact only if her event feature is re-run again.
+Danara is saved by her collection spot (and the Dashing Doc), but realistically you can toss her back when looking to tighten your crew slot belt and not notice her missing. Until more of her traits are chosen to pump up her tangible collection value, don’t feel bad about prioritizing more relevant options.

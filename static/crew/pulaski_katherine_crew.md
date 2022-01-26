@@ -12,4 +12,9 @@ mega: false
 published: true
 ---
 
-A fairly thin trait set and middling voyage rank may grab the eye, but MED crew play by different rules, even if there are more options now than there ever have been. Kathy remains a viable, if not amazing, MED voyager with good metrics for all permutations of her set and a sizable base with admittedly limited chances at a weekend bonus. Medics don't come around too frequently and though it's a shame to see Pulaski's skill set tied to an event corpse, she's still strong enough to catch weekend work while pitching in worthwhile voyage credentials.
+https://www.youtube.com/watch?v=Mj8FIbuoWPY - God, I miss hyperlinks.
+
+Various scattered reports and unconfirmed rumors of Dr. Kathy making voyages at whatever abhorrent power level she was at the time is a testament to the scarcity of her skill set (hold your Mirror Culbers tight, folks). While we may have underrated her potential longevity at the time due to less than elite raw power, that’s no longer the case and any roster on which Pulaski would see more than very seldom voyage use is a roster that should look to upgrade in that area.
+
+
+The opportunity for MED seating being what it is, Pulaski will need one of variant, Physician, or Caregiver bonuses to activate for her to have any kind of chance to make a notable impact on shuttles. With both of her viable traits having been plucked for collection duty, we can’t see any room for her to improve in the future, but she still has slivers of value in multiple areas.
