@@ -3,7 +3,7 @@ name: Kestra Troi-Riker
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 5
 in_portal: true
 date: 18/06/2020

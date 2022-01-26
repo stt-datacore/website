@@ -3,8 +3,8 @@ name: Anij
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 6
+bigbook_tier: 7
+events: 7
 in_portal: true
 date: 28/03/2018
 obtained: Event
