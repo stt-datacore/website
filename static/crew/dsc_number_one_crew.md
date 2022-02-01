@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-They don't call her Bridge Officer for nothing - more than 18 months after her debut, Rebecca Romjin (like the lettuce, friends, like the lettuce) is still providing the bonafides day in, day out, on any voyage that cares to field her. Now that Strange New Worlds is a certainty rather than a dream, those who invest are sure to find they've bet on the right number, and even if she didn't have that pair of loaded dice up her sleeve, she's still an easy recommend for daily use.
+Three plus years is nothing to scoff at with regards to voyage work, but even though Majel2.0 is not dead in the water there, we have to scrutinize things a bit more for cards that offer little else.
 
-DIP/ENG isn't as rare these days if you choose to cultivate it properly, and she's surrounded by options with different tertiaries or other ancillary benefits that can be tempting, but in the end, it comes down to who the Guardian of Forever chooses to barf in your direction. If she's who turns up, it'll take a whopper of a card to avoid being lured in by her voyage metrics, her base, and her alluring mystique. Just don't let the DIP/ENG Gauntler pair fool you - with Red Angel swooping down from on high, you'll find it a bit of no man's land trying to field rolls like these without courting disappointment.
+The “little else” includes a top three DIP/ENG proficiency roll in a handful of gauntlets, but just like Discovery, Burnham is going to hog the screen time whenever that skill pair pops up and so Bex is limited to new player offering in that area. And, of course, the crossed fingers we have for Strange New Worlds and any boost to relevance for Ms. Romijn’s (like the lettuce) character.
+
+If you’re mulling a Number One acquisition, it’s likely for her mid-range voyage ability which rests on the shoulders of adequate raw power and a 5-for-5 hit rate on voyage anti-matter traits. If she wouldn’t be a significant upgrade for you there, we might recommend shying away from starting fresh on a card which is painfully thin on traits and broader utility in general.
