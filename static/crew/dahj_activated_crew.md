@@ -3,17 +3,18 @@ name: Activated Dahj
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
-events: 5
-in_portal:
+bigbook_tier: 5
+events: 6
+in_portal: true
 date: 11/06/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Any discussion of Dahj that doesn't involve her footwear choices or Kid Vid glasses has to start with her voyage prowess, where an eye-popping total meets the perennially scarce SEC/SCI pair. In a combo where the likes of Klingon Janeway and EV Suit Seven are still voyage-relevant, Dahj provides a direct upgrade few other cards can match.
+Any discussion of Dahj that doesn't involve her footwear choices or Kid Vid glasses has to start with her voyage ability, where she’s one of the few notable SEC/SCI primary/secondary options for that perennially scarce combo. Her overall skill set isn’t all that rare and her anti-matter seat options are average at best, but her skill order will produce chances for use in a skill pair that can be tough to stack.
 
-In the brave new world of WRG event planning, where no show or cast bonuses can be counted on, our crystal ball is cloudier than ever. The precedent of Lore/B4 not counting for Data events dictates that variant bonuses for Dahj are unlikely, but chances are Androids will be a going concern for the future, and she is now the #1 SEC base among Androids by a sizeable margin (it was a good run, Detective Data), even throwing in a top 5 SCI base for good measure.
+In the brave new world of WRG event “planning”, where no show or cast bonuses can be counted on, our crystal ball is cloudier than ever. The precedent of Lore/B4 not counting for Data events dictates that variant bonuses for Dahj won’t be frequent. Her strong base metrics will most often be relegated to daily shuttles, but her disruptor will be able to bully its way onto almost any faction event she snags a bonus for.
 
-Even without a particularly useful ship ability, any Gauntlet use, or even an unlimited Data plan, Dahj is well worth activating. Just steer clear of the Romulans.
+
+It’s fair to question the longevity of crew who are mainly voyage options, but there’s still plenty of daily use to be had here and the full book on Picard show crew hasn’t been written yet.

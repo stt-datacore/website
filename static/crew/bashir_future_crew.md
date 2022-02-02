@@ -3,8 +3,8 @@ name: Alternate Future Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 21
+bigbook_tier: 9
+events: 22
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The Kukalaka waits...silently stalking your chronitons, ready to strike. This Bashir has a build cost reputation, but the bigger issue is that he doesn't pay it off. Statistically weak in all areas of the game, he, like a handful of others, is saved by his MED-centric skill set and brand name. Ugly bases should chip on from higher star counts for a few shuttles each year and he has an outside shot at MED/CMD voyages for those in dire straits. Gauntlet work for newer players is available as a one star investment against other poor behold choices.
+The Kukalaka waits...silently stalking your chronitons, ready to strike. This Bashir has a build cost reputation, but the bigger issue is that he doesn't pay it off. Statistically weak in all areas of the game, he, like a handful of others, is saved by his MED-centric skill set and brand name.
+
+Ugly bases should chip in on a few shuttles each year if he's (nearly) fully fused and he has an outside shot at a couple different gauntlets, which is an attribute available for newer players as a one star investment against other poor behold choices. If you're taking him to max (on purpose), it's usually for the classic Bashir 1-2 collection punch of Physician and Engineered

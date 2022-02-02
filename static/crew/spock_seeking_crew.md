@@ -3,13 +3,15 @@ name: Seeking Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 28
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 05/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Giant Intergalactic Space Probes Seeking Spock is not a section I expected to find in the newspaper but here we are! Spock has a decently high SCI stat, the base rank more an indication of just how much of this skill we've had recently than any kind of indictment of his long term value, especially since he's the second best SCI Spock behind Science Officer. His combined SCI/MED scores give him a nice boost in voyages just behind Indulgent Seven and his Voyage rank, although not as strong as some, is respectable enough to earn him a place on your outgoing excursions. Combine all that with the fact he is Spock, a name bound to gain plenty of event usage in the future! Now back to the paper, ooh Tellerites Seeking Zakdorn!
+Giant Intergalactic Space Probe seeking Spock is not what I was looking for in the personals, but here we are. 
+
+Usable a little while longer on voyages thanks in part to his half dozen anti-matter traits, Spock is more known for his well-established event empire. Plenty of events year-to-year supplemented by traits which also grant him multi-collection status is value that endures and should keep him afloat as a behold option as he drops out of daily use contention. Now back to the paper - ooh Tellarite Seeking Zakdorn!

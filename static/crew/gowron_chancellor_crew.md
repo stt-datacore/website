@@ -3,8 +3,8 @@ name: Chancellor Gowron
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 11
+bigbook_tier: 6
+events: 15
 in_portal: true
 date: 05/12/2016
 obtained: Pack

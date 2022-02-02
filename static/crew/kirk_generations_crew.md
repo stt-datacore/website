@@ -3,8 +3,8 @@ name: Nexus Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 26
+bigbook_tier: 7
+events: 27
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-An underrated crew that happens to be usable in a few areas, though great in none. A huge proficiency total allows him to pitch in until 5* crew begin to trickle in. +1 Inspiring and Kirk's event count help make up for him being poor for daily use outside the gauntlet. Also tied to my favorite Trek music of all time.
+His last note called Nexus Kirk underrated - this one won't. While he does have traces of his former versatility, the power is simply not there. Scads of events go to waste for a variant with such awful bases that he'll rarely merit the thaw. And what could be usable proficiencies in the right skill set are in the wrong one and will butt heads with Balok far too often.
+
+It's almost difficult to find crew without collections these days so even though you will level and freeze this crew eventually, you don't need to be in a rush to do so unless you're an early enough roster that you could use him in a gauntlet or two.

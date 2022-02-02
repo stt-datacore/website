@@ -3,8 +3,8 @@ name: Loken
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 4
+bigbook_tier: 8
+events: 8
 in_portal: true
 date: 01/08/2019
 obtained: Event
@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Loken's ranking anywhere above, say, a ham sandwich has almost everything to do with the ENG/MED part of his skill set which will help you attack the universal weak point of any player's voyage lineup. If you need help trying to shore up those runs, and we all do, your options will be limited and Loken can at least do that. His underachieving bases will rarely help you between three bad traits in one hand and a few superior ENG mega crew in the other. Which leaves an eight second arena nuke as his only other worthwhile attribute if you can meet its cloak requirement. Any utility beyond that, you're Lo-ken in all the wrong places.
+When Loken debuted, his ranking anywhere above, say, a ham sandwich had almost everything to do with the ENG/MED part of his skill set which was in short supply. But thanks to a 2021 trait audit, Loken picked up three new traits, one of which went on to become the largest collection in the game at the time. While those three traits didn't seem the most eventable or collectable at the time. Resourceful's over-performance in value goes to show that nothing can be taken for granted.
 
-By the way, I have Ham Sandwich around tier 8. Solid whole wheat base will make some shuttle runs when bonus, but few condiments limit his voyage and event potential.
+With a base that ranks as usable across his trait pools and even some cloak-triggered arena damage and lower end voyage ability, Loken is more well-rounded than he was at the time of his debut and has held up in value over time.
+
+By the way, we have Ham Sandwich around tier 8. Solid whole wheat base will make some shuttle runs when bonus, but few condiments limit his voyage and event potential.

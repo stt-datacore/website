@@ -658,5 +658,225 @@
 		"smallbonus": {
 			"traits": ["sisko","jake","mccoy","Survivalist"]
 		}
+	},
+	{
+		"name": "Biological Imperatives",
+		"type": "Galaxy",
+		"dates": "Thursday 07/22 until Monday 07/26 at Noon (16.00 UTC)",
+		"startDate": "2021-07-22T16:00:00Z",
+		"endDate": "2021-07-26T16:00:00Z",
+		"highbonus": ["paxton_john_crew", "kim_alternate_crew", "tpol_commander_crew"],
+		"smallbonus": {
+			"traits": ["tpol","kim"]
+		}
+	},
+	{
+		"name": "The Captain's Oath (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 07/29 until Monday 08/02 at Noon (16.00 UTC)",
+		"startDate": "2021-07-29T16:00:00Z",
+		"endDate": "2021-08-02T16:00:00Z",
+		"highbonus": ["dsc_saru_captain_crew", "bateson_captain_crew", "sulu_captain_crew","harriman_captain_crew"],
+		"smallbonus": {
+			"traits": ["saru","sulu","Inspiring","Explorer"]
+		}
+	},
+	{
+		"name": "The Mad Lieutenant - Mega Event Part 1",
+		"type": "Faction",
+		"dates": "Thursday 08/05 until Monday 08/09 at Noon (16.00 UTC)",
+		"startDate": "2021-08-05T16:00:00Z",
+		"endDate": "2021-08-09T16:00:00Z",
+		"highbonus": ["mccoy_tribble_crew", "larkin_underwear_crew", "dsc_lucero_captain_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["mccoy","larkin","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "It's the Fuzz - Mega Event Part 2",
+		"type": "Galaxy",
+		"dates": "Thursday 08/12 until Monday 08/16 at Noon (16.00 UTC)",
+		"startDate": "2021-08-12T16:00:00Z",
+		"endDate": "2021-08-16T16:00:00Z",
+		"highbonus": ["uhura_tribble_crew", "spock_tribble_crew", "dax_jadzia_tos_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["uhura","spock","Dax","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "Furred Up - Mega Event Part 3",
+		"type": "Faction",
+		"dates": "Thursday 08/19 until Monday 08/23 at Noon (16.00 UTC)",
+		"startDate": "2021-08-19T16:00:00Z",
+		"endDate": "2021-08-23T16:00:00Z",
+		"highbonus": ["odo_tos_crew", "sulu_tribble_crew", "sato_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["sato","odo","sulu","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "A Bed of Mushrooms - Mega Event Finale",
+		"type": "Skirmish",
+		"dates": "Thursday 08/26 until Monday 08/30 at Noon (16.00 UTC)",
+		"startDate": "2021-08-26T16:00:00Z",
+		"endDate": "2021-08-30T16:00:00Z",
+		"highbonus": ["chekov_tribble_crew", "phlox_tribble_crew", "quark_tribble_crew","kirk_tribble_crew"],
+		"smallbonus": {
+			"traits": ["chekov","phlox","quark","Tribbled","Exobiology"]
+		}
+	},
+	{
+		"name": "For Charity (Flashback)",
+		"type": "Galaxy",
+		"dates": "Thursday 09/02 until Monday 09/06 at Noon (16.00 UTC)",
+		"startDate": "2021-09-02T16:00:00Z",
+		"endDate": "2021-09-06T16:00:00Z",
+		"highbonus": ["riker_littlejohn_crew", "bashir_dress_uniform_crew", "quark_klingon_armor_crew"],
+		"smallbonus": {
+			"traits": ["riker","bashir","quark"]
+		}
+	},
+	{
+		"name": "Health Insurance",
+		"type": "Faction",
+		"dates": "Thursday 09/09 until Monday 09/13 at Noon (16.00 UTC)",
+		"startDate": "2021-09-09T16:00:00Z",
+		"endDate": "2021-09-13T16:00:00Z",
+		"highbonus": ["spock_platonian_crew", "salt_vampire_crew", "mccoy_julepmint_crew"],
+		"smallbonus": {
+			"traits": ["spock","mccoy"]
+		}
+	},
+	{
+		"name": "Eye of the Storm",
+		"type": "Skirmish",
+		"dates": "Thursday 09/23 until Monday 09/27 at Noon (16.00 UTC)",
+		"startDate": "2021-09-23T16:00:00Z",
+		"endDate": "2021-09-27T16:00:00Z",
+		"highbonus": ["picard_evsuit_crew", "data_sacrifice_crew", "fesek_crew"],
+		"smallbonus": {
+			"traits": ["picard","data"]
+		}
+	},
+	{
+		"name": "A Changeling in Time (rerun)",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 09/30 until Monday 10/04 at Noon (16.00 UTC)",
+		"startDate": "2021-09-30T16:00:00Z",
+		"endDate": "2021-10-04T16:00:00Z",
+		"highbonus": ["mitchell_crew", "dehner_elizabeth_crew", "antaak_crew", "odo_chaplain_crew"],
+		"smallbonus": {
+			"traits": ["odo","Dominion"]
+		}
+	},
+	{
+		"name": "The Miracles They Deserve - Mega Event Pt1",
+		"type": "Faction",
+		"dates": "Thursday 10/07 until Monday 10/11 at Noon (16.00 UTC)",
+		"startDate": "2021-10-07T16:00:00Z",
+		"endDate": "2021-10-11T16:00:00Z",
+		"highbonus": ["dsc_straal_crew", "photonic_alien_crew", "laforge_doctor_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["laforge","Innovator"]
+		}
+	},
+	{
+		"name": "Renegade Wishes - Mega Event Pt2",
+		"type": "Skirmish",
+		"dates": "Thursday 10/14 until Monday 10/18 at Noon (16.00 UTC)",
+		"startDate": "2021-10-14T16:00:00Z",
+		"endDate": "2021-10-18T16:00:00Z",
+		"highbonus": ["sisko_kalhyah_crew", "iden_crew", "archer_cowboy_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["sisko","archer","Innovator"]
+		}
+	},
+	{
+		"name": "The Dream Machine - Mega Event Pt3",
+		"type": "Galaxy",
+		"dates": "Thursday 10/21 until Monday 10/25 at Noon (16.00 UTC)",
+		"startDate": "2021-10-21T16:00:00Z",
+		"endDate": "2021-10-25T16:00:00Z",
+		"highbonus": ["zimmerman_ds9_crew", "barclay_firstcontact_crew", "lefler_robin_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["zimmerman","barclay","Innovator"]
+		}
+	},
+	{
+		"name": "The Surface of Dashed Hopes - Mega Event Pt4",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 10/28 until Monday 11/01 at Noon (16.00 UTC)",
+		"startDate": "2021-10-28T16:00:00Z",
+		"endDate": "2021-11-01T16:00:00Z",
+		"highbonus": ["rurigan_crew", "brother_rom_crew", "dsc_burnham_pistol_crew", "q_luau_crew"],
+		"smallbonus": {
+			"traits": ["rom","burnham","Innovator"]
+		}
+	},
+	{
+		"name": "Barren Heat (flashback)",
+		"type": "Skirmish",
+		"dates": "Thursday 11/04 until Monday 11/08 at Noon (16.00 UTC)",
+		"startDate": "2021-11-04T16:00:00Z",
+		"endDate": "2021-11-08T16:00:00Z",
+		"highbonus": ["kirk_wrathful_crew", "wesley_cadet_crew", "sisko_jodmos_crew"],
+		"smallbonus": {
+			"traits": ["kirk","sisko","wesley"]
+		}
+	},
+	{
+		"name": "Looted Boxes",
+		"type": "Faction/Galaxy Hybrid",
+		"dates": "Thursday 11/11 until Monday 11/15 at Noon (17.00 UTC)",
+		"startDate": "2021-11-11T17:00:00Z",
+		"endDate": "2021-11-15T17:00:00Z",
+		"highbonus": ["daimon_solok_crew", "vash_profiteer_crew", "chuft_captain_crew"],
+		"smallbonus": {
+			"traits": ["vash","Merchant"]
+		}
+	},
+	{
+		"name": "A Measure of Valor",
+		"type": "Faction/Skirmish Hybrid",
+		"dates": "Thursday 11/18 until Monday 11/22 at Noon (17.00 UTC)",
+		"startDate": "2021-11-18T17:00:00Z",
+		"endDate": "2021-11-22T17:00:00Z",
+		"highbonus": ["li_nalas_crew", "sam_lavelle_crew", "dsc_mudd_takeover_crew"],
+		"smallbonus": {
+			"traits": ["mudd","Maverick"]
+		}
+	},
+	{
+		"name": "Leisure Time (rerun)",
+		"type": "Galaxy",
+		"dates": "Thursday 11/25 until Monday 11/29 at Noon (17.00 UTC)",
+		"startDate": "2021-11-25T17:00:00Z",
+		"endDate": "2021-11-29T17:00:00Z",
+		"highbonus": ["obrien_racquetball_crew", "scott_claymore_crew", "emh_caddy_crew", "kira_niners_crew"],
+		"smallbonus": {
+			"traits": ["emh","kira","obrien"]
+		}
+	},
+	{
+		"name": "Scars of History - Mega Pt 1",
+		"type": "Faction",
+		"dates": "Thursday 12/02 until Monday 12/06 at Noon (17.00 UTC)",
+		"startDate": "2021-12-02T17:00:00Z",
+		"endDate": "2021-12-06T17:00:00Z",
+		"highbonus": ["kira_prophet_crew", "quarren_kyrian_crew", "archer_founder_crew", "sahil_lieutenant_crew"],
+		"smallbonus": {
+			"traits": ["kira","archer","Cultural Figure"]
+		}
+	},
+	{
+		"name": "Fragments of the Past - Mega Pt 2",
+		"type": "Galaxy",
+		"dates": "Thursday 12/09 until Monday 12/13 at Noon (17.00 UTC)",
+		"startDate": "2021-12-09T17:00:00Z",
+		"endDate": "2021-12-13T17:00:00Z",
+		"highbonus": ["ancient_humanoid_crew", "patar_crew", "data_friar_tuck_crew", "sahil_lieutenant_crew"],
+		"smallbonus": {
+			"traits": ["data","Cultural Figure"]
+		}
 	}
 ]

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The above ranks spell out (very) limited use, but the bulk of her value is in the gauntlet. A #4 ranked SCI proficiency and #2 SCI/ENG pair have earned her a reputation of reliability since the advent of the gauntlet, but back-to-back Gauntlet exclusives (Caretaker/Armus) have put a big dent in her value. Though she sports a healthy event count, her bases are overall poor and generally not worth adding stars to. Where she looks to recoup some of her value is in the arena. Twelve seconds is on the slow side nowadays, but 2700 combined crit rating and 1750 passive accuracy is a nice chunk of stats worth considering.
+Built on a cracked foundation of traits, the tower of Seven is leaning more than ever. Raw gauntlet power had her a dominant force there years ago, but multiple ENG/SCI exclusives with better numbers and traits have crowded her out to a large extent. Still a worthwhile one star proposition for that area of the game, be aware that most of her matchups involve her going up against solid gauntlet walls comprised of bigger, meaner crew.
+
+Stars two through five are not buying you much equity either. The Borg collection is likely to be the only one she ever calls home and those poor traits against hamstring her event work, never mind her poor bases. Certainly some pillars of good value exist with this OG Seven, but her power in most areas are too low for you to consider her anything but a niche option.

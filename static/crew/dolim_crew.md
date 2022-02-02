@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Dolim’s value used to be lost in the pit of despair, but he’s since picked up a vanity collection and a mega’s worth of events. There’s some wiggle room on future weekend bonuses from traits, but that’s mostly theoretical value at this point. Even though his daily power is abysmal in most corners, a 2019 dabo update added two ships to the pool to help him activate his slow, but powerful arena damage.
+Dude looks like a pineapple. What are you going to use a pineapple for? ... Malcom, return back to your post, please.
+
+Dolim's lifeline is his trait set. It's provided several event chances thus far, though you're looking at a very rough pair of bases that won't make the thaw list for fleshed out rosters. Beyond that, you're either sticking him on the end of your Shenzhou in the early game to go boom or hoping they expand his collection portfolio.

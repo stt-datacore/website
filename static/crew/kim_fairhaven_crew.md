@@ -3,9 +3,9 @@ name: Fair Haven Harry Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 19
-in_portal:
+bigbook_tier: 8
+events: 20
+in_portal: true
 date: 27/10/2020
 obtained: Pack
 mega: false

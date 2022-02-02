@@ -3,9 +3,9 @@ name: Platonian Chekov
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 3
-events: 14
-in_portal:
+bigbook_tier: 6
+events: 11
+in_portal: true
 date: 16/03/2021
 obtained: Pack
 mega: false

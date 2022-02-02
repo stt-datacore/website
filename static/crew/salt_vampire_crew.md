@@ -3,8 +3,8 @@ name: M-113 Creature
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
-events: 4
+bigbook_tier: 5
+events: 9
 in_portal: true
 date: 21/08/2017
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A statistically above average crew, but without long-term benefits to look forward to, her expensive build may not be worth it for all players. A laundry list of required items from five different factions and 3* components out the wazoo. Situationally useful instant damage in arena. Check to make sure she will be an upgrade for you before selecting or leveling her.
+Having aged out of non-shipboard daily use, M-113 will have to hit on a little more trait value to pay off her equip list of required items from five different factions and rare components out the wazoo.
+
+Her first star offers fine starter-grade arena damage while an eclectic trait list promises varying amounts of collection and event potential. No one would blame you for passing on Salty if you're cruising through the mid-game, but there's a chance to see an uptick in value here if her traits align.

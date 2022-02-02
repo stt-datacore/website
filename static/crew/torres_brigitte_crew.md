@@ -3,12 +3,12 @@ name: Brigitte Torres
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 2
-events: 23
-in_portal:
+bigbook_tier: 3
+events: 25
+in_portal: true
 date: 20/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

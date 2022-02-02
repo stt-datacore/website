@@ -3,9 +3,9 @@ name: Kelis
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 1
-in_portal:
+bigbook_tier: 6
+events: 2
+in_portal: true
 date: 05/11/2020
 obtained: Event
 mega: false

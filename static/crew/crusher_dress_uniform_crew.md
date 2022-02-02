@@ -3,8 +3,8 @@ name: Dress Uniform Beverly Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 17
+bigbook_tier: 9
+events: 19
 in_portal: true
 date: 31/12/2019
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Bev has never been (and likely will never be) an event player - even Whizz kid Wes almost doubles mom's event tally. But despite her likeliest traits already being tapped for megas, she does own competent bases and theoretical bridge crew status, making her a probable thaw candidate some time in the future when you least expect it. Thin collection value may grow a bit if WRG moves forward with expanding other collections down the line.
+Bev has never been (and likely will never be) a big event player - even Whizz kid Wes almost doubles mom's event tally. Still, she does own competent bases, a few non-HFS traits, and theoretical bridge crew status to make her a probable thaw candidate some time in the future when you least expect it. A collection in hand and two in the bush offers a little something to help boost the rest of your roster if you're not big on faction events.

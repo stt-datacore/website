@@ -3,17 +3,17 @@ name: Dr. Agnes Jurati
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 2
-events: 7
+bigbook_tier: 6
+events: 14
 in_portal: true
 date: 23/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-What do you picture when you hear the word Agnes? Someone old, someone not quite with the times, or perhaps someone cursed with a name that makes them seem like they're destined to live to 89 and have fifteen cats, am I right? Well, Ms. Jurati bucks that image quite handily, showing an excellent grasp of what the people want - and that's Cheesecake Seven.
+Agnes’ scorecard is green light, stop light. And if you’re looking at the raw numbers or aren’t utilizing super rares at all anymore, she might be all stop light.
 
-Now, I would never dream of saying that she can come close to that leviathan's impact, but it's a name worth mentioning, regardless. Scoring two stat boosting collections (that might be expanded soon, ala Diplomat), a unique skill order for super rare crew, and a half decent voyage score that she will outperform, she even has a relatively bankable event future thanks to her firmly established place on La Sirena.
+With a huge gap between raw voyage power and real world voyage utility, Jurati is a crew that new players would love to get their hands on. A strong skill set and seven anti-matter traits will have her making runs for you into the midgame and are a breath of fresh air in the face of so many monotonous skill sets. If your young roster can manage to snag multiple copies in quick succession, she will perform for you in that area.
 
-Will you freeze her? Eventually. But it'll be a long road, getting from here to there - and while you're traversing that road, this cute as a button, capable of murder (twice!), brilliantly unique card will be at your side long after you thought you'd need her.
+Everything else, however, is merely garnish. Multiple collections are always nice to snag on a single crew, just keep in mind that hundreds of super rares have already achieved that mark and her overall ceiling in that area remains average. A strong on-paper MED base rank is undercut by atrociously low chances for MED seating in many events. Jurati is a fine crew on balance, but one that’s primarily pointed at the early game and without as much flexibility or longevity as some others.

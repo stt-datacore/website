@@ -3,7 +3,7 @@ name: Jannar
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 6
 in_portal:
 date: 20/12/2017
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-One of the few voyage exclusive crew that will legitimately make you curse the RNG gods for depriving you of him for so long. Netting you +1 Vanity and +1 Diplomat would be good enough reason to take even a weak card, but Jannar may well find himself carving out quite a niche in your roster. He brings with him a very Xindi instant damage attack (100% base), and a lovely DIP/SCI/ENG skill set with great voyage power, even after 2019’s influx of excellent voyagers. His event chances are woeful, but as daily contributors go, you can’t ask for much more.
+Formerly the best daily use voyage exclusive, Jannar typically takes too long to fuse these days to make much of an impact. There's some niche arena use in the way of instant damage, but you're really just looking to stack stars for his collection value down the line. 
+
+A two-parter reward, it's not advisable for Jannar to be one of your purple citation targets, but if it's keeping you up at night, he's at least a crew who should never hit the portal.

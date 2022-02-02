@@ -3,7 +3,7 @@ name: Admiral Patrick
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 9
 in_portal: true
 date: 03/12/2019
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Is one of the finest admirals in the fleet a good choice for voyage rosters? That's a stupid question. Surprisingly our augmented savant here is a top choice for CMD/SCI voyages, that is if you don't have that field already well crewed. Although he beats the likes of Tenavik and FO Burnham for the top spot in the CMD/SCI leagues his overall usefulness is negated by a middling ship ability and less than useful event numbers. Two 1k base stats will get him work on shuttles should he not find room on an already crowded CMD/SCI voyage. Should you not have FO Burnham then Patrick is an adequate replacement, just don't expect him to pull too many event bonuses.
+Is one of the finest admirals in the fleet a good choice for your roster? That's a stupid question.
+
+Ok, that joke landed better on release, but Patrick is still a fine crew. Primarily a voyager, Pat will look to combat an ever-growing CMD/DIP/SCI skill set with reasonable overall power and a couple less common anti-matter traits.
+
+Those traits also encompass his spotty event work and, more tangibly, a collection count that should land somewhere between two and four - not bad for a crew who you can still use outside of cryo from time to time.

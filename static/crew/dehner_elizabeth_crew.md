@@ -3,8 +3,8 @@ name: Elizabeth Dehner
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 9
-events: 4
+bigbook_tier: 10
+events: 5
 in_portal: true
 date: 05/09/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Dehner Dehner Dehner Dehner Batman! I hate to be negative about such an iconic character, but there's not enough meat here for a compliment sandwich. Her MED base is about as deceiving as it can be. It sits behind three former Mega crew as well as the über popular Culber and is the least common Faction event skill. Her introductory weekend is one of two that she's been bonus-eligible for since the beginning of Timelines. Due to the rarity of MED primaries, she's far from the worst crew and will contribute on most rosters (especially new players), just don't chase her big base expecting it to carry much value.
+Dehner Dehner Dehner Dehner Batman! I hate to be negative about such an iconic character, but there's not enough meat here for a compliment sandwich.
+
+This was a crew we long warned players off of for a lack of both power and utility and just a few years after her release, she's essentially completely dead in the water. She's not a voyager, a shuttler, a gauntleteer, or an event crew. With her one-and-a-half viable traits, she does have collection "value", but should be one of the last possible crew you immortalize for that purpose. Feel free to @ me if the Telekinetic collection hits, because this really is a fun piece of Trek history worth nostalgizing about.

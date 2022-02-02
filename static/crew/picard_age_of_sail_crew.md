@@ -3,17 +3,17 @@ name: Age of Sail Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 22
-in_portal:
+bigbook_tier: 4
+events: 25
+in_portal: true
 date: 02/06/2020
 obtained: Pack
 mega: false
 published: true
 ---
 
-"I always knew this day would come." You may have to walk the 6-pack plank (You'll never make it...no one ever has) to snag this skipper, but as a crew, he's worth it.
+"I always knew this day would come." You may have had to walk the 6-pack plank when Picard debuted (You'll never make it...no one ever has), but now that he’s in the portal, is he still worth it?
 
-With but a single commendation to his name (meritorious vanity collection), you'll be hoisting Picard up the star counts to tap into his voyage potential (top score for his skill order) and base/event pairing. A DIP base triple digit points higher than any other Picard makes him an excellent option for shuttles, bonus or not.
+With a trio of commendations to his name (meritorious collections), you'll be hoisting Picard up the star counts to tap into all three of his offerings on voyages, shuttles, and collections. A DIP base almost two hundred points higher than any other Picard crew makes him a strong option for shuttles, bonus or not.
 
-Picard events have yet to experience their expected uptick in the wake of his namesake show's season 1 and his traits are less than exemplary, but Picard remains a fairly reliable and anticipated event name moving forward.
+Picard events didn’t explode in the wake of his namesake show, but he still collects bonuses at the clip you’d expect from a real life icon and some of the same traits that sprinkle in anti-matter value on voyages have popped for weekend event bonuses too. Even as his somewhat poor skill set ages out of voyages, his event work should keep him a relevant name on any roster.

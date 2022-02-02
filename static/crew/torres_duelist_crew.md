@@ -3,8 +3,8 @@ name: Duelist Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 24
+bigbook_tier: 8
+events: 28
 in_portal: true
 date: 17/11/2016
 obtained: Post-Launch

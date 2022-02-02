@@ -3,8 +3,8 @@ name: Captain Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 18
+bigbook_tier: 9
+events: 23
 in_portal: true
 date: 01/01/2016
 obtained: Launch

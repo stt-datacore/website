@@ -4,14 +4,20 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 1
-events: 28
+events: 33
 in_portal: true
 date: 01/01/2016
 obtained: Launch
-mega: true
+mega: false
 published: true
 ---
 
-Phlox is a mirror MED monster. Great at one star for gauntlet and fully fused for voyages and shuttles. His voyage MED lead over the pack has been shaved away at, but still years later no one can come close. Combined with a rare MED/SEC stack, he earns voyage seating past 8-9 hours. Three ranked gauntlet pairs among all crew including the #1 MED/SEC roll make him perhaps the best super rare crew available in that area.
+Mirror Phlox is a tier one crew and if that ever changes, we’ll change the rank sorting to start with tier two.
 
-A whopping SIX different traits have previously snagged event bonuses and he's been featured event crew twice. He boasts triple collection spots and he's even one of the very few instant damage arena crew to fit the MED slot. Undeniably great in every facet of the game and my choice for best Super Rare.
+The best two-skill crew ever released in Timelines, Phlox is, or has been, potent in every area of the game. A brief aside for the sake of thoroughness for a crew who deserves it; a MED base now outside the top ten won’t find much MED seating in daily shuttles. And although once a surprisingly effective voyager thanks to his outrageous voyage MED and rare skill stack, we can’t sanction clinging to his poor overall power any longer.
+
+That being said, he’s still rangy without those attributes. A whopping six different traits have popped up as weekend event bonuses and they’ve also provided him an above average collection profile. He’s also one of the few MED crew with instant damage, which is handy considering his ship passives are the best out of any such crew.
+
+The lede, buried here in paragraph four, is his gauntlet ability. The Big Book’s top rated super rare gauntleteer gets it done with just two skills. The number two MED proficiency in the game, rare skill pair which offer no walls of overpowered gauntlet exclusives, and healthy number of elevated crit gauntlets all combine to make him a more effective option than his drawbacks would suggest. 
+
+Making a case for the most well-rounded super rare in the game, Phlox is an automatic behold choice, especially early on when he can single-handedly establish your gauntlet lineup and start to collect wins for your squad.

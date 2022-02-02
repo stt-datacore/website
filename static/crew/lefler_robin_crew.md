@@ -3,8 +3,8 @@ name: Mission Specialist Lefler
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 4
+bigbook_tier: 8
+events: 8
 in_portal: true
 date: 11/02/2020
 obtained: Pack
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Lefler's trait album is littered with singles that are just too crowded to get any event airtime down the line, which handicaps a respectable ENG base. The lone exception, Innovator, did pop in 2019, though it likely provides better value for its collection spot. In the arena, her weak active ability has her behind too many other options to register on the value radar and undercuts an interesting and otherwise useful initialization time.
+This is what happens to promising young careers after meeting up with Wesley Crusher. Lefler is, in essence, a series of traits at this point in time. And although all seven of hers show up as anti-matter traits, only four have the option to flourish as event and collection markers.
 
-The base and voyage numbers are there in a vacuum, but in the tree ring slice of our current timeline, her near clone, Safecracker Nog, was just available from an event, while you'd be looking to fuse Lefler from a 6-pack. A character-driven crew who will hurt for impact opportunities beyond the early/mid-game.
+Already a multi-collection piece, late game players will happily snag copies through beholds and voyages when possible, but her ceiling in that area isn't massive. Between relatively large bonus pools for possible events and a primary skill that isn't always favored for shuttle seating, you're not likely to get much "real" use out of Lefler, but she's worth some amount of capital in low end beholds.

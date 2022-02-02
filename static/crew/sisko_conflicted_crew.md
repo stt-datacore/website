@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 16
+events: 22
 in_portal: true
 date: 19/02/2019
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Players conflicted about whether or not to acquire this crew better be facing some poor options next to Ben. If the cost of two middling gauntlet pairs is a pair of horrible bases, then that's a price I can't live with. With High Roller Sisko dominating the event competition and even two other variants above his SEC primary, Conflicted Sisko can't seem to decide where he wants to contribute. An ENG tertiary will help soften the descent of his voyage power, but this is more or less a character-driven card whose statistical relevance is the result of natural power creep.
+The Big Book will take the L for underselling Sisko's gauntlet ability for some time (goddamn interns). His top ten SEC roll does step into a very competitive pair when coupled with CMD, but an ENG kicker, an abundance of elevated crit gauntlets, and strong overall proficiency makes him a contender there and worthwhile one-star behold option.
+
+Beyond that, there should be ample event opportunities for this main cast captain, including a handful of theoretically eventable traits. Those same traits promise to make him a collection horse as the game's lifespan approaches infinity, though it may take a while for the wheel of fortune to spin through all of them.

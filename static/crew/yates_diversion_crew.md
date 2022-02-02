@@ -3,15 +3,17 @@ name: Diversion Yates
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 11
 in_portal: true
 date: 09/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Another day, another DIP crew you don't need. It's no longer stunning to see 1200+ bases, especially for the diplomacy skill, which you'll probably notice is becoming big enough to shove several entire MED crew rosters inside. Fun, huh? A day late and a dollar short for events too (Pilot), Yates' best (only?) chance for future weekend impact would seem to be wielding a top five DIP base for a theoretical costumed mega - and that's a lot of maybes.
+Typically I, unseen author #6, like to iterate on previous crew notes and brush up things where needed, but with Yates I had to tear up the script. 
 
-In addition to a cookie cutter skill set and few useful traits, she lacks any pop or notable attributes, save for a chunk of shipboard crit which is usable, but replaceable. If you're okay with "stats good enough for daily use" crew, chase the ones with interesting skill sets and save your CMD/DIP/SEC hunting for the truly special cards.
+With daily use a fading memory, we'll risk being somewhat reductive in saying that the Costumed, Pilot, and Civilian traits encompass what kind of value you can expect to glean from Yates moving forward. As they hit on various events and collections, she'll become varying levels of attractive across different rosters.
+
+But the lede, here in paragraph three as is the custom, is her spot in the Bada-Bing collection. You'll want to read up on Scapegoat O'Brien before deciding on Yates as the two are forever linked in value. As of this writing, the 🐐 is a hell of a daily use crew and worth completing for their collection. As long as he remains so, you can consider Yates' spot there as something like an equivalent 1/5/10 stat-booster if you have enough capital to see their immortalizations through.

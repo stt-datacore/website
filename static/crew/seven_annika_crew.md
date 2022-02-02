@@ -3,15 +3,15 @@ name: Annika Hansen Seven
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 7
 events: 14
 in_portal: true
 date: 05/02/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Imagine the previous global gift Seven in Silver grew a third leg and became voyage-capable. Terrible and graphic analogy aside, their shuttle work is roughly similar. But despite a very handy voyage ability, MMMBop sensation Annika may miss out on some Borg trait goodness down the line, courtesy of Star Trek: Picard.
+Annika was, at launch, one of just two voyage-capable Seven (of Nine) variants. With time having ravaged her metrics since then, the former MMMBop sensation is on thin ice elsewhere. 
 
-Mid-range (for a newer crew) in the areas of base, voyage, and events, Ms. Hansen is a fine pickup for those looking to acquire her for purposes of character or art, but lacks a top-end metric or unique offering.
+Events are something of a (lumpy) cushion for her, although between lacking in traits and with more than one dud year on her résumé, she's more in the pleasant surprise territory of weekend shuttle names. A 'win with your favorites' level of arena ability is there for fans who want her as a leadoff option on ships, but those without a sentimental attachment are advised to look elsewhere for just about everything Annika offers.

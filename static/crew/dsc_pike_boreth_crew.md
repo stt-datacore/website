@@ -3,17 +3,15 @@ name: Boreth Pike
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 19
-in_portal:
+bigbook_tier: 7
+events: 20
+in_portal: true
 date: 15/10/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-At first impression, this particular Pike may seem like a Bore-th, but there's actually quite a lot of long term value to be found here if you take the time to inspect that point of light - fitting, for a man who's just seen his future play out in front of him.
+From a moment in Discovery that even TOS-ers can appreciate, Pike fittingly has signed up for the long haul. Besides some new player utility on ships, provided you can acquire enough stars, he points mainly towards late game.
 
-A top ten CMD base is almost certain to find use, between potential Discovery, Explorer, and Strange New Worlds-boosted Pike events. And double collections, including the all-powerful Diplomat, mean he'll be pulling weight even if you never pull him out of the freezer again.
-
-He'll also provide good early game Arena attack boosts to those of you who haven't had the luck to stumble into a fully fused legendary or his Disco contemporaries, Sarek and Mirror Burnham. It's rare for a card to straddle the short term to the endgame in this way, but they do happen, and you should take them where you can.
+The Disco storm seems to have passed, leaving a quiet 2020/21 in its wake for most Pike variants, but Strange New Worlds could be his salvation, even if only for the bevy of variant events we’re likely to see. Having not gotten much event help from traits either, that can only improve in the future and his multi-collection status should slowly tick upwards. Boreth is not a do-it-all savior in the early game, but can be a fine tool to have at your disposal if you’re at the point where you don’t ask for much from your super rares on a daily basis.

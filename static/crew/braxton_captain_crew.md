@@ -3,7 +3,7 @@ name: Captain Braxton
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 7
 in_portal: true
 date: 16/01/2019
@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-Of course his numbers are great, he's from the future! Braxton owns the #1 overall voyager and voyage CMD spots (makes sense, it's not like his crew mutinied and threw him in jail). As of this writing, his lead over voyager #25 is the same gap between #25 and #160. If you're a stats queen, as the kids say, then Braxton's the one you want. His voyage work will hog the attention and rightfully so, but he's not too shabby elsewhere either.
+Of course his numbers are powerful, he's from the future! Bruce McGill’s Braxton may go down as the game’s greatest Undisputed Heavyweight Voyage Champion of all time thanks to his three year reign at the top of the charts
 
-In the gauntlet, his lone ranked pair comes in ranked #1 for ENG/CMD. Be warned, that skill combo is sprinkled with super rare crew and its scoring potential is lower in general, but #1 is #1. He can rotate into your team with two good-not-great single rolls for CMD or ENG gauntlets.
+Having his spot there foiled by Fencing Picard has stolen about ninety percent of his luster in the eyes of many, but that’s an overreaction. Still with monstrous power and a strong anti-matter trait set, his work on voyages is safe for several more years, even if he’s not making more runs than the rest of your roster combined.
 
-There was enough meat on the bone after factoring out Braxton's rather robust proficiency numbers to leave him with a worthwhile CMD base. With such poor event chances, you may want one of the many Discovery or Main Cast characters if you're looking to add a CMD base in particular, but as just another attribute for a sterling crew it's a nice addition and should provide handy support for daily shuttles.
+The (only) other area of interest here is in the gauntlet where again Braxton has been brutalized by a Picard. The former owner of the top CMD/ENG gauntlet pair is now second place to EV Suit Picard and so Braxton’s lack of 45%+ gauntlet sets stings a little more. Still an occasionally viable dice roller when used with elevated crit, this offering is shifting more toward something for newer players rather than a 1B to his Voyage main course.
+
+Ranging from mediocre to poor elsewhere, the two shots leveled at his longtime #1 ranks have certainly hurt more than any other card losing a single rank in some other area, but Braxton doesn’t have either foot or even a toe in the grave yet. Behold, retrieve, cite…all options remain in play for this top voyage cog who has years left to benefit your team.

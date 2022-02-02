@@ -3,13 +3,15 @@ name: Obrist
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 10
 in_portal: true
 date: 06/06/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-I’ll take “Decent Non-Event Crew” for $800, Alex. Obrist may be champion of Quiz Bowl, but once his Mega-moment passed, so did a lot of his value to veteran players. Boasting mostly OK voyage power and a few niche traits, Obrist offers nothing you can't find elsewhere, but would help out early rosters if you can collect multiple stars in short order.
+I’ll take “Trait collection dart throws” for $400, Alex. Obrist may be the champion of Quiz Bowl, but the real lightning round lies in the eye of the Toyota Trait-a-thon hurricane booth (The trick is to lick the palms of your hands so the cash sticks to you).
+
+Without any guaranteed work aside from early game voyage potential for rosters who can snag multiple stars at once, most players will just be keeping their eye on his trait list to see how much value to place on a crew who is otherwise a low end behold dice roll.

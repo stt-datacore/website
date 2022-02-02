@@ -3,8 +3,8 @@ name: C.O.P. Founder Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 9
-events: 14
+bigbook_tier: 8
+events: 18
 in_portal: true
 date: 07/11/2017
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Nobody's idea of a powerhouse, but +1 Inspiring and an event bonus per year is worth taking over plenty of other super rare choices.
+As forgettable as the episode he comes from (or maybe we just wish it was forgettable), Archer is a low floor, low ceiling collection stuffer who you'll thaw once or twice a year thanks to his shuttle-friendly skill set.

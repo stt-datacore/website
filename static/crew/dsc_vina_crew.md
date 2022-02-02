@@ -3,13 +3,15 @@ name: Pining Vina
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 18
 in_portal: true
 date: 24/10/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Vina adorably bests New Eden Pike for the top Disco DIP spot and continues the long held tradition of immediately power creeping crew you just worked/paid for. The raw numbers are there in more than one area, but if your name is Devinoni and you're looking for an edge, this crew doesn't quite fit the bill. Despite offering little unique, Vina's stats are significant enough to garner shuttle and voyage work on any roster and a splash of MED is something we rarely pass on, especially if you weren't playing during the former MED/DIP megas. She may shrivel up if Discovery events do too, but as of now she's a strong voyager with bursts of weekend impact, and she's one of the better Diplomats to immortalise if you're looking for someone who won't give you citation remorse.
+Vina's raw numbers are a few years old now, so if your name is Devinoni and you're looking for an edge, this crew doesn't quite fit the bill. A low-end voyage option, Vina also predictably had her utility torpedoed when Discovery megas ended.
+
+Although she would still fit as a voyage/shuttle option in the right context, her prospective collection traits are rather bloated and it may take her a while to reach her maximum potential there. Early adopters are probably fine with her trajectory thus far, but we advise caution on a ground-up investment at this point.

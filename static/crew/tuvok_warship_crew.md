@@ -3,13 +3,15 @@ name: Warship Tuvok
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 27
+bigbook_tier: 9
+events: 28
 in_portal: true
 date: 12/04/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Thanks to a slew of traits including two megas, Warship has hit twenty event bonuses which gives him plenty of chances to anchor your shuttles or even sneak in a Galaxy crafting node here and there. His SEC rank may not be the catbird seat, but it's closer to #1 than it would be for any other skill and SEC is the most common Faction seat; a good place to sit his #1 Vulcan SEC. The last Dabo Wheel update gave players a couple more Position options to activate Tuvok as a damage option on ships. His ability comes online a hair slow, but still packs enough punch and is certainly thematic.
+This Tuvok is as you might expect from a 'middle aged' 2-skiller; reliant on traits for relevance. With Tim Russ getting a shamefully small amount of love from WRG, his traits have done an admirable job of keeping Warship's pair of shuttle friendly bases relevant on the weekend. 
+
+They also give him a reasonable collection future, though only one has born fruit in that regard as of this writing. With a scoop of arena damage hidden behind a trigger as a one star offering, Warship is a fine low end behold dart throw, but may be subject to stretches of irrelevance depending on the way the trait winds blow.

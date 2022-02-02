@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-F. Murray Abraham's hateable perS'ona (still) owns the top ENG base in the game, but contributes next to nothing in the arena, gauntlet, or collections tab. He's below average on voyages, even considering a plus skill set. A handful of traits give him some wiggle room on possible future weekend bonuses, though in all likelihood, he'll be holding down a Faction seat for events with thin bonus pools. That's still a useful job, but on any given week he'll be competing with over a hundred crew who will be a better choice for those uncommon ENG slots when bonus.
+F. Murray Abraham's hateable perS'ona (still) owns the top ENG base in the game, but contributes next to nothing in the arena, gauntlet, or voyage tabs. A handful of traits give him some wiggle room on possible future weekend bonuses, though he doesn't always need them as he's adept at holding down a Faction seat for events with thin bonus pools. That can be a useful job, but ENG doesn't enjoy the ubiquitous shuttle seating that Captain Tribble or Professor Sato do.
 
-All this is not to say that Ru'afo is a bad card. Just be aware that the stories you hear about him will come from players who obtained him fully fused out of the box from his mega event. If you have The Traveler on your roster and are happy with the investment, that's the sort of future trajectory you can expect from Ru'afo.
+All this is not to say that Ru'afo is a bad card. Just be aware that he's not high utility and has had years to build a reputation as a former mega crew. His collection value is adequate to help you break any ties if you're not sure about going in on 'shuttle crew', but his elite base and safety cushion collections still make him a fine crew to behold.

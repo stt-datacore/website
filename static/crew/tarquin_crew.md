@@ -3,7 +3,7 @@ name: Tarquin
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 4
 in_portal: true
 date: 09/10/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His spot in the Delphic Expanse collection may be the only intriguing attribute about this crew. He lacks event chances or raw statistical power, offering merely a chunk of arena crit bonus until you find stronger and faster options.
+Ms. Cleo is heating up in the collections department, which is good for him, because there's not much room for him to maneuver elsewhere. His voyage power is shot and those big trait pools that make juicy pack sales candidate for WRG's collection push may prove mostly too large to be eventable. His Path of Exile in the arena may prove worthwhile to innovators who have a personal vendetta against Ardra and want some juicy crit values, though he's not much more than a curiosity there.

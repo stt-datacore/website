@@ -3,8 +3,8 @@ name: Lt. Commander La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 22
+bigbook_tier: 10
+events: 26
 in_portal: true
 date: 01/01/2016
 obtained: Launch

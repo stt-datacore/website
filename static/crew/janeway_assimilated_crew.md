@@ -3,13 +3,13 @@ name: Assimilated Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 28
+bigbook_tier: 8
+events: 22
 in_portal: true
 date: 29/05/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Her event history has been up and down, but the voyage work is simply down. SCI/CMD has rocketed up the charts in representation as her numbers have plummeted, leaving her with mop-up duty if your base-ier crew like First Officer Burnham or Timelord Tenavik are flying shuttles. There's still plenty to like about the event potential of Borg meets Captain, but with an arena ability that's a hair slow and a spot in the Borg collection which no longer requires a gold crew to complete, Janeway will quickly go from well-rounded to shuttle pilot as your roster matures.
+No longer a voyager, Borgway can be thought of as a 2-skiller, except where shuttle flexibility is concerned. That being said, she does excel at piloting on the weekends. Two huge spike years of seven events for Janeway variants have pumped up an event tally that is thick with Faction action. That sort of (re)usability makes her even more attractive as a collection option as those stars won't go to waste.

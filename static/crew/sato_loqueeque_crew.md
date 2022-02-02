@@ -4,12 +4,14 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 9
-events: 17
+events: 18
 in_portal: true
 date: 22/03/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Professor Sato's much heralded arrival and domination of the DIP scene put a big dent in the vast majority of Loque'eque's appeal. Sato's events aren't frequent enough to carry any cards to value on their own and Loque'eque's DIP is not quite high enough to be special. She'll still perform fine for that once a year event, but is little more than a part-time daily shuttle pilot.
+Lokek's event history is baffling longer than one would expect and while it seems sensible to postulate that another survivalist or Enterprise mega is unlikely, that would be mostly guesswork, as the dark art of event forecasting tends to be.
+
+Somewhat more tangible are her set of collections, including a vanity. There are certainly worse collection/event combos out there, but if your aim is to acquire crew you can use, this Sato is buried behind hundreds of others.

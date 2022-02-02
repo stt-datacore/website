@@ -3,7 +3,7 @@ name: Rakal Troi
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 5
 events: 20
 in_portal: true
 date: 01/01/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A well-rounded crew, but deficient numbers in every phase of daily play. Far more useful on voyages than her total indicates - she covers two underrepresented skill sets; MED/CMD and MED/SEC, but ends up still being replaceable, even by 1/5s. Troi + Romulan events, but with bases topping out at 525, you may stop unfreezing her at some point. Monstrous passive arena EV with solid 300% instant damage means you probably already see her there fairly often. A murderer's row of faction items is required to equip her, but she pays off the investment more often than not.
+With deficient power in most areas of play, Rakal at least makes for a passable starter crew, assuming the cost to equip can be met. Skill set potential for voyages and gauntlet will fade fast as your roster grows, but MED/CMD is a hard combo to stack and will lessen the competition she faces in the gauntlet where you would only bring her along with elevated crit.
+
+Troi's event tally is pretty immaterial with such putrid bases in tow. If you've gotten to the point of freezing this crew, you probably have better options to handle such duty, even those without a bonus. Lastly, while her collection future is unknown, having enough non-HFS traits to start a family band is a good launching pad and at least leaves the door open on the possibility of value expansion in that area.

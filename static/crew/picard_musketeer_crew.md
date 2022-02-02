@@ -3,13 +3,15 @@ name: Musketeer Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 22
+bigbook_tier: 7
+events: 26
 in_portal: true
 date: 25/10/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-This holographic hero is a fair facsimile of fellow variant Augment Picard, simply trading off some base power for better voyage and gauntlet numbers. If you have one, you probably don't need the other. Inspiring is an ironic collection choice for Musketeer as his skill set and stats are anything but. He'll still perform fine for a few events per year, but if you're looking for a daily workhouse, you can find better without too much effort. The exceptions may be for new players - on ships he has some minor Skirmish potential and in the gauntlet where he owns a #3 ranked pair, even if it is dwarfed by fan favorites Locutus and Gowron.
+This holographic hero is a fair facsimile of fellow variant Augment Picard, simply trading off some base power for better voyage and gauntlet numbers. The latter of which may be his only point of entry into daily use - his metrics there won't blow anyone away, but acceptable proficiencies have a number of elevated crit gauntlets to allow him spot duty if your roster isn't yet totally stocked.
+
+Beyond that it's the typical event/collection pairing we see more and more of from older crew. The Picard event train runs on time (unlike Deutsche Bahn. Fuck Deutsche Bahn) and the majority of his traits are still eventable enough. Those same traits show reasonable collection promise and will help keep his desirability afloat as he descends to pure (perhaps freezable) event piece.

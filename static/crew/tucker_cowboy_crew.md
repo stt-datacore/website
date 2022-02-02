@@ -3,7 +3,7 @@ name: North Star Tucker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 18
 in_portal: true
 date: 12/12/2016
@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-NS Tucker is a blend of useful attributes and ineffective numbers. His best rank to be found, a top five ENG proficiency, translates into a top five ENG/DIP gauntlet pair behind some rather uncommon crew and at least gives his one bullet a chance to take down The Caretaker. Tucker's skill set used to command more use on voyages, but recent additions like mega Etana Jol have stolen some work from him. Between that and a pitiful voyage score, his days as a voyager are likely behind him on most rosters.
+NS Tucker is a blend of interesting attributes and ineffective numbers. His vaguely top ten ENG and ENG/DIP rolls ultimately result in him being clowned on by The Red Angel, as most crew are. However, a Simpsons handful of 45% crit sets give him enough power to bring along occasionally and he is able to match the featured skill in three of the four instances.
 
-Trip has only recently hit a half dozen events, but NS Tucker has exactly the kind of traits that set the wheels turning in our mind. Marksman, Gambler? Maybe? Even if he'd be firmly in the shuttle filler section, it's more than some cards can hope for. A surprising amount of Tucker's value comes from his two exclusive collections. He's a must for Western, and while there are considerably better options now available for Jury Rigger, we don't always have the luxury of choice. Ask me about the 1701 Sisko I have sitting at 4/5 sometime . . .
+Formerly a voyager (when we walked to school in the snow uphill both ways), Tucker shouldn't be used in that capacity any longer despite his myriad anti-matter traits. But because that skill set is generally low power overall, it's a good combo to keep tucked away in the back of your brain for future releases.
+
+The last stop on this wagon train to the lower tiers is naturally the event/collection combo. Trip's bases are flat out bad, but he does get just enough event love from WRG and has a number of traits that could and should provide many more bonuses. Similarly, he's already a good collection value even if we ignore his vanity and a few traits waiting in the wings will keep him a buoyant, if not overall powerful behold option.

@@ -4,14 +4,18 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 3
-events: 15
+events: 18
 in_portal: true
 date: 12/12/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Card art showing Scott Bakula's frontula (someone fan me) is not even the most impressive part of this crew. Let's start with that great base DIP rank. Keep in mind that it's still miles behind #1 Sato, but he'll pip any other option and though his event chances are merely average, DIP is a common enough Faction seat for him to pick up non-bonus work from time to time and have his own private chair for daily shuttles. 
+Card art showing Scott Bakula's frontula (someone fan me) comes from the episode where Archer's a total dick. Haha, like that narrows it down.
 
-On voyages, he's a fantastic counterpart to former megas Cornwell/Bashir and even maintains a strong MED/CMD rank despite being DIP primary. In the gauntlet, though far from dominant, he owns a top three ranked pair and may make your starting five should the traits align in his favor. Hitting on several areas with good numbers, Archer is an elite daily use crew who we can only hope has a sharp uptick in events.
+Still a fine daily use option, Humbled is viable in the gauntlet, on shuttles, and on voyages. His formerly #2 DIP base is competitive enough with everyone not named Sato or Saru and should find some daily use in between his streaky event bonuses.
+
+One of the best skill sets for a DIP primary helps out on voyages as well. His half dozen anti-matter traits and splash of MED/CMD should have him making a handful of different combos there for a while longer. And that same rare skill stack pans out in the gauntlet where he's a mid-level option who new players especially will appreciate.
+
+One would assume that his handful of viable traits will catch a collection or three over time and help offset any stat rank droopage to keep him in contention as a strong behold choice.

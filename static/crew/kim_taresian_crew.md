@@ -3,13 +3,15 @@ name: Taresian Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 19
+bigbook_tier: 7
+events: 21
 in_portal: true
 date: 25/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-We had a scare when Captain Kim made us think that his character might have decent representation going forward, but DB set things right and sent Kim back to the shadow realm. With the card art being his most menacing attribute and a flaccid skill set, this is a crew you’ll forget about until you search your cryo vault the week before an event. Kim’s arena evasion is his only particularly notable attribute, but with six second burst crew lurking and a growing number of Kraytons cruising around, his eight second initialization may be too slow for the Admiral division moving forward.
+When your character washes up on the beach in an RPG and you grab a rusty pipe to go fight some crabs.
+
+There are three points of interest here: arena evasion for the early game, fairly consistent events to highlight mediocre bases, and a few non-HFS traits that might hit the collection lotto at some point down the line. As of this writing he's one of the easier super rares to ignore, but has a path to value should his traits become featured material in the future.

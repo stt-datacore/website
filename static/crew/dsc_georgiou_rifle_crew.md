@@ -3,8 +3,8 @@ name: Armed Philippa Georgiou
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 23
+bigbook_tier: 6
+events: 22
 in_portal: true
 date: 14/11/2017
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Pretty favorable crew makeup for the CMD/DIP/SEC skill set, or one with a thin trait set. Georgiou has probably outlived her voyage usefulness in most situations thanks to a particularly poor skill set, but with double collections and a monstrous event clip (and event future), she'll do most of her heavy lifting post-cryo.
+It's rarely clearer than in a case like this where one can definitively say that a crew has peaked. Georgie will never recapture the voyage power that once upon a time offset her skill set, Discovery events are frozen in carbonite, and she has no more untapped traits for future collections.
+
+That being said, she's still viable as a collection target and occasional thaw. Georgiou chugs along with a modest event clip while Inspiring and Diplomat have at least some amount of event potential moving forward.

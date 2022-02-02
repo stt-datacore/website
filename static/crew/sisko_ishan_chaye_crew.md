@@ -3,8 +3,8 @@ name: Ishan Chaye Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 2
-events: 15
+bigbook_tier: 4
+events: 17
 in_portal: true
 date: 01/01/2020
 obtained: Event

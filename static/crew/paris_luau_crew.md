@@ -3,9 +3,9 @@ name: Luau Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 14
-in_portal:
+bigbook_tier: 5
+events: 16
+in_portal: true
 date: 05/01/2021
 obtained: Giveaway
 mega: false

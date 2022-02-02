@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 17
+events: 22
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,6 +12,10 @@ mega: false
 published: true
 ---
 
-It's not fair to say Crell isn't event crew. All five of his traits have been event bonuses that have combined for a respectable total and his MED base for those traits rank pretty highly. That combination of event frequency and efficacy is more potent than many supposed "Bridge crew". Though known as a gauntleteer, his relative power there has dipped tremendously and the best of his three ranked pairs is rated at only 72% of the #1 crew. He still has some value when his traits align, but he's much more of a throw-in as your fifth crew than a powerhouse.
+Crell has been unfairly lumped into "not bridge crew" for a long time, but he just has those traits that WRG seems to like and has produced the same as a mid-level main cast name off the back of them. His MED primary and weak bases may not have him on the first wave of shuttles, but he hasn't hurt for opportunity.
 
-In the arena, his massive crit values activate quickly enough to compliment several damage crew and he's fine as a slightly slower Ardra if you'd like to free her crew spot. The base and voyage ranks may be reaching depressing territory, but his versatility is still there and makes for a nice one star (or more) starter crew on newer rosters.
+If you're the kind of player who likes to win with their favorites, then one supposes that Moset's event-ability extends to skirmishes as well. A hair slower than the most popular options, he's a fine pivot from Ardra who, if nothing else, would allow you to free up a crew slot.
+
+Offering fine collection value, Moset's floor of three, ceiling of five or six is bankable equity that should keep him floating above the bottom rungs of crew for a long time. And yet another angle of contribution especially relevant for new players; gauntlet capability at one star with a reasonable number of elevated crit gauntlets and a couple of skill pairs which aren't (yet) dominated by walls of overpowered exclusive crew.
+
+Moset will catch flak for his lack of power which you will certainly feel in many situations, but he offers too much utility to be written off for rosters of any level.

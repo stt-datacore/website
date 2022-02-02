@@ -3,9 +3,9 @@ name: Lt. Commander Dexter Remmick
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 5
 events: 3
-in_portal:
+in_portal: true
 date: 21/01/2021
 obtained: Event
 mega: false

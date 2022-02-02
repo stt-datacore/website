@@ -3,8 +3,8 @@ name: Astrosciences Sulu
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
-events: 15
+bigbook_tier: 9
+events: 16
 in_portal: true
 date: 07/09/2018
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Astro showed up just in time for Sulu's first two events and the Pilot mega. If he helped carry you to victory those weeks, you might have a rosy picture of him in mind, but the numbers aren't as flattering. Sulu's historically been an event dud and though Astro's top two bases both rank #1 for the character, they're not good enough for daily use otherwise. His voyage numbers sit near the bottom of most metrics and although he has a top 15 SCI proficiency, the ranks above him are littered with gauntlet regulars who will outperform him. With all that said, he's actually the second best Sulu out there, but that only serves to highlight how little DB has given the character to work with.
+Long time players might recall Astro's hilarious introduction to the game via a 10,000 dil buy-in weekday pack. He's been disappointing players who paid that amount every day since.
+
+A respectable SCI proficiency might trick players into taking him for the gauntlet and while he can edge out a few wins at 45% crit, his other proficiencies are miniscule and the CMD/DIP/SCI skill set has an avalanche of competition. A couple events per year and average collection value for a legendary crew finish off the outline for what is one in a long line of disappointing Sulu variants.

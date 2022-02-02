@@ -3,8 +3,8 @@ name: Abraham Lincoln
 rarity: 5
 series:
 memory_alpha:
-bigbook_tier: 9
-events: 1
+bigbook_tier: 7
+events: 6
 in_portal: true
 date: 23/05/2016
 obtained: Pack

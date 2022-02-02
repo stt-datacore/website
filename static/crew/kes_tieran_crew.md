@@ -3,8 +3,8 @@ name: Tieran Possessed Kes
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 10
+bigbook_tier: 7
+events: 9
 in_portal: true
 date: 17/05/2018
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-I had to zoom out the spreadsheet just to find her competition for base CMD; you may even notice a few 5/5s below her whose primary she bests. Surprisingly, she's not the top CMD voyager, but having the only secondary-or-better MED in the top 80 CMD means she fills that particular niche wonderfully with solid totals to boot. Her daily work is among the best in the game, but she won’t catch regular events and boasts no collections which dampens her desirability a bit. Thankfully, Kes’ lone event feature was alongside the popular Killy in a faction event which would make for a delightful rerun.
+WRG has long been inconsistent with stat creep. In one area they may blow the roof of and in others crew can coast for years atop the rankings. So it is with Kes who has enjoyed years as the top super rare CMD base and may hold that spot for years more. Without 'bridge crew' status, that may not seem the most lucrative metric to dominate in, but the game is in a different place now.
+
+Kes' fascinating trait set has more or less been a dud as of this writing, but with a floor of, well, the floor and a ceiling of six+ collections and multi-mega shuttle dominatrix, Warlord Kes is one of the best low-cost dice rolls you can take.

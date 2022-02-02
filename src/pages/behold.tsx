@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Header, Dropdown, Grid, Rating, Divider, Form } from 'semantic-ui-react';
+import { Header, Dropdown, Grid, Rating, Divider, Form, Popup, Label } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import marked from 'marked';
 
 import Layout from '../components/layout';
 import CommonCrewData from '../components/commoncrewdata';
+
+import { getStoredItem } from '../utils/storage';
 
 type BeholdsPageProps = {
 	location: {
@@ -18,6 +20,7 @@ type BeholdsPageState = {
 	allcrew: any[];
 	entries: any[];
 	minRarity: any;
+	roster: any[];
 };
 
 const rarityOptions = [
@@ -35,13 +38,14 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		currentSelectedItems: [],
 		allcrew: [],
 		entries: [],
-		minRarity: null
+		minRarity: null,
+		roster: []
 	};
 
 	async componentDidMount() {
+		const playerData = getStoredItem('tools/playerData', undefined);
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
-
 		let peopleList = [];
 		allcrew.forEach(crew => {
 			peopleList.push({
@@ -64,6 +68,14 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 				this.setState({ minRarity: 4 });
 			}
 		});
+
+		if (playerData) {
+			let roster = playerData.player.character.crew;
+			roster = roster.concat(playerData.player.character.stored_immortals);
+			roster = roster.map(c1 => allcrew.find(c2 => c1.symbol == c2.symbol))
+										 .filter(c => c != undefined);
+			this.setState({ roster });
+		}
 	}
 
 	render() {
@@ -121,7 +133,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 									<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
 								</Link>
 							</Header>
-							<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} />
+							<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} roster={this.state.roster}/>
 							{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown }} />}
 						</Grid.Column>
 					))}

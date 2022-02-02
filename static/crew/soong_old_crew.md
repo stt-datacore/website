@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 10
-events: 9
+events: 14
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Don't let the skills fool you; his usage is among the worst in the game. ENG/SCI looks helpful for new players, but for voyages he's within 100 points of super rare crew despite a star advantage and his bases don't begin to beat out solid 4/4s until he has four stars himself. Soong's two event features, should they be re-run, will serve to help you win more copies of a bad card. His gauntlet pair has vanished from the ranks and leaves behind only a month or two of usability for brand new accounts.
+Noted turd pile Soong has been a punchline for years. That's it. That's his note.
+
+Ok, ok...there's a case to be made for collecting traits and Soong does have three of four viable ones. Maybe hitting on a few more collections and megas would polish this crew, but by then you'll have even more 3-4-5 collection names who offer greater power or utility. You can probably count the number of worse legendary crew out there without having to take off your socks.

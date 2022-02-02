@@ -227,8 +227,8 @@ export function exportCrewFields(): ExportField[] {
 	];
 }
 
-export function exportCrew(crew): string {
-	return simplejson2csv(crew, exportCrewFields());
+export function exportCrew(crew, delimeter = ','): string {
+	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
 export function applyCrewBuffs(crew: any, buffConfig: any) {
@@ -311,7 +311,9 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 	// Merge with player crew
 	let ownedCrew = [];
 	let unOwnedCrew = [];
-	for (let crew of allcrew) {
+	for (let oricrew of allcrew) {
+		// Create a copy of crew instead of directly modifying the source (allcrew)
+		let crew = JSON.parse(JSON.stringify(oricrew));
 		crew.rarity = crew.max_rarity;
 		crew.level = 100;
 		crew.have = false;

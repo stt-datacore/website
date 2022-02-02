@@ -3,8 +3,8 @@ name: Sheriff Worf
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 27
+bigbook_tier: 3
+events: 29
 in_portal: true
 date: 19/06/2017
 obtained: Pack

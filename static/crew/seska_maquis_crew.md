@@ -3,9 +3,9 @@ name: Maquis Takeover Seska
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 14
-in_portal:
+bigbook_tier: 6
+events: 15
+in_portal: true
 date: 12/11/2020
 obtained: Event
 mega: false

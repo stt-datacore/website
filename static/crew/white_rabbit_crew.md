@@ -3,7 +3,7 @@ name: White Rabbit
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 4
 in_portal: true
 date: 16/04/2019
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-After dodging Torpedo McCoy (and with an eye on Galordon Core Geordi and Mine Defusing Ezri), Rabbit is one of just three legendaries in the game to have ENG and MED as their top two skills. Which means that for that voyage combo, at least, he has a hind leg up on the competition. For the accompanying SCI/MED and ENG/SCI runs, he's going to contribute a tertiary skill that's often lacking in those crew. In short, his skill set and particularly skill order is great and will serve to inflate his voyage value. Rabbit's holes are certainly substantial, but he still gets some voyage leash even if he's lacking elsewhere.
+Once the premier ENG/MED voyager and one of very few options available, we knew by his lack of other attributes that he wouldn't age the most gracefully. He may still make a few voyage runs in that specific skill combo, but the "meta" at this point is more to acquire power crew and let the collection tide raise all boats.
+
+Rabbit's Costume Party collection has eased his descent to a small degree, but it doesn't get much worse than three traits for future event and collection potential. If your Rabbit situation is looking like a slow build over time through beholds, you may as well discount his voyage potential and treat him as a low-level collection option or bridge crew extraordinaire due to his comically large head.

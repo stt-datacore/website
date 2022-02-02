@@ -3,8 +3,8 @@ name: Cadet Wesley Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 10
-events: 8
+bigbook_tier: 9
+events: 14
 in_portal: true
 date: 28/09/2017
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Averaging less than an event per year qualifies him for the dreaded "non-event 2-skiller" category. With no collections or daily work to save him, he's worse crew than his skill set and average bases suggest. If you have him on your roster from voyages or a straight pack drop, you’ll be crossing your fingers for his only vaguely eventable trait, Prodigy, to make its first appearance. Before you freeze him, have him unlock a node for you.
+When you're looking at a crew's selling point being Wesley Crusher events, you probably took a wrong turn in a really bad part of town. The entirety of Wes' pre-cryo value to your roster is summed up by a handful of Prodigy node unlocks on the galaxy map. Once those are clear, you can expect a thaw or two per year if there are enough SCI/ENG seats to go around.

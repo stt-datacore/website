@@ -3,9 +3,9 @@ name: Mike Burnham Sr.
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 21
-in_portal:
+bigbook_tier: 6
+events: 23
+in_portal: true
 date: 14/01/2021
 obtained: Event
 mega: false

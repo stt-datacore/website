@@ -3,15 +3,15 @@ name: Desert Philippa Georgiou
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 23
+bigbook_tier: 9
+events: 22
 in_portal: true
 date: 10/10/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Georgy girl holds the distinction of being one of only two legendary crew to appear in three stat-boosting collections. With 'Diplomat' being revamped to the tune of a 60-crew threshold, other similar changes may be in the works, which keeps Georgiou on the short list of best collection stuffers the game has to offer.
+I guess nobody told Georgy Girl that this is a marathon, not a sprint. She shot out in the lead to become the second legendary crew in three stat-boosting collections, but her viable traits are now all tapped out, as are her best chances at event work.
 
-Her value otherwise depends on Discovery and variant events, of which there have been plenty. Even considering a trait set mostly bereft of value, Georgiou has collected multiple Faction events in each of the last three calendar years including TEN event bonuses in 2019. With or without a starring role in a standalone Section 31 series, Georgiou will have plenty of opportunity to pilot some class Fs for you down the line.
+With Disco megas likely finished and her Section 31 show on ice, Georgiou is going to struggle for weekend relevance. Her shuttle-friendly bases will have no trouble earning a seat when she finds a bonus, but how often that occurs is highly questionable going forward. She's still worth a shot in low-end beholds, but her special attraction has been dwarfed by the Disney-sized Collection Theme Park that opened right next door.

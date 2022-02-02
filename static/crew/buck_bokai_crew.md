@@ -3,8 +3,8 @@ name: Buck Bokai
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 3
+bigbook_tier: 3
+events: 9
 in_portal: true
 date: 23/04/2019
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His name is Buck and he’s here to party. For a weekday pack filler, Buck offers some surprising utility. His event count seems to be a dud now, but he claims two traits from a recent mega event survey (Cultural Figure, Explorer) and boasts great super rare SEC ranks for both. That same base is usable for daily shuttles and a new player who stumbled into a fused Buck early may find his voyage numbers useful, even if the skill set is not. Even his arena offering is usable; fast accuracy with a chunk of crit bonus. The buried lede is a nice pair of collections which makes him ‘necessary’ for completionists. For a non-event crew with the CMD/DIP/SEC skill set, this is the absolute upper limit of crew value.
+His name is Buck and he’s here to party. Already a strong collection option, Buck's found his niche and should stick with it. Rounding out a sextet of collections would be awesome value for a super rare and his event clip seems likely to pick up as well with a handful of non-HFS traits in tow. Even if you don't use him day to day, he's one of the better long term value prospects from the minor leagues.

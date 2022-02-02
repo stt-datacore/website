@@ -3,12 +3,12 @@ name: Human Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 2
-events: 34
-in_portal:
+bigbook_tier: 1
+events: 39
+in_portal: true
 date: 01/04/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

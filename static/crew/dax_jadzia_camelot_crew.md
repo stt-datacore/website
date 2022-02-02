@@ -3,8 +3,8 @@ name: Princess Jadzia
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 16
+bigbook_tier: 3
+events: 30
 in_portal: true
 date: 19/06/2017
 obtained: Event

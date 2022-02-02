@@ -3,7 +3,7 @@ name: Mountain Climber Mayweather
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 15
 in_portal: true
 date: 17/06/2019
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Call him Delta Flyer Paris Version 2.0. As North Face Knee Brace Mayweather is the second legendary crew to have a CMD/ENG/MED skill set, the comparison is unavoidable. Mayweather's base and voyage prowess thoroughly outclass Ol' Speed Racer, with a CMD base that slots in right between OG stalwarts Commander Kira and Borg Queen to give him some spotty event work when you least expect it
+Call him Delta Flyer Paris Version 2.0 - as North Face Knee Brace Mayweather is the second legendary crew to have a CMD/ENG/MED skill set, the comparison is unavoidable. Travis' raw voyage score is set to join Paris in the Power Creep Acres rest home, yet his skill set (arguably the best in the game) will keep him in service longer than the raw numbers suggest that he should. I don't know...something about workman's comp?
 
-But you're here to hear me gush about his voyage work. His pair of top five voyage pairs as well as *the best* skill set in the game is like popping in a couple of quarters on Paris' flashing 'Game Over' screen so that you can enjoy a few more years of voyage work from Mayweather and Paris can finally start thumbing through the Power Creep Acres brochure you gave him months ago.
+Mayweather is the opposite of a brand name, as evidenced by his leisurely two year hiatus from event bonuses, but at least his CMD base will earn him scattered chances to, ya know, pilot a shuttle from time to time. Beyond that, just two little traits stand between him and the bottom of the barrel.

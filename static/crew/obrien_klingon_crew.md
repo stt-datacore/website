@@ -3,8 +3,8 @@ name: Klingon O'Brien
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 3
-events: 16
+bigbook_tier: 5
+events: 18
 in_portal: true
 date: 13/11/2017
 obtained: Event

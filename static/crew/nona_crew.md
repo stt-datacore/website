@@ -3,17 +3,17 @@ name: Nona
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 6
-in_portal:
+bigbook_tier: 8
+events: 8
+in_portal: true
 date: 10/09/2020
 obtained: Event
 mega: false
 published: true
 ---
 
-It's happened without fanfare, but the medical drought of yesteryear has lifted. Sprinkled throughout events, recurring megas, and even giveaways, 2020 has provided an average of one legendary MED voyager per month - all of them better than Nona.
+For years, Nona’s arena quote said it all, but WRG’s collection bonanza may begin her path to redemption. 
 
-The impulse to reach for a crew offering MED and CMD in one package is understandable, but Nona's debut voyage power is depressing, despite being her one and only highlight.
+Head-scratchingly short on power, even for a character from a cheesy TOS episode, Nona won’t play for voyages or gauntlet, even with the vaunted MED/CMD stack and pair of 45% crit trait sets. Outside of a dodgy event history punctuated by mega events which never offer more than two factions in a month, Nona really is just a collection dice roll past the early game.
 
-Wholly uneventable traits and a primary skill which struggles to find shuttle seating have reduced her to effective in a single area. With deference to the game's track record with skill combos and an ever-present MED/CMD deficiency, Nona is not a bottom barrel crew on release, but will certainly age like one.
+The Caregiver collection pierced the foil on this terrible vintage crew and with a handful of untapped traits, Nona’s value should rise over time - it certainly can’t get much lower.

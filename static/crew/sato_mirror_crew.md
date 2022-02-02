@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 9
-events: 18
+events: 20
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-We’re doing a kindness listing the voyage score for the worst CMD/DIP/SEC super rare voyager in the game, but it doesn’t belong as a tool on your roster, nor her boarding damage or weak gauntlet numbers. The Empress also had the misfortune of two overlapping Sato and Mirror events, not that it would have made a huge difference.
-
-Her DIP is still good enough to pop for one or two event shuttles per year, but as a behold choice, you're only chasing the (admittedly valuable) collection spot.
+A low end event/collection piece that you can afford to pass on, Sato *could* improve the latter during WRG's collection era and she *could* be thawed for events despite her base ranking in the triple digits. But rosters young and old likely have other options to cover just about every conceivable avenue of usage that Sato provides. Until her potential collections become actual collections, kick the can down the road and let copies drift in from voyages or bad beholds.

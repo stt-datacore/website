@@ -3,9 +3,9 @@ name: Lt. Commander Raffaela Musiker
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 1
-in_portal:
+in_portal: true
 date: 02/02/2021
 obtained: Pack
 mega: false

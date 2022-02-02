@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-It's a shame that the scales aren't tipped in favor of Rain's dual 1k bases which, to date, have not snagged a single event bonus. If the numbers were shifted a bit, they could push a #6 SCI/ENG gauntlet pair past even the freakasaurus Caretaker. Alas, she remains a competent voyager who, if starred up, should have no problem taking over daily shuttle duty from super rares. Just don't expect any surprise mega work out of her frankly putrid trait set.
+It's a shame that the scales are tipped in favor of Rain's dual 1k bases which, to date, have barely tasted the event spotlight. If the numbers were shifted a bit, they could push her top ten SCI/ENG gauntlet pair past even the freakasaurus Caretaker. Her duo 45% gauntlets and middling overall proficiency present some one-star opportunity for fresh rosters.
+
+Alas, her voyage run has all but winded down and leaves a wishful trait list behind. Starting off with the massive Resourceful collection was a pleasant surprise and gives the rest of Rain's fairly large trait pools the potential for great growth in that area, but are at the mercy of WRG's dart board. As we all are. Help. We must escape. I want to live again.

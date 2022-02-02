@@ -3,21 +3,17 @@ name: Archer and Porthos
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 15
-in_portal:
+bigbook_tier: 6
+events: 19
+in_portal: true
 date: 26/05/2020
 obtained: Pack
 mega: false
 published: true
 ---
 
-The pessimist might say, "He's a direct downgrade from Humbled Archer - base, voyage, and skill set!" The optimist might say, "He's a direct downgrade from Humbled Archer - base, voyage, and skill set. I don't have to waste dil on him!"
+Apparently the last incarnation of this note went on for five paragraphs. Man, we really love hearing ourselves talk, ‘cause this card certainly doesn’t merit that.
 
-Although crew deserve to be ranked on their own merits and not always against their big brothers, to quote a player reaction from Arthos' release, "This card does not need to be." If you happen to have Humbled Archer, you have Arthos and more.
+The CMD/DIP/SEC skill set simply requires huge raw power and/or a smattering of niche anti-matter traits to gain any sort of serious traction as a wise voyage investment. As a former campaign crew, some rosters will report in with tales of occasional usage for a crew who likely had a star advantage for them, but he simply cannot boast a strong return on investment profile by the numbers.
 
-About those previously mentioned merits, the requisite power creep numbers are certainly there; a fat DIP base and sturdy voyage score, but almost nothing else is. A thin trait set which may as well number three (If we're all in Starfleet, are any of us really in Starfleet?) does support a single collection, but is not brimming with event potential.
-
-Which especially hurts for a character like Archer. "Main cast" and "Captain" has netted him about an event per year. His variant event count sits tied with the likes of Lord Neelix, The Most High Chakotay, and Sir Wesley the Brave.
-
-A vanilla crew in the truest sense of the phrase, Archer's surface level numbers are a boon and, if fused, will guarantee him day one work on almost any roster if you want to venture into his debut pack which includes headliner Gary Seven. But his cliff is a lot sharper and coming a lot sooner than the level of crew you'd want to dive into a weekday 6-pack for.
+If voyages are off the table for your hefty roster, then the value narrows considerably. A collection ceiling low enough for Balok to bump his head on meets an event history that breathes in and out along with WRG affectations of care for the black sheep ENT series captain. You certainly will use his competent bases from time to time, but really a glance at the trait and skill sets is an accurate enough summary of Arthos and Porcher’s usability in this case.

@@ -3,13 +3,13 @@ name: Commander Barclay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 7
+bigbook_tier: 7
+events: 11
 in_portal: true
 date: 10/10/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-CMD/ENG may be a little less barren than it was, thanks largely to Ru’afo and a few recent event purples, but it’s always nice to stack up on uncommon skill sets. For early players, Broccoli is likely to be very helpful, but more seasoned rosters will find he’s better in the freezer, adding +1 Holodeck Enthusiasts and +1 Innovator, and will only find themselves thawing him out for the odd Barclay event.
+Those pesky HFS traits fluff up a trait list that in actuality is nearing the peak of its usefulness for collections. Granted, he offers fine value there, but that may be close to all he offers in the face of has-been voyage ability and very spotty event work. With most of his attribute scores set to drop at a consistent pace, take Broccoli for the collection value and count anything else you get from him as extra.

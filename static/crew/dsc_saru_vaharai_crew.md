@@ -3,17 +3,17 @@ name: Vahar'ai Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
-events: 22
+bigbook_tier: 5
+events: 27
 in_portal: true
 date: 23/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-It's a little hard to get the Vahots for this particular Kelpien stud when he's essentially a remixed version of the really rather good Soji that everyone's getting a 4/5 copy of at the moment, but bear with me and let me tell you why you should at least look his way.
+Legendary Sarus are fairly neapolitan, spanning the power levels from obscure to obscene. The Vahar’ai variant draws one of the shorter straws in this case. While still functional for events in a post-Disco mega landscape, DIP is a skill that Saru variants don’t lack. With show megas on the side of a milk carton and his traits less eventable than they seem at a glance, Vahar’ai will often be bullied by his older brothers’ obnoxiously large bases.
 
-For one thing, MED is always worth stacking, and while we here at the Big Book are often the first to tell you not to care about a big common base like Saru's DIP primary, that doesn't mean you shouldn't still collect them where you can. This is also a skill set that you don't often see for main cast variants, especially not a SCI heavy character like Saru, so for future Faction events, he'll give you a definite edge.
+The news from the voyage front isn’t much better. His unboosted power level may limp through the end of 2022, but many endgame rosters have already stopped using him as there just aren’t many clutch trait seats or spartan skill combos for Vahar’ai to serve in.
 
-He may not have particularly excellent traits, and he's barely ranked in the Gauntlet, but I suspect that most rosters will find themselves using him more than they think so long as they don't expect any heroics. It's crew like this that will form a strong backbone on your roster, and if you find yourself looking at your line-up in a few months, wondering why you're mysteriously short of DIP, it's because you can't just shoot for the amazing cards - you have to have a few just very good ones, too.
+As a former campaign crew, you’ll find enough players willing to share how their Saru performs, just be sure to shave a power level or two off of that assessment if you’re starting a first star investment from the ground up.

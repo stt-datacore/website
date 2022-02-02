@@ -3,9 +3,9 @@ name: Mr. Vup
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 7
 events: 7
-in_portal:
+in_portal: true
 date: 22/12/2020
 obtained: Pack
 mega: false

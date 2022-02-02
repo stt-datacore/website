@@ -3,8 +3,8 @@ name: Admiral Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 9
+events: 27
 in_portal: true
 date: 26/06/2017
 obtained: Pack
