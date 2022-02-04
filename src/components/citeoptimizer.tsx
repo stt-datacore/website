@@ -69,8 +69,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.HeaderCell>Rank</Table.HeaderCell>
 						<Table.HeaderCell>Crew</Table.HeaderCell>
 						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Voyages improved</Table.HeaderCell>
-						<Table.HeaderCell>Expected value</Table.HeaderCell>
+						<Table.HeaderCell>Final EV</Table.HeaderCell>
+						<Table.HeaderCell>Remaining EV</Table.HeaderCell>
+						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -100,10 +101,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
 								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
+									{ Math.ceil(training ? row.addedEV : row.totalEVContribution) }
 								</Table.Cell>
+								{
+									!training &&
+									<Table.Cell>
+										{Math.ceil(training ? row.addedEV : row.totalEVRemaining)}
+									</Table.Cell>
+								}
 								<Table.Cell>
-									{ (training ? row.addedEV : row.evPerCitation).toFixed(1) }
+									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
 								</Table.Cell>
 							</Table.Row>
 						);
