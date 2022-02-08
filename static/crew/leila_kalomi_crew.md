@@ -3,7 +3,7 @@ name: Leila Kalomi
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 2
 in_portal: true
 date: 22/10/2020

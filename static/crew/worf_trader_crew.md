@@ -3,7 +3,7 @@ name: Trader Worf
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 29
 in_portal: true
 date: 02/10/2017
