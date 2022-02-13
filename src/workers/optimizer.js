@@ -17,11 +17,11 @@ const createSkillPool = (skills, name) => {
     assignedCrew: [],
     full: false,
     superSets: SKILLS.filter(s => !skills.includes(s))
-                     .map(s => skills.concat(s))
-                     .map(skills => SKILLS.filter(s => skills.includes(s)).join('/'))
-                     .map(skillSet => skillSet === SKILLS.join('/') ? 'voyageCrew' : skillSet),
+      .map(s => skills.concat(s))
+      .map(skills => SKILLS.filter(s => skills.includes(s)).join('/'))
+      .map(skillSet => skillSet === SKILLS.join('/') ? 'voyageCrew' : skillSet),
     subSets: skills.map(s1 => skills.filter(s2 => s1 !== s2).join('/'))
-                   .filter(skillSet => skillSet.length > 0)
+      .filter(skillSet => skillSet.length > 0)
 
   };
 };
@@ -35,7 +35,7 @@ const createSkillPools = () => {
       combos.concat(genCombinations(skills.slice(i + 1), n - 1).map(c => [item, ...c])), []);
   };
   const pools = [5, 4, 3, 2, 1].reduce((pools, n) => pools.concat(genCombinations(SKILLS, n)), [])
-                        .map(pool => createSkillPool(pool));
+    .map(pool => createSkillPool(pool));
   return pools;
 };
 
@@ -53,14 +53,14 @@ const Optimizer = {
   rosterArray: [],
   skills: SKILLS,
   skillPairingsArray: SKILLS.reduce((pairs, s1) => pairs.concat(SKILLS.filter(s2 => s1 !== s2)
-                                                                      .map(s2 => [s1, s2])
-                                                                      .map(s => s.join('/'))), []),
+    .map(s2 => [s1, s2])
+    .map(s => s.join('/'))), []),
   voyageSkillRankings: {
     currentRarity: emptyArrayMap(skillPairings),
     fullyCited: emptyArrayMap(skillPairings),
   },
   voyageSkillPools: Object.fromEntries([createSkillPool(SKILLS, 'voyageCrew')].concat(createSkillPools())
-                                                                              .map(pool => [pool.signature, pool])),
+    .map(pool => [pool.signature, pool])),
   topVoyageCrews: {
     currentBest: toObject(skillPairings, assignmentTemplate),
     rarityBest: toObject(skillPairings, assignmentTemplate),
@@ -97,13 +97,13 @@ const Optimizer = {
             let gauntletPairingEV = 0
             for (var skill in crew.base_skills) {
               if (skill == primarySkill) {
-                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max)/2) * 0.35 ;
-                gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max)/2
+                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2) * 0.35;
+                gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2
               } else if (skill == secondarySkill) {
-                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max)/2) * 0.25;
-                gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max)/2
+                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2) * 0.25;
+                gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2
               } else {
-                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max)/2) * 0.1;
+                voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2) * 0.1;
               }
             }
             if (voyagePairingEV > Optimizer.bestPossibleCrew.voyages[voyagePairingKey].voyagePairingEV) {
@@ -247,16 +247,16 @@ const Optimizer = {
 
       for (let skillIndex = 0; skillIndex < crew.skillSet.skillArray.length; skillIndex++) {
         crew.skillSet.signature += crew.skillSet.skillArray[skillIndex].slice(0, crew.skillSet.skillArray[skillIndex].indexOf('_'));
-          if (skillIndex != crew.skillSet.skillArray.length - 1) {
-            crew.skillSet.signature += "/";
-          }
+        if (skillIndex != crew.skillSet.skillArray.length - 1) {
+          crew.skillSet.signature += "/";
+        }
       }
       let voyageSkills = ["command_skill", "diplomacy_skill", "engineering_skill", "security_skill", "medicine_skill", "science_skill"];
       for (var rarity in crew.skillData) {
         let rarityLevel = crew.skillData[rarity];
         for (var skill in rarityLevel.base_skills) {
           let assessedSkill = rarityLevel.base_skills[skill];
-          crew.skillData[rarity].base_skills[skill].ev = assessedSkill.core + (assessedSkill.range_min + assessedSkill.range_max)/2;
+          crew.skillData[rarity].base_skills[skill].ev = assessedSkill.core + (assessedSkill.range_min + assessedSkill.range_max) / 2;
         }
         rarityLevel.voyageMetrics = {};
         voyageSkills.forEach(primarySkill => {
@@ -525,7 +525,7 @@ const Optimizer = {
             Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].base_skills[skill].ev;
         };
         Optimizer.topVoyageCrews.currentBest[skillPairing].totalEV +=
-        Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].voyageMetrics[skillPairing];
+          Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].voyageMetrics[skillPairing];
       });
     });
   },
@@ -564,7 +564,7 @@ const Optimizer = {
             Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].base_skills[skill].ev;
         };
         Optimizer.topVoyageCrews.rarityBest[skillPairing].totalEV +=
-        Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].voyageMetrics[skillPairing];
+          Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].rarity].voyageMetrics[skillPairing];
       });
     });
   },
@@ -639,7 +639,7 @@ const Optimizer = {
     while (sortingArray.length > 0) {
       let highestContribingTrainee = '';
       let highestContributedEV = 0;
-      let highestContributedVoyages='';
+      let highestContributedVoyages = '';
       sortingArray.forEach(crewName => {
         if (Optimizer.topCrewToTrain[crewName].totalEVAdded > highestContributedEV) {
           highestContribingTrainee = crewName;
@@ -647,7 +647,7 @@ const Optimizer = {
           highestContributedVoyages = Optimizer.topCrewToTrain[crewName].voyagesImproved
         }
       });
-      if(highestContribingTrainee in Optimizer.rosterLibrary) {
+      if (highestContribingTrainee in Optimizer.rosterLibrary) {
         Optimizer.rankedCrewToTrain.push({
           name: highestContribingTrainee,
           addedEV: highestContributedEV,
@@ -696,7 +696,7 @@ const Optimizer = {
             Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].maxRarity].base_skills[skill].ev;
         };
         Optimizer.topVoyageCrews.citedBest[skillPairing].totalEV +=
-        Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].maxRarity].voyageMetrics[skillPairing];
+          Optimizer.rosterLibrary[crewName].skillData[Optimizer.rosterLibrary[crewName].maxRarity].voyageMetrics[skillPairing];
       });
     });
   },
