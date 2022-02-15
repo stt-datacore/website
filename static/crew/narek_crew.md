@@ -3,7 +3,7 @@ name: Narek
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 14
 in_portal: true
 date: 14/04/2020

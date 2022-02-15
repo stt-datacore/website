@@ -3,7 +3,7 @@ name: Soji Asha
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 8
 in_portal: true
 date: 09/04/2020
