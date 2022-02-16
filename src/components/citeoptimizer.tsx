@@ -70,7 +70,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.HeaderCell>Crew</Table.HeaderCell>
 						<Table.HeaderCell>Rarity</Table.HeaderCell>
 						<Table.HeaderCell>Final EV</Table.HeaderCell>
-						{!training && <Table.HeaderCell>Remaining EV</Table.HeaderCell>}
+						{!training &&
+						<React.Fragment>
+							<Table.HeaderCell>Remaining EV</Table.HeaderCell>
+							<Table.HeaderCell>EV Per Citation</Table.HeaderCell>
+						</React.Fragment>
+						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
@@ -105,9 +110,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								</Table.Cell>
 								{
 									!training &&
-									<Table.Cell>
-										{Math.ceil(training ? row.addedEV : row.totalEVRemaining)}
-									</Table.Cell>
+									<React.Fragment>
+										<Table.Cell>
+											{Math.ceil(row.totalEVRemaining)}
+										</Table.Cell>
+										<Table.Cell>
+											{Math.ceil(row.evPerCitation)}
+										</Table.Cell>
+									</React.Fragment>
 								}
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
