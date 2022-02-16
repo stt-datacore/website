@@ -3,8 +3,8 @@ name: Assimilated Troi
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 4
-events: 24
+bigbook_tier: 3
+events: 25
 in_portal: true
 date: 16/01/2019
 obtained: Event

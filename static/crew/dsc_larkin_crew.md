@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Don’t let his #1 base and voyage pair ranks fool you, he’s an idiot. Larkin is effectively a two skiller with that poor, but hilarious, DIP tertiary and will not cut it on most voyages. He’s one of the Super Rare MED/SCI crew I would avoid recommending to people purely for the fact that there are so many better alternatives. Agnes Jurati, Sarina Douglas and Nexus Guinan to name a few. No Arena, No Collection and his traits are underused but perhaps the Craft/’Shepherd Mega will come to fruition one day. Have him transferred to the freezer as soon as possible. This conversation is over, dismissed. This is the end of the conversation.
+No in-jokes here, Larkin’s Trek short was a steaming pile and I’ll fight anyone who says differently.
+
+Which means that Larkin’s card pretty much fits, then. A skill set attractive to new players is mired in lousy voyage power thanks to his Grebnedlog-esque tertiary and thawpertunities in a post-Disco world are a big question mark, though Ed has a pretty plus trait set overall.
+
+Those traits do provide his most notable value spot; collections. With the Tribbled collection seemingly a lock to expand at a glacial pace, by the time you don’t need all of those names, Larkin will probably be in three or four collections and overall still a fairly key gatekeeper for completionists.

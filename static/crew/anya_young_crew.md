@@ -3,8 +3,8 @@ name: Young Anya
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 7
+bigbook_tier: 6
+events: 8
 in_portal: true
 date: 21/07/2020
 obtained: Pack
