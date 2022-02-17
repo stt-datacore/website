@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Dropdown, Grid, Rating, Divider, Form, Popup, Label } from 'semantic-ui-react';
 import { Link } from 'gatsby';
-import marked from 'marked';
+import { marked } from 'marked';
 
 import Layout from '../components/layout';
 import CommonCrewData from '../components/commoncrewdata';
@@ -154,7 +154,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 
 			// This emulates the Gatsby markdown output until the transition to dynamic loading entirely
 			entries.push({
-				markdown: marked(bcrew.markdownContent),
+				markdown: marked.parse(bcrew.markdownContent),
 				crew: this.state.allcrew.find(c => c.symbol === symbol),
 				crewDemands: {
 					factionOnlyTotal: bcrew.factionOnlyTotal,
