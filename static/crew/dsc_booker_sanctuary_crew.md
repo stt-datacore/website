@@ -12,9 +12,9 @@ mega: false
 published: true
 ---
 
-Aggressively Average is a phrase we’ve used several times before to describe certain cards and Booker is certainly the boilerplate example of this quote. Had this card been released a year ago then I might just have been uttering the words “Yes he’s CDS but…”. However, the great convergence has bestowed upon us a plethora of WRG’s default skill set and we have to face the reality that Booker’s 4.5K voyage score will face redundancy.
+Aggressively Average is a phrase we’ve used several times before to describe certain cards and Booker is certainly the boilerplate example of this quote. Had this card been released a year ago then I might just have been uttering the words “Yes he’s CDS but…”. However, the great convergence has bestowed upon us a plethora of WRG’s default skill set and we have to face the reality that Booker’s strong debut voyage score will face redundancy.
 
-Okay look, if you’ve been living in a cave, taken a break or new then yes, Booker is an excellent card on paper. A nice voyage power combined with some useful seatable traits and a decent chance of event use moving forward is a fantastic reason for anyone to grab a copy. 450% boom damage on cloak, even at 10 seconds, is a reasonable consideration for the arena-philes who want a bit of extra damage.
+Okay look, if you’ve been living in a cave, taken a break, or are new then yes, Booker is an excellent card on paper. A nice voyage power combined with some useful seatable traits and a decent chance of event use moving forward is a fantastic reason for anyone to grab a copy. 450% boom damage on cloak, even at 10 seconds, is a reasonable consideration for the arena-philes who want a bit of extra damage.
 
 But we have the CDS problem yet again. Mega recurring crew are rife with it, recent giveaway Returning Saru has it, Tuesday packs have had some shocking arrivals in that array of abilities. It’s the saturated fats of Timelines, not enough to make you ill but if you have too much you start to feel bloated and desperate to reach the nearest antacid.
 
