@@ -12,7 +12,7 @@ mega: false
 published: true
 ---
 
-Communication officers from TOS onwards that are not Uhura or Sato tend to get a bit neglected when it comes to Trek appearances and...oh wait, that's Bryce. This is Rhys. I'm getting my yce's confused again.
+Communications officers from TOS onwards that are not Uhura or Sato tend to get a bit neglected when it comes to Trek appearances and...oh wait, that's Bryce. This is Rhys. I'm getting my ‘yce’s confused again.
 
 Dual wielded programmable matter ray guns are not enough to dissuade us that the winter of bad crew is upon us again and WRG are now steering us into the snowdrift of adequacy. Rhys is a card you need to think carefully about as to whether you need him or not.
 
