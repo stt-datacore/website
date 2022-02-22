@@ -3,11 +3,11 @@ name: Platonian Chapel
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: undefined
-events: 0
+bigbook_tier: 5
+events: 17
 in_portal:
-date:
-obtained:
+date: 22/02/2022
+obtained: Pack
 mega: false
 published: true
 ---
