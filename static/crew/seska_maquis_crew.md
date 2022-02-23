@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-First things first: For CMD/ENG voyagers, there's Braxton and then there's everyone else. Seska is in no danger of dethroning the Voyage King, but she does bring a lot to the table. Hailing from a delightfully fun episode, she debuts with good (but not game-breaking) voyage power in a relatively uncommon skill order, a top ten CMD base, and a collection.  
+We swore that Teska was a sleeping giant and despite picking up only a single faction event and lone collection expansion in the year plus since then, we stand by that assessment. 
 
-As for event futures, dismal variant event chances meet a trait set that is truly outstanding. She has three racial traits including hologram which has already seen a mega and some one-offs, as well as juicy untapped traits like crafty, villain, and undercover operative. While you're waiting for her traits to pop for events, they can yield an antimatter bonus on common voyage seats. +1 Cardassian never hurt anyone (collection expansion when?), and for a Cardassian mega she'd be up there with Saboteur Garak as one of the best two options in the game. 
+Traits are the value driver here and between a CMD base that ranks near the top across all of her traits (including Voyager crew) and seven viable collection possibilities, smart money is on Seska providing excellent long term value.
 
-Seska won't help in the gauntlet or with ship battles, so folks who are already stocked with the best CMD/ENG voyagers in the game may not see her move the needle outside of events. For everyone else, she brings solid base and voyage power combined with a plus trait set that should keep her contributing for a long time.
+In the meantime, her voyage efficacy is questionable. Her laundry list of relatively exclusive anti-matter traits meets mediocre raw power and a skill set that’s more populated than you might think. Living in the shadows according to the “Just retrieve Braxton” crowd, Seska is still a viable piece in that area for a while longer, but voyages aren’t the reason you’re buying in on a crew who’s set up nicely to make a lasting impact.
