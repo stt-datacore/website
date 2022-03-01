@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A repugnant combination of skill set and limp stat total makes him a non-starter on voyages, leaving events and collections as his paths to contributing on your roster. Plenty of variant events and two scoops of traits will activate Ben perhaps 2-4 weekends per year on your shuttles, but that's his upper limit.
+Searching “Captain Sisko” and finding him buried on the second page should give you a hint about his daily usability. A repugnant combination of skill set and limp stat total has him sitting with the worst voyagers among golds, but there is life in him yet thanks to the typical Sisko trait lineup.
 
-The double collection hit being attached to a steady event name is a big help in the face of so many other terrible gold options. The value of those collections will fluctuate over time, but if he ends up being key for you in that area, there are worse crew to fuse than a series Captain.
+Plenty of variant events and two scoops of traits will activate Ben a few weekends per year on your shuttles and grant him a better collection floor and ceiling than most crew. This isn’t a crew you want to consider until you’ve got pretty much all the areas of day to day usefulness on lockdown, but for endgame players, he’s an alright addition.

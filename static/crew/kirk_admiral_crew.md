@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Any other two-skiller with utility this low would be buried in the mines of Rura Penthe, but Kirk is not just any other man. He's the quintessential event name who still holds a big lead over other variant DIP options. With a few untapped eventable traits and a base worthy of daily shuttles, the nattily dressed Admiral is ready to be pressed into service a few times each year, right from star one.
+The nattily dressed Admiral generally elicits crestfallen anti-cipation from players who are forced to behold him, but when snorkeling the murky waters of lower tiers, grabbing a crew who you can use several times per year is better than a thumb to the eye.
+
+A quartet of viable traits have only begun unfurling their event and collection value and though he’ll never regain his old top ten base form, you’ll undoubtedly be fine with seating the Admiral on several Kirk and assorted trait event shuttles while waiting for the rest of his collections to roll in.
