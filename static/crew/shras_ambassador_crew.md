@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Owner of a huge DIP base, but with few events in which to multiply it. Despite those poor event chances and the most common skill set, he’s still useful for newer players with shuttle-worthy DIP and +1 Diplomat for long term benefit. His +9 arena attack boost can meet or exceed what the more popular Rura Penthe Reed and Duras Sisters offer.
+A former do it all crew, Shras has lost a good deal of his daily lustre, but still offers a fine return on investment. Triple collections headline this card for most players with something like Ambassador or Civilian threatening to make a Connect Four if WRG runs out of more interesting collections to add in the meantime.
+
+There’s also a nice attack boost to be had on ships, even if it’s a hair slower than we might prefer. His bases are still worthy of a thaw, but Shras has popped an event bonus in just a single calendar year throughout the game’s entire run.

@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-The Smoke and Mirrors collection came along at the right time to prop up the value of a one-off crew who seems to have lost the comforting relevance of blanket Discovery bonuses of yore. With ranks drooping in all corners and a big tumble in event chances, Shukar has one other area of note besides his dual collections; gauntlet. Two 45% crit sets will bump him above the walls of Locutuses for 48 hours at a time and makes him a fine rotational piece in that section of the game.
+I’ve always likened Shukar to Locutus-lite, though I’m not sure how many players I could get onboard with that. Poor-ish bases, but a long event history. Some gauntlet juice in the same skill set. A growing collection portfolio…
+
+Shukar may have just hit his zenith with the advent of the Andorian collection. Desperate and Civilian traits seem unlikely candidates to join the value train and there’s really not much daily work on the table at this point either. 
+
+With Disco megas a distant memory, he’s been treading water off the back of the Mirror trait, but a slowdown in his event clip seems inevitable. At least his gauntlet work is fine for players who haven’t lucked into Loco yet and a pair of 45% trait sets should give him some play on late game rosters if you’re feelin’ frisky.

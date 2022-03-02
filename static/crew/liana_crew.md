@@ -3,7 +3,7 @@ name: Liana
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 15
 in_portal:
 date: 01/02/2022

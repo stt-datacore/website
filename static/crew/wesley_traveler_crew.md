@@ -3,7 +3,7 @@ name: Traveler Wesley
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 15
 in_portal: true
 date: 16/07/2020

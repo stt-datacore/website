@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-2018 was the year of Andoria and gave Lissan and her kind a glimmer of hope, but has since then proved to be a flash in the pan. Her 1100+ base is quite adequate for event work, unfortunately it's tied to traits that would seem to support spotty weekend relevance at best. On the daily use front, she leverages two fairly even proficiencies into a top five gauntlet pair, though she caps out at 25% gauntlet crit. We like to see at least one big roll for our gauntlet crew to pick up wins against odd combos and 1-for-2s, but when her traits align, she's usable as a 5th gauntlet crew.
+There are two types of rosters mulling Lissan in beholds; those just starting out in the game and taking her so-so gauntlet ability to help them out of a bad behold or late game players eyeing her traits to get them out of a bad behold. In either case, you shouldn’t be considering her if there are any respectable options flanking her.
+
+Two near identical proficiencies give her a nice on-paper CMD/DIP roll, but there are a few flies in her soup. Gauntlet exclusive Balok will form a Demilitarized Zone of walls for years to come and Lissan lacks a beefy single roll to pick up any lucky 1-for-2 rolls against weaker competition. If her specific skill pair doesn’t pop up, you’re out of luck.
+
+At least most of her collection value comes front loaded. We could see that count creep upwards with Telepath, Civilian, or even Aenar if Strange New Worlds does gangbusters business (just kidding) and so she’s an acceptable consolation prize if your behold offers you a few lumps of coal.
