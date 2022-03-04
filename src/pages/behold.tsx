@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Header, Dropdown, Grid, Rating, Divider, Form, Popup, Label } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { graphql, Link, StaticQuery } from 'gatsby';
 import marked from 'marked';
 
 import Layout from '../components/layout';
 import CommonCrewData from '../components/commoncrewdata';
 
 import { getStoredItem } from '../utils/storage';
+import { fetchCrewData } from '../utils/crewutils';
 
 type BeholdsPageProps = {
 	location: {
@@ -44,21 +45,21 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 
 	async componentDidMount() {
 		const playerData = getStoredItem('tools/playerData', undefined);
-		let response = await fetch('/structured/crew.json');
-		const allcrew = await response.json();
-		let peopleList = [];
-		allcrew.forEach(crew => {
-			peopleList.push({
-				key: crew.symbol,
-				value: crew.symbol,
-				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
-				text: `${crew.short_name} (${crew.name})`,
-				max_rarity: crew.max_rarity
-			});
-		});
-		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text)),
+		// //let response = await fetch('/structured/crew.json');
+		// //const allcrew = await response.json();
+		// const allcrew = graphql()
+		// let peopleList = [];
+		// allcrew.forEach(crew => {
+		// 	peopleList.push({
+		// 		key: crew.symbol,
+		// 		value: crew.symbol,
+		// 		image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
+		// 		text: `${crew.short_name} (${crew.name})`,
+		// 		max_rarity: crew.max_rarity
+		// 	});
+		// });
 
-		this.setState({ allcrew, peopleList }, () => {
+		this.setState({ }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));
@@ -79,38 +80,45 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 	}
 
 	render() {
-		if (this.state.allcrew.length === 0) {
-			return (
-				<Layout title='Behold helper / crew comparison'>
-					<div className='ui medium centered text active inline loader'>Loading data...</div>
-				</Layout>
-			);
-		}
-
-		let peopleToShow = [...this.state.peopleList];
-		if (this.state.minRarity) {
-			peopleToShow = peopleToShow.filter((crew) => crew.max_rarity >= this.state.minRarity);
-		}
-
 		return (
 			<Layout title='Behold helper / crew comparison'>
 				<Header as='h4'>Behold helper / crew comparison</Header>
 				<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
 				<Form>
 					<Form.Group>
-						<Dropdown
-							clearable
-							fluid
-							multiple
-							search
-							selection
-							closeOnChange
-							options={peopleToShow}
-							placeholder='Select or search for crew'
-							label='Behold crew'
-							value={this.state.currentSelectedItems}
-							onChange={(e, { value }) => this._selectionChanged(value)}
-						/>
+					<StaticQuery
+						query={graphql`query peopleList {
+							allCrewJson(sort: {fields: name}) {
+								nodes {
+									name
+									short_name
+									symbol
+									imageUrlPortrait
+									max_rarity
+								}
+							}
+						}`}
+						render={data => (<Dropdown
+								clearable
+								fluid
+								multiple
+								search
+								selection
+								closeOnChange
+								options={data.allCrewJson.nodes
+														 .filter(crew => crew.max_rarity >= this.state.minRarity)
+														 .map(crew => ({
+															 key: crew.symbol,
+															 value: crew.symbol,
+															 image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
+															 text: `${crew.name}`
+														 }))}
+								placeholder='Select or search for crew'
+								label='Behold crew'
+								value={this.state.currentSelectedItems}
+								onChange={(e, { value }) => this._selectionChanged(value)}
+							/>
+						)} />
 						<Form.Field
 							control={Dropdown}
 							placeholder={this.state.minRarity ? `Minimum rarity: ${this.state.minRarity}` : `Minimum rarity`}
@@ -142,11 +150,11 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 		);
 	}
 
-	_selectionChanged(value: any) {
+	async _selectionChanged(value: any) {
 		let params = new URLSearchParams();
 		let entries = [];
 		for (let symbol of value) {
-			let bcrew = this.state.allcrew.find(bc => bc.symbol === symbol);
+			let bcrew = await fetchCrewData(symbol);
 			if (!bcrew) {
 				console.error(`Crew ${symbol} not found in crew.json!`);
 				break;
@@ -155,7 +163,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 			// This emulates the Gatsby markdown output until the transition to dynamic loading entirely
 			entries.push({
 				markdown: marked(bcrew.markdownContent),
-				crew: this.state.allcrew.find(c => c.symbol === symbol),
+				crew: bcrew,
 				crewDemands: {
 					factionOnlyTotal: bcrew.factionOnlyTotal,
 					totalChronCost: bcrew.totalChronCost,
