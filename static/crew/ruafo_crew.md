@@ -3,7 +3,7 @@ name: Ahdar Ru'afo
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 15
 in_portal: true
 date: 01/08/2018

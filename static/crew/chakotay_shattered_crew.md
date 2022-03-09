@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-TPC's headline has always been a gorgeous skill set. With a few eventable traits and triple variant-best bases to boot, Chakotay's base ranks can be dismissed to a certain degree. Not so on voyages where even crew who only match one or two of his skills will be the better pick as you jigsaw together crew with superior power. Not necessarily a citation candidate because of his statistical power level, but nevertheless useful once fused and a name you should still be happy to see in a behold.
+TPC's headline has always been a gorgeous skill set. Unfortunately he’s lost all semblance of competitive power and will flounder in any attempts to use him as a daily option. Still owner of a SEC base that will play in events, regard Chakotay as an event/collection piece only whose value could perk up in spurts if the WRG wheel of traits cooperates.

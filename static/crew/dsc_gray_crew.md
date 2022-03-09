@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-When it comes to Discovery cards, you tend to either get rock solid contributors, or the drossiest of dross, and sadly, if you're looking for the former, well, this Gray'int it, chief. In a pinch, a few 45% Gauntlets and a not totally putrid pair might give him early life on your roster, but that's about the upper limit of day to day usability.
+Gray (and a few Adirae) is in line to benefit from WRG’s continued collection releases, but until such time he’s almost totally dead in the water. A pair of 45% gauntlets (which might appear once per month and probably on the other track) is the extent of his pre-cryo usability.
 
-Sporting bases that wouldn't have looked out of place in 2017, and traits only just a twitch above completely mind-numbingly dull, this poor Trill's time on your roster will be cut brutally short by either a freezer or an airlock, existing from then on only as a ghost to remind you of citations lost and crew slots to claw back.
+Offering only scant thawpertunities to date, Gray’s poor bases are often only marginal upgrades from either who’s already active for you or similarly frozen crew. We do like the future event and collection potential for all of his viable traits, but they’ll need to start popping off before he earns your behold capital.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Durango's note used to gush about her huge SEC lead over other variants and that's still true, in a sense. Dark Empath Troi (also known as Naughty Troi, Deanna de Vil, Cruella de Troi, Skunk Troi) nearly matches her base, and with a far better voyage profile is a worthwhile pivot in most situations.
+There's a smoking crater where Durango's voyage power used to be, but as far as old school cards and event/collection combo platters go, Troi can still get it done.
 
-There's a smoking crater where Durango's voyage power used to be, but with her event pedigree, vanity collection spot, and non-standard trait set, she's still a fine mid-range behold target who can pitch in on Troi event shuttles with her first star.
+The SEC skill doesn’t get an hourly refresh like DIP and so Troi’s Winchester is still of a respectable caliber and will allow her priority seating for a handful of events each year. The flavorful episode she comes from affords Troi some luxury traits beyond her normal ship’s business and should see her collection count slowly tick upwards while helping to flesh out some more volatile event counts from year to year.

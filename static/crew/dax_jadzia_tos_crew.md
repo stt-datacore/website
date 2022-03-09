@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Beehive Dax is the absolute epitome of event crew. With basement-level voyage numbers and no Gauntlet use, many players coming new to Dax may find her dead on arrival for daily use. But an astounding SIX separate event features with a skyhigh Dax event count on top of that, you’re going to be thawing her several times a year. Arena evasion earns her niche use elsewhere, but this Dax is a weekend warrior, first and foremost.
+Beehive Dax is the absolute epitome of event crew. With basement-level voyage numbers and no Gauntlet use, many players coming new to Dax may find her dead on arrival for daily use. But an astounding SEVEN separate event features with a skyhigh Dax event count on top of that means that you’re going to be thawing her several times per year.
+
+Arena evasion earns her niche use elsewhere, but most players have an eye on her extensive trait list which besides padding out her event tally also promises strong collection returns over time. If you didn’t listen to us in years past when we said “no daily use = no good hurr durr”, then you’re probably sitting pretty with one of the big beneficiaries of the trait era and WRG’s everlasting infatuation with this variant.

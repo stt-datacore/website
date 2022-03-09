@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-This imposter Pi-card is well rounded, but with slipping power. A now-redundant skill set and weak bases are a problem for the typical aveunes of daily use, but his spot in a stat-boosting collection, usable arena accuracy, and Picard events with a dash of intriguing traits are enough to make him worth picking up for most players. A pair of 45% gauntlets is a nice asset for newer rosters, but can't hold up against the top shelf dice rollers.
+This imposter Pi-card is well rounded, but with old school power. A now-redundant skill set and weak bases are a problem for the typical avenues of daily use, but some new player gauntlet ability, usable arena accuracy, and Picard events with a dash of intriguing traits are enough to make him worth picking up for most players.
+
+Can you win any gauntlet matchups with him against the big boys? No you can't! Don't even try!
