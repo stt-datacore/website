@@ -3,8 +3,8 @@ name: Desert T'Pol
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 36
+bigbook_tier: 4
+events: 37
 in_portal: true
 date: 22/05/2019
 obtained: Event

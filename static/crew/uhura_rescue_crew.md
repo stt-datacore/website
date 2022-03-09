@@ -1,7 +1,7 @@
 ---
 name: Rescue Team Uhura
 rarity: 5
-series: tos
+series: tas
 memory_alpha:
 bigbook_tier: 5
 events: 15
