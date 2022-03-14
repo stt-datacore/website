@@ -8,6 +8,13 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 
+import CommandIcon from '../images/CommandIcon';
+import DiplomacyIcon from '../images/DiplomacyIcon';
+import EngineeringIcon from '../images/EngineeringIcon';
+import MedicineIcon from '../images/MedicineIcon';
+import ScienceIcon from '../images/ScienceIcon';
+import SecurityIcon from '../images/SecurityIcon';
+
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
 	{ key: '1', value: '25', text: '25' },
@@ -61,6 +68,45 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
+
+		const icons = {
+			command: {
+				primary: <CommandIcon color='gold' position={0} />,
+				secondary: <CommandIcon color='silver' position={6} />,
+				tertiary: <CommandIcon color='#b08d57' position={6} />,
+				voyageSecondary: <CommandIcon color='silver' position={22} />
+			},
+			diplomacy: {
+				primary: <DiplomacyIcon color='gold' position={-6} />,
+				secondary: <DiplomacyIcon color='silver' position={0} />,
+				tertiary: <DiplomacyIcon color='#b08d57' position={-6} />,
+				voyageSecondary: <DiplomacyIcon color='silver' position={10} />
+			},
+			engineering: {
+				primary: <EngineeringIcon color='gold' position={0} />,
+				secondary: <EngineeringIcon color='silver' position={0} />,
+				tertiary: <EngineeringIcon color='#b08d57' position={0} />,
+				voyageSecondary: <EngineeringIcon color='silver' position={24} />
+			},
+			medicine: {
+				primary: <MedicineIcon color='gold' position={0} />,
+				secondary: <MedicineIcon color='silver' position={0} />,
+				tertiary: <MedicineIcon color='#b08d57' position={0} />,
+				voyageSecondary: <MedicineIcon color='silver' position={24} />
+			},
+			science: {
+				primary: <ScienceIcon color='gold' position={0} />,
+				secondary: <ScienceIcon color='silver' position={0} />,
+				tertiary: <ScienceIcon color='#b08d57' position={8} />,
+				voyageSecondary: <ScienceIcon color='silver' position={24} />
+			},
+			security: {
+				primary: <SecurityIcon color='gold' position={0} />,
+				secondary: <SecurityIcon color='silver' position={0} />,
+				tertiary: <SecurityIcon color='#b08d57' position={0} />,
+				voyageSecondary: <SecurityIcon color='silver' position={24} />
+			},
+		}
 
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -120,7 +166,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									</React.Fragment>
 								}
 								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
+									{
+										row.voyagesImproved.map((pairing, i) => (
+											<svg key={i} width="50" height="22" viewBox="0 0 50 22">
+												{icons[pairing.split('/')[1]].voyageSecondary}
+												{icons[pairing.split('/')[0]].primary}
+											</svg>
+										))
+									}
 								</Table.Cell>
 							</Table.Row>
 						);
