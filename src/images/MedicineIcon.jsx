@@ -2,7 +2,8 @@ import React from 'react';
 
 const CommandIcon = ({ color, position }) => {
   return (
-    <svg id="Layer_1" data-name="Layer 1" width={26 + position} height="20" viewBox="0 0 92.81 85.92">
+    <svg id="Layer_1" data-name="Layer 1" width={26} height="20" viewBox="0 0 92.81 85.92"
+      transform={`translate(${position}, 0)`}>
       <g>
         <path d="M739,214.55H708.69a34.06,34.06,0,0,0,2.1,3.64h28.45Z" transform="translate(-705.02 -205.64)" fill={color} stroke="#000" />
         <path d="M713.86,222.09c8.81,9.38,21,9.64,26.18,9.64l-.57-9.64Z" transform="translate(-705.02 -205.64)" fill={color} stroke="#000" />

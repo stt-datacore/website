@@ -74,37 +74,37 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				primary: <CommandIcon color='gold' position={0} />,
 				secondary: <CommandIcon color='silver' position={6} />,
 				tertiary: <CommandIcon color='#b08d57' position={6} />,
-				voyageSecondary: <CommandIcon color='silver' position={22} />
+				voyageSecondary: <CommandIcon color='silver' position={0} />
 			},
 			diplomacy: {
 				primary: <DiplomacyIcon color='gold' position={-6} />,
 				secondary: <DiplomacyIcon color='silver' position={0} />,
 				tertiary: <DiplomacyIcon color='#b08d57' position={-6} />,
-				voyageSecondary: <DiplomacyIcon color='silver' position={10} />
+				voyageSecondary: <DiplomacyIcon color='silver' position={0} />
 			},
 			engineering: {
 				primary: <EngineeringIcon color='gold' position={0} />,
 				secondary: <EngineeringIcon color='silver' position={0} />,
 				tertiary: <EngineeringIcon color='#b08d57' position={0} />,
-				voyageSecondary: <EngineeringIcon color='silver' position={24} />
+				voyageSecondary: <EngineeringIcon color='silver' position={0} />
 			},
 			medicine: {
 				primary: <MedicineIcon color='gold' position={0} />,
 				secondary: <MedicineIcon color='silver' position={0} />,
 				tertiary: <MedicineIcon color='#b08d57' position={0} />,
-				voyageSecondary: <MedicineIcon color='silver' position={24} />
+				voyageSecondary: <MedicineIcon color='silver' position={0} />
 			},
 			science: {
 				primary: <ScienceIcon color='gold' position={0} />,
 				secondary: <ScienceIcon color='silver' position={0} />,
 				tertiary: <ScienceIcon color='#b08d57' position={8} />,
-				voyageSecondary: <ScienceIcon color='silver' position={24} />
+				voyageSecondary: <ScienceIcon color='silver' position={0} />
 			},
 			security: {
 				primary: <SecurityIcon color='gold' position={0} />,
 				secondary: <SecurityIcon color='silver' position={0} />,
 				tertiary: <SecurityIcon color='#b08d57' position={0} />,
-				voyageSecondary: <SecurityIcon color='silver' position={24} />
+				voyageSecondary: <SecurityIcon color='silver' position={500} />
 			},
 		}
 
