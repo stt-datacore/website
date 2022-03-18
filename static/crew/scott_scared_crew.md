@@ -3,15 +3,15 @@ name: Scared Scotty
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 8
+bigbook_tier: 9
+events: 9
 in_portal: true
 date: 19/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Runaway Po thy name is Scott! Jumping into the deep end of the DIP/ENG pool comes a counterpart to (currently) one of the best SR cards in the game. Coming in at #3 for DIP/ENG voyagers, our confused looking scotsman is a very strong card for those that don't have many legendary options in that category.
+Scotty debuted as a 'daily use' voyage and shuttle crew, but now he's just...a crew. ENG seating being as scarce as it is handicaps his best statistical offering; his base. He'll still ride some event shuttles when given the opportunity, but that's unfortunately quite rare, even if his event clip is better than it once was.
 
-His shuttle ENG is superlative for a super rare, it simply lacks opportunity as Scotty maintains red-headed stepchild status and a woeful event clip. However, for a strong DIP/ENG card that ticks off another step of the Jury Rigger list, Scared Scotty easily makes for a card worth keeping.
+His spot in the jury rigger collection saves his bacon from the airlock and gives at least veteran rosters a reason to grab a copy here and there, but those of you looking for consistent use from your super rares can give him a hard pass and swing back around to fuse him at a later date.

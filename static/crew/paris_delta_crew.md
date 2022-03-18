@@ -3,8 +3,8 @@ name: Delta Flyer Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 22
+bigbook_tier: 8
+events: 23
 in_portal: true
 date: 22/11/2016
 obtained: Post-Launch

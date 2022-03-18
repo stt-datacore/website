@@ -3,9 +3,9 @@ name: Party Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
-events: 19
-in_portal:
+bigbook_tier: 7
+events: 21
+in_portal: true
 date: 25/05/2021
 obtained: Pack
 mega: false

@@ -3,8 +3,8 @@ name: Chancellor Martok
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 13
+bigbook_tier: 6
+events: 18
 in_portal: true
 date: 27/11/2019
 obtained: Pack

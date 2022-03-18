@@ -3,7 +3,7 @@ name: Kazon Seska
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 10
 events: 3
 in_portal: true
 date: 01/01/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-With ENG getting a lot of mega love and Seska’s weak voyage ability, you’re most likely waiting for some trait events to marry with her ENG base that still barely sits inside the top ten. The bulk of her value outside of the early game comes from the Cardassian collection and theoretical event work.
+I just want to say - still salty about removing her Bajoran trait days before its first event bonus. Dick move, man.
+
+Traits are indeed the name of the game for Seska who, despite an ENG-led skill set, has zero functionality for normal day to day operations. With Kazon and Obsidian Order traits not likely to bear fruit for collections or events, she’s more or less hanging on to three traits for value, but has a valid chance to hit her collection ceiling before too long.

@@ -3,15 +3,15 @@ name: Captain Lorca
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 29
 in_portal: true
 date: 16/10/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-No longer the #1 CMD/DIP shuttler, Lorca has been outmatched by Tom Paris and Gul Dukat’s dopplegangers and what I can only describe as a green wench from one of Enterprise’s worst episodes - a more ignominious fate is hard to imagine for anyone who was playing the game when he was amongst the most desirable shuttle crew in the game.
+This space used to detail Lorca’s top CMD/DIP shuttle pair, which now sits somewhere in the 40s or 50s or 100s I don’t know, I’m just the writer. Most players are only going to utilize this cleaned up Isaacs variant when he has an event bonus, which is predictably far less often than the Disco mega era afforded him. 
 
-He’s still the #1 Mirror and Explorer CMD, and will still hold down daily shuttles with aplomb if that’s your bag, but taking him in a raw Behold is a risky prospect without guarantee of a pay off if you expect anything out of him beyond a spot in his stat boosting collection. Buyer beware.
+Still, with a few eventable and collectable traits in hand, Lorca isn’t really *that* far out of contention when stacked up next to the hundreds of other crew in similar situations. Just keep in mind that long stretches of irrelevance should be expected.

@@ -3,9 +3,9 @@ name: Captain Picard Day Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
-events: 24
-in_portal:
+bigbook_tier: 7
+events: 30
+in_portal: true
 date: 15/06/2021
 obtained: Giveaway
 mega: false

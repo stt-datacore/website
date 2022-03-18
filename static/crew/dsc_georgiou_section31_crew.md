@@ -3,12 +3,12 @@ name: Section 31 Philippa Georgiou
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 1
-events: 36
+bigbook_tier: 2
+events: 38
 in_portal: true
 date: 31/01/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

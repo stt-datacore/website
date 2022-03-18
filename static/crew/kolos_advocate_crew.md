@@ -3,12 +3,12 @@ name: Advocate Kolos
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 15
+bigbook_tier: 4
+events: 16
 in_portal: true
 date: 31/07/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

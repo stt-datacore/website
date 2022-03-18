@@ -3,8 +3,8 @@ name: Groom Worf
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 25
+bigbook_tier: 6
+events: 27
 in_portal: true
 date: 23/07/2020
 obtained: Event

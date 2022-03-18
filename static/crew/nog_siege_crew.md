@@ -3,7 +3,7 @@ name: Siege Nog
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 7
 events: 15
 in_portal:
 date: 21/09/2021

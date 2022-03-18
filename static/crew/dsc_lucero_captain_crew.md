@@ -3,7 +3,7 @@ name: Captain Lucero
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 4
 events: 30
 in_portal: true
 date: 15/01/2020
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Alita arrives to kick tribble ass! Well, her inexperienced Starfleet cousin does at any rate. Purple CMD/SCI has not been the most populated pairing until recent times and it makes sense that the Prodigy Of Pike should be quite proficient in this field. Her voyage ability is the lede and she'll perform like a gold crew with two or three stars there. 
+Thinking Lucero would anchor our Discovery shuttles for years...well, I guess that makes us the idiots. At least almost every other part of this card is good for something. Ardra-lite arena ability, worthwhile voyage metrics (if you can fuse her early), even an admirable event tally post-Disco megas.
 
-Even for Disco events she's a fine stand-in for shuttle seats and may save you from thawing a less daily-capable option, just beware of the flood of Discovery SCI bases that have her outside the top twenty names there. Her Crit Bonus ability fires off quick enough to be used with some damage dealers which increases her Arena/Skirmish viability, producing Ardra-lite results. But for Disco Faction events Lucero is more than useful. She is just a shell, not good, not bad. That part is up to you.
+Rather than sit on her hands with a dozen untapped traits, Lucero cashed in early and offers us strong collection value right out of the box. Established rosters welcome her aboard for that reason alone, while early-to-mid game players can utilize her other perks safe in knowing that the behold investment will pay off long term as well.

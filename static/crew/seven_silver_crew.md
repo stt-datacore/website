@@ -3,8 +3,8 @@ name: Seven in Silver
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 18
+bigbook_tier: 9
+events: 19
 in_portal: true
 date: 15/01/2019
 obtained: Giveaway

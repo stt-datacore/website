@@ -3,17 +3,17 @@ name: EDF Adira
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 19
+bigbook_tier: 5
+events: 20
 in_portal: true
 date: 17/12/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Only with a DIP primary can a character have a base that doesn't even touch the top 40 and still be a top 20 legendary voyager, in a game of over 300 options. That being said, if we at the Big Book knocked every DIP base for being 'low' ranking in the most overstuffed skill in the game, we wouldn't be very good at our jobs.
+The Adira twins made a splash upon their inclusion to the game in more ways than one. Youngin’s can ask their grandparents about Adiragate, but alongside that noise was a pair of pretty attractive voyagers. They’re both doing alright in that regard, EDF less so, but have a bundle of unanswered questions otherwise.
 
-And so it is in other, key ways that Adira Tal will enrich your roster, much as each life of a symbiont enriches the life of its subsequent hosts. For one, the voyage power is key, especially since it comes with an ENG tertiary that keeps Adira's value over their next exact replacement (in this instance, Krenim Paris and Tux Nog) quite high, as well as helping to diversify your voyages and keep you earning antimatter in the early stages for long enough that 10 hours will become a regular occurrence.
+A “Lasting Impressions”-style trait set (how would they have reacted to each other we wonder?) is a fun target for forward-thinking collectors, but it simply hasn’t bore much fruit for weekend event bonuses or collections so far. With Discover megas of yore hiding a shockingly thin event history, it’s voyages or bust for this variant.
 
-Combining demonstrably elite voyager power in a relatively rare skill order with guaranteed event futures - think Reno more than Nhan or Linus - Adira is an easy cite option if you're looking to shore up certain voyage pairs or want to bank Discovery event names now that the tag is dead. Their traits are sparse but interesting enough that mega features seem highly likely, sporting a #1 DIP base in all but Trill (Z'Odo) and Prodigy (Professor Sato), especially post Caregiver/Warp Theorist. In the end, as a Faction reward, obtaining this card might be a Tal order, but you'll soon realise the long term benefits make it one worth taking on.
+Adira’s order of skills (and low anti-matter chances) is unfortunate for voyage efficacy, but will flip flop for event seating, when they inevitably grab a mega or two down the line. Until then it’s a waiting game as we hope for the Great Material Continuum to provide Adira’s traits with relevance.

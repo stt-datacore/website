@@ -3,13 +3,15 @@ name: Karyn Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 14
 in_portal: true
 date: 25/06/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Somewhere out there in the future is a DIP/SCI Super Rare that I’ll have high praise for but today is not that day. Karyn sports some average numbers to secure her space on many early game voyages but she lacks a good array for traits to back up her mediocre numbers. She’s replaceable with any number of recent additions and doesn’t have quite enough power to justify her poor event count. However with the right combination she might be able to push a six hour voyage into eight.
+Somewhere out there in the future is a DIP/SCI Super Rare that will earn resounding applause, but today is not that day. If there are any Karen jokes to be made, it’s probably because we want to return this one to the store, no questions asked.
+
+Outside of moonshot voyage potential if a new roster gathers all four stars quickly, Karyn is merely a single collection piece whose inclusion in a future Desperate collection might herald the end of the game.

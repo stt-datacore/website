@@ -3,8 +3,8 @@ name: Captain Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
-events: 27
+bigbook_tier: 7
+events: 28
 in_portal:
 date: 09/09/2021
 obtained: Event

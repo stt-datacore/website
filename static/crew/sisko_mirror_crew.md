@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Handfuls of events wasted on irredeemable bases have long left Sisko in the avoid pile. 2020, being the wacky year that it was, did finally give us a reason to behold this otherwise pathetic mess. You will need him for the Smoke and Mirrors collection, but don't bother leveling him until you're at a collection threshold or just need the crew slot.
+Handfuls of events wasted on irredeemable bases have long left Sisko in the avoid pile. 2020, being the wacky year that it was, did finally give us a reason to behold this otherwise pathetic mess. Getting on the collection board with Smoke and Mirrors, Sisko would seem likely to pick up one or two more of those, but until he does, feel free to pass on him again and again in beholds if he’s across from any other card with a pulse.

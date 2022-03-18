@@ -3,12 +3,12 @@ name: Klingon Neelix
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 22
+bigbook_tier: 8
+events: 23
 in_portal: true
 date: 10/07/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

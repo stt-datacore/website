@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 5
-events: 15
+events: 16
 in_portal: true
 date: 01/12/2020
 obtained: Pack
@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-Middling is the word of the day - there are a few perks here, just enough for her behold appearance to elicit an "Oh..."
+An early 2022 mega littered with Romulans provided only a single piece of competition (Laris) for that hard-to-fill anti-matter seat on voyages, but it may have been enough to put Oh, otherwise lacking in power, out of work there permanently.
 
-Her voyage power is just Oh-K for most skill sets, but fairly dire for the ubiquitous CMD/DIP/SEC. She can make runs for most rosters, just not for too much longer. Nevertheless, it's her other offerings you're likely after.
+Generally fair-to-bad in most areas, it’s Oh’s arena work that’s of most interest. “Killy, but two seconds slower” is blasphemous for veteran players and may have them vomiting and rending their garments, but for players who don’t have perfectly manicured ship lineups or have bigger fish to fry with their crew retrievals, Oh does a fair enough approximation to last you a long time.
 
-Double collections - one of which still requires legendary crew - and a little event potential, both from traits and a possible all-inclusive Picard mega. She even collects a handful of 45% gauntlet sets, but doesn't break into the power charts for any of them, again, because of a lousy skill set.
-
-The buried lede here is a great arena ability - think everybody's favorite Killy, just a hair slower. If one hand on the hip isn't enough and you just have to pivot to an option with both hands firmly in power pose, Oh will do a fine approximation, right down to the beefy +10 attack boost with five stars. You might have to tap for a few more minutes over the course of a skirmish weekend or be picky with your arena victims, but the gulf in effectiveness between Oh and the top options is not massive.
+If you are that fresh faced Timelines cadet, keep an eye out for any of her 45% gauntlet sets. She doesn’t have the proficiency power to last past your first year in the game, but a reasonable CMD roll can handle mop-up duty on thinner rosters.

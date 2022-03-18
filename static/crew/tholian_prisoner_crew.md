@@ -3,13 +3,15 @@ name: Tholian Prisoner
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 25
+bigbook_tier: 6
+events: 26
 in_portal: true
 date: 18/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Over twenty events wringed from four traits (and one invisible one) is unbelievable and has made this one-off, nameless crew more relevant than he has any right to be. Continuing that trend is his post-release spot in a stat-boosting collection which requires you to collect every eligible super rare, including this one. Voyage numbers still on the right side of usable makes him worth grabbing from events if possible and building slowly via beholds for his premium collection spot.
+Over twenty events wringed from four traits (and one invisible one) is unbelievable and has made this one-off, nameless crew more relevant than he has any right to be. We would have bet at any point in the past that it wouldn't have continued and still affirm that - I guess we'll see if he continues to beat the odds.
+
+There isn't much else noteworthy besides his three collectable traits. Should they all land on the wheel of fortune (can't capitalize that or we'll have to pay royalties), he'd be a more attractive behold option, especially to veteran players.

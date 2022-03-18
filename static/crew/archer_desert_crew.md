@@ -3,8 +3,8 @@ name: Desert Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
-events: 22
+bigbook_tier: 7
+events: 25
 in_portal: true
 date: 30/10/2019
 obtained: Event

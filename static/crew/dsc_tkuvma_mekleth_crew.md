@@ -3,8 +3,8 @@ name: T'Kuvma
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 26
+bigbook_tier: 7
+events: 31
 in_portal: true
 date: 10/10/2017
 obtained: Mega

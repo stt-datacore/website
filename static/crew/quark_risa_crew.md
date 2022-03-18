@@ -4,7 +4,7 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 4
-events: 25
+events: 26
 in_portal: true
 date: 11/01/2018
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Most people don't think "powerhouse" when they see Quark's shapely lobes, but this variant very nearly is. Great voyage numbers and only two crew rated higher have better MED. Two very usable bases for Quark's double-digit events, and +1 Ferengi collection give him several avenues to contribute. Only 11 Ferengi items required to FE make him a bargain.
+Born as an impressive daily use option, Quark is making the graceful transition to collection era target. Seven non-HFS traits, all with the potential to be "something" in the future, gives him plenty of whacks at the collection and event piñata. With fringe-playable voyage ability in the right situation and variant events as a cushion, Tourist Quark turns a build cost light on Ferengi faction items into a bargain payoff that would make any Ferengi blush.

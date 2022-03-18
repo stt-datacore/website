@@ -3,8 +3,8 @@ name: Anastasia Komananov
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 34
+bigbook_tier: 4
+events: 36
 in_portal: true
 date: 24/04/2017
 obtained: Event

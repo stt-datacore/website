@@ -3,8 +3,8 @@ name: Commander Barak
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 10
+bigbook_tier: 9
+events: 11
 in_portal: true
 date: 02/10/2017
 obtained: Event

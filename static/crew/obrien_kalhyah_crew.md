@@ -3,12 +3,12 @@ name: Kal'Hyah O'Brien
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: -1
-events: 8
-in_portal:
+bigbook_tier: 6
+events: 20
+in_portal: true
 date: 10/06/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

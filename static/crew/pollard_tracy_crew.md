@@ -3,7 +3,7 @@ name: Dr. Pollard
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 20
 in_portal: true
 date: 17/07/2019
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-A late bloomer, Pollard only stands out more over time as other skill sets explode in their number of options while strong medics remain as rare as latinum. The good doctor was 2019's sole addition to the ranks of MED/CMD crew and we thank Qod that she's a good one. Voyages are the main course here. Fret not a slipping voyage total. Exclusivity plus a powerful MED primary will have her standing out from the crowd, if her bleached white uniform doesn't do the trick. We pump the brakes a bit when it comes to shuttles. She sits atop an absurdly thin slate of 'MED and CMD' seating options and has collected fistfuls of event bonuses from the Discovery trait, but the downsides are big - 'MED and CMD' seats are rare and the Discovery event bubble seems to have burst, leaving Pollard with some ugly trait options in its wake. Pollard won't blow the roof off shuttles the way she has in the past, but everyone should try to collect options for a diverse and deep roster and Pollard is #1A for her skill pair and can pick up shuttle work even without bonuses.
+There are so few legendary MED/CMD crew that veteran players know them by heart. And in the same vein as Reverend Phlox, Pollard’s current value is very much tied to the simple lack of competition in her best areas.
+
+Pollard’s raw voyage power is a big Oof these days and would be about two years out of service if she were wearing CMD/DIP/SEC colors. But although her usage in that area is narrow, there are a few skill combos for which she’s still guaranteed to ride. The ability to boost everybody’s weakest voyages is a siren’s call to many players and even though it’s rarely the best long term return on citation investment, Pollard is still an option.
+
+In a post-Disco event world, Pollard is stranded on an island and trying to rub her two viable traits together to start a fire. Again, due to a lack of proper MED/CMD options and considering strong base metrics for her skill set, Pollard is more of a non-bonus option than it might first appear. Tapped out on collectable traits yet having grabbed at least a pair of collections, Doc Tracy is doing a highwire act to maintain value and a few well placed crew additions could send her tumbling.

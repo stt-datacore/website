@@ -3,8 +3,8 @@ name: Captain Klaa
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 9
+bigbook_tier: 9
+events: 10
 in_portal: true
 date: 17/04/2017
 obtained: Pack

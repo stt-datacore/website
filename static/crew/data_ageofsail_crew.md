@@ -3,8 +3,8 @@ name: Age of Sail Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 31
+bigbook_tier: 7
+events: 32
 in_portal: true
 date: 11/09/2018
 obtained: Pack

@@ -3,12 +3,12 @@ name: Gladiator Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 3
-events: 45
+bigbook_tier: 6
+events: 47
 in_portal: true
 date: 10/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

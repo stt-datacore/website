@@ -3,12 +3,12 @@ name: Soren
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 7
-in_portal:
+in_portal: true
 date: 11/02/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

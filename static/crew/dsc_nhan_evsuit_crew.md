@@ -3,12 +3,12 @@ name: EV Suit Nhan
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 7
 events: 19
 in_portal: true
 date: 02/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -3,8 +3,8 @@ name: Commander Tomalak
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 7
+bigbook_tier: 9
+events: 8
 in_portal: true
 date: 26/07/2016
 obtained: Post-Launch

@@ -4,12 +4,14 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 5
-events: 20
+events: 22
 in_portal: true
 date: 21/12/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-At one point, Mayweather was viable for daily shuttles and voyages, but years of competition have stuffed him down into the roster-dependent pile. There's still enough voyage juice for newer players who can fuse him early, but the valuable Mirror collection spot and occasional Faction event help is what gives him broader appeal.
+Offering at least a little bit of something in all corners except the gauntlet, Mayweather is a crew who really needs all four stars to measure up to his overall rating. Driven mostly by base and voyage metrics, if you're looking at him as a behold choice, consider if what he offers will still be relevant for you by the time you finish him.
+
+If you do fuse him early, however, there's enough juice for fringe daily use spanning shuttles, arena, and voyages with his more lasting contributions coming on weekend shuttles and his thin but tangible collection value.

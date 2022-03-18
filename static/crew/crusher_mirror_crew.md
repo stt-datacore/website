@@ -3,13 +3,17 @@ name: Mirror Beverly Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 8
+events: 29
 in_portal: true
 date: 21/12/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Crusher? I hardly know her! A formerly well-rounded crew, Bev's unable to hide her age to the point that the Mok'bara variant released in 2020 shocked many players by providing a "good Crusher". The plus skill set and minor gauntlet ability would be a boon on early rosters, but the fused numbers don't hold up to competition and the event work for Crusher crew or the Mirror tag will never be consistent. She might still be in consideration for the Mirror collection which boasts several putrid legendary crew, but as a standalone, she doesn't move the needle in the endgame.
+Bev offering to repair your ship's hull twenty (!!) seconds into the battle? She is Troy Barnes delivering pizza.
+
+Relic of a bygone era is apt in this case. As Brooks would say, "The world went and got itself in a big damn hurry." You can add voyages and gauntlet (at least for established players) to the list of areas where she used to be alright too. So what is this Bev good for?
+
+Well, an eclectic trait set has saved many a crew and although they can't magically give her modern proficiencies, fresh rosters can plug-n-play her gauntlet work from time to time. And Bev's event count would be on life support without those traits. As with most crew this age, consider Crusher for her collection and event value with anything else as a bonus.

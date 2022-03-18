@@ -3,8 +3,8 @@ name: Drone Seven of Nine
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 17
+bigbook_tier: 7
+events: 18
 in_portal: true
 date: 20/10/2016
 obtained: Post-Launch

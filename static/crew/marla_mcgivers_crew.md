@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A 900 DIP base with fairly uncommon ENG secondary and reasonable arena evasion. Her two events were standalone features and may open up chances for re-run bonuses to power up her already great DIP. But most of her traits are not particularly eventable outside of romantic and her performance to date has mostly been as a daily shuttle pilot which is about as valueless as it gets.
+There was a time when Marla was a favorite of the B I G B A S E segment of the playerbase, but her way forward is going to be appealing to the “follow the traits” sect. A reasonable DIP base will almost always play for events (if she ever gets them), including a re-run of one of her features, but as those have been extremely sparse so far, you’re probably just eyeing her trait set to provide collection value.
+
+She doesn’t have ‘sleeping giant’ potential like certain other trait rich crew, but Marla could certainly pop up with three or four collections under her belt before you realize it.

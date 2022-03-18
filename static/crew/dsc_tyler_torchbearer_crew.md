@@ -3,8 +3,8 @@ name: Torchbearer Tyler
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 27
+bigbook_tier: 7
+events: 34
 in_portal: true
 date: 07/11/2019
 obtained: Event

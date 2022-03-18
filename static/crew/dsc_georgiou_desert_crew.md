@@ -3,12 +3,12 @@ name: Desert Philippa Georgiou
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 9
 events: 22
 in_portal: true
 date: 10/10/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

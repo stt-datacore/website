@@ -3,8 +3,8 @@ name: Liaison Torres
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 19
+bigbook_tier: 8
+events: 20
 in_portal: true
 date: 29/07/2017
 obtained: Post-Launch

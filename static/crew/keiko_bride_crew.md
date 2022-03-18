@@ -3,7 +3,7 @@ name: Bridal Keiko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 2
 in_portal: true
 date: 14/05/2020
@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-When evaluating new crew, it's often useful and instructive to use "comps," or crew that compare closely in skill set and relative power, to see how they stack up. So, let's look at some comps for Bridal Keiko, shall we? Harcourt Fenton Mudd. Lenara Kahn. Loqueque Sato. Joseph Sisko. Orion Vina. Oh my.
+When evaluating crew, it's often useful and instructive to use "comps" or crew that compare closely in skill set and relative power to see how they stack up. So, let’s check out some comps for Bridal Keiko -  Lenara Kahn. Loqueque Sato. Joseph Sisko. Orion Vina. Oh my.
 
-Let's try to find some positives. Her art is good and unique for the game, and her ship ability is certainly useful enough, if a tad slow (Side note: whoever came up with the idea of "I Do!" dropping 400% instant damage deserves a raise) 
+Well, her art is pretty cool.
 
-Unfortunately, there's not much else here to recommend. Her event count is dismal, her traits ensure that won't get better, and she has no collection value.
+Keiko is more or less just a ship damage option and even though she may catch a mega or two in the future and, yes, there is an art file floating around for the Botanist collection (fight me, WRG), there’s nothing she offers that other crew can’t cover while pitching in greater utility.
 
 So before you take Bridal Keiko as your lawfully wedded crew member, consider us the man in the back yelling "I object!"

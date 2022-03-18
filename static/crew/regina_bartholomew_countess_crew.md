@@ -3,9 +3,9 @@ name: Countess Regina Bartholomew
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 5
 events: 11
-in_portal:
+in_portal: true
 date: 06/07/2021
 obtained: Pack
 mega: false

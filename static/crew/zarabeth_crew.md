@@ -3,15 +3,15 @@ name: Zarabeth
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 10
-events: 15
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 29/10/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Hailing from a good episode and having good art do not a good card make, and unfortunately Zarabeth doesn't bring much else to the table. A two-skiller with neither base debuting in the top 30 for Super Rares is an inauspicious beginning. Her traits are decent, but most of the eventable ones have already been tapped for megas and one-off events.
+Hailing from a personal favorite episode that saw Mr. Atoz push the Pram-a-lot, Zarabeth’s art holds up its end of the bargain, but the raw stats don’t. A quick glance will let you know that outside of some early game stopgap arena evasion, there’s really nothing here outside of what traits can provide.
 
-Looking further, we see no collections, and a ship ability (EV) that's just "okay." She'll be fine to use in her debut skirmish, but after that it's freeze and forget. Her only long term value beyond +1 immo is the possibility of making a great bridge crew lineup if we ever get a card for Mr. Atoz in the game.
+That being said, Zarabeth has a healthy collection profile and has mustered a respectable event history during the trait mega era and looks to continue that going forward. She’s merely a bit player and not a wagon to hitch your early game roster to, but still a behold option that established players should be happy to welcome aboard.

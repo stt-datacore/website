@@ -3,7 +3,7 @@ name: Compromised Airiam
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 29
 in_portal: true
 date: 10/12/2019
@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Ripper's value is highly volatile and is event and roster depe...oh wait hang on, that's the other Disco SEC/SCI workhorse. Like her macro-tardigrade cousin, Airiam’s uses are limited for a shuttle filler with only two skills. Disco events are numerous but if you have been playing since Discovery launched no doubt you will be inundated with faction fodder.
+An arena quote like "Open the Airlock" is just begging to be riffed on, but Airiam does have a few perks up the sleeves of her Power Rangers outfit.
 
-There's enough meat on her trait set to offer workhorse status in spurts, as demonstrated by her unexpected SEC dominance during the Astrophysicist mega, but the lack of a third skill to fill out her hefty primary and secondary skills should give one pause before adding her to your roster over candidates with broader utility.
+A beefy trait list, including the hidden 'evsuit', has paid dividends here and there in the form of collections and event bonuses. While the latter is dampened by an uncommon skill pair on shuttles and the presumptive end of Discovery events, a single 1500+ SEC base is plenty to fill shuttle seats any other time she snags a bonus.
+
+If you're a new player facing her in a particularly nasty begold, Airiam has roughly two dozen elevated crit gauntlets and just barely enough proficiency power to make a few gauntlets for you in your first couple of months of play.

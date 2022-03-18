@@ -3,7 +3,7 @@ name: Saboteur Garak
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 23/05/2019
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-From arguably the best episode in the history of Star Trek comes inarguably Timelines' best version of Garak. He is tailor-made (groan) for the weekend, with variant-best (and Cardassian-best) SEC and ENG bases paired with an event count that seems to be picking up speed and could hit on any of several potential eventable traits. He's no slouch for daily use either, with SEC/ENG voyage metrics placing him right in the thick of things and a 400% damage ship ability similar to previous campaign crew Leland, which pairs excellently with a Killy/RP Commandant to make a strong one-two punch for Arena and Skirmishes. I don't know about you, but I'd call THAT a bargain.
+When it comes to voyages, Garak is definitely on the back nine (at Gedi Prime) despite his juicy trait lineup. If you can squeeze a few combos out of him still, that's the cherry on top. Taking the lede is his rich trait inventory which could and probably will supplement a respectable number of variant events. Strong SEC base power will have him finding shuttle seating at will, even if there's a somewhat sour Romulan sitting in that chair already.
+
+His collection pot crock pot has been slow cooking for years and though he only owns a spot in one as of this writing, he could be in three or four by the time you read this and has a higher ceiling than most. If that all isn't enough of a package, Garak also pitches in an acceptably fast 400% damage ship ability that pairs nicely with a Killy/RPC to make a strong one-two punch for Arena and Skirmishes. I don't know about you, but I'd call THAT a bargain.

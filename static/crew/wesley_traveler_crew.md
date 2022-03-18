@@ -3,7 +3,7 @@ name: Traveler Wesley
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 15
 in_portal: true
 date: 16/07/2020
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Clearly something went wrong with the clocks in WRG, because apparently it’s still 2017 according to Vestley's stats. Somehow he was still late to his own party, debuting after his warp theorist trait was featured in a mega event. Poor numbers compounding his obscure traits are a sure sign of his irrelevance. We are fast approaching the limit to Wesley variants (Polywater Wesley looms on nobody's mind) and with nothing but a poor entry in the SCI/ENG leagues, the only place he should "travel" is out your nearest airlock.
+A brutally bad card, Vestley (great nickname) was done dirty by being released with stats three years older than he was. The only path to redemption here is his trait list. A few of his entries are extremely small, niche traits while civilian is huge, but with collections numbering in the dozens, as long as they’re not Human, Federation, or Starfleet, we can only assume they’ll have their day. Freeze and forget, or better yet - don’t let him aboard.

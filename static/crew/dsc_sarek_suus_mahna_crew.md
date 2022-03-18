@@ -3,13 +3,17 @@ name: Suus Mahna Sarek
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 32
+bigbook_tier: 6
+events: 36
 in_portal: true
 date: 15/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-His numbers don't jump off the page and aren't even average in many cases, but Sarek's trait rolodex and smattering of series appearances have caused him to collect a litany of event chances. Owning two spots in collections that were expanded in 2020 help offset a voyage score resting in the dumpster and the presumable loss of blanket Discovery event bonuses. Slow, but strong, trigglerless arena damage should find use on most early-to-midgame rosters and help round him out, offering a wider array of value to various rosters.
+A former “meh” power giveaway crew, Sarek has somewhat been the gift that keeps on giving. He probably hasn’t sniffed much daily use for anyone in years, but the trait era has been good to him, providing prodigious event and collection value that should abide for a while longer.
+
+Still afloat on the weekends in a post-Disco world, Sarek’s trait and event his variants should be good for at least a couple events yearly with the odd mega power spike from time to time. And his quartet of collections could potentially double in count if players call WRG’s bluff and see just how committed they are to maintaining monthly collections.
+
+With some very usable triggerless arena damage available at one star, Sarek offers value via some non-traditional avenues, even if he’s best enjoyed by late game, established rosters.

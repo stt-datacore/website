@@ -3,9 +3,9 @@ name: Alternate Harry Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 7
 events: 24
-in_portal:
+in_portal: true
 date: 22/07/2021
 obtained: Event
 mega: false

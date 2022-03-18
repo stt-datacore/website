@@ -3,7 +3,7 @@ name: Tora Ziyal
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 4
 in_portal: true
 date: 20/02/2018
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Two 'usable' bases puts her near the top of a couple different traits' 'best of' lists. If/when they crop up, she'll be a valuable weekend resource, but until then she's almost a total dud of an investment. She may pop up on a few voyages out of necessity for very new players due to her MED, but will fade into obscurity in the mid-game and beyond. If you select her as a character choice, you'll be hoping for a Cardassian or Bajoran mega, like the several other racial events that have come before.
+Two 'usable' bases (when bonus) puts her near the top of a couple different traits' 'best of' lists. If/when they crop up, she'll be a valuable weekend resource, but until then Ziyal is almost a total dud of an investment.
+
+Something in the four to five collection range is firmly within her possible outcomes and it would be hard to catch *fewer* events going forward, but as you’ve probably guessed, Ziyal is far more theoretical value than realized potential.

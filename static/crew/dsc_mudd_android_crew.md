@@ -3,12 +3,12 @@ name: Android Mudd
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: -1
-events: 44
-in_portal:
+bigbook_tier: 2
+events: 46
+in_portal: true
 date: 22/04/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

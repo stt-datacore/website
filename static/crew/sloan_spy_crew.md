@@ -3,7 +3,7 @@ name: Luther Sloan
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 8
 events: 8
 in_portal: true
 date: 03/04/2017
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Now in the era of trait megas, Sloan is looking a bit better than he had previously. Still not a daily use option, he’ll be banking on one of a few traits to trigger another chunk of event bonuses. Half of his current event total comes from Section 31, which has had an event in each calendar year and may provide more thawpertunities down the line.
+In the collection/trait era, Sloan is looking marginally better than he had previously. Still not a daily use option aside from a reasonable crit-centric arena ability, he’ll be banking on any one of his quartet of viable traits to grant collection value. Events are of course on the table, but most well-stocked rosters would find little use in thawing his mid-2017 bases.

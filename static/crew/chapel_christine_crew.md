@@ -3,13 +3,13 @@ name: Christine Chapel
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 8
+bigbook_tier: 9
+events: 11
 in_portal: true
 date: 04/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Sistine Chapel she is not, but Christine is still worth snagging. Disappointing release numbers are softened by a MED-led skill set for voyages and two scoops of collections automatically lift her value above many other names. Chapel's base ranking is inflated in a depressed MED skill, but with a smattering of trait potential and the juicy prospect of a second date with Leonardo in a re-run, she may pitch in post-cryo from time to time.
+Sistine Chapel this card is not, though Christine is still worth some behold capital for her collections. Disappointing release numbers did her no favors as she's no longer viable in other areas of the game unless she picks up another big bonus feature and a younger roster is able to obtain multiple stars at once. If your other behold options are similarly unusable for typical voyage and shuttle runs, take her collections and run.

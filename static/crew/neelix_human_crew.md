@@ -3,12 +3,12 @@ name: Human Neelix
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: -1
-events: 16
-in_portal:
+bigbook_tier: 4
+events: 17
+in_portal: true
 date: 22/04/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -3,9 +3,9 @@ name: Grecian Carolyn Palamas
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: -1
-events: 1
-in_portal:
+bigbook_tier: 6
+events: 2
+in_portal: true
 date: 13/04/2021
 obtained: Pack
 mega: false

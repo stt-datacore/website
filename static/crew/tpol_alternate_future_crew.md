@@ -3,8 +3,8 @@ name: Alternate Future T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
-events: 27
+bigbook_tier: 7
+events: 28
 in_portal: true
 date: 21/08/2018
 obtained: Pack

@@ -3,8 +3,8 @@ name: Smitten Jean-Luc Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 18
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 28/09/2017
 obtained: Pack

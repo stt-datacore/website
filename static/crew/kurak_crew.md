@@ -3,8 +3,8 @@ name: Kurak
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 22
+bigbook_tier: 8
+events: 23
 in_portal: true
 date: 08/09/2016
 obtained: Post-Launch

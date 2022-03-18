@@ -3,7 +3,7 @@ name: Dr. Edward La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 6
 events: 7
 in_portal: true
 date: 23/07/2020
@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Just as I thought to myself “Gosh I do wish I could complete my La Forge family bridge crew,” lo and behold here is Daddy La Forge looking down at us with fatherly disdain. Why do I suddenly feel guilty about something I’ve done? 
+There’s an unwritten rule of thumb - if a crew can’t be 100% retrieved, they’re probably not useful enough to get excited about. That’s not totally true in Ed’s case, but it surely does point to his aging profile and what sort of value you can expect long term.
 
-The most exciting crew to grace our roster he is not, but he’s a great example of WRG delving into the depths of TNG lore in order to pull a classic “one scene wonder with amazing stats” maneuver. Solid SCI/MED voyagers are not exactly hard to come by, but that CMD sweetener is a wonderful thing to behold. His stats are perfectly balanced as a compromise between Voyages and Shuttle seats, and he excels in both. Should you be lacking some big names like Pollard, Rev Phlox, or Hobo Culber and lack that commanding presence then Eddy is a fine choice. 
+Before that tumble reaches terminal velocity, you should be able to squeeze some more voyaging out of him. Perhaps not a recommended journey starting from star one at this point, Ed nevertheless has a plus skill set, splash of everybody’s hardest stack in MED/CMD, and all four of his traits trigger anti-matter bonuses. 
 
-The big BUT that never lies is that his event use is empty. Exobiology isn’t a friend to many event features, and although he shares the family name he won’t be cropping up on many of his son’s away missions. Combine that with a frequent roster of recurring SCI or MED crew potentially waiting in the wings, his voyage scores are bound to plummet. Great stats but be sure who else you have waiting on the cite list before you invest in Ed.
+With the totality of his post-voyage value tied to the Exobiology trait, there’s no shame in beholding a crew with a boring skill set if their long term benefits beat out adding early stars onto Ed.

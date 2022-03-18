@@ -3,7 +3,7 @@ name: Lore
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 7
 in_portal: true
 date: 01/11/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His best (and perhaps only) attribute of note for most players is a handful (4) of previous big bonus features in Faction events. Certainly worth a thaw if he catches more, but otherwise he can only boast fast arena evasion if you find yourself being stomped in the arena like a late harvest Chateau Picard.
+His best (and perhaps only) blip of realized usage is a handful (4) of previous big bonus features in Faction events. Aside from his modest collection profile, he'd be worth a thaw if he catches more features, otherwise he can only boast fast-activating shipboard evasion if you find yourself being stomped in the arena like a late harvest Chateau Picard.

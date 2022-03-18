@@ -5,10 +5,10 @@ series: dsc
 memory_alpha:
 bigbook_tier: 2
 events: 39
-in_portal:
+in_portal: true
 date: 01/04/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

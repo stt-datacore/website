@@ -3,8 +3,8 @@ name: Mobile Doctor
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 20
+bigbook_tier: 10
+events: 21
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The former MED base leader has officially fallen out of the top ten. The king is dead, long live the king. On voyages, the numbers speak for themselves in a way that even a handy skill order has trouble saving. But a crew with sinking effectiveness in all corners, was thrown a lifeline in the form of Fusion-palooza! As a standalone card he still has event value, but as a catalyst to create the ultra useful Indulgent Seven, he has new life. Despite Father Time bearing down on him, Mobile Doc is still a handy card to come across at the behold screen.
+The former MED base leader has officially fallen from the ugly tree and hit every branch on the way down. You’d have a hard time finding a redder scorecard, but the fly in the ointment here is his fusion ability. Combining with a super rare Indignant Seven card creates Indulgent Seven, a fairly worthy card - certainly worthier than her component elements. 
+
+Considering Mobile Doctor cannot be isolated in crew retrieval, you’d better grab his first star whenever possible if you have designs on acquiring and immortalizing the iconic Cheesecake Seven.

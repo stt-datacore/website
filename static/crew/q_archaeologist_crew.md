@@ -3,9 +3,9 @@ name: Archaeologist Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: -1
-events: 23
-in_portal:
+bigbook_tier: 6
+events: 26
+in_portal: true
 date: 20/05/2021
 obtained: Event
 mega: false

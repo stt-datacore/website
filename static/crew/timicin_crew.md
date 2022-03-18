@@ -3,7 +3,7 @@ name: Timicin
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 5
 in_portal: true
 date: 20/03/2018
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Timicin's voyage numbers aren't what they used to be almost a year after his release and his ENG/SCI skill pairing is not hard up for representation. But his SCI base is as sturdy as he is and built to carry the load for daily shuttle runs, even though he'll need to get lucky with traits to make a difference on the weekends. If you snag this guy in a behold, do yourself a favor and go watch his tragic episode.
+Right near the top of Timelines injustices I'd like to correct is the complete lack of usability for this tragic and powerful character portrayed by the late David Ogden Stiers. There's simply nothing here besides a short list of potential collection traits. Look to see that Timicin has hit on at least a couple of them before you consider selecting him in a behold.
