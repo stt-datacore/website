@@ -1,14 +1,11 @@
 import React from 'react';
 
-const EngineeringIcon = ({ color, position }) => {
+const EngineeringIcon = ({ color, position, dimLimit }) => {
+  const dimBalancer = dimLimit;
+  // width={dimBalancer * 0.856}
   return (
-    <svg id="Layer_1" data-name="Layer 1" width={26} height="20" viewBox="0 0 85.31 99.68" transform={`translate(${position}, 0)`}>
-      <polygon points="0.84 99.18 18.82 99.18 27.92 81.09 40.26 79.55 34.19 55.9 10.89 62.29 14.74 73.58 0.84 99.18" fill={color} stroke="#000" />
-      <g>
-        <polygon points="77.24 4.75 54.48 44.8 40.26 46.34 32.77 32.7 38.72 22.88 23.5 22.88 13.94 40.67 20.55 54.12 38.63 49.97 43.14 67.95 59.28 64.59 84.74 18.1 77.24 4.75" fill={color} stroke="#000" />
-        <polygon points="45.66 11.42 52.27 0.5 35.52 0.5 29.65 11.42 45.66 11.42" fill={color} stroke="#000" />
-        <polygon points="25.73 18.73 41.23 18.73 43.5 14.99 27.74 14.99 25.73 18.73" fill={color} stroke="#000" />
-      </g>
+    <svg width={dimBalancer} height={dimBalancer} viewBox="0 0 85.98 100.47" transform={`translate(${position} 0)`}>
+      <polygon points="0.84 99.97 18.96 99.97 28.14 81.73 40.57 80.18 34.45 56.34 10.97 62.78 14.85 74.16 0.84 99.97" fill={color} stroke="#000" /><polygon points="77.85 4.78 54.91 45.16 40.57 46.7 33.02 32.96 39.02 23.05 23.68 23.05 14.05 40.99 20.7 54.55 38.93 50.36 43.48 68.49 59.75 65.1 85.4 18.24 77.85 4.78" fill={color} stroke="#000" /><polygon points="46.01 11.51 52.68 0.5 35.79 0.5 29.88 11.51 46.01 11.51" fill={color} stroke="#000" /><polygon points="25.93 18.87 41.55 18.87 43.84 15.1 27.95 15.1 25.93 18.87" fill={color} stroke="#000" />
     </svg>
   )
 }

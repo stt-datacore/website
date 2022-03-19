@@ -71,40 +71,40 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const icons = {
 			command: {
-				primary: <CommandIcon color='gold' position={0} />,
-				secondary: <CommandIcon color='silver' position={6} />,
-				tertiary: <CommandIcon color='#b08d57' position={6} />,
-				voyageSecondary: <CommandIcon color='silver' position={0} />
+				primary: <CommandIcon color='gold' position={0} dimLimit={25}/>,
+				secondary: <CommandIcon color='silver' position={6} dimLimit={25}/>,
+				tertiary: <CommandIcon color='#b08d57' position={6} dimLimit={25}/>,
+				voyageSecondary: <CommandIcon color='silver' position={0} dimLimit={25}/>
 			},
 			diplomacy: {
-				primary: <DiplomacyIcon color='gold' position={-6} />,
-				secondary: <DiplomacyIcon color='silver' position={0} />,
-				tertiary: <DiplomacyIcon color='#b08d57' position={-6} />,
-				voyageSecondary: <DiplomacyIcon color='silver' position={0} />
+				primary: <DiplomacyIcon color='gold' position={-6} dimLimit={25}/>,
+				secondary: <DiplomacyIcon color='silver' position={0} dimLimit={25}/>,
+				tertiary: <DiplomacyIcon color='#b08d57' position={-6} dimLimit={25}/>,
+				voyageSecondary: <DiplomacyIcon color='silver' position={0} dimLimit={25}/>
 			},
 			engineering: {
-				primary: <EngineeringIcon color='gold' position={0} />,
-				secondary: <EngineeringIcon color='silver' position={0} />,
-				tertiary: <EngineeringIcon color='#b08d57' position={0} />,
-				voyageSecondary: <EngineeringIcon color='silver' position={0} />
+				primary: <EngineeringIcon color='gold' position={0} dimLimit={25}/>,
+				secondary: <EngineeringIcon color='silver' position={0} dimLimit={25}/>,
+				tertiary: <EngineeringIcon color='#b08d57' position={0} dimLimit={25}/>,
+				voyageSecondary: <EngineeringIcon color='silver' position={0} dimLimit={25}/>
 			},
 			medicine: {
-				primary: <MedicineIcon color='gold' position={0} />,
-				secondary: <MedicineIcon color='silver' position={0} />,
-				tertiary: <MedicineIcon color='#b08d57' position={0} />,
-				voyageSecondary: <MedicineIcon color='silver' position={0} />
+				primary: <MedicineIcon color='gold' position={0} dimLimit={25}/>,
+				secondary: <MedicineIcon color='silver' position={0} dimLimit={25}/>,
+				tertiary: <MedicineIcon color='#b08d57' position={0} dimLimit={25}/>,
+				voyageSecondary: <MedicineIcon color='silver' position={0} dimLimit={25}/>
 			},
 			science: {
-				primary: <ScienceIcon color='gold' position={0} />,
-				secondary: <ScienceIcon color='silver' position={0} />,
-				tertiary: <ScienceIcon color='#b08d57' position={8} />,
-				voyageSecondary: <ScienceIcon color='silver' position={0} />
+				primary: <ScienceIcon color='gold' position={0} dimLimit={25}/>,
+				secondary: <ScienceIcon color='silver' position={0} dimLimit={25}/>,
+				tertiary: <ScienceIcon color='#b08d57' position={8} dimLimit={25}/>,
+				voyageSecondary: <ScienceIcon color='silver' position={0} dimLimit={25}/>
 			},
 			security: {
-				primary: <SecurityIcon color='gold' position={0} />,
-				secondary: <SecurityIcon color='silver' position={0} />,
-				tertiary: <SecurityIcon color='#b08d57' position={0} />,
-				voyageSecondary: <SecurityIcon color='silver' position={500} />
+				primary: <SecurityIcon color='gold' position={0} dimLimit={25}/>,
+				secondary: <SecurityIcon color='silver' position={0} dimLimit={25}/>,
+				tertiary: <SecurityIcon color='#b08d57' position={0} dimLimit={25}/>,
+				voyageSecondary: <SecurityIcon color='silver' position={500} dimLimit={25}/>
 			},
 		}
 
@@ -168,9 +168,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									{
 										row.voyagesImproved.map((pairing, i) => (
-											<svg key={i} width="50" height="22" viewBox="0 0 50 22">
-												{icons[pairing.split('/')[1]].voyageSecondary}
-												{icons[pairing.split('/')[0]].primary}
+											<svg key={i} width="50" height="25" viewBox="0 0 50 25">
+												<g transform={`translate(12.5 0)`}>{icons[pairing.split('/')[1]].voyageSecondary}</g>
+												<g>{icons[pairing.split('/')[0]].primary}</g>
 											</svg>
 										))
 									}

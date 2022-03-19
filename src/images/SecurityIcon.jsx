@@ -1,14 +1,14 @@
 import React from 'react';
 
-const SecurityIcon = ({ color, position }) => {
+const SecurityIcon = ({ color, position, dimLimit }) => {
+  const dimBalancer = dimLimit;
+  // height={dimBalancer * 0.75}
   return (
-    <svg id="Layer_1" data-name="Layer 1" width={24 } height="21" viewBox="0 0 124 95"
-      transform={`translate(${position}, 0)`}>
-      <path d="M707.17,219.22v8.06s-17.5-1.85-17.5-8.06,17.5-8.06,17.5-8.06Z" transform="translate(-688 -202)" fill={color} stroke="#000" />
-      <path d="M712.11,233.14V207.48s3.34-3.34,36.37-3.34,55.95,9.08,61.11,11.74l-3.91,7.83H728.34c-7.25,0-8.29,9.43-8.29,9.43Z" transform="translate(-688 -202)" fill={color} stroke="#000" />
-      <path d="M728.18,227.28h61.68s-.67,8.56-3.92,8.56h-21c-4.48,0-5.88,2.69-5.88,4a7.11,7.11,0,0,0,.84,3.92c.9,1.9,22.53,45.45,22.53,45.45h2.88s1.46-.11,1.46,2.57,0,2.13-1.12,2.13H760.2c-2.58,0-2.13-.78-2.13-2s.56-1.45,1.57-1.45,2.57.11,2.57.11l-27-50h-7.06s-4.36.55-4.36-7.41C723.82,227.9,728.18,227.28,728.18,227.28Z" transform="translate(-688 -202)" fill={color} stroke="#000" />
+    <svg width={dimBalancer} height={dimBalancer} viewBox="0 0 99.51 74.68" transform={`translate(${position} 0)`}>
+      <path d="M15.16,25.54v6.6S.81,30.63.81,25.54s14.35-6.61,14.35-6.61Z" transform="translate(-0.31 -12.67)" fill={color} stroke="#000" />
+      <path d="M19.22,37v-21S22,13.17,49,13.17s45.88,7.45,50.12,9.63L96,29.22H32.53c-6,0-6.8,7.73-6.8,7.73Z" transform="translate(-0.31 -12.67)" fill={color} stroke="#000" />
+      <path d="M32.4,32.14H83s-.55,7-3.22,7H62.51c-3.67,0-4.82,2.2-4.82,3.3a5.78,5.78,0,0,0,.69,3.22C59.11,47.25,76.85,83,76.85,83h2.36s1.2-.1,1.2,2.11,0,1.74-.92,1.74H58.65c-2.11,0-1.74-.64-1.74-1.65S57.37,84,58.19,84s2.11.09,2.11.09L38.18,43H32.4s-3.58.46-3.58-6.07C28.82,32.65,32.4,32.14,32.4,32.14Z" transform="translate(-0.31 -12.67)" fill={color} stroke="#000" />
     </svg>
-
   )
 }
 
