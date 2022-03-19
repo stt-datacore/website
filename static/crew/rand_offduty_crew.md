@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-They say a Rand a day keeps the crew slots away. In this case it’s literally true. No inherent worth in the card aside from some marginal voyage work on an early roster should one somehow be lacking any DIP. If a prisoner event should come up again she could get a shuttle seat but don’t hold your breath. Her common skill set combined with a few dull traits and zero collections means she’ll probably be replaced by even the most sub-par begolds. Freeze or airlock then forget.
+Perhaps the most fitting crew to debut in the not-romantic, but scoundrel mega, Rand is mostly around to eat up your crew slots. Her ENG kicker won’t save a flagging voyage score that hits on only the three most common anti-matter traits and while her bases might be okay to thaw, she simply won’t get many bonuses due to a lack of eventable traits (thus far).
+
+Without name brand value or much potential collection value, feel free to avoid this Janice in beholds until she shows more tangible value.
