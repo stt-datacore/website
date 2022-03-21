@@ -39,6 +39,7 @@ type SearchableTableProps = {
 	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
+	lockable?: any[];
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -58,6 +59,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
+	const [activeLock, setActiveLock] = React.useState(undefined);
+
 	// Override stored values with custom initial options and reset all others to defaults
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
@@ -70,6 +73,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			setPaginationPage(props.initOptions['page'] ?? 1);
 		}
 	}, [props.initOptions]);
+
+	// Activate lock by default if only 1 lockable
+	React.useEffect(() => {
+		setActiveLock(props.lockable?.length === 1 ? props.lockable[0] : undefined);
+	}, [props.lockable]);
 
 	// Update column and/or toggle direction, and store new values in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
@@ -125,6 +133,26 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		);
 	}
 
+	function onLockableClick(lock: any): void {
+		if (lock) {
+			setActiveLock(lock);
+		}
+		else {
+			setActiveLock(undefined);
+			// Remember active page after removing lock
+			setPaginationPage(activePage);
+		}
+	}
+
+	function isRowHighlighted(row: any, highlight: any): boolean {
+		if (!highlight) return false;
+		let isMatch = true;
+		Object.keys(highlight).forEach(key => {
+			if (row[key] !== highlight[key]) isMatch = false;
+		});
+		return isMatch;
+	}
+
 	// Sorting
 	if (column) {
 		const sortConfig: IConfigSortData = {
@@ -170,6 +198,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Pagination
 	let activePage = pagination_page;
+	if (activeLock) {
+		const index = data.findIndex(row => isRowHighlighted(row, activeLock));
+		activePage = index >= 0 ? Math.floor(index / pagination_rows) + 1 : 1;
+	}
 	let totalPages = Math.ceil(data.length / pagination_rows);
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
@@ -204,16 +236,21 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>
 
+			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx))}</Table.Body>
+				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowHighlighted(row, activeLock)))}</Table.Body>
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={props.config.length}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={activePage}
-								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
+								onPageChange={(event, { activePage }) => {
+									setPaginationPage(activePage as number);
+									setActiveLock(undefined);	// Remove lock when changing pages
+								}}
 							/>
 							<span style={{ paddingLeft: '2em'}}>
 								Rows per page:{' '}
@@ -235,10 +272,38 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	);
 };
 
+type LockButtonsProps = {
+	lockable: any[];
+	activeLock: any;
+	setLock: (lock: any) => void;
+};
+
+const LockButtons = (props: LockButtonsProps) => {
+	const { lockable, activeLock, setLock } = props;
+
+	if (lockable?.length == 0) return (<></>);
+
+	return (
+		<div style={{ margin: '.5em 0' }}>
+			<span style={{ marginRight: '.5em' }}>Lock view on:</span>
+			{lockable.map((lock, lockNum) => (
+				<Button key={lockNum} compact toggle active={JSON.stringify(lock) === JSON.stringify(activeLock)} onClick={() => handleClick(lock)}>
+					{lock.name}
+				</Button>
+			))}
+		</div>
+	);
+
+	function handleClick(lock: any): void {
+		const isActive = JSON.stringify(lock) === JSON.stringify(activeLock);
+		setLock(isActive ? undefined : lock);
+	}
+};
+
 // Check for custom initial table options from URL or <Link state>
 export const initSearchableOptions = (location: any) => {
 	let initOptions = false;
-	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page', 'highlights'];
+	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page', 'highlight', 'highlights'];
 
 	// Always use URL parameters if found
 	if (location?.search) {

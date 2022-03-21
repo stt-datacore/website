@@ -6,6 +6,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../comp
 
 import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
+import ProspectPicker from '../components/prospectpicker';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
@@ -21,39 +22,112 @@ type ProfileCrewProps = {
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const { isTools } = props;
-	const pageId = isTools ? 'tools' : 'profile';
 	const myCrew = [...props.playerData.player.character.crew];
-	const buffConfig = calculateBuffConfig(props.playerData.player);
+
+	// Check for custom initial table options from URL or <Link state>
+	let initOptions = initSearchableOptions(window.location);
+	// Clear history state now so that new stored values aren't overriden by outdated parameters
+	if (window.location.state && initOptions)
+		window.history.replaceState(null, '');
+
+	// Convert highlight parameter to lockable object
+	const lockable = [];
+	if (initOptions.highlight) {
+		const crew = myCrew.find(c => c.symbol === initOptions.highlight);
+		if (crew) {
+			lockable.push({
+				symbol: crew.symbol,
+				name: crew.name
+			});
+		}
+	}
+
+	if (props.isTools) {
+		const allCrew = [...props.allCrew].sort((a, b)=>a.name.localeCompare(b.name));
+		const buffConfig = calculateBuffConfig(props.playerData.player);
+		return (<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig} initOptions={initOptions} lockable={lockable} />);
+	}
+
+	return (<ProfileCrewTable crew={myCrew} initOptions={initOptions} lockable={lockable} />);
+};
+
+type ProfileCrewTools = {
+	myCrew: any[];
+	allCrew: any[];
+	buffConfig: any;
+	initOptions: any;
+	lockable: any[];
+};
+
+const ProfileCrewTools = (props: ProfileCrewTools) => {
+	const { allCrew, buffConfig, initOptions } = props;
+	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
+
+	const myCrew = [...props.myCrew];
+	const lockable = [...props.lockable];
+
+	prospects.forEach((p) => {
+		let prospect = allCrew.find((c) => c.symbol == p.symbol);
+		if (prospect) {
+			prospect = JSON.parse(JSON.stringify(prospect));
+			prospect.id = myCrew.length+1;
+			prospect.prospect = true;
+			prospect.have = false;
+			prospect.rarity = p.rarity;
+			prospect.level = 100;
+			prospect.immortal = 0;
+			CONFIG.SKILLS_SHORT.forEach(skill => {
+				let score = { "core": 0, "min": 0, "max" : 0 };
+				if (prospect.base_skills[skill.name]) {
+					if (prospect.rarity == prospect.max_rarity)
+						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
+					else
+						score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity-1].base_skills[skill.name]);
+				}
+				prospect[skill.name] = score;
+			});
+			myCrew.push(prospect);
+			lockable.push({
+				symbol: prospect.symbol,
+				name: prospect.name,
+				rarity: prospect.rarity,
+				level: prospect.level,
+				prospect: prospect.prospect
+			});
+		}
+	});
+
 	return (
 		<React.Fragment>
-			<ProfileCrewTable pageId={pageId} crew={myCrew} />
-			{isTools && <SkillDepth myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />}
+			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} />
+			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
+			<SkillDepth myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
 		</React.Fragment>
 	);
+
+	function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
+		const getMultiplier = (skill: string, stat: string) => {
+			return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+		};
+		return {
+			core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
+			min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
+			max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+		};
+	}
 };
 
 type ProfileCrewTableProps = {
-	pageId: string;
+	pageId?: string;
 	crew: any[];
+	initOptions: any;
+	lockable?: any[];
 };
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
-	const { pageId } = props;
-	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/crew/showFrozen', true);
-	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/crew/findDupes', false);
-	const [initOptions, setInitOptions] = React.useState(undefined);
-
-	React.useEffect(() => {
-		// Check for custom initial table options from URL or <Link state>
-		const options = initSearchableOptions(window.location);
-		// Clear history state now so that new stored values aren't overriden by outdated parameters
-		if (window.location.state && options)
-			window.history.replaceState(null, '');
-		setInitOptions({...options});
-	}, []);
-
-	if (!initOptions) return (<><Icon loading name='spinner' /> Loading...</>);
+	const pageId = props.pageId ?? 'crew';
+	const [showFrozen, setShowFrozen] = useStateWithStorage(pageId+'/showFrozen', true);
+	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/findDupes', false);
 
 	const myCrew = JSON.parse(JSON.stringify(props.crew));
 
@@ -85,13 +159,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: any, idx: number): JSX.Element {
-		const highlighted = {
-			positive: initOptions.highlights?.indexOf(crew.symbol) >= 0
+	function renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+		const attributes = {
+			positive: highlighted
 		};
 
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...highlighted}>
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -157,8 +231,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			return (
 				<div>
 					{crew.favorite && <Icon name="heart" />}
+					{crew.prospect && <Icon name="add user" />}
 					<span>Level {crew.level}, </span>
-					{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </>}{formattedCounts}
+					{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{formattedCounts}
 				</div>
 			);
 		}
@@ -183,17 +258,34 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				</Form.Group>
 			</div>
 			<SearchableTable
-				id={`${pageId}_crew`}
+				id={`${pageId}/table_`}
 				data={myCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
+				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-				initOptions={initOptions}
 				showFilterOptions="true"
+				initOptions={props.initOptions}
+				lockable={props.lockable}
 			/>
 		</React.Fragment>
 	);
 }
+
+type ProspectsProps = {
+	pool: any[];
+};
+
+const Prospects = (props: ProspectsProps) => {
+	const { pool, prospects, setProspects } = props;
+
+	return (
+		<React.Fragment>
+			<Header as='h4'>Prospective Crew</Header>
+			<p>Add prospective crew to see how they fit into your existing roster.</p>
+			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
+		</React.Fragment>
+	);
+};
 
 type SkillDepthProps = {
 	myCrew: any[];
