@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Dax variants are almost universally useful, even down to her two star version. And though the Lt Commander remains a key event piece, both for her good SCI and even better event count, her voyage efficacy is plummeting as we're inundated with new crew. With little to offer on the periphery, her usefulness narrows as time goes on.
+Brain and Brain! What is brain‽
+
+The card that launched many players’ (and WRG’s) love affair with Jadzia in game was lucky to snag a handful of traits before anyone knew what valuable tools they were going to be in the future. Her lack of overall power is apparent and she’s not a crew who should hang out on your active roster, but there’s been consistent weekend bonuses for this variant and her modest collection profile should steadily grow. Not a bad proposition for those looking to throw darts in low-end beholds.

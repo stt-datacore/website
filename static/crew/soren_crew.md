@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Look, no one will blame you if you are suffering from a shortage of DIP/ENG and maybe this card seems like it might do some good for your roster. However, Soren sits below many two skillers on the pair charts and with Adira Tal and Laborer Kirk both being far superior giveaways in recent months it really makes one wonder why newer crew are built with such deficiencies. 
-
-The trait spread is slight but usable and there is just enough voyage power in them that should you stumble into a fully fused version then they could make a backup voyage whilst the more popular cards are away on excursions. Had they come out in 2017 you would be fondly looking at this card in the freezer, remembering that one time you made an eight hour voyage...
+Not just missing some would-be useful traits like Maverick or Hero, but also any semblance of usability too, Soren is merely a short bundle of traits waiting for WRG to favor them in the form of collections or megas. As their arena ability suggests, they offer nothing that can’t be found attached to more capable crew, leaving them as a trait dart throw in dead-end beholds.

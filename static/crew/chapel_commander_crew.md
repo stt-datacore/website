@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Double collections automatically qualify her for consideration, but a plus skill set no longer has the power to compete with day 1 options. With a slim chance to be event relevant - her one featured event was a faction alongside the popular da Vinci - cross your fingers that she'll find her way out of cryo once a year.
+Chapel had a nice peak some time after release which saw her with reasonable voyage ability and a pair of collections before most other crew could claim that accomplishment. Now, years later, those collections are all that remain.
+
+While Physician and Veteran remain viable mega traits, her bases may not provide a ton of help during those periods anyways. We’re grateful to have seen the much ballyhooed Leo da Vinci event re-run come to fruition which saw her as a big bonus featured name and even provided us with a reasonable second legendary crew in Korby. That might be her only path to actual use on the majority of rosters.

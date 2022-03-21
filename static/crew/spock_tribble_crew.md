@@ -3,7 +3,7 @@ name: Tribble Spock
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 40
 in_portal:
 date: 12/08/2021

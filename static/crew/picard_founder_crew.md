@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Senator Vreenak is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his two 1k bases, his chances at work are looking up with his ongoing namesake show. Unfortunately, that's the limit of his utility outside of a vanity collection which often isn't reason enough to star up such a narrow crew.
+Senator Vreenak is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his handful of traits which already see him as a great collection piece, Founder is a worthwhile event option as well. He should be headed straight to cryostasis after being equipped, but is a fine low-end behold value amidst the sea of “who is this guy?” legendary cards in the game.
