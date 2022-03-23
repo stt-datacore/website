@@ -3,7 +3,7 @@ name: Disguised Tuvok
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 4
 events: 20
 in_portal: true
 date: 30/11/2016

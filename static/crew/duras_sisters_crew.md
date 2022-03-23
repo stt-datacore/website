@@ -7,7 +7,7 @@ bigbook_tier: 8
 events: 16
 in_portal:
 date: 01/01/2016
-obtained: Launch
+obtained: Fuse
 mega: false
 published: true
 ---

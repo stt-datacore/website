@@ -1,7 +1,7 @@
 ---
 name: Commodore Robert April
 rarity: 5
-series: tos
+series: tas
 memory_alpha:
 bigbook_tier: 9
 events: 2

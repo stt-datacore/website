@@ -7,7 +7,7 @@ bigbook_tier: 8
 events: 20
 in_portal:
 date: 23/10/2018
-obtained: Missions
+obtained: Collection
 mega: false
 published: true
 ---
