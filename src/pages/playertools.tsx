@@ -32,7 +32,7 @@ export const playerTools = {
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({playerData, allCrew}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} />
+		render: ({playerData, allCrew, location}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} location={location} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
@@ -75,7 +75,7 @@ export const playerTools = {
 	}
 };
 
-const PlayerToolsPage = () =>  {
+const PlayerToolsPage = (props: any) =>  {
 	const [playerData, setPlayerData] = React.useState(undefined);
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 
@@ -92,7 +92,6 @@ const PlayerToolsPage = () =>  {
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
 
-
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
 		return (<PlayerToolsPanes
@@ -106,6 +105,7 @@ const PlayerToolsPage = () =>  {
 					allItems={allItems}
 					requestShowForm={setShowForm}
 					requestClearData={clearPlayerData}
+					location={props.location}
 				/>);
 	}
 
@@ -223,6 +223,7 @@ type PlayerToolsPanesProps = {
 	allItems?: any;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
+	location: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {

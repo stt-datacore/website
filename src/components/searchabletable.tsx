@@ -144,7 +144,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		}
 	}
 
-	function isRowHighlighted(row: any, highlight: any): boolean {
+	function isRowActive(row: any, highlight: any): boolean {
 		if (!highlight) return false;
 		let isMatch = true;
 		Object.keys(highlight).forEach(key => {
@@ -199,8 +199,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	// Pagination
 	let activePage = pagination_page;
 	if (activeLock) {
-		const index = data.findIndex(row => isRowHighlighted(row, activeLock));
-		activePage = index >= 0 ? Math.floor(index / pagination_rows) + 1 : 1;
+		const index = data.findIndex(row => isRowActive(row, activeLock));
+		// Locked crew is not viewable in current filter
+		if (index < 0) {
+			setActiveLock(undefined);
+			return (<></>);
+		}
+		activePage = Math.floor(index / pagination_rows) + 1;
 	}
 	let totalPages = Math.ceil(data.length / pagination_rows);
 	if (activePage > totalPages) activePage = totalPages;
@@ -240,7 +245,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowHighlighted(row, activeLock)))}</Table.Body>
+				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={props.config.length}>
@@ -303,28 +308,22 @@ const LockButtons = (props: LockButtonsProps) => {
 // Check for custom initial table options from URL or <Link state>
 export const initSearchableOptions = (location: any) => {
 	let initOptions = false;
-	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page', 'highlight', 'highlights'];
+	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
 
-	// Always use URL parameters if found
-	if (location?.search) {
-		const urlParams = new URLSearchParams(location.search);
-		OPTIONS.forEach((option) => {
-			if (urlParams.has(option)) {
-				if (!initOptions) initOptions = {};
-				initOptions[option] = urlParams.get(option);
-			}
-		});
-	}
-	// Otherwise check <Link state>
-	else if (location?.state) {
-		const linkState = location.state;
-		OPTIONS.forEach((option) => {
-			if (linkState[option]) {
-				if (!initOptions) initOptions = {};
-				initOptions[option] = linkState[option];
-			}
-		});
-	}
+	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
+	const linkState = location.state;
+
+	OPTIONS.forEach((option) => {
+		let value = undefined;
+		// Always use URL parameters if found
+		if (urlParams?.has(option)) value = urlParams.get(option);
+		// Otherwise check <Link state>
+		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (value) {
+			if (!initOptions) initOptions = {};
+			initOptions[option] = value;
+		}
+	});
 
 	return initOptions;
 };

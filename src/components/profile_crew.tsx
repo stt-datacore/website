@@ -19,36 +19,57 @@ type ProfileCrewProps = {
 	playerData: any;
 	isTools?: boolean;
 	allCrew?: any[];
+	location: any;
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const myCrew = [...props.playerData.player.character.crew];
 
 	// Check for custom initial table options from URL or <Link state>
+	//	Custom options are only available in player tool right now
 	let initOptions = initSearchableOptions(window.location);
+	// Check for custom initial profile_crew options from URL or <Link state>
+	const initHighlight = initOption(props.location, 'highlight', '');
+	const initProspects = initOption(props.location, 'prospect', []);
 	// Clear history state now so that new stored values aren't overriden by outdated parameters
-	if (window.location.state && initOptions)
+	if (window.location.state && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
-
-	// Convert highlight parameter to lockable object
-	const lockable = [];
-	if (initOptions.highlight) {
-		const crew = myCrew.find(c => c.symbol === initOptions.highlight);
-		if (crew) {
-			lockable.push({
-				symbol: crew.symbol,
-				name: crew.name
-			});
-		}
-	}
 
 	if (props.isTools) {
 		const allCrew = [...props.allCrew].sort((a, b)=>a.name.localeCompare(b.name));
 		const buffConfig = calculateBuffConfig(props.playerData.player);
-		return (<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig} initOptions={initOptions} lockable={lockable} />);
+		return (
+			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects} />
+		);
 	}
 
+	const lockable = [];
+	if (initHighlight != '') {
+		const highlighted = myCrew.find(c => c.symbol === initHighlight);
+		if (highlighted) {
+			lockable.push({
+				symbol: highlighted.symbol,
+				name: highlighted.name
+			});
+		}
+	}
 	return (<ProfileCrewTable crew={myCrew} initOptions={initOptions} lockable={lockable} />);
+
+	function initOption(location: any, option: string, defaultValue: any): any {
+		let value = undefined;
+		// Always use URL parameters if found
+		if (location?.search) {
+			const urlParams = new URLSearchParams(location.search);
+			if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
+		}
+		// Otherwise check <Link state>
+		if (!value && location?.state) {
+			const linkState = location.state;
+			if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		}
+		return value ?? defaultValue;
+	};
 };
 
 type ProfileCrewTools = {
@@ -56,7 +77,8 @@ type ProfileCrewTools = {
 	allCrew: any[];
 	buffConfig: any;
 	initOptions: any;
-	lockable: any[];
+	initHighlight: string;
+	initProspects: string[];
 };
 
 const ProfileCrewTools = (props: ProfileCrewTools) => {
@@ -64,7 +86,26 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
 
 	const myCrew = [...props.myCrew];
-	const lockable = [...props.lockable];
+	const lockable = [];
+
+	React.useEffect(() => {
+		if (props.initProspects?.length > 0) {
+			const newProspects = [];
+			props.initProspects.forEach(p => {
+				const newProspect = allCrew.find(c => c.symbol === p);
+				if (newProspect) {
+					newProspects.push({
+						symbol: newProspect.symbol,
+						name: newProspect.name,
+						imageUrlPortrait: newProspect.imageUrlPortrait,
+						rarity: newProspect.max_rarity,
+						max_rarity: newProspect.max_rarity
+					});
+				}
+			});
+			setProspects([...newProspects]);
+		}
+	}, [props.initProspects]);
 
 	prospects.forEach((p) => {
 		let prospect = allCrew.find((c) => c.symbol == p.symbol);
@@ -96,6 +137,16 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 			});
 		}
 	});
+
+	if (props.initHighlight != '') {
+		const highlighted = myCrew.find(c => c.symbol === props.initHighlight);
+		if (highlighted) {
+			lockable.push({
+				symbol: highlighted.symbol,
+				name: highlighted.name
+			});
+		}
+	}
 
 	return (
 		<React.Fragment>

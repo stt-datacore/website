@@ -11,25 +11,29 @@ type ProspectPickerProps = {
 const ProspectPicker = (props: ProspectPickerProps) => {
 	const { pool, prospects, setProspects } = props;
 
+	enum OptionsState {
+		Uninitialized,
+		Initializing,
+		Ready
+	};
+
 	const [selection, setSelection] = React.useState('');
+	const [options, setOptions] = React.useState({
+		state: OptionsState.Uninitialized,
+		list: []
+	});
 
 	if (pool.length == 0) return (<></>);
 
-	const poolList = pool.map((c) => (
-		{
-			key: c.symbol,
-			value: c.symbol,
-			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
-			text: c.name
-		}
-	));
+	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Crew';
 
 	return (
 		<React.Fragment>
 			<Dropdown search selection clearable
-				placeholder='Select Crew'
-				options={poolList}
+				placeholder={placeholder}
+				options={options.list}
 				value={selection}
+				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
 				onChange={(e, { value }) => setSelection(value)}
 			/>
 			<Button compact icon='add user' color='green' content='Add Crew' onClick={() => { addProspect(); }} style={{ marginLeft: '1em' }} />
@@ -52,6 +56,33 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 			</Table>
 		</React.Fragment>
 	);
+
+	function populateOptions(): void {
+		setOptions({
+			state: OptionsState.Initializing,
+			list: []
+		});
+		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
+		setTimeout(() => {
+			const populatePromise = new Promise((resolve, reject) => {
+				const poolList = pool.map((c) => (
+					{
+						key: c.symbol,
+						value: c.symbol,
+						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
+						text: c.name
+					}
+				));
+				resolve(poolList);
+			});
+			populatePromise.then((poolList) => {
+				setOptions({
+					state: OptionsState.Initialized,
+					list: poolList
+				});
+			});
+		}, 0);
+	}
 
 	function addProspect(): void {
 		if (selection == '') return;
