@@ -3,7 +3,7 @@ name: Mint Julep McCoy
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 22
 in_portal:
 date: 09/09/2021

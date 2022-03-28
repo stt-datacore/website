@@ -3,7 +3,7 @@ name: Mirror Zefram Cochrane
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 42
 in_portal: true
 date: 03/04/2018

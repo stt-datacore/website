@@ -3,7 +3,7 @@ name: Zhaban
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 15
 in_portal:
 date: 09/02/2022

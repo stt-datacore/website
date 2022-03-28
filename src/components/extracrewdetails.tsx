@@ -275,9 +275,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		let crewPolestars = constellation.keystones.concat(constellation.raritystone.concat(constellation.skillstones));
 		data.forEach((optimal) => {
-			optimal.combos = optimal.polestars.map((trait) =>
-				crewPolestars.find((op) => filterTraits(op, trait))
-			)
+			optimal.combos = optimal.polestars.map((trait) => {
+				const polestar = crewPolestars.find((op) => filterTraits(op, trait));
+				// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
+				return polestar ?? {
+					short_name: trait.substr(0, 1).toUpperCase()+trait.substr(1),
+					icon: {
+						file: '/items_keystones_'+trait+'.png'
+					}
+				};
+			})
 		});
 
 		// Pagination
@@ -296,16 +303,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{data.map((optimal) => (
-							<Table.Row>
+						{data.map((optimal, idx) => (
+							<Table.Row key={idx}>
 								<Table.Cell>
 									<div style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 										{(1/optimal.count*100).toFixed()}%
 									</div>
 									{optimal.count > 1 && (
 									<div style={{ gridArea: 'description' }}>Shared with{' '}
-										{optimal.alts.map((alt, idx) => (
-											<Link to={`/crew/${alt.symbol}/`}>
+										{optimal.alts.map((alt) => (
+											<Link key={alt.symbol} to={`/crew/${alt.symbol}/`}>
 												{alt.name}
 											</Link>
 										)).reduce((prev, curr) => [prev, ', ', curr])}
@@ -362,8 +369,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		}
 
 		return (
-			this.state.variants.map(group => (
-				<Segment>
+			this.state.variants.map((group, idx) => (
+				<Segment key={idx}>
 					<Header as='h4'>Variants of {group.name}</Header>
 					<Grid centered padded>
 						{group.trait_variants.map(variant => (

@@ -3,7 +3,7 @@ name: Century Nurse Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 18
 in_portal: true
 date: 04/03/2021

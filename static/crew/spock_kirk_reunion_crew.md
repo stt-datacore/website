@@ -7,7 +7,7 @@ bigbook_tier: 1
 events: 52
 in_portal:
 date: 22/03/2021
-obtained: Fusion
+obtained: Fuse
 mega: false
 published: true
 ---
