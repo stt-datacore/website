@@ -198,7 +198,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					</Grid.Row>
 				</Grid>
 				<Divider horizontal hidden />
-				{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
+				{hasBigBookEntry && (
+					<React.Fragment>
+						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
+						<div style={{ marginTop: '1em', textAlign: 'right' }}>
+							-- <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
+						</div>
+					</React.Fragment>
+				)}
 				{/*userName && (
 						<div>
 							<br />

@@ -984,7 +984,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'bigbook_tier', title: 'Tier (Legacy)' },
+		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 		{ width: 1, column: 'cab_ov', title: 'CAB', reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },

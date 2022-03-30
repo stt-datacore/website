@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Header, Table, Rating, Icon, Dropdown, Popup } from 'semantic-ui-react';
-import { navigate } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 
 import Layout from '../components/layout';
-import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
@@ -14,26 +14,32 @@ import CABExplanation from '../components/cabexplanation';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
-type IndexPageProps = {};
+type IndexPageProps = {
+	data: any;
+	location: any;
+};
 
 type IndexPageState = {
 	botcrew: any[];
 	initOptions: any;
-	highlights: string[];
+	lockable: any[];
 };
 
 const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events', 'date_added'] },
+	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'date_added'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
+	{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-	{ width: 1, column: 'command_skill', title: <img alt="Command" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'science_skill', title: <img alt="Science" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'security_skill', title: <img alt="Security" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'engineering_skill', title: <img alt="Engineering" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'diplomacy_skill', title: <img alt="Diplomacy" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} style={{ height: '1.1em' }} />, reverse: true },
-	{ width: 1, column: 'medicine_skill', title: <img alt="Medicine" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} style={{ height: '1.1em' }} />, reverse: true }
+	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
 ];
+CONFIG.SKILLS_SHORT.forEach((skill) => {
+	tableConfig.push({
+		width: 1,
+		column: `${skill.name}`,
+		title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+		reverse: true
+	});
+});
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	constructor(props) {
@@ -41,7 +47,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		this.state = {
 			botcrew: [],
 			initOptions: false,
-			highlights: []
+			lockable: []
 		};
 	}
 
@@ -57,35 +63,45 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		});
 
 		// Check for custom initial table options from URL or <Link state>
-		let initOptions = false, highlights = [];
-		const OPTIONS = ['searchFilter', 'filterType', 'column', 'direction', 'paginationRows', 'paginationPage'];
-
-		// Always use URL search parameter if found
-		//	TODO: Allow URL parameters for all options (with validation) so we can permalink search results
-		let urlParams = new URLSearchParams(this.props.location.search);
-		if (urlParams.has('search')) {
-			initOptions = { searchFilter: urlParams.get('search') };
-		}
-		// Otherwise check <Link state>
-		else if (this.props.location.state) {
-			const linkState = this.props.location.state;
-			OPTIONS.forEach((option) => {
-				if (linkState[option]) {
-					if (!initOptions) initOptions = {};
-					initOptions[option] = linkState[option];
-				}
-			});
-			if (linkState.highlights) highlights = linkState.highlights;
-			// Clear history state now so that new stored values aren't overriden by outdated parameters
+		const initOptions = initSearchableOptions(this.props.location);
+		// Check for custom initial index options from URL or <Link state>
+		const initHighlight = initOption(this.props.location, 'highlight', '');
+		// Clear history state now so that new stored values aren't overriden by outdated parameters
+		if (this.props.location.state && (initOptions || initHighlight))
 			window.history.replaceState(null, '');
+
+		const lockable = [];
+		if (initHighlight != '') {
+			const highlighted = botcrew.find(c => c.symbol === initHighlight);
+			if (highlighted) {
+				lockable.push({
+					symbol: highlighted.symbol,
+					name: highlighted.name
+				});
+			}
 		}
 
-		this.setState({ botcrew, initOptions, highlights });
+		this.setState({ botcrew, initOptions, lockable });
+
+		function initOption(location: any, option: string, defaultValue: any): any {
+			let value = undefined;
+			// Always use URL parameters if found
+			if (location?.search) {
+				const urlParams = new URLSearchParams(location.search);
+				if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
+			}
+			// Otherwise check <Link state>
+			if (!value && location?.state) {
+				const linkState = location.state;
+				if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+			}
+			return value ?? defaultValue;
+		}
 	}
 
-	renderTableRow(crew: any): JSX.Element {
-		const highlighted = {
-			positive: this.state.highlights.indexOf(crew.symbol) >= 0
+	renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+		const attributes = {
+			positive: highlighted
 		};
 
 		const counts = [
@@ -99,7 +115,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		)).reduce((prev, curr) => [prev, ' ', curr]);
 
 		return (
-			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...highlighted}>
+			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -112,15 +128,18 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)} (Legacy), </>}{formattedCounts}
+							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{formattedCounts}
 						</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+				</Table.Cell>
+				<Table.Cell textAlign="center">
+					<b>{formatTierLabel(crew.bigbook_tier)}</b>
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>{crew.cab_ov}</b><br />
@@ -147,7 +166,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	}
 
 	render() {
-		const { botcrew, initOptions } = this.state;
+		const { botcrew, initOptions, lockable } = this.state;
 		if (!botcrew || botcrew.length === 0) {
 			return (
 				<Layout>
@@ -166,14 +185,15 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					id="index"
 					data={botcrew}
 					config={tableConfig}
-					renderTableRow={crew => this.renderTableRow(crew)}
+					renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx, highlighted)}
 					filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
 					initOptions={initOptions}
 					showFilterOptions={true}
+					lockable={lockable}
 				/>
 
 				<p>
-					<i>Hint</i> Click on a row to get details on that specific crew
+					<i>Hint</i>: Click on a row to get details on that specific crew
 				</p>
 			</Layout>
 		);
