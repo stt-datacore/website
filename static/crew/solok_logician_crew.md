@@ -3,7 +3,7 @@ name: Logician Solok
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 17
 in_portal: true
 date: 24/03/2020

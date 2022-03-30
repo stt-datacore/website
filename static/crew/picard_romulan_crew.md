@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A #2 base for a character with Picard's infinity versions is impressive. And we always welcome a racial trait tacked onto main cast to inflate their event count. In the gauntlet, his proficiencies put him within half a percent of the #3 SEC/DIP pair and can be formidable when he hits 45% crit. Some durable arena EV activates fast enough to avoid most instant damage crew and rounds him out well. The skill set is a bummer, but he's an otherwise versatile crew.
+Soupicard did hold up better than most CMD/DIP/SUCK have any right to, but he’s more of an Allen wrench at this stage. Four second arena evasion is certainly fast enough to ward off most attacking ships and a tidy collection profile is at least a step up from wearing nothing at all…nothing at all…nothing at all.
+
+If you complete the collection Trek to five stars, you’ll be able to leverage Picard’s otherwise mediocre bases when they catch a bonus on the weekends. His event tally has been fairly reliable on balance and he owns enough traits to help maintain that pace. As a cherry on top, a large number of elevated crit gauntlets meet proficiencies best left to new players, but his DIP/SEC roll at 45% is certainly nothing the opposition will want to tangle with.

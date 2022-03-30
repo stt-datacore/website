@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-The Re-TAS-sance of new crew inspired by The Animated Series continues apace, joining recent additions Em/3/Green and Shiboline M'Ress. Dare we hope that someday, WRG might see clear to add "Spock Two" to the game? (Not to mention the Lower Decks gang -- a fan can only hope.) 
+I’ll take S-words for $400, Trebeck. We know that the TAS writers had enjoyed a few Potent Potables before Sord’s episode, but WRG still decided to make him a worthwhile crew. Sord’s voyage ability is certainly waning despite a strong bevy of anti-matter traits, but sporadic use there and the occasional mega event serve to supplement his highlights; collections and arena.
 
-But, back to the Gecko Guy at hand. In the "pros" column, he debuts as a Top 100 Voyager, with a 400% Instant Attack move with a 6-second spin-up on the Arena side. In the "cons" column: few Traits, and the ones he has appear unlikely to help much for Events. Also no Collections, and in all likelihood, he'll never get any variants.
-
-So Sord's value mainly comes down to Voyages and Ship Ability, and admittedly he's decent on both counts. You just need to ask whether "iguana" some help in those areas, or you don't.
+One of the game’s premier shipboard options has flown under the radar for too long, but his uncommon instant damage/accuracy pairing comes online in no time and can be tougher to replace than any of the attack-boosting damage options floating around out there. With tempting collection value as another reason to stack stars, Sord is a fine behold (and immortalization) target, even if he’s not providing you with traditional, top-notch voyage and shuttle value.

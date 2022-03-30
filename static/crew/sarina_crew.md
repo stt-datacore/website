@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A great voyager for years has come down off the irreplaceable pedestal thanks to a fleshing out of ENG/MED crew and natural power creep. A couple of multi-collection pieces joined the game in 2020 as value replacements, though she will still hold her own in most cases. A strong SCI base is laudable, and although an equivalent Burnham or Dax might be better to keep around since they pick up a lot of events as well, Sarina's collection spot is a nice pivot if you're not big on Faction events.
+Sarina was a magnificent voyager on debut - one who could play with the big boy legendaries. She can still make runs for newer rosters today, but almost all her other attributes are long past their expiration date.
+
+A thin trait set tanks her desirability for events and collections while a potentially gauntlet-friendly skill set lacks the proficiency power to make much headway. If you can collect all four stars early on in your Timelines journey, feel free to do so to help supplement your voyages. If not, take your time adding stars to a crew with disappointing long term usability.

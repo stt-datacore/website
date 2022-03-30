@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Weekday pack filler who's poor in almost every area. The one number which piques interest is a top ten CMD/SEC gauntlet pair, but it's buried behind walls of Kahless/Mirror JLP and is accompanied by a poor trait set.
+Mugato is quite literally a meme card (inspiring Will Ferrell’s Zoolander villain) and probably not the name you want to chase if you need collection help. WRG was at least good enough to give him competitive proficiencies which could be formidable if he was able to leverage better than 25% crit. As it stands, use him to beat up on Balok once in a while and have a laugh.
