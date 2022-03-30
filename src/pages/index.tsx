@@ -26,7 +26,7 @@ type IndexPageState = {
 };
 
 const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'date_added'] },
+	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length', 'date_added'] },
 	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
 	{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
@@ -131,7 +131,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{formattedCounts}
+							{formattedCounts}
 						</div>
 					</div>
 				</Table.Cell>

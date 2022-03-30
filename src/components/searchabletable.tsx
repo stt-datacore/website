@@ -126,7 +126,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ')}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ').replace('.length', '')}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
