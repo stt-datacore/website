@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
+import { Link } from 'gatsby';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
@@ -39,6 +40,7 @@ type SearchableTableProps = {
 	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
+	showPermalink: boolean;
 	lockable?: any[];
 };
 
@@ -130,6 +132,24 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
+		);
+	}
+
+	function renderPermalink(): JSX.Element {
+		// Will not catch custom options (e.g. highlight)
+		const params = new URLSearchParams();
+		if (searchFilter != '') params.append('search', searchFilter);
+		if (filterType != 'Any match') params.append('filter', filterType);
+		if (column != defaultSort.column) params.append('column', column);
+		if (direction != defaultSort.direction) params.append('direction', direction);
+		if (pagination_rows != 10) params.append('rows', pagination_rows);
+		if (pagination_page != 1) params.append('page', pagination_page);
+		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
+		if (params.toString() != '') permalink += '?' + params.toString();
+		return (
+			<Link to={permalink}>
+				<Icon name='linkify' /> Permalink
+			</Link>
 		);
 	}
 
@@ -269,6 +289,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 									}}
 								/>
 							</span>
+							{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
@@ -328,7 +349,50 @@ export const initSearchableOptions = (location: any) => {
 	return initOptions;
 };
 
-function renderDefaultExplanation() {
+// Check for other initial option from URL or <Link state> by custom name
+export const initCustomOption = (location: any, option: string, defaultValue: any) => {
+	let value = undefined;
+	// Always use URL parameters if found
+	if (location?.search) {
+		const urlParams = new URLSearchParams(location.search);
+		if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
+	}
+	// Otherwise check <Link state>
+	if (!value && location?.state) {
+		const linkState = location.state;
+		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+	}
+	return value ?? defaultValue;
+};
+
+export const prettyCrewColumnTitle = (column: string) => {
+	if (column.substr(0, 6) == 'ranks.') {
+		let title = column.replace('ranks.', '');
+		if (title.substr(-4) == 'Rank') {
+			title = title.replace('Rank', '');
+			title = title.substr(0, 1).toUpperCase() + title.substr(1);
+			return title;
+		}
+		else {
+			const vars = title.split('_');
+			let score = vars.shift();
+			switch (score) {
+				case 'G': score = 'Gauntlet'; break;
+				case 'V': score = 'Voyage'; break;
+			}
+			const skills = vars.reduce((prev, curr) => prev != '' ? prev + ' / ' + curr : curr, '');
+			return (
+				<span style={{ fontSize: '.95em' }}>
+					{score}<br/>{skills}
+				</span>
+			);
+		}
+		return title;
+	}
+	return column;
+};
+
+function renderDefaultExplanation(): JSX.Element {
 	return (
 		<div>
 			<p>

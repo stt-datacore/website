@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Icon, Rating, Form, Checkbox, Header } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
@@ -29,8 +29,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	//	Custom options are only available in player tool right now
 	let initOptions = initSearchableOptions(window.location);
 	// Check for custom initial profile_crew options from URL or <Link state>
-	const initHighlight = initOption(props.location, 'highlight', '');
-	const initProspects = initOption(props.location, 'prospect', []);
+	const initHighlight = initCustomOption(props.location, 'highlight', '');
+	const initProspects = initCustomOption(props.location, 'prospect', []);
 	// Clear history state now so that new stored values aren't overriden by outdated parameters
 	if (window.location.state && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
@@ -55,21 +55,6 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 	}
 	return (<ProfileCrewTable crew={myCrew} initOptions={initOptions} lockable={lockable} />);
-
-	function initOption(location: any, option: string, defaultValue: any): any {
-		let value = undefined;
-		// Always use URL parameters if found
-		if (location?.search) {
-			const urlParams = new URLSearchParams(location.search);
-			if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
-		}
-		// Otherwise check <Link state>
-		if (!value && location?.state) {
-			const linkState = location.state;
-			if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
-		}
-		return value ?? defaultValue;
-	}
 };
 
 type ProfileCrewTools = {
@@ -182,8 +167,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const myCrew = JSON.parse(JSON.stringify(props.crew));
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'bigbook_tier', 'events'] },
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
+		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 		{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
 	];
@@ -237,6 +223,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled />
 				</Table.Cell>
+				<Table.Cell textAlign="center">
+					<b>{formatTierLabel(crew.bigbook_tier)}</b>
+				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>{crew.cab_ov}</b><br />
 					<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
@@ -283,7 +272,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					{crew.favorite && <Icon name="heart" />}
 					{crew.prospect && <Icon name="add user" />}
 					<span>Level {crew.level}, </span>
-					{crew.bigbook_tier > 0 && <>Tier {formatTierLabel(crew.bigbook_tier)}, </>}{formattedCounts}
+					{formattedCounts}
 				</div>
 			);
 		}

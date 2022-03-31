@@ -3,7 +3,7 @@ import { Header, Table, Rating, Icon, Dropdown, Popup } from 'semantic-ui-react'
 import { Link, navigate } from 'gatsby';
 
 import Layout from '../components/layout';
-import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
@@ -15,37 +15,24 @@ import CABExplanation from '../components/cabexplanation';
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
 type IndexPageProps = {
-	data: any;
 	location: any;
 };
 
 type IndexPageState = {
 	botcrew: any[];
+	tableConfig: any[];
+	customColumns: string[];
 	initOptions: any;
 	lockable: any[];
 };
-
-const tableConfig: ITableConfigRow[] = [
-	{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length', 'date_added'] },
-	{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
-	{ width: 1, column: 'bigbook_tier', title: 'Tier' },
-	{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-	{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
-];
-CONFIG.SKILLS_SHORT.forEach((skill) => {
-	tableConfig.push({
-		width: 1,
-		column: `${skill.name}`,
-		title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
-		reverse: true
-	});
-});
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			botcrew: [],
+			tableConfig: [],
+			customColumns: [],
 			initOptions: false,
 			lockable: []
 		};
@@ -65,10 +52,38 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		// Check for custom initial table options from URL or <Link state>
 		const initOptions = initSearchableOptions(this.props.location);
 		// Check for custom initial index options from URL or <Link state>
-		const initHighlight = initOption(this.props.location, 'highlight', '');
+		const initHighlight = initCustomOption(this.props.location, 'highlight', '');
 		// Clear history state now so that new stored values aren't overriden by outdated parameters
 		if (this.props.location.state && (initOptions || initHighlight))
 			window.history.replaceState(null, '');
+
+		const tableConfig: ITableConfigRow[] = [
+			{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length', 'date_added'] },
+			{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
+			{ width: 1, column: 'bigbook_tier', title: 'Tier' },
+			{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+			{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
+		];
+		CONFIG.SKILLS_SHORT.forEach((skill) => {
+			tableConfig.push({
+				width: 1,
+				column: `${skill.name}`,
+				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+				reverse: true
+			});
+		});
+
+		// Check for custom columns (currently only available from URL/state)
+		const customColumns = [];
+		if (initOptions.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1)
+			customColumns.push(initOptions.column);
+		customColumns.forEach(column => {
+			tableConfig.push({
+				width: 1,
+				column: column,
+				title: prettyCrewColumnTitle(column)
+			});
+		});
 
 		const lockable = [];
 		if (initHighlight != '') {
@@ -81,25 +96,11 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			}
 		}
 
-		this.setState({ botcrew, initOptions, lockable });
-
-		function initOption(location: any, option: string, defaultValue: any): any {
-			let value = undefined;
-			// Always use URL parameters if found
-			if (location?.search) {
-				const urlParams = new URLSearchParams(location.search);
-				if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
-			}
-			// Otherwise check <Link state>
-			if (!value && location?.state) {
-				const linkState = location.state;
-				if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
-			}
-			return value ?? defaultValue;
-		}
+		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable });
 	}
 
 	renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+		const { customColumns } = this.state;
 		const attributes = {
 			positive: highlighted
 		};
@@ -161,12 +162,26 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 						<Table.Cell key={skill.name} />
 					)
 				)}
+
+				{customColumns.map(column => {
+					const value = column.split('.').reduce((prev, curr) => prev && prev[curr] ? prev[curr] : undefined, crew);
+					if (value) {
+						return (
+							<Table.Cell key={column} textAlign='center'>
+								<b>{value}</b>
+							</Table.Cell>
+						);
+					}
+					else {
+						return (<Table.Cell key={column} />);
+					}
+				})}
 			</Table.Row>
 		);
 	}
 
 	render() {
-		const { botcrew, initOptions, lockable } = this.state;
+		const { botcrew, tableConfig, initOptions, lockable } = this.state;
 		if (!botcrew || botcrew.length === 0) {
 			return (
 				<Layout>
@@ -189,6 +204,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
 					initOptions={initOptions}
 					showFilterOptions={true}
+					showPermalink={true}
 					lockable={lockable}
 				/>
 
