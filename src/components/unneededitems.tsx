@@ -58,11 +58,11 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			return b.rarity - a.rarity;
 		});
 
-		// Calculate all replicator fodder
-		let equipmentAlreadyOnCrew = new Set();
-		let equipmentNeededByCrew = new Set();
-
-		// Only consider equipment of fully-equipped crew as fodder
+		// Only consider equipment of fully-equipped crew as potential fodder
+		//	Assume all equipment items of other crew are still needed
+		let equipmentEquipped = new Set();
+		let equipmentNeeded = new Set();
+		// Handle dupes as either all fully-equipped or as all needing items
 		let crewBySymbol = [];
 		playerData.player.character.crew.forEach(crew => {
 			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
@@ -77,15 +77,16 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			const crew = crewList[0];
 			crew.equipment_slots.forEach(equipment => {
 				if (allFullyEquipped)
-					equipmentAlreadyOnCrew.add(equipment.symbol);
+					equipmentEquipped.add(equipment.symbol);
 				else
-					equipmentNeededByCrew.add(equipment.symbol);
+					equipmentNeeded.add(equipment.symbol);
 			});
 		});
 
+		// Calculate all replicator fodder
 		let fuellist = items.filter(
-			item => equipmentAlreadyOnCrew.has(item.symbol) &&
-					!equipmentNeededByCrew.has(item.symbol)
+			item => equipmentEquipped.has(item.symbol) &&
+					!equipmentNeeded.has(item.symbol)
 		).sort((a, b) => {
 			if (a.rarity == b.rarity)
 				return a.name.localeCompare(b.name);
@@ -100,16 +101,29 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			name.indexOf("’s ") > 0 ||
 			name.indexOf("s’ ") > 0;
 
+		// Assume needed if a higher quality item of same name is needed
+		const needsHigherQuality = (symbol, rarity) => {
+			let needsHigher = false;
+			for (let i = rarity + 1; i <= 5; i++) {
+				if (equipmentNeeded.has(symbol.replace(/quality\d/, 'quality'+i))) {
+					needsHigher = true;
+					break;
+				}
+			}
+			return needsHigher;
+		};
+
 		// Filter crew-specific items
 		let fuelspecific = fuellist.filter(
-			item => isSpecificItem(item.name)
+			item => isSpecificItem(item.name) && !needsHigherQuality(item.symbol, item.rarity)
 		);
 
 		// Filter generic items
 		let fuelgeneric = fuellist.filter(
 			item =>
 				item.quantity === 1 && item.rarity > 1 &&
-				!isSpecificItem(item.name)
+				!isSpecificItem(item.name) &&
+				!needsHigherQuality(item.symbol, item.rarity)
 		);
 
 		this.setState({ fuelschematics, fuelspecific, fuelgeneric });
@@ -158,7 +172,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 				{this.state.fuelspecific.length > 0 && (
 					<React.Fragment>
 						<Header as='h4'>Crew-Specific Equipment ({this.state.fuelspecific.length})</Header>
-						<p>The following equipment items are good candidates to discard as they are used to equip <b>specific crew you have already fully equipped</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as partial builds of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
+						<p>The following equipment items are good candidates to discard as they are used to equip <b>specific crew you have already fully equipped</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as building blocks of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
 						<Grid columns={5} centered padded>
 							{this.state.fuelspecific.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
@@ -178,7 +192,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 				{this.state.fuelgeneric.length > 0 && (
 					<React.Fragment>
 						<Header as='h4'>Other Equipment ({this.state.fuelgeneric.length})</Header>
-						<p>The following equipment items are good candidates to discard as they are <b>not needed for any crew on your current roster</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as partial builds of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
+						<p>The following equipment items are other candidates to discard as they are <b>no longer needed for any crew on your current roster</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as building blocks of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
 						<Grid columns={5} centered padded>
 							{this.state.fuelgeneric.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
