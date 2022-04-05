@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Jellico Jr. comes from a great episode and is equally loveable, but he's arguably the better card pound for rarity pound. Great offensive passive stats and one of few fast damage crew to boost your accuracy, Kurn may function as a modified Ardra for those who don’t have her yet. The size of the Klingon collection ensures his value spot in it, though that works against him for events as there are many more options to thaw before you get down the base ranks to where Kurn sits.
+Jellico Jr. comes from a great episode and is equally loveable, but he's arguably the better card pound for rarity pound. Great offensive passive stats and one of few fast damage crew to boost your accuracy, Kurn may function as a modified Ardra for those who don’t have her yet.
+
+With but a mere three traits, his value ceiling post-cryo is obvious, but most players will want to get around to completing him for the collection help he does offer.

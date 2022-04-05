@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Civil Warf is a theoretical SEC base for Worf/Klingon faction events, but his blunted bases will cease to merit the thaw at some point in your Timelines journey. The same can be said for a 12 second 200% instant damage arena ability. His most enduring attribute is likely to be his spot in the huge Klingon collection which can be unlocked for a fairly easy build cost. A few points of interest here, but most will evaporate as your roster grows in power.
+Civil Warf is a theoretical SEC base for Worf/Klingon faction events, but his blunted bases will cease to merit the thaw at some point in your Timelines journey. The same can be said for a 12 second 200% instant damage arena ability which is nice for new players, but too slow to maintain a spot in your skirmish lineup.
+
+His most enduring attribute is likely to be whatever collection value materializes from his handful of viable traits. A few points of interest here, but most will evaporate as your roster grows in power.

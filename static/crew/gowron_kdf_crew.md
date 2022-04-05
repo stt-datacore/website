@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-An abysmal crew in all but one area - new players avoid, veteran players embrace. Two of the tougher collections in one package makes him a must-take at some point in your Timelines journey, but he's so wretchedly bad elsewhere and expensive to build that you shouldn't feel obligated to do so until later on in your gameplay. Don't bother thawing him for events unless he's the featured crew.
+Being an early adopter to collections was the perfume covering his wretched musk, but now that Gowron is more average there, his sins are laid bare. You probably won’t be thawing his awful bases for events and he’s simply useless elsewhere so take the collections when you can, but this Gowron shouldn’t be any kind of priority otherwise.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Ba’ku Worf, now with kung-fu grip! The 2021 Klingon kollection did wonders for the value of a crew who ticks the other long-term value box for super rares - Faction events. As of this writing, Worf has added FIVE new variants to his résumé over the course of a year and his event count sits behind only The Man himself, James T. Kirk. With that juicy collection spot in tow and even some triggerless arena damage for the early game, Worf ends up being about as well-rounded as it gets for 2-skill crew not named Mirror Phlox.
+Ba’ku Worf, now with kung-fu grip! The value for this particular bazooka-wielding variant is thin, but spans across all types of rosters. New players may find his triggerless arena damage helpful while established rosters should still find his bases worth the thaw for his yearly smattering of Klingon and Worf variant events. Although his collection value is paper thin, it’s attached to a super rare that you may actually use from time to time.
