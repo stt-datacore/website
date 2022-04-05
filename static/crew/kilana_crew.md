@@ -3,7 +3,7 @@ name: Kilana
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 18
 in_portal: true
 date: 28/08/2017

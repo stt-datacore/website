@@ -3,8 +3,8 @@ name: Temporal Prisoner Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 14
+bigbook_tier: 8
+events: 15
 in_portal: true
 date: 25/09/2017
 obtained: Pack

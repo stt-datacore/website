@@ -3,8 +3,8 @@ name: Displaced Molly O'Brien
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 10
+bigbook_tier: 7
+events: 11
 in_portal: true
 date: 17/06/2021
 obtained: Event

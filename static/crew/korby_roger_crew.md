@@ -3,7 +3,7 @@ name: Dr. Roger Korby
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 6
 in_portal: true
 date: 24/09/2020

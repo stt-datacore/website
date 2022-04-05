@@ -3,7 +3,7 @@ name: Party Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 21
 in_portal: true
 date: 25/05/2021

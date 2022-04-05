@@ -3,7 +3,7 @@ name: Facer Rios
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 9
 in_portal: true
 date: 03/11/2020

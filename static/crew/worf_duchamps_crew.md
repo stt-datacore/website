@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The massive Worf/Klingon/Hologram event count and vanity collection are certainly nice, but his stats and skill set tell the story of a crew whose likely ceiling is as a fourth Faction shuttle seat warmer. No lack of opportunity to excel there, but he has quite an expensive build consisting of over 100 faction items and pricey components. The 2021 addition of a Klingon collection has made him a must-have for later-game players, though he may not be the first name on the list you level.
+The huge Worf/Klingon/Hologram event count and collectable traits are certainly nice, but his stats and skill set tell the story of a crew whose likely ceiling is as a fourth Faction shuttle seat warmer. No lack of opportunity to excel there, but he has quite an expensive build consisting of over 100 faction items and pricey components.
+
+He’s a fine speculative crew to add stars to as his collection value is sure to grow, but he may take some time to pay back the cost of admission.

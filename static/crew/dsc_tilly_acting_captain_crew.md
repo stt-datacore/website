@@ -3,8 +3,8 @@ name: Acting Captain Tilly
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 21
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 26/07/2021
 obtained: Pack
