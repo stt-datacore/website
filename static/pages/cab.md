@@ -8,4 +8,4 @@ CAB Power Ratings are a system designed to help rank crew by their overall value
 
 DataCore shows both the "overall power rating", which is a decimal number, and the "overall rank", which tells you how a crew's overall power rating compares to other crew of the same rarity.
 
-DataCore has added this information to give players more ways to sort and evaluate crew, which is particularly important now that the Big Book of Beholds has ceased operation. Like all ranks and ratings, CAB power ratings should only be considered a guide or tool - how valuable a crew is to a player depends on how much the player values different aspects of the game, and which crew a player already owns.
+DataCore has added this information to give players more ways to sort and evaluate crew. Like all ranks and ratings, CAB power ratings should only be considered a guide or tool - how valuable a crew is to a player depends on how much the player values different aspects of the game, and which crew a player already owns.
