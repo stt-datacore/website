@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A variety of traits help suppliment O'Brien's otherwise lacklustre event pace, but this variant is more of a collection box anyway. Klingon is the headliner, making him an essential crew to immortalize for late game stat boost collectors and his other two are both in line for an expansion with neither requiring a legendary crew to complete.
+Formerly worth using in most areas, time has worn down O’Brien’s sharp edges to a dull nub. His remaining value stems from traits which produce his lone bright spot; collection value. Above average there and with some room to grow, O’Brien is an obligatory pickup for late game players, if nothing else.
 
-The rest of this meek Klingon is more early game-friendly with some situationally useful, short initialization +Acc/shield repair in the arena and bases which will catch the occasional bonus, but are likely to be edged out on more established rosters.
+Although his base ranks reside in the basement, his traits have underperformed for weekend bonuses relative to what one might expect. Don’t be surprised if he rips off a few consecutive megas at any point.

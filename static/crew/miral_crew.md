@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Commadant rarely grants crew reprieve from the Pit of Despair, but the addition of one of the most valuable stat-boosters in the game has made Miral a virtually essential piece of the skill boost puzzle for late game players. Of course, by then such players will have no use for her during any possible trait (read:Klingon) events, leaving the collection to comprise all of her card's value.
+The Commandant rarely grants crew reprieve from the Pit of Despair, but the addition of the honorable Klingon kollection has given Miral a morsel of value. It’s likely to be her only blip on the radar until the end of the game so feel free to pass on her until your other behold options are fully fused.

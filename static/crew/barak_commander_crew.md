@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Every roster will want to snag Barak to Mark off another notch on the massive Klingon collection, but beyond that there isn't a whole lot to the card. His big CMD base has aged well and he even picked up a few traits post-release, but chances for bonus work will be few and far between.
+With super rare CMD options being added at a snail’s pace, Barak’s base rank has held steady for, frankly, far too long. But you can do better with your beholds than a limited shuttle pilot…we believe in you. If/when more of Barak’s traits hit on collection and events, he could become a crew worth revisiting.

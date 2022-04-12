@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-An honorary Klingon, perhaps due to his ability to stomach leola root, this Neelix becomes an obligatory immortalize for late game players looking to stack skill boosts. Beyond that, he's more reminiscent of certain Sulus or Reeds who would perform well as Faction fillers when given the opportunity, but that chance rarely comes around.
+An honorary Klingon, perhaps due to his ability to stomach leola root, this Neelix becomes an obligatory immortalize for late game players looking to stack skill boosts. Beyond that, he's more reminiscent of certain Sulus or Chekovs who would perform well as Faction fillers when given the opportunity, but that chance rarely comes around. He’s not a behold priority until more of his traits blossom into realized value.
