@@ -3,8 +3,8 @@ name: Displaced Gabrielle Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 45
+bigbook_tier: 7
+events: 46
 in_portal: true
 date: 07/05/2020
 obtained: Event
