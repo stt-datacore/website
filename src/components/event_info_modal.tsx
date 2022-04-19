@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Header, Image, Tab } from 'semantic-ui-react';
+import { Container, Image, Tab } from 'semantic-ui-react';
 
 import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';

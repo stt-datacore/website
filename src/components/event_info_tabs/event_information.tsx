@@ -6,10 +6,6 @@ import { getIconPath, getRarityColor } from '../../utils/assets';
 import { getEventData } from '../../utils/events';
 import CrewCard from './crew_card';
 
-type Content = {
-	content_type: string,
-};
-
 const contentTypeMap = {
 	gather: 'Galaxy',
 	shuttles: 'Faction',
@@ -44,44 +40,73 @@ function sortCrew(crewArray) {
 	return groups.flat();
 }
 
-function EventInformationTab({eventData}) {
-	const {crewJson} = useStaticQuery(graphql`
+function EventInformationTab({ eventData }) {
+	const { crewJson } = useStaticQuery(graphql`
 		query {
 			crewJson: allCrewJson {
 				edges {
 					node {
 						name
-						symbol
 						max_rarity
 						imageUrlPortrait
+						symbol
+						traits_named
+						base_skills {
+							security_skill {
+								core
+							}
+							command_skill {
+								core
+							}
+							diplomacy_skill {
+								core
+							}
+							engineering_skill {
+								core
+							}
+							medicine_skill {
+								core
+							}
+							science_skill {
+								core
+							}
+						}
 					}
 				}
 			}
 		}
 	`);
 	const crewData = crewJson.edges.map(edge => edge.node);
+	const crewMap = {};
+	crewData.forEach(crew => {
+		crewMap[crew.symbol] = crew;
+	})
 
 	const {
 		name,
 		description,
 		bonus_text,
 		content_types,
-		featured_crew
 	} = eventData;
 
-	const featuredCrewData = featured_crew.map(crew => ({
-		key: `crew_${crew.id}`,
-		name: crew.full_name,
-		image: getIconPath(crew.portrait),
-		rarity: crew.rarity,
-		skills: Object.keys(crew.skills).map(skill => ({
-			key: skill,
-			imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
-		})),
-		traits: crew.traits.map(trait => `${trait[0].toUpperCase()}${trait.substr(1).replace(/_/g, ' ')}`),
-	}));
-
-	const {bonus, featured} = getEventData(eventData);
+	const { bonus, featured } = getEventData(eventData);
+	const featuredCrewData = featured.map(symbol => {
+		const crew = crewMap[symbol];
+		return {
+			key: `crew_${crew.symbol}`,
+			name: crew.name,
+			image: getIconPath({file: crew.imageUrlPortrait}),
+			rarity: crew.max_rarity,
+			skills: Object.keys(crew.base_skills)
+				.filter(skill => !!crew.base_skills[skill])
+				.sort((a, b) => crew.base_skills[a].core > crew.base_skills[b].core ? -1 : 1)
+				.map(skill => ({
+					key: skill,
+					imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
+				})),
+			traits: crew.traits_named,
+		};
+	});
 	const bonusCrew = crewData.filter(crew => bonus.includes(crew.symbol) && !featured.includes(crew.symbol));
 
 	return (
@@ -107,9 +132,9 @@ function EventInformationTab({eventData}) {
 				<p>Bonus crew not yet determined for this event.</p>
 			)}
 			{sortCrew(bonusCrew).map(crew => (
-				<Label key={`crew_${crew.symbol}`} color="black" style={{marginBottom: '5px'}}>
+				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
 					<Image
-						src={getIconPath({file: crew.imageUrlPortrait})}
+						src={getIconPath({ file: crew.imageUrlPortrait })}
 						size="massive"
 						inline
 						spaced="right"
