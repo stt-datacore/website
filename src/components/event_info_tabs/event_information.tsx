@@ -50,6 +50,8 @@ function EventInformationTab({ eventData }) {
 						max_rarity
 						imageUrlPortrait
 						symbol
+						traits
+						traits_hidden
 						traits_named
 						base_skills {
 							security_skill {
@@ -89,7 +91,7 @@ function EventInformationTab({ eventData }) {
 		content_types,
 	} = eventData;
 
-	const { bonus, featured } = getEventData(eventData);
+	const { bonus, featured } = getEventData(eventData, crewData);
 	const featuredCrewData = featured.map(symbol => {
 		const crew = crewMap[symbol];
 		return {
