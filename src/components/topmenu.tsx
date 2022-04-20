@@ -105,6 +105,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 	);
 
 	const pages = [
+		{ title: 'Events', link: '/events' },
 		{ title: 'Collections', link: '/collections' },
 		{ title: 'Items', link: '/items' },
 		{ title: 'Misc stats', link: '/stats' },
@@ -112,7 +113,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		{ title: 'Hall of Fame', link: '/hall_of_fame' }
 	];
 	items.push(createSubMenu('Pages', pages));
-	
+
 	items.push(<Menu.Item key='bigbook' onClick={() => navigate('https://bigbook.app')}>Big book</Menu.Item>);
 
 	const about = [
