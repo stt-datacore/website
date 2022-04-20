@@ -6,7 +6,7 @@ memory_alpha:
 bigbook_tier: 4
 events: 25
 in_portal:
-date: 13/04/2022
+date: 19/04/2022
 obtained: Campaign
 mega: false
 published: true
