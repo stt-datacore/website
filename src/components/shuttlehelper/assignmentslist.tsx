@@ -164,7 +164,11 @@ const AssignmentsList = (props: AssignmentsList) => {
 			const currentShuttle = currentSeat ? shuttlers.shuttles.find(shuttle => shuttle.id === currentSeat.shuttleId) : undefined;
 			return (
 				<Table.Row key={idx} style={{ cursor: 'pointer' }}
-					onClick={() => { if (crew.id !== assignedCrew.id) updateAssignment(shuttleId, seatNum, crew, true); setEditAssignment(undefined); }}
+					onClick={() => {
+						if (!assignedCrew || crew.id !== assignedCrew.id)
+							updateAssignment(shuttleId, seatNum, crew, true);
+						setEditAssignment(undefined);
+					}}
 				>
 					<Table.Cell textAlign='center'>
 						{assignedCrew?.id === crew.id && (<Icon color='green' name='check' />)}
