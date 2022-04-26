@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Gorgeous double collections headline this card...well, that and James Sloyan, but there's a bit more juice outside of those boundaries as well. Slow, cloak-triggered arena damage isn't really what we're looking to grab for our ship lineup, but it's at least an option and accompanies worthwhile base and voyage numbers, both of which are boosted by a SCI primary to avoid what could have been another paint by numbers CMD/DIP/SEC Klingon.
+Daily usage for this member of the Sloyan Rat Pack is tenuous and generally comes down to a fortuitous voyage trait match for early-to-mid game rosters who manage to fully fuse K’mtar before other more powerful options. Once his pre-cryo usefulness to you has evaporated, he falls into the classic trait-powered, sometimes usable event option mold whose collection value will compete with your other behold options.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-They say that a rose smells as sweet by any other name. Well, this particular rose stinks, even with his new moniker. A nearly carbon copy of Klingon Quark, Wedding Day Quark hails from a fun episode, but brings none of that joy with him. With marginally better bases than his doppelganger, and roughly the same event eligibility, he’ll bump your shuttle successes by a few percent and have plenty of chances to do so, but otherwise keep him out of the way as collection fodder, headlined by the 80-threshold Klingon.
+“Hands up, don’t shoot!” generally means a SEC primary ‘round these parts, but it hardly matters what skills Quark has with numbers this poor. Usable in a single area, event shuttles with a bonus, Quark’s rancid bases will be looking for small bonus pools or early-to-mid game rosters in order to compete for shuttle seating.
+
+That being said, if either of those criteria are met, perhaps you can cash in some value based on his prodigious and remarkably consistent event history. In concert with a mid-level collection profile, you’re looking at a card who isn’t special by any means, but should beat out plenty of dead end behold choices.
