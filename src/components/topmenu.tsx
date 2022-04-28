@@ -111,7 +111,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		{ title: 'Misc stats', link: '/stats' },
 		{ title: 'Episodes', link: '/episodes' },
 		{ title: 'Hall of Fame', link: '/hall_of_fame' },
-		{ title: 'DataLore', link: '/datalore' }
+		{ title: 'Worfle', link: '/crewchallenge' }
 	];
 	items.push(createSubMenu('Pages', pages));
 
