@@ -3,7 +3,7 @@ name: Disguised Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 events: 14
 in_portal: true
 date: 05/12/2018
