@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 4
-events: 21
+events: 22
 in_portal:
 date: 14/09/2021
 obtained: Honor Hall
