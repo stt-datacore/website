@@ -4,7 +4,7 @@ rarity: 4
 series:
 memory_alpha:
 bigbook_tier: 1
-events: 12
+events: 13
 in_portal:
 date: 02/05/2022
 obtained: Event

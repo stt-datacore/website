@@ -3,7 +3,7 @@ name: Tribble Herder Scotty
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 13
 in_portal: true
 date: 08/10/2019
