@@ -3,7 +3,7 @@ name: Vashti Picard
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 16
 in_portal: true
 date: 13/07/2020

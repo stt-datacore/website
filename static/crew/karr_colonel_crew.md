@@ -3,7 +3,7 @@ name: Colonel Karr
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 4
 in_portal: true
 date: 04/08/2016
