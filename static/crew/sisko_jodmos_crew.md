@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-He's no dung beetle, in fact Klingon Sisko is pretty far from shit. Stout base and voyage numbers, a very steady event pace, and triple collections make him an ideal crew to offset a worn out skill set. Sisko's long been an underrated name for lush trait sets and Jodmos is no exception. Already proving out the theory with the addition of the Klingon kollection, we may see even more from his fantastic trait lineup, which also double dips in value to provide Faction event bonus opportunities for a SEC base that sits near 1100 with bonuses.
+He's no dung beetle, in fact Klingon Sisko is pretty far from shit. Providing stock standard shuttle and voyage help in the early game, Jodmos blooms again post-cryo, especially in the eyes of veteran players.
+
+His current collection cornucopia is enough justification for automatic behold status on endgame rosters, while his traits provide room for growth in that area and also supplement Sisko’s main cast status on the weekend, pushing him into top shelf event crew status. Don’t be put off by the unremarkable skill set, this is a prime crew for players of any level to target.

@@ -3,8 +3,8 @@ name: Blood Oath Jadzia Dax
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 31
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 20/10/2016
 obtained: Pack

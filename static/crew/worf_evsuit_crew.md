@@ -3,8 +3,8 @@ name: EV Suit Worf
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 26
+bigbook_tier: 6
+events: 27
 in_portal: true
 date: 15/12/2020
 obtained: Pack
