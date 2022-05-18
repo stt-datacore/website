@@ -183,7 +183,8 @@ const AssignmentsList = (props: AssignmentsList) => {
 					</Table.Cell>
 					<Table.Cell>
 						{currentShuttle?.name}
-						{currentShuttle?.id === shuttleId ? <span style={{ paddingLeft: '1em' }}><i>(This Shuttle)</i></span> : ''}
+						{currentShuttle?.id === shuttleId && <span style={{ paddingLeft: '1em' }}><i>(This Shuttle)</i></span>}
+						{currentSeat?.locked && <span style={{ paddingLeft: '1em' }}><Icon name='lock' /></span>}
 					</Table.Cell>
 					<Table.Cell textAlign='center'>
 						{currentSeat && renderScoreChange(currentSeat.shuttleId, currentSeat.seatNum, 0)}
@@ -225,7 +226,7 @@ const AssignmentsList = (props: AssignmentsList) => {
 
 	return (
 		<React.Fragment>
-			<p>You can rearrange crew to balance shuttle chances as you see fit. Click a seat to change the crew assigned to it.</p>
+			<p>You can rearrange crew to balance shuttle chances as you see fit. Click a seat to change the crew assigned to it. Lock an assignment to keep that crew in that seat when requesting new recommendations.</p>
 			<Table celled striped compact='very'>
 				<Table.Header>
 					<Table.Row>

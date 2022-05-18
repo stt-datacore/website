@@ -12,10 +12,11 @@ type MissionsListProps = {
 	recommendShuttlers: () => void;
 	shuttlers: Shuttlers;
 	setShuttlers: (shuttlers: Shuttlers) => void;
+	activeShuttles: any[];
 };
 
 const MissionsList = (props: MissionsListProps) => {
-	const { groupId, shuttlers, setShuttlers } = props;
+	const { groupId, shuttlers, setShuttlers, activeShuttles } = props;
 
 	const [editMission, setEditMission] = React.useState(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -45,6 +46,11 @@ const MissionsList = (props: MissionsListProps) => {
 			checkOptions.push({ key: 'three-seaters', text: `Select only 3-seaters (${threeSeaters.length})`, ids: threeSeaters });
 		if (fourSeaters.length > 0)
 			checkOptions.push({ key: 'four-seaters', text: `Select only 3- and 4- seaters (${fourSeaters.length})`, ids: fourSeaters });
+
+		if (activeShuttles?.length > 0) {
+			const openIds = activeShuttles.map(adventure => adventure.symbol);
+			checkOptions.push({ key: `open-adventures`, text: `Select only open in-game (${openIds.length})`, ids: openIds });
+		}
 
 		const factions = [];
 		data.forEach(shuttle => {
@@ -316,7 +322,7 @@ const MissionsList = (props: MissionsListProps) => {
 				</Table.Footer>
 			</Table>
 			{editMission && <MissionEditor shuttle={editMission} />}
-			<p>If the mission you want isn't listed here, click 'Create Mission' to manually input the mission parameters. Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can automatically import the missions.</p>
+			<p>If the mission you want isn't listed here, click 'Create Mission' to input the mission parameters manually. Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can import the missions automatically.</p>
 			<Button icon='plus square' content='Create Mission' onClick={() => createMission() } />
 		</React.Fragment>
 	);

@@ -96,7 +96,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 			{activeStep === 'missions' && (
 				<MissionsList groupId={props.groupId}
 					setActiveStep={setActiveStep} recommendShuttlers={recommendShuttlers}
-					shuttlers={shuttlers} setShuttlers={setShuttlers} />
+					shuttlers={shuttlers} setShuttlers={setShuttlers} activeShuttles={activeShuttles} />
 			)}
 			{activeStep === 'assignments' && (
 				<AssignmentsList groupId={props.groupId} crew={props.crew}

@@ -54,7 +54,7 @@ const EventPlanner = (props: EventPlannerProps) => {
 			const activeCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
-				crew.active_status = active.active_status;
+				crewman.active_status = active.active_status;
 				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 

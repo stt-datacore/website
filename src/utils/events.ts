@@ -26,7 +26,9 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 
 	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
-	let activePhase = Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content;
+	const activePhase = Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content;
+	if (!activePhase) return result;
+
 	if (activePhase.content_type == 'shuttles') {
 		activePhase.shuttles.forEach((shuttle: any) => {
 			for (let symbol in shuttle.crew_bonuses) {
