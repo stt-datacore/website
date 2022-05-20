@@ -50,19 +50,22 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	componentDidMount() {
 		// Get variant names from traits_hidden
-		let ignore = [
-			'tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic',
+		const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
+		const ignore = [
 			'female', 'male',
 			'artificial_life', 'nonhuman', 'organic', 'species_8472',
 			'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 			'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1',
-			'spock_tos' /* 'spock_tos' Spocks also have 'spock' trait so use that and ignore _tos for now */
+			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
 		];
 		let variantTraits = [];
 		for (let i = 0; i < this.props.traits_hidden.length; i++) {
 			let trait = this.props.traits_hidden[i];
-			if (ignore.indexOf(trait) == -1) variantTraits.push(trait);
+			if (!series.includes(trait) && !ignore.includes(trait)) {
+				// Also ignore multishow variant traits, e.g. spock_tos, spock_dsc
+				if (!/_[a-z]{3}$/.test(trait) || !series.includes(trait.substr(-3)))
+					variantTraits.push(trait);
+			}
 		}
 
 		let self = this;
@@ -112,7 +115,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							return a.max_rarity - b.max_rarity;
 						});
 						// short_name may not always be the best name to use, depending on the first variant
-						variants.push({ 'name': found[0].short_name, 'trait_variants': found });
+						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
+						variants.push({ 'name': trait === 'dax' ? 'Dax' : found[0].short_name, 'trait_variants': found });
 					}
 				});
 
