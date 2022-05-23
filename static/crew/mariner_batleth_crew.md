@@ -1,7 +1,7 @@
 ---
 name: Bat'leth Mariner
 rarity: 4
-series:
+series: low
 memory_alpha:
 bigbook_tier: 1
 events: 13

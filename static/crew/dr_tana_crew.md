@@ -1,7 +1,7 @@
 ---
 name: Dr. T'Ana
 rarity: 5
-series:
+series: low
 memory_alpha:
 bigbook_tier: 4
 events: 12

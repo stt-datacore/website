@@ -1,7 +1,7 @@
 ---
 name: Ephraim and Dot
 rarity: 5
-series:
+series: low
 memory_alpha:
 bigbook_tier: 6
 events: 8

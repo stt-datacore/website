@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 2
-events: 10
+events: 11
 in_portal:
 date: 13/07/2021
 obtained: Gauntlet

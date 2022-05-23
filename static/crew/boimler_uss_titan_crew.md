@@ -1,10 +1,10 @@
 ---
 name: USS Titan Bradward Boimler
 rarity: 4
-series:
+series: low
 memory_alpha:
 bigbook_tier: 7
-events: 6
+events: 7
 in_portal:
 date: 02/05/2022
 obtained: Event

@@ -3,8 +3,8 @@ name: Test Pilot Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 21
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 14/03/2019
 obtained: Event
