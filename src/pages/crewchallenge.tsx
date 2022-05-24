@@ -1,13 +1,19 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Header, Icon, Menu, Grid, Input, Button, Table, Image, Rating, Divider, Statistic, Modal, Message } from 'semantic-ui-react';
+import { Header, Icon, Menu, Grid, Input, Button, Table, Image, Rating, Divider, Statistic, Modal, Message, Popup, Dropdown } from 'semantic-ui-react';
 
 import Layout from '../components/layout';
 
 import { useStateWithStorage } from '../utils/storage';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
-const MAX_GUESSES = 8;
+const GAME_NAME = 'Worfle';
+const GAME_URL = 'https://datacore.app/crewchallenge';
+
+const DEFAULT_GUESSES = 8;
+const DEFAULT_SERIES = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw', 'original'];
+const DEFAULT_RARITIES = [1, 2, 3, 4, 5];
+
 const STYLE_SOLVED = { backgroundColor: 'green', color: 'white' };
 const STYLE_ADJACENT = { backgroundColor: 'yellow', color: 'black' };
 const STYLE_LOSER = { backgroundColor: 'maroon', color: 'white' };
@@ -24,6 +30,15 @@ enum EvaluationState {
 	Exact
 };
 
+class GameRules {
+	guesses: number;
+	excludedCrew: string[];
+	constructor() {
+		this.guesses = DEFAULT_GUESSES;
+		this.excludedCrew = [];
+	}
+};
+
 class PlayerStats {
 	plays: number = 0;
 	wins: number = 0;
@@ -31,7 +46,7 @@ class PlayerStats {
 	maxStreak: number = 0;
 	constructor() {
 		this.guesses = {};
-		for (let i = 1; i <= MAX_GUESSES; i++) {
+		for (let i = 1; i <= DEFAULT_GUESSES; i++) {
 			this.guesses[i] = 0;
 		}
 		this.guesses.fail = 0;
@@ -49,14 +64,13 @@ const CrewChallenge = () => {
 		// Sort here to ensure consistency for seedrandom
 		const portalcrew = allcrew.filter(crew => crew.in_portal).sort((a, b) => a.name.localeCompare(b.name));
 		// Fix incorrect series; changes here are consistent with unofficial Trait Audit thread:
-		//	https://forum.disruptorbeam.com/stt/discussion/18700/trait-audit-thread
+		//	https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread
 		const fixes = [
 			/* Missing series */
 			{ symbol: 'abe_lincoln_crew', series: 'tos', audit: '+' },
 			{ symbol: 'borg_queen_crew', series: 'tng', audit: '+' },
 			{ symbol: 'data_mirror_crew', series: 'tng', audit: '+' },
 			{ symbol: 'defiant_helmsman_crew', series: 'tng', audit: '+' },
-			{ symbol: 'ephraim_dot_crew', series: 'dsc', audit: '+' },
 			{ symbol: 'laforge_mirror_crew', series: 'tng', audit: '+' },
 			{ symbol: 'lonzak_crew', series: 'voy', audit: '+' },
 			{ symbol: 'neelix_human_crew', series: 'tng', audit: '+' },
@@ -65,6 +79,7 @@ const CrewChallenge = () => {
 			{ symbol: 'chang_general_crew', series: 'tos', audit: '-tng' },
 			{ symbol: 'dsc_guardian_carl_crew', series: 'dsc', audit: '-tos' },
 			{ symbol: 'earp_wyatt_crew', series: 'tos', audit: '-tng' },
+			{ symbol: 'ephraim_dot_crew', series: 'dsc', audit: '-low' },
 			{ symbol: 'janeway_admiral_crew', series: 'tng', audit: '-voy' },
 			{ symbol: 'jarok_crew', series: 'tng', audit: '-ds9' },
 			{ symbol: 'keiko_bride_crew', series: 'tng', audit: '-ds9' },
@@ -111,7 +126,7 @@ const CrewChallengeLayout = () => {
 	const menuItems = [
 		{ name: 'daily', title: 'Daily Game' },
 		{ name: 'practice', title: 'Practice Game' },
-		{ name: 'instructions', title: 'How to Play' }
+		{ name: 'instructions', title: <span><Icon name='question circle outline' /> How to Play</span> }
 	];
 
 	return (
@@ -135,7 +150,8 @@ const CrewChallengeLayout = () => {
 
 		return (
 			<React.Fragment>
-				<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{MAX_GUESSES} tries</b> to guess the mystery crew.</p>
+				<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{DEFAULT_GUESSES} tries</b> to guess the mystery crew.</p>
+				<p>Only crew that are currently <b>available in the time portal</b> will be used as mystery crew and valid guesses.</p>
 				<p>Anything <span style={{ backgroundColor: 'green', padding: '3px .5em' }}>highlighted green</span> indicates an exact match between your guess and the mystery crew on one or more of these criteria: series, rarity, or skills.</p>
 				<p>A <span style={adjacentStyle}>yellow crew name</span> indicates the mystery crew is a variant* of your guess.</p>
 				<p>A <span style={adjacentStyle}>yellow series</span> indicates the mystery crew is from a different series* in the same production era as your guess. The possible eras are:</p>
@@ -148,8 +164,7 @@ const CrewChallengeLayout = () => {
 				<p>A <span style={adjacentStyle}>yellow rarity</span> indicates the mystery crew has a max rarity that is either 1 star higher or 1 star lower than your guess.</p>
 				<p>"<b>Skill Order</b>" lists the guessed crew's skills from highest to lowest base value. A <span style={adjacentStyle}>yellow skill</span> indicates the mystery crew has that skill, but not in the same position as your guess.</p>
 				<p>"<b>Traits in Common</b>" identify the traits* your guess and the mystery crew share in common.</p>
-				<p>Only crew that are currently <b>available in the portal</b> will be used as mystery crew and valid guesses.</p>
-				<p>* All information used here comes directly from the Star Trek Timelines game data. Variants, series, and traits may not always be what you expect; please see <a href='https://forum.disruptorbeam.com/stt/discussion/18700/trait-audit-thread'>this thread</a> for known issues.</p>
+				<p>* All information used here comes directly from the Star Trek Timelines game data. Variants, series, and traits may not always be what you expect; please see <a href='https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread'>this thread</a> for known issues.</p>
 			</React.Fragment>
 		);
 	}
@@ -158,10 +173,10 @@ const CrewChallengeLayout = () => {
 const DailyGame = () => {
 	const portalCrew = React.useContext(PortalCrewContext);
 	const [dailyId, setDailyId] = useStateWithStorage('datalore/dailyId', '', { rememberForever: true, onInitialize: variableReady });
+	const [solution, setSolution] = useStateWithStorage('datalore/dailySolution', '', { rememberForever: true, onInitialize: variableReady });
 	const [guesses, setGuesses] = useStateWithStorage('datalore/dailyGuesses', [], { rememberForever: true, onInitialize: variableReady });
 	const [stats, setStats] = useStateWithStorage('datalore/dailyStats', new PlayerStats(), { rememberForever: true, onInitialize: variableReady });
 	const [loadState, setLoadState] = React.useState(0);
-	const [solution, setSolution] = React.useState('');
 	const [solveState, setSolveState] = React.useState(SolveState.Unsolved);
 	const [showStats, setShowStats] = React.useState(false);
 
@@ -177,30 +192,32 @@ const DailyGame = () => {
 	resetTime.setUTCDate(resetTime.getUTCDate()+1)
 
 	React.useEffect(() => {
-		if (loadState === 3) initializeDailyGame();
+		if (loadState === 4) initializeDailyGame();
 	}, [loadState]);
 
 	React.useEffect(() => {
 		setShowStats(solveState !== SolveState.Unsolved);
 	}, [solveState]);
 
-	if (loadState < 3 || solution === '')
+	if (loadState < 4 || solution === '')
 		return (<></>);
+
+	const rules = new GameRules();
 
 	return (
 		<React.Fragment>
-			<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{MAX_GUESSES} tries</b> to guess the mystery crew. Good luck!</p>
-			<CrewChallengeGame solution={solution}
+			<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{DEFAULT_GUESSES} tries</b> to guess the mystery crew. Good luck!</p>
+			<CrewChallengeGame rules={rules} solution={solution}
 				guesses={guesses} setGuesses={setGuesses}
 				solveState={solveState} setSolveState={setSolveState}
-				onGameEnd={handleGameEnd} />
-			{renderStats()}
+				gameTime={gameTime} onGameEnd={handleGameEnd} />
 			{renderResetTime()}
+			{renderStats()}
 		</React.Fragment>
 	);
 
 	function variableReady(keyName: string): void {
-		setLoadState(prevState => Math.min(prevState + 1, 3));
+		setLoadState(prevState => Math.min(prevState + 1, 4));
 	}
 
 	function initializeDailyGame(): void {
@@ -237,21 +254,34 @@ const DailyGame = () => {
 
 		// Daily game id is based on game time
 		const gameId = getGameIdFromDate(gameTime);
-		const dailySeed = getFreshSeed(gameId);
-		const solution = portalCrew[dailySeed].symbol;
-
 		setDailyId(gameId);
-		setSolution(solution);
+
+		const dailySeed = getFreshSeed(gameId);
+		const dailySolution = portalCrew[dailySeed].symbol;
+
+		// Create new game
 		if (dailyId === '' || dailyId !== gameId) {
 			setGuesses([]);
+			setSolution(dailySolution);
 			setSolveState(SolveState.Unsolved);
+			return;
 		}
-		else {
-			if (guesses.includes(solution))
+
+		// No existing solution, get solveState from daily solution
+		if (solution === '') {
+			setSolution(dailySolution);
+			if (guesses.includes(dailySolution))
 				setSolveState(SolveState.Winner);
-			else if (guesses.length >= MAX_GUESSES)
+			else if (guesses.length >= DEFAULT_GUESSES)
 				setSolveState(SolveState.Loser);
+			return;
 		}
+
+		// Get solveState from existing solution
+		if (guesses.includes(solution))
+			setSolveState(SolveState.Winner);
+		else if (guesses.length >= DEFAULT_GUESSES)
+			setSolveState(SolveState.Loser);
 	}
 
 	function handleGameEnd(solveState: number): void {
@@ -305,7 +335,7 @@ const DailyGame = () => {
 	}
 
 	function renderResetTime(): JSX.Element {
-		if (!showStats) return (<></>);
+		if (!showStats || solveState === SolveState.Unsolved) return (<></>);
 
 		const formatTime = (seconds: number) => {
 			const h = Math.floor(seconds / 3600);
@@ -315,16 +345,16 @@ const DailyGame = () => {
 		};
 
 		return (
-			<React.Fragment>
-				<Divider />
-				<p>A new mystery crew will be available in <b>{formatTime((resetTime.getTime()-currentTime.getTime())/1000)}</b>.</p>
-			</React.Fragment>
+			<div style={{ marginTop: '2em' }}>
+				A new mystery crew will be available in <b>{formatTime((resetTime.getTime()-currentTime.getTime())/1000)}</b>.
+			</div>
 		);
 	}
 };
 
 const PracticeGame = () => {
 	const portalCrew = React.useContext(PortalCrewContext);
+	const [rules, setRules] = useStateWithStorage('datalore/practiceRules', newPracticeRules());
 	const [solution, setSolution] = useStateWithStorage('datalore/practiceSolution', '');
 	const [guesses, setGuesses] = useStateWithStorage('datalore/practiceGuesses', []);
 	const [solveState, setSolveState] = useStateWithStorage('datalore/practiceSolveState', SolveState.Unsolved);
@@ -336,8 +366,11 @@ const PracticeGame = () => {
 
 	return (
 		<React.Fragment>
-			<p>You can play as many practice games as you like. Statistics for practice games will not be recorded.</p>
-			<CrewChallengeGame solution={solution}
+			<p>
+				You can play as many practice games as you like. Statistics for practice games will not be recorded.
+				<CustomRules rules={rules} changeRules={changePracticeRules} />
+			</p>
+			<CrewChallengeGame rules={rules} solution={solution}
 				guesses={guesses} setGuesses={setGuesses}
 				solveState={solveState} setSolveState={setSolveState} />
 			<div style={{ marginTop: '2em' }}>
@@ -347,9 +380,24 @@ const PracticeGame = () => {
 		</React.Fragment>
 	);
 
+	function newPracticeRules(): GameRules {
+		const newRules = new GameRules();
+		newRules.series = DEFAULT_SERIES;
+		newRules.rarities = DEFAULT_RARITIES;
+		return newRules;
+	}
+
+	function changePracticeRules(newRules: GameRules): void {
+		setRules(newRules);
+		setSolution('');
+	}
+
 	function createPracticeGame(): void {
-		const randomIndex = Math.floor(Math.random()*portalCrew.length);
-		setSolution(portalCrew[randomIndex].symbol);
+		let pool = portalCrew.slice();
+		if (rules.excludedCrew.length > 0)
+			pool = pool.filter(crew => !rules.excludedCrew.includes(crew.symbol));
+		const randomIndex = Math.floor(Math.random()*pool.length);
+		setSolution(pool[randomIndex].symbol);
 		setGuesses([]);
 		setSolveState(SolveState.Unsolved);
 	}
@@ -359,17 +407,155 @@ const PracticeGame = () => {
 	}
 };
 
+type CustomRulesProps = {
+	rules: GameRules;
+	changeRules: (newRules: GameRules) => void;
+};
+
+const CustomRules = (props: CustomRulesProps) => {
+	const portalCrew = React.useContext(PortalCrewContext);
+	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [guesses, setGuesses] = React.useState(props.rules.guesses);
+	const [series, setSeries] = React.useState(props.rules.series);
+	const [rarities, setRarities] = React.useState(props.rules.rarities);
+	const [excludedCrew, setExcludedCrew] = React.useState([]);
+
+	React.useEffect(() => {
+		const excludes = portalCrew.filter(crew => !series.includes(crew.series) || !rarities.includes(crew.max_rarity)).map(crew => crew.symbol);
+		setExcludedCrew([...excludes]);
+	}, [series, rarities]);
+
+	const guessOptions = [];
+	for (let i = 1; i <= 20; i++) {
+		guessOptions.push(
+			{ key: i, value: i, text: i }
+		);
+	}
+
+	const seriesOptions = [
+		{ key: 'tos', value: 'tos', text: 'The Original Series' },
+		{ key: 'tas', value: 'tas', text: 'The Animated Series' },
+		{ key: 'tng', value: 'tng', text: 'The Next Generation' },
+		{ key: 'ds9', value: 'ds9', text: 'Deep Space Nine' },
+		{ key: 'voy', value: 'voy', text: 'Voyager' },
+		{ key: 'ent', value: 'ent', text: 'Enterprise' },
+		{ key: 'dsc', value: 'dsc', text: 'Discovery' },
+		{ key: 'pic', value: 'pic', text: 'Picard' },
+		{ key: 'low', value: 'low', text: 'Lower Decks' },
+		{ key: 'snw', value: 'snw', text: 'Strange New Worlds' },
+		{ key: 'original', value: 'original', text: 'Timelines Originals' }
+	];
+
+	const rarityOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
+
+	const isDefault = guesses === DEFAULT_GUESSES && series.length === DEFAULT_SERIES.length && rarities.length === DEFAULT_RARITIES.length;
+	const isDirty = guesses !== props.rules.guesses || series.length !== props.rules.series.length || rarities.length !== props.rules.rarities.length;
+	const isValid = portalCrew.length - excludedCrew.length > 0;
+
+	return (
+		<Modal
+			open={modalIsOpen}
+			onClose={() => { revertRules(); setModalIsOpen(false); }}
+			onOpen={() => setModalIsOpen(true)}
+			trigger={renderTrigger()}
+			size='tiny'
+		>
+			<Modal.Header>
+				Custom rules
+				<span style={{ paddingLeft: '1em', fontSize: '.9em', fontWeight: 'normal' }}>
+					(Possible solutions: {portalCrew.length - excludedCrew.length})
+				</span>
+			</Modal.Header>
+			<Modal.Content>
+				<div>
+					Max guesses:{' '}
+					<Dropdown selection
+						options={guessOptions}
+						value={guesses}
+						onChange={(e, { value }) => setGuesses(value)}
+					/>
+				</div>
+				<div style={{ marginTop: '1em' }}>
+					Include crew by series:
+					<Dropdown selection multiple fluid clearable closeOnChange
+						placeholder='Select at least 1 series'
+						options={seriesOptions}
+						value={series}
+						onChange={(e, { value }) => setSeries(value)}
+					/>
+				</div>
+				<div style={{ marginTop: '1em' }}>
+					Include crew by rarity:
+					<Dropdown selection multiple fluid clearable closeOnChange
+						placeholder='Select at least 1 rarity'
+						options={rarityOptions}
+						value={rarities}
+						onChange={(e, { value }) => setRarities(value)}
+					/>
+				</div>
+			</Modal.Content>
+			<Modal.Actions>
+				{!isDefault && <Button content='Reset' onClick={() => resetRules()} />}
+				{isDirty && <Button positive={isValid ? true : undefined} content='New Practice Game' onClick={() => applyRules()} />}
+				{!isDirty && <Button content='Close' onClick={() => setModalIsOpen(false)} />}
+			</Modal.Actions>
+		</Modal>
+	);
+
+	function renderTrigger(): JSX.Element {
+		return (
+			<span style={{ paddingLeft: '1em' }}>
+				<Button compact>
+					{!isDefault && <span><Icon name='check' color='green' /> Use custom rules</span>}
+					{isDefault && <span>Use custom rules...</span>}
+				</Button>
+			</span>
+		);
+	}
+
+	function revertRules(): void {
+		setGuesses(props.rules.guesses);
+		setSeries(props.rules.series);
+		setRarities(props.rules.rarities);
+	}
+
+	function resetRules(): void {
+		setGuesses(DEFAULT_GUESSES);
+		setSeries(DEFAULT_SERIES);
+		setRarities(DEFAULT_RARITIES);
+	}
+
+	function applyRules(): void {
+		if (!isValid) return;
+		const newRules = new GameRules();
+		newRules.guesses = guesses;
+		newRules.excludedCrew = excludedCrew;
+		newRules.series = series;
+		newRules.rarities = rarities;
+		props.changeRules(newRules);
+		setModalIsOpen(false);
+	}
+};
+
 type CrewChallengeGame = {
+	rules: GameRules;
 	solution: string;
 	guesses: string[];
 	setGuesses: (guesses: string[]) => void;
 	solveState: number;
 	setSolveState: (solveState: number) => void;
+	gameTime?: Date;
 	onGameEnd?: (solveState: number) => void;
 };
 
 const CrewChallengeGame = (props: CrewChallengeGame) => {
-	const { solution, guesses, setGuesses, solveState, setSolveState } = props;
+	const { rules, solution, guesses, setGuesses, solveState, setSolveState } = props;
 	const portalCrew = React.useContext(PortalCrewContext);
 
 	const [solvedCrew, setSolvedCrew] = React.useState(undefined);
@@ -406,14 +592,52 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 		if (solveState !== SolveState.Unsolved) return (<></>);
 		return (
 			<div style={{ margin: '1em 0' }}>
-				<CrewPicker guesses={guesses} handleSelect={handleCrewSelect} />
+				<CrewPicker rules={rules} guesses={guesses} handleSelect={handleCrewSelect} />
 			</div>
 		);
 	}
 
 	function renderShare(): JSX.Element {
 		if (solveState === SolveState.Unsolved) return (<></>);
-		if (!props.onGameEnd) return (<></>);
+		if (!props.gameTime) return (<></>);
+
+		const formatEvaluation = (evaluation: number) => {
+			if (evaluation === EvaluationState.Exact)
+				return '🟩';
+			else if (evaluation === EvaluationState.Adjacent)
+				return '🟨';
+			return '⬜';
+		};
+
+		const formatGrid = () => {
+			const shortId = `${props.gameTime.getUTCMonth()+1}/${props.gameTime.getUTCDate()}`;
+			let output = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${guesses.length}!` : `{$GAME_NAME} {$shortId} stumped me!`;
+			output += `\n${GAME_URL}`;
+			guessesEvaluated.forEach(guess => {
+				output += '\n';
+				['variant', 'series', 'rarity'].forEach(evaluation => {
+					output += formatEvaluation(guess.evaluation[evaluation]);
+				});
+				[0, 1, 2].forEach(idx => {
+					output += formatEvaluation(guess.evaluation.skills[idx]);
+				});
+			});
+			navigator.clipboard.writeText(output);
+		};
+
+		return (
+			<div style={{ marginTop: '2em' }}>
+				<Popup
+					content='Copied!'
+					on='click'
+					position='right center'
+					size='tiny'
+					trigger={
+						<Button icon='clipboard check' content='Copy results to clipboard' onClick={() => formatGrid()} />
+					}
+				/>
+			</div>
+		);
 	}
 
 	function handleCrewSelect(symbol: string): void {
@@ -422,7 +646,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 		setGuesses([...guesses]);
 		if (guesses.includes(solution))
 			endGame(SolveState.Winner);
-		else if (guesses.length >= MAX_GUESSES)
+		else if (guesses.length >= rules.guesses)
 			endGame(SolveState.Loser);
 	}
 
@@ -480,8 +704,9 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			const traits = variantTraits.slice();
 			['Female', 'Male'].forEach(usable => { if (crew.traits_hidden.includes(usable.toLowerCase())) traits.push(usable); });
 			const usableCollections = [
-				'A Little Stroll', 'Badda-Bing, Badda-Bang', 'Bride of Chaotica', 'Delphic Expanse', 'Holodeck Enthusiasts',
-				'Our Man Bashir', 'Play Ball!', 'Set Sail!', 'Sherwood Forest', 'The Big Goodbye', 'The Wild West'
+				'A Little Stroll', 'Animated', 'Badda-Bing, Badda-Bang', 'Bride of Chaotica', 'Delphic Expanse',
+				'Holodeck Enthusiasts', 'Our Man Bashir', 'Pet People', 'Play Ball!', 'Set Sail!', 'Sherwood Forest',
+				'The Big Goodbye', 'The Wild West'
 			];
 			crew.collections.forEach(collection => {
 				if (usableCollections.includes(collection))
@@ -582,12 +807,13 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 };
 
 type CrewPickerProps = {
+	rules: GameRules;
 	guesses: string[];
 	handleSelect: (value: string) => void;
 };
 
 const CrewPicker = (props: CrewPickerProps) => {
-	const { guesses, handleSelect } = props;
+	const { rules, guesses, handleSelect } = props;
 	const portalCrew = React.useContext(PortalCrewContext);
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -596,7 +822,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 	const [selectedCrew, setSelectedCrew] = React.useState(undefined);
 	const [showHints, setShowHints] = React.useState(true);
 
-	const guessesLeft = MAX_GUESSES - guesses.length;
+	const guessesLeft = rules.guesses - guesses.length;
 
 	const inputRef = React.createRef();
 
@@ -662,12 +888,20 @@ const CrewPicker = (props: CrewPickerProps) => {
 
 		let data = portalCrew.slice();
 
+		if (rules.excludedCrew.length > 0)
+			data = data.filter(crew => !rules.excludedCrew.includes(crew.symbol));
+
 		// Filtering
 		if (searchFilter !== '') {
 			const filter = (input: string) => input.toLowerCase().indexOf(searchFilter.toLowerCase()) >= 0;
 			data = data.filter(crew => filter(crew.name));
 		}
-		if (data.length === 0) return (<Message>No crew names match your current search.</Message>);
+		if (data.length === 0) return (
+			<Message>
+				<p>No crew names match your current search.</p>
+				<p>Only crew that are currently <b>available in the time portal</b> will be used as mystery crew and valid guesses.</p>
+			</Message>
+		);
 
 		// Pagination
 		const itemsPerPage = 24, itemsToShow = itemsPerPage*paginationPage;
@@ -748,49 +982,6 @@ const GuessTable = (props) => {
 	);
 };
 
-/* Not used yet */
-const SpoilerFreeTable = (props: GuessTableProps) => {
-	const { guessesEvaluated } = props;
-
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-
-	return (
-		<Modal
-			centered={false}
-			open={modalIsOpen}
-			onClose={() => setModalIsOpen(false)}
-			onOpen={() => setModalIsOpen(true)}
-			trigger={<Button><Icon name='share alternate' />Share</Button>}
-			dimmer='blurring'
-			size='tiny'
-		>
-			<Modal.Content scrolling>
-				{renderGrid()}
-			</Modal.Content>
-		</Modal>
-	);
-
-	function renderGrid(): JSX.Element {
-		if (!modalIsOpen) return (<></>);
-		return (
-			<Table celled collapsing padded fixed style={{ margin: '0 auto' }}>
-				<Table.Body>
-					{guessesEvaluated.map(guess => (
-						<Table.Row key={guess.symbol} {...styleCell(guess.evaluation.crew === EvaluationState.Exact ? EvaluationState.Exact : EvaluationState.Wrong)}>
-							<Table.Cell {...styleCell(guess.evaluation.variant)}></Table.Cell>
-							<Table.Cell {...styleCell(guess.evaluation.series)}></Table.Cell>
-							<Table.Cell {...styleCell(guess.evaluation.rarity)}></Table.Cell>
-							{guess.skills.map((skill, idx) => (
-								<Table.Cell key={idx} {...styleCell(guess.evaluation.skills[idx])}></Table.Cell>
-							))}
-						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
-		);
-	}
-};
-
 type GuessRowProps = {
 	guess: any;
 	solveState: number;
@@ -849,6 +1040,15 @@ const GuessRow = (props: GuessRowProps) => {
 		return attributes;
 	}
 
+	function styleCell(evaluationState: number): any {
+		const attributes = {};
+		if (evaluationState === EvaluationState.Exact)
+			attributes.style = STYLE_SOLVED;
+		else if (evaluationState === EvaluationState.Adjacent)
+			attributes.style = STYLE_ADJACENT;
+		return attributes;
+	}
+
 	function formatTrait(trait: string): string {
 		const simpleName = (trait: string) => {
 			return trait.replace(/[^A-Z]/gi, '').toLowerCase();
@@ -865,14 +1065,5 @@ const GuessRow = (props: GuessRowProps) => {
 		return properName(trait);
 	}
 };
-
-function styleCell(evaluationState: number): any {
-	const attributes = {};
-	if (evaluationState === EvaluationState.Exact)
-		attributes.style = STYLE_SOLVED;
-	else if (evaluationState === EvaluationState.Adjacent)
-		attributes.style = STYLE_ADJACENT;
-	return attributes;
-}
 
 export default CrewChallenge;
