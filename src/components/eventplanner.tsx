@@ -1,10 +1,12 @@
 import React from 'react';
-import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Input, Button, Grid, Image } from 'semantic-ui-react';
+import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import CONFIG from './CONFIG';
 
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import ProspectPicker from '../components/prospectpicker';
+import ShuttleHelper from '../components/shuttlehelper/shuttlehelper';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
@@ -14,17 +16,16 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 
 type EventPlannerProps = {
 	playerData: any;
-	activeCrew: string[];
 	allCrew: any;
 };
 
 const EventPlanner = (props: EventPlannerProps) => {
 	const { playerData, allCrew } = props;
-	const dbid = playerData.player.dbid;
 
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [activeEvents, setActiveEvents] = React.useState(undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', []);
 
+	const [activeEvents, setActiveEvents] = React.useState(undefined);
 	if (!activeEvents) {
 		identifyActiveEvents();
 		return (<></>);
@@ -33,22 +34,28 @@ const EventPlanner = (props: EventPlannerProps) => {
 	if (activeEvents.length == 0)
 		return (<p>Event data currently not available.</p>);
 
-	const activeCrew = JSON.parse(JSON.stringify(props.activeCrew));
+	// Create fake ids for active crew based on level and equipped status
+	const activeCrewIds = activeCrew.map(ac => {
+		return {
+			id: ac.symbol+','+ac.level+','+ac.equipment.join(''),
+			active_status: ac.active_status
+		};
+	});
 
-	let myCrew = [];
-	let fakeID = 1;
+	const myCrew = [];
+	let fakeId = 1;
 	playerData.player.character.crew.forEach(crew => {
-		let crewman = JSON.parse(JSON.stringify(crew));
-		crewman.id = fakeID++;
+		const crewman = JSON.parse(JSON.stringify(crew));
+		crewman.id = fakeId++;
 
 		crewman.active_status = 0;
 		if (crew.immortal === 0) {
 			// Re-attach active_status property
-			const isActive = (ac) => ac.symbol == crew.symbol && ac.level == crew.level && ac.equipment.join('') === crew.equipment.join('');
-			let activeCrewIndex = activeCrew.findIndex(isActive);
-			if (activeCrewIndex >= 0) {
-				crewman.active_status = activeCrew[activeCrewIndex].active_status;
-				activeCrew.splice(activeCrewIndex, 1);	// Clear this ID so that dupes are counted properly
+			const activeCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
+			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			if (active) {
+				crewman.active_status = active.active_status;
+				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 
 			// Add immortalized skill numbers to skill_data
@@ -64,16 +71,16 @@ const EventPlanner = (props: EventPlannerProps) => {
 		myCrew.push(crewman);
 	});
 
-	let buffConfig = calculateBuffConfig(playerData.player);
+	const buffConfig = calculateBuffConfig(playerData.player);
 
 	return (
-		<EventPicker dbid={dbid} events={activeEvents} crew={myCrew} buffConfig={buffConfig} allCrew={allCrew} />
+		<EventPicker playerData={playerData} events={activeEvents} crew={myCrew} buffConfig={buffConfig} allCrew={allCrew} />
 	);
 
 	function identifyActiveEvents(): void {
 		// Get event data from recently uploaded playerData
 		if (eventData) {
-			let currentEvents = eventData.map((ev) => getEventData(ev))
+			let currentEvents = eventData.map((ev) => getEventData(ev, allCrew))
 				.filter((ev) => ev.seconds_to_end > 0)
 				.sort((a, b) => (a.seconds_to_start - b.seconds_to_start));
 			setActiveEvents([...currentEvents]);
@@ -88,7 +95,7 @@ const EventPlanner = (props: EventPlannerProps) => {
 };
 
 type EventPickerProps = {
-	dbid: string;
+	playerData: any;
 	events: any[];
 	crew: any[];
 	buffConfig: any;
@@ -96,7 +103,7 @@ type EventPickerProps = {
 };
 
 const EventPicker = (props: EventPickerProps) => {
-	const { dbid, events, crew, buffConfig, allCrew } = props;
+	const { playerData, events, crew, buffConfig, allCrew } = props;
 
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
@@ -138,6 +145,7 @@ const EventPicker = (props: EventPickerProps) => {
 	allBonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 
 	const myCrew = JSON.parse(JSON.stringify(crew));
+	const lockable = [];
 
 	prospects.forEach((p) => {
 		let prospect = allCrew.find((c) => c.symbol == p.symbol);
@@ -150,7 +158,7 @@ const EventPicker = (props: EventPickerProps) => {
 			prospect.level = 100;
 			prospect.immortal = 0;
 			CONFIG.SKILLS_SHORT.forEach(skill => {
-				let score = { "core": 0, "min": 0, "max" : 0 };
+				let score = { core: 0, min: 0, max: 0 };
 				if (prospect.base_skills[skill.name]) {
 					if (prospect.rarity == prospect.max_rarity)
 						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
@@ -160,6 +168,13 @@ const EventPicker = (props: EventPickerProps) => {
 				prospect[skill.name] = score;
 			});
 			myCrew.push(prospect);
+			lockable.push({
+				symbol: prospect.symbol,
+				name: prospect.name,
+				rarity: prospect.rarity,
+				level: prospect.level,
+				prospect: prospect.prospect
+			});
 		}
 	});
 
@@ -177,9 +192,9 @@ const EventPicker = (props: EventPickerProps) => {
 				<div>{eventData.description}</div>
 				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value) } /></div>)}
 			</Form>
-			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} />
-			<EventProspects crew={allBonusCrew} prospects={prospects} setProspects={setProspects} />
-			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttlers dbid={dbid} crew={myCrew} eventData={eventData} />)}
+			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
+			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
+			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
 	);
 };
@@ -189,6 +204,7 @@ type EventCrewTableProps = {
 	eventData: any;
 	phaseIndex: number;
 	buffConfig: any;
+	lockable?: any[];
 };
 
 const EventCrewTable = (props: EventCrewTableProps) => {
@@ -198,6 +214,13 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
+	const [initOptions, setInitOptions] = React.useState({});
+
+	const crewAnchor = React.useRef(null);
+
+	React.useEffect(() => {
+		setInitOptions({});
+	}, [eventData, phaseIndex]);
 
 	if (eventData.bonus.length == 0)
 		return (
@@ -221,9 +244,26 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		});
 	});
 
+	// Check for custom column (i.e. combo from crew matrix click)
+	let customColumn = '';
+	if (initOptions?.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1) {
+		customColumn = initOptions.column;
+		const customSkills = customColumn.replace('combos.', '').split(',');
+		tableConfig.push({
+			width: 1,
+			column: customColumn,
+			title:
+				<span>
+					<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${customSkills[0]}.png`} style={{ height: '1.1em' }} />
+					+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${customSkills[1]}.png`} style={{ height: '1.1em' }} />
+				</span>,
+			reverse: true
+		});
+	}
+
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
-	let bestPairs = {};
+	let bestCombos = {};
 
 	const zeroCombos = {};
 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
@@ -240,6 +280,15 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) myCrew = myCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 	if (!showFrozen) myCrew = myCrew.filter((c) => c.immortal == 0);
+
+	const getPairScore = (crew: any, primary: string, secondary: string) => {
+		if (phaseType === 'shuttles') {
+			if (secondary) return crew[primary].core+(crew[secondary].core/4);
+			return crew[primary].core;
+		}
+		if (secondary) return (crew[primary].core+crew[secondary].core)/2;
+		return crew[primary].core/2;
+	};
 
 	myCrew.forEach(crew => {
 		// First adjust skill scores as necessary
@@ -270,55 +319,50 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		let bestPair = { score: 0 };
 		let bestSkill = { score: 0 };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
-			let firstSkill = CONFIG.SKILLS_SHORT[first];
-			if (crew[firstSkill.name].core > 0) {
+			const firstSkill = CONFIG.SKILLS_SHORT[first];
+			const single = {
+				score: crew[firstSkill.name].core,
+				skillA: firstSkill.name
+			};
+			combos[firstSkill.name] = single.score;
+			if (!bestCombos[firstSkill.name] || single.score > bestCombos[firstSkill.name].score)
+				bestCombos[firstSkill.name] = { id: crew.id, score: single.score };
+			if (single.score > bestSkill.score) bestSkill = { score: single.score, skill: single.skillA };
+			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+				const secondSkill = CONFIG.SKILLS_SHORT[second];
 				let pair = {
-					score: crew[firstSkill.name].core,
+					score: getPairScore(crew, firstSkill.name, secondSkill.name),
 					skillA: firstSkill.name,
-					skillB: ''
-				};
-				combos[firstSkill.name] = pair.score;
-				if (pair.score > bestPair.score) bestPair = pair;
-				if (pair.score > bestSkill.score) bestSkill = { score: pair.score, skill: pair.skillA };
-				if (!bestPairs[firstSkill.name] || pair.score > bestPairs[firstSkill.name].score)
-					bestPairs[firstSkill.name] = { id: crew.id, score: pair.score };
-				for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
-					let secondSkill = CONFIG.SKILLS_SHORT[second];
-					if (crew[secondSkill.name].core > 0) {
-						pair = {
-							score: crew[firstSkill.name].core+(crew[secondSkill.name].core/4),
-							skillA: firstSkill.name,
-							skillB: secondSkill.name
-						}
-						if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
-							pair = {
-								score: crew[secondSkill.name].core+(crew[firstSkill.name].core/4),
-								skillA: secondSkill.name,
-								skillB: firstSkill.name
-							}
-						}
-						combos[firstSkill.name+','+secondSkill.name] = pair.score;
-						if (pair.score > bestPair.score) bestPair = pair;
-						let pairId = firstSkill.name+secondSkill.name;
-						if (!bestPairs[pairId] || pair.score > bestPairs[pairId].score)
-							bestPairs[pairId] = { id: crew.id, score: pair.score };
+					skillB: secondSkill.name
+				}
+				if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
+					pair = {
+						score: getPairScore(crew, secondSkill.name, firstSkill.name),
+						skillA: secondSkill.name,
+						skillB: firstSkill.name
 					}
 				}
+				combos[firstSkill.name+','+secondSkill.name] = pair.score;
+				if (pair.score > bestPair.score) bestPair = pair;
+				const pairId = firstSkill.name+secondSkill.name;
+				if (!bestCombos[pairId] || pair.score > bestCombos[pairId].score)
+					bestCombos[pairId] = { id: crew.id, score: pair.score };
 			}
 		}
-		//crew.combos = combos;	// Not used yet. Can be added as columns to searchabletable or passed to shuttlers
+		crew.combos = combos;
 		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
 	});
 
 	return (
 		<React.Fragment>
+			<div ref={crewAnchor} />
 			<Header as='h4'>Your Crew</Header>
 			<div style={{ margin: '.5em 0' }}>
 				<Form.Group grouped>
 					<Form.Field
 						control={Checkbox}
-						label='Only show event crew'
+						label={`Only show event crew (${eventData.bonus_text.replace('Crew Bonus: ', '')})`}
 						checked={showBonus}
 						onChange={(e, { checked }) => setShowBonus(checked)}
 					/>
@@ -343,20 +387,26 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				</Form.Group>
 			</div>
 			<SearchableTable
-				id={"eventplanner"}
+				id='eventplanner'
 				data={myCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
+				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-				showFilterOptions="true"
+				initOptions={initOptions}
+				showFilterOptions={true}
+				lockable={props.lockable}
 			/>
-			{phaseType != "skirmish" && (<EventCrewMatrix crew={myCrew} bestPairs={bestPairs} />)}
+			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
 
-	function renderTableRow(crew: any, idx: number): JSX.Element {
+	function renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+		const attributes = {
+			positive: highlighted
+		};
+
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -379,25 +429,30 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 					{crew.bonus > 1 ? `x${crew.bonus}` : ''}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<b>{Math.floor(crew.bestSkill.score)}</b>
-					<br /><img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
+					<b>{scoreLabel(crew.bestSkill.score)}</b>
+					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<b>{Math.floor(crew.bestPair.score)}</b>
-					<br /><img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
-					{crew.bestPair.skillB != '' && (<span>+<img alt="Skill" src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+					<b>{scoreLabel(crew.bestPair.score)}</b>
+					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
+					{crew.bestPair.skillB != '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
 						<Table.Cell key={skill.name} textAlign='center'>
-							<b>{crew[skill.name].core}</b>
-							<br />
-							<small>+({crew[skill.name].min}-{crew[skill.name].max})</small>
+							<b>{scoreLabel(crew[skill.name].core)}</b>
+							{phaseType != 'gather' && (<span><br /><small>+({crew[skill.name].min}-{crew[skill.name].max})</small></span>)}
 						</Table.Cell>
 					) : (
 						<Table.Cell key={skill.name} />
 					)
 				)}
+				{customColumn != '' && (
+						<Table.Cell key='custom' textAlign='center'>
+							<b>{scoreLabel(customColumn.split('.').reduce((prev, curr) => prev.hasOwnProperty(curr) ? prev[curr] : undefined, crew))}</b>
+						</Table.Cell>
+					)
+				}
 			</Table.Row>
 		);
 	}
@@ -405,36 +460,69 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				<div><Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size="large" disabled /></div>
+				<div><Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
 				<div>
-					{crew.favorite && <Icon name="heart" />}
-					{crew.immortal > 0 && <Icon name="snowflake" />}
-					{crew.prospect && <Icon name="add user" />}
+					{crew.favorite && <Icon name='heart' />}
+					{crew.immortal > 0 && <Icon name='snowflake' />}
+					{crew.prospect && <Icon name='add user' />}
 					<span>{crew.immortal ? (`${crew.immortal} frozen`) : (`Level ${crew.level}`)}</span>
 				</div>
 			</div>
 		);
 	}
 
+	function scoreLabel(score: number): JSX.Element {
+		if (!score || score === 0) return (<></>);
+		if (phaseType === 'gather') return (<>{`${calculateGalaxyChance(score)}%`}</>);
+		return (<>{Math.floor(score)}</>);
+	}
+
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
 		// Bonus, frozen crew filtering now handled before rendering entire table instead of each row
 		return crewMatchesSearchFilter(crew, filters, filterType);
+	}
+
+	function sortByCombo(skillA: string, skillB: string): void {
+		if (skillA === skillB) {
+			setInitOptions({
+				column: `${skillA}.core`,
+				direction: 'descending'
+			});
+		}
+		else {
+			// Order of combo match order of skills in CONFIG
+			const customSkills = [];
+			CONFIG.SKILLS_SHORT.forEach((skill) => {
+				if (skillA === skill.name || skillB === skill.name)
+					customSkills.push(skill.name);
+			});
+			setInitOptions({
+				column: `combos.${customSkills[0]},${customSkills[1]}`,
+				direction: 'descending'
+			});
+		}
+		if (!crewAnchor.current) return;
+		crewAnchor.current.scrollIntoView({
+			behavior: 'smooth'
+		}, 500);
 	}
 };
 
 type EventCrewMatrixProps = {
 	crew: any[];
-	bestPairs: any;
+	bestCombos: any;
+	phaseType: string;
+	handleClick: (skillA: string, skillB: string) => void;
 };
 
 const EventCrewMatrix = (props: EventCrewMatrixProps) => {
-	const {crew, bestPairs} = props;
+	const { crew, bestCombos, phaseType, handleClick } = props;
 
 	return (
 		<React.Fragment>
 			<Header as='h4'>Skill Matrix</Header>
-			<p>This table shows your best crew for each possible skill combination. Use this table to identify your best crew for this event and the best candidates to share in a faction event if you are a squad leader.</p>
-			<Table definition celled striped collapsing unstackable compact="very">
+			<p>This table shows your best crew for each possible skill combination. Use this table to identify your best crew for this event{phaseType === 'shuttles' ? ` and the best candidates to share in a faction event if you are a squad leader` : ''}.</p>
+			<Table definition celled striped collapsing unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell />
@@ -458,23 +546,24 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	);
 
 	function renderCell(skillA: string, skillB: string) : JSX.Element {
-		let key = skillA+skillB;
-		let bestPair = bestPairs[skillA] ?? {score: 0};
-		if (bestPairs[skillB] && bestPairs[skillB].score > bestPair.score) {
-			bestPair = bestPairs[skillB];
+		let key, best;
+		if (skillA === skillB) {
+			key = skillA;
+			best = bestCombos[skillA];
 		}
-		if (bestPairs[skillA] && bestPairs[skillB]) {
-			if (bestPairs[skillA+skillB] && bestPairs[skillA+skillB].score > bestPair.score) bestPair = bestPairs[skillA+skillB];
-			if (bestPairs[skillB+skillA] && bestPairs[skillB+skillA].score > bestPair.score) bestPair = bestPairs[skillB+skillA];
+		else {
+			key = skillA+skillB;
+			best = bestCombos[skillA+skillB] ?? bestCombos[skillB+skillA];
 		}
-		if (bestPair.score > 0) {
-			let bestCrew = crew.find(c => c.id == bestPair.id);
+		if (!best) best = {score: 0};
+		if (best.score > 0) {
+			let bestCrew = crew.find(c => c.id === best.id);
 			let icon = (<></>);
 			if (bestCrew.immortal) icon = (<Icon name='snowflake' />);
 			if (bestCrew.prospect) icon = (<Icon name='add user' />);
 			return (
-				<Table.Cell key={key} textAlign='center'>
-					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({Math.floor(bestPair.score)})</small>
+				<Table.Cell key={key} textAlign='center' style={{ cursor: 'zoom-in' }} onClick={() => handleClick(skillA, skillB)}>
+					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 				</Table.Cell>
 			);
 		}
@@ -482,598 +571,85 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			<Table.Cell key={key} textAlign='center'>-</Table.Cell>
 		);
 	}
-
-	// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
-	//	Not used yet
-	function calculateGalaxyChance(skillValue: number) : number {
-		const craft_config = {
-			specialist_chance_formula: {
-				steepness: 0.3,
-				midpoint: 5.5
-			},
-			specialist_challenge_rating: 1050,
-			specialist_failure_bonus: 0.05,
-			specialist_maximum_success_chance: 0.99
-		};
-
-		let midpointOffset = skillValue / craft_config.specialist_challenge_rating;
-		let val = Math.floor(
-			100 /
-			(1 +
-				Math.exp(
-					-craft_config.specialist_chance_formula.steepness *
-					(midpointOffset - craft_config.specialist_chance_formula.midpoint)
-					))
-			);
-		return Math.min(val / 100, craft_config.specialist_maximum_success_chance);
-	}
 };
 
 type EventProspectsProps = {
-	crew: any[];
+	pool: any[];
 	prospects: any[];
 	setProspects: (prospects: any[]) => void;
 };
 
 const EventProspects = (props: EventProspectsProps) => {
-	const {crew, prospects, setProspects} = props;
-
-	const [selection, setSelection] = React.useState('');
-
-	if (crew.length == 0) return (<></>);
-
-	const crewList = crew.map((c) => (
-		{
-			key: c.symbol,
-			value: c.symbol,
-			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
-			text: c.name
-		}
-	));
+	const { pool, prospects, setProspects } = props;
+	if (pool.length === 0) return (<></>);
 
 	return (
 		<React.Fragment>
 			<Header as='h4'>Prospective Crew</Header>
 			<p>Add prospective crew (or shared crew) to see how they fit into your existing roster for this event.</p>
-			<Dropdown search selection clearable
-				placeholder='Select Crew'
-				options={crewList}
-				value={selection}
-				onChange={(e, { value }) => setSelection(value)}
-			/>
-			<Button compact icon='add user' color='green' content='Add Crew' onClick={() => { addProspect(); }} style={{ marginLeft: '1em' }} />
-			<Table celled striped collapsing unstackable compact="very">
-				<Table.Body>
-					{prospects.map((p, prospectNum) => (
-						<Table.Row key={prospectNum}>
-							<Table.Cell><img width={24} src={`${process.env.GATSBY_ASSETS_URL}${p.imageUrlPortrait}`} /></Table.Cell>
-							<Table.Cell>{p.name}</Table.Cell>
-							<Table.Cell><Rating icon='star' rating={p.rarity} maxRating={p.max_rarity} size="large" onRate={(e, {rating, maxRating}) => { fuseProspect(prospectNum, rating); }} /></Table.Cell>
-							<Table.Cell><Button compact icon='trash' color='red' onClick={() => deleteProspect(prospectNum)} /></Table.Cell>
-						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
 		</React.Fragment>
 	);
-
-	function addProspect(): void {
-		if (selection == '') return;
-		let valid = crew.find((c) => c.symbol == selection);
-		if (valid) {
-			let prospect = {
-				symbol: valid.symbol,
-				name: valid.name,
-				imageUrlPortrait: valid.imageUrlPortrait,
-				rarity: valid.max_rarity,
-				max_rarity: valid.max_rarity
-			};
-			prospects.push(prospect);
-			setProspects([...prospects]);
-		};
-		setSelection('');
-	}
-
-	function fuseProspect(prospectNum: number, rarity: number): void {
-		if (rarity == 0) return;
-		prospects[prospectNum].rarity = rarity;
-		setProspects([...prospects]);
-	}
-
-	function deleteProspect(prospectNum: number): void {
-		prospects.splice(prospectNum, 1);
-		setProspects([...prospects]);
-	}
 };
 
-class Shuttlers {
-	shuttles: Shuttle[] = [];
-}
-
-class Shuttle {
-	id: string = '';
-	name: string = '';
-	seats: ShuttleSeat[] = [];
-	constructor (id: string) {
-		this.id = id ?? 'shuttle-'+Date.now();
-	}
-}
-
-class ShuttleSeat {
-	operand: string = 'AND';
-	skillA: string = '';
-	skillB: string = '';
-};
-
-function getSkillSetId(seat: ShuttleSeat): string {
-	let skillA = seat.skillA;
-	let skillB = seat.skillB;
-	let operand = seat.operand;
-	let skills = [skillA, skillB];
-	if (skillA == "" || skillA == skillB)
-		skills = [skillB];
-	else if (skillB == "")
-		skills = [skillA];
-	return operand+','+skills.sort((a, b)=>a.localeCompare(b));
-}
-
-type EventShuttlersProps = {
-	dbid: string;
+type EventShuttlesProps = {
+	playerData: any;
 	crew: any[];
 	eventData: any;
 };
 
-const EventShuttlers = (props: EventShuttlersProps) => {
-	const [shuttlers, setShuttlers] = useStateWithStorage(props.dbid+'/eventplanner/shuttlers', new Shuttlers(), { rememberForever: true });
-	const [assigned, setAssigned] = useStateWithStorage(props.dbid+'/eventplanner/assigned', [], { rememberForever: true });
-	const [skillsets, setSkillSets] = React.useState({});
-	const [crewScores, setCrewScores] = React.useState([]);
-	const [shuttleScores, setShuttleScores] = React.useState(new Array(shuttlers.shuttles.length));
+const EventShuttles = (props: EventShuttlesProps) => {
+	const { playerData, eventData } = props;
 
-	const [considerActive, setConsiderActive] = useStateWithStorage('eventplanner/considerActive', true);
-	const [considerVoyage, setConsiderVoyage] = useStateWithStorage('eventplanner/considerVoyage', false);
-	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('eventplanner/considerFrozen', false);
-	const [saveSetups, setSaveSetups] = useStateWithStorage(props.dbid+'/eventplanner/saveSetups', false, { rememberForever: true });
+	const [fullEventData, setFullEventData] = useStateWithStorage('tools/eventData', undefined);
 
-	React.useEffect(() => {
-		updateCrewScores();
-	}, [shuttlers]);
+	//playerData.player.shuttle_rental_tokens
 
-	React.useEffect(() => {
-		updateShuttleScores();
-	}, [assigned]);
+	const ShuttleProjection = () => {
+		const SHUTTLE_DIFFICULTY = 4000;
+		const SHUTTLE_DURATION = 3*60*60;
+		const SHUTTLE_RATE = .9;
 
-	React.useEffect(() => {
-		updateCrewScores(true);
-	}, [props.crew, considerActive, considerVoyage, considerFrozen]);
+		if (eventData.seconds_to_start !== 0) return (<></>);
 
-	// Shuttle setups and assignments are saved in local storage,
-	//	so we must check whether to clear them on session close
-	React.useEffect(() => {
-		if (typeof window !== 'undefined' && window) {
-			window.onbeforeunload = (e: any) => {
-				if (!saveSetups) {
-					setShuttlers(new Shuttlers());
-					setAssigned([]);
-				}
-			};
+		let currentVP = 0, secondsToEndShuttles = eventData.seconds_to_end, endType = 'event';
+		if (fullEventData) {
+			const activeEvent = fullEventData.find(event => event.symbol === eventData.symbol);
+			currentVP = activeEvent.victory_points;
+			if (activeEvent.content_types.length > 1) {
+				activeEvent.phases.forEach((phase, phaseIdx) => {
+					if (activeEvent.content_types[phaseIdx] === 'shuttles')
+						secondsToEndShuttles = phase.seconds_to_end;
+						endType = 'faction phase';
+				});
+			}
 		}
-	}, [saveSetups]);
+
+		let estimatedVP = currentVP;
+		if (secondsToEndShuttles > 0) {
+			const runsLeft = Math.floor(secondsToEndShuttles/SHUTTLE_DURATION)*playerData.player.character.shuttle_bays;
+			const runsSuccessful = Math.floor(runsLeft*SHUTTLE_RATE);
+			const runsFailed = runsLeft - runsSuccessful;
+			estimatedVP += (runsSuccessful*SHUTTLE_DIFFICULTY)+(runsFailed*SHUTTLE_DIFFICULTY/5);
+			return (
+				<span> If you run {playerData.player.character.shuttle_bays} shuttles every 3 hours with a 90% success rate, you will have <b>{estimatedVP} VP</b> by the end of the {endType}.</span>
+			);
+		}
+
+		return (<></>);
+	};
 
 	return (
 		<React.Fragment>
 			<Header as='h4'>Shuttle Helper</Header>
-			<p>Use this tool to help plan your shuttles in a faction event. Start by adding all missions that you want to run and set each seat to the skills required for each mission. Click 'Recommend' to see the best seats for your current crew. You can then rearrange crew to balance shuttle chances as you see fit.</p>
-			<Table striped>
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell>Mission</Table.HeaderCell>
-						<Table.HeaderCell>Seats</Table.HeaderCell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{shuttlers.shuttles.map((shuttle, shuttleNum) => (
-						<Table.Row key={shuttle.id ?? shuttleNum}>
-							<Table.Cell>
-								<EventShuttlersRenamer shuttleNum={shuttleNum} shuttleName={shuttle.name} updateCallback={updateShuttleName} />
-								<Button icon color='red' onClick={() => deleteShuttle(shuttleNum)}><Icon name='trash' /></Button>
-								{shuttleScores[shuttleNum] ? <div>{Math.floor(shuttleScores[shuttleNum].chance*100)}% Chance</div> : <></>}
-							</Table.Cell>
-							<Table.Cell>
-								<Table compact="very" size="small">
-									<Table.Body>
-										{shuttle.seats.map((seat, seatNum) => (
-											<Table.Row key={`${shuttleNum}_${seatNum}`}>
-												<Table.Cell><EventShuttlersSeat shuttleNum={shuttleNum} seatNum={seatNum} seat={seat} updateCallback={updateShuttleSeat} /></Table.Cell>
-												<Table.Cell><EventShuttlersCrewPicker shuttleNum={shuttleNum} seatNum={seatNum} seat={seat} skillsets={skillsets} assigned={assigned} updateCallback={updateAssignment} /></Table.Cell>
-												<Table.Cell><Button compact icon='trash' color='red' onClick={() => deleteShuttleSeat(shuttleNum, seatNum)} /></Table.Cell>
-											</Table.Row>
-										))}
-									</Table.Body>
-								</Table>
-								<Button compact icon='add square' color='green' content='Add Seat' onClick={() => { addShuttleSeat(shuttleNum); updateShuttlers(); }} />
-							</Table.Cell>
-						</Table.Row>
-					))}
-				</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.HeaderCell colSpan="2">
-							<Button compact icon='space shuttle' color='green' content='Add Shuttle Mission' onClick={() => { addShuttleAndSeat(); updateShuttlers(); }} />
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
-			<div style={{ margin: '1em 0' }}>
-			<Form.Group grouped>
-				<Form.Field
-					control={Checkbox}
-					label='Consider crew on active shuttles'
-					checked={considerActive}
-					onChange={(e, { checked }) => setConsiderActive(checked)}
-				/>
-				<Form.Field
-					control={Checkbox}
-					label='Consider crew on active voyage'
-					checked={considerVoyage}
-					onChange={(e, { checked }) => setConsiderVoyage(checked)}
-				/>
-				<Form.Field
-					control={Checkbox}
-					label='Consider frozen (vaulted) crew'
-					checked={considerFrozen}
-					onChange={(e, { checked }) => setConsiderFrozen(checked)}
-				/>
-				<Form.Field
-					control={Checkbox}
-					label='Remember shuttle setups'
-					checked={saveSetups}
-					onChange={(e, { checked }) => setSaveSetups(checked)}
-				/>
-			</Form.Group>
-			</div>
-			<Button onClick={() => { recommendShuttlers(); }}>Recommend Shuttle Crew</Button>
+			<p>
+				Use this tool to help plan your shuttles.
+				<ShuttleProjection />
+			</p>
+			<ShuttleHelper helperId='eventplanner' groupId={eventData.symbol} dbid={playerData.player.dbid} crew={props.crew} eventData={eventData} />
 		</React.Fragment>
 	);
-
-	function updateShuttleName(shuttleNum: number, shuttleName: string): void {
-		shuttlers.shuttles[shuttleNum].name = shuttleName;
-		updateShuttlers();
-	}
-
-	function addShuttleAndSeat(): void {
-		let shuttleNum = addShuttle();
-		addShuttleSeat(shuttleNum);
-	}
-
-	function addShuttle(): number {
-		shuttlers.shuttles.push(new Shuttle());
-		return shuttlers.shuttles.length-1;
-	}
-
-	function addShuttleSeat(shuttleNum: number): number {
-		shuttlers.shuttles[shuttleNum].seats.push(new ShuttleSeat());
-		return shuttlers.shuttles[shuttleNum].seats.length-1;
-	}
-
-	function updateShuttleSeat(shuttleNum: number, seatNum: number, skill: string, value: string): void {
-		shuttlers.shuttles[shuttleNum].seats[seatNum][skill] = value;
-		updateShuttlers();
-	}
-
-	function updateAssignment(shuttleNum: number, seatNum: number, assignedCrew: any): void {
-		// Unassign crew from previously assigned seat, if necessary
-		if (assignedCrew) {
-			let current = assigned.find(seat => seat.assignedId == assignedCrew.id);
-			if (current) {
-				current.assignedId = -1;
-				current.assignedSymbol = "";
-				current.seatScore = 0;
-			}
-		}
-
-		let seated = assigned.find(seat => seat.shuttleNum == shuttleNum && seat.seatNum == seatNum);
-		if (assignedCrew && !seated) {
-			assigned.push({
-				shuttleNum,
-				seatNum,
-				ssId: assignedCrew.ssId,
-				assignedId: assignedCrew.id,
-				assignedSymbol: assignedCrew.symbol,
-				seatScore: assignedCrew.score
-			});
-		}
-		else if (assignedCrew) {
-			seated.assignedId = assignedCrew.id;
-			seated.assignedSymbol = assignedCrew.symbol;
-			seated.seatScore = assignedCrew.score;
-		}
-		else {
-			seated.assignedId = -1;
-			seated.assignedSymbol = "";
-			seated.seatScore = 0;
-		}
-		setAssigned([...assigned]);
-	}
-
-	function deleteShuttle(shuttleNum: number): void {
-		shuttlers.shuttles.splice(shuttleNum, 1);
-		updateShuttlers();
-	}
-
-	function deleteShuttleSeat(shuttleNum: number, seatNum: number): void {
-		shuttlers.shuttles[shuttleNum].seats.splice(seatNum, 1);
-		updateShuttlers();
-	}
-
-	function updateShuttlers(): void {
-		setShuttlers({...shuttlers});
-	}
-
-	function updateCrewScores(resetAll: boolean = false): void {
-		const SKILL_IDS = ['command_skill', 'diplomacy_skill', 'security_skill',
-							'engineering_skill', 'science_skill', 'medicine_skill'];
-
-		let newSkills = resetAll ? {} : {...skillsets};
-		let newScores = resetAll ? [] : [...crewScores];
-
-		let todo = [];
-		for (let shuttleNum = 0; shuttleNum < shuttlers.shuttles.length; shuttleNum++) {
-			let shuttle = shuttlers.shuttles[shuttleNum];
-			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
-				let skillSet = shuttle.seats[seatNum];
-				if (skillSet.skillA == "" && skillSet.skillB == "") continue;
-				let ssId = getSkillSetId(skillSet);
-				if (!newSkills[ssId]) {
-					newSkills[ssId] = [];
-					todo.push(skillSet);
-				}
-			}
-		}
-		if (todo.length == 0) return;
-
-		for (let i = 0; i < props.crew.length; i++) {
-			if (!considerActive && props.crew[i].active_status == 2)
-				continue;
-
-			if (!considerVoyage && props.crew[i].active_status == 3)
-				continue;
-
-			if (!considerFrozen && props.crew[i].immortal > 0)
-				continue;
-
-			todo.forEach((skillSet) => {
-				let skillOperand = skillSet.operand;
-				let primarySkill = skillSet.skillA;
-				let secondarySkill = skillSet.skillB;
-				let ssId = getSkillSetId(skillSet);
-				if (!newSkills[ssId]) newSkills[ssId] = [];
-
-				let iHigherSkill = 0, iLowerSkill = 0;
-				for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
-					let skillId = SKILL_IDS[iSkill];
-					if (skillId != primarySkill && skillId != secondarySkill) continue;
-					if (props.crew[i][skillId].core == 0) continue;
-
-					let iMultiplier = 1;
-					if (props.eventData.featured.indexOf(props.crew[i].symbol) >= 0)
-						iMultiplier = 3;
-					else if (props.eventData.bonus.indexOf(props.crew[i].symbol) >= 0)
-						iMultiplier = 2;
-					let iSkillScore = props.crew[i][skillId].core*iMultiplier;
-
-					if (iSkillScore > iHigherSkill) {
-						iLowerSkill = iHigherSkill;
-						iHigherSkill = iSkillScore;
-					}
-					else if (iSkillScore > iLowerSkill) {
-						iLowerSkill = iSkillScore;
-					}
-				}
-
-				let iSeatScore = 0;
-				if (skillOperand == "OR")
-					iSeatScore = iHigherSkill;
-				else
-					iSeatScore = iHigherSkill+(iLowerSkill/4);
-
-				if (iSeatScore > 0) {
-					let crewman = {
-						id: props.crew[i].id,
-						symbol: props.crew[i].symbol,
-						name: props.crew[i].name,
-						score: iSeatScore,
-						ssId
-					};
-					newSkills[ssId].push(crewman);
-					newScores.push(crewman);
-				}
-			});
-		}
-
-		todo.forEach((skillSet) => {
-			let ssId = getSkillSetId(skillSet);
-			newSkills[ssId].sort((a, b) => b.score - a.score);
-		});
-		setSkillSets({...newSkills});
-
-		newScores.sort((a, b) => b.score - a.score);
-		setCrewScores([...newScores]);
-	}
-
-	function updateShuttleScores(): void {
-		const DIFFICULTY = 2000;
-		const newScores = [];
-		assigned.forEach((seated) => {
-			if (!newScores[seated.shuttleNum]) {
-				newScores[seated.shuttleNum] = { chance: 0, scores: [] };
-			}
-			newScores[seated.shuttleNum].scores.push(seated.seatScore);
-			let dAvgSkill = newScores[seated.shuttleNum].scores.reduce((a, b) => (a + b))/newScores[seated.shuttleNum].scores.length;
-			let dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
-			newScores[seated.shuttleNum].chance = dChance;
-		});
-		setShuttleScores(newScores);
-	}
-
-	function recommendShuttlers(): void {
-		let seats = [];
-		for (let shuttleNum = 0; shuttleNum < shuttlers.shuttles.length; shuttleNum++) {
-			let shuttle = shuttlers.shuttles[shuttleNum];
-			// Undocumented feature: ignore shuttles prefixed with hyphen
-			if (shuttle.name.substr(0, 1) == "-") continue;
-			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
-				let ssId = getSkillSetId(shuttle.seats[seatNum]);
-				seats.push({
-					shuttleNum,
-					seatNum,
-					ssId,
-					assignedId: -1,
-					assignedSymbol: "",
-					seatScore: 0
-				});
-			}
-		}
-		if (seats.length == 0) return;
-
-		let scores = JSON.parse(JSON.stringify(crewScores));
-		let iAssigned = 0;
-		while (scores.length > 0 && iAssigned < seats.length) {
-			let testScore = scores.shift();
-			let alreadyAssigned = seats.find(seat => seat.assignedId == testScore.id);
-			if (alreadyAssigned) continue;
-
-			let openSeat = seats.find(seat => seat.ssId == testScore.ssId && seat.assignedId == -1);
-			if (openSeat) {
-				openSeat.assignedId = testScore.id;
-				openSeat.assignedSymbol = testScore.symbol;
-				openSeat.seatScore = testScore.score;
-				iAssigned++;
-			}
-		}
-		setAssigned([...seats]);
-	}
 };
-
-type EventShuttlersRenamerProps = {
-	shuttleNum: number;
-	shuttleName: string;
-	updateCallback: (shuttleNum: number, shuttleName: string) => void;
-};
-
-const EventShuttlersRenamer = (props: EventShuttlersRenamerProps) => {
-	const [shuttleName, setShuttleName] = React.useState(props.shuttleName);
-
-	return (
-		<Input
-			placeholder="Mission name..."
-			value={shuttleName}
-			onChange={(e, { value }) => onRenameShuttle(value)}>
-				<input />
-				<Button icon onClick={() => onRenameShuttle('')} >
-					<Icon name='delete' />
-				</Button>
-		</Input>
-	);
-
-	// Wait for user to finish typing so that parent UI doesn't re-render on every keystroke
-	let timeoutId;
-	function onRenameShuttle(shuttleName: string) : void {
-		setShuttleName(shuttleName);
-		if (timeoutId) clearTimeout(timeoutId);
-		timeoutId = setTimeout(() => {
-			const {shuttleNum, updateCallback} = props;
-			updateCallback(shuttleNum, shuttleName);
-		}, 500);
-	}
-};
-
-type EventShuttlersSeatProps = {
-	shuttleNum: number;
-	seatNum: number;
-	seat: ShuttleSeat;
-	updateCallback: (shuttleNum: number, seatNum: number, key: string, value: string) => void;
-};
-
-const EventShuttlersSeat = (props: EventShuttlersSeatProps) => {
-	const { shuttleNum, seatNum, seat, updateCallback } = props;
-
-	const skillOptions = [
-		{ key: 'CMD', text: 'CMD', value: 'command_skill' },
-		{ key: 'DIP', text: 'DIP', value: 'diplomacy_skill' },
-		{ key: 'ENG', text: 'ENG', value: 'engineering_skill' },
-		{ key: 'MED', text: 'MED', value: 'medicine_skill' },
-		{ key: 'SCI', text: 'SCI', value: 'science_skill' },
-		{ key: 'SEC', text: 'SEC', value: 'security_skill' }
-	];
-	/*image: { src: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png` }*/
-
-	return (
-		<Grid textAlign='center' columns={3}>
-			<Grid.Column>
-				<Dropdown
-					compact
-					selection
-					options={skillOptions}
-					value={seat.skillA}
-					onChange={(e, { value }) => updateCallback(shuttleNum, seatNum, 'skillA', value)}
-				/>
-			</Grid.Column>
-			<Grid.Column>
-				<Button circular disabled={seat.skillB == "" ? true : false} onClick={() => updateCallback(shuttleNum, seatNum, 'operand', seat.operand == 'AND' ? 'OR' : 'AND')}>{seat.skillB == "" ? "" : seat.operand}</Button>
-			</Grid.Column>
-			<Grid.Column>
-				<Dropdown
-					compact
-					selection
-					clearable
-					options={skillOptions}
-					value={seat.skillB}
-					onChange={(e, { value }) => updateCallback(shuttleNum, seatNum, 'skillB', value)}
-				/>
-			</Grid.Column>
-		</Grid>
-	);
-};
-
-type EventShuttlersCrewPickerProps = {
-	shuttleNum: number;
-	seatNum: number;
-	seat: ShuttleSeat;
-	skillsets: any;
-	assigned: any[];
-	updateCallback: (shuttleNum: number, seatNum: number, assignedCrew: any) => void;
-};
-
-const EventShuttlersCrewPicker = (props: EventShuttlersCrewPickerProps) => {
-	const { shuttleNum, seatNum, seat, skillsets, assigned, updateCallback } = props;
-
-	const ssId = getSkillSetId(seat);
-	const scores = skillsets[ssId];
-	if (!scores) return (<></>);
-
-	const seated = assigned.find((seat) => seat.shuttleNum == shuttleNum && seat.seatNum == seatNum);
-
-	let assignedCrew = undefined;
-	if (seated) {
-		assignedCrew = scores.find((score) => score.id == seated.assignedId && score.symbol == seated.assignedSymbol);
-		if (!assignedCrew) assignedCrew = scores.find((score) => score.symbol == seated.assignedSymbol);
-	}
-
-	const options = scores.map((score, idx) => {
-		return { key: idx, text: score.name, value: score.id };
-	});
-
-	return (
-		<Dropdown
-			selection
-			clearable
-			options={options}
-			value={assignedCrew ? assignedCrew.id : -1}
-			onChange={(e, { value }) => updateCallback(shuttleNum, seatNum, scores.find(score => score.id == value))}
-		/>
-	);
-}
 
 function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
 	const getMultiplier = (skill: string, stat: string) => {
@@ -1084,6 +660,30 @@ function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core
 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
 	};
+}
+
+// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
+function calculateGalaxyChance(skillValue: number) : number {
+	const craft_config = {
+		specialist_chance_formula: {
+			steepness: 0.3,
+			midpoint: 5.5
+		},
+		specialist_challenge_rating: 1050,
+		specialist_failure_bonus: 0.05,
+		specialist_maximum_success_chance: 0.99
+	};
+
+	let midpointOffset = skillValue / craft_config.specialist_challenge_rating;
+	let val = Math.floor(
+		100 /
+		(1 +
+			Math.exp(
+				-craft_config.specialist_chance_formula.steepness *
+				(midpointOffset - craft_config.specialist_chance_formula.midpoint)
+				))
+		);
+	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 
 export default EventPlanner;
