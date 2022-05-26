@@ -54,7 +54,7 @@ const MissionsList = (props: MissionsListProps) => {
 
 		const factions = [];
 		data.forEach(shuttle => {
-			if (!factions.includes(shuttle.faction)) factions.push(shuttle.faction);
+			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
 		});
 		if (factions.length > 1) {
 			factions.forEach(factionId => {
