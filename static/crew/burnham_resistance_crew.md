@@ -3,7 +3,7 @@ name: Resistance Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 32
 in_portal:
 date: 01/12/2021

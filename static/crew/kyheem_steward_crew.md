@@ -3,7 +3,7 @@ name: Steward Kyheem
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 20
 in_portal:
 date: 17/09/2021

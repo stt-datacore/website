@@ -3,7 +3,7 @@ name: Kevin Uxbridge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 2
 in_portal: true
 date: 07/01/2021

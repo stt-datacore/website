@@ -3,7 +3,7 @@ name: Lt. JG Sam Lavelle
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 1
 in_portal:
 date: 18/11/2021
