@@ -3,7 +3,7 @@ name: Kamala
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 8
 events: 2
 in_portal: true
 date: 21/11/2019

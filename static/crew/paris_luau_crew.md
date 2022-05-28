@@ -3,8 +3,8 @@ name: Luau Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 14
+bigbook_tier: 5
+events: 18
 in_portal: true
 date: 05/01/2021
 obtained: Giveaway
@@ -14,10 +14,6 @@ published: true
 
 Imagine that Episode 10 reward Quinn and former campaign crew Determined Paris had a love child and he came out wearing a really cool shirt, sipping on a pineapple.
 
-Let's start with Luau's Diplomat trait. 62% of legendary Diplomats are CMD/DIP/SEC, meaning the skill set is unavoidable if you want to finish the collection in short order. With four of five stars coming to players for free at release, he has our stamp of approval if you want to fully fuse him for an easy notch toward finishing the Diplomat collection.
+Luau’s trajectory was always self-evident and the power that earned him his own quarters on debut isn’t quite enough to stand out in the worst voyage skill set in the game by a mile. Having had his skill set, skill order, and several anti-matter traits cannibalized by one mega and giveaway crew after another, Paris may not be a card you want to chase from star one if you weren’t playing for his four copy giveaway.
 
-Also working in his favor is a strong event history. Luau slots in as the top Paris DIP base for a very common shuttle seat and double digit (faction) events help compensate for a somewhat weak trait lineup to keep him catching bonuses at a fairly regular clip.
-
-For voyages, his raw power helps compensate for what is among the most redundant skill orders in the game and the aforementioned 'poor' trait set is aces for voyage anti-matter bonuses. His value over replacement options won't be game-changing, but the debut numbers should keep him in service on your roster for at least a couple of years.
-
-From a statistical point of view, Luau Paris isn't the most exciting celebration crew and certainly some MED for the medic wouldn't have gone amiss. But he has the power and/or relevance in most of the right places to earn him a spot in your crew quarters for the next few Convergence Day anniversaries.
+That’s not to say he’s dead in the water, but if mulling a behold or citation investment, you should already be mentally pivoting to his event and collection values. Paris is a typically reliable event name, but his traits have offered only token help on the weekends and in the collection tab. If I were a betting man, I would say that Casual will hit both a mega and stat-booster before too long, but his ceiling is somewhat capped compared to other more versatile characters.

@@ -3,8 +3,8 @@ name: Author Doctor
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 20
+bigbook_tier: 6
+events: 22
 in_portal: true
 date: 04/09/2017
 obtained: Event

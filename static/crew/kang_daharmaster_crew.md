@@ -3,12 +3,12 @@ name: Dahar Master Kang
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 10
+bigbook_tier: 9
+events: 15
 in_portal: true
 date: 24/07/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

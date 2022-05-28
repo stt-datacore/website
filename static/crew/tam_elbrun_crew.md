@@ -3,8 +3,8 @@ name: Tam Elbrun
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: -1
-events: 0
+bigbook_tier: 9
+events: 1
 in_portal:
 date: 05/10/2021
 obtained: Pack

@@ -3,12 +3,12 @@ name: Alternate Future Jadzia Dax
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 32
+bigbook_tier: 8
+events: 34
 in_portal: true
 date: 01/08/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

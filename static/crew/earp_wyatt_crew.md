@@ -3,14 +3,15 @@ name: Wyatt Earp
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 2
-in_portal:
+bigbook_tier: 6
+events: 7
+in_portal: true
 date: 25/02/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Not sure what WRG was trying to pull when they built him but he actually has some respectable numbers for someone beating the drum of DIP/SEC yet again. Your opinion of him might depend on how many stars you need. If it’s the first star be aware that the superior Quinn is available for free in the missions (remember to adwarp to get two) and that citing him up might not be worth the extra tier in the Western Collection. But he is strong enough to be a considerable voyager and his traits will grant him a seat on an intergalactic stagecoach.
-Despite the lack of potential future variant events and a skill set that would get lost in the OK Corral one wouldn’t be remiss in giving credence to our good friend of the south here...oh no, I’ve gone all western too. Dag nabbit!
+If you pull the string on his back, he’ll tell you to “Reach for the skyyyy”, but Wyatt Earp the card doesn’t quite reach to infinity and beyond. CMD/DIP/SEC voyagers get graded on a curve, so although we’re happy with his current raw power and handful of fairly exclusive anti-matter seats, he won’t age as well as any other skill set in his position would. Competent as of this writing, but perhaps not a recommended investment from the ground up.
+
+Luckily he has other cooperating attributes. Four of his five traits are viable for collections and events, the latter of which have lain dormant thus far, but could see a mega’s worth of weekend relevance at any time. Thanks to his exclusive spot in the Wild West collection, he’s an overall worthwhile collection piece who hasn’t peaked yet. There’s value to be had here for this one-off character, but he may struggle to find sustained relevance.

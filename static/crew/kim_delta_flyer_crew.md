@@ -3,8 +3,8 @@ name: Delta Flyer Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 20
+bigbook_tier: 6
+events: 21
 in_portal: true
 date: 14/05/2020
 obtained: Event
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Delta Flyer Kim is what you might call a stocking filler card - yes, even though we're in May, shut up, the analogy still works. He's very much not an exciting card, nor is he particularly bad; much like a pack of thin mint chocolates or a Top Gear DVD that you know your mother bought from the budget store, you'll eventually enjoy using him down the road in one of Kim's eventual Faction events, and if you haven't been cultivating your CMD/ENG, you'll find him palatable until you find a better upgrade.
+Harry’s got the Braxton skill set without the enviable voyage power. If you come across multiple copies of DF Kim in short order, he should perform fine for younger rosters in that area of the game, but voyages are not typically an attribute you should chase in beholds, given how large the portal is and how long it can take to “target” adding stars to specific crew.
+
+Of more lasting value; a base worth thawing for Kim events (don’t laugh) that have been far more plentiful than compliments from Captain Janeway. His three viable traits have each contributed something in the way of event bonuses and are as likely as any to join the collection ranks before the ink dries on this crew note.

@@ -3,8 +3,8 @@ name: Cadet Wesley Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 10
-events: 14
+bigbook_tier: 9
+events: 15
 in_portal: true
 date: 28/09/2017
 obtained: Pack

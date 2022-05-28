@@ -3,9 +3,9 @@ name: Chuft-Captain
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: -1
-events: 4
-in_portal:
+bigbook_tier: 5
+events: 6
+in_portal: true
 date: 11/05/2021
 obtained: Pack
 mega: false

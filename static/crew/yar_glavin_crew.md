@@ -3,8 +3,8 @@ name: Duelist Yar
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 15
+bigbook_tier: 5
+events: 16
 in_portal: true
 date: 17/01/2018
 obtained: Event

@@ -3,17 +3,17 @@ name: Courier Zareh
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 events: 27
 in_portal: true
 date: 23/12/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Oof, those are some 2016, launch day-type numbers on Zareh. He doesn't fit the base/event/voyage mold of so many crew, but that doesn't mean he's a total dud.
+Panned for launch day-type numbers right from the start, Zareh hasn’t exactly fared any better over time, although his new player attributes abide.
 
-Niche usefulness is available at one star for younger rosters thanks to a nice trait set and proficiency pair which combine for a crit-boosted top five CMD/SEC roll in three different gauntlets. Those traits are immaterial for event potential with bases this bad, but you already knew that.
+Proficiencies unsuitable for mature audiences are robust enough to ekke out work for fresh faced Timelines players and include a trio of 45% gauntlet sets thanks to traits which we promise will be collections before too long. (You said that last time, jerks.)
 
-The other area of interest is Zareh's shipboard +9 attack boost. The handicap, initialization, and duration times are all a hair off from where you'd like them to be, but a new roster can't be picky. His attack boost, when fused, may anchor some arena and skirmish scuffles through your account's early months.
+Another attribute of circumstance; an arena attack boost which is a hair slower than optimal and comes with an unfortunate handicap for rosters whose battles tend to last a little longer. But a strong attack boost is an important acquisition and Zareh’s cost to fuse is far cheaper than going straight for a legendary option.

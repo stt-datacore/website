@@ -3,11 +3,11 @@ name: Lucille Davenport
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 24
+bigbook_tier: 8
+events: 21
 in_portal:
 date: 23/10/2018
-obtained: Missions
+obtained: Collection
 mega: false
 published: true
 ---

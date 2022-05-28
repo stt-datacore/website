@@ -3,7 +3,7 @@ name: Shiboline M'Ress
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 8
 events: 0
 in_portal: true
 date: 19/01/2021
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A crew to give Ari Bn Bem a run for his money as the best TAS representation in game. M'Ress offers your standard base/voyage considerations, with a bent toward the former. Unfortunately, TAS being regarded as it is and with a dearth of eventable traits, requisition shuttle stuffer might be her ceiling for many rosters without event bonuses to look forward to.
+A reasonable TAS offering at the time of her debut, M’Ress still has a smidge of daily use in the tank despite an awful trait set. As of this writing, global boosts don’t favor her skill set, but there are still viable voyage and base numbers in play if boosts level out.
 
-Aside from some usable, if vanilla arena accuracy, you'll primarily be deploying M'Ress on voyages. A somewhat average power level on debut is compensated for by a plus skill set, giving her a 2-3 year projected window of use on most rosters.
+Prior to the Animated collection, we would have said things are exceptionally dire for M’Ress’ collection outlook, but that offering out of left field has bumped her up to average-ish in that area. With the pace of TAS cards accelerating, M’Ress may be one of your better options to help reach a theoretical twenty-five crew milestone for that group.

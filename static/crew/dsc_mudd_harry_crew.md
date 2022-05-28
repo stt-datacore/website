@@ -3,12 +3,12 @@ name: Harcourt Fenton Mudd
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 37
+bigbook_tier: 9
+events: 38
 in_portal: true
 date: 30/10/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -50,19 +50,22 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	componentDidMount() {
 		// Get variant names from traits_hidden
-		let ignore = [
-			'tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic',
+		const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
+		const ignore = [
 			'female', 'male',
 			'artificial_life', 'nonhuman', 'organic', 'species_8472',
 			'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 			'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1',
-			'spock_tos' /* 'spock_tos' Spocks also have 'spock' trait so use that and ignore _tos for now */
+			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
 		];
 		let variantTraits = [];
 		for (let i = 0; i < this.props.traits_hidden.length; i++) {
 			let trait = this.props.traits_hidden[i];
-			if (ignore.indexOf(trait) == -1) variantTraits.push(trait);
+			if (!series.includes(trait) && !ignore.includes(trait)) {
+				// Also ignore multishow variant traits, e.g. spock_tos, spock_dsc
+				if (!/_[a-z]{3}$/.test(trait) || !series.includes(trait.substr(-3)))
+					variantTraits.push(trait);
+			}
 		}
 
 		let self = this;
@@ -112,7 +115,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							return a.max_rarity - b.max_rarity;
 						});
 						// short_name may not always be the best name to use, depending on the first variant
-						variants.push({ 'name': found[0].short_name, 'trait_variants': found });
+						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
+						variants.push({ 'name': trait === 'dax' ? 'Dax' : found[0].short_name, 'trait_variants': found });
 					}
 				});
 
@@ -275,9 +279,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		let crewPolestars = constellation.keystones.concat(constellation.raritystone.concat(constellation.skillstones));
 		data.forEach((optimal) => {
-			optimal.combos = optimal.polestars.map((trait) =>
-				crewPolestars.find((op) => filterTraits(op, trait))
-			)
+			optimal.combos = optimal.polestars.map((trait) => {
+				const polestar = crewPolestars.find((op) => filterTraits(op, trait));
+				// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
+				return polestar ?? {
+					short_name: trait.substr(0, 1).toUpperCase()+trait.substr(1),
+					icon: {
+						file: '/items_keystones_'+trait+'.png'
+					}
+				};
+			})
 		});
 
 		// Pagination
@@ -296,16 +307,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{data.map((optimal) => (
-							<Table.Row>
+						{data.map((optimal, idx) => (
+							<Table.Row key={idx}>
 								<Table.Cell>
 									<div style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 										{(1/optimal.count*100).toFixed()}%
 									</div>
 									{optimal.count > 1 && (
 									<div style={{ gridArea: 'description' }}>Shared with{' '}
-										{optimal.alts.map((alt, idx) => (
-											<Link to={`/crew/${alt.symbol}/`}>
+										{optimal.alts.map((alt) => (
+											<Link key={alt.symbol} to={`/crew/${alt.symbol}/`}>
 												{alt.name}
 											</Link>
 										)).reduce((prev, curr) => [prev, ', ', curr])}
@@ -362,8 +373,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		}
 
 		return (
-			this.state.variants.map(group => (
-				<Segment>
+			this.state.variants.map((group, idx) => (
+				<Segment key={idx}>
 					<Header as='h4'>Variants of {group.name}</Header>
 					<Grid centered padded>
 						{group.trait_variants.map(variant => (

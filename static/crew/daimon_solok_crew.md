@@ -3,7 +3,7 @@ name: DaiMon Solok
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 9
 events: 6
 in_portal:
 date: 04/11/2021

@@ -3,8 +3,8 @@ name: Mountain Climber Mayweather
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
-events: 15
+bigbook_tier: 7
+events: 16
 in_portal: true
 date: 17/06/2019
 obtained: Pack

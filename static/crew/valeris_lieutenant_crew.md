@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Reprehensible bases make the event count meaningless in this case, but three event features - all of which were a Galaxy (10x bonus) - certainly do matter. Her main daily contribution will come in the gauntlet where she has the #1 cumulative proficiency total and the best CMD/SCI and SEC/SCI pair among 4* crew. Strong +9 Acc at four seconds in the arena is worth a look too.
+Reprehensible bases make the event count meaningless in this case, but four event features - three of which were a Galaxy (10x bonus) - probably will make a splash for most users. Valeris’ main daily contribution comes in the gauntlet where her strong overall proficiency meets a pair of 45% crit gauntlets - new players should be able to utilize her well early on.
+
+Her arena ability is worth a look as a fast activating accuracy boost, though it lacks the crit punch of Ardra or her many lesser disciples. With a middling collection profile in tow, Valeris remains pretty well rounded and certainly a far better performing super rare than almost any other from 2016.

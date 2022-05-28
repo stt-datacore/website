@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 2
-events: 26
+events: 28
 in_portal: true
 date: 19/03/2020
 obtained: Event
@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-As Jimmy Demaret said "Golf and sex are about the only things you can enjoy without being good at". Well, he clearly forgot about tiering images of holographic golfers for a mobile game. In the Super Rare leagues it's always refreshing to get more MED and his combination of DIP/MED is #1 for SR voyagers both in the pair and triplet.
+As Jimmy Demaret once said "Golf and sex are about the only things you can enjoy without being good at". You can tell by Doc’s art that Tee Time is in full agreement, having just spent a few hours on the back Nine.
 
-As for the classic long term value pairing of events and collections for super rares, Doc birdies there too. His spot in the massive Costume Party collection bolsters his portfolio for late game players who previously were only seeing a spot in the Physician collection which is long overdue for expansion. And while Doc has never been a strong Faction name historically, he will catch events and has a handful of traits to pair with his strong DIP base that will always find a seat. Now where did I leave my nine iron...
+A tremendous voyager, Doc combines his plus skill set with an absurd anti-matter hit rate, essentially guaranteeing him a trait match with every voyage. Strong overall power there and a splash of MED should see him rubbing shoulders with partially-fused legendary crew as your roster grows.
+
+Even elderly players will have a use for this Doc variant. His worthwhile collection profile is an easy acquire on its own, while an oft-seated DIP base sees enough event bonuses each year to provide thawpertunities aplenty for this very spiffy dresser.

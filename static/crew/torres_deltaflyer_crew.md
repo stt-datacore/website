@@ -3,8 +3,8 @@ name: Delta Flyer Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 23
+bigbook_tier: 7
+events: 25
 in_portal: true
 date: 01/05/2019
 obtained: Event

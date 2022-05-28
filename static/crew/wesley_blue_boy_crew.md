@@ -3,9 +3,9 @@ name: Little Boy Blue Wesley
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 7
 events: 20
-in_portal:
+in_portal: true
 date: 08/07/2021
 obtained: Event
 mega: false

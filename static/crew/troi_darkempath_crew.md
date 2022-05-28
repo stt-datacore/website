@@ -3,8 +3,8 @@ name: Dark Empath Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 16
+bigbook_tier: 6
+events: 18
 in_portal: true
 date: 05/11/2019
 obtained: Pack

@@ -3,12 +3,12 @@ name: Mintakan Troi
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 1
-events: 36
+bigbook_tier: 2
+events: 42
 in_portal: true
 date: 26/04/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

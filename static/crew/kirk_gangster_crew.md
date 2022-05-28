@@ -3,8 +3,8 @@ name: Gangster Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 28
+bigbook_tier: 8
+events: 30
 in_portal: true
 date: 24/04/2017
 obtained: Event

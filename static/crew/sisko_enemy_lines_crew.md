@@ -3,12 +3,12 @@ name: Enemy Lines Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 19
+bigbook_tier: 7
+events: 23
 in_portal: true
 date: 30/05/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

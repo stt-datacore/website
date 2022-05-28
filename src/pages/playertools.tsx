@@ -11,6 +11,7 @@ import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
 import CiteOptimizer from '../components/citeoptimizer';
+import CollectionsTool from '../components/collectionstool';
 import EventPlanner from '../components/eventplanner';
 import VoyageCalculator from '../components/voyagecalculator';
 import CrewRetrieval from '../components/crewretrieval';
@@ -24,15 +25,15 @@ import { useStateWithStorage } from '../utils/storage';
 export const playerTools = {
 	'voyage': {
 		title: 'Voyage Calculator',
-		render: ({playerData, voyageData, eventData}) => <VoyageCalculator playerData={playerData} voyageData={voyageData} eventData={eventData} />
+		render: ({playerData, allCrew}) => <VoyageCalculator playerData={playerData} allCrew={allCrew} />
 	},
 	'event-planner': {
 		title: 'Event Planner',
-		render: ({playerData, eventData, activeCrew, allCrew}) => <EventPlanner playerData={playerData} eventData={eventData} activeCrew={activeCrew} allCrew={allCrew}/>
+		render: ({playerData, allCrew}) => <EventPlanner playerData={playerData} allCrew={allCrew} />
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({playerData}) => <ProfileCrew playerData={playerData} isTools={true} />
+		render: ({playerData, allCrew, location}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} location={location} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
@@ -45,6 +46,10 @@ export const playerTools = {
 	'cite-optimizer': {
 		title: 'Citation Optimizer',
 		render: ({playerData, allCrew}) => <CiteOptimizer playerData={playerData} allCrew={allCrew} />
+	},
+	'collections': {
+		title: 'Collections',
+		render: ({playerData, allCrew}) => <CollectionsTool playerData={playerData} allCrew={allCrew} />
 	},
 	'ships': {
 		title: 'Ships',
@@ -75,7 +80,7 @@ export const playerTools = {
 	}
 };
 
-const PlayerToolsPage = () =>  {
+const PlayerToolsPage = (props: any) =>  {
 	const [playerData, setPlayerData] = React.useState(undefined);
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 
@@ -88,10 +93,10 @@ const PlayerToolsPage = () =>  {
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [activeShuttles, setActiveShuttles] = useStateWithStorage('tools/activeShuttles', undefined);
 
 	const [dataSource, setDataSource] = React.useState(undefined);
 	const [showForm, setShowForm] = React.useState(false);
-
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm) {
@@ -106,6 +111,7 @@ const PlayerToolsPage = () =>  {
 					allItems={allItems}
 					requestShowForm={setShowForm}
 					requestClearData={clearPlayerData}
+					location={props.location}
 				/>);
 	}
 
@@ -160,27 +166,22 @@ const PlayerToolsPage = () =>  {
 		// Reset session before storing new variables
 		sessionStorage.clear();
 
-		// Active crew, voyage data, and event data will be stripped from playerData,
-		//	so keep a copy for voyage calculator here
-		//	Event data is not player-specific, so we should find a way to get that outside of playerData
-		let activeCrew = [], shuttleCrew = [];
+		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
+		//	so store a copy for player tools (i.e. voyage calculator, event planner)
+		let activeCrew = [];
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ symbol: crew.symbol, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
-				// Stripped data doesn't include crewId, so create pseudoId based on level and equipment
-				let shuttleCrewId = crew.symbol + ',' + crew.level + ',';
-				crew.equipment.forEach(equipment => shuttleCrewId += equipment[0]);
-				shuttleCrew.push(shuttleCrewId);
 			}
 		});
 		let voyageData = {
 			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions],
 			voyage: [...inputPlayerData.player.character.voyage],
-			shuttle_crew: shuttleCrew
 		}
 		setVoyageData(voyageData);
 		setEventData([...inputPlayerData.player.character.events]);
 		setActiveCrew(activeCrew);
+		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures]);
 
 		let dtImported = new Date();
 
@@ -223,6 +224,7 @@ type PlayerToolsPanesProps = {
 	allItems?: any;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
+	location: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {

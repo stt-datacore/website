@@ -3,7 +3,7 @@ name: Ishan Chaye Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 5
 events: 17
 in_portal: true
 date: 01/01/2020
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Not Avery Brook’s most memorable outing, but this is definitely a card worth travelling through a changeling-induced fever dream to get. Being among the ENG elite on voyages is a big move for an obscure character but, ambiguity aside, his numbers do show his versatility. Second only to global giveaway Adira Tal for ENG/DIP voyages, he perfectly complements them and other familiar names with DIP primaries like Bridge Officer No.1, Interfaced La Forge, and Stranded Quark.
+Ishan drew the short end of the stick around the 2021/2022 turn as WRG favored several ENG/DIP releases which pipped him on voyages. While still perfectly usable there, you should at least have an easier time looking to replicate what he brings to that area of the game.
 
-Ample bases give him top billing for DIP and ENG seats during Sisko events while an assortment of traits all but guarantee him a few extra whacks at the Faction piñata. Six second arena evasion is the royal icing on top of a crew who will churn out work on your roster for years to come.
+His traits have returned surprisingly modest dividends for collections and event bonuses, but still the potential is there to supplement a dependable Sisko event history and provide a tidy collection profile if things break right for him. He had a sharp tier tumble for a while, but should descend more gently in value from here on out.

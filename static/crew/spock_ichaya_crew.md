@@ -3,8 +3,8 @@ name: Spock and I-Chaya
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: -1
-events: 42
+bigbook_tier: 5
+events: 46
 in_portal:
 date: 08/09/2021
 obtained: Giveaway

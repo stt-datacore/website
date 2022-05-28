@@ -3,12 +3,12 @@ name: Galaxy Gallivanting Vash
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 11
 in_portal: true
 date: 31/07/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -3,8 +3,8 @@ name: Arachnia Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 23
+bigbook_tier: 9
+events: 20
 in_portal: true
 date: 21/04/2016
 obtained: Event
@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Arachnia hasn't deserved the title of 'Queen' for about three years now and with honors like 'worst CMD/DIP/SEC voyage total', you should know what you're getting into before she skunks you with her pheromones. She owns the #3 Janeway DIP base (respectable for its age), which has poor chances to flourish through trait events, and a vanity collection spot. There's still some value to be gleaned from this aged monarch, but don't expect any daily use.
+Players seem to gravitate toward Arachina and imbue her with usability that she doesn’t, in most cases, have. Maybe it’s the pheromones, maybe it’s the exquisite art.
+
+Naturally, the peak for this 2016 crew was years ago, but this Janeway variant’s value is pretty hard locked at this point. Having snagged a vanity collection already, we can’t see a path for any value growth there. Likewise, Janeway’s Faction event rate is stellar and you will find a shuttle seat for her from time to time, but her seemingly lone viable trait has had its mega and shouldn’t provide too much more event value considering its size.
+
+There are certainly uses for this iconic crew, including in the arena, but displaying low power in most traditional daily use areas signals DOOM FOR ARACHNIA, QUEEN OF THE SPIDER PEOPLE.

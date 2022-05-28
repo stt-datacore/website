@@ -3,9 +3,9 @@ name: Cosmo Traitt
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 30
-in_portal:
+bigbook_tier: 5
+events: 31
+in_portal: true
 date: 09/03/2021
 obtained: Pack
 mega: false

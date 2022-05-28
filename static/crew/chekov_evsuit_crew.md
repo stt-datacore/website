@@ -3,12 +3,12 @@ name: EV Suit Chekov
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 11
 in_portal: true
 date: 26/12/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

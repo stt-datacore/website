@@ -3,15 +3,15 @@ name: Gladiator Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 3
-events: 45
+bigbook_tier: 6
+events: 48
 in_portal: true
 date: 10/04/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-The renaissance man is at it again, this time putting Gangster's peashooter to shame. Double digit traits have created double, double digit event chances and give him excellent utility for both voyage antimatter and future event bonuses. His base SEC is leagues ahead of the next best Spock option who happens to be someone players rarely immortalize; one-star wonder Gangster Spock. He can handle his variants' competition with a single star and in many cases will be the easy choice over super rares to win your favor for shuttle seating. In combination with prodigious weekend work, his gun (sword, I guess) will be called upon fairly frequently.
+Powered by a stellar lineup of traits, as with most Spocks, Gladiator has the potential to see his value rise and fall over time. The biggest black mark against him is a voyage score that has been creeped out of regular usage for many players, despite his lengthy list of anti-matter seats and fairly useful skill set. If you’re not close to immortalizing him at this moment, it’s fine to ignore his voyage potential as you mull adding additional stars.
 
-Gladiator has dropped off certain voyage-only citation lists because of the raw ranks, but with only two SEC/SCI names above him in overall power there, his voyage ability is still a great side dish to his other offerings. Piddly proficiency numbers and middling arena work are available for the glass-half-empty crowd to critique, but his owners will be too busy using him regularly to care.
+Which you’ll probably want to do for his event and collection potential. An absolutely loaded event history alternates between clockwork variant events and mega after mega after mega. His event clip should never slow down and his SEC base will be in play for all of them. Gladiator also boasts about two crew’s worth of traits and has a collection ceiling as high as any name in the game. He may not be a day-to-day option any longer, but still hits a couple high notes that you’ll want on your roster.

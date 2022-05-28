@@ -3,8 +3,8 @@ name: Rakal Troi
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 19
+bigbook_tier: 5
+events: 22
 in_portal: true
 date: 01/01/2016
 obtained: Launch

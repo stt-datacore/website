@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message } from 'semantic-ui-react';
-import { navigate } from 'gatsby';
+import { Link } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -984,7 +984,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'bigbook_tier', title: 'Tier (Legacy)' },
+		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 		{ width: 1, column: 'cab_ov', title: 'CAB', reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
@@ -1005,7 +1005,7 @@ const CrewTable = (props: CrewTableProps) => {
 	function renderTableRow(crew: any, idx: number): JSX.Element {
 		return (
 			<Table.Row key={idx}>
-				<Table.Cell style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
+				<Table.Cell>
 					<div
 						style={{
 							display: 'grid',
@@ -1018,7 +1018,7 @@ const CrewTable = (props: CrewTableProps) => {
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
 					</div>
@@ -1099,12 +1099,15 @@ const CrewTable = (props: CrewTableProps) => {
 						fuseGroups[parentId].push(parentGroup);
 					else
 						fuseGroups[parentId] = [parentGroup];
-					let childGroups = groupByFuses(combos, comboId, parentGroup);
-					for (let childId in childGroups) {
-						if (fuseGroups[childId])
-							fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
-						else
-							fuseGroups[childId] = childGroups[childId];
+					// Only collect combo groups up to 5 fuses
+					if (parentGroup.length < 5) {
+						let childGroups = groupByFuses(combos, comboId, parentGroup);
+						for (let childId in childGroups) {
+							if (fuseGroups[childId])
+								fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
+							else
+								fuseGroups[childId] = childGroups[childId];
+						}
 					}
 				}
 			}
@@ -1134,7 +1137,7 @@ type ComboGridProps = {
 	fuseGroups: any;
 };
 
-const ComboGrid = ((props: ComboGridProps) => {
+const ComboGrid = (props: ComboGridProps) => {
 	const { crew, fuseGroups } = props;
 	let combos = [...props.combos];
 
@@ -1164,6 +1167,9 @@ const ComboGrid = ((props: ComboGridProps) => {
 		groupOptions = groups.map((group, groupId) => {
 			return { key: groupId, value: groupId, text: 'Option '+(groupId+1) };
 		});
+		// Only show first 200 options
+		if (groupOptions.length > 200)
+			groupOptions = groupOptions.slice(0, 200);
 	}
 
 	return (
@@ -1206,9 +1212,9 @@ const ComboGrid = ((props: ComboGridProps) => {
 	);
 
 	function cycleGroupOptions(): void {
-		if (groups.length <= 1) return;
-		setGroupIndex(groupIndex+1 < groups.length ? groupIndex+1 : 0);
+		if (groupOptions.length <= 1) return;
+		setGroupIndex(groupIndex+1 < groupOptions.length ? groupIndex+1 : 0);
 	}
-});
+};
 
 export default CrewRetrieval;

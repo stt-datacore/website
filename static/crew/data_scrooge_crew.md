@@ -3,8 +3,8 @@ name: Scrooge Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 30
+bigbook_tier: 6
+events: 34
 in_portal: true
 date: 25/11/2019
 obtained: Campaign

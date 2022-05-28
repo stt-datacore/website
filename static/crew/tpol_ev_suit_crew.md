@@ -3,15 +3,15 @@ name: EV Suit T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 27
+bigbook_tier: 7
+events: 29
 in_portal: true
 date: 05/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-EV Suit's voyage power is in that certain area where you're looking for the right skill set to excuse some pedestrian ranks and CMD/SEC certainly isn't it. She can still be an asset, but is an eminently replaceable one.
+EV Suit's sunset scorecard is not unlike those of almost all of her other legendary variants, Twilight’s gauntlet ability notwithstanding. Meaning as a standalone crew, there’s not much here in the way of intrigue, but at least she’s a serviceable event piece.
 
-As we look elsewhere, she profiles a bit better. Great bases (for a T'Pol), a smattering of variant and trait events, and dual collections - one of which (Vulcan) still requires golds to complete. Again, there's nothing here that can't be replicated, but she's still one of the better versions of her character.
+As one of the few ENT characters to get any love from WRG and in combination with trait bonuses, T’Pol’s shuttle-friendly skills should have an easy time finding seats for events in which she has a bonus. Some middling collection value and a “win with your favorites” arena ability offer other reasons for stacking some stars and make her a reliable if unexciting crew to try and extract long term value from.

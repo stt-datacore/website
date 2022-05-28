@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 43
+events: 45
 in_portal: true
 date: 21/08/2017
 obtained: Event
@@ -12,6 +12,13 @@ mega: false
 published: true
 ---
 
-His event count seems inflated thanks to four prior megas, but his traits have room for even more and Bashir remains an average-or-better bet for variant event work down the line. A good deal of his value is in the absurd lead he has over other Bashirs for both of his bases. When it comes time for SEC/ENG event work, it's a case of the haves and the have nots. He's the type of crew along with names like Survivalist Kirk or Solar Sisko that you'd like to snag if you're looking to corner the market on a character's event work.
+Julian
+You don't have to put on the green light
+Those days are over
+You don't have to shoot your buddy for the plight
 
-Previously noted gauntlet work just doesn't pass muster any longer with proficiency monsters like Locutus and Red Angel dominating several skill combos, but Bashir recently picked up his second stat-boosting collection, making him an OK name to consider if looking to finish Smoke and Mirrors sooner than later.
+Brothel Bashir's art screams old card and the stats live down to it. An updated version looks like (the still "old") Augment O'Brien and a contemporary release of a 2-skiller with plus traits, tons of events, and gauntlet usability would be even better still. But until someone at WRG shows up to work with a shred of imagination, we'll have to make do with these older cards.
+
+Despite lacking in power overall, Bashir can still perform in the aforementioned areas including a great skill pair to 2-for-1 opposing Caretakers or big SEC crew in the gauntlet and even collects a trio of 45% crit sets. Not a recommended inclusion for late game rosters, he at least offers some help for newer players with his first star.
+
+Beyond that, the record needle falls on that classic O'Jay's hit Trait Train. Every iteration of Bashir's Big Book note has had to change the number of his collections - his ceiling there is higher than most. And his traits have also given him a plump and juicy event history, padding out almost every calendar year with tons of bonuses which should at least give Bashir a chance to ride some requisition shuttles on the back of his SEC base alone.

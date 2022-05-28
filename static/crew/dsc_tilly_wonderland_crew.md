@@ -3,8 +3,8 @@ name: Wonderland Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: -1
-events: 3
+bigbook_tier: 6
+events: 20
 in_portal:
 date: 23/11/2021
 obtained: Pack

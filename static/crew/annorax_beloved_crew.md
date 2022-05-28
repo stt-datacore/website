@@ -3,12 +3,12 @@ name: Beloved Annorax
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 9
+bigbook_tier: 9
+events: 10
 in_portal: true
 date: 12/06/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

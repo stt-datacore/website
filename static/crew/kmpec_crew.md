@@ -1,14 +1,14 @@
 ---
-name: K'mpec
+name: Chancellor K'mpec
 rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 10
+events: 16
 in_portal:
 date: 09/12/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

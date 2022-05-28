@@ -3,9 +3,9 @@ name: Xindi-Aquatic Councilor
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 6
 events: 14
-in_portal:
+in_portal: true
 date: 06/05/2021
 obtained: Event
 mega: false

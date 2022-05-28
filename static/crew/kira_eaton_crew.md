@@ -3,8 +3,8 @@ name: Kay Eaton
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 20
+bigbook_tier: 7
+events: 23
 in_portal: true
 date: 28/05/2020
 obtained: Event
@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-Much like the White Rose Redi-Tea she's stirring up, Kay won't be to everyone's palate, whether you're a self-respecting Englishman or simply tired of this skillset. With no less than three previous megas sharing the same set, chances are, even if you haven't been chasing it, it's not something you're worrying about. Poor traits and the conspicuous absence of the Bajoran tag - consistent with Benny Russell, but still disappointing - mean that you're essentially waiting for events for her dance card to get any play.
+If the Far Beyond the Stars themed rumors are true, this note may be made obsolete sooner than we’d like, but, frankly, so was Kay Eaton. 
 
-That being said, as a Kira event piece, she does immediately carve out a unique space as her only SCI variant, which could well pay dividends in the future, and if you happened to miss some recent mega crew, she'll shore up any deficiences you have there. You do, after all, need to fill multiple seats for these skills, and there's nothing wrong with strengthening what you already have - you can't always plug your roster holes, especially since some of them are designed that way (looking at you, MED/CMD).
+Her debut voyage score wasn’t great to begin with, but shoving out of spacedock wearing the CMD/DIP/SCI skill set is begging for power creep to do its dirty deed unless you’re rocking some major power notes.
 
-In the end, appropriately for such a forward looking character, you're investing in future spoils with this card, not immediate gratification. Depending on your playstyle, that either makes her an investment sink, or a source of incredible satisfaction six to twelve months down the line.
+Kay’s often been reduced to “the only Kira with SCI” and it’s true, that should be of use going forward. If there was one name who could weather not getting any event help from traits, Kira is probably it. Remarkably consistent with variant events over the years, Kay will be a fine plug-n-play weekend shuttle pilot, even if her events are thick with CMD/DIP/SEC seating.
+
+Settling for events and collections to hang her hat on like many crew much older than her, Kay dropped from daily use faster than a lot of options her age, but should settle into a part time role nicely with at least one or two niches to exploit.

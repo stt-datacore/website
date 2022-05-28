@@ -3,7 +3,7 @@ name: Tucker On-The-Ropes
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 9
 events: 15
 in_portal: true
 date: 27/09/2018

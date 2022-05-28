@@ -3,8 +3,8 @@ name: Timekeeper Tenavik
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 25
+bigbook_tier: 6
+events: 30
 in_portal: true
 date: 03/10/2019
 obtained: Mega

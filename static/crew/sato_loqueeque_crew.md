@@ -3,12 +3,12 @@ name: Loque'eque Sato
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 18
 in_portal: true
 date: 22/03/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

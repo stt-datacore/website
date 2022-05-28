@@ -3,8 +3,8 @@ name: Carlos Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 25
+bigbook_tier: 4
+events: 26
 in_portal: true
 date: 19/11/2020
 obtained: Event
@@ -18,4 +18,4 @@ But as long as such injustices don't result in another boring, retread skill set
 
 Rather than matching voyage strength with shuttle strength, Carlos opts to fill a few different holes in Data's skill portfolio. Blowing past all other variant SCI options and offering the only MED for his character, he'll have no trouble finding work during his events and in some cases may be one of very few bonus options with his skills.
 
-Timely arena accuracy is the extent of his peripheral perks, but sterling voyage credentials and a much-needed refresh of Data variant power makes him a no-brainer acquisition the next time you're in South America.
+Timely arena accuracy, a handful of collections, sturdy voyage credentials, and a much-needed refresh of Data variant power all serve to make him a no-brainer acquisition the next time you're in South America.

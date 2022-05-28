@@ -3,12 +3,12 @@ name: Mutated Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 19
+bigbook_tier: 6
+events: 22
 in_portal: true
 date: 22/03/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

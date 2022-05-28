@@ -867,5 +867,16 @@
 		"smallbonus": {
 			"traits": ["kira","archer","Cultural Figure"]
 		}
+	},
+	{
+		"name": "Fragments of the Past - Mega Pt 2",
+		"type": "Galaxy",
+		"dates": "Thursday 12/09 until Monday 12/13 at Noon (17.00 UTC)",
+		"startDate": "2021-12-09T17:00:00Z",
+		"endDate": "2021-12-13T17:00:00Z",
+		"highbonus": ["ancient_humanoid_crew", "patar_crew", "data_friar_tuck_crew", "sahil_lieutenant_crew"],
+		"smallbonus": {
+			"traits": ["data","Cultural Figure"]
+		}
 	}
 ]

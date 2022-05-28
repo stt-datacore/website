@@ -3,12 +3,12 @@ name: Yelgrun
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 9
+bigbook_tier: 8
+events: 10
 in_portal: true
 date: 16/08/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

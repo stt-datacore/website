@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Header, Dropdown, Grid, Rating, Divider, Form, Popup, Label } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Header, Dropdown, Grid, Rating, Divider, Form, Popup, Label, Button } from 'semantic-ui-react';
+import { Link, navigate } from 'gatsby';
 import marked from 'marked';
 
 import Layout from '../components/layout';
@@ -24,12 +24,11 @@ type BeholdsPageState = {
 };
 
 const rarityOptions = [
-	{ key: null, value: null, text: 'Any' },
-	{ key: '1', value: '1', text: '1' },
-	{ key: '2', value: '2', text: '2' },
-	{ key: '3', value: '3', text: '3' },
-	{ key: '4', value: '4', text: '4' },
-	{ key: '5', value: '5', text: '5' }
+	{ key: 'ro0', value: null, text: 'Any rarity' },
+	{ key: 'ro2', value: '2', text: 'Minimum 2*' },
+	{ key: 'ro3', value: '3', text: 'Minimum 3*' },
+	{ key: 'ro4', value: '4', text: 'Minimum 4*' },
+	{ key: 'ro5', value: '5', text: 'Minimum 5*' }
 ];
 
 class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
@@ -94,8 +93,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 
 		return (
 			<Layout title='Behold helper / crew comparison'>
-				<Header as='h4'>Behold helper / crew comparison</Header>
-				<p>Simply search for the crew you want to compare to get side-by-side views for comparison.</p>
+				<Header as='h2'>Behold helper / crew comparison</Header>
 				<Form>
 					<Form.Group>
 						<Dropdown
@@ -106,7 +104,7 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 							selection
 							closeOnChange
 							options={peopleToShow}
-							placeholder='Select or search for crew'
+							placeholder='Search for crew to compare'
 							label='Behold crew'
 							value={this.state.currentSelectedItems}
 							onChange={(e, { value }) => this._selectionChanged(value)}
@@ -121,6 +119,9 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 						/>
 					</Form.Group>
 				</Form>
+				{this.state.currentSelectedItems?.length > 0 && (
+					<Button compact icon='add user' color='green' content='Preview all in your roster' onClick={() => { this._addProspects(); }} />
+				)}
 
 				<Divider horizontal hidden />
 
@@ -134,7 +135,14 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 								</Link>
 							</Header>
 							<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} roster={this.state.roster}/>
-							{entry.markdown && <div dangerouslySetInnerHTML={{ __html: entry.markdown }} />}
+							{entry.markdown && (
+								<React.Fragment>
+									<div dangerouslySetInnerHTML={{ __html: entry.markdown }} />
+									<div style={{ marginTop: '1em' }}>
+										<a href={`https://www.bigbook.app/crew/${entry.crew.symbol}`}>View {entry.crew.name} on Big Book</a>
+									</div>
+								</React.Fragment>
+							)}
 						</Grid.Column>
 					))}
 				</Grid>
@@ -177,6 +185,14 @@ class BeholdsPage extends Component<BeholdsPageProps, BeholdsPageState> {
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);
+	}
+
+	_addProspects(): void {
+		const linkUrl = '/playertools?tool=crew';
+		const linkState = {
+			prospect: this.state.currentSelectedItems
+		};
+		navigate(linkUrl, { state: linkState });
 	}
 }
 

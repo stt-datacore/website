@@ -3,8 +3,8 @@ name: Satin Dress Lily Sloane
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 6
+bigbook_tier: 6
+events: 7
 in_portal: true
 date: 19/07/2018
 obtained: Event

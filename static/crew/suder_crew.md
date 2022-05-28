@@ -3,7 +3,7 @@ name: Lon Suder
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 2
 in_portal: true
 date: 12/10/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Suder doesn’t belong on any active rosters and if you’re looking for a reason to snag a great on-screen character, you’ll be looking to the Circle of Traits which seeks to bring all crew to relevance sooner or later. Although Brutal is the only one which has triggered a bonus to date, the Wheel of Megas is a fickle mistress and if he does end up snagging a month’s reprieve from cryo, Suder’s two borderline usable-when-bonus bases should be fine for at least requisition shuttles, thanks to some shallow pools of crew who share his traits.
+Suder doesn’t belong on any active rosters, but if you’re looking for a reason to snag a great on-screen character, pray to the Circle of Traits which seeks to bring all crew to relevance in time.
+
+His six non-HFS traits are all varying levels of reasonable when it comes to collection potential and indeed he has a higher ceiling there than most, though it remains to be seen if WRG goes the direction of a Troi-heavy Betazoid collection or Vulcan-esque Telepath collection. With bad bases that would take many requisition shuttles to find a spot even with a bonus, Suder is a collections-or-bust dice roll in otherwise bad beholds.

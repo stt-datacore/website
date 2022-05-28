@@ -3,8 +3,8 @@ name: Mademoiselle de Neuf
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 20
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 09/05/2016
 obtained: Pack
@@ -12,6 +12,10 @@ mega: false
 published: true
 ---
 
-Don't let Mrs. Gangster Spock's numbers fool you. On voyages, a SEC/SCI crew with a few stars will always pop up to at least within view, but with several better options available to you since the mid-2019 portal update, you might find that she's struggling to stay relevant. Even 4* crew like Fugitive Spock will probably manage to eke out in front of her unless you've really put the time and the citations in, to say nothing of if you've managed to snag an Away Team Burnham or someone marginally worse. In Gauntlet, she can still pitch in some ranked pairs, but outside of the edge of a few 45% trait sets, she'll probably be a rotational fifth rather than a cornerstone of your strategy.
+A poor man's Gangster Spock, this Seven variant is similarly pointed toward gauntlet, but with less meat on the bone in the trait and event departments. 
 
-On the plus side, the Blonde Borg Bombshell does offer a base SEC which, despite its seeming appalling rank, is still a variant best for Ms. of Nine, something to keep in mind since her event frequency has actually been fairly respectable, to say nothing of the inevitable ST: Picard events. That being said, if you snagged (go go!) Fenris Ranger Seven, she performs at 95% of Neuf's strength, without the need to star up such an expensive crew, so that value comes at a price. Rounding her out is arena accuracy at four seconds with healthy crit values that you might find useful, especially for Skirmishes. A more valuable crew than the poor numbers intimate.
+Owner of a fairly nice skill set for dice rolling, SEC/SCI does have a good amount of competition, but SEC/ENG less so and that will be her chance at 2-for-1ing bigger bodies, such as The Caretaker. Solid overall proficiency and an extreme number of elevated crit sets make this an ideal stepping stone gauntlet option for newer rosters to get their foot in the door of a competitive area of play. Unfortunately, established rosters won't find much use for her here.
+
+Almost a lateral step left brings us to the collection tab where Mademoiselle is in multiple collections and should pick up a few more. Again, not at the top of her field in this area, but with tangible benefits, this time for more veteran users.
+
+Shaky event value is mostly a product of her poor bases thanks to the heavier proficiency allocation, but we again see a reasonable value profile in the form of a consistent, if modest, event history. Mademoiselle generally looks better on paper than she does in real world usage due to a lack of power, but undoubtedly offers at least some amount of value to players at every stage of play and is far from dud territory.

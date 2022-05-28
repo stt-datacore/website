@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
-import { graphql } from 'gatsby';
+import { graphql, navigate } from 'gatsby';
 
 import SimpleMDE from 'react-simplemde-editor';
 import marked from 'marked';
@@ -141,6 +141,10 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Column width={12}>
 							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
+							<div style={{ margin: '1em 0', textAlign: 'right' }}>
+								<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
+							</div>
+
 							{this.state.items.length > 0 ? (
 								<React.Fragment>
 									{this.renderEquipment(crew)}
@@ -198,7 +202,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					</Grid.Row>
 				</Grid>
 				<Divider horizontal hidden />
-				{hasBigBookEntry && <div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />}
+				{hasBigBookEntry && (
+					<React.Fragment>
+						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
+						<div style={{ marginTop: '1em', textAlign: 'right' }}>
+							-- <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
+						</div>
+					</React.Fragment>
+				)}
 				{/*userName && (
 						<div>
 							<br />
@@ -266,6 +277,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			.catch(err => {
 				console.error(err);
 			});
+	}
+
+	_addProspect(crew: any): void {
+		const linkUrl = '/playertools?tool=crew';
+		const linkState = {
+			prospect: [crew.symbol]
+		};
+		navigate(linkUrl, { state: linkState });
 	}
 
 	renderEquipment(crew) {

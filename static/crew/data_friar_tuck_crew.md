@@ -3,8 +3,8 @@ name: Friar Tuck Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 31
+bigbook_tier: 2
+events: 36
 in_portal: true
 date: 09/01/2017
 obtained: Pack

@@ -3,8 +3,8 @@ name: Warship Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 31
+bigbook_tier: 7
+events: 28
 in_portal: true
 date: 01/01/2016
 obtained: Launch

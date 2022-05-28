@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
+import { Link } from 'gatsby';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
@@ -26,6 +27,8 @@ export interface ITableConfigRow {
 	column: string;
 	title: string | JSX.Element;
 	pseudocolumns?: string[];
+	reverse?: boolean;
+	tiebreakers?: string[];
 }
 
 type SearchableTableProps = {
@@ -37,6 +40,8 @@ type SearchableTableProps = {
 	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
+	showPermalink: boolean;
+	lockable?: any[];
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -56,18 +61,25 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
+	const [activeLock, setActiveLock] = React.useState(undefined);
+
 	// Override stored values with custom initial options and reset all others to defaults
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions['searchFilter'] ?? '');
-			setFilterType(props.initOptions['filterType'] ?? 'Any match');
+			setSearchFilter(props.initOptions['search'] ?? '');
+			setFilterType(props.initOptions['filter'] ?? 'Any match');
 			setColumn(props.initOptions['column'] ?? defaultSort.column);
 			setDirection(props.initOptions['direction'] ?? defaultSort.direction);
-			setPaginationRows(props.initOptions['paginationRows'] ?? 10);
-			setPaginationPage(props.initOptions['paginationPage'] ?? 1);
+			setPaginationRows(props.initOptions['rows'] ?? 10);
+			setPaginationPage(props.initOptions['page'] ?? 1);
 		}
 	}, [props.initOptions]);
+
+	// Activate lock by default if only 1 lockable
+	React.useEffect(() => {
+		setActiveLock(props.lockable?.length === 1 ? props.lockable[0] : undefined);
+	}, [props.lockable]);
 
 	// Update column and/or toggle direction, and store new values in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
@@ -116,11 +128,49 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ')}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ').replace('.length', '')}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
 		);
+	}
+
+	function renderPermalink(): JSX.Element {
+		// Will not catch custom options (e.g. highlight)
+		const params = new URLSearchParams();
+		if (searchFilter != '') params.append('search', searchFilter);
+		if (filterType != 'Any match') params.append('filter', filterType);
+		if (column != defaultSort.column) params.append('column', column);
+		if (direction != defaultSort.direction) params.append('direction', direction);
+		if (pagination_rows != 10) params.append('rows', pagination_rows);
+		if (pagination_page != 1) params.append('page', pagination_page);
+		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
+		if (params.toString() != '') permalink += '?' + params.toString();
+		return (
+			<Link to={permalink}>
+				<Icon name='linkify' /> Permalink
+			</Link>
+		);
+	}
+
+	function onLockableClick(lock: any): void {
+		if (lock) {
+			setActiveLock(lock);
+		}
+		else {
+			setActiveLock(undefined);
+			// Remember active page after removing lock
+			setPaginationPage(activePage);
+		}
+	}
+
+	function isRowActive(row: any, highlight: any): boolean {
+		if (!highlight) return false;
+		let isMatch = true;
+		Object.keys(highlight).forEach(key => {
+			if (row[key] !== highlight[key]) isMatch = false;
+		});
+		return isMatch;
 	}
 
 	// Sorting
@@ -147,6 +197,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		// Use original dataset for sorting
 		const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
 		data = sorted.result;
+
+		// Sorting by pre-calculated ranks should filter out crew without matching skills
+		//	Otherwise crew without skills show up first (because 0 comes before 1)
+		if (column.substr(0, 5) === 'ranks') {
+			const rank = column.split('.')[1];
+			data = data.filter(row => row.ranks[rank] > 0);
+		}
 	}
 
 	// Filtering
@@ -161,6 +218,15 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Pagination
 	let activePage = pagination_page;
+	if (activeLock) {
+		const index = data.findIndex(row => isRowActive(row, activeLock));
+		// Locked crew is not viewable in current filter
+		if (index < 0) {
+			setActiveLock(undefined);
+			return (<></>);
+		}
+		activePage = Math.floor(index / pagination_rows) + 1;
+	}
 	let totalPages = Math.ceil(data.length / pagination_rows);
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
@@ -195,16 +261,21 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>
 
+			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx))}</Table.Body>
+				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={props.config.length}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={activePage}
-								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
+								onPageChange={(event, { activePage }) => {
+									setPaginationPage(activePage as number);
+									setActiveLock(undefined);	// Remove lock when changing pages
+								}}
 							/>
 							<span style={{ paddingLeft: '2em'}}>
 								Rows per page:{' '}
@@ -218,15 +289,110 @@ export const SearchableTable = (props: SearchableTableProps) => {
 									}}
 								/>
 							</span>
+							{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
 			</Table>
 		</div>
 	);
-}
+};
 
-function renderDefaultExplanation() {
+type LockButtonsProps = {
+	lockable: any[];
+	activeLock: any;
+	setLock: (lock: any) => void;
+};
+
+const LockButtons = (props: LockButtonsProps) => {
+	const { lockable, activeLock, setLock } = props;
+
+	if (lockable?.length == 0) return (<></>);
+
+	return (
+		<div style={{ margin: '.5em 0' }}>
+			<span style={{ marginRight: '.5em' }}>Lock view on:</span>
+			{lockable.map((lock, lockNum) => (
+				<Button key={lockNum} compact toggle active={JSON.stringify(lock) === JSON.stringify(activeLock)} onClick={() => handleClick(lock)}>
+					{lock.name}
+				</Button>
+			))}
+		</div>
+	);
+
+	function handleClick(lock: any): void {
+		const isActive = JSON.stringify(lock) === JSON.stringify(activeLock);
+		setLock(isActive ? undefined : lock);
+	}
+};
+
+// Check for custom initial table options from URL or <Link state>
+export const initSearchableOptions = (location: any) => {
+	let initOptions = false;
+	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
+
+	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
+	const linkState = location.state;
+
+	OPTIONS.forEach((option) => {
+		let value = undefined;
+		// Always use URL parameters if found
+		if (urlParams?.has(option)) value = urlParams.get(option);
+		// Otherwise check <Link state>
+		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (value) {
+			if (!initOptions) initOptions = {};
+			initOptions[option] = value;
+		}
+	});
+
+	return initOptions;
+};
+
+// Check for other initial option from URL or <Link state> by custom name
+export const initCustomOption = (location: any, option: string, defaultValue: any) => {
+	let value = undefined;
+	// Always use URL parameters if found
+	if (location?.search) {
+		const urlParams = new URLSearchParams(location.search);
+		if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
+	}
+	// Otherwise check <Link state>
+	if (!value && location?.state) {
+		const linkState = location.state;
+		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+	}
+	return value ?? defaultValue;
+};
+
+export const prettyCrewColumnTitle = (column: string) => {
+	if (column.substr(0, 6) == 'ranks.') {
+		let title = column.replace('ranks.', '');
+		if (title.substr(-4) == 'Rank') {
+			title = title.replace('Rank', '');
+			title = title.substr(0, 1).toUpperCase() + title.substr(1);
+			return title;
+		}
+		else {
+			const vars = title.split('_');
+			let score = vars.shift();
+			switch (score) {
+				case 'G': score = 'Gauntlet'; break;
+				case 'V': score = 'Voyage'; break;
+			}
+			const skills = vars.reduce((prev, curr) => prev != '' ? prev + ' / ' + curr : curr, '');
+			return (
+				<span style={{ fontSize: '.95em' }}>
+					{score}<br/>{skills}
+				</span>
+			);
+		}
+		return title;
+	}
+	return column;
+};
+
+function renderDefaultExplanation(): JSX.Element {
 	return (
 		<div>
 			<p>

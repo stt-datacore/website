@@ -3,8 +3,8 @@ name: Phlox, Au Naturel
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
-events: 16
+bigbook_tier: 8
+events: 18
 in_portal: true
 date: 16/10/2018
 obtained: Pack

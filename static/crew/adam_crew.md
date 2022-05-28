@@ -3,9 +3,9 @@ name: Adam
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 9
 events: 3
-in_portal:
+in_portal: true
 date: 20/05/2021
 obtained: Event
 mega: false

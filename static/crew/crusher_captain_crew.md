@@ -3,8 +3,8 @@ name: Captain Beverly Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 13
+bigbook_tier: 6
+events: 14
 in_portal:
 date: 13/03/2018
 obtained: Honor Hall

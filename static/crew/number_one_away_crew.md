@@ -12,4 +12,8 @@ mega: false
 published: true
 ---
 
-Majel is a gauntlet crew through and through, meaning her first star is great, but spending extra behold capital a calculated investment. Strange New Worlds may open up a small avenue for variant events, but with poor bases beside, it's the rest of this card that's interesting. Armus-eque in the gauntlet, she owns two highly ranked pairs, one of which is only a few points from #1. On ships, she can reach +11 attack fast enough (6 sec) for almost any instant damage crew and her voyage work is average, even saddled with a bloated skill set. Not a weekend warrior by any means, but worthwhile daily numbers and packs a punch from star one.
+I said the real Number One… Perfection.
+
+Majel’s cage rendition netted her an arguably more interesting card than Rebecca Romijn’s, even though they’re similar in many ways. In most respects, AT#1 is “meh” at best, but in the gauntlet… Before we get there, though, keep in mind that this card has an extremely low chance to be retrieved thanks to her generic trait and skill sets so if you’re looking at her in a behold, make sure you’re okay with never seeing her again if you choose to pass.
+
+So, do you need her? Well, she’s one hell of a gauntleteer. Owning two top fifteen single skill rolls give her a nice amount of flexibility and they combine for a virtual first place CMD/SCI tie with gauntlet exclusive Armus. Those two cards throw elbows quite often vying for players’ attention, but if you’re serious about the gauntlet, it’s nice to have both options. Her top ten overall proficiency and reasonable number of elevated crit sets give her usability there on any roster.

@@ -3,8 +3,8 @@ name: Dr. Toby Russell
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 3
+bigbook_tier: 8
+events: 5
 in_portal: true
 date: 29/07/2016
 obtained: Post-Launch

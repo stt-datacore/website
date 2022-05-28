@@ -4,12 +4,12 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 8
-events: 9
+events: 11
 in_portal: true
 date: 19/02/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Look at that face. Isn’t that the face of a hero? For those of you who remember this thoroughly middle of the road episode of DS9, you probably either dislike or thoroughly loathe this piece of wet toast, and this card doesn’t do him any favours. SCI/CMD/DIP is the new CMD/DIP/SEC, and with his traits exhausted (Civilian or Trill mega seems unlikely), the most Arjin can offer you is merely okay voyage use on a fledgling roster, and a +9 Accuracy boost in the Arena. Freeze and forget.
+His arena quote is another (Cardassian) lie - you're really not looking at much beyond a handful of traits from Arjin. His voyage numbers are edge case usable if you're able to grab all four stars at once early on, but it isn't an attribute to chase one star at a time from beholds. His collection and event tally should increment upwards over time, just don't feel rushed to acquire (or hold) this card until those traits deliver more tangible value.

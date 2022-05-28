@@ -3,9 +3,9 @@ name: EV Suit Mayweather
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 13
-in_portal:
+bigbook_tier: 7
+events: 14
+in_portal: true
 date: 20/04/2021
 obtained: Pack
 mega: false

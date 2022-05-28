@@ -3,15 +3,17 @@ name: Time Loop Mudd
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 37
+bigbook_tier: 4
+events: 38
 in_portal: true
 date: 22/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-“I wish there was a way to know you're in the good old days before you've actually left them.”
+Mudd’s last note had him with one foot in the grave, but then he said “Oh, you thought” and pulled out a fistful of big bonus event features while puffing up his collection count, which still has room to grow.
 
-Stella aside, Mudd's golden days of holding down Discovery ENG or pushing your voyages ever longer are over. He still has a handful of traits to get him some shuttle work beyond what his otherwise poor bases would demand. Outside of that, his low-ish power will get him lost in the shuffle of new crew who have base and voyage scores hundreds of points higher. Most likely a freeze and forget name for the EV Suit collection.
+Anyone who’s seen me buzzing around players seeking behold advice has probably heard the phrase “bet on traits” and they’re paying off in spades for Mudd. Besides WRG’s fascination with this particular variant, his traits give him a strong collection profile and have acquitted him well in a post-Disco landscape, even if his bases aren’t exactly top of the line.
+
+Mostly bereft of daily usefulness, don’t feel squeezed to level him before all four stars are in, but he should continue to pay off after immortalization.

@@ -3,15 +3,15 @@ name: Deral
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 2
-in_portal:
+bigbook_tier: 9
+events: 3
+in_portal: true
 date: 25/02/2021
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Who has a slightly creepy smile and is currently sitting top of the DIP/SCI voyage pairings. This guy except oh, he’s not been blessed with more than two of the most common skills in the game.
+Brett Cullen’s list of acting credits is longer than the list of players temp banned by WRG for opening packs, but surely the pinnacle of his career came when briefly romancing Jadzia Dax before shifting into an alternate universe along with his entire planet. That’s the most Star Trek plot that’s ever been penned.
 
-A notch on the diplomat collection saves him from the bottom rungs but he you are thinking that his traits might net a strong shuttle seat I can point to at least three in portal super rare crew and a shit load of useless golds that would perform better than this wet nugget of a romance plot.
+Anyways, that was just some filler, much like this crew. There’s only so many times you can say, “Well, I guess he’s got a few traits.” His four viable traits will look to provide post-cryo value in the form of collections and events, but this is not a daily operator or a behold priority unless he maxes out his collection potential in a hurry.

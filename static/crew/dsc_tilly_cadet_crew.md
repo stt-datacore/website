@@ -3,15 +3,13 @@ name: Cadet Sylvia Tilly
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
-events: 18
+bigbook_tier: 10
+events: 19
 in_portal: true
 date: 23/10/2017
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Much like her engineering, a lot of Tilly's value is largely theoretical - thanks to the distorting effect of Discovery megas, a positive looking event count hides the fact that in the lifetime of the game, Tilly has only had two variant events, and while a TOS-style shift to bridge crew only bonuses would keep her from sliding into complete obscurity, there's just not a whole lot here.
-
-What was once the #1 Disco ENG base has slid to #5, a once respectable SCI base no longer even makes the first Datacore page of Disco crew, and her traits are as barren as Regula I. If you're taking her in a begold, make sure that it's either for love or because the other options are truly diabolical, because this is as light on versatility as you can really get.
+Much like her engineering, whatever value Tilly could or should have is purely theoretical. Her traits are as barren as Regula I and Discovery megas have left her high and dry in the events department. Averaging less than an event per year outside of them, this is a crew that may sit in cryo for years between uses. Until either a legendary or Discovery series collection comes along (which would lift all boats anyways), this is my pick for worst legendary crew in the game.

@@ -3,8 +3,8 @@ name: Camp Nurse Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 23
+bigbook_tier: 5
+events: 20
 in_portal: true
 date: 15/09/2020
 obtained: Pack

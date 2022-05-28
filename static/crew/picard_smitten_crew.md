@@ -3,8 +3,8 @@ name: Smitten Jean-Luc Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 18
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 28/09/2017
 obtained: Pack
@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-It's a fool's errand to guess future events (Pilot mega, really?), and there's no way to better illustrate how foolish it is than to tell you that this note used to mention just how good this Pickerd would look as the poster boy for a Romantic mega that never did, and likely never will, materialise. Oops.
+We’ve been banging the February Romantic mega/campaign drum for so long that the calf skin is ripped. One more campaign will make no difference in the here and now. But twenty two years ago, one campaign could have stopped this endless wave of overpowered Picards before it started.
 
-In the here and now, Smitten is fine event crew with two shuttle-quality bases and an event count we can work with. Picard-mania swept through Timelines with a Happy Picard Day mailbox gift, a campaign "inspired by the recent Star Trek: Picard teaser", and a namesake television show which should only help his variants out on the weekend.
+Smitten still has competitive bases for his variants’ events and should (continue to) see the occasional weekend bonus from his traits which have done more for him in the collections tab so far. He’s merely average there as of this writing, but should see all of his “viable” traits materialize before too long.
 
-His spot in the Inspiring collection still has value and may be a behold tie-breaker as his star count rises. For a bit of added daily value, consider his arena damage at an ultra-rare nine seconds; slower than some, but fast enough to catch crew like T'kuvma sleeping.
+Providing some nice peripheral perks for a 2-skiller as well, Smitten offers (trigger-locked) shipboard damage and a gauntlet pair which, while not impressive for veteran players, is available at one star and not something you want to try to roll against when he catches crit.

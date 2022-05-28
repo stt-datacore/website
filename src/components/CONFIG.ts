@@ -126,5 +126,5 @@ export default class CONFIG {
 		"medical_officer"
 	]
 
-	static readonly CITATION_COST = [500, 500, 500, 4500, 18000, 50000];
+	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
 }

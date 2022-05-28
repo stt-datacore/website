@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab} from 'semantic-ui-react';
+import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab } from 'semantic-ui-react';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
 
@@ -42,7 +42,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	componentDidMount() {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.props;
-		worker.addEventListener('message', message => this.setState({citeData: message.data.result}));
+		worker.addEventListener('message', message => this.setState({ citeData: message.data.result }));
 		worker.postMessage({
 			worker: 'citeOptimizer',
 			playerData,
@@ -53,14 +53,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderTable(data, training = true) {
 		const createStateAccessors = (name) => [
 			this.state[name],
-			(value) => this.setState((prevState) => {prevState[name] = value; return prevState; })
+			(value) => this.setState((prevState) => { prevState[name] = value; return prevState; })
 		];
-		const [ paginationPage, setPaginationPage ] = createStateAccessors(training ? 'trainingPage' : 'citePage');
-		const [ otherPaginationPage, setOtherPaginationPage ] = createStateAccessors(training ? 'citePage' : 'trainingPage');
-		const [ paginationRows, setPaginationRows ] = createStateAccessors('paginationRows');
+		const [paginationPage, setPaginationPage] = createStateAccessors(training ? 'trainingPage' : 'citePage');
+		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
+		const [paginationRows, setPaginationRows] = createStateAccessors('paginationRows');
 
-		const baseRow = (paginationPage-1)*paginationRows;
-		const totalPages = Math.ceil(data.length/paginationRows);
+		const baseRow = (paginationPage - 1) * paginationRows;
+		const totalPages = Math.ceil(data.length / paginationRows);
 
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -69,17 +69,23 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.HeaderCell>Rank</Table.HeaderCell>
 						<Table.HeaderCell>Crew</Table.HeaderCell>
 						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Voyages improved</Table.HeaderCell>
-						<Table.HeaderCell>Expected value</Table.HeaderCell>
+						<Table.HeaderCell>Final EV</Table.HeaderCell>
+						{!training &&
+						<React.Fragment>
+							<Table.HeaderCell>Remaining EV</Table.HeaderCell>
+							<Table.HeaderCell>EV Per Citation</Table.HeaderCell>
+						</React.Fragment>
+						}
+						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{data.slice(baseRow, baseRow+paginationRows).map((row, idx) => {
+					{data.slice(baseRow, baseRow + paginationRows).map((row, idx) => {
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (
 							<Table.Row>
-								<Table.Cell>{baseRow+idx+1}</Table.Cell>
+								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
 								<Table.Cell>
 									<div
 										style={{
@@ -100,10 +106,21 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
 								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
+									{Math.ceil(training ? row.addedEV : row.totalEVContribution)}
 								</Table.Cell>
+								{
+									!training &&
+									<React.Fragment>
+										<Table.Cell>
+											{Math.ceil(row.totalEVRemaining)}
+										</Table.Cell>
+										<Table.Cell>
+											{Math.ceil(row.evPerCitation)}
+										</Table.Cell>
+									</React.Fragment>
+								}
 								<Table.Cell>
-									{ (training ? row.addedEV : row.evPerCitation).toFixed(1) }
+									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
 								</Table.Cell>
 							</Table.Row>
 						);
@@ -117,13 +134,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								activePage={paginationPage}
 								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
 							/>
-							<span style={{ paddingLeft: '2em'}}>
+							<span style={{ paddingLeft: '2em' }}>
 								Rows per page:{' '}
 								<Dropdown
 									inline
 									options={pagingOptions}
 									value={paginationRows}
-									onChange={(event, {value}) => {
+									onChange={(event, { value }) => {
 										setPaginationPage(1);
 										setOtherPaginationPage(1);
 										setPaginationRows(value as number);
@@ -150,13 +167,24 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}
 					{citeData &&
 						<Tab panes={[
-							{menuItem: 'Crew to cite', render: () => this.renderTable(citeData.crewToCite, false)},
-							{menuItem: 'Crew to train', render: () => this.renderTable(citeData.crewToTrain, true) }
+							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData.crewToCite, false) },
+							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData.crewToTrain, true) }
 						]} />
 					}
 					<Rail position='right'>
-							<h3>Explanation</h3>
-							Voyages are calculated for every combination and have an Expected Value (EV) which is based on each crews base+(min + max)/2 for each skill, then for the voyage main proficiency times 0.35, secondary proficiency times 0.25 and all other times 0.1. This is the total score for the voyage. We use this to rank all of your crew for each proficiency combo of voyage from best to worst. We then do this again assuming you had leveled all your crew to 100, and compare the difference in EV for each voyage to work out how much you would gain by leveling that crew. This produces the "Ranked Crew to Train" section in the console output, you will get a list of what voyages they improve, and how much they will improve the best proficiency combo by. Then finally we do this all over again assuming that you have fully cited your crew, and then tell you the EV benefit per citation. Note that for citations the assumption is that you will cite a crew to 5/5, so this tool does not answer "where should I spend the next citation for most improvement", it answers "who should I cite to 5/5 for most improvement", as one citation on a killer 1/5 may have no effect on your voyages, but at 5/5 they might be your best crew.
+						<h3>Explanation</h3>
+						<p>
+							A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.
+						</p>
+						<p>
+							A crew's EV for a voyage is found by finding the crew's average for the skill "Base + (Min + Max) / 2", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.
+						</p>
+						<p>
+							"Training" is considered simply leveling and equipping the considered crew <u>at their current rarity</u>. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>at current rarity</u>.
+						</p>
+						<p>
+							"Citing" considered <u>fully fusing</u>, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>and fused</u>.
+						</p>
 					</Rail>
 				</Segment>
 			</>

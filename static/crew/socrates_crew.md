@@ -3,8 +3,8 @@ name: Socrates
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 18
+bigbook_tier: 4
+events: 22
 in_portal: true
 date: 29/12/2020
 obtained: Pack
@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Socrates' primary selling point (aside from gorgeous art reminiscent of a classical chess piece carved from ivory) is a prodigious voyage score. It will hang out in the double-digit ranks for years, ensuring a long term return on any citation investments.
+Socrates' primary selling point (aside from gorgeous art reminiscent of a classical chess piece carved from ivory) is a hefty voyage score. And though he is not now that strength which in old days moved earth and heaven, that which he is, he is.
 
-Of course, CMD/DIP/SCI has also become a rather bloated skill set for legendary crew. Socrates sits among (and above) a bevy of names in the voyage power ranks which include four mega crew, four campaign crew, and global gift Mambo Picard, not to mention fistfuls of former event crew. He outworks and will outlast most of those names on voyages, but with slimmer value over replacement than other skill sets offer, the improvement may be marginal for advanced rosters.
+Having fallen out of the top ten, Socrates’ ugly and overstuffed skill set will come home to roost on voyages over time. He outworks and will outlast many of the names in his skill set, but with slimmer value over replacement than other skills can offer, the improvement may be marginal for advanced rosters. Nevertheless, as his highlight, the time to acquire and fuse for voyage work is now, if ever.
 
-Another small perk slanted toward newer players; five different 45% gauntlets. Mediocre proficiency power limits him to affection choice in most cases, but there are worse crew arts to display proudly. His efforts there, as well as modest arena and collection value act as garnish for his daily voyage contributions.
+WRG has shown tremendous favoritism to Socrates’ traits, giving him a strong event history for a one-off name and a reasonable collection portfolio as well. A small perk slanted toward newer players; five different 45% gauntlets. Mediocre proficiency power limits him to affection choice in most cases, but there are worse crew arts to display proudly. Those attributes generally sum up to garnish for his daily voyage contributions, but can help soften his value tumble when displaced from voyages.

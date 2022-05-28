@@ -3,8 +3,8 @@ name: Returning Craft
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 8
+events: 28
 in_portal: true
 date: 26/09/2019
 obtained: Event

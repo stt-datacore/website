@@ -3,8 +3,8 @@ name: Alternate Future Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 22
+bigbook_tier: 8
+events: 25
 in_portal: true
 date: 01/01/2016
 obtained: Launch

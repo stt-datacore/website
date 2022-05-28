@@ -3,15 +3,17 @@ name: Alicia Travers
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 8
+bigbook_tier: 7
+events: 12
 in_portal: true
 date: 13/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-MED/DIP is not something most people should be struggling with these days. If you're either a long term player who has Katrina Cornwell and Dearth Bashir, or you started after them but recently picked up the excellent Soji Asha, you probably have the skill set covered even if you haven't snagged gauntlet exclusive Bartender Guinan yet. 
+As Tawny Travers would say, “I have one seat on this lousy voyage…it’s stupid, but I’m gonnna use it!”
 
-Travers imitates a lot of their best features quite well, and whilst the MEDaissance of 2019-2020 may have passed, she has enough power behind her with two 1k bases to make a fair amount of voyages and shuttles should she be cited. Whilst she is not inundated with Traits (c'mon saboteur mega), she has a few useful qualities that might creep up from time to time in a future event. If you are looking for someone to help with general day to day work, Alicia will certainly patch up a leaking MED/DIP or DIP/SEC voyage and help it on its way to 10 hours.
+MED/DIP generally doesn’t hurt for options on voyages and Travers, sandwiched between more available names like Cornwell and Bartender Guinan, doesn’t have a ton of room to maneuver as her unboosted score rank plummets. An exception, the saboteur anti-matter trait, should continue to win the favor of voyage calculators for a while longer, but as an investment from the ground up, you can surely find better power options.
+
+With scant utility otherwise and a primary skill that rarely gets ample event seating, Alicia’s value will fall fast and fall hard once she stops pitching in on your voyages.

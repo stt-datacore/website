@@ -3,8 +3,8 @@ name: Merry Men Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 13
+bigbook_tier: 9
+events: 14
 in_portal: true
 date: 31/07/2018
 obtained: Pack

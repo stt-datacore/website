@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 2
-events: 22
+events: 25
 in_portal: true
 date: 29/09/2020
 obtained: Pack
@@ -14,8 +14,8 @@ published: true
 
 Breen Disguise Kira is from the episode where Dukat sits on a giant spike and she has to pull it out of his ass. But just in case you need any more reason to acquire her...
 
-This Kira is going to keep skill set fanatics up at night. Not since Kahless the Unforgettable three and a half years ago (before voyages existed) have we seen a CMD/DIP/SEC crew appear this high in the overall voyage ranks. Warnings about that bloated skill set are sprinkled throughout dozens of other crew notes and discuss concepts such as value over replacement, but cards at this power level have historically only dropped about a rank per year and that's a different kind of value.
+Dipping across franchise lines for a second, Breera at the moment is kind of like that Star Wars Davish Krail meme “Stay on target…stay on target!” Her skill set has been loaded up to a frankly irresponsible degree on voyages, but it’s not quite time to pull the ripcord. Floating around the top ten in overall power grants her temporary plot armor against the power creep monster and some low-competition anti-matter traits like Bajoran and Saboteur should have her catching the eye of voyage calculators for quite a while.
 
-Valuable, too, is the Kira name which sits among the event leaders and this version offers two worthwhile bases for those weekends including the top Kira SEC. She'll easily be manning event shuttles into 2022 if she's even fallen out of the top ten voyagers by then.
+Despite voyages often grabbing this card’s headlines (like, well, right here), she’s quite versatile otherwise. Kira is the very model of a modern major event player, boasting tremendous consistency for variant events along with a few traits that haven’t yet had their day in the sun.
 
-To help round her out, a handful of plus traits fall in the right bonus pool size for further event speculation and give her a 45% gauntlet trait set wherein she would have a few ranked pairs, but is still bested be some more common names.
+Between new player gauntlet numbers led by a fat SEC roll, an adequate collection profile, and even a little shipboard damage, Kira is the kind of card that we all wish CMD/DIP/SUCK options would be.
