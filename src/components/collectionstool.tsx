@@ -100,7 +100,8 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 	}
 
 	function simplerDescription(description: string): string {
-		let simple = description.replace(/(<([^>]+)>)/g, '')
+		let simple = description.replace(/&lt;/g, '<').replace(/&gt;/g, '>') /* Webarchive import fix */
+			.replace(/(<([^>]+)>)/g, '')
 			.replace('Immortalize ', '')
 			.replace(/^the /i, '')
 			.replace(/\.$/, '');
@@ -288,7 +289,9 @@ type CrewTableProps = {
 const CrewTable = (props: CrewTableProps) => {
 	const { playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
 
-	const [showPortalOnly, setShowPortalOnly] = useStateWithStorage('collectionstool/showPortalOnly', false);
+	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
+	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
+	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', []);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew' },
@@ -305,6 +308,28 @@ const CrewTable = (props: CrewTableProps) => {
 		};
 	});
 
+	const ownedFilterOptions = [
+		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' },
+		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
+		{ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' }
+	];
+
+	const fuseFilterOptions = [
+		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'portal', value: 'portal', text: 'Only show retrievable crew' },
+		{ key: 'portal-unique', value: 'portal-unique', text: 'Only show uniquely retrievable crew' },
+		{ key: 'nonportal', value: 'nonportal', text: 'Only show non-retrievable crew' }
+	];
+
+	const rarityFilterOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
+
 	return (
 		<React.Fragment>
 			<Header as='h4'>Collection Crew</Header>
@@ -319,19 +344,44 @@ const CrewTable = (props: CrewTableProps) => {
 					selection
 					options={collectionsOptions}
 					value={collectionsFilter}
-					onChange={(e, { value }) => setCollectionsFilter(value) }
+					onChange={(e, { value }) => setCollectionsFilter(value)}
 					closeOnChange
 				/>
 			</div>
 			<div style={{ margin: '1em 0' }}>
-				<Form.Group inline>
-					<Form.Field
-						control={Checkbox}
-						label='Only show crew in portal'
-						checked={showPortalOnly}
-						onChange={(e, { checked }) => setShowPortalOnly(checked)}
-					/>
-				</Form.Group>
+				<Form>
+					<Form.Group inline>
+						<Form.Field
+							placeholder='Filter by owned status'
+							control={Dropdown}
+							clearable
+							selection
+							options={ownedFilterOptions}
+							value={ownedFilter}
+							onChange={(e, { value }) => setOwnedFilter(value)}
+						/>
+						<Form.Field
+							placeholder='Filter by retrieval option'
+							control={Dropdown}
+							clearable
+							selection
+							options={fuseFilterOptions}
+							value={fuseFilter}
+							onChange={(e, { value }) => setFuseFilter(value)}
+						/>
+						<Form.Field
+							placeholder='Filter by rarity'
+							control={Dropdown}
+							clearable
+							multiple
+							selection
+							options={rarityFilterOptions}
+							value={rarityFilter}
+							onChange={(e, { value }) => setRarityFilter(value)}
+							closeOnChange
+						/>
+					</Form.Group>
+				</Form>
 			</div>
 			<SearchableTable
 				id='collections/crew'
@@ -345,7 +395,6 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
 		if (crew.immortal) return false;
-		if (showPortalOnly && !crew.in_portal) return false;
 		if (collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < collectionsFilter.length; i++) {
@@ -356,6 +405,13 @@ const CrewTable = (props: CrewTableProps) => {
 			}
 			if (!hasAllCollections) return false;
 		}
+		if (ownedFilter === 'unowned' && crew.highest_owned_rarity > 0) return false;
+		if (ownedFilter.substr(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+		if (ownedFilter === 'owned-impact' && crew.max_rarity - crew.highest_owned_rarity > 1) return false;
+		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
+		if (fuseFilter.substr(0, 6) === 'portal' && !crew.in_portal) return false;
+		if (fuseFilter === 'portal-unique' && crew.unique_polestar_combos.length === 0) return false;
+		if (fuseFilter === 'nonportal' && crew.in_portal) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -431,8 +487,8 @@ const RewardsGrid = (props: any) => {
 
 	const getImageName = (reward) => {
 		let img = reward.icon?.file.replace(/\//g, '_');
-		if (img.substr(0, 1) == '_') img = img.substr(1); else img = '/atlas/' + img;
-		if (img.substr(-4) != '.png') img += '.png';
+		if (img.substr(0, 1) === '_') img = img.substr(1); else img = '/atlas/' + img;
+		if (img.substr(-4) !== '.png') img += '.png';
 		return img;
 	};
 
