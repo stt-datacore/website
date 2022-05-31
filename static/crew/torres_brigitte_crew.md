@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-'Great Gams Torres' may not have made it past WRG's censors, but we regrettably have less filter here. A fairly nondescript 3/4 from events in the middle of 2020 struck gold just a few, short months later as she picked up double collections, both of which are massive and require fistfuls of legendary crew to complete. She's an automatic, must-pick behold option for veteran players looking to stack skill boosts, but Bump'lanna has something for everyone.
+Great Gams Torres' may not have made it past WRG's censors, but we regrettably have less filter here. Bump'lanna battled her way up the tiers shortly after release, scoring points with players via collections. That value abides along with solid shuttle metrics, but her voyage shelf life is all but tapped out, thanks to a poor skill set for that area.
 
-Her respectable DIP base is one of painfully few options among B'Elanna's variants (who'd have guessed?) and even sits atop the non-gold options for Klingon crew too. Between her fairly generous trait set for weekend bonus chances and a strong, if vanilla presence on voyages, there's a wealth of value here along with an outside chance at a Killing Game vanity.
+With a Killing Game vanity a distinct possibility, Torres has an outside chance to see her trio of collections double over time to supplement thaw-able bases for a reasonable 1-2 super rare punch.

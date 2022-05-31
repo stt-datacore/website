@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-The age old and fittingly Honorable question; is Kahless worth his price tag? For the first time since the Big Book began, the answer has gone from 'conditional yes' to 'conditional maybe'.
+The age old and fittingly Honorable question; is Kahless worth his price tag? As a recovering Kahless truther and fool from Quinlat, even I have to admit he’s been distilled down to pure, sweet luxury.
 
-His primary point of interest, the gauntlet, now provides his greatest competition for free. Gauntlet exclusive Balok matches Kahless' average CMD roll exactly while sporting better overall power and flat out dumb amounts of big crit gauntlets. While their differing skill order buffets Kahless against Balok's dominance slightly, it inarguably dings him. Still, a half dozen 45%+ gauntlets for Kahless himself gives him plenty of leeway and he's still a clear cut above all other CMD primary gauntleteers. 
+His primary point of interest, the gauntlet, provides his greatest competition for free. Gauntlet exclusive Balok matches Kahless' average CMD roll exactly while sporting better overall power and flat out dumb amounts of big crit gauntlets. Dumber still is the even crittier Tribbled Koloth and Korax who ended Kahless’ CMD/SEC reign in crit-neutral situations while being the better inclusion in most cases due to the versatility afforded him by a lovely ENG tertiary.
 
-The next question is 'should I cite?'. The answer will depend on who you ask, but with a few collections to his name and voyage power that's 'good for everyone except CMD/DIP/SEC', he can at least make an argument. In either case, he remains a wonderfully valuable choice; another option for your honor.
+With Kahless’ voyage ability tamped down pretty thoroughly from the flood of CMD/DIP/SUCK options, even considering a few nice anti-matter traits, it’s up to his trait list to provide all his value via collections and big crit gauntlets where he can still excel, even if only as a rotational piece.
+
+If you’ve already taken the plunge, the next question is 'should I cite?'. The answer will depend on who you ask, but unless he’s granted some exclusivity in the form of an Honor Hall collection, you can get his non-gauntlet goodies elsewhere and for cheaper. In either case, he remains an intriguing and valuable choice; another option for your honor.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Ignore her art's vomitous hue, that's simply the opposition green with envy as you move one step closer to finishing the Klingon kollection. Borg Torres is a stop and start event piece who's destined to see her event chances come in chunks thanks to a pretty plus trait set overall with variant weekends sprinkled in. Though her trio of collections are of varying value, she *does* have three of them and may see adjustments in value over time should any of them be expanded.
+Ignore her art's vomitous hue, that's simply the opposition green with envy as you move one step closer to finishing the Klingon kollection. Those tiny little stat boosters are the name of the game here - Torres’ ceiling is above average in that area and comprise a good portion of her value.
+
+Her otherwise dutiful event tally is marred by a frequent lack of seating for ENG crew, though in totality she’s again above average in that area too. Rather more like a souped up super rare, Torres is a behold choice best left to late game players who are looking to get out of a bad behold.
