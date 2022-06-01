@@ -3,7 +3,7 @@ name: Marine Q
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 22
 in_portal: true
 date: 11/08/2020

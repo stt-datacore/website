@@ -3,7 +3,7 @@ name: U.S.S. Zheng He Riker
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 24
 in_portal: true
 date: 08/09/2020

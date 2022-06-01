@@ -3,7 +3,7 @@ name: Bartender Guinan
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 3
 in_portal:
 date: 06/06/2017

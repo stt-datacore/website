@@ -3,7 +3,7 @@ name: Captain Harry Kim
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 17
 in_portal: true
 date: 13/03/2019
