@@ -197,96 +197,200 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderCrew() {
 		const { voyageData, roster } = this.props;
-		const ship  = this.ship;
+		const ship = this.ship;
 		const voyScore = v => Math.floor(v.core + (v.range_min + v.range_max)/2);
-		const getTopSkill = crew => Object.entries(crew.skills)
-																			.reduce((best, e) => voyScore(e[1]) > voyScore(best[1]) ? e : best)[0];
+		const getBestRank = (crew, seatSkill) => {
+			const best = {
+				skill: 'None',
+				rank: 1000
+			};
+			Object.keys(crew.skills).forEach(crewSkill => {
+				const skill = skillRankings.find(sr => sr.skill === crewSkill);
+				const rank = skill.roster.filter(c =>
+					Object.keys(c.skills).includes(seatSkill)
+						&& voyScore(c.skills[crewSkill]) > voyScore(crew.skills[crewSkill])
+						&& !usedCrew.includes(c.id)
+				).length + 1;
+				if (rank < best.rank || (rank === best.rank && crewSkill === seatSkill)) {
+					best.skill = crewSkill;
+					best.rank = rank;
+				}
+			});
+			return best;
+		};
+
 		const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
 			skill,
 			roster: roster.filter(c => Object.keys(c.skills).includes(skill))
-										.filter(c => c.skills[skill].core > 0)
-										.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
+				.filter(c => c.skills[skill].core > 0)
+				.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
 		}));
-		let usedCrew = [];
+		const usedCrew = [];
+		const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
+			const { crew, name, trait, skill } = Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry);
+			const bestRank = getBestRank(crew, skill);
+			if (!crew.imageUrlPortrait)
+				crew.imageUrlPortrait =
+					`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+			usedCrew.push(crew.id);
+			return {
+				crew, name, trait, skill, bestRank
+			};
+		});
+
+		let direction, index, shipBonus = 0, crewBonus = 0;
+		if (ship) {
+			direction = ship.index.right < ship.index.left ? 'right' : 'left';
+			index = ship.index[direction] ?? 0;
+			shipBonus = ship.traits.includes(voyageData.ship_trait) ? 150 : 0;
+			crewBonus = voyageData.max_hp - ship.antimatter - shipBonus;
+		}
 
 		return (
-			<div>
-			  {ship && (<span>Ship : <b>{ship.name}</b></span>)}
-				<Grid columns={isMobile ? 1 : 2}>
-					<Grid.Column>
-						<ul>
-							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
-								const { crew, name, trait, skill }  = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry);
+			<Grid columns={isMobile ? 1 : 2}>
+				<Grid.Column>
+					{renderAsTable()}
+				</Grid.Column>
+				<Grid.Column verticalAlign='middle'>
+					{renderAggregates()}
+				</Grid.Column>
+			</Grid>
+		);
 
-								const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
-								const topRank = roster ?
-									skillRankings.filter(c => Object.keys(crew.skills).includes(c.skill))
-															 .filter(c => !usedCrew.includes(c))
-															 .reduce((best, ranking) => {
-										const rank = ranking.roster
-																				.filter(c => Object.keys(c.base_skills).includes(skill))
-																				.findIndex(c => crew.symbol === c.symbol) + 1;
-										return rank < best.rank || (ranking.skill == entry && rank <= best.rank)
-											? {skill: ranking.skill, rank} : best;
-									}, { rank: 1000 })
-									: {skill: 'None, rank: 0'};
-								const skillContent =  `Select ${topRank.rank == 1 ? 'top crew in' : addPostfix(topRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[topRank.skill]}`;
-								const skillIcon = <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${topRank.skill}.png`} style={{ height: '1em' }} />;
+		function renderAsTable(): JSX.Element {
+			return (
+				<table>
+					<tbody>
+						{ship && (
+							<tr>
+								<td style={{ paddingBottom: '1em' }}>Ship</td>
+								<td style={{ padding: '0 .5em 1em', textAlign: 'center' }}>
+									{ship.traits.includes(voyageData.ship_trait) &&
+										<span style={{ cursor: 'help' }}>
+											<Popup content='+150 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />} />
+										</span>
+									}
+								</td>
+								<td style={{ paddingBottom: '1em' }}><b>{ship.name}</b></td>
+								<td style={{ padding: '0 1.5em 1em', textAlign: 'center' }}>
+									{voyageData.state === 'pending' &&
+										<span style={{ cursor: 'help' }}>
+											<Popup content='Tap this direction this many times to select ship' trigger={<span><Icon name={`arrow ${direction}`} />{index}</span>} />
+										</span>
+									}
+								</td>
+							</tr>
+						)}
+						{assignments.map((assignment, idx) => {
+							const { crew, name, trait, bestRank } = assignment;
+							return (
+								<tr key={idx}>
+									<td>{name}</td>
+									<td style={{ textAlign: 'center' }}>
+										{crew.traits.includes(trait.toLowerCase()) &&
+											<Popup content='+25 AM' trigger={
+												<span style={{ cursor: 'help' }}>
+													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+												</span>
+											} />
+										}
+									</td>
+									<td><CrewPopup crew={crew} useBase={false} /></td>
+									<td style={{ textAlign: 'center' }}>
+										{voyageData.state === 'pending' && renderCrewFinder(crew, bestRank)}
+									</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			);
+		}
 
-								usedCrew.push(crew);
-								if (!crew.imageUrlPortrait)
-									crew.imageUrlPortrait =
-										`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+		function renderCrewFinder(crew: any, bestRank: any): JSX.Element {
+			const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
+			let popup = {
+				content: `Select ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[bestRank.skill]}`,
+				trigger:
+					<span>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bestRank.skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+						{` `}{bestRank.rank}
+					</span>
+			};
+			if (crew.immortal > 0) {
+				popup = {
+					content: 'Unfreeze crew',
+					trigger: <Icon name='snowflake' />
+				};
+			}
+			else if (crew.active_status === 2) {
+				popup = {
+					content: 'On shuttle',
+					trigger: <Icon name='space shuttle' />
+				};
+			}
+			return (
+				<Popup content={popup.content} trigger={
+					<span style={{ cursor: 'help' }}>
+						{popup.trigger}
+					</span>
+				} />
+			);
+		}
 
+		function renderAggregates(): JSX.Element {
+			return (
+				<table>
+					<tbody>
+						<tr>
+							<td></td>
+							<td style={{ paddingBottom: '1em' }}>Antimatter</td>
+							<td style={{ paddingBottom: '1em', textAlign: 'right' }}>
+								{ship && (
+									<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageData.max_hp}</span>}>
+										<Popup.Content>
+											{`${ship.antimatter} (Level ${ship.level} Ship) +${shipBonus} (Ship Trait Bonus) +${crewBonus} (Crew Trait Bonuses)`}
+										</Popup.Content>
+									</Popup>
+								)}
+								{!ship && <span>{voyageData.max_hp}</span>}
+							</td>
+						</tr>
+						{['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill'].map((entry, idx) => {
+							const agg = voyageData.skill_aggregates[entry];
+
+							if (typeof(agg) === 'number') {
 								return (
-									<li key={idx}>
-										{name}
-										{'  :  '}
-										<CrewPopup crew={crew} useBase={false} />
-										{'\t'}
-										{crew.immortal > 0 && <Popup content={`${crew.immortal} frozen`} trigger={<Icon name="snowflake" />} />}
-										{crew.traits.includes(trait.toLowerCase()) && <Popup content='+25 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />}/>}
-										{voyageData.state == 'pending' && <Popup content={skillContent} trigger={skillIcon} />}
-									</li>
+									<tr key={idx}>
+										<td></td>
+										<td>{CONFIG.SKILLS[entry]}</td>
+										<td><b>{Math.round(agg)}</b></td>
+									</tr>
 								);
-							})}
-						</ul>
-					</Grid.Column>
-					<Grid.Column verticalAlign="middle">
-						<ul>
-							<li>
-								Antimatter
-								{' : '}
-								<b>{voyageData.max_hp}</b>
-							</li>
-						</ul>
-						<ul>
-							{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
-								const agg = voyageData.skill_aggregates[entry];
-
-								if (typeof(agg) === 'number') {
-									return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
-								} else {
-									const score = voyScore(agg);
-
-									return (
-										<li key={idx}>
-											{CONFIG.SKILLS[entry]}
-											{' : '}
+							} else {
+								const score = voyScore(agg);
+								return (
+									<tr key={idx}>
+										<td>
+											{voyageData.skills.primary_skill === entry && <Icon name='star' color='yellow' />}
+											{voyageData.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
+										</td>
+										<td>{CONFIG.SKILLS[entry]}</td>
+										<td style={{ textAlign: 'right' }}>
 											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
 												<Popup.Content>
 													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
 												</Popup.Content>
 											</Popup>
-										</li>
-									);
-								}
-							})}
-						</ul>
-					</Grid.Column>
-				</Grid>
-			</div>
-		);
+										</td>
+									</tr>
+								);
+							}
+						})}
+					</tbody>
+				</table>
+			);
+		}
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
