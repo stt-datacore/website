@@ -3,8 +3,8 @@ name: Twilight T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
-events: 37
+bigbook_tier: 5
+events: 38
 in_portal: true
 date: 06/02/2020
 obtained: Event

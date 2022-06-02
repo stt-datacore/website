@@ -3,7 +3,7 @@ name: Kukulkan
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 8
 in_portal:
 date: 31/08/2021
