@@ -49,7 +49,8 @@ const forDataCore = (input, output, chewable) => {
 		const config = {
 			ps, ss, others,
 			'startAm': input.bestShip.score + lineup.antimatter,
-			'prof': lineup.proficiency
+			'prof': lineup.proficiency,
+			noExtends: false // Set to true to show estimate with no refills
 		};
 		return new Promise((resolve, reject) => {
 			const estimate = chewable(config, () => false);

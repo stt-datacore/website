@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Image, Message } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../components/CONFIG';
@@ -16,44 +16,61 @@ type VoyageStatsProps = {
 	ships: [];
 	showPanels: [];
 	estimate?: any;
+	roster?: any[];
+	playerItems?: any[];
 };
 
 type VoyageStatsState = {
 	estimate: any;
 	activePanels: [];
+	currentAm: number;
+	currentDuration: number;
 };
 
+const POSITION_POSTFIX = [
+	'th',
+	'st',
+	'nd',
+	'rd',
+	'th',
+	'th',
+	'th',
+	'th',
+	'th',
+	'th'
+];
+
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+	static defaultProps = {
+		roster: [],
+	};
+
 	constructor(props) {
 		super(props);
 		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
 
 		this.state = {
 			estimate: estimate,
-			activePanels: showPanels ? showPanels : []
+			activePanels: showPanels ? showPanels : [],
+			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360)
 		};
 
 		if (!voyageData)
 			return;
 
-		if (ships.length == 1) {
-			this.ship = ships[0].ship;
-		} else {
-			let ship = ships.find(s => s.id == voyageData.ship_id);
-			fetch('/structured/ship_schematics.json').then(ships => ships.json().then(allShips => {
-				this.ship = allShips.find(s => s.ship.symbol == ship.symbol).ship
-			}));
-		}
+		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
+			const duration = voyageData.voyage_duration ?? 0;
+			const correctedDuration = this.state.voyageBugDetected ? duration : duration - duration%7200;
 
 			this.config = {
 				others: [],
 				numSims: numSims ?? 5000,
 				startAm: voyageData.max_hp,
 				currentAm: voyageData.hp ?? voyageData.max_hp,
-				elapsedSeconds: voyageData.voyage_duration ?? 0,
+				elapsedSeconds: correctedDuration,
 			};
 
 			for (let agg of Object.values(voyageData.skill_aggregates)) {
@@ -96,7 +113,24 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const rawData = needsRevive ? estimate.refills : estimate.refills.slice(0, 2);
 		// Convert bins to percentages
 		const data = estimate.refills.map((refill, index) => {
-			const total = refill.bins
+			var bins = {};
+			const binSize = 1/30;
+
+			for (var result of refill.all.sort()) {
+				const bin = Math.floor(result/binSize)*binSize+binSize/2;
+
+			  try{
+				++bins[bin].count;
+			  }
+			  catch {
+				bins[bin] = {result: bin, count: 1};
+			  }
+			}
+
+			delete bins[NaN];
+			var refillBins = Object.values(bins);
+
+			const total = refillBins
 													.map(value => value.count)
 													.reduce((acc, value) => acc + value, 0);
 			var aggregate = total;
@@ -106,7 +140,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			};
 			const ongoing = value => { return {x: value.result, y: value.count/total}};
 
-			const percentages = refill.bins
+			const percentages = refillBins
 																.sort((bin1, bin2) => bin1.result - bin2.result)
 																.map(cumValues);
 
@@ -162,67 +196,201 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const {voyageData} = this.props;
-		const  ship  = this.ship;
+		const { voyageData, roster } = this.props;
+		const ship = this.ship;
+		const voyScore = v => Math.floor(v.core + (v.range_min + v.range_max)/2);
+		const getBestRank = (crew, seatSkill) => {
+			const best = {
+				skill: 'None',
+				rank: 1000
+			};
+			Object.keys(crew.skills).forEach(crewSkill => {
+				const skill = skillRankings.find(sr => sr.skill === crewSkill);
+				const rank = skill.roster.filter(c =>
+					Object.keys(c.skills).includes(seatSkill)
+						&& voyScore(c.skills[crewSkill]) > voyScore(crew.skills[crewSkill])
+						&& !usedCrew.includes(c.id)
+				).length + 1;
+				if (rank < best.rank || (rank === best.rank && crewSkill === seatSkill)) {
+					best.skill = crewSkill;
+					best.rank = rank;
+				}
+			});
+			return best;
+		};
+
+		const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
+			skill,
+			roster: roster.filter(c => Object.keys(c.skills).includes(skill))
+				.filter(c => c.skills[skill].core > 0)
+				.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
+		}));
+		const usedCrew = [];
+		const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
+			const { crew, name, trait, skill } = Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry);
+			const bestRank = getBestRank(crew, skill);
+			if (!crew.imageUrlPortrait)
+				crew.imageUrlPortrait =
+					`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+			usedCrew.push(crew.id);
+			return {
+				crew, name, trait, skill, bestRank
+			};
+		});
+
+		let direction, index, shipBonus = 0, crewBonus = 0;
+		if (ship) {
+			direction = ship.index.right < ship.index.left ? 'right' : 'left';
+			index = ship.index[direction] ?? 0;
+			shipBonus = ship.traits.includes(voyageData.ship_trait) ? 150 : 0;
+			crewBonus = voyageData.max_hp - ship.antimatter - shipBonus;
+		}
 
 		return (
-			<div>
-			  {ship && (<span>Ship : <b>{ship.name}</b></span>)}
-				<Grid columns={isMobile ? 1 : 2}>
-					<Grid.Column>
-						<ul>
-							{Object.values(CONFIG.VOYAGE_CREW_SLOTS).map((entry, idx) => {
-								let { crew, name }  = Object.values(voyageData.crew_slots).find(slot => slot.symbol == entry);
+			<Grid columns={isMobile ? 1 : 2}>
+				<Grid.Column>
+					{renderAsTable()}
+				</Grid.Column>
+				<Grid.Column verticalAlign='middle'>
+					{renderAggregates()}
+				</Grid.Column>
+			</Grid>
+		);
 
-								if (!crew.imageUrlPortrait)
-									crew.imageUrlPortrait =
-										`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
-
-								return (
-									<li key={idx}>
-										{name}
-										{'  :  '}
-										<CrewPopup crew={crew} useBase={false} />
-										</li>
-									);
-								})}
-							</ul>
-						</Grid.Column>
-						<Grid.Column verticalAlign="middle">
-							<ul>
-								<li>
-									Antimatter
-									{' : '}
-									<b>{voyageData.max_hp}</b>
-								</li>
-							</ul>
-							<ul>
-								{Object.keys(CONFIG.SKILLS).map((entry, idx) => {
-									const agg = voyageData.skill_aggregates[entry];
-
-									if (typeof(agg) === 'number') {
-										return (<li key={idx}>{`${CONFIG.SKILLS[entry]} : ${Math.round(agg)}`}</li>);
-									} else {
-										const score = Math.floor(agg.core + (agg.range_min + agg.range_max)/2);
-
-										return (
-											<li key={idx}>
-												{CONFIG.SKILLS[entry]}
-												{' : '}
-												<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-													<Popup.Content>
-														{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-													</Popup.Content>
-												</Popup>
-											</li>
-										);
+		function renderAsTable(): JSX.Element {
+			return (
+				<table>
+					<tbody>
+						{ship && (
+							<tr>
+								<td style={{ paddingBottom: '1em' }}>Ship</td>
+								<td style={{ padding: '0 .5em 1em', textAlign: 'center' }}>
+									{ship.traits.includes(voyageData.ship_trait) &&
+										<span style={{ cursor: 'help' }}>
+											<Popup content='+150 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />} />
+										</span>
 									}
-								})}
-							</ul>
-						</Grid.Column>
-					</Grid>
-				</div>
+								</td>
+								<td style={{ paddingBottom: '1em' }}><b>{ship.name}</b></td>
+								<td style={{ padding: '0 1.5em 1em', textAlign: 'center' }}>
+									{voyageData.state === 'pending' &&
+										<span style={{ cursor: 'help' }}>
+											<Popup content='Tap this direction this many times to select ship' trigger={<span><Icon name={`arrow ${direction}`} />{index}</span>} />
+										</span>
+									}
+								</td>
+							</tr>
+						)}
+						{assignments.map((assignment, idx) => {
+							const { crew, name, trait, bestRank } = assignment;
+							return (
+								<tr key={idx}>
+									<td>{name}</td>
+									<td style={{ textAlign: 'center' }}>
+										{crew.traits.includes(trait.toLowerCase()) &&
+											<Popup content='+25 AM' trigger={
+												<span style={{ cursor: 'help' }}>
+													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+												</span>
+											} />
+										}
+									</td>
+									<td><CrewPopup crew={crew} useBase={false} /></td>
+									<td style={{ textAlign: 'center' }}>
+										{voyageData.state === 'pending' && renderCrewFinder(crew, bestRank)}
+									</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
 			);
+		}
+
+		function renderCrewFinder(crew: any, bestRank: any): JSX.Element {
+			const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
+			let popup = {
+				content: `Select ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[bestRank.skill]}`,
+				trigger:
+					<span>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bestRank.skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+						{` `}{bestRank.rank}
+					</span>
+			};
+			if (crew.immortal > 0) {
+				popup = {
+					content: 'Unfreeze crew',
+					trigger: <Icon name='snowflake' />
+				};
+			}
+			else if (crew.active_status === 2) {
+				popup = {
+					content: 'On shuttle',
+					trigger: <Icon name='space shuttle' />
+				};
+			}
+			return (
+				<Popup content={popup.content} trigger={
+					<span style={{ cursor: 'help' }}>
+						{popup.trigger}
+					</span>
+				} />
+			);
+		}
+
+		function renderAggregates(): JSX.Element {
+			return (
+				<table>
+					<tbody>
+						<tr>
+							<td></td>
+							<td style={{ paddingBottom: '1em' }}>Antimatter</td>
+							<td style={{ paddingBottom: '1em', textAlign: 'right' }}>
+								{ship && (
+									<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageData.max_hp}</span>}>
+										<Popup.Content>
+											{`${ship.antimatter} (Level ${ship.level} Ship) +${shipBonus} (Ship Trait Bonus) +${crewBonus} (Crew Trait Bonuses)`}
+										</Popup.Content>
+									</Popup>
+								)}
+								{!ship && <span>{voyageData.max_hp}</span>}
+							</td>
+						</tr>
+						{['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill'].map((entry, idx) => {
+							const agg = voyageData.skill_aggregates[entry];
+
+							if (typeof(agg) === 'number') {
+								return (
+									<tr key={idx}>
+										<td></td>
+										<td>{CONFIG.SKILLS[entry]}</td>
+										<td><b>{Math.round(agg)}</b></td>
+									</tr>
+								);
+							} else {
+								const score = voyScore(agg);
+								return (
+									<tr key={idx}>
+										<td>
+											{voyageData.skills.primary_skill === entry && <Icon name='star' color='yellow' />}
+											{voyageData.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
+										</td>
+										<td>{CONFIG.SKILLS[entry]}</td>
+										<td style={{ textAlign: 'right' }}>
+											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
+												<Popup.Content>
+													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
+												</Popup.Content>
+											</Popup>
+										</td>
+									</tr>
+								);
+							}
+						})}
+					</tbody>
+				</table>
+			);
+		}
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -240,6 +408,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (<div>Calculating estimate. Please wait...</div>);
 
 		const renderEst = (label, refills) => {
+			if (refills >= estimate['refills'].length) return (<></>);
 			const est = estimate['refills'][refills];
 			return (
 				<tr>
@@ -273,7 +442,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{renderEst("2 Refills", refill++)}
 					</tbody></Table>
 					<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
-					{this._renderChart()}
+					{estimate.final && this._renderChart()}
 					<small>Powered by Chewable C++</small>
 				</div>
 			);
@@ -310,6 +479,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewards(rewards) {
+		const { playerItems,roster } = this.props;
+
 		rewards = rewards.sort((a, b) => {
 			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
 				return a.full_name.localeCompare(b.full_name);
@@ -335,25 +506,44 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return `${process.env.GATSBY_ASSETS_URL}${url}`;
 		};
 
+		const itemsOwned = item => {
+			const pItem = playerItems.find(i => i.symbol == item.symbol);
+			return `(Have ${pItem ? pItem.quantity > 1000 ? `${Math.floor(pItem.quantity/1000)}k+` : pItem.quantity : 0})`;
+		};
+		const ownedFuncs = [
+			item => '',
+			item => {
+				const owned = roster.filter(c => c.symbol == item.symbol);
+
+				for (const c of owned)
+					if (c.rarity < c.max_rarity)
+						return '(Fusable)';
+
+				return  owned.length > 0 ? '(Duplicate)' : '(Unowned)';
+			},
+			itemsOwned,
+			item => '',
+		];
+
 		return (
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
 					{rewards.map((entry, idx) => (
 						<Grid.Column key={idx}>
-								<Header
-									style={{ display: 'flex' }}
-									icon={
-										<ItemDisplay
-											src={assetURL(entry.icon.file)}
-											size={48}
-											rarity={rarity(entry)}
-											maxRarity={entry.rarity}
-											hideRarity={hideRarity(entry)}
-										/>
-									}
-									content={entry.name}
-									subheader={`Got ${entry.quantity}`}
-								/>
+							<Header
+								style={{ display: 'flex' }}
+								icon={
+									<ItemDisplay
+										src={assetURL(entry.icon.file)}
+										size={48}
+										rarity={rarity(entry)}
+										maxRarity={entry.rarity}
+										hideRarity={hideRarity(entry)}
+									/>
+								}
+								content={entry.name}
+								subheader={`Got ${entry.quantity} ${ownedFuncs[entry.type](entry)}`}
+							/>
 						</Grid.Column>
 					))}
 				</Grid>
@@ -393,13 +583,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
-		const rewards = {
-			'pending': () => [],
-			'started': () => voyageData.pending_rewards.loot,
-			'failed': () => voyageData.pending_rewards.loot,
-			'recalled': () => voyageData.pending_rewards.loot,
-			'completed': () => voyageData.granted_rewards.loot
-		}[voyState]();
+		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
 
 		// Adds/Removes panels from the active list
 		const flipItem = (items, item) => items.includes(item)
@@ -417,22 +601,34 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					active={isActive}
 					index={key}
 					onTitleClick={handleClick}
-					title={isActive ? {icon: 'caret down', content: title} : {icon: 'caret right', content: collapsedTitle}}
+					title={isActive ? {icon: 'caret down', content: collapsedTitle} : {icon: 'caret right', content: collapsedTitle}}
 					content={{content: <Segment>{content}</Segment>}}/>
 			);
 		};
 
 		if (voyState !== 'pending') {
+			const msgTypes = {
+				started: ' has been running for ',
+				failed: ' failed at ',
+				recalled: ' ran for ',
+				completed: ' ran for '
+			};
+			const voyagePriSec = Object.values(voyageData.skills)
+																 .map(s1 => CONFIG.SKILLS_SHORT.filter(s2 => s2.name === s1)[0].short)
+																 .join('/');
+			const timeDiscrepency = Math.floor(voyageData.voyage_duration/7200) - Math.floor(voyageData.log_index/360);
+			const voyageDuration = this._formatTime(voyageData.state == 'started' ? voyageData.voyage_duration/3600 : voyageData.log_index/180);
+
 			return (
 				<div>
-					{Math.floor(voyageData.log_index/360) < Math.floor(voyageData.voyage_duration/7200) &&
+					{(voyageData.state === 'started' && timeDiscrepency > 0) &&
 						<Message warning>
 							WARNING!!! A potential problem with the reported voyage duration has been detected.
-							The estimate is likely to be inaccurate.
-							Load the game then return to Datacore with a fresh copy of your player file to get an accurate estimate.
+							We have attemped to correct this but estimate may be inaccurate.
+							Open the game then return to Datacore with a fresh copy of your player file to guarrentee an accurate estimate.
 						</Message>
 					}
-					<Message>Your voyage {voyState === 'failed' ? 'failed at ' :  'has been running for ' + this._formatTime(voyageData.voyage_duration/3600)}.</Message>
+					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + voyageDuration}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
 						voyState !== 'recalled' && voyState !== 'completed' &&

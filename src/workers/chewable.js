@@ -27,7 +27,7 @@ function getEstimate(config, reportProgress = () => true) {
   var estimate = {};
 
   // output
-  var numExtends = 2;
+  var numExtends = config.noExtends ? 0 : 2;
   var maxExtends = 100;
   var maxNum20hourSims = 100;
 
@@ -78,23 +78,9 @@ function getEstimate(config, reportProgress = () => true) {
       var safestTime = exResults[0];
       var moonshotTime = exResults[exResults.length-Math.floor(exResults.length/100)];
 
-      // compute last dilemma chance
-      var lastDilemma = 0;
-      var lastDilemmaFails = 0;
-      for(var i = 0; i < exResults.length; i++) {
-        var dilemma = Math.floor(exResults[i]/2);
-        if (dilemma > lastDilemma) {
-          lastDilemma = dilemma;
-          lastDilemmaFails = Math.max(0,i);
-        }
-      }
-
-      var dilChance = Math.round(100*(exResults.length-lastDilemmaFails)/exResults.length);
-      // HACK: if there is a tiny chance of the next dilemma, assume 100% chance of the previous one instead
-      if (dilChance == 0) {
-        lastDilemma--;
-        dilChance = 100;
-      }
+      // compute chance of dilemma closest to median
+      const lastDilemma = Math.max(Math.floor(elapsedSeconds/7200)*2+2, Math.round(voyTime/2)*2);
+      const lastDilemmaSuccesses = exResults.filter(r => r >= lastDilemma).length;
 
       var refill = {
          'all': exResults,
@@ -102,33 +88,15 @@ function getEstimate(config, reportProgress = () => true) {
          'safeResult': safeTime,
          'saferResult': saferTime,
          'moonshotResult': moonshotTime,
-         'lastDil': lastDilemma*2,
-         'dilChance': dilChance,
+         'lastDil': lastDilemma,
+         'dilChance': 100*lastDilemmaSuccesses/exResults.length,
          'refillCostResult': extend > 0 ? Math.ceil(resultsRefillCostTotal[extend]/exResults.length) : 0
       }
-
-      var bins = {};
-      const binSize = 1/45;
-
-      for (result of exResults.sort()) {
-	  		let bin = (Math.floor(result/binSize)+0.5)*binSize;
-
-        try{
-        	++bins[bin].count;
-        }
-        catch {
-          bins[bin] = {result: bin, count: 1};
-        }
-      }
-
-      delete bins[NaN];
-      refill.bins = Object.values(bins);
 
       refills.push(refill);
     } // foreach extend
 
     estimate['refills'] = refills;
-
 
     // calculate 20hr results
     let num20hrSims = deterministic ? 1 : num20hourSims;

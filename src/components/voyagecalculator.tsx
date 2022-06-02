@@ -14,12 +14,15 @@ import { useStateWithStorage } from '../utils/storage';
 import { CALCULATORS, CalculatorState } from '../utils/voyagehelpers';
 import { getEstimate } from '../workers/chewable.js';
 
+const AllDataContext = React.createContext();
+
 type VoyageCalculatorProps = {
 	playerData: any;
+	allCrew: any;
 };
 
 const VoyageCalculator = (props: VoyageCalculatorProps) => {
-	const { playerData } = props;
+	const { playerData, allCrew } = props;
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState(undefined);
@@ -29,8 +32,8 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	// Create fake ids for shuttle crew based on level and equipped status
-	const shuttleCrew = activeCrew.map(ac => {
+	// Create fake ids for active crew based on level and equipped status
+	const activeCrewIds = activeCrew.map(ac => {
 		return {
 			id: ac.symbol+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
@@ -56,11 +59,11 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		// Voyage roster generation looks for active_status property
 		crew.active_status = 0;
 		if (crew.immortal === 0) {
-			let shuttleCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
-			let onShuttle = shuttleCrew.find(sc => sc.id == shuttleCrewId);
-			if (onShuttle) {
-				crew.active_status = onShuttle.active_status;
-				onShuttle.id = '';	// Clear this id so that dupes are counted properly
+			const activeCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
+			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			if (active) {
+				crew.active_status = active.active_status;
+				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 		}
 	});
@@ -69,8 +72,14 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	if (playerData.player.character.level < 8 || myCrew.length < 12)
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
+	const allData = {
+		allCrew, allShips, playerData
+	};
+
 	return (
-		<VoyageMain myCrew={myCrew} allShips={allShips} />
+		<AllDataContext.Provider value={allData}>
+			<VoyageMain myCrew={myCrew} />
+		</AllDataContext.Provider>
 	);
 
 	async function fetchAllShips() {
@@ -82,6 +91,20 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 		const ownedCount = playerData.player.character.ships.length;
 		playerData.player.character.ships.sort((a, b) => a.archetype_id - b.archetype_id).forEach((ship, idx) => {
+			// allShips is missing the default ship for some reason (1* Constellation Class), so manually add it here from playerData
+			if (ship.symbol === 'constellation_ship') {
+				const constellation = {
+					symbol: ship.symbol,
+					rarity: ship.rarity,
+					level: ship.level,
+					antimatter: ship.antimatter,
+					name: 'Constellation Class',
+					icon: { file: '/ship_previews_fed_constellationclass' },
+					traits: ['federation','explorer'],
+					owned: true
+				};
+				ships.push(constellation);
+			}
 			const myShip = ships.find(s => s.symbol === ship.symbol);
 			if (myShip) {
 				myShip.id = ship.id;	// VoyageStats needs ship id to identify ship on existing voyage
@@ -98,11 +121,10 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 type VoyageMainProps = {
 	myCrew: any[];
-	allShips: any[];
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
-	const { myCrew, allShips } = props;
+	const { myCrew } = props;
 
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [voyageConfig, setVoyageConfig] = React.useState(undefined);
@@ -160,8 +182,9 @@ const VoyageMain = (props: VoyageMainProps) => {
 					</Grid.Column>
 				</Grid>
 			}
-			{voyageState != 'input' && (<VoyageExisting voyageConfig={voyageConfig} allShips={allShips} useCalc={() => setVoyageState('input')} />)}
-			{voyageState == 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} allShips={allShips} useInVoyage={() => setVoyageState(voyageConfig.state)} />)}
+
+			{voyageState !== 'input' && (<VoyageExisting voyageConfig={voyageConfig} useCalc={() => setVoyageState('input')} roster={myCrew} />)}
+			{voyageState === 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} useInVoyage={() => setVoyageState(voyageConfig.state)} />)}
 		</React.Fragment>
 	);
 
@@ -373,12 +396,13 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 
 type VoyageExistingProps = {
 	voyageConfig: any;
-	allShips: any[];
 	useCalc: () => void;
+	roster: any[];
 };
 
 const VoyageExisting = (props: VoyageExistingProps) => {
-	const { voyageConfig, allShips, useCalc } = props;
+	const { allShips, playerData } = React.useContext(AllDataContext);
+	const { voyageConfig, useCalc, roster } = props;
 	const [CIVASExportFailed, setCIVASExportFailed] = React.useState(false);
 	const [doingCIVASExport, setDoingCIVASExport] = React.useState(false);
 
@@ -419,11 +443,13 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				voyageData={voyageConfig}
 				ships={allShips}
 				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
+				playerItems={playerData.player.character.items}
+				roster={roster}
 			/>
 			<Button onClick={() => useCalc()}>Return to crew calculator</Button>
-			{(voyageConfig.state == 'recalled' || voyageConfig.state == 'failed') && navigator.clipboard &&
+			{voyageConfig.state != 'started' && navigator.clipboard &&
 				<React.Fragment>
-					<Button loading={doingCIVASExport} onClick={() => exportData().then(
+					<Button style={{marginLeft: '1em' }} loading={doingCIVASExport} onClick={() => exportData().then(
 						() => setDoingCIVASExport(false),
 						() => {
 							setDoingCIVASExport(false);
@@ -457,27 +483,25 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 type VoyageInputProps = {
 	voyageConfig: any;
 	myCrew: any[];
-	allShips: any[];
 	useInVoyage: () => void;
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { voyageConfig, myCrew, allShips, useInVoyage } = props;
+	const { allShips, playerData } = React.useContext(AllDataContext);
+	const { voyageConfig, myCrew, useInVoyage } = props;
 
 	const [bestShip, setBestShip] = React.useState(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState([]);
-	const [calculator, setCalculator] = React.useState(isMobile ? 'ussjohnjay' : 'iampicard');
+	const [calculator, setCalculator] = useStateWithStorage(playerData.player.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = React.useState({});
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState([]);
 	const [results, setResults] = React.useState([]);
 
 	React.useEffect(() => {
-		// Note that allShips is missing the default ship for some reason (1* Constellation Class)
-		//	This WILL break voyagecalculator if that's the only ship a player owns
 		const consideredShips = [];
 		allShips.filter(ship => ship.owned).forEach(ship => {
-			const traited = ship.traits.find(trait => trait === voyageConfig.ship_trait);
+			const traited = ship.traits.includes(voyageConfig.ship_trait);
 			let entry = {
 				ship: ship,
 				score: ship.antimatter + (traited ? 150 : 0),
@@ -554,7 +578,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 					</Form.Button>
 					{voyageConfig.state &&
 						<Form.Button onClick={()=> useInVoyage()}>
-							Return to in voyage calculator
+							Return to current voyage
 						</Form.Button>
 					}
 				</Form.Group>
@@ -598,6 +622,9 @@ const VoyageInput = (props: VoyageInputProps) => {
 		if (results.length == 0)
 			return (<></>);
 
+		// In-game voyage crew picker ignores immortalized crew and crew active on shuttles
+		const availableRoster = myCrew.filter(c => c.immortal === 0 && c.active_status !== 2);
+
 		const showPopup = (result) => <Popup basic content={<p>{result.result.postscript}</p>} trigger={<p>{result.name}</p>} />
 		const panes = results.map(result => ({
 			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
@@ -605,6 +632,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 				<VoyageResultPane result={result.result}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
+					roster={availableRoster}
 				/>
 			)
 		}));
@@ -785,6 +813,7 @@ type InputCrewExcluderProps = {
 }
 
 const InputCrewExcluder = (props: InputCrewExcluderProps) => {
+	const { allCrew } = React.useContext(AllDataContext);
 	const { updateExclusions } = props;
 
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
@@ -854,15 +883,17 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	function identifyActiveEvent(): void {
 		// Get event data from recently uploaded playerData
 		if (eventData && eventData.length > 0) {
-			const currentEvent = getEventData(eventData.sort((a, b) => (a.seconds_to_start - b.seconds_to_start))[0]);
+			const currentEvent = getEventData(eventData.sort((a, b) => (a.seconds_to_start - b.seconds_to_start))[0], allCrew);
 			setActiveEvent({...currentEvent});
 		}
 		// Otherwise guess event from autosynced events
+		/* 	Uncomment when voyagecalc can run without playerData
 		else {
 			guessCurrentEvent().then(currentEvent => {
 				setActiveEvent({...currentEvent});
 			});
 		}
+		*/
 	}
 
 	function populatePlaceholders(): void {
@@ -897,10 +928,11 @@ type VoyageResultPaneProps = {
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
+	roster: any[];
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
-	const { result, requests, requestId, calcState, abortCalculation } = props;
+	const { result, requests, requestId, calcState, abortCalculation, roster } = props;
 
 	const request = requests.find(r => r.id == requestId);
 	if (!request) return (<></>);
@@ -963,6 +995,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 					voyageData={data}
 					estimate={result.estimate}
 					ships={[request.bestShip]}
+					roster={roster}
 					showPanels={['crew']}
 				/>
 				<div style={{ marginTop: '1em' }}>
