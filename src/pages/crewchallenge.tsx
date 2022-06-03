@@ -611,7 +611,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 
 		const formatGrid = () => {
 			const shortId = `${props.gameTime.getUTCMonth()+1}/${props.gameTime.getUTCDate()}`;
-			let output = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${guesses.length}!` : `{$GAME_NAME} {$shortId} stumped me!`;
+			let output = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${guesses.length}!` : `${GAME_NAME} ${shortId} stumped me!`;
 			output += `\n${GAME_URL}`;
 			guessesEvaluated.forEach(guess => {
 				output += '\n';
