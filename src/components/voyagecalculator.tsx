@@ -32,10 +32,10 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	// Create fake ids for active crew based on level and equipped status
+	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew.map(ac => {
 		return {
-			id: ac.symbol+','+ac.level+','+ac.equipment.join(''),
+			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
 		};
 	});
@@ -59,7 +59,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		// Voyage roster generation looks for active_status property
 		crew.active_status = 0;
 		if (crew.immortal === 0) {
-			const activeCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
+			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crew.active_status = active.active_status;
@@ -493,7 +493,7 @@ const VoyageInput = (props: VoyageInputProps) => {
 	const [bestShip, setBestShip] = React.useState(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState([]);
 	const [calculator, setCalculator] = useStateWithStorage(playerData.player.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
-	const [calcOptions, setCalcOptions] = React.useState({});
+	const [calcOptions, setCalcOptions] = useStateWithStorage(playerData.player.dbid+'/voyage/calcOptions', {}, { rememberForever: true });
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState([]);
 	const [results, setResults] = React.useState([]);

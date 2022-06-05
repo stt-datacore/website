@@ -211,7 +211,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						&& voyScore(c.skills[crewSkill]) > voyScore(crew.skills[crewSkill])
 						&& !usedCrew.includes(c.id)
 				).length + 1;
-				if (rank < best.rank || (rank === best.rank && crewSkill === seatSkill)) {
+				// Prefer seat skill if no scrolling is necessary
+				if (rank < best.rank && (best.skill !== seatSkill || best.rank >= 3)) {
 					best.skill = crewSkill;
 					best.rank = rank;
 				}
@@ -247,7 +248,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		}
 
 		return (
-			<Grid columns={isMobile ? 1 : 2}>
+			<Grid columns={2} stackable>
 				<Grid.Column>
 					{renderAsTable()}
 				</Grid.Column>
@@ -275,7 +276,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 								<td style={{ padding: '0 1.5em 1em', textAlign: 'center' }}>
 									{voyageData.state === 'pending' &&
 										<span style={{ cursor: 'help' }}>
-											<Popup content='Tap this direction this many times to select ship' trigger={<span><Icon name={`arrow ${direction}`} />{index}</span>} />
+											<Popup content={`On voyage selection screen, tap ${direction} ${index} times to select ship`} trigger={
+												<span style={{ whiteSpace: 'nowrap' }}>
+													<Icon name={`arrow ${direction}`} />{index}
+												</span>
+											} />
 										</span>
 									}
 								</td>
@@ -312,7 +317,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			let popup = {
 				content: `Select ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[bestRank.skill]}`,
 				trigger:
-					<span>
+					<span style={{ whiteSpace: 'nowrap' }}>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bestRank.skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 						{` `}{bestRank.rank}
 					</span>

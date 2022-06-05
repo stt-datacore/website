@@ -51,18 +51,18 @@ export const CALCULATORS = {
 		},
 		{
 			calculators: ['ussjohnjay'],
-			id: 'estimatorThreshold',
-			name: 'Estimator threshold',
-			description: 'Estimator threshold',
+			id: 'estimatorPriority',
+			name: 'Estimator priority',
+			description: 'Estimator priority',
 			control: 'select',
 			options: [
-				{ key: '0', text: 'Auto (recommended)', value: 0 },
-				{ key: '0.1', text: '0.1 (fastest)', value: 0.1 },
-				{ key: '0.25', text: '0.25', value: 0.25 },
-				{ key: '0.5', text: '0.5', value: 0.5 },
-				{ key: '1', text: '1.0 (slowest)', value: 1 }
+				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
+				{ key: 'guaranteed', text: 'Guaranteed minimum', value: 'guaranteed' },
+				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
+				{ key: 'speed', text: 'Speed', value: 'speed' },
+				{ key: 'thorough', text: 'Thoroughness (slowest)', value: 'thorough' }
 			],
-			default: 0
+			default: 'estimate'
 		}
 	]
 };
@@ -364,7 +364,7 @@ class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			estimatorThreshold: props.calcOptions.estimatorThreshold ?? 0
+			estimatorPriority: props.calcOptions.estimatorPriority ?? 'estimate'
 		};
 	}
 
@@ -376,7 +376,7 @@ class USSJohnJayHelper extends Helper {
 			voyage_description: this.voyageConfig,
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
-			estimatorThreshold: this.calcOptions.estimatorThreshold,
+			estimatorPriority: this.calcOptions.estimatorPriority,
 			luckFactor: false,
 			favorSpecialists: false,
 			worker: 'ussjohnjay'
@@ -399,8 +399,14 @@ class USSJohnJayHelper extends Helper {
 	_estimatesToResults(lineups: any[], estimates: any[]): ICalcResult[] {
 		const results = [];
 
+		let sortOptions = [0, 1, 2, 3, 4];
+		if (this.calcOptions.estimatorPriority === 'guaranteed')
+			sortOptions = [1, 0];
+		else if (this.calcOptions.estimatorPriority === 'moonshot')
+			sortOptions = [2, 0];
+
 		const bestKeys = [];
-		[0, 1, 2, 3, 4].forEach(sort => {
+		sortOptions.forEach(sort => {
 			const best = estimates.sort((a, b) => this._chewableSort(a, b, sort))[0];
 			let bestLineup = lineups.find(lineup => lineup.key == best.key);
 			if (bestLineup.best) bestLineup.best.push(sort); else bestLineup.best = [sort];
