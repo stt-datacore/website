@@ -137,6 +137,10 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
 		//	We should get this from playerData.player.character.item_limit, but it's not in preparedProfileData
 
+		const wikiLink = itemName => {
+			return 'https://sttwiki.org/wiki/'+itemName.replace(/\s/g,'_').replace(/’/g,'\'');
+		};
+
 		return (
 			<div>
 				{itemCount > itemWarning && (
@@ -182,7 +186,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p><a href={`https://sttwiki.org/wiki/${item.name.replace(/\s/g,'_')}`}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -202,7 +206,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p><a href={`https://sttwiki.org/wiki/${item.name.replace(/\s/g,'_')}`}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
 								</Grid.Column>
 							))}
 						</Grid>
