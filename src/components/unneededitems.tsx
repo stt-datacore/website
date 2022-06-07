@@ -58,22 +58,35 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			return b.rarity - a.rarity;
 		});
 
-		// Calculate all replicator fodder
-		// 	Only consider equipment of already immortalized crew as fodder
-		//	This may miss out on items for crew who are mid-level (or even fully equipped Lvl 99s)
-		let equipmentAlreadyOnCrew = new Set();
-		let equipmentNeededByCrew = new Set();
+		// Only consider equipment of fully-equipped crew as potential fodder
+		//	Assume all equipment items of other crew are still needed
+		let equipmentEquipped = new Set();
+		let equipmentNeeded = new Set();
+		// Handle dupes as either all fully-equipped or as all needing items
+		let crewBySymbol = [];
 		playerData.player.character.crew.forEach(crew => {
+			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
+		});
+		crewBySymbol.forEach(crewSymbol => {
+			const crewList = playerData.player.character.crew.filter(crew => crew.symbol === crewSymbol);
+			let allFullyEquipped = true;
+			crewList.forEach(crew => {
+				if (crew.level < 99 || crew.equipment.length < 4)
+					allFullyEquipped = false;
+			});
+			const crew = crewList[0];
 			crew.equipment_slots.forEach(equipment => {
-				if (crew.immortal > 0)
-					equipmentAlreadyOnCrew.add(equipment.symbol);
+				if (allFullyEquipped)
+					equipmentEquipped.add(equipment.symbol);
 				else
-					equipmentNeededByCrew.add(equipment.symbol);
+					equipmentNeeded.add(equipment.symbol);
 			});
 		});
+
+		// Calculate all replicator fodder
 		let fuellist = items.filter(
-			item => equipmentAlreadyOnCrew.has(item.symbol) &&
-					!equipmentNeededByCrew.has(item.symbol)
+			item => equipmentEquipped.has(item.symbol) &&
+					!equipmentNeeded.has(item.symbol)
 		).sort((a, b) => {
 			if (a.rarity == b.rarity)
 				return a.name.localeCompare(b.name);
@@ -88,16 +101,29 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			name.indexOf("’s ") > 0 ||
 			name.indexOf("s’ ") > 0;
 
+		// Assume needed if a higher quality item of same name is needed
+		const needsHigherQuality = (symbol, rarity) => {
+			let needsHigher = false;
+			for (let i = rarity + 1; i <= 5; i++) {
+				if (equipmentNeeded.has(symbol.replace(/quality\d/, 'quality'+i))) {
+					needsHigher = true;
+					break;
+				}
+			}
+			return needsHigher;
+		};
+
 		// Filter crew-specific items
 		let fuelspecific = fuellist.filter(
-			item => isSpecificItem(item.name)
+			item => isSpecificItem(item.name) && !needsHigherQuality(item.symbol, item.rarity)
 		);
 
 		// Filter generic items
 		let fuelgeneric = fuellist.filter(
 			item =>
 				item.quantity === 1 && item.rarity > 1 &&
-				!isSpecificItem(item.name)
+				!isSpecificItem(item.name) &&
+				!needsHigherQuality(item.symbol, item.rarity)
 		);
 
 		this.setState({ fuelschematics, fuelspecific, fuelgeneric });
@@ -111,6 +137,10 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
 		//	We should get this from playerData.player.character.item_limit, but it's not in preparedProfileData
 
+		const wikiLink = itemName => {
+			return 'https://sttwiki.org/wiki/'+itemName.replace(/\s/g,'_').replace(/’/g,'\'');
+		};
+
 		return (
 			<div>
 				{itemCount > itemWarning && (
@@ -118,14 +148,15 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Message.Header>Items approaching limit</Message.Header>
 						<p>
 							You have {itemCount} items in your inventory. At {itemLimit} the game starts randomly losing
-							items; go and replicate away some unnecessary stuff.
+							items; go and replicate away some of the items suggested below.
 						</p>
 					</Message>
 				)}
 
 				{this.state.fuelschematics.length > 0 && (
 					<React.Fragment>
-						<Header as='h4'>Here are {this.state.fuelschematics.length} Ship Schematics that you don't need (used to upgrade ships you already maxed):</Header>
+						<Header as='h4'>Ship Schematics ({this.state.fuelschematics.length})</Header>
+						<p>The following ship schematics are safe to discard as they are used to upgrade <b>ships you have already maxed</b>.</p>
 						<Grid columns={5} centered padded>
 							{this.state.fuelschematics.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
@@ -144,7 +175,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 
 				{this.state.fuelspecific.length > 0 && (
 					<React.Fragment>
-						<Header as='h4'>Here are {this.state.fuelspecific.length} Equipment items that you don't need (used to equip specific crew you already equipped):</Header>
+						<Header as='h4'>Crew-Specific Equipment ({this.state.fuelspecific.length})</Header>
+						<p>The following equipment items are good candidates to discard as they are used to equip <b>specific crew you have already fully equipped</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as building blocks of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
 						<Grid columns={5} centered padded>
 							{this.state.fuelspecific.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
@@ -154,7 +186,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p>{item.name}</p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -163,7 +195,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 
 				{this.state.fuelgeneric.length > 0 && (
 					<React.Fragment>
-						<Header as='h4'>Here are {this.state.fuelgeneric.length} Equipment items that you don't need now, but might be useful in the future:</Header>
+						<Header as='h4'>Other Equipment ({this.state.fuelgeneric.length})</Header>
+						<p>The following equipment items are other candidates to discard as they are <b>no longer needed for any crew on your current roster</b>. Note: some items listed here might be useful for crew who are not on your current roster, or as building blocks of other needed equipment. Click an item name to consult the wiki for more information about the equipment.</p>
 						<Grid columns={5} centered padded>
 							{this.state.fuelgeneric.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
@@ -173,7 +206,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p>{item.name}</p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
 								</Grid.Column>
 							))}
 						</Grid>
