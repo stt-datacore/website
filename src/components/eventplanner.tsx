@@ -34,10 +34,10 @@ const EventPlanner = (props: EventPlannerProps) => {
 	if (activeEvents.length == 0)
 		return (<p>Event data currently not available.</p>);
 
-	// Create fake ids for active crew based on level and equipped status
+	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew.map(ac => {
 		return {
-			id: ac.symbol+','+ac.level+','+ac.equipment.join(''),
+			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
 		};
 	});
@@ -51,7 +51,7 @@ const EventPlanner = (props: EventPlannerProps) => {
 		crewman.active_status = 0;
 		if (crew.immortal === 0) {
 			// Re-attach active_status property
-			const activeCrewId = crew.symbol+','+crew.level+','+crew.equipment.join('');
+			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crewman.active_status = active.active_status;
