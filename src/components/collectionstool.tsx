@@ -312,13 +312,15 @@ const CrewTable = (props: CrewTableProps) => {
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' },
 		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
-		{ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' }
+		{ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' },
+		{ key: 'owned-ff', value: 'owned-ff', text: 'Only show fully fused crew' }
 	];
 
 	const fuseFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'portal', value: 'portal', text: 'Only show retrievable crew' },
 		{ key: 'portal-unique', value: 'portal-unique', text: 'Only show uniquely retrievable crew' },
+		{ key: 'portal-nonunique', value: 'portal-nonunique', text: 'Only show non-uniquely retrievable crew' },
 		{ key: 'nonportal', value: 'nonportal', text: 'Only show non-retrievable crew' }
 	];
 
@@ -408,9 +410,11 @@ const CrewTable = (props: CrewTableProps) => {
 		if (ownedFilter === 'unowned' && crew.highest_owned_rarity > 0) return false;
 		if (ownedFilter.substr(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
 		if (ownedFilter === 'owned-impact' && crew.max_rarity - crew.highest_owned_rarity > 1) return false;
+		if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (fuseFilter.substr(0, 6) === 'portal' && !crew.in_portal) return false;
 		if (fuseFilter === 'portal-unique' && crew.unique_polestar_combos.length === 0) return false;
+		if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos.length > 0) return false;
 		if (fuseFilter === 'nonportal' && crew.in_portal) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
