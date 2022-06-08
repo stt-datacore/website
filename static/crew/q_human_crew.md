@@ -3,8 +3,8 @@ name: Human Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 25
+bigbook_tier: 8
+events: 26
 in_portal: true
 date: 17/01/2017
 obtained: Event
