@@ -263,7 +263,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 		if (!options) {
 			// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
 			const knownShipTraits = ['andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
-				'dominion','emp','explorer','federation','ferengi','freighter','historic','hologram',
+				'dominion','emp','explorer','federation','ferengi','fighter','freighter','historic','hologram',
 				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
 				'scout','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
 			const knownCrewTraits = ['android','astrophysicist','bajoran','borg','brutal',
