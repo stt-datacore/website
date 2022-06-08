@@ -3,7 +3,7 @@ name: Qalankhkai Elnor
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 11
 in_portal:
 date: 16/05/2022
