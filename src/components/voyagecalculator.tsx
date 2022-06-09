@@ -952,7 +952,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	let data = {...request.voyageConfig};
 	if (result.entries) {
 		result.entries.forEach((entry, idx) => {
-			let acrew = request.consideredCrew.find(c => c.symbol === entry.choice.symbol);
+			let acrew = request.consideredCrew.find(c => c.id === entry.choice.id);
 			data.crew_slots[entry.slotId].crew = acrew;
 		});
 	}
