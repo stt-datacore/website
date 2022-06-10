@@ -4,7 +4,7 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 7
-events: 31
+events: 32
 in_portal: true
 date: 05/08/2020
 obtained: Event
