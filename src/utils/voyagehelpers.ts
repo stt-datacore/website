@@ -51,18 +51,34 @@ export const CALCULATORS = {
 		},
 		{
 			calculators: ['ussjohnjay'],
-			id: 'estimatorThreshold',
-			name: 'Estimator threshold',
-			description: 'Estimator threshold',
+			id: 'multiTarget',
+			name: 'Multi target',
+			description: 'Multi target',
 			control: 'select',
 			options: [
-				{ key: '0', text: 'Auto (recommended)', value: 0 },
-				{ key: '0.1', text: '0.1 (fastest)', value: 0.1 },
-				{ key: '0.25', text: '0.25', value: 0.25 },
-				{ key: '0.5', text: '0.5', value: 0.5 },
-				{ key: '1', text: '1.0 (slowest)', value: 1 }
+				{ key: 'all', text: 'All (default)', value: 'all' },
+				{ key: 'estimates', text: 'Best estimates', value: 'estimates' },
+				{ key: 'minimums', text: 'Guaranteed minimums', value: 'minimums' },
+				{ key: 'moonshots', text: 'Moonshots', value: 'moonshots' },
+				{ key: 'none', text: 'None (best estimate only)', value: 'none' }
 			],
-			default: 0
+			default: 'all'
+		},
+		{
+			calculators: ['ussjohnjay'],
+			id: 'estimationIndex',
+			name: 'Estimation index',
+			description: 'Estimation index',
+			control: 'select',
+			options: [
+				{ key: '0', text: '0 (fastest)', value: 0 },
+				{ key: '1', text: '1', value: 1 },
+				{ key: '2', text: '2 (recommended)', value: 2 },
+				{ key: '5', text: '5', value: 5 },
+				{ key: '10', text: '10', value: 10 },
+				{ key: '50', text: '50 (slowest)', value: 50 }
+			],
+			default: 2
 		}
 	]
 };
@@ -364,7 +380,8 @@ class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			estimatorThreshold: props.calcOptions.estimatorThreshold ?? 0
+			multiTarget: props.calcOptions.multiTarget ?? 'all',
+			estimationIndex: props.calcOptions.estimationIndex ?? 2
 		};
 	}
 
@@ -376,17 +393,15 @@ class USSJohnJayHelper extends Helper {
 			voyage_description: this.voyageConfig,
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
-			estimatorThreshold: this.calcOptions.estimatorThreshold,
-			luckFactor: false,
-			favorSpecialists: false,
+			multiTarget: this.calcOptions.multiTarget,
+			estimationIndex: this.calcOptions.estimationIndex,
 			worker: 'ussjohnjay'
 		};
 
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (message.data.result) {
-				const { lineups, estimates } = message.data.result;
-				const results = this._estimatesToResults(lineups, estimates);
+				const results = this._messageToResults(message.data.result);
 				this.perf.end = performance.now();
 				this.calcState = CalculatorState.Done;
 				this.resultsCallback(this.id, results, CalculatorState.Done);
@@ -396,130 +411,105 @@ class USSJohnJayHelper extends Helper {
 		this.calcWorker = worker;
 	}
 
-	_estimatesToResults(lineups: any[], estimates: any[]): ICalcResult[] {
-		const results = [];
+	_messageToResults(bests: any[]): ICalcResult[] {
+		const bestValues = {
+			estimate: 0,
+			minimum: 0,
+			moonshot: 0,
+			antimatter: 0,
+			dilemma: {
+				hour: 0,
+				chance: 0
+			}
+		};
 
-		const bestKeys = [];
-		[0, 1, 2, 3, 4].forEach(sort => {
-			const best = estimates.sort((a, b) => this._chewableSort(a, b, sort))[0];
-			let bestLineup = lineups.find(lineup => lineup.key == best.key);
-			if (bestLineup.best) bestLineup.best.push(sort); else bestLineup.best = [sort];
-			if (!bestKeys.includes(best.key)) bestKeys.push(best.key);
+		bests.forEach(best => {
+			const values = this._flattenEstimate(best.estimate);
+			Object.keys(bestValues).forEach((valueKey) => {
+				if (valueKey === 'dilemma') {
+					if (values.dilemma.hour > bestValues.dilemma.hour
+						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
+							bestValues.dilemma = values.dilemma;
+					}
+				}
+				else if (values[valueKey] > bestValues[valueKey]) {
+					bestValues[valueKey] = values[valueKey];
+				}
+			});
 		});
 
-		bestKeys.forEach((bestKey, idx) => {
-			const best = estimates.find(estimate => estimate.key == bestKey);
-			let bestLineup = lineups.find((lineup) => lineup.key == bestKey);
-			let postscript = bestLineup.best.length < 5
-				? '['+(idx+1)+'/'+bestKeys.length+'] Recommended for '+bestLineup.best.map(sort => this._showRecommendedValue(sort, best.estimate)).join(', ')
-				: 'Recommended for all criteria';
-			let result = {
-				entries: bestLineup.crew.map(({id}, idx) => ({
-					slotId: idx,
-					choice: this.consideredCrew.find(c => c.id == id),
-					hasTrait: bestLineup.traits[idx]
+		return bests.map((best, bestId) => {
+			const recommended = this._getRecommendedList(best.estimate, bestValues);
+			let postscript = '';
+			if (recommended.length > 0)
+				postscript = '['+(bestId+1)+'/'+bests.length+'] Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
+			else if (bests.length === 1)
+				postscript = 'Recommended for all criteria';
+			return {
+				entries: best.crew.map((crew, entryId) => ({
+					slotId: entryId,
+					choice: this.consideredCrew.find(c => c.id === crew.id),
+					hasTrait: best.traits[entryId]
 				})),	// convert to ICalcResult entries
 				estimate: best.estimate,
-				aggregates: bestLineup.skills,
-				startAM: this.bestShip.score + bestLineup.antimatter,
+				aggregates: best.skills,
+				startAM: best.estimate.antimatter,
 				postscript
 			};
-			results.push(result);
 		});
-
-		return results;
 	}
 
-	_chewableSort(a: any, b: any, sortOption: number = 0): number {
-		const DIFFERENCE = 0.02; // ~1 minute
-
-		let aEstimate = a.estimate.refills[0];
-		let bEstimate = b.estimate.refills[0];
-
-		// Best Median Runtime by default
-		let aScore = aEstimate.result;
-		let bScore = bEstimate.result;
-
-		let compareCloseTimes = false;
-
-		// Best Guaranteed Runtime
-		//	Compare 99% worst case times (saferResult)
-		if (sortOption == 1 && aEstimate.saferResult) {
-			aScore = aEstimate.saferResult;
-			bScore = bEstimate.saferResult;
-		}
-		// Best Moonshot Runtime
-		//	Compare best case times (moonshotResult)
-		else if (sortOption == 2 && aEstimate.moonshotResult) {
-			compareCloseTimes = true;
-			aScore = aEstimate.moonshotResult;
-			bScore = bEstimate.moonshotResult;
-			// If times are close enough, use the one with the better median result
-			if (Math.abs(bScore - aScore) <= DIFFERENCE) {
-				aScore = aEstimate.result;
-				bScore = bEstimate.result;
+	_flattenEstimate(estimate: any): any {
+		const extent = estimate.refills[0];
+		return {
+			estimate: extent.result,
+			minimum: extent.saferResult,
+			moonshot: extent.moonshotResult,
+			antimatter: estimate.antimatter,
+			dilemma: {
+				hour: extent.lastDil,
+				chance: extent.dilChance
 			}
-		}
-		// Best Dilemma Chance
-		else if (sortOption == 3 && aEstimate.lastDil) {
-			aScore = aEstimate.lastDil;
-			bScore = bEstimate.lastDil;
-			if (aScore == bScore) {
-				aScore = aEstimate.dilChance;
-				bScore = bEstimate.dilChance;
-			}
-			// If dilemma chance is the same, use the one with the better median result
-			if (aScore == bScore) {
-				compareCloseTimes = true;
-				aScore = aEstimate.result;
-				bScore = bEstimate.result;
-			}
-		}
-		// Highest Antimatter
-		else if (sortOption == 4 && a.estimate.antimatter) {
-			aScore = a.estimate.antimatter;
-			bScore = b.estimate.antimatter;
-			// If antimatter is the same, use the one with the better median result
-			if (aScore == bScore) {
-				compareCloseTimes = true;
-				aScore = aEstimate.result;
-				bScore = bEstimate.result;
-			}
-		}
-
-		// If times are close enough, use the one with the better safer result
-		if (compareCloseTimes && Math.abs(bScore - aScore) <= DIFFERENCE) {
-			aScore = aEstimate.saferResult;
-			bScore = bEstimate.saferResult;
-		}
-
-		return bScore - aScore;
+		};
 	}
 
-	_showRecommendedValue(sortOption: number, estimate: any): string {
-		const sortNames = [
-			'estimated runtime', 'guaranteed minimum', 'moonshot', 'dilemma chance', 'starting antimatter'
-		];
-		let sortValue = "";
-		switch (sortOption) {
-			case 0:
-				sortValue = formatTime(estimate.refills[0].result);
+	_getRecommendedList(estimate: any, bestValues: any): string[] {
+		const recommended = [];
+		const values = this._flattenEstimate(estimate);
+		Object.keys(bestValues).forEach((method) => {
+			if (bestValues[method] === values[method] ||
+				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance))
+					recommended.push(method);
+		});
+		return recommended;
+	};
+
+	_getRecommendedValue(method: number, bestValues: any): string {
+		let sortName = '', sortValue = '';
+		switch (method) {
+			case 'estimate':
+				sortName = 'estimated runtime';
+				sortValue = formatTime(bestValues.estimate);
 				break;
-			case 1:
-				sortValue = formatTime(estimate.refills[0].saferResult);
+			case 'minimum':
+				sortName = 'guaranteed minimum';
+				sortValue = formatTime(bestValues.minimum);
 				break;
-			case 2:
-				sortValue = formatTime(estimate.refills[0].moonshotResult);
+			case 'moonshot':
+				sortName = 'moonshot';
+				sortValue = formatTime(bestValues.moonshot);
 				break;
-			case 3:
-				sortValue = estimate.refills[0].dilChance+'% to reach '+estimate.refills[0].lastDil+'h';
+			case 'dilemma':
+				sortName = 'dilemma chance';
+				sortValue = bestValues.dilemma.chance+'% to reach '+bestValues.dilemma.hour+'h';
 				break;
-			case 4:
-				sortValue = estimate.antimatter;
+			case 'antimatter':
+				sortName = 'starting antimatter';
+				sortValue = bestValues.antimatter;
 				break;
 		}
 		if (sortValue != '') sortValue = ' ('+sortValue+')';
-		return sortNames[sortOption]+sortValue;
+		return sortName+sortValue;
 	}
 };
 
