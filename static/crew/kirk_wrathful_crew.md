@@ -3,7 +3,7 @@ name: Wrathful Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 27
 in_portal: true
 date: 11/07/2019
