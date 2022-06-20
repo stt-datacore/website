@@ -5,9 +5,9 @@ series: ''
 memory_alpha: ''
 bigbook_tier:
 events:
-in_portal:
+in_portal: true
 date: 26/04/2022
 obtained:
 mega:
-published: false
+published: true
 ---
