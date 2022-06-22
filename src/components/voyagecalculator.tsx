@@ -12,7 +12,8 @@ import { guessCurrentEvent, getEventData } from '../utils/events';
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { CALCULATORS, CalculatorState } from '../utils/voyagehelpers';
-import { getEstimate } from '../workers/chewable.js';
+
+import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 
 const AllDataContext = React.createContext();
 
@@ -403,27 +404,108 @@ type VoyageExistingProps = {
 const VoyageExisting = (props: VoyageExistingProps) => {
 	const { allShips, playerData } = React.useContext(AllDataContext);
 	const { voyageConfig, useCalc, roster } = props;
-	const [CIVASExportFailed, setCIVASExportFailed] = React.useState(false);
-	const [doingCIVASExport, setDoingCIVASExport] = React.useState(false);
 
-	const hoursToTime = hours => {
-		let wholeHours = Math.floor(hours);
-		return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
-	}
+	return (
+		<div style={{ marginTop: '1em' }}>
+			<VoyageStats
+				voyageData={voyageConfig}
+				ships={allShips}
+				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
+				playerItems={playerData.player.character.items}
+				roster={roster}
+			/>
+			<div style={{ marginTop: '1em' }}>
+				<Button onClick={() => useCalc()}>Return to crew calculator</Button>
+				{voyageConfig.state !== 'started' && <CIVASButton voyageConfig={voyageConfig} />}
+			</div>
+		</div>
+	)
+};
 
-	const exportData = () => new Promise((resolve, reject) => {
-		setDoingCIVASExport(true);
+type CIVASButtonProps = {
+	voyageConfig: any;
+};
 
-		let estimate = getEstimate({
+const CIVASButton = (props: CIVASButtonProps) => {
+	enum ExportState {
+		None,
+		InProgress,
+		Ready
+	};
+
+	const { voyageConfig } = props;
+	const [exportState, setExportState] = React.useState(ExportState.None);
+	const [estimate, setEstimate] = React.useState(undefined);
+
+	React.useEffect(() => {
+		if (estimate) copyToClipboard();
+	}, [estimate]);
+
+	if (!navigator.clipboard) return (<></>);
+
+	return (
+		<React.Fragment>
+			<Popup
+				content={exportState === ExportState.Ready ? 'Copied!' : 'Please wait...'}
+				on='click'
+				position='right center'
+				size='tiny'
+				trigger={
+					<Button icon='clipboard check' content='Export to CIVAS' onClick={() => exportData()} />
+				}
+			/>
+			<Popup
+				trigger={<Icon name='help' />}
+				content={
+					<>
+						Copies details of the voyage to the clipboard so that it can be pasted into <a href='https://docs.google.com/spreadsheets/d/1edSWAoaqFMK4S9CSI7Qk21iNSWKExZGeySp06CW1B4c/edit?usp=sharing' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
+					</>
+				}
+				mouseLeaveDelay={1000}
+			/>
+		</React.Fragment>
+	);
+
+	function exportData(): void {
+		if (exportState === ExportState.InProgress) return;
+		if (estimate) {
+			copyToClipboard();
+			return;
+		}
+
+		setExportState(ExportState.InProgress);
+		const config = {
 			startAm: voyageConfig.max_hp,
 			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
 			ss: voyageConfig.skill_aggregates[voyageConfig.skills['secondary_skill']],
-			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill)),
-		}, () => true).refills[0].result;
+			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill))
+		};
+		const ChewableConfig = {
+			config,
+			worker: 'chewable'
+		};
+		const worker = new UnifiedWorker();
+		worker.addEventListener('message', message => {
+			if (!message.data.inProgress) {
+				setExportState(ExportState.Ready);
+				setEstimate(message.data.result);
+			}
+		});
+		worker.postMessage(ChewableConfig);
+	}
+
+	function copyToClipboard(): void {
+		const hoursToTime = hours => {
+			let wholeHours = Math.floor(hours);
+			return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
+		};
+
+		const skillToShort = skillName => CONFIG.SKILLS_SHORT.find(skill => skill.name === skillName).short;
 
 		let values = [
+			skillToShort(voyageConfig.skills['primary_skill'])+'/'+skillToShort(voyageConfig.skills['secondary_skill']),
 			new Date(voyageConfig.created_at).toLocaleDateString(),
-			hoursToTime(estimate),
+			hoursToTime(estimate.refills[0].result),
 			hoursToTime(voyageConfig.log_index/180),
 			voyageConfig.hp
 		];
@@ -434,50 +516,8 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 			.map(s => s.crew.name)
 		);
 
-		navigator.clipboard.writeText(values.join('\n')).then(resolve, reject);
-	});
-
-	return (
-		<div style={{ marginTop: '1em' }}>
-			<VoyageStats
-				voyageData={voyageConfig}
-				ships={allShips}
-				showPanels={voyageConfig.state == 'started' ? ['estimate'] : ['rewards']}
-				playerItems={playerData.player.character.items}
-				roster={roster}
-			/>
-			<Button onClick={() => useCalc()}>Return to crew calculator</Button>
-			{voyageConfig.state != 'started' && navigator.clipboard &&
-				<React.Fragment>
-					<Button style={{marginLeft: '1em' }} loading={doingCIVASExport} onClick={() => exportData().then(
-						() => setDoingCIVASExport(false),
-						() => {
-							setDoingCIVASExport(false);
-							setCIVASExportFailed(true);
-
-							let timeout = setTimeout(() => {
-								setCIVASExportFailed(false);
-								clearTimeout(timeout);
-							}, 5000);
-						})}>
-						Export to CIVAS
-					</Button>
-					<Popup
-						trigger={<Icon name='help' />}
-						content={
-							<>
-								Copies details of the voyage to the clipboard so that it can be pasted into <a href='https://docs.google.com/spreadsheets/d/1nbnD2WvDXAT9cxEWep0f78bv6_hOaP51tmRjmY0oT1k' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
-							</>
-						}
-						mouseLeaveDelay={1000}
-					/>
-					{CIVASExportFailed &&
-						<Message negative>Export to clipboard failed</Message>
-					}
-				</React.Fragment>
-			}
-		</div>
-	)
+		navigator.clipboard.writeText(values.join('\t'));
+	}
 };
 
 type VoyageInputProps = {
