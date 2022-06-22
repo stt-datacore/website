@@ -3,7 +3,7 @@ name: Rumpelstiltskin
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 14
 in_portal:
 date: 12/04/2022
