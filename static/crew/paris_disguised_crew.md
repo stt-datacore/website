@@ -3,7 +3,7 @@ name: Disguised Tom Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 23
 in_portal:
 date: 13/04/2022

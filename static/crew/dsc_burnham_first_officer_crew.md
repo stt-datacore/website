@@ -3,8 +3,8 @@ name: First Officer Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 33
+bigbook_tier: 4
+events: 34
 in_portal: true
 date: 25/09/2017
 obtained: Pack

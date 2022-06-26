@@ -3,7 +3,7 @@ name: Vulcan Executioner
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 14
 in_portal: true
 date: 17/04/2017
