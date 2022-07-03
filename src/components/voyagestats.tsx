@@ -61,7 +61,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
-			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
 			const duration = voyageData.voyage_duration ?? 0;
 			const correctedDuration = this.state.voyageBugDetected ? duration - duration%7200 : duration;
 
@@ -78,11 +77,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				let skillOdds = 0.1;
 
 				if (agg.skill == voyageData.skills.primary_skill)
-					this.config.ps = score(agg);
+					this.config.ps = agg;
 				else if (agg.skill == voyageData.skills.secondary_skill)
-					this.config.ss = score(agg);
+					this.config.ss = agg;
 				else
-					this.config.others.push(score(agg));
+					this.config.others.push(agg);
 
 				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 			}
