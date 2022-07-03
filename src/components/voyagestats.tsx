@@ -63,7 +63,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		if (!estimate) {
 			const score = agg => Math.floor(agg.core + (agg.range_min+agg.range_max)/2);
 			const duration = voyageData.voyage_duration ?? 0;
-			const correctedDuration = this.state.voyageBugDetected ? duration : duration - duration%7200;
+			const correctedDuration = this.state.voyageBugDetected ? duration - duration%7200 : duration;
 
 			this.config = {
 				others: [],
@@ -71,17 +71,18 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				startAm: voyageData.max_hp,
 				currentAm: voyageData.hp ?? voyageData.max_hp,
 				elapsedSeconds: correctedDuration,
+				variance: 0
 			};
 
 			for (let agg of Object.values(voyageData.skill_aggregates)) {
 				let skillOdds = 0.1;
 
 				if (agg.skill == voyageData.skills.primary_skill)
-					this.config.ps = agg;
+					this.config.ps = score(agg);
 				else if (agg.skill == voyageData.skills.secondary_skill)
-					this.config.ss = agg;
+					this.config.ss = score(agg);
 				else
-					this.config.others.push(agg);
+					this.config.others.push(score(agg));
 
 				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 			}
@@ -629,8 +630,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					{(voyageData.state === 'started' && timeDiscrepency > 0) &&
 						<Message warning>
 							WARNING!!! A potential problem with the reported voyage duration has been detected.
-							We have attemped to correct this but estimate may be inaccurate.
-							Open the game then return to Datacore with a fresh copy of your player file to guarrentee an accurate estimate.
+							We have attemped to correct this but the estimate may be inaccurate.
+							Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate.
 						</Message>
 					}
 					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + voyageDuration}.</Message>
