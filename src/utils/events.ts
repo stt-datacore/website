@@ -72,6 +72,7 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
 		result.bonus = bonus;
 		result.featured = featured;
+		result.bonusGuessed = true;
 	}
 
 	return result;
@@ -138,7 +139,7 @@ function guessBonusCrew(activeEvent: any, allCrew: any[]): { bonus: string[], fe
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
-		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace(' crew', '').replace(/\sor\s/, ',').split(',');
+		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace(' crew', '').replace(/\sor\s/, ',').split(',').filter(word => word !== '');
 		words.forEach(trait => {
 			// Search for exact name first
 			const testName = trait.trim();
@@ -150,7 +151,7 @@ function guessBonusCrew(activeEvent: any, allCrew: any[]): { bonus: string[], fe
 			}
 			// Otherwise search for matching trait
 			else {
-				const testTrait = testName.replace(/[\.\s]/g, '').toLowerCase();
+				const testTrait = testName.replace(/[\.\s'’]/g, '').toLowerCase();
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(testTrait) || crew.traits_hidden.includes(testTrait));
 				if (perfectTraits.length > 0) {
 					perfectTraits.forEach(crew => {
