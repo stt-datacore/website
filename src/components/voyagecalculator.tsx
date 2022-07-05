@@ -416,17 +416,20 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 			/>
 			<div style={{ marginTop: '1em' }}>
 				<Button onClick={() => useCalc()}>Return to crew calculator</Button>
-				{voyageConfig.state !== 'started' && <CIVASButton voyageConfig={voyageConfig} />}
 			</div>
+			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
 		</div>
 	)
 };
 
-type CIVASButtonProps = {
+type CIVASMessageProps = {
 	voyageConfig: any;
 };
 
-const CIVASButton = (props: CIVASButtonProps) => {
+const CIVASMessage = (props: CIVASMessageProps) => {
+	const CIVASLink = 'https://docs.google.com/spreadsheets/d/1utIuwIgIRO7mwYMSP3P9eWEygf1YT9k24A8BZ_l4pOw/edit?usp=sharing';
+	const CIVASVer = '2.1';
+
 	enum ExportState {
 		None,
 		InProgress,
@@ -445,24 +448,21 @@ const CIVASButton = (props: CIVASButtonProps) => {
 
 	return (
 		<React.Fragment>
-			<Popup
-				content={exportState === ExportState.Ready ? 'Copied!' : 'Please wait...'}
-				on='click'
-				position='right center'
-				size='tiny'
-				trigger={
-					<Button icon='clipboard check' content='Export to CIVAS' onClick={() => exportData()} />
-				}
-			/>
-			<Popup
-				trigger={<Icon name='help' />}
-				content={
-					<>
-						Copies details of the voyage to the clipboard so that it can be pasted into <a href='https://docs.google.com/spreadsheets/d/1edSWAoaqFMK4S9CSI7Qk21iNSWKExZGeySp06CW1B4c/edit?usp=sharing' target='_blank'>Captain Idol's Voyage Analysis Sheet</a>
-					</>
-				}
-				mouseLeaveDelay={1000}
-			/>
+			<Message style={{ marginTop: '2em' }}>
+				<Message.Content>
+					<Message.Header>Captain Idol's Voyage Analysis Sheet</Message.Header>
+					<p>Pro tip: use <b><a href={CIVASLink} target='_blank'>Captain Idol's Voyage Analysis Sheet</a></b> to help you keep track of your voyagers, runtimes, and estimates. Click the button below to copy the details of your current voyage to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{CIVASVer}).</p>
+					<Popup
+						content={exportState === ExportState.Ready ? 'Copied!' : 'Please wait...'}
+						on='click'
+						position='right center'
+						size='tiny'
+						trigger={
+							<Button icon='clipboard check' content='Copy details to clipboard' onClick={() => exportData()} />
+						}
+					/>
+				</Message.Content>
+			</Message>
 		</React.Fragment>
 	);
 
@@ -504,12 +504,11 @@ const CIVASButton = (props: CIVASButtonProps) => {
 
 		let values = [
 			skillToShort(voyageConfig.skills['primary_skill'])+'/'+skillToShort(voyageConfig.skills['secondary_skill']),
-			new Date(voyageConfig.created_at).toLocaleDateString(),
-			hoursToTime(estimate.refills[0].result),
-			hoursToTime(voyageConfig.log_index/180),
-			voyageConfig.hp
+			new Date(voyageConfig.created_at).toISOString().split('T')[0],
+			hoursToTime(estimate.refills[0].result)
 		];
-
+		values.push(voyageConfig.state === 'recalled' ? hoursToTime(voyageConfig.log_index/180) : '');
+		values.push(voyageConfig.state === 'recalled' ? voyageConfig.hp : '');
 		values = values.concat(voyageConfig
 			.crew_slots
 			.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol))
