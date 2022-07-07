@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image } from 'semantic-ui-react';
+import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import CONFIG from './CONFIG';
@@ -358,6 +358,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		<React.Fragment>
 			<div ref={crewAnchor} />
 			<Header as='h4'>Your Crew</Header>
+			{eventData.bonusGuessed && <Message warning>The full list of bonus crew for this event is not yet available from player data. As a result, DataCore may not identify all of your possible event crew.</Message>}
 			<div style={{ margin: '.5em 0' }}>
 				<Form.Group grouped>
 					<Form.Field
