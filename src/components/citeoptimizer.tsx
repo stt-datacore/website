@@ -84,7 +84,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (
-							<Table.Row>
+							<Table.Row key={idx}>
 								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
 								<Table.Cell>
 									<div
