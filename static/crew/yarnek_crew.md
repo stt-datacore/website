@@ -3,7 +3,7 @@ name: Yarnek
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 8
 in_portal: true
 date: 05/06/2017
