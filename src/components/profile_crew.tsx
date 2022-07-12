@@ -5,7 +5,6 @@ import { Link, navigate } from 'gatsby';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
-
 import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
 
@@ -13,6 +12,8 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
+
+import allTraits from '../../static/structured/translation_en.json';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -184,18 +185,27 @@ type ProfileCrewTableProps = {
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const pageId = props.pageId ?? 'crew';
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
-	const [findDupes, setFindDupes] = useStateWithStorage(pageId+'/findDupes', false);
-	const [statusFilter, setStatusFilter] = useStateWithStorage(pageId+'/statusFilter', '');
+	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
+	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
+	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
 
-	const statusFilterOptions = [
+	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'unfrozen', value: 'unfrozen', text: 'Only show unfrozen crew' },
-		{ key: 'frozen', value: 'frozen', text: 'Only show frozen crew' }
+		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' },
+		{ key: 'frozen', value: 'frozen', text: 'Only show frozen crew' },
+		{ key: 'idle', value: 'idle', text: 'Only show idle crew', tool: 'true' }
 	];
-	if (pageId === 'crewTool') statusFilterOptions.push(
-		{ key: 'available', value: 'available', text: 'Only show available crew' }
-	);
+
+	const rosterFilterOptions = [
+		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'freezable', value: 'freezable', text: 'Only show freezable crew' },
+		{ key: 'mortal', value: 'mortal', text: 'Only show non-immortals' },
+		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
+		{ key: 'impact', value: 'impact', text: 'Only show crew needing 1 fuse' },
+		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
+		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' }
+	];
 
 	const rarityFilterOptions = [
 		{ key: '1*', value: 1, text: '1* Common' },
@@ -206,6 +216,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	];
 
 	const myCrew = JSON.parse(JSON.stringify(props.crew));
+	// Allow for more consistent sorting by action ability
 	myCrew.forEach(crew => {
 		if (!crew.action.ability) crew.action.ability = { type: '', condition: '' };
 	});
@@ -231,6 +242,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		});
 	}
 
+	const traitOptions = Object.keys(allTraits.trait_names).map(trait => {
+		return {
+			key: trait,
+			value: trait,
+			text: allTraits.trait_names[trait]
+		};
+	});
+
 	if (tableView === 'ship') {
 		tableConfig.push(
 			{ width: 1, column: 'action.bonus_type', title: 'Boosts' },
@@ -250,15 +269,19 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (findDupes) {
-			if (myCrew.filter((c) => c.symbol === crew.symbol).length === 1)
-				return false;
-		}
+		const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment.length === 4;
 
-		if (statusFilter === 'available' && (crew.immortal > 0 || crew.active_status > 0)) return false;
-		if (statusFilter === 'unfrozen' && crew.immortal > 0) return false;
-		if (statusFilter === 'frozen' && crew.immortal === 0) return false;
+		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
+		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
+		if (usableFilter === 'frozen' && crew.immortal === 0) return false;
+		if (rosterFilter === 'freezable' && (crew.immortal > 0 || !isImmortal(crew))) return false;
+		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
+		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
+		if (rosterFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
+		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
+		if (rosterFilter === 'dupes' && myCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
+		if (traitFilter.length > 0 && !crew.traits.some(t => traitFilter.includes(t))) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -417,27 +440,28 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				</div>
 			)}
 			<div style={{ margin: '1em 0' }}>
-				<Form.Group grouped>
-					<Form.Field
-						control={Checkbox}
-						label='Only show duplicate crew'
-						checked={findDupes}
-						onChange={(e, { checked }) => setFindDupes(checked)}
-					/>
-				</Form.Group>
-			</div>
-			<div style={{ margin: '1em 0' }}>
 				<Form>
 					<Form.Group inline>
 						<Form.Field
-							placeholder='Filter by status'
+							placeholder='Filter by availability'
 							control={Dropdown}
 							clearable
 							selection
-							options={statusFilterOptions}
-							value={statusFilter}
-							onChange={(e, { value }) => setStatusFilter(value)}
+							options={usableFilterOptions.filter(option => pageId === 'crewTool' || option.tool !== 'true')}
+							value={usableFilter}
+							onChange={(e, { value }) => setUsableFilter(value)}
 						/>
+						{usableFilter !== 'frozen' && (
+							<Form.Field
+								placeholder='Roster maintenance'
+								control={Dropdown}
+								clearable
+								selection
+								options={rosterFilterOptions}
+								value={rosterFilter}
+								onChange={(e, { value }) => setRosterFilter(value)}
+							/>
+						)}
 						<Form.Field
 							placeholder='Filter by rarity'
 							control={Dropdown}
@@ -447,6 +471,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							options={rarityFilterOptions}
 							value={rarityFilter}
 							onChange={(e, { value }) => setRarityFilter(value)}
+							closeOnChange
+						/>
+						<Form.Field
+							placeholder='Filter by trait'
+							control={Dropdown}
+							clearable
+							multiple
+							selection
+							options={traitOptions}
+							value={traitFilter}
+							onChange={(e, { value }) => setTraitFilter(value)}
 							closeOnChange
 						/>
 					</Form.Group>
