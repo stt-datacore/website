@@ -165,7 +165,11 @@ export function stripPlayerData(items: any[], p: any): any {
 			rarity: crew.rarity,
 			equipment: crew.equipment.map(eq => eq[0]),
 			base_skills: crew.base_skills,
-			favorite: crew.favorite
+			favorite: crew.favorite,
+			action: {
+				bonus_amount: crew.action.bonus_amount
+			},
+			ship_battle: crew.ship_battle
 		}));
 
 	let c_stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity === 1).map(im => im.id);
