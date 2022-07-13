@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Header, Button, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Header, Button, Dropdown, Label } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
@@ -92,6 +92,9 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 		}
+
+		// Allow for more consistent sorting by action ability
+		if (!crew.action.ability) crew.action.ability = { type: '', condition: '', amount: '' };
 	});
 
 	const lockable = [];
@@ -135,6 +138,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 				}
 				prospect[skill.name] = score;
 			});
+			if (!prospect.action.ability) prospect.action.ability = { type: '', condition: '', amount: '' };
 			myCrew.push(prospect);
 			lockable.push({
 				symbol: prospect.symbol,
@@ -190,6 +194,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
 
+	React.useEffect(() => {
+		if (usableFilter === 'frozen') setRosterFilter('');
+	}, [usableFilter]);
+
+	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
+
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' },
@@ -214,12 +224,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: '4*', value: 4, text: '4* Super Rare' },
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
-
-	const myCrew = JSON.parse(JSON.stringify(props.crew));
-	// Allow for more consistent sorting by action ability
-	myCrew.forEach(crew => {
-		if (!crew.action.ability) crew.action.ability = { type: '', condition: '' };
-	});
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
@@ -253,14 +257,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	if (tableView === 'ship') {
 		tableConfig.push(
 			{ width: 1, column: 'action.bonus_type', title: 'Boosts' },
-			{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true },
-			{ width: 1, column: 'action.penalty.type', title: 'Handicap' },
+			{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
+			{ width: 1, column: 'action.penalty.type', title: 'Handicap', tiebreakers: ['action.penalty.amount'] },
 			{ width: 1, column: 'action.initial_cooldown', title: 'Initialize' },
 			{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
 			{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
 			{ width: 1, column: 'action.limit', title: 'Uses' },
-			{ width: 1, column: 'action.ability.type', title: 'Bonus Ability' },
-			{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type'] },
+			{ width: 1, column: 'action.ability.type', title: 'Bonus Ability', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+			{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+			{ width: 1, column: 'action.charge_phases', title: 'Charge Phases' },
 			{ width: 1, column: 'ship_battle.accuracy', title: 'Accuracy', reverse: true },
 			{ width: 1, column: 'ship_battle.crit_bonus', title: 'Crit Bonus', reverse: true },
 			{ width: 1, column: 'ship_battle.crit_chance', title: 'Crit Rating', reverse: true },
@@ -269,8 +274,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment.length === 4;
-
 		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
 		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
 		if (usableFilter === 'frozen' && crew.immortal === 0) return false;
@@ -279,7 +282,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
 		if (rosterFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
-		if (rosterFilter === 'dupes' && myCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
+		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (traitFilter.length > 0 && !crew.traits.some(t => traitFilter.includes(t))) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
@@ -292,7 +295,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
-				<Table.Cell>
+				<Table.Cell className='sticky'>
 					<div
 						style={{
 							display: 'grid',
@@ -373,10 +376,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					{crew.action.limit && <><b>{crew.action.limit}</b></>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.action.ability.type !== '' && <><b>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}</b></>}
+					{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</>}
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{crew.action.charge_phases && <>{formatChargePhases(crew)}</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{crew.ship_battle.accuracy && <>+<b>{crew.ship_battle.accuracy}</b></>}
@@ -395,45 +401,64 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	function descriptionLabel(crew: any): JSX.Element {
-		const formattedTraits = () => {
-			if (traitFilter.length === 0) return (<></>);
-			const matchingTraits = traitFilter.filter(trait => crew.traits.includes(trait))
-				.map(trait => allTraits.trait_names[trait])
-				.reduce((prev, curr) => prev + (prev !== '' ? ', ' : '') + curr, '');
-			return (
-				<div>{matchingTraits}</div>
-			);
-		};
+		const immortal = isImmortal(crew);
+		const formattedTraits = traitFilter.filter(trait => crew.traits.includes(trait)).map((trait, idx) => (
+			<Label key={idx} color='brown'>
+				{allTraits.trait_names[trait]}
+			</Label>
+		)).reduce((prev, curr) => [prev, ' ', curr], []);
+		const counts = [
+			{ name: 'event', count: crew.events },
+			{ name: 'collection', count: crew.collections.length }
+		];
+		const formattedCounts = counts.map((count, idx) => (
+			<span key={idx} style={{ whiteSpace: 'nowrap' }}>
+				{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
+			</span>
+		)).reduce((prev, curr) => [prev, ' ', curr]);
+		return (
+			<div>
+				{crew.favorite && <Icon name='heart' />}
+				{immortal &&
+					<React.Fragment>
+						{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
+						{crew.immortal === 0 && <span>Immortalized</span>}
+					</React.Fragment>
+				}
+				{!immortal &&
+					<React.Fragment>
+						{crew.prospect && <Icon name='add user' />}
+						{crew.active_status > 0 && <Icon name='space shuttle' />}
+						<span>Level {crew.level}, </span>
+						{formattedCounts}
+					</React.Fragment>
+				}
+				{traitFilter.length > 0 && <div>{formattedTraits}</div>}
+			</div>
+		);
+	}
 
-		if (crew.immortal) {
-			return (
-				<div>
-					{formattedTraits()}
-					<Icon name='snowflake' /> <span>{crew.immortal} frozen</span>
-				</div>
-			);
-		} else {
-			const counts = [
-				{ name: 'event', count: crew.events },
-				{ name: 'collection', count: crew.collections.length }
-			];
-			const formattedCounts = counts.map((count, idx) => (
-				<span key={idx} style={{ whiteSpace: 'nowrap' }}>
-					{count.count} {count.name}{count.count != 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
-				</span>
-			)).reduce((prev, curr) => [prev, ' ', curr]);
+	// Adapted from function of same name in crewutils.ts
+	function formatChargePhases(crew): string {
+		let totalTime = 0;
+		let result = [];
+		crew.action.charge_phases.forEach(phase => {
+			totalTime += phase.charge_time;
+			let ps = `After ${totalTime}s `;
 
-			return (
-				<div>
-					{formattedTraits()}
-					{crew.favorite && <Icon name='heart' />}
-					{crew.prospect && <Icon name='add user' />}
-					{crew.active_status > 0 && <Icon name='space shuttle' />}
-					<span>Level {crew.level}, </span>
-					{formattedCounts}
-				</div>
-			);
-		}
+			if (crew.action.ability?.type !== '') {
+				ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
+			} else {
+				ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+			}
+
+			if (phase.cooldown) {
+				ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
+			}
+			result.push(ps);
+		});
+
+		return result.join('; ');
 	}
 
 	return (
@@ -502,11 +527,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			</div>
 			<SearchableTable
 				id={`${pageId}/table_`}
-				data={myCrew}
+				data={props.crew}
 				config={tableConfig}
 				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-				showFilterOptions="true"
+				showFilterOptions={true}
 				initOptions={props.initOptions}
 				lockable={props.lockable}
 			/>

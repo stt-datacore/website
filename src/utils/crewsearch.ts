@@ -48,6 +48,11 @@ export function crewMatchesSearchFilter(crew: any, filters: [], filterType: stri
 					conditionResult = skillName in crew.base_skills;
 				} else if (condition.keyword === 'in_portal') {
 					conditionResult = condition.value.toLowerCase() === 'true' ? crew.in_portal : !crew.in_portal;
+				} else if (condition.keyword === 'ship') {
+					conditionResult = matchesFilter(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type], condition.value) ||
+						(crew.action.ability.type !== '' &&
+							(matchesFilter(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type], condition.value) ||
+								matchesFilter(CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition], condition.value)));
 				}
 				meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 			}
