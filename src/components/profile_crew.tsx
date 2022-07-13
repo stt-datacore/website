@@ -222,7 +222,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	});
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length'] },
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
 	];
 
@@ -248,7 +248,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			value: trait,
 			text: allTraits.trait_names[trait]
 		};
-	});
+	}).sort((a, b) => a.text.localeCompare(b.text));
 
 	if (tableView === 'ship') {
 		tableConfig.push(
@@ -395,9 +395,20 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	function descriptionLabel(crew: any): JSX.Element {
+		const formattedTraits = () => {
+			if (traitFilter.length === 0) return (<></>);
+			const matchingTraits = traitFilter.filter(trait => crew.traits.includes(trait))
+				.map(trait => allTraits.trait_names[trait])
+				.reduce((prev, curr) => prev + (prev !== '' ? ', ' : '') + curr, '');
+			return (
+				<div>{matchingTraits}</div>
+			);
+		};
+
 		if (crew.immortal) {
 			return (
 				<div>
+					{formattedTraits()}
 					<Icon name='snowflake' /> <span>{crew.immortal} frozen</span>
 				</div>
 			);
@@ -414,6 +425,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 			return (
 				<div>
+					{formattedTraits()}
 					{crew.favorite && <Icon name='heart' />}
 					{crew.prospect && <Icon name='add user' />}
 					{crew.active_status > 0 && <Icon name='space shuttle' />}
@@ -478,6 +490,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							control={Dropdown}
 							clearable
 							multiple
+							search
 							selection
 							options={traitOptions}
 							value={traitFilter}
