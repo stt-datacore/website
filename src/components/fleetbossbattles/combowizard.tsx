@@ -123,12 +123,16 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 
 	function renderBoss(): JSX.Element {
 		const boss = wizardInput.data.find(b => b.id === activeBoss);
-		let open = [], found = [];
+
+		let open = [], found = [], current = false;
 		boss.combo.nodes.forEach(node => {
-			if (node.unlocked_character)
+			if (node.unlocked_character) {
 				found = found.concat(node.open_traits, node.hidden_traits);
-			else
+				if (node.unlocked_character.is_current) current = true;
+			}
+			else {
 				open = open.concat(node.open_traits);
+			}
 		});
 		const traitPool = [];
 		boss.combo.traits.forEach(trait => {
@@ -138,21 +142,33 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		for (let i = 1; i <= MAX_RARITY_BY_DIFFICULTY[boss.difficulty_id]; i++) {
 			rarityPool.push(i);
 		}
+
+		const buttonName = (trait: string) => {
+			const node = boss.combo.nodes.find(n => n.open_traits.includes(trait));
+			const post = node.hidden_traits.length > 1 ? ` (${node.hidden_traits.length})`: '';
+			return `${allTraits.trait_names[trait]}${post}`;
+		};
+
 		return (
 			<React.Fragment>
 				<div style={{ marginTop: '1em' }}>
-					Select an open node:{` `}
-					{open.map((nodeTrait, idx) =>
-						<Button key={idx} color='blue'
-							content={allTraits.trait_names[nodeTrait]}
-							onClick={() => {
-								wizardInput.handler({
-									nodeTrait, traitPool: traitPool.filter(trait => trait !== nodeTrait), rarityPool
-								});
-								setModalIsOpen(false);
-							}}
-						/>
-					).reduce((prev, curr) => [prev, ' ', curr], [])}
+					{current && <div style={{ marginBottom: '1em' }}>You may have already cleared a node for the current chain of this difficulty.</div>}
+					<div>
+						Select an open node:{` `}
+						{open.map((nodeTrait, idx) =>
+							<Button key={idx} color='blue'
+								content={buttonName(nodeTrait)}
+								onClick={() => {
+									wizardInput.handler({
+										nodeTrait: `"${allTraits.trait_names[nodeTrait]}"`,
+										traitPool: traitPool.filter(trait => trait !== nodeTrait),
+										rarityPool
+									});
+									setModalIsOpen(false);
+								}}
+							/>
+						).reduce((prev, curr) => [prev, ' ', curr], [])}
+					</div>
 				</div>
 			</React.Fragment>
 		);
