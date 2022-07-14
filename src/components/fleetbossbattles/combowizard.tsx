@@ -136,7 +136,8 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		});
 		const traitPool = [];
 		boss.combo.traits.forEach(trait => {
-			if (!traitPool.includes(trait)) traitPool.push(trait);
+			if (!found.includes(trait) && !traitPool.includes(trait))
+				traitPool.push(trait);
 		});
 		const rarityPool = [];
 		for (let i = 1; i <= MAX_RARITY_BY_DIFFICULTY[boss.difficulty_id]; i++) {
