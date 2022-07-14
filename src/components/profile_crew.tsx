@@ -195,6 +195,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
+	const [minimumTraits, setMinimumTraits] = React.useState(1);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -287,6 +288,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (traitFilter.length > 0 && !crew.traits.some(t => traitFilter.includes(t))) return false;
+		if (traitFilter.length > 0 && minimumTraits > 1 && crew.traits.filter(t => traitFilter.includes(t)).length < minimumTraits) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -542,13 +544,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	);
 
 	function handleWizard(wizardData: any): void {
-		const { nodeTrait, traitPool, rarityPool } = wizardData;
+		const { traitsNeeded, traitPool, rarityPool, searchText } = wizardData;
 		setInitOptions({
-			search: 'trait:'+nodeTrait,
+			search: searchText,
 			filter: 'Exact'
 		});
-		setTraitFilter(traitPool);
 		setRarityFilter(rarityPool);
+		setTraitFilter(traitPool);
+		setMinimumTraits(traitsNeeded);
 	}
 }
 

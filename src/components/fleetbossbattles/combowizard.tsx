@@ -124,31 +124,36 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 	function renderBoss(): JSX.Element {
 		const boss = wizardInput.data.find(b => b.id === activeBoss);
 
-		let open = [], found = [], current = false;
-		boss.combo.nodes.forEach(node => {
+		const traits = {};
+		boss.combo.traits.forEach(trait => {
+			if (!traits[trait]) traits[trait] = { listed: 0, consumed: 0 };
+			traits[trait].listed++;
+		});
+
+		const openNodes = [];
+		let current = false;
+		boss.combo.nodes.forEach((node, nodeId) => {
 			if (node.unlocked_character) {
-				found = found.concat(node.open_traits, node.hidden_traits);
+				[node.open_traits, node.hidden_traits].forEach(found => {
+					found.forEach(trait => { traits[trait].consumed++; });
+				});
 				if (node.unlocked_character.is_current) current = true;
 			}
 			else {
-				open = open.concat(node.open_traits);
+				openNodes.push(nodeId);
 			}
 		});
+
 		const traitPool = [];
 		boss.combo.traits.forEach(trait => {
-			if (!found.includes(trait) && !traitPool.includes(trait))
+			if (!traitPool.includes(trait) && traits[trait].consumed < traits[trait].listed)
 				traitPool.push(trait);
 		});
+
 		const rarityPool = [];
 		for (let i = 1; i <= MAX_RARITY_BY_DIFFICULTY[boss.difficulty_id]; i++) {
 			rarityPool.push(i);
 		}
-
-		const buttonName = (trait: string) => {
-			const node = boss.combo.nodes.find(n => n.open_traits.includes(trait));
-			const post = node.hidden_traits.length > 1 ? ` (${node.hidden_traits.length})`: '';
-			return `${allTraits.trait_names[trait]}${post}`;
-		};
 
 		return (
 			<React.Fragment>
@@ -156,22 +161,42 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 					{current && <div style={{ marginBottom: '1em' }}>You may have already cleared a node for the current chain of this difficulty.</div>}
 					<div>
 						Select an open node:{` `}
-						{open.map((nodeTrait, idx) =>
-							<Button key={idx} color='blue'
-								content={buttonName(nodeTrait)}
-								onClick={() => {
-									wizardInput.handler({
-										nodeTrait: `"${allTraits.trait_names[nodeTrait]}"`,
-										traitPool: traitPool.filter(trait => trait !== nodeTrait),
-										rarityPool
-									});
-									setModalIsOpen(false);
-								}}
-							/>
-						).reduce((prev, curr) => [prev, ' ', curr], [])}
+						{openNodes.map(nodeId => renderButton(nodeId, traitPool, rarityPool)).reduce((prev, curr) => [prev, ' ', curr], [])}
 					</div>
 				</div>
 			</React.Fragment>
+		);
+	}
+
+	function renderButton(nodeId: number, traitPool: string[], rarityPool: number[]): JSX.Element {
+		const boss = wizardInput.data.find(b => b.id === activeBoss);
+		const node = boss.combo.nodes[nodeId];
+
+		const traitsNeeded = node.hidden_traits.length;
+		let buttonText = '', searchText = '';
+		node.open_traits.forEach(trait => {
+			if (buttonText !== '') buttonText += ', ';
+			buttonText += allTraits.trait_names[trait];
+			if (searchText !== '') searchText += ' ';
+			searchText += `trait:"${allTraits.trait_names[trait]}"`;
+		});
+		if (traitsNeeded > 1) buttonText += ` (${traitsNeeded})`;
+
+		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
+
+		return (
+			<Button key={nodeId} color='blue'
+				content={buttonText}
+				onClick={() => {
+					wizardInput.handler({
+						traitsNeeded,
+						traitPool: filteredPool,
+						rarityPool,
+						searchText
+					});
+					setModalIsOpen(false);
+				}}
+			/>
 		);
 	}
 };
