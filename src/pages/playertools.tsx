@@ -92,6 +92,7 @@ const PlayerToolsPage = (props: any) =>  {
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [fleetbossData, setFleetbossData] = useStateWithStorage('tools/fleetbossData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 	const [activeShuttles, setActiveShuttles] = useStateWithStorage('tools/activeShuttles', undefined);
 
@@ -105,6 +106,7 @@ const PlayerToolsPage = (props: any) =>  {
 					strippedPlayerData={strippedPlayerData}
 					voyageData={voyageData}
 					eventData={eventData}
+					fleetbossData={fleetbossData}
 					activeCrew={activeCrew}
 					dataSource={dataSource}
 					allCrew={allCrew}
@@ -180,6 +182,7 @@ const PlayerToolsPage = (props: any) =>  {
 		}
 		setVoyageData(voyageData);
 		setEventData([...inputPlayerData.player.character.events]);
+		setFleetbossData(inputPlayerData.fleet_boss_battles_root ? [...inputPlayerData.fleet_boss_battles_root.statuses] : undefined);
 		setActiveCrew(activeCrew);
 		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures]);
 
@@ -420,7 +423,7 @@ type PlayerToolsFormProps = {
 };
 
 const PlayerToolsForm = (props: PlayerToolsFormProps) => {
-	const PLAYERLINK = 'https://stt.disruptorbeam.com/player?client_api=17';
+	const PLAYERLINK = 'https://stt.disruptorbeam.com/player?client_api=19';
 
 	const { setValidInput } = props;
 

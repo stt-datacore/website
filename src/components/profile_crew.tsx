@@ -7,6 +7,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
+import ComboWizard from '../components/fleetbossbattles/combowizard';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
@@ -188,6 +189,7 @@ type ProfileCrewTableProps = {
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const pageId = props.pageId ?? 'crew';
+	const [initOptions, setInitOptions] = React.useState(props.initOptions);
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
 	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
@@ -522,6 +524,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							onChange={(e, { value }) => setTraitFilter(value)}
 							closeOnChange
 						/>
+						{pageId === 'crewTool' && <ComboWizard handleWizard={handleWizard} />}
 					</Form.Group>
 				</Form>
 			</div>
@@ -532,11 +535,18 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 				showFilterOptions={true}
-				initOptions={props.initOptions}
+				initOptions={initOptions}
 				lockable={props.lockable}
 			/>
 		</React.Fragment>
 	);
+
+	function handleWizard(wizardData: any): void {
+		const { nodeTrait, traitPool, rarityPool } = wizardData;
+		setInitOptions({ search: 'trait:'+nodeTrait });
+		setTraitFilter(traitPool);
+		setRarityFilter(rarityPool);
+	}
 }
 
 type ProspectsProps = {
