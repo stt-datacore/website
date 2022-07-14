@@ -543,7 +543,10 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	function handleWizard(wizardData: any): void {
 		const { nodeTrait, traitPool, rarityPool } = wizardData;
-		setInitOptions({ search: 'trait:'+nodeTrait });
+		setInitOptions({
+			search: 'trait:'+nodeTrait,
+			filter: 'Exact'
+		});
 		setTraitFilter(traitPool);
 		setRarityFilter(rarityPool);
 	}

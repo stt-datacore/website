@@ -130,7 +130,10 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 			else
 				open = open.concat(node.open_traits);
 		});
-		const traitPool = boss.combo.traits.filter(trait => !found.includes(trait));
+		const traitPool = [];
+		boss.combo.traits.forEach(trait => {
+			if (!traitPool.includes(trait)) traitPool.push(trait);
+		});
 		const rarityPool = [];
 		for (let i = 1; i <= MAX_RARITY_BY_DIFFICULTY[boss.difficulty_id]; i++) {
 			rarityPool.push(i);
@@ -144,7 +147,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 							content={allTraits.trait_names[nodeTrait]}
 							onClick={() => {
 								wizardInput.handler({
-									nodeTrait, traitPool, rarityPool
+									nodeTrait, traitPool: traitPool.filter(trait => trait !== nodeTrait), rarityPool
 								});
 								setModalIsOpen(false);
 							}}
