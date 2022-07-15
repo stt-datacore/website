@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Header, Button, Dropdown, Label } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Header, Button, Dropdown, Label, Message } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
@@ -196,6 +196,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
 	const [minimumTraits, setMinimumTraits] = React.useState(1);
+	const [showReset, setShowReset] = React.useState(false);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -204,14 +205,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
 	const usableFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'none', value: '', text: 'Show all owned crew' },
 		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' },
 		{ key: 'frozen', value: 'frozen', text: 'Only show frozen crew' },
 		{ key: 'idle', value: 'idle', text: 'Only show idle crew', tool: 'true' }
 	];
 
 	const rosterFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'none', value: '', text: 'Show all owned crew' },
 		{ key: 'freezable', value: 'freezable', text: 'Only show freezable crew' },
 		{ key: 'mortal', value: 'mortal', text: 'Only show non-immortals' },
 		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
@@ -527,6 +528,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							closeOnChange
 						/>
 						{pageId === 'crewTool' && <ComboWizard handleWizard={handleWizard} />}
+						{showReset && <Button content='Reset' onClick={() => resetForm()} />}
 					</Form.Group>
 				</Form>
 			</div>
@@ -539,6 +541,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				showFilterOptions={true}
 				initOptions={initOptions}
 				lockable={props.lockable}
+				zeroMessage={renderZeroMessage()}
 			/>
 		</React.Fragment>
 	);
@@ -552,6 +555,31 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setRarityFilter(rarityPool);
 		setTraitFilter(traitPool);
 		setMinimumTraits(traitsNeeded);
+		setShowReset(true);
+	}
+
+	function resetForm(): void {
+		setInitOptions({
+			search: '',
+			filter: 'Any match'
+		});
+		setRarityFilter([]);
+		setTraitFilter([]);
+		setMinimumTraits(1);
+		setShowReset(false);
+	}
+
+	function renderZeroMessage(): JSX.Element {
+		return (
+			<Message icon style={{ margin: '1.5em 0' }}>
+				<Icon name='search' />
+				<Message.Content>
+					<Message.Header>0 results found</Message.Header>
+					<p>Please try different search options.</p>
+					{showReset && <p>If you recently used a search wizard, it might help to <Button content='Reset' size='tiny' onClick={() => resetForm()} /> all options to their default values before starting a new search.</p>}
+				</Message.Content>
+			</Message>
+		);
 	}
 }
 

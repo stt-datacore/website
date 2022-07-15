@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 
@@ -42,6 +42,7 @@ type SearchableTableProps = {
     showFilterOptions: boolean;
 	showPermalink: boolean;
 	lockable?: any[];
+	zeroMessage?: React.ReactNode;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -265,7 +266,16 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+				<Table.Body>
+					{data.length === 0 &&
+						<Table.Row>
+							<Table.HeaderCell colSpan={props.config.length}>
+								{props.zeroMessage || renderDefaultZeroMessage()}
+							</Table.HeaderCell>
+						</Table.Row>
+					}
+					{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}
+				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={props.config.length}>
@@ -391,6 +401,18 @@ export const prettyCrewColumnTitle = (column: string) => {
 	}
 	return column;
 };
+
+function renderDefaultZeroMessage(): JSX.Element {
+	return (
+		<Message icon style={{ margin: '1.5em 0' }}>
+			<Icon name='search' />
+			<Message.Content>
+				<Message.Header>0 results found</Message.Header>
+				Please try different search options.
+			</Message.Content>
+		</Message>
+	);
+}
 
 function renderDefaultExplanation(): JSX.Element {
 	return (

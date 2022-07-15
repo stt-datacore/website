@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button, Dropdown, Message, Popup } from 'semantic-ui-react';
+import { Modal, Button, Dropdown, Message, Grid } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../../utils/storage';
 
@@ -87,6 +87,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 				</React.Fragment>
 			);
 		}
+
 		const bossOptions = [];
 		wizardInput.data.forEach(boss => {
 			if (boss.ends_in) {
@@ -102,20 +103,24 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 				}
 			}
 		});
+
+		if (!activeBoss && bossOptions.length === 1)
+			setActiveBoss(bossOptions[0].value);
+
 		return (
 			<React.Fragment>
 				<div style={{ marginBottom: '1em' }}>
-					Use this wizard to help find crew that match the required traits of a fleet boss battle. Warning: this feature is still in early development and should be considered very experimental!
+					Use this wizard to help find crew that match the required traits of a fleet boss battle. Warning: this feature is still in early development.
 				</div>
 				{bossOptions.length > 0 &&
-					<Dropdown selection clearable
+					<Dropdown fluid selection clearable
 						placeholder='Select a difficulty'
 						options={bossOptions}
 						value={activeBoss}
 						onChange={(e, { value }) => setActiveBoss(value)}
 					/>
 				}
-				{bossOptions.length === 0 && <>You currently have no fleet boss battles with any open nodes.</>}
+				{bossOptions.length === 0 && <Message>You currently have no fleet boss battles with any open nodes.</Message>}
 				{activeBoss && renderBoss()}
 			</React.Fragment>
 		);
@@ -158,11 +163,15 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		return (
 			<React.Fragment>
 				<div style={{ marginTop: '1em' }}>
-					{current && <div style={{ marginBottom: '1em' }}>You may have already cleared a node for the current chain of this difficulty.</div>}
-					<div>
-						Select an open node:{` `}
-						{openNodes.map(nodeId => renderButton(nodeId, traitPool, rarityPool)).reduce((prev, curr) => [prev, ' ', curr], [])}
-					</div>
+					{current && <Message warning>You have already cleared a node for the current chain of this difficulty.</Message>}
+					<div style={{ textAlign: 'center' }}>Select an open node:</div>
+					<Grid doubling columns={openNodes.length === 3 || openNodes.length === 5 ? 3 : 2} verticalAlign='middle' textAlign='center'>
+						{openNodes.map(nodeId => (
+							<Grid.Column key={nodeId}>
+								{renderButton(nodeId, traitPool, rarityPool)}
+							</Grid.Column>
+						))}
+					</Grid>
 				</div>
 			</React.Fragment>
 		);
@@ -180,7 +189,8 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 			if (searchText !== '') searchText += ' ';
 			searchText += `trait:"${allTraits.trait_names[trait]}"`;
 		});
-		if (traitsNeeded > 1) buttonText += ` (${traitsNeeded})`;
+		for (let i = 0; i < traitsNeeded; i++)
+			buttonText += ' + ?';
 
 		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
 
