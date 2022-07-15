@@ -195,8 +195,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
-	const [minimumTraits, setMinimumTraits] = React.useState(1);
-	const [showReset, setShowReset] = React.useState(false);
+	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
+	const [presetOptions, setPresetOptions] = useStateWithStorage(pageId+'/presetOptions', undefined);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -234,6 +234,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
 	];
 
+	if (traitFilter.length > 1) {
+		tableConfig.push(
+			{ width: 1, column: 'traits_matched.length', title: 'Matches', reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
+		);
+	}
+
 	if (tableView === 'base') {
 		tableConfig.push(
 			{ width: 1, column: 'bigbook_tier', title: 'Tier' },
@@ -247,6 +253,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 				reverse: true
 			});
+		});
+	}
+
+	const myCrew = [...props.crew];
+	if (traitFilter.length > 0) {
+		myCrew.forEach(crew => {
+			crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
 		});
 	}
 
@@ -288,8 +301,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && !crew.traits.some(t => traitFilter.includes(t))) return false;
-		if (traitFilter.length > 0 && minimumTraits > 1 && crew.traits.filter(t => traitFilter.includes(t)).length < minimumTraits) return false;
+		if (traitFilter.length > 0 && crew.traits_matched.length < Math.min(minTraitMatches, traitFilter.length)) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -321,6 +333,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
+				{traitFilter.length > 1 && (
+					<Table.Cell textAlign='center'>
+						{crew.traits_matched.map((trait, idx) => (
+							<Label key={idx} color='brown'>
+								{allTraits.trait_names[trait]}
+							</Label>
+						)).reduce((prev, curr) => [prev, ' ', curr], [])}
+					</Table.Cell>
+				)}
 				{tableView === 'base' && renderBaseNumbers(crew)}
 				{tableView === 'ship' && renderShipNumbers(crew)}
 			</Table.Row>
@@ -407,11 +428,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	function descriptionLabel(crew: any): JSX.Element {
 		const immortal = isImmortal(crew);
-		const formattedTraits = traitFilter.filter(trait => crew.traits.includes(trait)).map((trait, idx) => (
-			<Label key={idx} color='brown'>
-				{allTraits.trait_names[trait]}
-			</Label>
-		)).reduce((prev, curr) => [prev, ' ', curr], []);
 		const counts = [
 			{ name: 'event', count: crew.events },
 			{ name: 'collection', count: crew.collections.length }
@@ -438,7 +454,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						{formattedCounts}
 					</React.Fragment>
 				}
-				{traitFilter.length > 0 && <div>{formattedTraits}</div>}
 			</div>
 		);
 	}
@@ -528,20 +543,20 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							closeOnChange
 						/>
 						{pageId === 'crewTool' && <ComboWizard handleWizard={handleWizard} />}
-						{showReset && <Button content='Reset' onClick={() => resetForm()} />}
+						{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
 					</Form.Group>
 				</Form>
 			</div>
 			<SearchableTable
 				id={`${pageId}/table_`}
-				data={props.crew}
+				data={myCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 				showFilterOptions={true}
 				initOptions={initOptions}
 				lockable={props.lockable}
-				zeroMessage={renderZeroMessage()}
+				zeroMessage={(search) => renderZeroMessage(search)}
 			/>
 		</React.Fragment>
 	);
@@ -554,29 +569,35 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		});
 		setRarityFilter(rarityPool);
 		setTraitFilter(traitPool);
-		setMinimumTraits(traitsNeeded);
-		setShowReset(true);
+		setMinTraitMatches(traitsNeeded);
+		setPresetOptions({
+			wizard: 'fleetboss',
+			search: searchText
+		});
 	}
 
 	function resetForm(): void {
-		setInitOptions({
-			search: '',
-			filter: 'Any match'
-		});
+		setInitOptions({ search: '' });	// This will reset all searchable options to default values
 		setRarityFilter([]);
 		setTraitFilter([]);
-		setMinimumTraits(1);
-		setShowReset(false);
+		setMinTraitMatches(1);
+		setPresetOptions(undefined);
 	}
 
-	function renderZeroMessage(): JSX.Element {
+	function renderZeroMessage(search: string): JSX.Element {
 		return (
-			<Message icon style={{ margin: '1.5em 0' }}>
+			<Message icon>
 				<Icon name='search' />
 				<Message.Content>
-					<Message.Header>0 results found</Message.Header>
+					<Message.Header>0 results found on your roster</Message.Header>
 					<p>Please try different search options.</p>
-					{showReset && <p>If you recently used a search wizard, it might help to <Button content='Reset' size='tiny' onClick={() => resetForm()} /> all options to their default values before starting a new search.</p>}
+					{presetOptions && presetOptions.search !== search && (
+						<p>
+							If you recently used a search wizard, it might help to
+							<Button content='Reset' size='tiny' onClick={() => resetForm()} style={{ margin: '0 .5em' }} />
+							all options to their default values before starting a new search.
+						</p>
+					)}
 				</Message.Content>
 			</Message>
 		);

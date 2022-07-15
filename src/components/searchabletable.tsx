@@ -42,7 +42,7 @@ type SearchableTableProps = {
     showFilterOptions: boolean;
 	showPermalink: boolean;
 	lockable?: any[];
-	zeroMessage?: React.ReactNode;
+	zeroMessage?: (search: string) => JSX.Element;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -217,6 +217,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	data = data.filter(row => props.filterRow(row, filters, filterType));
 
+	// Check for zero data before pagination, otherwise pagination won't show even if page is simply too high
+	const zeroData = data.length === 0;
+
 	// Pagination
 	let activePage = pagination_page;
 	if (activeLock) {
@@ -264,46 +267,45 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>
-					{data.length === 0 &&
+			{zeroData && (
+				<div style={{ margin: '2em 0' }}>
+					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
+				</div>
+			)}
+
+			{!zeroData && (
+				<Table sortable celled selectable striped collapsing unstackable compact="very">
+					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
+					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					<Table.Footer>
 						<Table.Row>
 							<Table.HeaderCell colSpan={props.config.length}>
-								{props.zeroMessage || renderDefaultZeroMessage()}
-							</Table.HeaderCell>
-						</Table.Row>
-					}
-					{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}
-				</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.HeaderCell colSpan={props.config.length}>
-							<Pagination
-								totalPages={totalPages}
-								activePage={activePage}
-								onPageChange={(event, { activePage }) => {
-									setPaginationPage(activePage as number);
-									setActiveLock(undefined);	// Remove lock when changing pages
-								}}
-							/>
-							<span style={{ paddingLeft: '2em'}}>
-								Rows per page:{' '}
-								<Dropdown
-									inline
-									options={pagingOptions}
-									value={pagination_rows}
-									onChange={(event, {value}) => {
-										setPaginationPage(1);
-										setPaginationRows(value as number);
+								<Pagination
+									totalPages={totalPages}
+									activePage={activePage}
+									onPageChange={(event, { activePage }) => {
+										setPaginationPage(activePage as number);
+										setActiveLock(undefined);	// Remove lock when changing pages
 									}}
 								/>
-							</span>
-							{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
+								<span style={{ paddingLeft: '2em'}}>
+									Rows per page:{' '}
+									<Dropdown
+										inline
+										options={pagingOptions}
+										value={pagination_rows}
+										onChange={(event, {value}) => {
+											setPaginationPage(1);
+											setPaginationRows(value as number);
+										}}
+									/>
+								</span>
+								{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
+							</Table.HeaderCell>
+						</Table.Row>
+					</Table.Footer>
+				</Table>
+			)}
 		</div>
 	);
 };
@@ -404,7 +406,7 @@ export const prettyCrewColumnTitle = (column: string) => {
 
 function renderDefaultZeroMessage(): JSX.Element {
 	return (
-		<Message icon style={{ margin: '1.5em 0' }}>
+		<Message icon>
 			<Icon name='search' />
 			<Message.Content>
 				<Message.Header>0 results found</Message.Header>
