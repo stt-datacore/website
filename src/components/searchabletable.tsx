@@ -37,12 +37,13 @@ type SearchableTableProps = {
 	explanation?: React.ReactNode;
 	config: ITableConfigRow[];
 	renderTableRow: (row: any, idx?: number) => JSX.Element;
-	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
+	filterRow: (row: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
 	showPermalink: boolean;
 	lockable?: any[];
-	zeroMessage?: (search: string) => JSX.Element;
+	zeroMessage?: (searchFilter: string) => JSX.Element;
+	postTable?: (searchFilter: string, filterType: string, filteredCount: number) => JSX.Element;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -216,9 +217,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		});
 	}
 	data = data.filter(row => props.filterRow(row, filters, filterType));
-
-	// Check for zero data before pagination, otherwise pagination won't show even if page is simply too high
-	const zeroData = data.length === 0;
+	const filteredCount = data.length;
 
 	// Pagination
 	let activePage = pagination_page;
@@ -267,13 +266,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 
-			{zeroData && (
+			{filteredCount === 0 && (
 				<div style={{ margin: '2em 0' }}>
 					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
 				</div>
 			)}
 
-			{!zeroData && (
+			{filteredCount > 0 && (
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
@@ -306,6 +305,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					</Table.Footer>
 				</Table>
 			)}
+
+			{props.postTable && props.postTable(searchFilter, filterType, filteredCount)}
 		</div>
 	);
 };
