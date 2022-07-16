@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Header, Button, Dropdown, Label, Message, Accordion } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Header, Button, Dropdown, Label, Message, Accordion, Grid } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
@@ -63,6 +63,10 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 			});
 		}
 	}
+	myCrew.forEach((crew, crewId) => {
+		// Allow for more consistent sorting by action ability
+		if (!crew.action.ability) crew.action.ability = { type: '', condition: '', amount: '' };
+	});
 	return (<ProfileCrewTable crew={myCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
@@ -190,7 +194,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
-	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [presetOptions, setPresetOptions] = useStateWithStorage(pageId+'/presetOptions', undefined);
 
 	React.useEffect(() => {
@@ -296,7 +299,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && crew.traits_matched.length < Math.min(minTraitMatches, traitFilter.length)) return false;
+		if (traitFilter.length > 0 && crew.traits_matched.length === 0) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -377,19 +380,25 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	return (
 		<React.Fragment>
-			{pageId === 'crewTool' && (
-				<div style={{ margin: '.5em 0' }}>
-					<Button.Group>
-						<Button onClick={() => setTableView('base')} positive={tableView === 'base' ? true : null} size='large'>
-							Base Skills
-						</Button>
-						<Button.Or />
-						<Button onClick={() => setTableView('ship')} positive={tableView === 'ship' ? true : null} size='large'>
-							Ship Abilities
-						</Button>
-					</Button.Group>
-				</div>
-			)}
+			<div>
+				<Button.Group>
+					<Button onClick={() => setTableView('base')} positive={tableView === 'base' ? true : null} size='large'>
+						Base Skills
+					</Button>
+					<Button.Or />
+					<Button onClick={() => setTableView('ship')} positive={tableView === 'ship' ? true : null} size='large'>
+						Ship Abilities
+					</Button>
+				</Button.Group>
+				<Button.Group floated='right'>
+					{pageId === 'crewTool' && (!presetOptions || presetOptions.wizard === 'fleetboss') && (
+						<Button.Group>
+							<ComboWizard handleWizard={handleWizard} triggerText={presetOptions?.title} />
+							{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
+						</Button.Group>
+					)}
+				</Button.Group>
+			</div>
 			<div style={{ margin: '1em 0' }}>
 				<Form>
 					<Form.Group inline>
@@ -436,8 +445,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							onChange={(e, { value }) => setTraitFilter(value)}
 							closeOnChange
 						/>
-						{pageId === 'crewTool' && <ComboWizard handleWizard={handleWizard} />}
-						{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
 					</Form.Group>
 				</Form>
 			</div>
@@ -457,16 +464,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	);
 
 	function handleWizard(wizardData: any): void {
-		const { traitsNeeded, traitPool, rarityPool, searchText } = wizardData;
+		const { nodeName, traitPool, rarityPool, searchText } = wizardData;
 		setInitOptions({
 			search: searchText,
-			filter: 'Exact'
+			filter: 'Exact',
+			column: 'traits_matched.length'
 		});
 		setRarityFilter(rarityPool);
 		setTraitFilter(traitPool);
-		setMinTraitMatches(traitsNeeded);
 		setPresetOptions({
 			wizard: 'fleetboss',
+			title: nodeName,
 			search: searchText
 		});
 	}
@@ -477,7 +485,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setRosterFilter('');
 		setRarityFilter([]);
 		setTraitFilter([]);
-		setMinTraitMatches(1);
 		setPresetOptions(undefined);
 	}
 
@@ -507,7 +514,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		return (
 			<UnownedCrewTable myCrew={myCrew} tableView={tableView}
-				rarityFilter={rarityFilter} traitFilter={traitFilter} minTraitMatches={minTraitMatches}
+				rarityFilter={rarityFilter} traitFilter={traitFilter}
 				searchFilter={searchFilter} filterType={filterType} filteredCount={filteredCount}
 			/>
 		);
@@ -519,7 +526,6 @@ type UnownedCrewTableProps = {
 	tableView: string;
 	rarityFilter: number[];
 	traitFilter: string[];
-	minTraitMatches: number;
 	searchFilter: string;
 	filterType: string;
 	filteredCount: number;
@@ -527,7 +533,7 @@ type UnownedCrewTableProps = {
 
 const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 	const { allCrew, buffConfig } = React.useContext(AllDataContext);
-	const { tableView, rarityFilter, traitFilter, minTraitMatches, searchFilter, filterType, filteredCount } = props;
+	const { tableView, rarityFilter, traitFilter, searchFilter, filterType, filteredCount } = props;
 
 	const [showUnowned, setShowUnowned] = useStateWithStorage('crewTool/showUnowned', false);
 
@@ -554,7 +560,7 @@ const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 	}
 	unownedCrew = unownedCrew.filter(crew => {
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && crew.traits_matched.length < Math.min(minTraitMatches, traitFilter.length)) return false;
+		if (traitFilter.length > 0 && crew.traits_matched.length === 0) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	});
 

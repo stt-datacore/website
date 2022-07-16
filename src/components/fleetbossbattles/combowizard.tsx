@@ -26,13 +26,15 @@ const WizardContext = React.createContext();
 
 type ComboWizardProps = {
 	handleWizard: (wizardOutput: any) => void;
+	triggerText?: string;
 };
 
 const ComboWizard = (props: ComboWizardProps) => {
 	const [fleetbossData, ] = useStateWithStorage('tools/fleetbossData', undefined);
 	const contextData = {
 		data: fleetbossData,
-		handler: props.handleWizard
+		handler: props.handleWizard,
+		triggerText: props.triggerText
 	};
 	return (
 		<WizardContext.Provider value={contextData}>
@@ -69,7 +71,10 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 	function renderTrigger(): JSX.Element {
 		return (
 			<Button compact color='red'>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/sb_phaser_attack.png`} style={{ height: '16px' }} />
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/sb_phaser_attack.png`} style={{ height: '16px', verticalAlign: 'text-top' }} />
+				{wizardInput.triggerText &&
+					<span style={{ paddingLeft: '.5em' }}>{wizardInput.triggerText}</span>
+				}
 			</Button>
 		);
 	}
@@ -110,7 +115,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		return (
 			<React.Fragment>
 				<div style={{ marginBottom: '1em' }}>
-					Use this wizard to help find crew that match the required traits of a fleet boss battle. Warning: this feature is still in early development.
+					Use this wizard to help find crew that match the required traits of a fleet boss battle. Warning: this feature is still in development.
 				</div>
 				{bossOptions.length > 0 &&
 					<Dropdown fluid selection clearable
@@ -139,12 +144,13 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		let current = false;
 		boss.combo.nodes.forEach((node, nodeId) => {
 			if (node.unlocked_character) {
-				[node.open_traits, node.hidden_traits].forEach(found => {
-					found.forEach(trait => { traits[trait].consumed++; });
+				[node.open_traits, node.hidden_traits].forEach(unlocked => {
+					unlocked.forEach(trait => { traits[trait].consumed++; });
 				});
 				if (node.unlocked_character.is_current) current = true;
 			}
 			else {
+				node.open_traits.forEach(trait => { traits[trait].consumed++; });
 				openNodes.push(nodeId);
 			}
 		});
@@ -199,7 +205,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 				content={buttonText}
 				onClick={() => {
 					wizardInput.handler({
-						traitsNeeded,
+						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
 						traitPool: filteredPool,
 						rarityPool,
 						searchText
