@@ -7,14 +7,14 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
+
+import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
+import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 import ComboWizard from '../components/fleetbossbattles/combowizard';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
-
-import allTraits from '../../static/structured/translation_en.json';
 
 import * as SearchString from 'search-string';
 
@@ -194,11 +194,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
+	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [presetOptions, setPresetOptions] = useStateWithStorage(pageId+'/presetOptions', undefined);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
 	}, [usableFilter]);
+
+	React.useEffect(() => {
+		if (minTraitMatches > traitFilter.length)
+			setMinTraitMatches(traitFilter.length === 0 ? 1 : traitFilter.length);
+	}, [traitFilter]);
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -208,7 +214,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	];
 
 	const rosterFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all owned crew' },
+		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'freezable', value: 'freezable', text: 'Only show freezable crew' },
 		{ key: 'mortal', value: 'mortal', text: 'Only show non-immortals' },
 		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
@@ -216,22 +222,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
 		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' }
 	];
-
-	const rarityFilterOptions = [
-		{ key: '1*', value: 1, text: '1* Common' },
-		{ key: '2*', value: 2, text: '2* Uncommon' },
-		{ key: '3*', value: 3, text: '3* Rare' },
-		{ key: '4*', value: 4, text: '4* Super Rare' },
-		{ key: '5*', value: 5, text: '5* Legendary' }
-	];
-
-	const traitOptions = Object.keys(allTraits.trait_names).map(trait => {
-		return {
-			key: trait,
-			value: trait,
-			text: allTraits.trait_names[trait]
-		};
-	}).sort((a, b) => a.text.localeCompare(b.text));
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
@@ -299,7 +289,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && crew.traits_matched.length === 0) return false;
+		if (traitFilter.length > 0 && crew.traits_matched.length < minTraitMatches) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -331,17 +321,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-				{traitFilter.length > 1 && (
-					<Table.Cell textAlign='center'>
-						{crew.traits_matched.map((trait, idx) => (
-							<Label key={idx} color='brown'>
-								{allTraits.trait_names[trait]}
-							</Label>
-						)).reduce((prev, curr) => [prev, ' ', curr], [])}
-					</Table.Cell>
-				)}
-				{tableView === 'base' && <CrewRowBaseCells crew={crew} />}
-				{tableView === 'ship' && <CrewRowShipCells crew={crew} />}
+				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} />}
+				{tableView === 'base' && <CrewBaseCells crew={crew} />}
+				{tableView === 'ship' && <CrewShipCells crew={crew} />}
 			</Table.Row>
 		);
 	}
@@ -393,13 +375,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				<Button.Group floated='right'>
 					{pageId === 'crewTool' && (!presetOptions || presetOptions.wizard === 'fleetboss') && (
 						<Button.Group>
-							<ComboWizard handleWizard={handleWizard} triggerText={presetOptions?.title} />
+							<ComboWizard handleWizard={handleComboWizard} triggerText={presetOptions?.title} />
 							{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
 						</Button.Group>
 					)}
 				</Button.Group>
 			</div>
-			<div style={{ margin: '1em 0' }}>
+			<div style={{ margin: '1em 0', clear: 'both' }}>
 				<Form>
 					<Form.Group inline>
 						<Form.Field
@@ -422,28 +404,10 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								onChange={(e, { value }) => setRosterFilter(value)}
 							/>
 						)}
-						<Form.Field
-							placeholder='Filter by rarity'
-							control={Dropdown}
-							clearable
-							multiple
-							selection
-							options={rarityFilterOptions}
-							value={rarityFilter}
-							onChange={(e, { value }) => setRarityFilter(value)}
-							closeOnChange
-						/>
-						<Form.Field
-							placeholder='Filter by trait'
-							control={Dropdown}
-							clearable
-							multiple
-							search
-							selection
-							options={traitOptions}
-							value={traitFilter}
-							onChange={(e, { value }) => setTraitFilter(value)}
-							closeOnChange
+						<CrewRarityFilter rarityFilter={rarityFilter} setRarityFilter={setRarityFilter} />
+						<CrewTraitFilter
+							traitFilter={traitFilter} setTraitFilter={setTraitFilter}
+							minTraitMatches={minTraitMatches} setMinTraitMatches={setMinTraitMatches}
 						/>
 					</Form.Group>
 				</Form>
@@ -463,7 +427,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		</React.Fragment>
 	);
 
-	function handleWizard(wizardData: any): void {
+	function handleComboWizard(wizardData: any): void {
 		const { nodeName, traitPool, rarityPool, searchText } = wizardData;
 		setInitOptions({
 			search: searchText,
@@ -472,6 +436,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		});
 		setRarityFilter(rarityPool);
 		setTraitFilter(traitPool);
+		setMinTraitMatches(1);
 		setPresetOptions({
 			wizard: 'fleetboss',
 			title: nodeName,
@@ -485,6 +450,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setRosterFilter('');
 		setRarityFilter([]);
 		setTraitFilter([]);
+		setMinTraitMatches(1);
 		setPresetOptions(undefined);
 	}
 
@@ -509,13 +475,16 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	function renderPostTable(searchFilter: string, filterType: string, filteredCount: number): JSX.Element {
 		if (pageId !== 'crewTool') return (<></>);
-		if (usableFilter !== '') return (<></>);
+		if (usableFilter !== '' || rosterFilter !== '') return (<></>);
 		if (searchFilter === '' && rarityFilter.length === 0 && traitFilter.length === 0) return (<></>);
+
+		const activeByDefault = presetOptions?.wizard === 'fleetboss';
 
 		return (
 			<UnownedCrewTable myCrew={myCrew} tableView={tableView}
-				rarityFilter={rarityFilter} traitFilter={traitFilter}
+				rarityFilter={rarityFilter} traitFilter={traitFilter} minTraitMatches={minTraitMatches}
 				searchFilter={searchFilter} filterType={filterType} filteredCount={filteredCount}
+				activeByDefault={activeByDefault}
 			/>
 		);
 	}
@@ -526,56 +495,64 @@ type UnownedCrewTableProps = {
 	tableView: string;
 	rarityFilter: number[];
 	traitFilter: string[];
+	minTraitMatches: number;
 	searchFilter: string;
 	filterType: string;
 	filteredCount: number;
+	activeByDefault: boolean;
 };
 
 const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 	const { allCrew, buffConfig } = React.useContext(AllDataContext);
-	const { tableView, rarityFilter, traitFilter, searchFilter, filterType, filteredCount } = props;
+	const { tableView, rarityFilter, traitFilter, minTraitMatches, searchFilter, filterType, filteredCount } = props;
 
-	const [showUnowned, setShowUnowned] = useStateWithStorage('crewTool/showUnowned', false);
+	const [unownedCrew, setUnownedCrew] = React.useState(undefined);
+	const [isActive, setIsActive] = React.useState(false);
+	const [alwaysShowUnowned, setAlwaysShowUnowned] = useStateWithStorage('crewTool/alwaysShowUnowned', false);
 
-	// Add dummy fields for sorting to work
-	let unownedCrew = [...allCrew].filter(crew => !props.myCrew.find(m => m.symbol === crew.symbol));
-	unownedCrew.forEach(crew => {
-		CONFIG.SKILLS_SHORT.forEach(skill => {
-			if (crew.base_skills[skill.name])
-				crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
-			else
-				crew[skill.name] = 0;
+	React.useEffect(() => {
+		let unowned = [...allCrew].filter(crew => !props.myCrew.find(m => m.symbol === crew.symbol));
+		unowned.forEach(crew => {
+			CONFIG.SKILLS_SHORT.forEach(skill => {
+				if (crew.base_skills[skill.name])
+					crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
+				else
+					crew[skill.name] = 0;
+			});
+			crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
+			if (!crew.action.ability) crew.action.ability = { type: '', condition: '', amount: '' };
 		});
-		crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
-		if (!crew.action.ability) crew.action.ability = { type: '', condition: '', amount: '' };
-	});
 
-	// Filter by original search conditions
-	const filters = [];
-	if (searchFilter) {
-		const grouped = searchFilter.split(/\s+OR\s+/i);
-		grouped.forEach(group => {
-			filters.push(SearchString.parse(group));
+		// Filter by original search conditions
+		const filters = [];
+		if (searchFilter) {
+			const grouped = searchFilter.split(/\s+OR\s+/i);
+			grouped.forEach(group => {
+				filters.push(SearchString.parse(group));
+			});
+		}
+		unowned = unowned.filter(crew => {
+			if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
+			if (traitFilter.length > 0 && crew.traits_matched.length < minTraitMatches) return false;
+			return crewMatchesSearchFilter(crew, filters, filterType);
 		});
-	}
-	unownedCrew = unownedCrew.filter(crew => {
-		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && crew.traits_matched.length === 0) return false;
-		return crewMatchesSearchFilter(crew, filters, filterType);
-	});
 
-	const isShowing = showUnowned || (filteredCount === 0 && unownedCrew.length > 0);
+		setUnownedCrew([...unowned]);
+		setIsActive(alwaysShowUnowned || props.activeByDefault || (filteredCount === 0 && unowned.length > 0));
+	}, [rarityFilter, traitFilter, minTraitMatches, searchFilter, filterType]);
+
+	if (!unownedCrew) return (<></>);
 
 	return (
 		<Accordion>
 			<Accordion.Title
-				active={isShowing}
-				onClick={() => setShowUnowned(!isShowing)}
+				active={isActive}
+				onClick={() => { setIsActive(!isActive); setAlwaysShowUnowned(!isActive); }}
 			>
-				<Icon name={isShowing ? 'caret down' : 'caret right'} /> Unowned Crew ({unownedCrew.length})
+				<Icon name={isActive ? 'caret down' : 'caret right'} /> Unowned Crew ({unownedCrew.length})
 			</Accordion.Title>
-			<Accordion.Content active={isShowing}>
-				<p>{unownedCrew.length} unowned crew {filteredCount > 0 && unownedCrew.length > 0 ? ' also ' : ''} matched the above search options.</p>
+			<Accordion.Content active={isActive}>
+				<p>{unownedCrew.length} unowned crew {filteredCount > 0 && unownedCrew.length > 0 ? ' also ' : ''} match{unownedCrew.length === 1 ? 'es' : ''} the above search options.</p>
 				{unownedCrew.length > 0 && renderTable()}
 			</Accordion.Content>
 		</Accordion>
@@ -664,17 +641,9 @@ const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-				{traitFilter.length > 1 && (
-					<Table.Cell textAlign='center'>
-						{crew.traits_matched.map((trait, idx) => (
-							<Label key={idx} color='brown'>
-								{allTraits.trait_names[trait]}
-							</Label>
-						)).reduce((prev, curr) => [prev, ' ', curr], [])}
-					</Table.Cell>
-				)}
-				{tableView === 'base' && <CrewRowBaseCells crew={crew} />}
-				{tableView === 'ship' && <CrewRowShipCells crew={crew} />}
+				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} />}
+				{tableView === 'base' && <CrewBaseCells crew={crew} />}
+				{tableView === 'ship' && <CrewShipCells crew={crew} />}
 			</Table.Row>
 		);
 	}
@@ -696,116 +665,6 @@ const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 				</React.Fragment>
 			</div>
 		);
-	}
-};
-
-type CrewRowProps = {
-	crew: any;
-};
-
-const CrewRowBaseCells = (props: CrewRowProps) => {
-	const { crew } = props;
-	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
-
-	return (
-		<React.Fragment>
-			<Table.Cell textAlign='center'>
-				<b>{formatTierLabel(crew.bigbook_tier)}</b>
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				<b>{crew.cab_ov}</b><br />
-				<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				<b>#{crew.ranks.voyRank}</b><br />
-				{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
-			</Table.Cell>
-			{CONFIG.SKILLS_SHORT.map(skill =>
-				crew[skill.name].core > 0 ? (
-					<Table.Cell key={skill.name} textAlign='center'>
-						<b>{crew[skill.name].core}</b>
-						<br />
-						+({crew[skill.name].min}-{crew[skill.name].max})
-					</Table.Cell>
-				) : (
-					<Table.Cell key={skill.name} />
-				)
-			)}
-		</React.Fragment>
-	);
-};
-
-const CrewRowShipCells = (props: CrewRowProps) => {
-	const { crew } = props;
-
-	return (
-		<React.Fragment>
-			<Table.Cell textAlign='center'>
-				<b>{CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}</b>
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.bonus_amount && <>+<b>{crew.action.bonus_amount}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.penalty && <><b>{CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]}</b> -<b>{crew.action.penalty.amount}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.initial_cooldown >= 0 && <><b>{crew.action.initial_cooldown}</b>s</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.cooldown >= 0 && <><b>{crew.action.cooldown}</b>s</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.duration && <><b>{crew.action.duration}</b>s</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.limit && <><b>{crew.action.limit}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.action.charge_phases && <>{formatChargePhases(crew)}</>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.ship_battle.accuracy && <>+<b>{crew.ship_battle.accuracy}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.ship_battle.crit_bonus && <>+<b>{crew.ship_battle.crit_bonus}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.ship_battle.crit_chance && <>+<b>{crew.ship_battle.crit_chance}</b></>}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{crew.ship_battle.evasion && <>+<b>{crew.ship_battle.evasion}</b></>}
-			</Table.Cell>
-		</React.Fragment>
-	);
-
-	// Adapted from function of same name in crewutils.ts
-	function formatChargePhases(crew): string {
-		let totalTime = 0;
-		let result = [];
-		crew.action.charge_phases.forEach(phase => {
-			totalTime += phase.charge_time;
-			let ps = `After ${totalTime}s `;
-
-			if (crew.action.ability?.type !== '') {
-				ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
-			} else {
-				ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
-			}
-
-			if (phase.cooldown) {
-				ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
-			}
-			result.push(ps);
-		});
-
-		return result.join('; ');
 	}
 };
 

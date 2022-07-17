@@ -94,7 +94,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		}
 
 		const bossOptions = [];
-		wizardInput.data.forEach(boss => {
+		wizardInput.data.statuses.forEach(boss => {
 			if (boss.ends_in) {
 				const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
 				if (boss.combo.nodes.length - unlockedNodes.length > 0) {
@@ -132,7 +132,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 	}
 
 	function renderBoss(): JSX.Element {
-		const boss = wizardInput.data.find(b => b.id === activeBoss);
+		const boss = wizardInput.data.statuses.find(b => b.id === activeBoss);
 
 		const traits = {};
 		boss.combo.traits.forEach(trait => {
@@ -184,7 +184,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 	}
 
 	function renderButton(nodeId: number, traitPool: string[], rarityPool: number[]): JSX.Element {
-		const boss = wizardInput.data.find(b => b.id === activeBoss);
+		const boss = wizardInput.data.statuses.find(b => b.id === activeBoss);
 		const node = boss.combo.nodes[nodeId];
 
 		const traitsNeeded = node.hidden_traits.length;

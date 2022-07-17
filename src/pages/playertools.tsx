@@ -182,7 +182,7 @@ const PlayerToolsPage = (props: any) =>  {
 		}
 		setVoyageData(voyageData);
 		setEventData([...inputPlayerData.player.character.events]);
-		setFleetbossData(inputPlayerData.fleet_boss_battles_root ? [...inputPlayerData.fleet_boss_battles_root.statuses] : undefined);
+		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
 		setActiveCrew(activeCrew);
 		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures]);
 
