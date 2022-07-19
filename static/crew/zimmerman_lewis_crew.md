@@ -3,7 +3,7 @@ name: Lewis Zimmerman
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 4
 events: 9
 in_portal: true
 date: 14/02/2019
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Zim's skill set will jump off the behold page, but there's not enough power in his base and proficiency numbers to mete out the pain through the traditional daily use avenues. Instead, Zim channels his cranky old man rage into the arena.
+Fleet Boss Battles are the greatest thing to happen to Zimm since Haley the Hologram.
 
-A +10 attack boost (with position trigger met) will hold over many rosters who may have a tough time starring up legendary crew to match or want to use their crew retrievals for other needs. The Shenzhou, available from Dabo, is a good option for a fast-activating position ability. For veterans who don't need his shipboard pop, there's multi-collection value to ensure that every roster should be beholding him sooner or later.
+Position Trigger, meet Borg Sphere 878 — his +10 attack boost is just what the Emergency Medical Hologram ordered. In a world where beating up the Big Boss requires maximizing damage done per battle thanks to the limited Valor drip, his 6s Initialization time allows him to be paired with some Boom and/or +Crit crew to help lay a beating on the Hard Difficulty level that doesn’t let you use any Legendary Crew or Ships. He can do double duty for newer players with viability in Arena as well (check out the USS Shenzhou and its fast-activating position ability), which, combined with his placement in two difficult to complete stat-boosting collections (plus the limited pool, long-time player requested Pet collection), makes Lonely Lew a great Behold target.

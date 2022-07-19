@@ -3,7 +3,7 @@ name: Captain Lorca
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 29
 in_portal: true
 date: 16/10/2017
