@@ -150,7 +150,6 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 				if (node.unlocked_character.is_current) current = true;
 			}
 			else {
-				node.open_traits.forEach(trait => { if (traits[trait]) traits[trait].consumed++; });
 				openNodes.push(nodeId);
 			}
 		});
@@ -198,48 +197,15 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		for (let i = 0; i < traitsNeeded; i++)
 			buttonText += ' + ?';
 
+		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
+
 		return (
 			<Button key={nodeId} color='blue'
 				content={buttonText}
 				onClick={() => {
 					wizardInput.handler({
 						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
-						traitPool,
-						rarityPool,
-						searchText
-					});
-					setModalIsOpen(false);
-				}}
-			/>
-		);
-	}
-
-	// Not in use yet
-	function renderAllButton(traitPool: string[], rarityPool: number[]): JSX.Element {
-		const boss = wizardInput.data.statuses.find(b => b.id === activeBoss);
-
-		let buttonText = '', searchText = '';
-		boss.combo.nodes.forEach(node => {
-			if (!node.unlocked_character) {
-				const traitsNeeded = node.hidden_traits.length;
-				node.open_traits.forEach(trait => {
-					if (buttonText !== '') buttonText += ', ';
-					buttonText += allTraits.trait_names[trait];
-					for (let i = 0; i < traitsNeeded; i++)
-						buttonText += ' + ?';
-					if (searchText !== '') searchText += ' OR ';
-					searchText += `trait:"${allTraits.trait_names[trait]}"`;
-				});
-			}
-		});
-
-		return (
-			<Button color='blue'
-				content='( All Open )'
-				onClick={() => {
-					wizardInput.handler({
-						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
-						traitPool,
+						traitPool: filteredPool,
 						rarityPool,
 						searchText
 					});
