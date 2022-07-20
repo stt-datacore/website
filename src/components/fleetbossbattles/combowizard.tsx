@@ -70,7 +70,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 
 	function renderTrigger(): JSX.Element {
 		return (
-			<Button compact color='red'>
+			<Button color='red'>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/sb_phaser_attack.png`} style={{ height: '16px', verticalAlign: 'text-top' }} />
 				{wizardInput.triggerText &&
 					<span style={{ paddingLeft: '.5em' }}>{wizardInput.triggerText}</span>
@@ -145,12 +145,12 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		boss.combo.nodes.forEach((node, nodeId) => {
 			if (node.unlocked_character) {
 				[node.open_traits, node.hidden_traits].forEach(unlocked => {
-					unlocked.forEach(trait => { traits[trait].consumed++; });
+					unlocked.forEach(trait => { if (traits[trait]) traits[trait].consumed++; });
 				});
 				if (node.unlocked_character.is_current) current = true;
 			}
 			else {
-				node.open_traits.forEach(trait => { traits[trait].consumed++; });
+				node.open_traits.forEach(trait => { if (traits[trait]) traits[trait].consumed++; });
 				openNodes.push(nodeId);
 			}
 		});
@@ -198,15 +198,48 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		for (let i = 0; i < traitsNeeded; i++)
 			buttonText += ' + ?';
 
-		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
-
 		return (
 			<Button key={nodeId} color='blue'
 				content={buttonText}
 				onClick={() => {
 					wizardInput.handler({
 						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
-						traitPool: filteredPool,
+						traitPool,
+						rarityPool,
+						searchText
+					});
+					setModalIsOpen(false);
+				}}
+			/>
+		);
+	}
+
+	// Not in use yet
+	function renderAllButton(traitPool: string[], rarityPool: number[]): JSX.Element {
+		const boss = wizardInput.data.statuses.find(b => b.id === activeBoss);
+
+		let buttonText = '', searchText = '';
+		boss.combo.nodes.forEach(node => {
+			if (!node.unlocked_character) {
+				const traitsNeeded = node.hidden_traits.length;
+				node.open_traits.forEach(trait => {
+					if (buttonText !== '') buttonText += ', ';
+					buttonText += allTraits.trait_names[trait];
+					for (let i = 0; i < traitsNeeded; i++)
+						buttonText += ' + ?';
+					if (searchText !== '') searchText += ' OR ';
+					searchText += `trait:"${allTraits.trait_names[trait]}"`;
+				});
+			}
+		});
+
+		return (
+			<Button color='blue'
+				content='( All Open )'
+				onClick={() => {
+					wizardInput.handler({
+						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
+						traitPool,
 						rarityPool,
 						searchText
 					});

@@ -15,7 +15,7 @@ export const CrewTraitMatchesCell = (props: CrewCellProps) => {
 	const { crew } = props;
 	return (
 		<Table.Cell textAlign='center'>
-			{crew.traits_matched.map((trait, idx) => (
+			{crew.traits_matched.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
 				<Label key={idx} color='brown'>
 					{allTraits.trait_names[trait]}
 				</Label>

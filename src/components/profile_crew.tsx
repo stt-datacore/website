@@ -223,6 +223,16 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' }
 	];
 
+	const subtools = [];
+	if (pageId === 'crewTool' && (!presetOptions || presetOptions.wizard === 'fleetboss')) {
+		subtools.push(
+			<Button.Group>
+				<ComboWizard handleWizard={handleComboWizard} triggerText={presetOptions?.title} />
+				{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
+			</Button.Group>
+		);
+	}
+
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
@@ -372,14 +382,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						Ship Abilities
 					</Button>
 				</Button.Group>
-				<Button.Group floated='right'>
-					{pageId === 'crewTool' && (!presetOptions || presetOptions.wizard === 'fleetboss') && (
-						<Button.Group>
-							<ComboWizard handleWizard={handleComboWizard} triggerText={presetOptions?.title} />
-							{presetOptions && <Button content='Reset' onClick={() => resetForm()} />}
-						</Button.Group>
-					)}
-				</Button.Group>
+				<div style={{ float: 'right', verticalAlign: 'middle' }}>
+					{subtools.map((tool, idx) => <span key={idx}>{tool}</span>).reduce((prev, curr) => [prev, ' ', curr], [])}
+				</div>
 			</div>
 			<div style={{ margin: '1em 0', clear: 'both' }}>
 				<Form>
