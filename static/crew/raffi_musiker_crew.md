@@ -3,7 +3,7 @@ name: Raffi Musiker
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 3
 in_portal: true
 date: 09/04/2020

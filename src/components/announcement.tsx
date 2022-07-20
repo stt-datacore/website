@@ -1,6 +1,6 @@
 import React from 'react';
-import { graphql, StaticQuery, Link } from 'gatsby';
-import { Message, Icon } from 'semantic-ui-react';
+import { graphql, StaticQuery, navigate } from 'gatsby';
+import { Message, Icon, Button } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../utils/storage';
 
@@ -62,13 +62,25 @@ const Announcement = () => {
 
 		const isExcerpt = announcement.html !== announcement.excerpt;
 
+		let color = null;
+		switch (announcement.frontmatter.class) {
+			case 'info': color = 'blue'; break;
+			case 'warning': color = 'yellow'; break;
+			case 'positive': color = 'green'; break;
+			case 'negative': color = 'red'; break;
+		}
+
 		return (
-			<Message icon className={announcement.frontmatter.class ?? ''} onDismiss={() => setDismissAnnouncement(new Date())}>
+			<Message icon size='large' color={color} onDismiss={() => setDismissAnnouncement(new Date())}>
 				<Icon name={announcement.frontmatter.icon ?? 'info'} />
 				<Message.Content>
 					<Message.Header>{announcement.frontmatter.title ?? 'Message from the DataCore Team'}</Message.Header>
 					<div dangerouslySetInnerHTML={{ __html: announcement.excerpt }} />
-					{isExcerpt && (<Link to='/announcements/'>See details...</Link>)}
+					{isExcerpt && (
+						<div style={{ marginTop: '1em' }}>
+							<Button color={color} content='See details...' onClick={() => navigate('/announcements/')} />
+						</div>
+					)}
 				</Message.Content>
 			</Message>
 		);

@@ -3,7 +3,7 @@ name: Puppy-Placated Janeway
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 16
 in_portal:
 date: 11/07/2022

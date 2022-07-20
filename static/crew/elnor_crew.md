@@ -3,7 +3,7 @@ name: Elnor
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 21
 in_portal: true
 date: 09/04/2020
