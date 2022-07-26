@@ -260,20 +260,20 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		function renderAsTable(): JSX.Element {
 			return (
-				<table>
+				<table className='voyageRec'>
 					<tbody>
 						{ship && (
-							<tr>
-								<td style={{ paddingBottom: '1em' }}>Ship</td>
-								<td style={{ padding: '0 .5em 1em', textAlign: 'center' }}>
+							<tr className='shipRec'>
+								<td>Ship</td>
+								<td className='iconic'>
 									{ship.traits.includes(voyageData.ship_trait) &&
 										<span style={{ cursor: 'help' }}>
 											<Popup content='+150 AM' trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />} />
 										</span>
 									}
 								</td>
-								<td style={{ paddingBottom: '1em' }}><b>{ship.name}</b></td>
-								<td style={{ padding: '0 1.5em 1em', textAlign: 'center' }}>
+								<td><b>{ship.name}</b></td>
+								<td className='iconic'>
 									{voyageData.state === 'pending' &&
 										<span style={{ cursor: 'help' }}>
 											<Popup content={`On voyage selection screen, tap ${direction} ${index} times to select ship`} trigger={
@@ -289,9 +289,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{assignments.map((assignment, idx) => {
 							const { crew, name, trait, bestRank } = assignment;
 							return (
-								<tr key={idx}>
+								<tr key={idx} className='crewRec'>
 									<td>{name}</td>
-									<td style={{ textAlign: 'center' }}>
+									<td className='iconic'>
 										{crew.traits.includes(trait.toLowerCase()) &&
 											<Popup content='+25 AM' trigger={
 												<span style={{ cursor: 'help' }}>
@@ -301,7 +301,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										}
 									</td>
 									<td><CrewPopup crew={crew} useBase={false} /></td>
-									<td style={{ textAlign: 'center' }}>
+									<td className='iconic'>
 										{voyageData.state === 'pending' && renderCrewFinder(crew, bestRank)}
 									</td>
 								</tr>
@@ -345,12 +345,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		function renderAggregates(): JSX.Element {
 			return (
-				<table>
+				<table className='voyageRec aggregates'>
 					<tbody>
-						<tr>
+						<tr className='antimatterRow'>
 							<td></td>
-							<td style={{ paddingBottom: '1em' }}>Antimatter</td>
-							<td style={{ paddingBottom: '1em', textAlign: 'right' }}>
+							<td>Antimatter</td>
+							<td>
 								{ship && (
 									<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageData.max_hp}</span>}>
 										<Popup.Content>
@@ -376,12 +376,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 								const score = voyScore(agg);
 								return (
 									<tr key={idx}>
-										<td>
+										<td className='iconic'>
 											{voyageData.skills.primary_skill === entry && <Icon name='star' color='yellow' />}
 											{voyageData.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
 										</td>
 										<td>{CONFIG.SKILLS[entry]}</td>
-										<td style={{ textAlign: 'right' }}>
+										<td>
 											<Popup wide trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
 												<Popup.Content>
 													{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
@@ -528,6 +528,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			},
 			itemsOwned,
 			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			itemsOwned	/* ship schematics */
 		];
 
 		return (
