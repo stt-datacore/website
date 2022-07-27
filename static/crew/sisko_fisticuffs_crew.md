@@ -3,7 +3,7 @@ name: Fisticuffs Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 21
 in_portal: true
 date: 04/08/2020
