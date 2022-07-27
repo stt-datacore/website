@@ -11,12 +11,32 @@ type CrewCellProps = {
 	crew: any;
 };
 
-export const CrewTraitMatchesCell = (props: CrewCellProps) => {
-	const { crew } = props;
+export const CrewTraitMatchesCell = (props: any) => {
+	const { crew, traitCounts } = props;
+	const colorize = (trait: string) => {
+		let background = 'grey', color = 'white';
+		if (traitCounts[trait] === 1) {
+			background = '#fdd26a';
+			color = 'black';
+		}
+		else if (traitCounts[trait] === 2) {
+			background = '#aa2deb';
+		}
+		else if (traitCounts[trait] === 3) {
+			background = '#5aaaff';
+		}
+		else if (traitCounts[trait] === 4) {
+			background = '#50aa3c';
+		}
+		else if (traitCounts[trait] === 5) {
+			background = '#9b9b9b';
+		}
+		return { background, color };
+	};
 	return (
 		<Table.Cell textAlign='center'>
 			{crew.traits_matched.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
-				<Label key={idx} color='brown'>
+				<Label key={idx} style={colorize(trait)}>
 					{allTraits.trait_names[trait]}
 				</Label>
 			)).reduce((prev, curr) => [prev, ' ', curr], [])}

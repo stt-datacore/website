@@ -205,6 +205,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 				onClick={() => {
 					wizardInput.handler({
 						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
+						traitsNeeded,
 						traitPool: filteredPool,
 						rarityPool,
 						searchText

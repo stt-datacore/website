@@ -36,14 +36,14 @@ type SearchableTableProps = {
 	data: any[];
 	explanation?: React.ReactNode;
 	config: ITableConfigRow[];
-	renderTableRow: (row: any, idx?: number) => JSX.Element;
+	renderTableRow: (row: any, idx?: number, isActive?: boolean, filteredData?: any[]) => JSX.Element;
 	filterRow: (row: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
 	showPermalink: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
-	postTable?: (searchFilter: string, filterType: string, filteredCount: number) => JSX.Element;
+	postTable?: (searchFilter: string, filterType: string, filteredData: any[]) => JSX.Element;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -217,7 +217,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		});
 	}
 	data = data.filter(row => props.filterRow(row, filters, filterType));
-	const filteredCount = data.length;
+	const filteredData = [...data];
 
 	// Pagination
 	let activePage = pagination_page;
@@ -266,16 +266,16 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 
-			{filteredCount === 0 && (
+			{filteredData.length === 0 && (
 				<div style={{ margin: '2em 0' }}>
 					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
 				</div>
 			)}
 
-			{filteredCount > 0 && (
+			{filteredData.length > 0 && (
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock), filteredData))}</Table.Body>
 					<Table.Footer>
 						<Table.Row>
 							<Table.HeaderCell colSpan={props.config.length}>
@@ -306,7 +306,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				</Table>
 			)}
 
-			{props.postTable && props.postTable(searchFilter, filterType, filteredCount)}
+			{props.postTable && props.postTable(searchFilter, filterType, filteredData)}
 		</div>
 	);
 };

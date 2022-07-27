@@ -303,10 +303,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: any, idx: number, highlighted: boolean, filteredData: any[]): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
+
+		const traitCounts = {};
+		if (traitFilter.length > 0) {
+			crew.traits_matched.forEach(trait => {
+				traitCounts[trait] = filteredData.filter(c => c.traits_matched.includes(trait)).length;
+			});
+		}
 
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
@@ -331,7 +338,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} />}
+				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} traitCounts={traitCounts} />}
 				{tableView === 'base' && <CrewBaseCells crew={crew} />}
 				{tableView === 'ship' && <CrewShipCells crew={crew} />}
 			</Table.Row>
@@ -421,19 +428,19 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				id={`${pageId}/table_`}
 				data={myCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
+				renderTableRow={(crew, idx, highlighted, filteredData) => renderTableRow(crew, idx, highlighted, filteredData)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 				showFilterOptions={true}
 				initOptions={initOptions}
 				lockable={props.lockable}
 				zeroMessage={(search) => renderZeroMessage(search)}
-				postTable={(searchFilter, filterType, filteredCount) => renderPostTable(searchFilter, filterType, filteredCount)}
+				postTable={(searchFilter, filterType, filteredData) => renderPostTable(searchFilter, filterType, filteredData)}
 			/>
 		</React.Fragment>
 	);
 
 	function handleComboWizard(wizardData: any): void {
-		const { nodeName, traitPool, rarityPool, searchText } = wizardData;
+		const { nodeName, traitsNeeded, traitPool, rarityPool, searchText } = wizardData;
 		setInitOptions({
 			search: searchText,
 			filter: 'Exact',
@@ -441,7 +448,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		});
 		setRarityFilter(rarityPool);
 		setTraitFilter(traitPool);
-		setMinTraitMatches(1);
+		setMinTraitMatches(traitsNeeded);
 		setPresetOptions({
 			wizard: 'fleetboss',
 			title: nodeName,
@@ -478,7 +485,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	function renderPostTable(searchFilter: string, filterType: string, filteredCount: number): JSX.Element {
+	function renderPostTable(searchFilter: string, filterType: string, filteredData: any[]): JSX.Element {
 		if (pageId !== 'crewTool') return (<></>);
 		if (usableFilter !== '' || rosterFilter !== '') return (<></>);
 		if (searchFilter === '' && rarityFilter.length === 0 && traitFilter.length === 0) return (<></>);
@@ -488,7 +495,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return (
 			<UnownedCrewTable myCrew={myCrew} tableView={tableView}
 				rarityFilter={rarityFilter} traitFilter={traitFilter} minTraitMatches={minTraitMatches}
-				searchFilter={searchFilter} filterType={filterType} filteredCount={filteredCount}
+				searchFilter={searchFilter} filterType={filterType} filteredCount={filteredData.length}
 				activeByDefault={activeByDefault}
 			/>
 		);
@@ -615,14 +622,21 @@ const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 				id='crewToolUnowned/table_'
 				data={unownedCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
+				renderTableRow={(crew, idx, highlighted, filteredData) => renderTableRow(crew, idx, highlighted, filteredData)}
 				filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType)}
 				showFilterOptions={true}
 			/>
 		);
 	}
 
-	function renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: any, idx: number, highlighted: boolean, filteredData: any[]): JSX.Element {
+		const traitCounts = {};
+		if (traitFilter.length > 0) {
+			crew.traits_matched.forEach(trait => {
+				traitCounts[trait] = filteredData.filter(c => c.traits_matched.includes(trait)).length;
+			});
+		}
+
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)}>
 				<Table.Cell className='sticky'>
@@ -646,7 +660,7 @@ const UnownedCrewTable = (props: UnownedCrewTableProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} />}
+				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} traitCounts={traitCounts} />}
 				{tableView === 'base' && <CrewBaseCells crew={crew} />}
 				{tableView === 'ship' && <CrewShipCells crew={crew} />}
 			</Table.Row>
