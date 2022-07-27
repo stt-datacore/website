@@ -134,6 +134,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 	function renderBoss(): JSX.Element {
 		const boss = wizardInput.data.statuses.find(b => b.id === activeBoss);
 
+		// The trait pool consists of only possible hidden_traits, not open_traits
 		const traits = {};
 		boss.combo.traits.forEach(trait => {
 			if (!traits[trait]) traits[trait] = { listed: 0, consumed: 0 };
@@ -144,8 +145,8 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		let current = false;
 		boss.combo.nodes.forEach((node, nodeId) => {
 			if (node.unlocked_character) {
-				[node.open_traits, node.hidden_traits].forEach(unlocked => {
-					unlocked.forEach(trait => { if (traits[trait]) traits[trait].consumed++; });
+				node.hidden_traits.forEach(trait => {
+					traits[trait].consumed++;
 				});
 				if (node.unlocked_character.is_current) current = true;
 			}
@@ -197,8 +198,6 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		for (let i = 0; i < traitsNeeded; i++)
 			buttonText += ' + ?';
 
-		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
-
 		return (
 			<Button key={nodeId} color='blue'
 				content={buttonText}
@@ -206,7 +205,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 					wizardInput.handler({
 						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
 						traitsNeeded,
-						traitPool: filteredPool,
+						traitPool,
 						rarityPool,
 						searchText
 					});
