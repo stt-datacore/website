@@ -198,6 +198,8 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 		for (let i = 0; i < traitsNeeded; i++)
 			buttonText += ' + ?';
 
+		const filteredPool = traitPool.filter(trait => !node.open_traits.includes(trait));
+
 		return (
 			<Button key={nodeId} color='blue'
 				content={buttonText}
@@ -205,7 +207,7 @@ const ComboWizardModal = (props: ComboWizardModalProps) => {
 					wizardInput.handler({
 						nodeName: `${DIFFICULTY_NAME[boss.difficulty_id]} : ${buttonText}`,
 						traitsNeeded,
-						traitPool,
+						traitPool: filteredPool,
 						rarityPool,
 						searchText
 					});
