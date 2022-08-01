@@ -4,7 +4,7 @@ rarity: 4
 series: tas
 memory_alpha:
 bigbook_tier: 6
-events: 6
+events: 7
 in_portal:
 date: 20/12/2017
 obtained: Voyage
