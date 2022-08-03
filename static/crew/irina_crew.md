@@ -3,8 +3,8 @@ name: Irina
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 7
+bigbook_tier: 6
+events: 8
 in_portal: true
 date: 29/01/2019
 obtained: Pack

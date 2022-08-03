@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Alternate is a good way to describe a crew in Harry who's probably not coming off the bench any time soon. Debuting with a triple digit voyage power rank among purples and flaccid bases, his two perks are an unexpectedly impressive event clip and more importantly the Survivalist collection spot. A nice crew for veterans to snag during a lazy weekend or voyage skill set for brand new rosters, but with no real power punch.
+Alternate is a good way to describe a crew in Harry who's probably not coming off the bench any time soon. Thin trait value won’t help boost uninspired daily numbers and while he’s had a more impressive event history than you think, they’ve not historically helped him see much Faction Action. This card is low end behold filler to help you with a couple collection notches.
