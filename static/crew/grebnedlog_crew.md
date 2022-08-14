@@ -3,7 +3,7 @@ name: Grebnedlog
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 1
 in_portal: true
 date: 28/05/2020

@@ -1,7 +1,7 @@
 ---
 name: Helmsman Wyatt
 rarity: 5
-series:
+series: tng
 memory_alpha:
 bigbook_tier: 10
 events: 6

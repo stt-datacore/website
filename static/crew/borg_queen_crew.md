@@ -1,7 +1,7 @@
 ---
 name: Borg Queen
 rarity: 5
-series:
+series: pic
 memory_alpha:
 bigbook_tier: 5
 events: 31

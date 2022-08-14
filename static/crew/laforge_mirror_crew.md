@@ -1,7 +1,7 @@
 ---
 name: Mirror Geordi La Forge
 rarity: 4
-series:
+series: tng
 memory_alpha:
 bigbook_tier: 3
 events: 35
