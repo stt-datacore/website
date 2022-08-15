@@ -3,7 +3,7 @@ name: Age of Sail Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 24
 in_portal: true
 date: 27/03/2017

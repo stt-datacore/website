@@ -3,7 +3,7 @@ name: Jett Reno
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 18
 in_portal: true
 date: 19/06/2019

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Formerly a SEC/SCI voyager of note, Klingway is now hundreds of ranks lower than the kind of power you'd like to employ there, but she still packs a plethora of peripheral perks. For starters, Janeway has an astonishing 93% Faction rate across her events, which all but guarantees that you'll have no trouble putting the #1 Janeway SEC to work a few times each year.
+Janeway’s going to have to pull a Worf soon - “I have nothing…but my honor” - as she loses daily use footholds over time. It’s hard to believe that her voyage power used to play thanks to an underrepresented SEC/SCI stack, but those days are behind her. And while she filled an Ardra-lite role in arena if you wanted to thaw the prototype, a flat 10,000 crit bonus isn’t quite as punchy as other options.
 
-Ship-friendly too, Janeway might act as +1 crew slot, if you choose to swap her in over your Ardra. The super rare Skirmish queen has crit bonus in unmatched amounts, but Klingway's accuracy boost and initialization times are superior. The cherry on top; a spot in the gigantic Klingon collection wherein Janeway is one of the better options for immortalizing.
+There’s still value in easy SEC seating for an event-heavy character and she has enough traits to keep her afloat there and in the collections tab. All things considered, she remains above average value for a crew from 2017, but will need to pick her spots to make a splash these days.

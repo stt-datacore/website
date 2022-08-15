@@ -3,7 +3,7 @@ name: Assimilated La Forge
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 38
 in_portal: true
 date: 22/05/2017

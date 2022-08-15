@@ -3,8 +3,8 @@ name: Commander Ransom
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 5
-events: 4
+bigbook_tier: 6
+events: 5
 in_portal:
 date: 20/07/2022
 obtained: Event

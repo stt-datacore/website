@@ -3,8 +3,8 @@ name: Edward Larkin
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 24
+bigbook_tier: 7
+events: 27
 in_portal: true
 date: 30/07/2020
 obtained: Event

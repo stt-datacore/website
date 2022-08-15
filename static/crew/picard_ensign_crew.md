@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 8
-events: 21
+events: 24
 in_portal:
 date: 05/09/2018
 obtained: Voyage

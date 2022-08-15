@@ -1,7 +1,7 @@
 ---
 name: Lonzak
 rarity: 5
-series:
+series: voy
 memory_alpha:
 bigbook_tier: 6
 events: 14

@@ -3,8 +3,8 @@ name: Trelane
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
-events: 14
+bigbook_tier: 7
+events: 17
 in_portal: true
 date: 04/11/2016
 obtained: Post-Launch

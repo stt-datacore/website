@@ -3,7 +3,7 @@ name: Tyler, Son of None
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 39
 in_portal: true
 date: 18/09/2018
