@@ -8,6 +8,13 @@ module.exports = {
 		siteUrl: 'https://datacore.app'
 	},
 	plugins: [
+		{
+			resolve: "@sentry/gatsby",
+			options: {
+			  dsn: "https://eb3773c69377443b98fa857cde350722@o1362387.ingest.sentry.io/6653811",
+			  sampleRate: 0.7,
+			},
+		},
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
 		`gatsby-plugin-remove-fingerprints`,

@@ -23,6 +23,7 @@
     "@nivo/pie": "^0.67.0",
     "@nivo/radar": "^0.67.0",
     "@nivo/sunburst": "0.64.0",
+    "@sentry/gatsby": "^7.10.0",
     "@types/react-helmet": "^6.1.0",
     "exceljs": "^4.2.1",
     "gatsby": "^3.0.4",
