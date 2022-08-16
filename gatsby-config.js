@@ -12,7 +12,7 @@ module.exports = {
 			resolve: "@sentry/gatsby",
 			options: {
 			  dsn: "https://eb3773c69377443b98fa857cde350722@o1362387.ingest.sentry.io/6653811",
-			  sampleRate: 0.7,
+			  sampleRate: 1.0,
 			},
 		},
 		`gatsby-transformer-json`,
