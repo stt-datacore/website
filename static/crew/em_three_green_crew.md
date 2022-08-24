@@ -4,7 +4,7 @@ rarity: 4
 series: tas
 memory_alpha:
 bigbook_tier: 9
-events: 3
+events: 4
 in_portal: true
 date: 06/10/2020
 obtained: Pack

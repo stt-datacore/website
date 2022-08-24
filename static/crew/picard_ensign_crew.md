@@ -3,8 +3,8 @@ name: Ensign Picard
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 24
+bigbook_tier: 7
+events: 25
 in_portal:
 date: 05/09/2018
 obtained: Voyage

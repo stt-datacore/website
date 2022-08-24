@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Even as instant damage options grow in the arena, RPC remains an elite name. The double dipping of big boom plus top end +10 attack boost makes him a great package who will cut down Skirmish times and arena opponents alike. 
+Fleet Boss Battles have shaken up the shipboard scene so you’re probably wondering if RPC is still worth the effort. Since you’re all going to die anyways, why not tell you? The answer is…
 
-If you're already stocked with premier shipboard options, the Commandant is still fine crew. Despite owning a skill set you're already overrun with, he also supplies satisfactory voyage numbers with some juicy antimatter traits and a 1200+ CMD base will sit near the top of most of his trait lists. Double collections headlined by the expansive Klingon trait are a real possibility if you decide to add stars for his hefty attack ability.
+We don’t know how future FBB bosses will play out. In iteration one, he’s one in a sea of options and his limit on uses hurts. But he remains an arena and skirmish stalwart and despite lacking in other daily utility, his strong trait lineup sees him as a strong collection piece with a handsome number of event opportunities. He may lack the gauntlet ability of a Fury Kes or MACO Mayweather, but he’s still a fine option to fuse up for new players looking to anchor their ship lineups.

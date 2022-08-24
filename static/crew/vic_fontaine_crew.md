@@ -3,8 +3,8 @@ name: Vic Fontaine
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 18
+bigbook_tier: 5
+events: 19
 in_portal: true
 date: 03/01/2017
 obtained: Post-Launch

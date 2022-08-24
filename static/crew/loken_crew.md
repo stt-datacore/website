@@ -3,8 +3,8 @@ name: Loken
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 11
+bigbook_tier: 8
+events: 12
 in_portal: true
 date: 01/08/2019
 obtained: Event
