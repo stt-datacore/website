@@ -3,7 +3,7 @@ name: Captain Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 24
 in_portal: true
 date: 30/01/2017
