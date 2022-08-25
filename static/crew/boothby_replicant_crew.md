@@ -3,7 +3,7 @@ name: Boothby Replicant
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 6
 in_portal: true
 date: 18/12/2018

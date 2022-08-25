@@ -3,7 +3,7 @@ name: T'Mir
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 25
 in_portal: true
 date: 25/09/2017
