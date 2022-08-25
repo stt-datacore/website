@@ -9,7 +9,7 @@
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "develop": "gatsby develop -p 8881",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
-    "start": "npm run develop",
+    "start": "yarn run develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\"",
     "cy:open": "cypress open",

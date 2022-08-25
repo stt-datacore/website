@@ -12,8 +12,8 @@ jobs:
         GATSBY_DATACORE_URL: https://test.datacore.app/
         GATSBY_ASSETS_URL: https://assets.datacore.app/
       run: |
-        npm install
-        npm run build
+        yarn install
+        yarn run build
     - name: Publish to server via rsync
       run: |
         sudo apt-get update -y -qq

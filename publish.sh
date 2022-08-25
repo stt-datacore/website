@@ -58,17 +58,17 @@ then
     exit 1
 fi
 
-npm install 2>&1
+yarn install 2>&1
 if [ $? -ne 0 ]
 then
-    echo "Failed during npm install"
+    echo "Failed during yarn install"
     exit 2
 fi
 
-npm run build
+yarn run build
 if [ $? -ne 0 ]
 then
-    echo "Failed during npm build"
+    echo "Failed during yarn build"
     exit 3
 fi
 
