@@ -27,7 +27,7 @@
     "@types/react-helmet": "^6.1.0",
     "exceljs": "^4.2.1",
     "gatsby": "^3.0.4",
-    "gatsby-plugin-manifest": "^3.0.0",
+    "gatsby-plugin-manifest": "^4.21.0",
     "gatsby-plugin-purge-cloudflare-cache": "^0.0.3",
     "gatsby-plugin-react-helmet": "^4.0.0",
     "gatsby-plugin-remove-fingerprints": "^0.0.2",
