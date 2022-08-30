@@ -212,7 +212,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						&& !usedCrew.includes(c.id)
 				).length + 1;
 				// Prefer seat skill if no scrolling is necessary
-				if (rank < best.rank && (best.skill !== seatSkill || best.rank >= 3)) {
+				const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
+				const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
+				if ((rank < best.rank && !stayWithSeat) || switchToSeat) {
 					best.skill = crewSkill;
 					best.rank = rank;
 				}
