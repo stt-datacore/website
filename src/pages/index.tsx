@@ -207,10 +207,6 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					showPermalink={true}
 					lockable={lockable}
 				/>
-
-				<p>
-					<i>Hint</i>: Click on a row to get details on that specific crew
-				</p>
 			</Layout>
 		);
 	}
