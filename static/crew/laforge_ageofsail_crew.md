@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 32
+events: 33
 in_portal: true
 date: 27/03/2017
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The ENG/CMD pair may still be plus value on voyages at the legendary level, but Geordi's voyage power is low enough that it won't take much effort to wean him off your runs in the mid-game. And though he faces no super rare competition for ENG shuttles in La Forge events, his Faction rate sits around a paltry 30% - a number that is likely to rise without Expeditions a factor. Long term value in the form of a strong event clip and triple collections makes him worth the behold capital, even if you don't use him day to day.
+Enough traits to make a brotha go “YI YI YI YI YI!” is the story of this nattily dressed Geordi variant. With a vanity collection in tow and enough value there overall to escape the bottom tier rungs, AoS La Forge is often involved in behold equations where you’re simply weighing collection value vs collection value. He’s caught a strong number of events to date, but weigh his poor bases against your other options before you spend merits thawing him.

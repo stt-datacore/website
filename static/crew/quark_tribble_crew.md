@@ -3,7 +3,7 @@ name: Tribble Quark
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 37
 in_portal: true
 date: 03/06/2021

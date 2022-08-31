@@ -3,8 +3,8 @@ name: Five of Twelve
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 14
+bigbook_tier: 8
+events: 15
 in_portal: true
 date: 09/01/2019
 obtained: Event

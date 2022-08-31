@@ -3,8 +3,8 @@ name: Commander Nevesa
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 10
-events: 12
+bigbook_tier: 9
+events: 13
 in_portal: true
 date: 21/08/2017
 obtained: Pack
