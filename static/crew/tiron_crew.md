@@ -6,7 +6,7 @@ memory_alpha:
 bigbook_tier: 9
 events: 11
 in_portal:
-date: 30/08/2022
+date: 31/08/2022
 obtained: Event
 mega: false
 published: true
