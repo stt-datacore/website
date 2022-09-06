@@ -3,7 +3,7 @@ name: Princess Tonia Barrows
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 6
 in_portal:
 date: 02/03/2022

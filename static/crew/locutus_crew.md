@@ -3,7 +3,7 @@ name: Locutus of Borg
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 38
 in_portal:
 date: 31/01/2017
