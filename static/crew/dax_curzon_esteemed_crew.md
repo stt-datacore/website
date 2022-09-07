@@ -3,8 +3,8 @@ name: Esteemed Curzon Dax
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 5
-events: 20
+bigbook_tier: 4
+events: 21
 in_portal:
 date: 09/03/2022
 obtained: Event
