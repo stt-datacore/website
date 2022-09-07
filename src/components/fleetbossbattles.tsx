@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Dropdown, Message, Form, Checkbox, Table, Rating, Icon } from 'semantic-ui-react';
+import { Header, Dropdown, Message, Form, Checkbox, Table, Rating, Icon, Button } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -57,9 +57,7 @@ const FleetBossBattles = (props: FleetBossBattlesProps) => {
 
 	return (
 		<AllDataContext.Provider value={allData}>
-			<div style={{ marginBottom: '1em' }}>
-				Use this tool to help activate combo chain bonuses in a fleet boss battle. Warning: this feature is still in development.
-			</div>
+			<p>Use this tool to help activate combo chain bonuses in a fleet boss battle. Warning: this feature is still in development.</p>
 			<ComboPicker />
 		</AllDataContext.Provider>
 	);
@@ -97,7 +95,7 @@ const ComboPicker = () => {
 					{
 						key: boss.id,
 						value: boss.id,
-						text: `${getBossName(boss.group)}, ${DIFFICULTY_NAME[boss.difficulty_id]} (${boss.combo.nodes.length-unlockedNodes.length} open)`
+						text: `${getBossName(boss.group)}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`
 					}
 				);
 			}
@@ -105,22 +103,24 @@ const ComboPicker = () => {
 	});
 
 	if (bossOptions.length === 0)
-		return (<p>No fleet boss battles are currently open.</p>);
+		return (<p>No fleet boss battles are currently active.</p>);
 
 	if (!activeBoss && bossOptions.length === 1)
 		setActiveBoss(bossOptions[0].value);
 
 	return (
 		<React.Fragment>
-			{bossOptions.length > 0 &&
-				<Dropdown fluid selection clearable
-					placeholder='Select a difficulty'
-					options={bossOptions}
-					value={activeBoss}
-					onChange={(e, { value }) => setActiveBoss(value)}
-				/>
-			}
-			{bossOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
+			<div style={{ margin: '2em 0' }}>
+				{bossOptions.length > 0 &&
+					<Dropdown fluid selection
+						placeholder='Select a difficulty'
+						options={bossOptions}
+						value={activeBoss}
+						onChange={(e, { value }) => setActiveBoss(value)}
+					/>
+				}
+				{bossOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
+			</div>
 			{combo && <ComboSolver combo={combo} />}
 		</React.Fragment>
 	);
@@ -138,9 +138,13 @@ const ComboSolver = (props: ComboSolverProps) => {
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
 	const [optimalCombos, setOptimalCombos] = React.useState([]);
+	const [attemptedCrew, setAttemptedCrew] = React.useState([]);
 
 	React.useEffect(() => {
-		if (props.combo) setCombo({...props.combo});
+		if (props.combo) {
+			setCombo({...props.combo});
+			if (combo && combo.id !== props.combo.id) setAttemptedCrew([]);
+		}
 	}, [props.combo]);
 
 	React.useEffect(() => {
@@ -181,6 +185,20 @@ const ComboSolver = (props: ComboSolverProps) => {
 	React.useEffect(() => {
 		if (!combo) return;
 
+		const ignoredCombos = [];
+		attemptedCrew.forEach(attempt => {
+			const crew = allData.allCrew.find(ac => ac.symbol === attempt);
+			openNodes.forEach(node => {
+				if (node.open_traits.every(trait => crew.traits.includes(trait))) {
+					const nodePool = traitPool.filter(trait => !node.open_traits.includes(trait));
+					const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
+					if (traitsMatched.length >= node.hidden_traits.length) {
+						ignoredCombos.push({ index: node.index, traits: traitsMatched });
+					}
+				}
+			});
+		});
+
 		const allMatchingCrew = [];
 		const allTraitCombos = [];
 		allData.allCrew.forEach(crew => {
@@ -194,15 +212,22 @@ const ComboSolver = (props: ComboSolverProps) => {
 						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
 						// Crew must have at least the same number of matching traits as hidden traits
 						if (traitsMatched.length >= node.hidden_traits.length) {
-							matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched };
-							nodeCoverage++;
-							const existing = allTraitCombos.find(combo =>
-								combo.traits.length === traitsMatched.length && combo.traits.every(trait => traitsMatched.includes(trait))
+							const shouldIgnore = !!ignoredCombos.find(ignored =>
+								ignored.index === node.index && traitsMatched.every(trait =>
+									ignored.traits.includes(trait)
+								)
 							);
-							if (existing && !existing.nodes.includes(node.index))
-								existing.nodes.push(node.index);
-							else if (!existing)
-								allTraitCombos.push({ traits: traitsMatched, nodes: [node.index] });
+							if (!shouldIgnore) {
+								matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched };
+								nodeCoverage++;
+								const existing = allTraitCombos.find(combo =>
+									combo.traits.length === traitsMatched.length && combo.traits.every(trait => traitsMatched.includes(trait))
+								);
+								if (existing && !existing.nodes.includes(node.index))
+									existing.nodes.push(node.index);
+								else if (!existing)
+									allTraitCombos.push({ traits: traitsMatched, nodes: [node.index] });
+							}
 						}
 					}
 				});
@@ -226,19 +251,28 @@ const ComboSolver = (props: ComboSolverProps) => {
 		});
 		setAllMatchingCrew([...allMatchingCrew]);
 		setOptimalCombos([...optimalCombos]);
-	}, [traitPool]);
+	}, [traitPool, attemptedCrew]);
 
 	if (!combo) return (<></>);
 
 	return (
 		<React.Fragment>
 			<ComboNodesTable comboId={combo.id} nodes={combo.nodes} traits={combo.traits} updateNodes={onUpdateNodes} />
-			<ComboCrewTable openNodes={openNodes} traitPool={traitPool} allMatchingCrew={allMatchingCrew} optimalCombos={optimalCombos} />
+			<CrewChecklist comboId={combo.id} attemptedCrew={attemptedCrew} updateAttempts={setAttemptedCrew}  />
+			<ComboCrewTable openNodes={openNodes} traitPool={traitPool} allMatchingCrew={allMatchingCrew} optimalCombos={optimalCombos} markAsTried={onCrewMarked} />
 		</React.Fragment>
 	);
 
 	function onUpdateNodes(nodes: any[]): void {
 		setCombo({...combo, nodes});
+	}
+
+	function onCrewMarked(crewSymbol: string): void {
+		if (!attemptedCrew.includes(crewSymbol)) {
+			const newAttempts = [...attemptedCrew];
+			newAttempts.push(crewSymbol);
+			setAttemptedCrew([...newAttempts]);
+		}
 	}
 };
 
@@ -268,43 +302,43 @@ const ComboNodesTable = (props: ComboNodesTableProps) => {
 	if (!traitOptions) return (<></>);
 
 	return (
-		<div style={{ marginTop: '2em' }}>
+		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Current Combo Chain</Header>
 			<p>This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.</p>
-			<Form>
-				<Table celled selectable striped unstackable compact='very'>
-					<Table.Header>
-						<Table.Row>
-							<Table.HeaderCell>Given Traits</Table.HeaderCell>
-							<Table.HeaderCell>Mystery Traits</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{nodes.map((node, nodeIndex) =>
-							<Table.Row key={nodeIndex}>
-								<Table.Cell>
-									{node.open_traits.map(trait => allTraits.trait_names[trait]).join(' + ')}
-								</Table.Cell>
-								<Table.Cell>
+			<Table celled selectable striped unstackable compact='very'>
+				<Table.Header>
+					<Table.Row>
+						<Table.HeaderCell>Given Traits</Table.HeaderCell>
+						<Table.HeaderCell>Mystery Traits</Table.HeaderCell>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{nodes.map((node, nodeIndex) =>
+						<Table.Row key={nodeIndex}>
+							<Table.Cell>
+								{node.open_traits.map(trait => allTraits.trait_names[trait]).join(' + ')}
+							</Table.Cell>
+							<Table.Cell>
+								<Form>
 									<Form.Group inline>
 										{node.hidden_traits.map((trait, traitIndex) =>
 											<TraitPicker key={`${comboId}-${nodeIndex}-${traitIndex}`}
 												nodeIndex={nodeIndex} traitIndex={traitIndex}
 												options={traitOptions}
-												trait={trait} onTraitChange={handleTraitChange}
+												trait={trait} setTrait={onTraitChange}
 											/>
 										)}
 									</Form.Group>
-								</Table.Cell>
-							</Table.Row>
-						)}
-					</Table.Body>
-				</Table>
-			</Form>
+								</Form>
+							</Table.Cell>
+						</Table.Row>
+					)}
+				</Table.Body>
+			</Table>
 		</div>
 	);
 
-	function handleTraitChange(nodeIndex: number, traitIndex: number, newTrait: string): void {
+	function onTraitChange(nodeIndex: number, traitIndex: number, newTrait: string): void {
 		nodes[nodeIndex].hidden_traits[traitIndex] = newTrait !== '' ? newTrait : '?';
 		props.updateNodes(nodes);
 	}
@@ -315,10 +349,10 @@ type TraitPickerProps = {
 	traitIndex: number;
 	options: any[];
 	trait: string;
-	onTraitChange: (newTrait: string) => void;
+	setTrait: (newTrait: string) => void;
 };
 
-const TraitPicker = (props: SolverProps) => {
+const TraitPicker = (props: TraitPickerProps) => {
 	const [activeTrait, setActiveTrait] = React.useState('?');
 
 	React.useEffect(() => {
@@ -334,14 +368,79 @@ const TraitPicker = (props: SolverProps) => {
 				selection
 				options={props.options}
 				value={activeTrait}
-				onChange={(e, { value }) => handleTraitChange(value)}
+				onChange={(e, { value }) => onTraitChange(value)}
 				closeOnChange
 			/>
 		</Form.Field>
 	);
-	function handleTraitChange(newTrait: string): void {
+	function onTraitChange(newTrait: string): void {
 		setActiveTrait(newTrait);
-		props.onTraitChange(props.nodeIndex, props.traitIndex, newTrait);
+		props.setTrait(props.nodeIndex, props.traitIndex, newTrait);
+	}
+};
+
+type CrewChecklistProps = {
+	comboId: string;
+	attemptedCrew: string[];
+	updateAttempts: (crewSymbols: string[]) => void;
+};
+
+const CrewChecklist = (props: CrewChecklistProps) => {
+	const allData = React.useContext(AllDataContext);
+	const { comboId, updateAttempts } = props;
+
+	const [options, setOptions] = React.useState(undefined);
+
+	React.useEffect(() => {
+		if (props.attemptedCrew)
+			if (options && !options.initialized) populatePlaceholders();
+	}, [props.attemptedCrew]);
+
+	if (!options) {
+		populatePlaceholders();
+		return (<></>);
+	}
+
+	return (
+		<div style={{ margin: '2em 0' }}>
+			Keep track of crew that have been tried for this combo chain.
+			<Form.Field
+				placeholder='Search for crew'
+				control={Dropdown}
+				clearable
+				fluid
+				multiple
+				search
+				selection
+				options={options.list}
+				value={props.attemptedCrew}
+				onFocus={() => { if (!options.initialized) populateOptions(); }}
+				onChange={(e, { value }) => updateAttempts(value) }
+			/>
+		</div>
+	);
+
+	function populatePlaceholders(): void {
+		const options = { initialized: false, list: [] };
+		if (props.attemptedCrew.length > 0) {
+			let crewList = [...allData.allCrew];
+			options.list = crewList.filter(c => props.attemptedCrew.includes(c.symbol)).map(c => {
+				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+			});
+		}
+		else {
+			options.list = [{ key: 0, value: 0, text: 'Loading...' }];
+		}
+		setOptions({...options});
+	}
+
+	function populateOptions(): void {
+		const crewList = [...allData.allCrew];
+		options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
+			return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+		});
+		options.initialized = true;
+		setOptions({...options});
 	}
 };
 
@@ -350,6 +449,7 @@ type ComboCrewTableProps = {
 	traitPool: string[];
 	allMatchingCrew: any[];
 	optimalCombos: any[];
+	markAsTried: (crewSymbol: string) => void;
 };
 
 const ComboCrewTable = (props) => {
@@ -396,11 +496,15 @@ const ComboCrewTable = (props) => {
 
 	openNodes.forEach(node => {
 		const renderTitle = (node) => {
-			const open = node.open_traits.map(trait => allTraits.trait_names[trait]).join(' + ');
+			const formattedOpen = node.open_traits.map((trait, idx) => (
+				<span key={idx}>
+					{idx > 0 ? <><br />+ </> : <></>}{allTraits.trait_names[trait]}
+				</span>
+			)).reduce((prev, curr) => [prev, curr]);
 			const hidden = node.hidden_traits.map(trait => trait !== '?' ? allTraits.trait_names[trait] : '?').join(' + ');
 			return (
 				<React.Fragment>
-					{open}
+					{formattedOpen}
 					<br/>+ {hidden}
 				</React.Fragment>
 			);
@@ -415,6 +519,8 @@ const ComboCrewTable = (props) => {
 		tableConfig.push(tableCol);
 	});
 
+	tableConfig.push({ width: 1, title: '' });
+
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
@@ -422,9 +528,9 @@ const ComboCrewTable = (props) => {
 	];
 
 	return (
-		<div style={{ marginTop: '2em' }}>
+		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Search for crew that satisfy the conditions of the remaining unsolved nodes.</p>
+			<p>Search for crew that satisfy the conditions of the remaining unsolved nodes. Click the X in the last column to mark crew that have been tried.</p>
 			<div>
 				<Form>
 					<Form.Group inline>
@@ -456,9 +562,9 @@ const ComboCrewTable = (props) => {
 				initOptions={initOptions}
 			/>
 			<div style={{ marginTop: '1em' }}>
-				<p><i>Optimal Crew</i> exclude crew whose matching traits are a subset of another matching crew for that node.</p>
+				<p><i>Optimal Crew</i> exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
-				<p><i>Trait Colors</i> are used to help visualize rarity of that trait per node, e.g. a gold trait means its crew (row) is the only possible crew with that trait in that node (column), a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your optimal crew preference.</p>
+				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node, e.g. a gold trait means its crew (row) is the only possible crew with that trait in that node (column), a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your optimal crew preference.</p>
 			</div>
 		</div>
 	);
@@ -499,6 +605,11 @@ const ComboCrewTable = (props) => {
 						/>
 					);
 				})}
+				<Table.Cell textAlign='center'>
+					<Button basic icon compact negative size='mini' onClick={() => props.markAsTried(crew.symbol)}>
+						<Icon name='x' />
+					</Button>
+				</Table.Cell>
 			</Table.Row>
 		);
 	}
