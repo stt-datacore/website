@@ -1,9 +1,11 @@
 import React from 'react';
-import { Message } from 'semantic-ui-react';
+import { Step, Icon, Message } from 'semantic-ui-react';
 
 import ComboNodesTable from './combonodestable';
+import ComboPossibleTraits from './combopossibletraits';
 import ComboCrewTable from './combocrewtable';
 import ComboChecklist from './combochecklist';
+import { ExportTraits, ExportCrewLists } from './exporter';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -20,6 +22,7 @@ type ComboSolverProps = {
 };
 
 const ComboSolver = (props: ComboSolverProps) => {
+	const [activeStep, setActiveStep] = React.useState('crew');
 	const [combo, setCombo] = React.useState(undefined);
 	const [openNodes, setOpenNodes] = React.useState([]);
 	const [traitPool, setTraitPool] = React.useState([]);
@@ -108,17 +111,18 @@ const ComboSolver = (props: ComboSolverProps) => {
 							if (!shouldIgnore) {
 								matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched };
 								nodeCoverage++;
-								const existing = allTraitCombos.find(combo =>
-									combo.traits.length === traitsMatched.length && combo.traits.every(trait => traitsMatched.includes(trait))
-								);
-								if (existing) {
-									if (!existing.nodes.includes(node.index))
-										existing.nodes.push(node.index);
-									if (!existing.inPortal && crew.in_portal)
-										existing.inPortal = true;
+								if (crew.in_portal) {
+									const existing = allTraitCombos.find(combo =>
+										combo.traits.length === traitsMatched.length && combo.traits.every(trait => traitsMatched.includes(trait))
+									);
+									if (existing) {
+										if (!existing.nodes.includes(node.index))
+											existing.nodes.push(node.index);
+									}
+									else if (!existing) {
+										allTraitCombos.push({ traits: traitsMatched, nodes: [node.index] });
+									}
 								}
-								else if (!existing)
-									allTraitCombos.push({ traits: traitsMatched, nodes: [node.index], inPortal: !!crew.in_portal });
 							}
 						}
 					}
@@ -131,10 +135,11 @@ const ComboSolver = (props: ComboSolverProps) => {
 				}
 			}
 		});
+		// Identify combo sets that are subsets of other possible combos
 		const optimalCombos = [];
 		allTraitCombos.sort((a, b) => b.traits.length - a.traits.length).forEach(combo => {
 			const supersets = optimalCombos.filter(optimal =>
-				optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait)) && optimal.inPortal
+				optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
 			);
 			const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
 			if (newNodes.length > 0) combo.nodes = newNodes;
@@ -149,8 +154,23 @@ const ComboSolver = (props: ComboSolverProps) => {
 
 	return (
 		<React.Fragment>
-			<ComboNodesTable comboId={combo.id} nodes={combo.nodes} traits={combo.traits} updateNodes={onUpdateNodes} />
-			{openNodes.length > 0 &&
+			<Step.Group>
+				<Step active={activeStep === 'crew' && openNodes.length > 0} onClick={() => setActiveStep('crew')}>
+					<Icon name='users' />
+					<Step.Content>
+						<Step.Title>Crew</Step.Title>
+						<Step.Description>Search for possible crew</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step active={activeStep === 'traits' || openNodes.length === 0} onClick={() => setActiveStep('traits')}>
+					<Icon name='tasks' />
+					<Step.Content>
+						<Step.Title>Traits</Step.Title>
+						<Step.Description>View current combo chain</Step.Description>
+					</Step.Content>
+				</Step>
+			</Step.Group>
+			{activeStep === 'crew' && openNodes.length > 0 &&
 				<React.Fragment>
 					<ComboCrewTable
 						comboId={combo.id} openNodes={openNodes} traitPool={traitPool}
@@ -158,10 +178,20 @@ const ComboSolver = (props: ComboSolverProps) => {
 						solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					/>
 					<ComboChecklist comboId={combo.id} crewList={props.allCrew} attemptedCrew={attemptedCrew} updateAttempts={setAttemptedCrew} />
+					<ExportCrewLists openNodes={openNodes} allMatchingCrew={allMatchingCrew} />
 				</React.Fragment>
 			}
-			{openNodes.length === 0 &&
-				<Message>There are no unsolved nodes remaining for the current combo chain. Update your player data to refresh active combos or select another difficulty.</Message>
+			{(activeStep === 'traits' || openNodes.length === 0) &&
+				<React.Fragment>
+					{openNodes.length === 0 &&
+						<Message positive>
+							Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.
+						</Message>
+					}
+					<ComboNodesTable comboId={combo.id} nodes={combo.nodes} traits={combo.traits} updateNodes={onUpdateNodes} />
+					<ComboPossibleTraits nodes={combo.nodes} traits={combo.traits} />
+					<ExportTraits nodes={combo.nodes} traits={combo.traits} />
+				</React.Fragment>
 			}
 		</React.Fragment>
 	);

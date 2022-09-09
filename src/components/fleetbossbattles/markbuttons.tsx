@@ -28,10 +28,12 @@ const MarkButtons = (props: MarkButtonProps) => {
 
 		let traitId = 0;
 		const nodes = Object.values(crew.node_matches).map(node => {
+			const open = openNodes.find(n => n.index === node.index);
 			return {
 				index: node.index,
 				possible: node.traits.map(trait => { return { id: traitId++, trait: trait }; }),
-				given: openNodes.find(n => n.index === node.index).open_traits
+				given: open.open_traits,
+				needed: open.hidden_traits.length
 			};
 		});
 
@@ -42,25 +44,27 @@ const MarkButtons = (props: MarkButtonProps) => {
 				size='tiny'
 			>
 				<Modal.Header>
-					Click the correct traits for {crew.name}
+					Identify the traits solved by {crew.name}
 				</Modal.Header>
 				<Modal.Content scrolling>
 					<Grid doubling columns={3} textAlign='center'>
 						{nodes.map(node =>
 							<Grid.Column key={node.index}>
-								<Header as='h4' style={{ marginBottom: '1em' }}>
+								<Header as='h4' style={{ marginBottom: '0' }}>
 									{node.given.map((trait, traitIndex) => (
 										<span key={traitIndex}>
 											{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
 										</span>
 									)).reduce((prev, curr) => [prev, curr], [])}
 								</Header>
+								<p>{node.needed} required:</p>
 								{node.possible.map(trait => (
 									<div key={trait.id} style={{ paddingBottom: '.5em' }}>
 										<Label
-											style={{ background: solvedTraits.includes(trait.id) ? 'green' : undefined, cursor: 'pointer' }}
+											style={{ cursor: 'pointer' }}
 											onClick={() => handleLabelClick(node.index, trait.id)}
 										>
+											{solvedTraits.includes(trait.id) && <Icon name='check' color='green' />}
 											{allTraits.trait_names[trait.trait]}
 										</Label>
 									</div>
@@ -78,6 +82,13 @@ const MarkButtons = (props: MarkButtonProps) => {
 		);
 
 		function handleLabelClick(nodeIndex: number, traitId: number): void {
+			if (solvedTraits.includes(traitId)) {
+				const solvedIndex = solvedTraits.indexOf(traitId);
+				solvedTraits.splice(solvedIndex, 1);
+				if (solvedTraits.length === 0) setSolvedNode(undefined);
+				setSolvedTraits([...solvedTraits]);
+				return;
+			}
 			const newTraits = solvedNode === nodeIndex ? solvedTraits : [];
 			newTraits.push(traitId);
 			const neededTraits = openNodes.find(node => node.index === nodeIndex).hidden_traits.length;

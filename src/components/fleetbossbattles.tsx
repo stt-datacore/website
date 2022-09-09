@@ -61,6 +61,7 @@ const ComboPicker = () => {
 			const comboIndex = boss.combo.previous_node_counts.length;
 			const combo = {
 				id: `${boss.id}-${comboIndex}`,
+				source: 'playerdata',
 				difficultyId: boss.difficulty_id,
 				traits: boss.combo.traits,
 				nodes: boss.combo.nodes
@@ -68,6 +69,9 @@ const ComboPicker = () => {
 			setCombo({...combo});
 		}
 	}, [activeBoss]);
+
+	if (!allData.bossData)
+		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;
 
 	const bossOptions = [];
 	const getBossName = (bossSymbol) => {

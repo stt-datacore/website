@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Dropdown, Form, Table } from 'semantic-ui-react';
+import { Header, Dropdown, Form, Table, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
@@ -43,6 +43,7 @@ const ComboNodesTable = (props: ComboNodesTableProps) => {
 					{nodes.map((node, nodeIndex) =>
 						<Table.Row key={nodeIndex}>
 							<Table.Cell>
+								{!node.hidden_traits.includes('?') && <Icon name='check' color='green' />}
 								{node.open_traits.map(trait => allTraits.trait_names[trait]).join(' + ')}
 							</Table.Cell>
 							<Table.Cell>
