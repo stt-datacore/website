@@ -16,30 +16,55 @@ type ComboCrewTableProps = {
 	openNodes: any[];
 	traitPool: string[];
 	allMatchingCrew: any[];
-	optimalCombos: any[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
 const ComboCrewTable = (props) => {
-	const { comboId, openNodes, optimalCombos } = props;
+	const { comboId, openNodes } = props;
 
-	const [data, setData] = React.useState([]);
+	const [optimalCombos, setOptimalCombos] = React.useState([]);
 	const [traitCounts, setTraitCounts] = React.useState({});
 	const [usableFilter, setUsableFilter] = React.useState('');
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
 
 	React.useEffect(() => {
-		const data = props.allMatchingCrew.filter(crew => {
-			if (!showOptimalsOnly) return true;
-			let isOptimal = false;
-			Object.values(crew.node_matches).forEach(node => {
-				if (optimalCombos.some(optimal => optimal.nodes.includes(node.index) && optimal.traits.every(trait => node.traits.includes(trait))))
-					isOptimal = true;
+		if (showOptimalsOnly) {
+			const viableCombos = [];
+			props.allMatchingCrew.filter(crew => filterByUsable(crew)).forEach(crew => {
+				Object.values(crew.node_matches).forEach(node => {
+					const existing = viableCombos.find(combo =>
+						combo.traits.length === node.traits.length && combo.traits.every(trait => node.traits.includes(trait))
+					);
+					if (existing) {
+						if (!existing.nodes.includes(node.index))
+							existing.nodes.push(node.index);
+					}
+					else if (!existing) {
+						viableCombos.push({ traits: node.traits, nodes: [node.index] });
+					}
+				});
 			});
-			return isOptimal;
-		});
-		setData([...data]);
+			// Identify combo sets that are subsets of other possible combos
+			const optimalCombos = [];
+			viableCombos.sort((a, b) => b.traits.length - a.traits.length).forEach(combo => {
+				const supersets = optimalCombos.filter(optimal =>
+					optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
+				);
+				const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
+				if (newNodes.length > 0) combo.nodes = newNodes;
+				if (supersets.length === 0 || newNodes.length > 0)
+					optimalCombos.push(combo);
+			});
+			setOptimalCombos([...optimalCombos]);
+		}
+		else {
+			setOptimalCombos([]);
+		}
+	}, [props.allMatchingCrew, usableFilter, showOptimalsOnly]);
+
+	React.useEffect(() => {
+		const data = props.allMatchingCrew.filter(crew => filterByOptimal(crew));
 		const traitCountsByNode = {};
 		openNodes.forEach(node => {
 			const traitCounts = {};
@@ -49,7 +74,28 @@ const ComboCrewTable = (props) => {
 			traitCountsByNode[`node-${node.index}`] = traitCounts;
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [props.allMatchingCrew, showOptimalsOnly]);
+	}, [optimalCombos]);
+
+	const filterByUsable = (crew) => {
+		if (usableFilter === 'portal' && !crew.in_portal) return false;
+		if ((usableFilter === 'owned' || usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
+		if (usableFilter === 'thawed' && crew.only_frozen) return false;
+		return true;
+	};
+
+	const filterByOptimal = (crew) => {
+		if (!showOptimalsOnly) return true;
+		let isOptimal = false;
+		Object.values(crew.node_matches).forEach(node => {
+			if (optimalCombos.find(optimal =>
+					optimal.nodes.includes(node.index) &&
+					node.traits.length === optimal.traits.length &&
+					optimal.traits.every(trait => node.traits.includes(trait))
+				))
+				isOptimal = true;
+		});
+		return isOptimal;
+	};
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -119,7 +165,7 @@ const ComboCrewTable = (props) => {
 			</div>
 			<SearchableTable
 				id={`comboCrewTable/${comboId}`}
-				data={data}
+				data={props.allMatchingCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
@@ -190,9 +236,8 @@ const ComboCrewTable = (props) => {
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (usableFilter === 'portal' && !crew.in_portal) return false;
-		if ((usableFilter === 'owned' || usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
-		if (usableFilter === 'thawed' && crew.only_frozen) return false;
+		if (!filterByUsable(crew)) return false;
+		if (!filterByOptimal(crew)) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 };

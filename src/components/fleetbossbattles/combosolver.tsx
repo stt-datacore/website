@@ -24,10 +24,9 @@ type ComboSolverProps = {
 const ComboSolver = (props: ComboSolverProps) => {
 	const [activeStep, setActiveStep] = React.useState('crew');
 	const [combo, setCombo] = React.useState(undefined);
-	const [openNodes, setOpenNodes] = React.useState([]);
+	const [openNodes, setOpenNodes] = React.useState(undefined);
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
-	const [optimalCombos, setOptimalCombos] = React.useState([]);
 	const [attemptedCrew, setAttemptedCrew] = React.useState([]);
 
 	React.useEffect(() => {
@@ -91,7 +90,6 @@ const ComboSolver = (props: ComboSolverProps) => {
 		});
 
 		const allMatchingCrew = [];
-		const allTraitCombos = [];
 		props.allCrew.forEach(crew => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[combo.difficultyId]) {
 				let nodeCoverage = 0;
@@ -111,18 +109,6 @@ const ComboSolver = (props: ComboSolverProps) => {
 							if (!shouldIgnore) {
 								matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched };
 								nodeCoverage++;
-								if (crew.in_portal) {
-									const existing = allTraitCombos.find(combo =>
-										combo.traits.length === traitsMatched.length && combo.traits.every(trait => traitsMatched.includes(trait))
-									);
-									if (existing) {
-										if (!existing.nodes.includes(node.index))
-											existing.nodes.push(node.index);
-									}
-									else if (!existing) {
-										allTraitCombos.push({ traits: traitsMatched, nodes: [node.index] });
-									}
-								}
 							}
 						}
 					}
@@ -135,22 +121,40 @@ const ComboSolver = (props: ComboSolverProps) => {
 				}
 			}
 		});
-		// Identify combo sets that are subsets of other possible combos
-		const optimalCombos = [];
-		allTraitCombos.sort((a, b) => b.traits.length - a.traits.length).forEach(combo => {
-			const supersets = optimalCombos.filter(optimal =>
-				optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
-			);
-			const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
-			if (newNodes.length > 0) combo.nodes = newNodes;
-			if (supersets.length === 0 || newNodes.length > 0)
-				optimalCombos.push(combo);
-		});
-		setAllMatchingCrew([...allMatchingCrew]);
-		setOptimalCombos([...optimalCombos]);
+		// Validate matched traits of non-portal crew
+		const nonPortals = allMatchingCrew.filter(crew => !crew.in_portal);
+		if (nonPortals.length > 0) {
+			openNodes.forEach(node => {
+				const nonPortalsByNode = nonPortals.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+				if (nonPortalsByNode.length > 0) {
+					const portalsByNode = allMatchingCrew.filter(crew => crew.in_portal && !!crew.node_matches[`node-${node.index}`]);
+					nonPortals.forEach(nonportal => {
+						if (!!nonportal.node_matches[`node-${node.index}`]) {
+							const validTraits = [];
+							nonportal.node_matches[`node-${node.index}`].traits.forEach(trait => {
+								// Trait is valid if any portal crew in this node shares the trait
+								//	Could be validated further by testing for unique trait combos
+								if (portalsByNode.some(portal => portal.node_matches[`node-${node.index}`].traits.includes(trait)))
+									validTraits.push(trait);
+							});
+							if (validTraits.length === 0) {
+								delete nonportal.node_matches[`node-${node.index}`];
+								nonportal.coverage_rarity--;
+							}
+							else {
+								nonportal.node_matches[`node-${node.index}`].traits = validTraits;
+							}
+						}
+					});
+				}
+			});
+		}
+		const matchingCrew = allMatchingCrew.filter(crew => crew.coverage_rarity > 0);
+		setAllMatchingCrew([...matchingCrew]);
 	}, [traitPool, attemptedCrew]);
 
-	if (!combo) return (<></>);
+	if (!combo || !openNodes)
+		return (<></>);
 
 	return (
 		<React.Fragment>
@@ -174,7 +178,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 				<React.Fragment>
 					<ComboCrewTable
 						comboId={combo.id} openNodes={openNodes} traitPool={traitPool}
-						allMatchingCrew={allMatchingCrew} optimalCombos={optimalCombos}
+						allMatchingCrew={allMatchingCrew}
 						solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					/>
 					<ComboChecklist comboId={combo.id} crewList={props.allCrew} attemptedCrew={attemptedCrew} updateAttempts={setAttemptedCrew} />

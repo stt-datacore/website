@@ -12,7 +12,7 @@ export const ExportTraits = (props: ExportTraitsProps) => {
 	const { nodes, traits } = props;
 
 	const CABLink = 'https://docs.google.com/spreadsheets/d/1aGdAhgDJqknJKz-im4jxASxcE-cmVL8w2FQEKxpK4Uw/edit#gid=631453914';
-	const CABVer = '3.01';
+	const CABVer = '3.02';
 
 	const copyTraits = () => {
 		let output = '';
