@@ -39,7 +39,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 	React.useEffect(() => {
 		if (!combo) return;
 
-		// The trait pool consists of only possible hidden_traits, not open_traits
+		// The trait pool consists of only remaining possible hidden_traits
 		const traits = {};
 		combo.traits.forEach(trait => {
 			if (!traits[trait]) traits[trait] = { listed: 0, consumed: 0 };
@@ -50,15 +50,26 @@ const ComboSolver = (props: ComboSolverProps) => {
 		let current = false;
 		combo.nodes.forEach((node, nodeIndex) => {
 			const nodeIsOpen = node.hidden_traits.includes('?');
+			const traitsKnown = node.open_traits.slice();
+			let hiddenLeft = node.hidden_traits.length;
+			node.hidden_traits.forEach(trait => {
+				if (trait !== '?') {
+					traits[trait].consumed++;
+					if (nodeIsOpen) {
+						traitsKnown.push(trait);
+						hiddenLeft--;
+					}
+				}
+			});
 			if (nodeIsOpen) {
-				openNodes.push({...node, comboId: combo.id, index: nodeIndex});
-			}
-			else {
-				node.hidden_traits.forEach(trait => {
-					if (trait !== '?') traits[trait].consumed++;
+				openNodes.push({
+					comboId: combo.id,
+					index: nodeIndex,
+					traitsKnown,
+					hiddenLeft
 				});
 			}
-			// You have already solved a node for this chain; not used yet
+			// You have already solved a node for this chain; not currently used by this tool
 			if (node.unlocked_character?.is_current) current = true;
 		});
 
@@ -79,10 +90,10 @@ const ComboSolver = (props: ComboSolverProps) => {
 		attemptedCrew.forEach(attempt => {
 			const crew = props.allCrew.find(ac => ac.symbol === attempt);
 			openNodes.forEach(node => {
-				if (node.open_traits.every(trait => crew.traits.includes(trait))) {
-					const nodePool = traitPool.filter(trait => !node.open_traits.includes(trait));
+				if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+					const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
 					const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
-					if (traitsMatched.length >= node.hidden_traits.length) {
+					if (traitsMatched.length >= node.hiddenLeft) {
 						ignoredCombos.push({ index: node.index, traits: traitsMatched });
 					}
 				}
@@ -95,12 +106,12 @@ const ComboSolver = (props: ComboSolverProps) => {
 				let nodeCoverage = 0;
 				const matchesByNode = {};
 				openNodes.forEach(node => {
-					// Crew must have every open trait
-					if (node.open_traits.every(trait => crew.traits.includes(trait))) {
-						const nodePool = traitPool.filter(trait => !node.open_traits.includes(trait));
+					// Crew must have every known trait
+					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
 						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
-						// Crew must have at least the same number of matching traits as hidden traits
-						if (traitsMatched.length >= node.hidden_traits.length) {
+						// Crew must have at least the same number of matching traits as remaining hidden traits
+						if (traitsMatched.length >= node.hiddenLeft) {
 							const shouldIgnore = !!ignoredCombos.find(ignored =>
 								ignored.index === node.index && traitsMatched.every(trait =>
 									ignored.traits.includes(trait)
@@ -137,7 +148,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 								if (portalsByNode.some(portal => portal.node_matches[`node-${node.index}`].traits.includes(trait)))
 									validTraits.push(trait);
 							});
-							if (validTraits.length === 0) {
+							if (validTraits.length < node.hiddenleft) {
 								delete nonportal.node_matches[`node-${node.index}`];
 								nonportal.coverage_rarity--;
 							}
@@ -213,7 +224,12 @@ const ComboSolver = (props: ComboSolverProps) => {
 	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		combo.nodes[nodeIndex].hidden_traits = traits;
+		let solvedIndex = 0;
+		const solvedTraits = combo.nodes[nodeIndex].hidden_traits.map(hiddenTrait => {
+			if (hiddenTrait === '?') return traits[solvedIndex++];
+			return hiddenTrait;
+		});
+		combo.nodes[nodeIndex].hidden_traits = solvedTraits;
 		setCombo({...combo});
 	}
 };

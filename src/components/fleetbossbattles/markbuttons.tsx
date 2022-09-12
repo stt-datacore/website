@@ -30,10 +30,8 @@ const MarkButtons = (props: MarkButtonProps) => {
 		const nodes = Object.values(crew.node_matches).map(node => {
 			const open = openNodes.find(n => n.index === node.index);
 			return {
-				index: node.index,
+				...open,
 				possible: node.traits.map(trait => { return { id: traitId++, trait: trait }; }),
-				given: open.open_traits,
-				needed: open.hidden_traits.length
 			};
 		});
 
@@ -51,13 +49,13 @@ const MarkButtons = (props: MarkButtonProps) => {
 						{nodes.map(node =>
 							<Grid.Column key={node.index}>
 								<Header as='h4' style={{ marginBottom: '0' }}>
-									{node.given.map((trait, traitIndex) => (
+									{node.traitsKnown.map((trait, traitIndex) => (
 										<span key={traitIndex}>
 											{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
 										</span>
 									)).reduce((prev, curr) => [prev, curr], [])}
 								</Header>
-								<p>{node.needed} required:</p>
+								<p>{node.hiddenLeft} required:</p>
 								{node.possible.map(trait => (
 									<div key={trait.id} style={{ paddingBottom: '.5em' }}>
 										<Label
@@ -91,7 +89,7 @@ const MarkButtons = (props: MarkButtonProps) => {
 			}
 			const newTraits = solvedNode === nodeIndex ? solvedTraits : [];
 			newTraits.push(traitId);
-			const neededTraits = openNodes.find(node => node.index === nodeIndex).hidden_traits.length;
+			const neededTraits = openNodes.find(node => node.index === nodeIndex).hiddenLeft;
 			if (newTraits.length === neededTraits) {
 				const traits = newTraits.map(traitId =>
 					nodes.find(node => node.index === nodeIndex).possible.find(p => p.id === traitId).trait
@@ -138,7 +136,7 @@ const MarkButtons = (props: MarkButtonProps) => {
 		let solvedNode = false;
 		if (Object.values(crew.node_matches).length === 1) {
 			const match = Object.values(crew.node_matches)[0];
-			if (match.traits.length === openNodes.find(node => node.index === match.index).hidden_traits.length)
+			if (match.traits.length === openNodes.find(node => node.index === match.index).hiddenLeft)
 				solvedNode = match;
 		}
 		if (solvedNode)

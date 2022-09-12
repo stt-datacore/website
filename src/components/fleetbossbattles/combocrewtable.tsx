@@ -105,13 +105,12 @@ const ComboCrewTable = (props) => {
 
 	openNodes.forEach(node => {
 		const renderTitle = (node) => {
-			const formattedOpen = node.open_traits.map((trait, idx) => (
+			const formattedOpen = node.traitsKnown.map((trait, idx) => (
 				<span key={idx}>
 					{idx > 0 ? <><br />+ </> : <></>}{allTraits.trait_names[trait]}
 				</span>
-			)).reduce((prev, curr) => [prev, curr]);
-			//const hidden = node.hidden_traits.map(trait => trait !== '?' ? allTraits.trait_names[trait] : '?').join(' + ');
-			const hidden = node.hidden_traits.map(trait => '?').join(' + ');
+			)).reduce((prev, curr) => [prev, curr], []);
+			const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 			return (
 				<React.Fragment>
 					{formattedOpen}
