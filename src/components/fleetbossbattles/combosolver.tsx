@@ -148,7 +148,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 								if (portalsByNode.some(portal => portal.node_matches[`node-${node.index}`].traits.includes(trait)))
 									validTraits.push(trait);
 							});
-							if (validTraits.length < node.hiddenleft) {
+							if (validTraits.length < node.hiddenLeft) {
 								delete nonportal.node_matches[`node-${node.index}`];
 								nonportal.coverage_rarity--;
 							}
