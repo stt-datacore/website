@@ -86,24 +86,32 @@ const ComboSolver = (props: ComboSolverProps) => {
 	React.useEffect(() => {
 		if (!combo) return;
 
-		const ignoredCombos = [];
-		attemptedCrew.forEach(attempt => {
-			const crew = props.allCrew.find(ac => ac.symbol === attempt);
-			openNodes.forEach(node => {
-				if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
-					const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
-					const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
-					if (traitsMatched.length >= node.hiddenLeft) {
-						ignoredCombos.push({ index: node.index, traits: traitsMatched });
-					}
+		const getAllCombos = (traits, count) => {
+			if (count === 1) return traits.map(trait => [trait]);
+			const combos = [];
+			for (let i = 0; i < traits.length; i++) {
+				for (let j = i+1; j < traits.length; j++) {
+					combos.push([traits[i], traits[j]]);
 				}
-			});
-		});
+			}
+			return combos;
+		};
+
+		const findCombo = (combos, combo) => {
+			let comboIndex = -1;
+			for (let i = 0; i < combos.length; i++) {
+				if (combos[i].every(trait => combo.includes(trait))) {
+					comboIndex = i;
+					continue;
+				}
+			}
+			return comboIndex;
+		};
 
 		const allMatchingCrew = [];
 		props.allCrew.forEach(crew => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[combo.difficultyId]) {
-				let nodeCoverage = 0;
+				const nodes = [];
 				const matchesByNode = {};
 				openNodes.forEach(node => {
 					// Crew must have every known trait
@@ -112,56 +120,89 @@ const ComboSolver = (props: ComboSolverProps) => {
 						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
 						// Crew must have at least the same number of matching traits as remaining hidden traits
 						if (traitsMatched.length >= node.hiddenLeft) {
-							const shouldIgnore = !!ignoredCombos.find(ignored =>
-								ignored.index === node.index && traitsMatched.every(trait =>
-									ignored.traits.includes(trait)
-								)
-							);
-							if (!shouldIgnore) {
-								matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched };
-								nodeCoverage++;
-							}
+							nodes.push(node.index);
+							const combos = getAllCombos(traitsMatched, node.hiddenLeft);
+							matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched, combos };
 						}
 					}
 				});
-				if (nodeCoverage > 0) {
+				if (nodes.length > 0) {
 					const matchedCrew = JSON.parse(JSON.stringify(crew));
-					matchedCrew.coverage_rarity = nodeCoverage;
+					matchedCrew.nodes = nodes;
+					matchedCrew.nodes_rarity = nodes.length;
 					matchedCrew.node_matches = matchesByNode;
 					allMatchingCrew.push(matchedCrew);
 				}
 			}
 		});
-		// Validate matched traits of non-portal crew
+
+		const ignoredCombos = [];
+		const ignoreCombo = (nodeIndex, combo) => {
+			if (!ignoredCombos.find(ignored => ignored.index === nodeIndex && ignored.combo.every(trait => combo.includes(trait))))
+				ignoredCombos.push({ index: nodeIndex, combo });
+		};
+
+		// Ignore combos of attempted crew
+		attemptedCrew.forEach(attempt => {
+			const crew = props.allCrew.find(ac => ac.symbol === attempt);
+			openNodes.forEach(node => {
+				if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+					const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
+					const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
+					const combos = getAllCombos(traitsMatched, node.hiddenLeft);
+					combos.forEach(combo => ignoreCombo(node.index, combo));
+				}
+			});
+		});
+
+		// Also ignore unique combos of non-portal crew
 		const nonPortals = allMatchingCrew.filter(crew => !crew.in_portal);
 		if (nonPortals.length > 0) {
 			openNodes.forEach(node => {
-				const nonPortalsByNode = nonPortals.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+				const nonPortalsByNode = nonPortals.filter(crew => crew.nodes.includes(node.index));
 				if (nonPortalsByNode.length > 0) {
-					const portalsByNode = allMatchingCrew.filter(crew => crew.in_portal && !!crew.node_matches[`node-${node.index}`]);
+					const portalsByNode = allMatchingCrew.filter(crew => crew.in_portal && crew.nodes.includes(node.index));
 					nonPortals.forEach(nonportal => {
-						if (!!nonportal.node_matches[`node-${node.index}`]) {
-							const validTraits = [];
-							nonportal.node_matches[`node-${node.index}`].traits.forEach(trait => {
-								// Trait is valid if any portal crew in this node shares the trait
-								//	Could be validated further by testing for unique trait combos
-								if (portalsByNode.some(portal => portal.node_matches[`node-${node.index}`].traits.includes(trait)))
-									validTraits.push(trait);
+						if (nonportal.nodes.includes(node.index)) {
+							nonportal.node_matches[`node-${node.index}`].combos.forEach(combo => {
+								if (!portalsByNode.some(portal => findCombo(portal.node_matches[`node-${node.index}`].combos, combo) >= 0))
+									ignoreCombo(node.index, combo);
 							});
-							if (validTraits.length < node.hiddenLeft) {
-								delete nonportal.node_matches[`node-${node.index}`];
-								nonportal.coverage_rarity--;
-							}
-							else {
-								nonportal.node_matches[`node-${node.index}`].traits = validTraits;
-							}
 						}
 					});
 				}
 			});
 		}
-		const matchingCrew = allMatchingCrew.filter(crew => crew.coverage_rarity > 0);
-		setAllMatchingCrew([...matchingCrew]);
+
+		// Validate matching combos and traits, factoring ignored combos
+		ignoredCombos.forEach(ignored => {
+			const crewWithCombo = allMatchingCrew.filter(crew =>
+				crew.nodes.includes(ignored.index) && findCombo(crew.node_matches[`node-${ignored.index}`].combos, ignored.combo) >= 0
+			);
+			crewWithCombo.forEach(crew => {
+				const crewMatches = crew.node_matches[`node-${ignored.index}`];
+				const comboIndex = findCombo(crewMatches.combos, ignored.combo);
+				crewMatches.combos.splice(comboIndex, 1);
+				if (crewMatches.combos.length > 0) {
+					const validTraits = [];
+					crewMatches.combos.forEach(combo => {
+						combo.forEach(trait => {
+							if (!validTraits.includes(trait)) validTraits.push(trait);
+						});
+					});
+					crewMatches.traits = validTraits;
+				}
+				else {
+					const nodeIndex = crew.nodes.find(node => node.index === ignored.index);
+					crew.nodes.splice(nodeIndex, 1);
+					delete crew.node_matches[`node-${ignored.index}`]
+					crew.nodes_rarity--;
+				}
+			});
+		});
+
+		const validatedCrew = allMatchingCrew.filter(crew => crew.nodes_rarity > 0);
+		setAllMatchingCrew([...validatedCrew]);
 	}, [traitPool, attemptedCrew]);
 
 	if (!combo || !openNodes)

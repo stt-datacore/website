@@ -100,7 +100,7 @@ const ComboCrewTable = (props) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'coverage_rarity', title: 'Coverage', reverse: true }
+		{ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true }
 	];
 
 	openNodes.forEach(node => {
@@ -123,7 +123,7 @@ const ComboCrewTable = (props) => {
 			column: `node_matches.node-${node.index}.traits.length`,
 			title: renderTitle(node),
 			reverse: true,
-			tiebreakers: ['coverage_rarity']
+			tiebreakers: ['nodes_rarity']
 		};
 		tableConfig.push(tableCol);
 	});
@@ -203,7 +203,7 @@ const ComboCrewTable = (props) => {
 					<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.coverage_rarity}
+					{crew.nodes_rarity}
 				</Table.Cell>
 				{openNodes.map(node => {
 					const nodeMatches = crew.node_matches[`node-${node.index}`];

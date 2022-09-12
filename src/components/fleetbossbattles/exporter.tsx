@@ -100,7 +100,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 			});
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';
-				output += `Node ${node.index+1} (${sortedTraits(node.open_traits)})\n`;
+				output += `Node ${node.index+1} (${sortedTraits(node.traitsKnown)})\n`;
 				output += nodeList;
 			}
 		});
