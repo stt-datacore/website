@@ -1,7 +1,7 @@
 ---
 name: Marla McGivers
 rarity: 4
-series: tng
+series: tos
 memory_alpha:
 bigbook_tier: 10
 events: 4
