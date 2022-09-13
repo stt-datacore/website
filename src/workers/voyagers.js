@@ -130,18 +130,18 @@ const forDataCore = (input, output, chewable) => {
 		.then((lineups) => {
 			// Estimate only as many lineups as necessary
 			const estimator = new VoyagersEstimates(voyage, input.bestShip.score, lineups, config);
-			estimator.estimate(datacoreEstimator, input.multiTarget, input.estimationIndex)
+			estimator.estimate(datacoreEstimator, input.strategy, input.confidence)
 				.then((estimates) => {
-					// Return only the best lineups by requested sort method(s)
+					// Return only the best lineups by requested sort strategy
 					let methods = ['estimate', 'minimum', 'moonshot', 'dilemma', 'antimatter'];
-					if (['none', 'estimates'].includes(input.multiTarget))
+					if (input.strategy === 'estimates')
 						methods = ['estimate'];
-					else if (input.multiTarget === 'minimums')
+					else if (input.strategy === 'minimums')
 						methods = ['minimum'];
-					else if (input.multiTarget === 'moonshots')
+					else if (input.strategy === 'moonshots')
 						methods = ['moonshot'];
 					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit = ['all', 'none'].includes(input.multiTarget) ? 1 : 3;
+					const limit = input.strategy === 'all' ? 1 : 3;
 					const sorter = new VoyagersSorted(lineups, estimates);
 					sorter.sort(datacoreSorter, methods, limit)
 						.then((sorted) => {
@@ -665,7 +665,7 @@ class VoyagersEstimates {
 			this.config.progressCallback(message);
 	}
 
-	estimate(estimator, target = 'all', index = 2) {
+	estimate(estimator, strategy = 'all', confidenceIndex = 2) {
 		let self = this;
 		return new Promise((resolve, reject) => {
 			self.lineups.forEach((lineup) => {
@@ -682,14 +682,14 @@ class VoyagersEstimates {
 				self.sendProgress('Narrowing by average tick count ('+avgTicks.toFixed(2)+')...');
 			}
 
-			// Narrow further by targets and estimation index
+			// Narrow further by sort strategy and confidence index
 			//  Lower index means less waiting, but also less thoroughness
-			if (index >= 0 && index < considered.length) {
+			if (confidenceIndex > 0 && confidenceIndex < considered.length) {
 				const scanKeys = [];
 
 				// Lineups with the best tick counts should yield best median estimates
 				//	Good chance best guaranteed minimum is also in this group; decent chance for good moonshot
-				let scanDepth = ['all', 'estimates', 'none'].includes(target) ? 3 + index : 0;
+				let scanDepth = ['estimates', 'all'].includes(strategy) ? confidenceIndex : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.projection.ticks - a.projection.ticks);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -697,7 +697,7 @@ class VoyagersEstimates {
 					}
 				}
 				// Lineups with low deviations tend to have better guaranteed minimums
-				scanDepth = target === 'minimums' ? 3 + index : (target === 'all' ? index : 0);
+				scanDepth = ['minimums', 'all'].includes(strategy) ? confidenceIndex : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.total - a.weights.total);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -707,7 +707,7 @@ class VoyagersEstimates {
 				}
 
 				// Lineups with high prime scores tend to have better moonshots
-				scanDepth = target === 'moonshots' ? 3 + index : (target === 'all' ? index : 0);
+				scanDepth = ['moonshots', 'all'].includes(strategy) ? confidenceIndex : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.primes - a.weights.primes);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -718,7 +718,7 @@ class VoyagersEstimates {
 
 				if (scanKeys.length > 0) {
 					considered = considered.filter((lineup) => scanKeys.includes(lineup.key));
-					self.sendProgress('Narrowing by scan target ('+target+') and depth ('+index+')...');
+					self.sendProgress('Narrowing by strategy ('+strategy+') and confidence ('+confidenceIndex+')...');
 				}
 			}
 

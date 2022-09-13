@@ -51,32 +51,30 @@ export const CALCULATORS = {
 		},
 		{
 			calculators: ['ussjohnjay'],
-			id: 'multiTarget',
-			name: 'Multi target',
-			description: 'Multi target',
+			id: 'strategy',
+			name: 'Strategy',
+			description: 'Prioritize lineups by strategy',
 			control: 'select',
 			options: [
 				{ key: 'all', text: 'All (default)', value: 'all' },
 				{ key: 'estimates', text: 'Best estimates', value: 'estimates' },
 				{ key: 'minimums', text: 'Guaranteed minimums', value: 'minimums' },
-				{ key: 'moonshots', text: 'Moonshots', value: 'moonshots' },
-				{ key: 'none', text: 'None (best estimate only)', value: 'none' }
+				{ key: 'moonshots', text: 'Moonshots', value: 'moonshots' }
 			],
 			default: 'all'
 		},
 		{
 			calculators: ['ussjohnjay'],
-			id: 'estimationIndex',
-			name: 'Estimation index',
-			description: 'Estimation index',
+			id: 'confidence',
+			name: 'Confidence',
+			description: 'Balance thoroughness and speed',
 			control: 'select',
 			options: [
-				{ key: '0', text: '0 (fastest)', value: 0 },
-				{ key: '1', text: '1', value: 1 },
-				{ key: '2', text: '2 (recommended)', value: 2 },
-				{ key: '5', text: '5', value: 5 },
-				{ key: '10', text: '10', value: 10 },
-				{ key: '50', text: '50 (slowest)', value: 50 }
+				{ key: '1', text: 'Lowest (fastest)', value: 1 },
+				{ key: '2', text: 'Lower', value: 2 },
+				{ key: '5', text: 'Normal', value: 5 },
+				{ key: '10', text: 'Higher', value: 10 },
+				{ key: '25', text: 'Highest (slowest)', value: 25 }
 			],
 			default: 2
 		}
@@ -380,8 +378,8 @@ class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			multiTarget: props.calcOptions.multiTarget ?? 'all',
-			estimationIndex: props.calcOptions.estimationIndex ?? 2
+			strategy: props.calcOptions.strategy ?? 'all',
+			confidence: props.calcOptions.confidence ?? 2
 		};
 	}
 
@@ -393,8 +391,8 @@ class USSJohnJayHelper extends Helper {
 			voyage_description: this.voyageConfig,
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
-			multiTarget: this.calcOptions.multiTarget,
-			estimationIndex: this.calcOptions.estimationIndex,
+			strategy: this.calcOptions.strategy,
+			confidence: this.calcOptions.confidence,
 			worker: 'ussjohnjay'
 		};
 
@@ -441,10 +439,15 @@ class USSJohnJayHelper extends Helper {
 		return bests.map((best, bestId) => {
 			const recommended = this._getRecommendedList(best.estimate, bestValues);
 			let postscript = '';
-			if (recommended.length > 0)
-				postscript = '['+(bestId+1)+'/'+bests.length+'] Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
-			else if (bests.length === 1)
+			if (bests.length === 1)
 				postscript = 'Recommended for all criteria';
+			else {
+				postscript = '['+(bestId+1)+'/'+bests.length+']';
+				if (recommended.length > 0)
+					postscript += ' Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
+				else
+					postscript += ' Alternative for requested strategy';
+			}
 			return {
 				entries: best.crew.map((crew, entryId) => ({
 					slotId: entryId,
