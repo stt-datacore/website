@@ -193,7 +193,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 					crewMatches.traits = validTraits;
 				}
 				else {
-					const nodeIndex = crew.nodes.find(node => node.index === ignored.index);
+					const nodeIndex = crew.nodes.indexOf(ignored.index);
 					crew.nodes.splice(nodeIndex, 1);
 					delete crew.node_matches[`node-${ignored.index}`]
 					crew.nodes_rarity--;
