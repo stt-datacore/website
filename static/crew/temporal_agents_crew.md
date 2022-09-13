@@ -3,8 +3,8 @@ name: Agents Dulmur and Lucsly
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 5
+bigbook_tier: 8
+events: 6
 in_portal: true
 date: 29/06/2021
 obtained: Pack

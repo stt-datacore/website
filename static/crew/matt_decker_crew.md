@@ -3,8 +3,8 @@ name: Commodore Matt Decker
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 0
+bigbook_tier: 7
+events: 1
 in_portal: true
 date: 02/07/2019
 obtained: Event

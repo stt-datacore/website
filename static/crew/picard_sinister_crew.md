@@ -3,8 +3,8 @@ name: Sinister Picard
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
-events: 31
+bigbook_tier: 4
+events: 32
 in_portal: true
 date: 19/05/2020
 obtained: Pack

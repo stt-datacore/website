@@ -3,8 +3,8 @@ name: Dealer Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 24
+bigbook_tier: 7
+events: 25
 in_portal: true
 date: 07/09/2021
 obtained: Pack

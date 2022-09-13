@@ -3,8 +3,8 @@ name: Linus
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 9
-events: 18
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 03/12/2020
 obtained: Event

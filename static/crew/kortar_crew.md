@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 16
+events: 17
 in_portal: true
 date: 10/07/2017
 obtained: Mega
@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-One of the less "Mega" mega crew in retrospect, at least by the numbers. His SEC resides in the top ten among Klingon crew, which is his primary event consideration, but may also pick up Hero or Cultural Figure megas down the line. That'll cut it for Faction events and those who have him at 5/5 from his mega will likely tell you he's been manning shuttles for them for a long time. But an unfortunate pairing of poor power and putrid skill set makes him a voyage non-factor.
+Once a mega, always a mega? If you’re still mulling a cite on this 4/5 recurring crew from half a decade ago, you probably need more help than this column can offer. But if you’re coming to Kortar fresh, he’s exactly what he looks like - just a guy.
 
-Though he thoroughly shows his age, Kortar as a package should still have the potential to outperform many older cards. Spotty event work and double collections including the massive Klingon make him a reasonable behold consolation prize.
+His worthwhile trait set will drive almost all of his value; providing a strong collection portfolio and all of his event opportunities. While his bases have long since retired from daily service, they’re the right skill set for easy shuttle seating and some Faction Action on any weekend where he snags a bonus.

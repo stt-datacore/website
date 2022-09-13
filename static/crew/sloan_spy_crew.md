@@ -3,8 +3,8 @@ name: Luther Sloan
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 8
+bigbook_tier: 9
+events: 9
 in_portal: true
 date: 03/04/2017
 obtained: Event

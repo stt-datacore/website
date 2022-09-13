@@ -3,8 +3,8 @@ name: Warship Yar
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 16
+bigbook_tier: 7
+events: 17
 in_portal: true
 date: 17/03/2016
 obtained: Pack

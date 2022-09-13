@@ -40422,6 +40422,38 @@ body.pushable > .pusher {
 }
 
 /*******************************
+         Voyage Stats
+*******************************/
+table.voyageRec {
+	border-collapse: collapse;
+}
+table.voyageRec tr td {
+	padding-top: .3em;
+	padding-bottom: .3em;
+}
+table.voyageRec tr.shipRec td,
+table.voyageRec tr.antimatterRow td {
+	padding-bottom: 1em;
+}
+table.voyageRec td {
+	padding-left: .5em;
+	padding-right: .5em;
+}
+table.voyageRec td.iconic {
+	text-align: center;
+}
+/* Stripes only work on dark mode for now */
+table.voyageRec tr:nth-child(2n) {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+table.voyageRec.aggregates tr td:last-child {
+	text-align: right;
+}
+table.voyageRec tr:not(:first-child):hover {
+	background: #EFEFEF !important;
+}
+
+/*******************************
          Site Overrides
 *******************************/
 

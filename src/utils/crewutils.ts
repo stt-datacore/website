@@ -341,6 +341,8 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 			crew.have = true;
 			crew.favorite = owned.favorite;
 			crew.equipment = owned.equipment;
+			if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
+			if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 		});

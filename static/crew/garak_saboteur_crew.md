@@ -3,8 +3,8 @@ name: Saboteur Garak
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 21
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 23/05/2019
 obtained: Event

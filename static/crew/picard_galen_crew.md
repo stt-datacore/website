@@ -3,8 +3,8 @@ name: Galen
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 24
+bigbook_tier: 7
+events: 26
 in_portal: true
 date: 06/06/2017
 obtained: Pack

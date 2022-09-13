@@ -3,8 +3,8 @@ name: Bridal Keiko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
-events: 2
+bigbook_tier: 10
+events: 3
 in_portal: true
 date: 14/05/2020
 obtained: Event

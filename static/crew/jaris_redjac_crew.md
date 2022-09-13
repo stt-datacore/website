@@ -3,8 +3,8 @@ name: Redjac Jaris
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 2
+bigbook_tier: 8
+events: 3
 in_portal: true
 date: 03/09/2019
 obtained: Pack

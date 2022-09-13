@@ -1,7 +1,7 @@
 ---
 name: Carl, Guardian of Forever
 rarity: 5
-series: tos
+series: dsc
 memory_alpha:
 bigbook_tier: 7
 events: 30

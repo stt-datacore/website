@@ -3,8 +3,8 @@ name: Klingon Bride Jadzia
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 46
+bigbook_tier: 7
+events: 47
 in_portal: true
 date: 10/04/2017
 obtained: Event

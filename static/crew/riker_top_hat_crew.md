@@ -3,8 +3,8 @@ name: Regency Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 8
+events: 24
 in_portal: true
 date: 20/07/2021
 obtained: Pack

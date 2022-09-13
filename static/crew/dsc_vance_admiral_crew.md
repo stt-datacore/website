@@ -3,8 +3,8 @@ name: Admiral Vance
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 25
+bigbook_tier: 4
+events: 27
 in_portal:
 date: 10/05/2022
 obtained: Pack

@@ -3,8 +3,8 @@ name: Off Duty Janice Rand
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 13
+bigbook_tier: 8
+events: 14
 in_portal: true
 date: 04/02/2021
 obtained: Event

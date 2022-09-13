@@ -3,8 +3,8 @@ name: Lt. Commander Uhura
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 14
+bigbook_tier: 7
+events: 16
 in_portal: true
 date: 23/07/2019
 obtained: Pack

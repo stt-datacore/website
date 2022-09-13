@@ -3,8 +3,8 @@ name: Frank Hollander
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 33
+bigbook_tier: 8
+events: 34
 in_portal: true
 date: 06/06/2016
 obtained: Event

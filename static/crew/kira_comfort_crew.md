@@ -3,7 +3,7 @@ name: Luma Rahl Kira
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 34
 in_portal: true
 date: 10/06/2021

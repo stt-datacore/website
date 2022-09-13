@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 
@@ -36,12 +36,13 @@ type SearchableTableProps = {
 	data: any[];
 	explanation?: React.ReactNode;
 	config: ITableConfigRow[];
-	renderTableRow: (row: any, idx?: number) => JSX.Element;
-	filterRow: (crew: any, filter: any, filterType?: string) => boolean;
+	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
+	filterRow: (row: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
     showFilterOptions: boolean;
 	showPermalink: boolean;
 	lockable?: any[];
+	zeroMessage?: (searchFilter: string) => JSX.Element;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -215,6 +216,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		});
 	}
 	data = data.filter(row => props.filterRow(row, filters, filterType));
+	const filteredCount = data.length;
 
 	// Pagination
 	let activePage = pagination_page;
@@ -263,37 +265,45 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
-				<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.HeaderCell colSpan={props.config.length}>
-							<Pagination
-								totalPages={totalPages}
-								activePage={activePage}
-								onPageChange={(event, { activePage }) => {
-									setPaginationPage(activePage as number);
-									setActiveLock(undefined);	// Remove lock when changing pages
-								}}
-							/>
-							<span style={{ paddingLeft: '2em'}}>
-								Rows per page:{' '}
-								<Dropdown
-									inline
-									options={pagingOptions}
-									value={pagination_rows}
-									onChange={(event, {value}) => {
-										setPaginationPage(1);
-										setPaginationRows(value as number);
+			{filteredCount === 0 && (
+				<div style={{ margin: '2em 0' }}>
+					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
+				</div>
+			)}
+
+			{filteredCount > 0 && (
+				<Table sortable celled selectable striped collapsing unstackable compact="very">
+					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
+					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					<Table.Footer>
+						<Table.Row>
+							<Table.HeaderCell colSpan={props.config.length}>
+								<Pagination
+									totalPages={totalPages}
+									activePage={activePage}
+									onPageChange={(event, { activePage }) => {
+										setPaginationPage(activePage as number);
+										setActiveLock(undefined);	// Remove lock when changing pages
 									}}
 								/>
-							</span>
-							{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
+								<span style={{ paddingLeft: '2em'}}>
+									Rows per page:{' '}
+									<Dropdown
+										inline
+										options={pagingOptions}
+										value={pagination_rows}
+										onChange={(event, {value}) => {
+											setPaginationPage(1);
+											setPaginationRows(value as number);
+										}}
+									/>
+								</span>
+								{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
+							</Table.HeaderCell>
+						</Table.Row>
+					</Table.Footer>
+				</Table>
+			)}
 		</div>
 	);
 };
@@ -391,6 +401,18 @@ export const prettyCrewColumnTitle = (column: string) => {
 	}
 	return column;
 };
+
+function renderDefaultZeroMessage(): JSX.Element {
+	return (
+		<Message icon>
+			<Icon name='search' />
+			<Message.Content>
+				<Message.Header>0 results found</Message.Header>
+				Please try different search options.
+			</Message.Content>
+		</Message>
+	);
+}
 
 function renderDefaultExplanation(): JSX.Element {
 	return (

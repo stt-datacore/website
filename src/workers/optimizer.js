@@ -502,7 +502,7 @@ const Optimizer = {
       let rankIndex = 0;
 
       //Used to find the best crew, but not seat them. These crew have been observed to have a valid seat waiting for them, even with the automated seating code failing
-      while (!skillPools.voyageCrew.full) {
+      while (!skillPools.voyageCrew.full && rankIndex < rankArray.length) {
         let crewName = rankArray[rankIndex];
         let crew = Optimizer.rosterLibrary[crewName];
         //If there is room in the immediate seats available and if they're already invested
@@ -601,7 +601,7 @@ const Optimizer = {
         //Rank index is used to track where we are moving down the rank array
         let rankIndex = 0;
         //Used to find the best crew, but not seat them. These crew have been observed to have a valid seat waiting for them, even with the automated seating code failing
-        while (!skillPools.voyageCrew.full) {
+        while (!skillPools.voyageCrew.full && rankIndex < rankArray.length) {
           let crewName = rankArray[rankIndex];
           let crew = Optimizer.rosterLibrary[crewName];
           //If there is room in the immediate seats available and if they're already invested

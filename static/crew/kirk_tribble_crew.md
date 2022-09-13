@@ -3,8 +3,8 @@ name: Tribble Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
-events: 30
+bigbook_tier: 6
+events: 31
 in_portal: true
 date: 05/08/2021
 obtained: Mega

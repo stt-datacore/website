@@ -3,8 +3,8 @@ name: Lt. JG Picard
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 24
+bigbook_tier: 5
+events: 25
 in_portal:
 date: 02/06/2022
 obtained: Event

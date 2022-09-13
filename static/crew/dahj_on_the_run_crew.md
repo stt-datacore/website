@@ -3,8 +3,8 @@ name: Dahj On The Run
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
-events: 15
+bigbook_tier: 5
+events: 16
 in_portal:
 date: 19/01/2022
 obtained: Event

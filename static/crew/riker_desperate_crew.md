@@ -3,8 +3,8 @@ name: Desperate Riker
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 32
+bigbook_tier: 4
+events: 38
 in_portal: true
 date: 12/06/2019
 obtained: Event

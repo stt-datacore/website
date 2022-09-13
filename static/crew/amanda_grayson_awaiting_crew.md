@@ -3,8 +3,8 @@ name: Awaiting Amanda Grayson
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 10
+bigbook_tier: 7
+events: 11
 in_portal: true
 date: 01/10/2020
 obtained: Event

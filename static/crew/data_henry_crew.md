@@ -3,8 +3,8 @@ name: Data V
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 32
+bigbook_tier: 7
+events: 33
 in_portal: true
 date: 10/10/2018
 obtained: Event

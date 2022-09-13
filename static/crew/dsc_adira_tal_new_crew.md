@@ -3,8 +3,8 @@ name: Adira Tal
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
-events: 21
+bigbook_tier: 6
+events: 22
 in_portal: true
 date: 19/01/2021
 obtained: Giveaway

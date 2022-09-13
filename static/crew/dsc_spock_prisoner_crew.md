@@ -3,8 +3,8 @@ name: Prisoner Spock
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 52
+bigbook_tier: 2
+events: 53
 in_portal:
 date: 26/01/2022
 obtained: Event

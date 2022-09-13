@@ -15,7 +15,7 @@ If you want to contribute code fixes, see below.
 
 ```sh
 $ git clone https://github.com/stt-datacore/website.git
-$ npm install 
+$ yarn install 
 ```
 
 In order to get images on your server you have to run the command. 
@@ -33,7 +33,7 @@ Starts the development server.
 #### Usage
 
 ```sh
-$ npm run start
+$ yarn run start
 ```
 
 ### `build`
@@ -43,7 +43,7 @@ Build the static files into the `public` folder.
 #### Usage
 
 ```sh
-$ npm run build
+$ yarn run build
 ```
 
 ### `serve`
@@ -53,7 +53,7 @@ This command is shorthand for `gatsby serve`
 #### Usage
 
 ```sh
-npm run serve
+yarn run serve
 ```
 
 ### `test`
@@ -63,7 +63,7 @@ Not implmented yet
 #### Usage
 
 ```sh
-npm run test
+yarn run test
 ```
 
 ### `format`
@@ -73,7 +73,7 @@ Formats code and docs according to our style guidelines using `prettier`
 #### Usage
 
 ```sh
-npm run format
+yarn run format
 ```
 
 ## Pull Requests
@@ -88,8 +88,8 @@ PR's should be [rebased](https://www.atlassian.com/git/tutorials/merging-vs-reba
 2. Create a branch from `master`. If you're addressing a specific issue, prefix your branch name with the issue number.
 2. If you've added code that should be tested, add tests.
 3. If you've changed APIs, update the documentation.
-4. Run `npm run test` and ensure the test suite passes. (Not applicable yet)
-5. Use `npm run format` to format and lint your code.
+4. Run `yarn run test` and ensure the test suite passes. (Not applicable yet)
+5. Use `yarn run format` to format and lint your code.
 6. PR's must be rebased before merge (feel free to ask for help).
 7. PR should be reviewed by at least one maintainer prior to merging.
 

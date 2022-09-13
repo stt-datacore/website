@@ -3,8 +3,8 @@ name: Away Team Michael Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
-events: 48
+bigbook_tier: 5
+events: 49
 in_portal: true
 date: 04/12/2018
 obtained: Pack

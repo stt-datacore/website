@@ -3,8 +3,8 @@ name: Dahar Master Koloth
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 3
-events: 16
+bigbook_tier: 4
+events: 17
 in_portal: true
 date: 15/01/2019
 obtained: Pack

@@ -3,7 +3,7 @@ name: Mirror Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 56
 in_portal: true
 date: 17/10/2016

@@ -3,8 +3,8 @@ name: Narek
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 6
-events: 16
+bigbook_tier: 7
+events: 20
 in_portal: true
 date: 14/04/2020
 obtained: Pack

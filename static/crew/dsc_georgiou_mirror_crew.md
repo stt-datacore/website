@@ -3,8 +3,8 @@ name: Emperor Philippa Georgiou
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 35
+bigbook_tier: 9
+events: 36
 in_portal: true
 date: 25/07/2018
 obtained: Event

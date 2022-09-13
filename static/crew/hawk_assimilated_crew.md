@@ -3,8 +3,8 @@ name: Assimilated Hawk
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 17
+bigbook_tier: 6
+events: 18
 in_portal: true
 date: 02/01/2019
 obtained: Event

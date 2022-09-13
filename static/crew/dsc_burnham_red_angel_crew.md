@@ -3,8 +3,8 @@ name: The Red Angel
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 1
-events: 37
+bigbook_tier: 2
+events: 38
 in_portal:
 date: 07/07/2020
 obtained: Gauntlet
