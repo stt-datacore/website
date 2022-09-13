@@ -76,7 +76,7 @@ export const CALCULATORS = {
 				{ key: '10', text: 'Higher', value: 10 },
 				{ key: '25', text: 'Highest (slowest)', value: 25 }
 			],
-			default: 2
+			default: 5
 		}
 	]
 };
