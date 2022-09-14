@@ -3,12 +3,12 @@ name: Starfleet Uniform Khan
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 23
+bigbook_tier: 1
+events: 24
 in_portal: true
 date: 30/05/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

@@ -3,12 +3,12 @@ name: Stranded Craft
 rarity: 3
 series: dsc
 memory_alpha:
-bigbook_tier: 5
-events: 23
+bigbook_tier: 4
+events: 28
 in_portal: true
 date: 09/10/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

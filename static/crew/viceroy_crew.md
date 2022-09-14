@@ -3,8 +3,8 @@ name: The Viceroy
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 8
+bigbook_tier: 5
+events: 11
 in_portal: true
 date: 09/06/2016
 obtained: Post-Launch

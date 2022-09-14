@@ -3,8 +3,8 @@ name: Lt. Tasha Yar
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 15
+bigbook_tier: 8
+events: 17
 in_portal: true
 date: 03/01/2016
 obtained: Launch

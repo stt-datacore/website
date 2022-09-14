@@ -3,8 +3,8 @@ name: Racquetball Bashir
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 2
-events: 20
+bigbook_tier: 6
+events: 24
 in_portal: true
 date: 29/11/2016
 obtained: Post-Launch

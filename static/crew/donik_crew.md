@@ -3,7 +3,7 @@ name: Donik
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 10
 events: 7
 in_portal: true
 date: 01/01/2016

@@ -3,12 +3,12 @@ name: Restless Trip Tucker
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 14
 in_portal: true
 date: 13/08/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

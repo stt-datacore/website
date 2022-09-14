@@ -3,7 +3,7 @@ name: Glinn Damar
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 1
 in_portal: true
 date: 01/01/2016

@@ -3,8 +3,8 @@ name: Lieutenant Commander Saru
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 4
-events: 36
+bigbook_tier: 7
+events: 37
 in_portal: true
 date: 20/09/2017
 obtained: Post-Launch

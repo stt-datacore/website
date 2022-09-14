@@ -3,8 +3,8 @@ name: Ensign Pazlar
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 2
-events: 4
+bigbook_tier: 7
+events: 9
 in_portal: true
 date: 26/05/2016
 obtained: Post-Launch

@@ -3,7 +3,7 @@ name: Mr. Vup
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 8
 in_portal: true
 date: 22/12/2020

@@ -3,8 +3,8 @@ name: Technician Rom
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 11
+bigbook_tier: 8
+events: 12
 in_portal: true
 date: 01/01/2016
 obtained: Launch

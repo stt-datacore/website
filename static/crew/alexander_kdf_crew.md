@@ -3,8 +3,8 @@ name: KDF Alexander
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 9
+bigbook_tier: 8
+events: 10
 in_portal: true
 date: 01/01/2016
 obtained: Launch

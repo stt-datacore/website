@@ -3,7 +3,7 @@ name: Private S. Money
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 9
 events: 4
 in_portal: true
 date: 21/07/2016
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A one skilled minor MACO does not make a voyaging man happy. The 3rd worst 3* Voyager mostly due to her one skilled SEC stat. That SEC stat is strong and at some point you will have to warrant spending time on her to complete the weekend cadets, after that she's just a notch on the Veteran collection.
+The name of a (bad) Bond villain, but far less entertaining, you probably shouldn’t bother with Money in most circumstances. The fly in the ointment may be the total lack of SEC primary Rare female aliens if you’re trying to 2-for-1 some weekend cadet value. If you need to level Money to help you crit some Saturday nodes, take solace in her stat-boosting collection spot, which should double with the inclusion of the Marksman collection before too long.

@@ -3,7 +3,7 @@ name: Mirror Marlena Moreau
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 14
 in_portal: true
 date: 28/12/2021

@@ -3,8 +3,8 @@ name: Talos IV Spock
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 39
+bigbook_tier: 3
+events: 45
 in_portal: true
 date: 30/08/2017
 obtained: Event

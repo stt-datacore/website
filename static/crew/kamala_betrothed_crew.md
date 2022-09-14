@@ -3,7 +3,7 @@ name: Betrothed Kamala
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 5
 events: 2
 in_portal: true
 date: 20/11/2019
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-A decent two star voyager with the artwork of a Legendary crew. This is stunning both for the artwork and for her usefulness. Her DIP base is only beaten by Tilly and Gaia Odo and she scores highly on the voyage ranks. Whilst many Rare cards will make her redundant her early game voyage use can't be ignored, especially on DIP/SCI voyage. On top of that she gets work on Tuesday and Thursday cadet missions. Sadly no extraneous collection bonuses but her ship ability is a nice upgrade with some damage too. Now where's my invite to the wedding…
+It’s a real shame that this art is buried in the Uncommon ranks while the Matzo cracker Kamala snags a spot in the legendary ranks. It’s also a shame that both variants are pretty poor. Betrothed has it better, all things considered, but a painfully thin trait set undercuts her usefulness mightily. 
+
+Eligible for just two days of cadet work each week, her secondary skill has trouble critting nodes there and WRG is unlikely to backfill Kriosian node bonuses any time soon. Kamala’s arena “hammer” is an interesting consideration, but can be used unleveled, which is welcome news for a crew whose collection value is as thin as Alrik of Valt’s interest in gorgeous women.

@@ -3,8 +3,8 @@ name: Doctor Selar
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 14
+bigbook_tier: 10
+events: 16
 in_portal: true
 date: 01/01/2016
 obtained: Launch

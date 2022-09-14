@@ -3,8 +3,8 @@ name: CMO Pulaski
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 6
+bigbook_tier: 10
+events: 8
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Another strong MED contender that will sit in your ranks for a while. #3 MED base which has some strong staying power. She’s in the same league as Ogawa but with a respectable SCI stat and the Physician collection too. You won’t be using her in Arena however, her +6 Accuracy bonus comes with a -2 Attack modifier which is a bizarrely contradictory combination.
+Pulaski is simply not worth it in any respect and the Dah-ta will back that up. Narrow usage for cadet missions one day per week and a lone collection won’t do much to stretch your food dollar if you’re economizing your trainers in the early game. If you do need MED help, look for markers of great utility - a third skill, stronger traits, or a tier rating in the single digits.

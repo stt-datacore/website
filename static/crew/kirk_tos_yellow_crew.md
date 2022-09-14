@@ -3,8 +3,8 @@ name: Captain Kirk
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 27
+bigbook_tier: 5
+events: 30
 in_portal: true
 date: 01/01/2017
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-First time players will probably remember Kirk from the beginning of the game where they choose one of their starting PokeCaptains (he's definitely Charmander). A good strong CMD stat and proficient early game Voyager with a collection boost too. He's a step behind your other intro options due to the lack of the extra Diplomat collection spot, but will perform as well as Sisko and Picard otherwise.
+Long time players may remember Kirk from the beginning of the game where they chose one of their starting PokeCaptains (he's definitely Charmander). His strength, event tally, will largely go unrealized thanks to higher rarity options outmuscling his shuttle offerings on any given weekend. With good-not-great utility elsewhere, we’d recommend starting off with the collection magnet Sisko instead, though any of the three choices will suit you fine in both the short term and long run.

@@ -2,12 +2,16 @@
 name: Ensign Tendi
 rarity: 2
 series: low
-memory_alpha: ''
-bigbook_tier:
-events:
+memory_alpha:
+bigbook_tier: 6
+events: 2
 in_portal:
-date: 18/08/2022
-obtained:
-mega:
-published: false
+date: 10/08/2022
+obtained: Event
+mega: false
+published: true
 ---
+
+Full cadet eligibility is great to see, though her somewhat weak secondary and tertiary skills may struggle with Epic difficulty node unlocks thanks to a lack of most of the relevant SCI-centric traits. Luckily the utility doesn’t end there.
+
+A Bones-esque Grand Slam shuttler, Tendi debuts as the top option for all MED (“and”) seats available and has a juicy early game skill set to pair with great voyage power that should see her perform there alongside Rare options. With worthwhile collection value as well, Tendi is a fine choice for your precious trainers at any stage of the game.
