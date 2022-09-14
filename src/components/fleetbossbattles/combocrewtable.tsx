@@ -3,6 +3,7 @@ import { Header, Dropdown, Form, Checkbox, Table, Rating, Icon, Popup } from 'se
 import { Link } from 'gatsby';
 
 import MarkButtons from './markbuttons';
+import { getOptimalCombos, isCrewOptimal } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewTraitMatchesCell } from '../../components/crewtables/commoncells';
@@ -30,32 +31,7 @@ const ComboCrewTable = (props) => {
 
 	React.useEffect(() => {
 		if (showOptimalsOnly) {
-			const viableCombos = [];
-			props.allMatchingCrew.filter(crew => filterByUsable(crew)).forEach(crew => {
-				Object.values(crew.node_matches).forEach(node => {
-					const existing = viableCombos.find(combo =>
-						combo.traits.length === node.traits.length && combo.traits.every(trait => node.traits.includes(trait))
-					);
-					if (existing) {
-						if (!existing.nodes.includes(node.index))
-							existing.nodes.push(node.index);
-					}
-					else if (!existing) {
-						viableCombos.push({ traits: node.traits, nodes: [node.index] });
-					}
-				});
-			});
-			// Identify combo sets that are subsets of other possible combos
-			const optimalCombos = [];
-			viableCombos.sort((a, b) => b.traits.length - a.traits.length).forEach(combo => {
-				const supersets = optimalCombos.filter(optimal =>
-					optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
-				);
-				const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
-				if (newNodes.length > 0) combo.nodes = newNodes;
-				if (supersets.length === 0 || newNodes.length > 0)
-					optimalCombos.push(combo);
-			});
+			const optimalCombos = getOptimalCombos(props.allMatchingCrew.filter(crew => filterByUsable(crew)));
 			setOptimalCombos([...optimalCombos]);
 		}
 		else {
@@ -85,16 +61,7 @@ const ComboCrewTable = (props) => {
 
 	const filterByOptimal = (crew) => {
 		if (!showOptimalsOnly) return true;
-		let isOptimal = false;
-		Object.values(crew.node_matches).forEach(node => {
-			if (optimalCombos.find(optimal =>
-					optimal.nodes.includes(node.index) &&
-					node.traits.length === optimal.traits.length &&
-					optimal.traits.every(trait => node.traits.includes(trait))
-				))
-				isOptimal = true;
-		});
-		return isOptimal;
+		return isCrewOptimal(crew, optimalCombos);
 	};
 
 	const tableConfig: ITableConfigRow[] = [
@@ -128,7 +95,7 @@ const ComboCrewTable = (props) => {
 		tableConfig.push(tableCol);
 	});
 
-	tableConfig.push({ width: 1, title: 'Trials' });
+	tableConfig.push({ width: 1, title: 'Trial' });
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -140,7 +107,7 @@ const ComboCrewTable = (props) => {
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Search for crew that satisfy the conditions of the remaining unsolved nodes. Use the buttons in the last column to mark crew that have been tried.</p>
+			<p>Search for crew that satisfy the conditions of the remaining unsolved nodes. Use the buttons in the trial column to mark crew that have been tried.</p>
 			<div>
 				<Form>
 					<Form.Group inline>
@@ -173,7 +140,7 @@ const ComboCrewTable = (props) => {
 			<div style={{ marginTop: '1em' }}>
 				<p><i>Optimal Crew</i> exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
-				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your optimal crew preference.</p>
+				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your crew filters.</p>
 			</div>
 		</div>
 	);
@@ -227,7 +194,7 @@ const ComboCrewTable = (props) => {
 				{crew.only_frozen && <Icon name='snowflake' />}
 				{!crew.in_portal &&
 					<Popup trigger={<Icon name='warning sign' color='yellow' />}
-						content={`Non-portal crew may be able to solve some nodes, but they cannot be a node's only solution`}
+						content={`Non-portal crew may be able to solve some nodes, but they are not the intended solution. Their non-viable traits are hidden automatically`}
 					/>
 				}
 			</div>

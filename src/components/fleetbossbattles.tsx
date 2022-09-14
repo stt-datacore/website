@@ -43,7 +43,7 @@ const FleetBossBattles = (props: FleetBossBattlesProps) => {
 
 	return (
 		<AllDataContext.Provider value={allData}>
-			<p>Use this tool to help activate combo chain bonuses in a fleet boss battle. Warning: this feature is still in development.</p>
+			<p>Use this tool to help activate combo chain bonuses in a fleet boss battle.</p>
 			<ComboPicker />
 		</AllDataContext.Provider>
 	);

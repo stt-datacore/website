@@ -1,5 +1,7 @@
 import React from 'react';
-import { Header, Button, Popup, Message } from 'semantic-ui-react';
+import { Header, Button, Popup, Message, Form, Checkbox } from 'semantic-ui-react';
+
+import { getOptimalCombos, isCrewOptimal } from './fbbutils';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
@@ -63,6 +65,8 @@ type ExportCrewListsProps = {
 export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const { openNodes, allMatchingCrew } = props;
 
+	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
+
 	const sortedTraits = (traits) => {
 		return traits.map(t => allTraits.trait_names[t]).sort((a, b) => a.localeCompare(b)).join(', ');
 	};
@@ -74,10 +78,15 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	};
 
 	const copyPossible = () => {
+		let crewList = allMatchingCrew.slice();
+		if (showOptimalsOnly) {
+			const optimalCombos = getOptimalCombos(crewList);
+			crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
+		}
 		let output = '';
 		openNodes.forEach(node => {
 			const possibleCombos = [];
-			const crewByNode = allMatchingCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+			const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
 			crewByNode.forEach(crew => {
 				const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
 				const exists = !!possibleCombos.find(combo =>
@@ -112,6 +121,16 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 			<Message.Content>
 				<Message.Header>Export Crew Lists</Message.Header>
 				<p>Copy the list of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums. Asterisked crew are possible solutions to multiple nodes.</p>
+				<Form>
+					<Form.Group inline>
+						<Form.Field
+							control={Checkbox}
+							label={<label>Only list optimal crew</label>}
+							checked={showOptimalsOnly}
+							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
+						/>
+					</Form.Group>
+				</Form>
 				<Popup
 					content='Copied!'
 					on='click'
