@@ -3,12 +3,12 @@ name: Human Airiam
 rarity: 3
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 19
+bigbook_tier: 7
+events: 21
 in_portal: true
 date: 09/04/2020
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

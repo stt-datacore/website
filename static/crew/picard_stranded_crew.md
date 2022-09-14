@@ -3,8 +3,8 @@ name: Picard at El-Adrel
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 1
-events: 30
+bigbook_tier: 2
+events: 33
 in_portal: true
 date: 02/04/2020
 obtained: Pack
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Top DIP bases, very nice proficiency and a top 10 3* voyager. One of the best cards a new roster can have. His unexpected MED stat gives him some fantastic voyage flexibility. It's not often you get crew members in this rarity that can excel in both shuttles and voyages but Picard and his stunning jacket certainly make the cut. A hefty shield regeneration ship ability and decent traits makes him finally one of the best represented Picard cards in the game.
+It’s hard to recommend cadet voyage ability too strongly when they’re so easily outclassed by higher rarity options, but when it comes attached to an otherwise versatile crew - saddle up!
+
+Stellar voyage metrics, the top Rare DIP base, and four fat collections is exactly the kind of bite-sized cadet Lunchables that will satisfy even a veteran player’s hunger. Pour one out for his lack of weekend cadet eligibility, if he was wearing a bra and had ridges on his head, he might be the best Rare crew in the game.

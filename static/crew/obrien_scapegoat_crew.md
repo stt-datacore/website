@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 3
-events: 17
+events: 18
 in_portal:
 date: 24/08/2021
 obtained: Collection

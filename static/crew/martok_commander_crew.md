@@ -4,12 +4,14 @@ rarity: 2
 series: ds9
 memory_alpha:
 bigbook_tier: 5
-events: 12
+events: 14
 in_portal: true
 date: 22/08/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-He can sweep up a few Tuesday cadet nodes, but the lack of a Starfleet or Female tag limits his early game usefulness. As does a cloak trigger which rarely plays nice with auto battle on ships. Nevertheless, double collection spots mean that every player should look toward chewing through his chron-cheap build cost once they can support the shuttles or replications needed for his smattering of Klingon and KCA faction items.
+Something of a man for all seasons, Martok offers voyage, shuttle, collection, and arena value in varying degrees. A competitive SECondary and handful of galaxy map node unlocks should earn him at least some level of work on fresh rosters.
+
+Only eligible for Tuesday cadets and requiring a smattering of Klingon and KCA faction items, it’s understandable if you’d rather save your precious trainers for other crew, though he’s not an objectively poor choice for early immortalization.

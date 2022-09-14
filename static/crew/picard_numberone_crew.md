@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 3
-events: 31
+events: 33
 in_portal: true
 date: 06/02/2020
 obtained: Mega

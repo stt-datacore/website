@@ -3,13 +3,13 @@ name: Tribunal Pike
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 5
-events: 6
+bigbook_tier: 6
+events: 8
 in_portal: true
 date: 20/02/2019
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 
-Beep Beep...okay I’ll leave that joke alone. A reasonable DIP crew that will hit a few nodes for you but outside of that his use will be limited. No cadet mission eligibility and his small skill set makes him less useful on voyages. But he might fill out a shuttle or two and backup some other crew unlocking difficult nodes.
+Beep Beep...okay we’ll leave that joke alone. Pike isn’t really a crew you want to make a project of early on in Timelines. He lacks weekend cadet mission eligibility and has a fairly limited number of trait node unlocks, most of which have a wide pool of candidates. Swing back around later on for his (limited) collection value, but feel free to airlock him for space as needed.

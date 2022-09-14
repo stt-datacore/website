@@ -3,7 +3,7 @@ name: First Maje Culluh
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 9
 events: 8
 in_portal: true
 date: 01/01/2016

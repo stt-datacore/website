@@ -3,8 +3,8 @@ name: Lt. Sulu
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 10
-events: 13
+bigbook_tier: 5
+events: 14
 in_portal: true
 date: 02/01/2016
 obtained: Launch

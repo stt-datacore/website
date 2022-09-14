@@ -3,8 +3,8 @@ name: CMO Ogawa
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 4
+bigbook_tier: 10
+events: 6
 in_portal: true
 date: 09/06/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Whilst MED skills are quite common in the lower rankings of crew cards they become much more sparse later on. Which is why you’ll probably find that Ogawa will linger in your manifest longer than she probably should. A #5 MED base will only get you so far however but she fills out the Physician collection nicely with a decent ship ability. Just don’t expect her to be much use on voyages if you have Commando Crusher or Raquetball Bashir in your ranks.
+Alyssa and the Terrible, Horrible, No Good, Very Bad Card. Just a complete nothing burger, you can feel free to point to her lone stat-boosting collection or her one day per week cadet eligibility, but neither are really worth the chronitons and trainers that could be better spent on more versatile options that cover both of her slim offerings. We recommend airlocking Ogawa early on for space and only swinging back around to immortalize her when you’re on the precipice of a Physician collection milestone.

@@ -3,8 +3,8 @@ name: Expedition Vash
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 11
+bigbook_tier: 8
+events: 13
 in_portal: true
 date: 01/01/2016
 obtained: Launch

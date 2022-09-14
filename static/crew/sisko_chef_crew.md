@@ -3,8 +3,8 @@ name: Sous-chef Sisko
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 4
-events: 24
+bigbook_tier: 3
+events: 26
 in_portal: true
 date: 10/07/2019
 obtained: Event

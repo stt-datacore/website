@@ -3,12 +3,12 @@ name: Expedition Shran
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 3
-events: 19
+bigbook_tier: 2
+events: 20
 in_portal: true
 date: 07/02/2018
 obtained: Event
-mega: true
+mega: false
 published: true
 ---
 

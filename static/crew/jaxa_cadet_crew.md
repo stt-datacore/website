@@ -3,8 +3,8 @@ name: Cadet Sito Jaxa
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 1
-events: 7
+bigbook_tier: 6
+events: 15
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The goddess of Cadets. One of “Riker’s Angels” and just all around awesome. If you pick her up quick enough you will have completed about 50% of the difficult missions. She can work on all three cadet missions all week. Her CMD stat is strong for a 2* and her ship ability will make short work combined with an attack boost. She lacks a collection but frankly she stands alone in being one of the best crewmembers you will ever use.
+An all-in-one cadet package, Cadet Sito (she doesn’t accept the distortion of her name either) is the premier CMD option for weekday cadet work. Your CMD options are the one skill Ro or a few different CMD secondaries if you want to hit on eligibility five days a week, leaving Sito the best option by far.
+
+Her DIP secondary can squeak by a few nodes on Epic, while her string of traits offers myriad galaxy map node unlocks as well as yet unrealized collection value. This is a card whose value surpasses surface level metrics and is an excellent early game pickup to jumpstart your roster.

@@ -3,8 +3,8 @@ name: Jazz Musician Riker
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 23
+bigbook_tier: 6
+events: 27
 in_portal: true
 date: 28/12/2016
 obtained: Post-Launch

@@ -1,10 +1,10 @@
 ---
 name: Marla McGivers
 rarity: 4
-series: tng
+series: tos
 memory_alpha:
 bigbook_tier: 10
-events: 3
+events: 4
 in_portal: true
 date: 12/06/2017
 obtained: Event

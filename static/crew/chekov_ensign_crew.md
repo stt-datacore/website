@@ -3,8 +3,8 @@ name: Ensign Chekov
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 10
-events: 11
+bigbook_tier: 7
+events: 12
 in_portal: true
 date: 01/01/2016
 obtained: Launch

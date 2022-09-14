@@ -3,8 +3,8 @@ name: Lt. Commander Nella Daren
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 5
+bigbook_tier: 9
+events: 10
 in_portal: true
 date: 09/06/2016
 obtained: Post-Launch

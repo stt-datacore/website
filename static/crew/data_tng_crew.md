@@ -3,8 +3,8 @@ name: Lt. Commander Data
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 27
+bigbook_tier: 1
+events: 29
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A strong ENG stat for a 2* makes up for his average SCI and SEC, however the combination makes for good early game voyaging and he has some useful traits which will help tick off a few nodes. He’s also classified as an alien for some reason so useful on two of the three cadet missions.
+One of the strongest Uncommon ENG bases makes up for an average SCI and SEC, combining to bring newer players some good early game Voyaging. Some useful traits will help tick off a few Galaxy map nodes (as well as Cadet Mission ones…shhh, he’s apparently an Alien and we won’t speak of this further) while providing an always welcome 2* Immortalization for a tricky Collection.

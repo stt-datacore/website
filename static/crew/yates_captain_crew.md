@@ -3,8 +3,8 @@ name: Captain Kasidy Yates
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 4
+bigbook_tier: 7
+events: 6
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Kasidy's value heavily rests on her Saturday Cadet mission eligibility where she holds both the #5 CMD and SEC bases. She's not the ideal early-game leveling target for that as she lacks in almost every other area, but if she has a star advantage and can help you clear those nodes, you may not have another option. Just make sure that your replicator is warmed up to answer the call of the 43 Faction items needed to fully equip her.
+Kasidy's value heavily rests on her Saturday Cadet mission eligibility - she has two skills that can make some noise on Epic difficulty, but if you’re willing to level two sets of crew for the weekend, you may as well pick ones with greater utility than what Kasidy offers. This card is an easy airlock for rosters at every level of play.

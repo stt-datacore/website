@@ -3,7 +3,7 @@ name: Sniper Reed
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 2
 events: 9
 in_portal: true
 date: 26/05/2016
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Triggerless arena damage begins and ends the value portfolio for Reed who boasts no collections, no cadet work, no third skill for voyages, no gauntlet work, and no business hogging a crew slot as soon as you can replace him on ships.
+Like his name would suggest, Sniper Reed has been lying in wait, biding his time until the Klingons arrive…uh, til he has any use in this game. Now it’s time for him to take his shot.
+
+Boasting a triggerless 200% instant damage at 6s, Malcolm finds his niche in the spam-worthy Normal difficulty of Fleet Boss Battles. It’s not much, but it’s honest work.

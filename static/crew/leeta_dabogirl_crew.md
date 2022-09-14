@@ -3,7 +3,7 @@ name: Dabo Girl Leeta
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 8
 events: 4
 in_portal: true
 date: 09/06/2016

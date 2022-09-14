@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 2
-events: 31
+events: 32
 in_portal: true
 date: 04/01/2022
 obtained: Giveaway

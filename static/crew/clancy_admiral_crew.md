@@ -3,8 +3,8 @@ name: Admiral Kirsten Clancy
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 8
-events: 3
+bigbook_tier: 9
+events: 4
 in_portal: true
 date: 21/04/2020
 obtained: Pack

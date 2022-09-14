@@ -3,8 +3,8 @@ name: Mission Specialist Lefler
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
-events: 8
+bigbook_tier: 9
+events: 9
 in_portal: true
 date: 11/02/2020
 obtained: Pack

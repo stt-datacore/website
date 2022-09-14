@@ -3,8 +3,8 @@ name: Dr. Reyga
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 15
+bigbook_tier: 8
+events: 21
 in_portal: true
 date: 01/01/2016
 obtained: Launch

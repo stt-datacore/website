@@ -3,8 +3,8 @@ name: Bashir, Julian Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 29
+bigbook_tier: 6
+events: 30
 in_portal: true
 date: 26/05/2016
 obtained: Pack

@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 6
-events: 15
+events: 16
 in_portal: true
 date: 05/05/2020
 obtained: Pack
