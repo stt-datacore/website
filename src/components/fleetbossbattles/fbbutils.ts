@@ -20,7 +20,10 @@ export function getOptimalCombos(crewList: any[]): any[] {
 		const supersets = optimalCombos.filter(optimal =>
 			optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
 		);
-		if (supersets.length === 0) optimalCombos.push(combo);
+		const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
+		if (newNodes.length > 0) combo.nodes = newNodes;
+		if (supersets.length === 0 || newNodes.length > 0)
+			optimalCombos.push(combo);
 	});
 	return optimalCombos;
 }
