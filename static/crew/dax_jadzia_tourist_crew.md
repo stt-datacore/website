@@ -3,7 +3,7 @@ name: Tourist Jadzia Dax
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 22
 in_portal: true
 date: 01/08/2018

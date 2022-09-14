@@ -4,7 +4,7 @@ rarity: 5
 series: original
 memory_alpha:
 bigbook_tier: 1
-events: 24
+events: 25
 in_portal:
 date: 06/09/2022
 obtained: Giveaway

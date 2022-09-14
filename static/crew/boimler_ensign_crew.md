@@ -3,8 +3,8 @@ name: Ensign Boimler
 rarity: 2
 series: low
 memory_alpha:
-bigbook_tier: 8
-events: 3
+bigbook_tier: 7
+events: 4
 in_portal:
 date: 17/08/2022
 obtained: Event
