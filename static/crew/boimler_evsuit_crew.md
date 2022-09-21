@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-
+This is a cash-only option not available through the game client. This page will be updated when the crew enters the portal.
