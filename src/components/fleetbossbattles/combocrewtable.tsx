@@ -138,7 +138,7 @@ const ComboCrewTable = (props) => {
 				showFilterOptions={true}
 			/>
 			<div style={{ marginTop: '1em' }}>
-				<p><i>Optimal Crew</i> exclude crew whose matching traits are a subset of another possible crew for that node.</p>
+				<p><i>Optimal Crew</i> are the crew you should try first for efficient use of valor; they exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
 				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your crew filters.</p>
 			</div>

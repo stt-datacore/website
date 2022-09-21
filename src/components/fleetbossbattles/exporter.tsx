@@ -66,6 +66,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const { openNodes, allMatchingCrew } = props;
 
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
+	const [showTraits, setShowTraits] = React.useState(true);
 
 	const sortedTraits = (traits) => {
 		return traits.map(t => allTraits.trait_names[t]).sort((a, b) => a.localeCompare(b)).join(', ');
@@ -73,7 +74,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 
 	const formatCrewName = (crew) => {
 		let name = crew.name.replace(/[,\.\(\)\[\]"“”]/g, '');
-		if (crew.coverage_rarity > 1) name = `*${name}*`;
+		if (crew.nodes_rarity > 1) name = `*${name}*`;
 		return name;
 	};
 
@@ -100,17 +101,19 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 					combo.length === crew.node_matches[`node-${node.index}`].traits.length
 					&& combo.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
 				).sort((a, b) => {
-					if (a.coverage_rarity !== b.coverage_rarity)
-						return b.coverage_rarity - a.coverage_rarity;
+					if (a.nodes_rarity !== b.nodes_rarity)
+						return b.nodes_rarity - a.nodes_rarity;
 					return a.name.localeCompare(b.name);
 				}).map(crew => formatCrewName(crew)).join(', ');
 				if (nodeList !== '') nodeList += '\n';
-				nodeList += `- ${crewList} (${sortedTraits(combo)})`;
+				nodeList += `- ${crewList}`;
+				if (showTraits) nodeList += ` (${sortedTraits(combo)})`;
 			});
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';
-				output += `Node ${node.index+1} (${sortedTraits(node.traitsKnown)})\n`;
-				output += nodeList;
+				output += `Node ${node.index+1}`;
+				if (showTraits) output += ` (${sortedTraits(node.traitsKnown)})`;
+				output += '\n' + nodeList;
 			}
 		});
 		navigator.clipboard.writeText(output);
@@ -128,6 +131,12 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 							label={<label>Only list optimal crew</label>}
 							checked={showOptimalsOnly}
 							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
+						/>
+						<Form.Field
+							control={Checkbox}
+							label={<label>List traits</label>}
+							checked={showTraits}
+							onChange={(e, { checked }) => setShowTraits(checked) }
 						/>
 					</Form.Group>
 				</Form>
