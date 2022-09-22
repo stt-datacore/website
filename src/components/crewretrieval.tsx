@@ -1027,7 +1027,7 @@ const CrewTable = (props: CrewTableProps) => {
 					<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size="large" disabled />
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
-					<b>{formatTierLabel(crew.bigbook_tier)}</b>
+					<b>{formatTierLabel(crew)}</b>
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 					<b>{crew.cab_ov}</b><br />
