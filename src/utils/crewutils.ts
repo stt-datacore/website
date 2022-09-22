@@ -359,11 +359,12 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
 
-export function formatTierLabel(tier, short = true) {
-	if (!tier || tier === -1) {
-		if (short) {
-			return 'none';
-		}
+export function formatTierLabel(crew) {
+	if (!crew.in_portal && crew.obtained === "WebStore") {
+		return '$';
 	}
-	return `${tier}`;
+	if (!crew.bigbook_tier || crew.bigbook_tier === -1) {
+		return 'none';
+	}
+	return `${crew.bigbook_tier}`;
 }

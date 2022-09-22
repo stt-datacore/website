@@ -52,7 +52,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	return (
 		<React.Fragment>
 			<Table.Cell textAlign='center'>
-				<b>{formatTierLabel(crew.bigbook_tier)}</b>
+				<b>{formatTierLabel(crew)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b>{crew.cab_ov}</b><br />
