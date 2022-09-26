@@ -4,7 +4,7 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 7
-events: 24
+events: 25
 in_portal:
 date: 02/03/2022
 obtained: Giveaway

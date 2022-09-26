@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Some on-paper contributions in the way of (cloak triggered) crit bonus or Sunday cadet eligibility are better left to crew who have broader usability than this CMD/DIP/SEC also-ran. You really should only be leveling him for the great kollection spot, which takes a few dozen faction items, but is light on chronitons.
+Thin utility for this two trait wonder comes either on ships where he laps the cadet field with heaps of crit bonus or in the collections tab where he’s a mere “and one” for midgame players looking to flesh out their boosts. Until you’re in that area of the game, feel free to pass on building him which will require a few dozen faction items, but a relatively light amount of chronitons.

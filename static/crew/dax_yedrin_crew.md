@@ -16,4 +16,4 @@ Jeez, Sisko, every behavioral expert on any two-bit True Crime drama will tell y
 
 Grandfathered, or rather Grandsonned into a heady Dax event count sees Yedrin starting off on the right foot. His string of traits have further supplemented that tally in recent years and should continue to do so as WRG pairs trait collection with trait mega time and again. As his number of collections rise to meet his weekend usefulness too, we should see Yedrin hold value in the future.
 
-But don’t overlook his immediate day to day potential either. Debuting with a top ten base and top twenty voyage score grants him day one usage for early-to-mid game rosters and makes him a well-rounded crew. This may not be the Jadzia or Ezri power refresh we’ve been looking for, but Dax is back with this offering.
+But don’t overlook his immediate day to day potential either. Debuting with a top ten base and top twenty voyage score grants him day one usage for early-to-midgame rosters and makes him a well-rounded crew. This may not be the Jadzia or Ezri power refresh we’ve been looking for, but Dax is back with this offering.

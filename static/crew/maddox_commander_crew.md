@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A perfectly average crew card for SCI really. He’s got nothing special that other SCI/ENG crew have except a small DIP bonus and a 15% hull repair in his ship ability. No extra collection bonuses and no use at the weekend but might find his way on a voyage or two.
+Data’s having the last laugh - Bruce is a worthless card. Boasting no cadet eligibility and only a single potential collection trait, any daily use in the way of shuttles or voyages that you might glean from him are trainers better spent elsewhere. Airlock relentlessly until the Cyberneticist collection hits.
