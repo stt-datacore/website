@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Okay, stay with me here, this girl has the lowest DIP primary stat of all the 2* crew, but that doesn’t matter. There’s only 70 points between her and the best in terms of base skill and Leeta actually has a bit more use. You will use her for certain Cadet Missions much more than you realise and she actually has a fair amount of daily use for a 2*. No collection mind but like her 4* mirror counterpart will up your crit rating in ship battles to something nice and destructive.
+How much can you trust the judgment of someone whose love for Rom is that unflagging? Without a solid Uncommon DIP option to cover all five days of cadet work, it’s feasible that Leeta is one of the crew you might employ to help out with that coverage. She’s so unremarkable elsewhere, however, that you should feel free to pass on lending her a crew slot until her letter B traits blossom into collection value down the line.
