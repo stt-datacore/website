@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The first Rare Disco Card!  Black Alert!  In the upper suits of timelines rosters CMD/DIP is a common occurrence but down in the F2P realms Pike is sweet relief. His CMD base puts him in the top 5 Rare crew and his average stat (important for voyaging) is only beaten by Klingon Dukat. A viable replacement for Jazz Musician Riker and extremely essential for CMD/DIP voyages. What keeps him from the top tier is a lack of unique traits and an unremarkable ship ability however at the point where you need him, that won't matter. Get him on every ship and shuttle you can send!
+Lacking the powerful follicle volume of his successors, this Pike variant is an easy catch and release candidate until you’re at cruising altitude in the midgame. Lacking the ability to participate in weekend cadet missions and with subpar collection value, you’ll find his CMD/DIP/SUCK voyage ability unable to stand up to higher rarity options as well.
+
+Green light base and voyage power is tempting for new players, but they’re easily replaceable attributes by your weekly event rewards.

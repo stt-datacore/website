@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Zeroes in the cadet and collection brackets hamstring Book mightily from the start. His above average base and voyage numbers make him a tempting target to level, but any amount of event super rares to drift in each week will provide longer-term benefit in those areas while you freeze-n'-forget collection piece rares instead.
+Lt. ‘Book’ Booker, a distant relative of ours, finally got justice with a post-release addition of the hidden nonhuman trait to give him some weekend cadet eligibility. Which is nice, because if he wasn’t on your early game shuttles, he wasn’t doing much.
+
+His small-enough-to-be-collection traits should trickle out of the “potential” category single file over time, but until they do, we’re not seeing broad enough value for him to be a recommended immortalization early on over more versatile crew.

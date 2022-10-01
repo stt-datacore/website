@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-Nothing particular exciting about Airiam aside from her fantastic attire for beachwear. A lack of proficiencies hurts her voyaging power and although her SCI base is good it's not enough to prioritise her over better cards. No traits, no collection and a poor ship ability hinder her usefulness. A one-day cadet help on the weekend, she comps (poorly) to the crew you really want to level for the early game:
-
 Mom, I want Mister Saavik.
 
 We have Saavik at home.
 
-Saavik at home: Human Airiam.
+Saavik at home:
+
+Crew like this have me hearing Sir Patrick shout about being bereft of something or other. A gross lack of traits and cadet mission eligibility on only one day downgrades this sandwich to a measly slice of white bread. This is an easy catch and release candidate until the Casual collection hits.

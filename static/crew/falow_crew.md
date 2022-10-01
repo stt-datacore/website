@@ -13,9 +13,9 @@ published: true
 ---
 
 Allamaraine
-He’s tier 4
+Now tier 5
 Allamaraine 
-And no more
+His edit's live
 Allamaraine 
 Collections 3
 Allamaraine 

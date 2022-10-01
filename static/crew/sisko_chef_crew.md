@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Okay first, yes that is a Potato, a coffee fueled Potato no less!. We’re going to laugh about this potato and how strange it is to equip for some time. #3 DIP base combined with a #13 MED base is very respectable for someone poking a vegetable. His Cultural Figure trait will unlock some specific nodes and might get an antimatter boost in voyages. His dual collection bonus is nice but his DIP proficiency isn’t that wide and he can’t work on any cadet missions. If it’s DIP/MED voyages you are looking to fill then Deanna Troi might be a better example.
+A “five times fast” kind of name is one you should get to know thanks to Shoe Chef Shisko’s fantastic collection mélange. A sprinkling of galaxy map node unlocks and early game shuttle work are merely hors d'oeuvres for Chef’s main course; stat-boosters.
+
+Already at the summit of collection power, the only crew who could chase him down if everything potential-ly breaks right would be that bloodsucker Khan. Even if you opt not to level Sisko right away due to a lack of cadet or voyage work, he still deserves to eat a crew slot while you finish your vegetables before having dessert.
