@@ -3,7 +3,7 @@ name: Yeoman Rand
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 7
 in_portal: true
 date: 01/01/2016

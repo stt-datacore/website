@@ -3,7 +3,7 @@ name: Tourist Worf
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 2
 events: 30
 in_portal: true
 date: 23/01/2020
