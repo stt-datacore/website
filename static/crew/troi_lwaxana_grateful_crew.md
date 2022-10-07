@@ -3,8 +3,8 @@ name: Grateful Lwaxana Troi
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 5
+bigbook_tier: 9
+events: 6
 in_portal: true
 date: 27/08/2019
 obtained: Pack

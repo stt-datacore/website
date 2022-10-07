@@ -140,7 +140,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				<Table.Cell textAlign="center">
-					<b>{formatTierLabel(crew.bigbook_tier)}</b>
+					<b>{formatTierLabel(crew)}</b>
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>{crew.cab_ov}</b><br />

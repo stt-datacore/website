@@ -3,8 +3,8 @@ name: Commando Crusher
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 1
-events: 13
+bigbook_tier: 5
+events: 15
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Golden Goose for all areas of the game. Seriously I consider her one of the best 3* cards available. Let’s start with the #1 MED Base stat which will destroy most nodes she is capable of. 200% damage in ship battles makes her absolutely needed for Arena and Skirmish events. A diverse skill set that gets her on most voyages and with the physician trait, more antimatter and collection bonuses.
+The Golden Goose for all areas of the game, Commando Crusher has aged like fine wine since launch. Still sitting comfortably in the #1 MED Base position, she’ll destroy most nodes she qualifies for (which, thanks to her diverse list of traits, is a fair amount). A triggerless 200% instant damage in ship battles makes her a must have for newer players in both Arena and Skirmish events, and even the elderly crowd will want to have her on hand for Fleet Boss Battles.

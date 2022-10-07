@@ -18,6 +18,6 @@ Sure, voyages are a non-starter and Travis is prone to dud event years, but in t
 
 Arena especially sees him rubbing shoulders with other automatic names like Captain Killy, but he dodges their unfortunately evasion handicap, making him a fine 1B option to the most offensively focused crew available.
 
-His gauntlet bona fides aren’t quite as superlative, but for only a single star he will stack ‘gauntlet boon’ on top of ‘arena boom’. A trio of 45% trait sets and reasonable overall proficiency should overcome a competitive skill set in most cases for players in the early-to-mid game and make it easy to avoid sinking additional honor or behold capital into that area while you wait for Balok to come along.
+His gauntlet bona fides aren’t quite as superlative, but for only a single star he will stack ‘gauntlet boon’ on top of ‘arena boom’. A trio of 45% trait sets and reasonable overall proficiency should overcome a competitive skill set in most cases for players in the early-to-midgame and make it easy to avoid sinking additional honor or behold capital into that area while you wait for Balok to come along.
 
 TACO won’t command a ton of usage on fleshed out rosters, but there’s no shame in seeking him out if you’re a new player. What he offers should make a much bigger impact for you than a crew with a singular focus in shuttles or voyages.

@@ -3,8 +3,8 @@ name: Away Team Neelix
 rarity: 2
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 14
+bigbook_tier: 2
+events: 15
 in_portal: true
 date: 07/03/2018
 obtained: Event

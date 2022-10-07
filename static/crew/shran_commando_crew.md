@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A spot in the Inspiring collection, but his stats are not. Usable +Attack arena activator for early instant damage friends and one event per year are the only times you might use him.
+Shran owns a spot in the Inspiring collection, but his stats are not. As with most launch day crew, his usefulness stems from his traits and once you hit the midgame and beyond, he’s merely collection fodder.

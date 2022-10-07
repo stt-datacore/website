@@ -3,8 +3,8 @@ name: Emergency Medical Holoprogram Mk.1
 rarity: 2
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 20
+bigbook_tier: 9
+events: 23
 in_portal:
 date: 31/03/2018
 obtained: Honor Hall

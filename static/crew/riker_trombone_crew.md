@@ -3,8 +3,8 @@ name: Jazz Musician Riker
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 23
+bigbook_tier: 6
+events: 27
 in_portal: true
 date: 28/12/2016
 obtained: Post-Launch
@@ -12,4 +12,9 @@ mega: false
 published: true
 ---
 
-If CMD strength is something you are looking for then J.M. Riker is a fairly good contender. His base stat isn’t amazing but it does have a strong proficiency bonus and his combination of skills and traits will make him a lot of voyages. But that’s not his redeeming feature, he has a very strong +7 Attack bonus which, paired with attack speed or crit bonus, will make short work of Skirmish enemies in the Captain stages. His shortcomings however mean you lose some evasion bonus with the ship skill and his DIP score is not the most useful on outgoing shuttles.
+🎵When the jazzman's testifyin'
+A faithless man believes
+He can sing you into paradise
+Or bring you to your knees🎵
+
+There’s two things Riker loves: Boning, and ‘Boning. If he’s not doing either of those, he’s probably helping a newer player out during Events with his solid CMD Base and highly eventable traits (which also add Collection value). He’ll stick around on your roster longer than other Rares will thanks to a mighty +7 Attack bonus in Ship Battles. Just don’t ask him to play Nightbird.

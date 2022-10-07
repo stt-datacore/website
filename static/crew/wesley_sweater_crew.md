@@ -3,8 +3,8 @@ name: Wesley Crusher
 rarity: 1
 series: tng
 memory_alpha:
-bigbook_tier: 10
-events: 10
+bigbook_tier: 8
+events: 11
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I can’t actually think of a more useless card. Not only can he not perform in the weekday cadet missions due to not being enlisted yet, but he has no collection, poor statistics and all of his abilities are bested by the superior Acting Ensign Wesley card, which has all the same traits and ship abilities but better. Even his card art is wrong, I have a special tier for just how wrong this card is, Fire-At-Wil. Don’t even use him for the common collection, don’t even take the honor, just uninstall your game if he drops
+Same boring old Wesley, now featuring Wunderkind! He's been upgraded from entirely useless to merely mostly useless thanks to his inclusion in the 'Prodigy' collection, and that only needs 20 Immortalizations to max out its stat boosts. Don't let his SCI/ENG fool you, Last Minute Cosplay Idea Wesley still offers next to nothing to even the newest of players, so freeze him as soon as you get Acting Ensign Crusher (if not sooner).

@@ -3,8 +3,8 @@ name: Festive Jadzia Dax
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 2
-events: 33
+bigbook_tier: 4
+events: 40
 in_portal: true
 date: 25/10/2017
 obtained: Event

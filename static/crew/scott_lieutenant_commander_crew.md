@@ -3,8 +3,8 @@ name: Lt. Commander Scott
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 9
+bigbook_tier: 10
+events: 10
 in_portal: true
 date: 01/01/2016
 obtained: Launch

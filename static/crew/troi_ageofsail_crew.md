@@ -16,4 +16,4 @@ published: true
 
 Any roster still using super rares on voyages should welcome aboard MED at every opportunity and AoS Troi certainly qualifies. The raw numbers there are worthwhile and in combination with a plus skill set should earn use into the mid-game.
 
-If voyaging the high seas aboard the HMS Enterprise doesn't suit your fancy, Troi has a few other noteworthy offerings. Her MED base won't find much work without a bonus, but edges out Assimilated Troi for tops among super rare variants and comes with double collections and a (brief) +9 attack boost on ships. Troi is a fantastic get for early-mid game rosters with some valuable collection equity for long time players.
+If voyaging the high seas aboard the HMS Enterprise doesn't suit your fancy, Troi has a few other noteworthy offerings. Her MED base won't find much work without a bonus, but edges out Assimilated Troi for tops among super rare variants and comes with double collections and a (brief) +9 attack boost on ships. Troi is a fantastic get for early-midgame rosters with some valuable collection equity for long time players.

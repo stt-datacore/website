@@ -3,8 +3,8 @@ name: Command Wrap Kirk
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 5
-events: 27
+bigbook_tier: 6
+events: 31
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Really DB should be making Kirk, Picard and all the main crew into stars in this game, but...no. Just-Threw-On-A-Towel Kirk has the worst CMD primary stat for a 3* card, even being beaten by some 2* crew. He’s not available for cadet missions and his ship ability is fairly terrible. His Inspiring trait makes the collection and being a main cast member means you could possibly use him in an event or two, but don’t rely on him for daily use if you have better crew.
+An arguably transcendent gauntleteer at the Rare level, Kirk’s “viability” there says more about WRG’s plans for new rare crew than his standalone power. In any other skill set, Ol’ Green Eyes would be rubbing shoulders with purple proficiency options and indeed can help you get a toe in the gauntlet door. But he owns more of a token top ranking when the reality of the situation will see him pitted against crew with twice his overall proficiency.
+
+Similarly, Kirk events will be plentiful, but he’s going to need more than a mere 2x bonus to match the base power of higher rarity options. Wrap’s stats are truly impressive for a launch card of his rarity, but you’ll have to strike early to get much use out of him as veteran players will be looking for more collection value when choosing who to level up with their spare trainers.

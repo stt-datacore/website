@@ -3,8 +3,8 @@ name: Ensign Vorik
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 11
+bigbook_tier: 10
+events: 12
 in_portal: true
 date: 21/07/2016
 obtained: Post-Launch

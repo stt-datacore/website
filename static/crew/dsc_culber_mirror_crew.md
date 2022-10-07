@@ -3,7 +3,7 @@ name: Mirror Doctor Culber
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 41
 in_portal: true
 date: 11/03/2021

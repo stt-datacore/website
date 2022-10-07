@@ -3,7 +3,7 @@ name: Vahar'ai Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 28
 in_portal: true
 date: 23/04/2020

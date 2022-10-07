@@ -3,7 +3,7 @@ name: Orbital Skydiving Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 21
 in_portal:
 date: 11/05/2022

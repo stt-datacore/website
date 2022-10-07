@@ -3,8 +3,8 @@ name: Grand Nagus Zek
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 10
-events: 22
+bigbook_tier: 9
+events: 23
 in_portal: true
 date: 24/08/2016
 obtained: Post-Launch

@@ -107,7 +107,10 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		const userName = this._getCurrentUsername();
 
-		const crew = crewJson.edges[0].node;
+		let crew = crewJson.edges[0].node;
+		if (markdownRemark && markdownRemark.frontmatter) {
+			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier;
+		}
 		return (
 			<Layout narrowLayout={true}>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>

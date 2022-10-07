@@ -3,8 +3,8 @@ name: CMO Bashir
 rarity: 1
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 22
+bigbook_tier: 4
+events: 26
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Second best 1* MED score, #18 overall, two additional collections (Physician and Engineered) and a very good early game ship ability make this one of the better cards to keep. The cyberneticist trait will be useful early on and once you get the point of freezing crew he can start three collections off quite nicely. His main let down is a pointless command statistic which can be easily ignored.
+Impressive collection value is the main draw for Rao Bashir who, despite his bevy of traits, offers no galaxy map node unlocks. A combined MED score punchy enough to help out with cadet missions does get limited help from bonus traits, but as a lowly, lowly cook common crew, feel free to hold off on leveling him until you get over the early game trainer hump.

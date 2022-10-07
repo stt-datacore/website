@@ -33,9 +33,10 @@ export const CrewTraitMatchesCell = (props: any) => {
 		}
 		return { background, color };
 	};
+	const traitList = props.traitList ?? crew.traits_matched;
 	return (
 		<Table.Cell textAlign='center'>
-			{crew.traits_matched.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+			{traitList.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
 				<Label key={idx} style={traitCounts ? colorize(trait) : undefined}>
 					{allTraits.trait_names[trait]}
 				</Label>
@@ -51,7 +52,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	return (
 		<React.Fragment>
 			<Table.Cell textAlign='center'>
-				<b>{formatTierLabel(crew.bigbook_tier)}</b>
+				<b>{formatTierLabel(crew)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b>{crew.cab_ov}</b><br />

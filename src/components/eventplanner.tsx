@@ -9,7 +9,6 @@ import ProspectPicker from '../components/prospectpicker';
 import ShuttleHelper from '../components/shuttlehelper/shuttlehelper';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel } from '../utils/crewutils';
 import { guessCurrentEvent, getEventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';

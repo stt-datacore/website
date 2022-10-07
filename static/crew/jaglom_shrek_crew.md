@@ -3,7 +3,7 @@ name: Jaglom Shrek
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 14
 in_portal:
 date: 05/04/2022

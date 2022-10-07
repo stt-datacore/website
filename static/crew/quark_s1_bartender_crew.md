@@ -3,8 +3,8 @@ name: Bartender Quark
 rarity: 1
 series: ds9
 memory_alpha:
-bigbook_tier: 9
-events: 24
+bigbook_tier: 3
+events: 30
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-If it wasn’t for his usefulness in the Ferengi collection I would say just airlock this guy straight away. He just about stays out of the lowest tier due to that and some useful traits that can unlock some early mission nodes. He has the lowest Diplomacy primary stat for any crew as well as having the lowest command AND lowest security bases for all the crew in the game. Don’t feel bad about pushing him out of the airlock, his only use is to tick a box and serve a drink.
+If it wasn’t for his spot in the Ferengi collection and blue suede shoes, Quark’s usefulness would be relegated to Nightmare Mode players. But we try to be more forward thinking around here and his devious smattering of traits keep the door cracked open for more collection value down the line.
+
+The green light shuttle and voyage metrics will be of interest to those aforementioned masochists, but are too easily outclassed by higher rarity options for the rest of us. Requiring a couple handfuls of faction items to immortalize, feel free to airlock this Quark a few times until you have the spare replicator uses to clear him from your active roster.

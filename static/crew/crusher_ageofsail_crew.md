@@ -3,7 +3,7 @@ name: Age of Sail Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 15
 in_portal: true
 date: 26/09/2016

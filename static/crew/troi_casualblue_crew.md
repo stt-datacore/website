@@ -3,8 +3,8 @@ name: Deanna Troi
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 14
+bigbook_tier: 8
+events: 17
 in_portal: true
 date: 22/11/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-With a high MED base and a good range of DIP/CMD to fall back on the Empathetic Empress here is one of the best rare cards to have. She has a few useful traits to knock out nodes and can work on all the weekend cadets, and has the best Gauntlet score for all cadets. Seeing how rare MED skills are later in the game I wouldn’t be surprised if she stays in your active roster once the weekend cadet missions are finished. Just make sure you have a lot of Holoprograms and Medical Experiments stocked up as she needs a lot of them to fully equip.
+Deanna’s reasonable daily utility for new players is somewhat muted by a build cost that requires dozens of faction items. She’s an acceptable option for clearing both Saturday and Sunday cadet nodes and may pitch in on voyages and in the gauntlet for some weeks, but has dreadful long term value. Troi is an informed choice at best for your valuable early game resources. Her strengths are better suited to high rarity crew.

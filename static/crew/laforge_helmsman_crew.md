@@ -3,8 +3,8 @@ name: Geordi La Forge
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 31
+bigbook_tier: 6
+events: 35
 in_portal: true
 date: 11/07/2018
 obtained: Event

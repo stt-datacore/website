@@ -3,8 +3,8 @@ name: Holodeck 3 Dr. Brahms
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 18
+bigbook_tier: 9
+events: 19
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch
