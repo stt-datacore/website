@@ -50,6 +50,9 @@ const forDataCore = (input, output, chewable) => {
 			'prof': lineup.proficiency,
 			noExtends: false // Set to true to show estimate with no refills
 		};
+		// Increase confidence of estimates for thorough, marginal strategies
+		if (['thorough', 'minimum', 'moonshot'].includes(input.strategy))
+			chewableConfig.numSims = 10000;
 		return new Promise((resolve, reject) => {
 			const estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
@@ -130,18 +133,18 @@ const forDataCore = (input, output, chewable) => {
 		.then((lineups) => {
 			// Estimate only as many lineups as necessary
 			const estimator = new VoyagersEstimates(voyage, input.bestShip.score, lineups, config);
-			estimator.estimate(datacoreEstimator, input.strategy, input.confidence)
+			estimator.estimate(datacoreEstimator, input.strategy)
 				.then((estimates) => {
-					// Return only the best lineups by requested sort strategy
-					let methods = ['estimate', 'minimum', 'moonshot', 'dilemma', 'antimatter'];
-					if (input.strategy === 'estimates')
+					// Return only the best lineups by requested strategy
+					let methods = ['estimate', 'minimum', 'moonshot'];
+					if (input.strategy === 'estimate')
 						methods = ['estimate'];
-					else if (input.strategy === 'minimums')
+					else if (input.strategy === 'minimum')
 						methods = ['minimum'];
-					else if (input.strategy === 'moonshots')
+					else if (input.strategy === 'moonshot')
 						methods = ['moonshot'];
 					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit = input.strategy === 'all' ? 1 : 3;
+					const limit = ['smart', 'thorough'].includes(input.strategy) ? 1 : 3;
 					const sorter = new VoyagersSorted(lineups, estimates);
 					sorter.sort(datacoreSorter, methods, limit)
 						.then((sorted) => {
@@ -665,7 +668,7 @@ class VoyagersEstimates {
 			this.config.progressCallback(message);
 	}
 
-	estimate(estimator, strategy = 'all', confidenceIndex = 2) {
+	estimate(estimator, strategy = 'estimate') {
 		let self = this;
 		return new Promise((resolve, reject) => {
 			self.lineups.forEach((lineup) => {
@@ -682,22 +685,24 @@ class VoyagersEstimates {
 				self.sendProgress('Narrowing by average tick count ('+avgTicks.toFixed(2)+')...');
 			}
 
-			// Narrow further by sort strategy and confidence index
-			//  Lower index means less waiting, but also less thoroughness
-			if (confidenceIndex > 0 && confidenceIndex < considered.length) {
+			// Narrow further by sort strategy
+			if (strategy !== 'thorough') {
 				const scanKeys = [];
 
+				// Lower depth value means less waiting, but also less thoroughness
+				const estimateDepth = 3;
+				const defaultDepth = 7;
+
 				// Lineups with the best tick counts should yield best median estimates
+				//	Always consider lineups with 3 best estimates
 				//	Good chance best guaranteed minimum is also in this group; decent chance for good moonshot
-				let scanDepth = ['estimates', 'all'].includes(strategy) ? confidenceIndex : 0;
-				if (scanDepth > 0) {
-					considered.sort((a, b) => b.projection.ticks - a.projection.ticks);
-					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
-						scanKeys.push(considered[i].key);
-					}
+				considered.sort((a, b) => b.projection.ticks - a.projection.ticks);
+				for (let i = 0; i < Math.min(estimateDepth, considered.length); i++) {
+					scanKeys.push(considered[i].key);
 				}
+
 				// Lineups with low deviations tend to have better guaranteed minimums
-				scanDepth = ['minimums', 'all'].includes(strategy) ? confidenceIndex : 0;
+				let scanDepth = ['minimum', 'smart'].includes(strategy) ? defaultDepth : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.total - a.weights.total);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -707,7 +712,7 @@ class VoyagersEstimates {
 				}
 
 				// Lineups with high prime scores tend to have better moonshots
-				scanDepth = ['moonshots', 'all'].includes(strategy) ? confidenceIndex : 0;
+				scanDepth = ['moonshot', 'smart'].includes(strategy) ? defaultDepth : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.primes - a.weights.primes);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -718,7 +723,7 @@ class VoyagersEstimates {
 
 				if (scanKeys.length > 0) {
 					considered = considered.filter((lineup) => scanKeys.includes(lineup.key));
-					self.sendProgress('Narrowing by strategy ('+strategy+') and confidence ('+confidenceIndex+')...');
+					self.sendProgress('Narrowing by strategy ('+strategy+')...');
 				}
 			}
 

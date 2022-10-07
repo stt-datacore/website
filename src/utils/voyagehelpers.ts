@@ -53,30 +53,16 @@ export const CALCULATORS = {
 			calculators: ['ussjohnjay'],
 			id: 'strategy',
 			name: 'Strategy',
-			description: 'Prioritize lineups by strategy',
+			description: 'Prioritize estimates by strategy',
 			control: 'select',
 			options: [
-				{ key: 'all', text: 'All (default)', value: 'all' },
-				{ key: 'estimates', text: 'Best estimates', value: 'estimates' },
-				{ key: 'minimums', text: 'Guaranteed minimums', value: 'minimums' },
-				{ key: 'moonshots', text: 'Moonshots', value: 'moonshots' }
+				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
+				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
+				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
+				{ key: 'smart', text: 'Smart', value: 'smart' },
+				{ key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
-			default: 'all'
-		},
-		{
-			calculators: ['ussjohnjay'],
-			id: 'confidence',
-			name: 'Confidence',
-			description: 'Balance thoroughness and speed',
-			control: 'select',
-			options: [
-				{ key: '1', text: 'Lowest (fastest)', value: 1 },
-				{ key: '2', text: 'Lower', value: 2 },
-				{ key: '5', text: 'Normal', value: 5 },
-				{ key: '10', text: 'Higher', value: 10 },
-				{ key: '25', text: 'Highest (slowest)', value: 25 }
-			],
-			default: 5
+			default: 'estimate'
 		}
 	]
 };
@@ -378,8 +364,7 @@ class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			strategy: props.calcOptions.strategy ?? 'all',
-			confidence: props.calcOptions.confidence ?? 2
+			strategy: props.calcOptions.strategy ?? 'estimate'
 		};
 	}
 
@@ -392,7 +377,6 @@ class USSJohnJayHelper extends Helper {
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
 			strategy: this.calcOptions.strategy,
-			confidence: this.calcOptions.confidence,
 			worker: 'ussjohnjay'
 		};
 
@@ -504,7 +488,7 @@ class USSJohnJayHelper extends Helper {
 				break;
 			case 'dilemma':
 				sortName = 'dilemma chance';
-				sortValue = bestValues.dilemma.chance+'% to reach '+bestValues.dilemma.hour+'h';
+				sortValue = Math.round(bestValues.dilemma.chance)+'% to reach '+bestValues.dilemma.hour+'h';
 				break;
 			case 'antimatter':
 				sortName = 'starting antimatter';
