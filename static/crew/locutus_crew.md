@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 1
-events: 40
+events: 41
 in_portal:
 date: 31/01/2017
 obtained: Gauntlet

@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-🐳 🐋 We've reached the point where ranking actual whales in a semi-serious fashion is a thing. George & Gracie's surface level ranks are usable for a beginner's roster and their assorted traits might pop for (more) events in the future, but G&G come up short where the tentpoles of rare crew value are concerned.
-
-Although their nonhuman hidden trait qualifies them for Sunday cadet work, there are superior DIP/SEC options out there including a handful of female aliens who can handle double duty for both days of weekend cadet missions. Without collections or significant arena/gauntlet ability, enjoy this April 1st offering in the spirit in which it's given. 🐋 🐳
+A fresh coat of hidden trait paint has renewed G&G’s time in the cadet spotlight. Now qualifying for all weekend cadet missions, that benefit stacks up alongside reasonable daily power and an adequate non-HFS trait list which should see an increase in collection value over time. We’re happy to sign off on them as one of your early Rare crew leveling projects. The hell they are our whales! 🐋 🐳
