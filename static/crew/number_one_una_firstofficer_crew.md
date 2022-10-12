@@ -3,7 +3,7 @@ name: First Officer Una
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 11
 in_portal:
 date: 06/07/2022

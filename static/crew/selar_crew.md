@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-An absolute MED monster. The #1 MED max score which, before bonuses, scores over 900! Being a one skilled crew means she probably won’t end up on many voyages however she will be useful on all weekend cadet missions and her +2000 shield regen is not to be ignored. Like Troi she will be in your roster long after her immortalisation due to her heavy MED boost and her two additional collections make her worth working on.
+Reserved Plakson is a rare Pepe indeed, but while most of Selar’s offerings are modest, she’s still a worthy option in a couple areas. Boasting full weekend eligibility and a huge combined MED score, she’s a fine choice to help crit lots of cadet and galaxy map missions. Her build cost is relatively light on faction items and thanks to her huge proficiency, you may not need to fully fuse her to get most of that benefit.
+
+Even as a one skill crew, you may bring her to a few gauntlets early on if she has elevated crit values, but that’s more of a side benefit for a crew who knocks out nodes like a natural.

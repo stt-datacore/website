@@ -3,7 +3,7 @@ name: Gathorel Labin
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 12
 in_portal:
 date: 28/09/2022

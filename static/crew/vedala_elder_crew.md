@@ -4,7 +4,7 @@ rarity: 5
 series: tas
 memory_alpha:
 bigbook_tier: 2
-events: 9
+events: 10
 in_portal:
 date: 13/07/2022
 obtained: Event

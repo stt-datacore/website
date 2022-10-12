@@ -3,8 +3,8 @@ name: Ambassador Fox
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 3
+bigbook_tier: 5
+events: 4
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A fairly unremarkable SCI crew. She will fill a hole in Saturday cadet missions but if it’s SCI crew you are looking for there are better options. Keep her for the Innovator collection if you need to but don’t hold her for long.
+Marcus’ usage is too narrow to justify spending valuable early game resources and she profiles more as a midgame leveling project to help you stack collection boosts. While we can’t always choose our crew early on, merit diving for any number of dual-eligible options such as Saavik or Mara should help sate your SCI and CMD needs.

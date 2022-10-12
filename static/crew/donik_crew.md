@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Ol’ Donik here might have an impressively high ENG base but his poor DIP stat means his voyage potential is lacking. His ship ability will prove useful combined with attack boosts but a lack of traits means that he is a pretty generic engineer. Still if you are lacking in ENG crew then he’s certainly not the worst crew to have but there are better options with more range.
+A strong ENG base for your…*checks notes* Hirogen node unlocks? Co-founder of the Trait Watchers diet plan (we see you, Damar), Donik is hardly more than a notch on the Innovator collection - a trait which doesn’t appear on a ton of galaxy map nodes. Despite his limited cadet eligibility, this is not a crew you want to level until you’re almost done with the rest of the Rare crew.
