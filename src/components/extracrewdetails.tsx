@@ -62,8 +62,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		for (let i = 0; i < this.props.traits_hidden.length; i++) {
 			let trait = this.props.traits_hidden[i];
 			if (!series.includes(trait) && !ignore.includes(trait)) {
-				// Also ignore multishow variant traits, e.g. spock_tos, spock_dsc
-				if (!/_[a-z]{3}$/.test(trait) || !series.includes(trait.substr(-3)))
+				// Also ignore exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage
+				if (!/^exclusive_/.test(trait))
 					variantTraits.push(trait);
 			}
 		}
