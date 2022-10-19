@@ -3,8 +3,8 @@ name: Krenim Guest Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 21
+bigbook_tier: 6
+events: 22
 in_portal: true
 date: 25/06/2020
 obtained: Event

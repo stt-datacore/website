@@ -3,8 +3,8 @@ name: Tribbled Koloth and Korax
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 1
-events: 19
+bigbook_tier: 2
+events: 20
 in_portal:
 date: 17/05/2022
 obtained: Gauntlet

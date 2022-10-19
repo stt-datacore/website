@@ -3,7 +3,7 @@ name: Angel Gabrielle Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 40
 in_portal:
 date: 26/01/2022

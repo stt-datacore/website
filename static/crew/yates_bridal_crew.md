@@ -3,7 +3,7 @@ name: Bride Kasidy Danielle Yates
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 5
 in_portal: true
 date: 11/02/2021

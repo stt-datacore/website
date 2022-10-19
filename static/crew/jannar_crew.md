@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 6
-events: 9
+events: 10
 in_portal:
 date: 20/12/2017
 obtained: Voyage
