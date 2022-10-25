@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Another disappointing Neelix. Whilst he has thrown away the chef’s hat for some all-terrain gear his stats are not exactly inspiring enough to consider him for daily use. His only redeeming features are the large amount of traits and a quick 150% instant damage with his ship ability. Collect him to fill out your uncommon collection but don’t keep him hanging about too long, you might just end up with a bowl of leola root stew!
+Chef. Morale Officer. Crack Commando.
+
+Ok, maybe not so much that last one. But he does offer an impressive-for-an-Uncommon-crew 150% Instant Damage in Ship Battles, so he’s no pushover on a new player’s roster. He’s got Collection value up the wazoo (a vestigial Talaxian organ, actually) and a trait list that could see a couple more, giving him a bit of extra impact for anyone’s Cryostasis Vault.

@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The best 2* MED you can buy for...15k honor. That’s a lot of honor to spend on someone who doesn’t perform any better than Nurse Kes or Dr Phlox, he might have a high Base but his Max MED let’s him down quite significantly. I would only suggest buying if you really need to fill out the physician collection or really don’t like holding on honor.
+“Please state the nature of the financial...er um, medical emergency.” 
+
+It’s gotta be a very dire situation for you to even consider splurging 15k Honour on this crew. Sure he has an outstanding MED base but even that is no longer the top of the Uncommon class. If you’re in a position in the game where you need that boost, you probably can’t afford to throw away Honour like this, and if you’re at the point where Honour is burning a hole in your pocket, he’s nothing but a box to check in the Uncommon and Physician Collections.

@@ -3,7 +3,7 @@ name: O'Brien at the Conn
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 20
 in_portal:
 date: 29/06/2022
