@@ -8,6 +8,7 @@ import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
 
+import RosterSummary from '../components/crewtables/rostersummary';
 import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
@@ -162,6 +163,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		<React.Fragment>
 			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
+			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
 		</React.Fragment>
 	);
 
