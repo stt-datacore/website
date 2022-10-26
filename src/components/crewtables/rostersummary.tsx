@@ -84,6 +84,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 				immortalPct: myImmortals.length/props.allCrew.length,
 				unfrozen: myUnfrozen.length,
 				frozen: myCrew.length - myUnfrozen.length + frozenDupes,
+				frozenDupes: frozenDupes,
 				dupes: unfrozenDupes + frozenDupes
 			}
 		);
@@ -107,6 +108,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 					immortalPct: immortals.length/allRarity.length,
 					unfrozen: unfrozen.length,
 					frozen: owned.length - unfrozen.length + frozenDupes,
+					frozenDupes: frozenDupes,
 					dupes: unfrozenDupes + frozenDupes
 				}
 			);
@@ -176,7 +178,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 						<Table.Cell textAlign='center'>{row.owned} / {row.total}</Table.Cell>
 						<Table.Cell textAlign='center'>{(row.ownedPct*100).toFixed(1)}</Table.Cell>
 						<Table.Cell textAlign='center'>{(row.portalPct*100).toFixed(1)}</Table.Cell>
-						<Table.Cell textAlign='center'>{row.immortal > 0 ? row.immortal : ''}</Table.Cell>
+						<Table.Cell textAlign='center'>{renderImmortalCell(row.rarity, row.immortal, row.frozenDupes)}</Table.Cell>
 						<Table.Cell textAlign='center'>{(row.immortalPct*100).toFixed(1)}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.unfrozen > 0 ? row.unfrozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.frozen > 0 ? row.frozen : ''}</Table.Cell>
@@ -186,6 +188,25 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 			</Table.Body>
 		</Table>
 	);
+
+	function renderImmortalCell(rarity: number, immortal: number, frozenDupes: number): JSX.Element {
+		if (immortal === 0) return <></>;
+		return (
+			<React.Fragment>
+				{immortal}
+				{rarity === 0 &&
+					<Popup
+						trigger=<Icon name='help' />
+						content=
+							<div>
+								<p>Your achievements in-game may incorrectly report this number as <b>{immortal+1}</b>.</p>
+								<p>Your cryostasis vault will report this number as <b>{immortal-frozenDupes}</b>, which is your total count of unique immortals.</p>
+							</div>
+					/>
+				}
+			</React.Fragment>
+		);
+	}
 
 	function reducer(state, action): any {
 		switch (action.type) {
