@@ -3,7 +3,7 @@ name: Bionic 5 Rutherford
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 11
 in_portal:
 date: 18/07/2022

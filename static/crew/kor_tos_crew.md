@@ -3,7 +3,7 @@ name: Commander Kor
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 5
 events: 9
 in_portal: true
 date: 26/05/2016

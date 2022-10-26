@@ -3,7 +3,7 @@ name: Alan-A-Dale
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 33
 in_portal: true
 date: 09/05/2018

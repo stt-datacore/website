@@ -3,7 +3,7 @@ name: Betrothed Kamala
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 2
 in_portal: true
 date: 20/11/2019

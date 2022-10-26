@@ -3,7 +3,7 @@ name: The Clown
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 15
 in_portal:
 date: 20/12/2017

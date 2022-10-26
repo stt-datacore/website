@@ -3,7 +3,7 @@ name: Rura Penthe Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 44
 in_portal: true
 date: 25/09/2017

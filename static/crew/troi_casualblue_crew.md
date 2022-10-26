@@ -3,7 +3,7 @@ name: Deanna Troi
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 17
 in_portal: true
 date: 22/11/2016

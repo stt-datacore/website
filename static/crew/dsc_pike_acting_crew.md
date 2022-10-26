@@ -3,7 +3,7 @@ name: Acting Captain Pike
 rarity: 3
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 23
 in_portal: true
 date: 02/10/2019

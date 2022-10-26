@@ -3,7 +3,7 @@ name: Acting Nagus Brunt
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 19
 in_portal: true
 date: 01/01/2016

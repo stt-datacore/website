@@ -3,7 +3,7 @@ name: Kevin Mulkahey
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 6
 in_portal:
 date: 31/08/2022

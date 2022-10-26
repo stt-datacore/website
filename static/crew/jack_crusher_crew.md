@@ -3,7 +3,7 @@ name: Lt. Commander Jack Crusher
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 14
 in_portal: true
 date: 17/10/2018

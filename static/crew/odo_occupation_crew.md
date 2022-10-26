@@ -3,7 +3,7 @@ name: Investigator Odo
 rarity: 1
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 8
 events: 19
 in_portal: true
 date: 01/01/2016

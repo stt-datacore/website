@@ -3,7 +3,7 @@ name: Lt. Commander Ron Docent
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 10
 in_portal:
 date: 24/08/2022

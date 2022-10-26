@@ -3,7 +3,7 @@ name: Koloth
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 17
 in_portal: true
 date: 08/09/2016

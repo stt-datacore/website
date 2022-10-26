@@ -3,7 +3,7 @@ name: Ba'ul
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 23
 in_portal: true
 date: 10/02/2019

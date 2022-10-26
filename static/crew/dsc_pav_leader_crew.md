@@ -3,7 +3,7 @@ name: Leader Pav
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 23
 in_portal:
 date: 24/03/2022

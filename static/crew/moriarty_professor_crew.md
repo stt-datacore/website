@@ -3,7 +3,7 @@ name: The Professor
 rarity: 5
 series: tng
 memory_alpha: https://memory-alpha.fandom.com/wiki/James_Moriarty_(hologram)
-bigbook_tier: 8
+bigbook_tier: 9
 events: 23
 in_portal: true
 date: 17/08/2016
