@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup } from 'semantic-ui-react';
+import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
 
@@ -80,11 +80,11 @@ const RarityDepth = (props: RarityDepthProps) => {
 				owned: myOwned.length,
 				ownedPct: myOwned.length/props.allCrew.length,
 				portalPct: myOwned.filter(crew => !!!crew.in_portal).length/props.allCrew.filter(crew => !!!crew.in_portal).length,
+				progress: myImmortals.length,
+				progressPct: myImmortals.length/props.allCrew.length,
 				immortal: myImmortals.length + frozenDupes,
-				immortalPct: myImmortals.length/props.allCrew.length,
 				unfrozen: myUnfrozen.length,
 				frozen: myCrew.length - myUnfrozen.length + frozenDupes,
-				frozenDupes: frozenDupes,
 				dupes: unfrozenDupes + frozenDupes
 			}
 		);
@@ -103,12 +103,12 @@ const RarityDepth = (props: RarityDepthProps) => {
 					total: allRarity.length,
 					owned: owned.length,
 					ownedPct: owned.length/allRarity.length,
-					portalPct: owned.filter(crew => !!!crew.in_portal).length/allRarity.filter(crew => !!!crew.in_portal).length,
+					portalPct: owned.filter(crew => !!crew.in_portal).length/allRarity.filter(crew => !!crew.in_portal).length,
+					progress: immortals.length,
+					progressPct: immortals.length/allRarity.length,
 					immortal: immortals.length + frozenDupes,
-					immortalPct: immortals.length/allRarity.length,
 					unfrozen: unfrozen.length,
 					frozen: owned.length - unfrozen.length + frozenDupes,
-					frozenDupes: frozenDupes,
 					dupes: unfrozenDupes + frozenDupes
 				}
 			);
@@ -123,7 +123,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 		<React.Fragment>
 			<p>This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.</p>
 			<RarityDepthTable data={rarityData} />
-			<p>The Owned, % Owned, % Portal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.</p>
+			<p>The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.</p>
 		</React.Fragment>
 	);
 };
@@ -149,8 +149,9 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		{ column: 'owned', title: 'Owned', center: true, reverse: true },
 		{ column: 'ownedPct', title: '% Owned', center: true, reverse: true },
 		{ column: 'portalPct', title: '% Portal', center: true, reverse: true },
-		{ column: 'immortal', title: 'Immortal', center: true, reverse: true },
-		{ column: 'immortalPct', title: '% Immortal', center: true, reverse: true },
+		{ column: 'progress', title: 'Immortal', center: true, reverse: true },
+		{ column: 'progressPct', title: '% Immortal', center: true, reverse: true },
+		{ column: 'immortal', title: 'Immortal+', center: true, reverse: true },
 		{ column: 'unfrozen', title: 'Unfrozen', center: true, reverse: true },
 		{ column: 'frozen', title: 'Frozen', center: true, reverse: true },
 		{ column: 'dupes', title: 'Duplicate', center: true, reverse: true }
@@ -174,12 +175,18 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 			<Table.Body>
 				{data.map(row => (
 					<Table.Row key={row.key}>
-						<Table.Cell><b>{row.name}</b></Table.Cell>
+						<Table.Cell>
+							{row.rarity === 0 && <b>{row.name}</b>}
+							{row.rarity > 0 &&
+								<Rating icon='star' rating={row.rarity} maxRating={row.rarity} disabled />
+							}
+						</Table.Cell>
 						<Table.Cell textAlign='center'>{row.owned} / {row.total}</Table.Cell>
-						<Table.Cell textAlign='center'>{(row.ownedPct*100).toFixed(1)}</Table.Cell>
-						<Table.Cell textAlign='center'>{(row.portalPct*100).toFixed(1)}</Table.Cell>
-						<Table.Cell textAlign='center'>{renderImmortalCell(row.rarity, row.immortal, row.frozenDupes)}</Table.Cell>
-						<Table.Cell textAlign='center'>{(row.immortalPct*100).toFixed(1)}</Table.Cell>
+						<Table.Cell textAlign='center'>{renderPercentCell(row.ownedPct)}</Table.Cell>
+						<Table.Cell textAlign='center'>{renderPercentCell(row.portalPct)}</Table.Cell>
+						<Table.Cell textAlign='center'>{row.progress}</Table.Cell>
+						<Table.Cell textAlign='center'>{renderPercentCell(row.progressPct)}</Table.Cell>
+						<Table.Cell textAlign='center'>{renderImmortalCell(row.rarity, row.immortal)}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.unfrozen > 0 ? row.unfrozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.frozen > 0 ? row.frozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.dupes > 0 ? row.dupes : ''}</Table.Cell>
@@ -189,7 +196,16 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		</Table>
 	);
 
-	function renderImmortalCell(rarity: number, immortal: number, frozenDupes: number): JSX.Element {
+	function renderPercentCell(value: number): JSX.Element {
+		if (value === 1) return <Icon name='check' color='green' />;
+		return (
+			<React.Fragment>
+				{(value*100).toFixed(1)}
+			</React.Fragment>
+		);
+	}
+
+	function renderImmortalCell(rarity: number, immortal: number): JSX.Element {
 		if (immortal === 0) return <></>;
 		return (
 			<React.Fragment>
@@ -197,11 +213,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 				{rarity === 0 &&
 					<Popup
 						trigger=<Icon name='help' />
-						content=
-							<div>
-								<p>Your achievements in-game may incorrectly report this number as <b>{immortal+1}</b>.</p>
-								<p>Your cryostasis vault will report this number as <b>{immortal-frozenDupes}</b>, which is your total count of unique immortals.</p>
-							</div>
+						content=<p>Your achievements in-game may incorrectly report this number as <b>{immortal+1}</b>.</p>
 					/>
 				}
 			</React.Fragment>
