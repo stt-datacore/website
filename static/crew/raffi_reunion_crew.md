@@ -3,7 +3,7 @@ name: Reunion Raffi
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 12
 in_portal:
 date: 16/02/2022

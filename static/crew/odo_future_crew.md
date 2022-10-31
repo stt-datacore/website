@@ -3,7 +3,7 @@ name: Gaia Odo
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 17
 in_portal: true
 date: 18/09/2017

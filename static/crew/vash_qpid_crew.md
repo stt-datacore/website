@@ -3,7 +3,7 @@ name: Maid Marian
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 21
 in_portal: true
 date: 13/09/2018
