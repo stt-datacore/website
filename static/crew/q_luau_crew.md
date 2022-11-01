@@ -3,7 +3,7 @@ name: Luau Q
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 27
 in_portal: true
 date: 07/10/2021
