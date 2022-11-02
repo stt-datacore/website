@@ -3,7 +3,7 @@ name: New Eden Pike
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 23
 in_portal: true
 date: 03/10/2019

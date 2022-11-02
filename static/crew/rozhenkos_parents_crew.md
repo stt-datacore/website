@@ -3,7 +3,7 @@ name: Sergey and Helena Rozhenko
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 events: 8
 in_portal: true
 date: 04/12/2018

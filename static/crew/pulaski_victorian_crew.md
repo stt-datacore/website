@@ -3,7 +3,7 @@ name: Victorian Pulaski
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 16
 in_portal: true
 date: 08/03/2018

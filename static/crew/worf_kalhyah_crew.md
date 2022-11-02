@@ -3,8 +3,8 @@ name: Kal'Hyah Worf
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 34
+bigbook_tier: 6
+events: 35
 in_portal:
 date: 24/02/2022
 obtained: Honor Hall

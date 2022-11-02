@@ -3,7 +3,7 @@ name: Resistance Rhys
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 21
 in_portal:
 date: 08/02/2022

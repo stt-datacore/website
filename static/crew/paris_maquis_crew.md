@@ -3,7 +3,7 @@ name: Maquis Takeover Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 22
 in_portal: true
 date: 19/11/2020

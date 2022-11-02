@@ -3,7 +3,7 @@ name: Commander Chekov
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 12
 in_portal: true
 date: 25/05/2016

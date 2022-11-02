@@ -3,7 +3,7 @@ name: Badgey
 rarity: 3
 series: low
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 12
 in_portal: true
 date: 26/04/2022

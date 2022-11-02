@@ -3,7 +3,7 @@ name: Compromised Airiam
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 35
 in_portal: true
 date: 10/12/2019
