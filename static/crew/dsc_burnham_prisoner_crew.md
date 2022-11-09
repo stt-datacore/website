@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A fairly unremarkable card statistics-wise but has enough range to be useful on Voyages. Use as a boost for other crew but don’t rely on her to score any major victories.
+Burnham’s SCI power is substantial, but her mission usage in the early game is made narrow by subpar secondary and tertiary skills. With Thursday cadet missions paying out best at the Elite level, you’ll want to opt for alien Starfleet options instead such as T’Pol or Jadzia to help clear Tuesday nodes. Given her wait-and-see collection potential, this is a crew who doesn’t need to hog a crew slot until you’re looking for easy leveling projects in the midgame.

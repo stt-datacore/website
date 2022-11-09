@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Fonzie card art is the best thing about Rejac. He's unlikely to contribute day to day and his event opportunities look to be few and far between from here on out. Klingon and Disco have combined for huge swaths of bonuses already, inflating an event clip that is sure to slow. A formerly ranked gauntlet pair with the occasional 65% crit might rarely make him a fifth member of your gauntlet squad, but if you're eyeing him for any kind of investment, it would have to be on the back of double collections and very sporadic event work..
+The Fonzie card art is the best thing about Rejac. Strikingly similar to his brother in arms T’Kuvma, Rejac (rejac, Rejac, REJAC) is a part-time gauntleteer in the early game thanks to strong crit values, a shuttle stuffer thanks to the preponderance of CMD/SEC seats in events, and a collection piece. His trait footprint outstripes his brief role on screen, even making him a justifiable retrieval option for veteran players who only have eyes for collections.

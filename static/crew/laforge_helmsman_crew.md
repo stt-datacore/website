@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Nothing stellar to tell about young geordi other than his collection bonus. His engineering score is pretty forgettable and DIP frankly embarrassing for a 2* card. You might get some use out of him on voyages as his CMD score isn’t bad but other than that, freeze and forget.
+A reasonable voyager, Geordi also offers a primary ENG skill that can be difficult for new players to stockpile. The issue is that when you’re first starting out and trainers are precious, you’ll want to maximize your cadet coverage with nonhuman and female crew options and Geordi often ends up as resources better allocated elsewhere. Still, he’s not an awful crew to prioritize early on and requires only a handful of faction items to immortalize.

@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-Worthwhile though it may be, no card can really do justice to Scotty's heroics on [stardate unknown], where without his impeccable power balancing and, presumably, cross-circuiting to B, we may not have had a happy ending to the episode which launched a host of hokey and cherished Mirror Trek episodes.
+A reasonable attempt though it may have been, no card can really do justice to Scotty's heroics on [stardate unknown], where without his impeccable power balancing and, presumably, cross-circuiting to B, we may not have had a happy ending to the episode which launched a host of hokey and cherished Mirror Trek episodes.
 
-Mirror Monty is fairly mid-level across most of his attributes. An average skill combo with good-not-great power puts him in play for voyages in the early-to-midgame, but he's not a standout. After an Archer-esque event drought to begin Timelines, Scotty has settled in as a steady, low-output event feature with an, again, average base for those weekends.
-
-Boosting his otherwise viable power levels are a pair of collections, including Smoke and Mirrors which has perhaps the most repugnant options at the legendary level of all the collections which still require a gold crew to complete. Monty will be a mandatory immortalize for players looking to avoid paying out massive honor levies to crew who are best left unpicked on the begold screen.
+Mirror Monty isn’t here to make a deal, in fact most of his attributes can be found in the bargain bin. He debuted as the best pound-for-pound Scotty in the game, but compared to modern Timelines, he’s about four traits and two scoops of power short. With most of his offerings - voyage, shuttles, collections - south of noteworthy, it won’t be a shock if you end up utilizing them for a time, but certainly not for long before relegating him to the vault.

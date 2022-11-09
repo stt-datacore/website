@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Another annoyingly awesome Kes! DB must love the character more than the actress did. She has the #2 MED base with a respectable proficiency bonus to grant her some use in Gauntlet. She can participate in all weekend missions and somehow manages to, again, outperform some of the actual Doctors in the game. Her ship ability grants +10000 crit bonus which will be useful to those who like to inflict some quick damage but don’t expect to see her too much in voyages nor does she fulfill any extra collection rewards. However for pure MED performance, swap out the Doctor for the Ocampan.
+Kes’ totally non-standard trait set is rather wonky for events and node clearing, but works just fine for collections. As one of few cadet choices for a couple of her traits, she’s a fine early game immortalization option to boost that area.
+
+But that’s burying the lede - her dual weekend cadet eligibility is a great way to stretch your trainer value and lets you crit almost all MED and SCI nodes available, with a bit of luck on your dice rolls. With several other attributes in tow that can find niche usage in the early game, Kes is very well-rounded for a 2-skill crew and a good choice to level up early.

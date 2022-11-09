@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Mr Sulu...I can’t help but notice that you have the worst primary SEC stat in the game and an even worse command score than Nurse Ogawa, please go and dematerialise yourself in the transporter...
+An extremely Faction-lite card to build, Sulu is a perfunctory midgame leveling “project” for players looking to make the mountainous trudge through the Resourceful collection. Somehow one of the traitiest Sulu variants, the Leftenant has a reasonable collection ceiling, but is functionally useless if you’re not playing “Nightmare Mode”.

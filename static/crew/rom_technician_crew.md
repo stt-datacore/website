@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Don’t underestimate this card, he has the highest 2* ENG base and fills out two extra collections. His Jury Rigger trait will unlock a fair few nodes and his ship ability adds some hull repair to your ship battling ensemble. Poor DIP scores limit his voyaging ability however but he will get a fair few of Tuesday’s cadet missions unlocked for you.
+Rom is an odd juxtaposition of great ENG power with scant cadet eligibility. He has a few uses in the early game, but generally isn’t worth the resources as young, trainer-strapped rosters struggle to keep ahead of the influx of new event cards. With a trait list on the meaty side for Uncommon crew, he’s more of a juicy midgame leveling project for rosters looking to build up their collection stat boosts.

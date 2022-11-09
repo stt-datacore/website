@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Not a standout by conventional metrics, Worf at least always has events to fall back on. Every variant has collected a few dozen bonuses to date and so despite a thin trait set which only has two items worthy of weekend consideration, you will find spots to use him a few times per year. Those reprieves from Cryo are also the excuse you need to finish him for his spot in two collections, one frivolous, one the massive stat-boosting Klingon kollection.
+Not a standout by conventional metrics, Worf at least always has events to fall back on. Getting more weekend chances at the bat than one might think by glancing at his trait list, there’s faction action aplenty here and he’s even managed to reach his forecasted collection ceiling before most other cards. This isn’t a terribly multi-faceted option for usage day to day, but you know exactly what you’ll be getting if you select him in a behold.

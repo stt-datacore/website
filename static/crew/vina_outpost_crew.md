@@ -3,7 +3,7 @@ name: Outpost Vina
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 9
 in_portal:
 date: 11/07/2022

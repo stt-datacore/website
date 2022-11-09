@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His time in the sun as #1 overall base SCI lasted the better part of a year - long enough to cultivate a reputation and it edges out notables like Leo da Vinci and Surak. Unfortunately for him, power creep stops for no man and despite having a fairly uncommon skill order, his voyage score is hundreds of points behind the endless march of new crew. His traits are mostly event duds and with Undercover Operative as his best and only chance at multi-week relevance, you're better off trying to snag another SCI option who will stand out from the crowd, either by power or event opportunity.
+Oh Danny boy, I guess the whole “good stats from the future” thing only worked out for Braxton. The oldster in the rocking chair would remind you that Daniels actually held the top SCI base spot for the better part of a year, but he couldn’t repair the power creep timeline and as a result has become a relic himself. Until both of his viable traits become collections (and even then…) he’s not worth your behold capital.

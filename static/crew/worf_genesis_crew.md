@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-There's not much to unpack for Proto Worf. He's just what he looks like; an event crew worth a spot in your tool belt. Even despite being significantly less versatile than his big brothers, the Guv and the sailor, Worf/Klingon events will always have enough CMD/SEC seats to still justify taking this primal stud in a pinch. With traits he's well into double-digit events and is still a capable shuttle pilot, also offering a spot in the massive Klingon collection.
+There's not much to unpack for Proto Worf. He's just what he looks like; a “screwdriver” crew who sits near the bottom of your toolbox. Despite being significantly less versatile than his big brother variants, Worf/Klingon events will always have enough CMD/SEC seats to justify beholding this primal in a pinch. With a consistent event pedigree and low end collection value, he’s a name you’ll notice a couple times a year once immortalized.

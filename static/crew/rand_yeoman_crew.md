@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A poor CMD stat, terrible DIP score (2nd lowest in the game) make this a forgettable card. No useful traits, terrible ship ability, no extra collection bonuses. Her one saving grace is that she is easy to equip. Move on.
+The only female CMD option at the Common level. Eat your heart out, Nightmare mode.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Top 1* CMD stat with a poor SEC score won’t be putting him any lists anytime soon. CMD/SEC is an extremely common pairing so you will no doubt have someone better. His ship ability might get some use with a +500 crit rating but don’t expect him to help in the Arena. No extra collection bonuses means you can move him on or find a superior bearded version.
+The most fascinating thing involving this crew since the game launched was how he wrongly sported the Trill trait for over a year before WRG bothered to fix it. However, now that his traits are materializing into collections, he’ll at least earn his crew slot briefly as you pay a perfunctory build cost with items primarily coming from away missions. Will Riker? - a great officer and an even greater question.

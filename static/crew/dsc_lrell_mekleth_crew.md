@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-With Disco's dominance having seemingly vanished, L'Rell is left with scant value. much of it coming via her spot in the Klingon collection. L'Rell herself has had a pair of events and there's some juice in her brief trait lineup, but she's fallen to bit player at the best of times.
+With Disco's dominance having seemingly vanished, L'Rell is left with scant value, most of it coming from her short trait list. The best argument for her in a behold is ironically that she’s so vanilla, you cannot guarantee a retrieval combination for her. She may snag a couple collections when it’s all said and done, but L’Rell should only be an option for endgame rosters who have no holes.

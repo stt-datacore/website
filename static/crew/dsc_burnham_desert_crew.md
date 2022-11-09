@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Despite Burnham's strong reputation at higher rarities, this windswept variant won't offer much to your roster. The highlight is a SCI stat which qualifies for cadet missions four days per week, but sits behind the more popular (alien) uncommons; T'Pol and Jadzia. There's little else of note besides a relatively expensive cost to equip.
+Despite Burnham's strong reputation at higher rarities, this windswept variant won't offer much to your roster. The highlight is a SCI stat which qualifies for cadet missions four days per week, but sits behind the more popular (alien) Uncommons; T'Pol and Jadzia. There's little else of note besides a relatively expensive cost to equip.
