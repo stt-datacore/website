@@ -3,7 +3,7 @@ name: Keyla Terrana
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 11
 in_portal:
 date: 01/03/2022

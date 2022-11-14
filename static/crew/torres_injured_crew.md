@@ -3,7 +3,7 @@ name: Injured Torres
 rarity: 2
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 1
 events: 40
 in_portal: true
 date: 19/06/2019

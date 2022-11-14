@@ -3,8 +3,8 @@ name: EV Suit Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 36
+bigbook_tier: 7
+events: 37
 in_portal: true
 date: 04/09/2018
 obtained: Pack

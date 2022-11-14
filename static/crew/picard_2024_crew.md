@@ -3,7 +3,7 @@ name: 2024 Picard
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 26
 in_portal:
 date: 30/03/2022
