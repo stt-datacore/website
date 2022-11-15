@@ -59,7 +59,7 @@ export const CALCULATORS = {
 				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
 				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
-				{ key: 'smart', text: 'Smart', value: 'smart' },
+				{ key: 'versatile', text: 'Versatile', value: 'versatile' },
 				{ key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
 			default: 'estimate'

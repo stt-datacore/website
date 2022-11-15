@@ -144,7 +144,7 @@ const forDataCore = (input, output, chewable) => {
 					else if (input.strategy === 'moonshot')
 						methods = ['moonshot'];
 					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit = ['smart', 'thorough'].includes(input.strategy) ? 1 : 3;
+					const limit = ['versatile', 'thorough'].includes(input.strategy) ? 1 : 3;
 					const sorter = new VoyagersSorted(lineups, estimates);
 					sorter.sort(datacoreSorter, methods, limit)
 						.then((sorted) => {
@@ -702,7 +702,7 @@ class VoyagersEstimates {
 				}
 
 				// Lineups with low deviations tend to have better guaranteed minimums
-				let scanDepth = ['minimum', 'smart'].includes(strategy) ? defaultDepth : 0;
+				let scanDepth = ['minimum', 'versatile'].includes(strategy) ? defaultDepth : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.total - a.weights.total);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
@@ -712,7 +712,7 @@ class VoyagersEstimates {
 				}
 
 				// Lineups with high prime scores tend to have better moonshots
-				scanDepth = ['moonshot', 'smart'].includes(strategy) ? defaultDepth : 0;
+				scanDepth = ['moonshot', 'versatile'].includes(strategy) ? defaultDepth : 0;
 				if (scanDepth > 0) {
 					considered.sort((a, b) => b.weights.primes - a.weights.primes);
 					for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
