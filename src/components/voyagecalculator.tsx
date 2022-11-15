@@ -172,7 +172,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 							</Card>
 							<Card>
 								<Card.Content>
-									<Card.Header>{allTraits.ship_trait_names[voyageConfig.ship_trait]}</Card.Header>
+									<Card.Header>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</Card.Header>
 									<p>ship trait</p>
 								</Card.Content>
 							</Card>
@@ -266,7 +266,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 			const knownShipTraits = ['andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
 				'dominion','emp','explorer','federation','ferengi','fighter','freighter','historic','hologram',
 				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
-				'scout','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
+				'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
 			const knownCrewTraits = ['android','astrophysicist','bajoran','borg','brutal',
 				'cardassian','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
 				'desperate','diplomat','doctor','duelist','exobiology','explorer','federation','ferengi',
@@ -288,7 +288,7 @@ const VoyageEditConfigModal = (props: VoyageEditConfigModalProps) => {
 				return {
 					key: trait,
 					value: trait,
-					text: allTraits.ship_trait_names[trait]
+					text: allTraits.ship_trait_names[trait] ?? trait
 				};
 			});
 			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
