@@ -3,8 +3,8 @@ name: 'Q as "God"'
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 29
+bigbook_tier: 8
+events: 30
 in_portal: true
 date: 08/08/2019
 obtained: Mega

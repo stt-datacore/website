@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The worst engineer in the game. Okay I’ll rephrase that, the worst engineer for someone who has ENG as their main stat. No good traits, no extra collection bonuses. His ship ability actually makes no sense by increasing attack damage by reducing accuracy. This means he probably shoots himself in the face mid battle. Don’t even think of promoting him!
+If I had a nickel for every 1-Skill ENG crew in the game I’d have a much bigger handful of change than you’d expect, which is kinda cool in a sad way. Speaking of sad things, here’s Ensign Kim! The long-awaited Musician collection has maxed out his traits and therefore his usefulness. Much like Captain Janeway, we here at the Big Book aren’t promoting this crew any time soon.

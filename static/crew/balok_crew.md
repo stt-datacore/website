@@ -3,7 +3,7 @@ name: Balok
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 15
 in_portal:
 date: 13/07/2021

@@ -3,8 +3,8 @@ name: Lothario Q
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 31
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 04/02/2021
 obtained: Mega

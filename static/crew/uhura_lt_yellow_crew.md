@@ -3,8 +3,8 @@ name: Lt. Uhura
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 17
+bigbook_tier: 5
+events: 18
 in_portal: true
 date: 11/12/2019
 obtained: Event
