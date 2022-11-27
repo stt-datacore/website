@@ -254,7 +254,7 @@ const UtilityWizardModal = () => {
 			<React.Fragment>
 				<Table.Cell textAlign='center' onClick={(e) => e.stopPropagation()}>
 					<RanksModal crew={crew}
-						coreTreshold={coreThreshold}
+						coreThreshold={coreThreshold}
 						shuttleThreshold={shuttleThreshold}
 						gauntletThreshold={gauntletThreshold}
 						voyageThreshold={voyageThreshold}
