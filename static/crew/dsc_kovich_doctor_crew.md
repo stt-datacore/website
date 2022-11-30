@@ -1,14 +1,14 @@
 ---
-name: Daring Tilly
+name: Doctor Kovich
 rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 2
-events: 36
+events: 30
 in_portal:
-date: 28/11/2022
-obtained: Campaign
-mega: false
+date: 30/11/2022
+obtained: Mega
+mega: true
 published: true
 ---
 

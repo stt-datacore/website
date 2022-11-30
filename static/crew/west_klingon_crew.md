@@ -3,7 +3,7 @@ name: Klingon West
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 18
 in_portal: true
 date: 15/04/2021

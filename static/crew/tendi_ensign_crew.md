@@ -3,7 +3,7 @@ name: Ensign Tendi
 rarity: 2
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 2
 in_portal:
 date: 10/08/2022

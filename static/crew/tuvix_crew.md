@@ -3,7 +3,7 @@ name: Tuvix
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 24
 in_portal:
 date: 01/01/2016
