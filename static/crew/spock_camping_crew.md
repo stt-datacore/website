@@ -3,7 +3,7 @@ name: Mountaineer Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 51
 in_portal: true
 date: 07/12/2018

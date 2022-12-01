@@ -3,7 +3,7 @@ name: Weyoun Clone 5
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 17
 in_portal: true
 date: 15/11/2018
