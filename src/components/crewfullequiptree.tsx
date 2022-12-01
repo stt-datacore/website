@@ -106,13 +106,13 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 		);
 
 		function copyItems(): void {
-			let output = 'Item,Rarity,Needed';
+			let output = 'Item,Rarity,Needed,Symbol';
 			demands.sort((a, b) => {
 				if (a.equipment.name === b.equipment.name) return b.equipment.rarity - a.equipment.rarity;
 				return a.equipment.name.localeCompare(b.equipment.name);
 			}).forEach(entry => {
 				if (output !== '') output += '\n';
-				output += `${entry.equipment.name},${entry.equipment.rarity},${entry.count}`;
+				output += `${entry.equipment.name},${entry.equipment.rarity},${entry.count},${entry.equipment.symbol}`;
 			});
 			navigator.clipboard.writeText(output);
 		}
