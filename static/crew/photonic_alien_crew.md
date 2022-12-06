@@ -3,7 +3,7 @@ name: Fifth Dimension Invader
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 16
 in_portal: true
 date: 07/10/2021

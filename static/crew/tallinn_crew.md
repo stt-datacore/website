@@ -3,7 +3,7 @@ name: Tallinn
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 17
 in_portal:
 date: 09/11/2022
