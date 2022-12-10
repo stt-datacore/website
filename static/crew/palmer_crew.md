@@ -3,7 +3,7 @@ name: Lt. JG Palmer
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 2
 in_portal: true
 date: 16/07/2019

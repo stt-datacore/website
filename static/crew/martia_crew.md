@@ -3,7 +3,7 @@ name: Martia
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 28
 in_portal: true
 date: 17/04/2017
