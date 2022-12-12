@@ -3,7 +3,7 @@ name: Science Officer T'Pol
 rarity: 2
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 34
 in_portal: true
 date: 11/04/2018

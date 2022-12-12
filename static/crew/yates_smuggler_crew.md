@@ -3,7 +3,7 @@ name: Smuggler Kasidy Yates
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 10
 in_portal: true
 date: 03/07/2018

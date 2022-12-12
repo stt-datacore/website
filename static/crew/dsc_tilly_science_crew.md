@@ -3,8 +3,8 @@ name: Science Officer Tilly
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 26
+bigbook_tier: 7
+events: 27
 in_portal: true
 date: 25/11/2021
 obtained: Campaign
