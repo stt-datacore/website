@@ -1,7 +1,14 @@
 import React from 'react';
-import { Modal, Button, Icon, Form, Checkbox, Table, Segment, Header, Statistic, Divider } from 'semantic-ui-react';
+import { Modal, Button, Icon, Form, Checkbox, Table, Segment, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
+
+const defaultThresholds = {
+	core: { d: 10 },
+	shuttle: { d: 10 },
+	gauntlet: { d: 10 },
+	voyage: { d: 10 }
+};
 
 const WizardContext = React.createContext();
 
@@ -27,10 +34,7 @@ const UtilityWizardModal = () => {
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
 	const [enabled, setEnabled] = React.useState(false);
-	const [coreThreshold, setCoreThreshold] = React.useState(5);
-	const [shuttleThreshold, setShuttleThreshold] = React.useState(5);
-	const [gauntletThreshold, setGauntletThreshold] = React.useState(5);
-	const [voyageThreshold, setVoyageThreshold] = React.useState(5);
+	const [utilityThresholds, setUtilityThresholds] = React.useState(defaultThresholds);
 	const [preferVersatile, setPreferVersatile] = React.useState(true);
 	const [showBreakdowns, setShowBreakdowns] = React.useState(false);
 
@@ -45,11 +49,11 @@ const UtilityWizardModal = () => {
 				{ width: 1, column: 'utility.thresholds.length', title: <Icon name='cogs' color='green' />, reverse: true, tiebreakers: ['max_rarity'] }
 			];
 			if (showBreakdowns) {
-				if (coreThreshold + shuttleThreshold > 0)
+				if (utilityThresholds.core.d + utilityThresholds.shuttle.d > 0)
 					columns.push({ width: 1, column: 'utility.counts.shuttle', title: 'S', reverse: true, tiebreakers: ['max_rarity'] });
-				if (gauntletThreshold > 0)
+				if (utilityThresholds.gauntlet.d > 0)
 					columns.push({ width: 1, column: 'utility.counts.gauntlet', title: 'G', reverse: true, tiebreakers: ['max_rarity'] });
-				if (voyageThreshold > 0)
+				if (utilityThresholds.voyage.d > 0)
 					columns.push({ width: 1, column: 'utility.counts.voyage', title: 'V', reverse: true, tiebreakers: ['max_rarity'] });
 			}
 			wizardInput.handler(
@@ -64,7 +68,7 @@ const UtilityWizardModal = () => {
 		else {
 			wizardInput.handler(undefined);
 		}
-	}, [enabled, coreThreshold, shuttleThreshold, gauntletThreshold, voyageThreshold, preferVersatile, showBreakdowns]);
+	}, [enabled, utilityThresholds, preferVersatile, showBreakdowns]);
 
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
@@ -91,8 +95,8 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={coreThreshold === t ? 'blue' : undefined}
-												onClick={() => setCoreThreshold(t)}
+											<Button key={t} content={t} color={utilityThresholds.core.d === t ? 'blue' : undefined}
+												onClick={() => setThreshold('core', t)}
 											/>
 										)}
 									</Button.Group>
@@ -103,32 +107,32 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={shuttleThreshold === t ? 'blue' : undefined}
-												onClick={() => setShuttleThreshold(t)}
+											<Button key={t} content={t} color={utilityThresholds.shuttle.d === t ? 'blue' : undefined}
+												onClick={() => setThreshold('shuttle', t)}
 											/>
 										)}
 									</Button.Group>
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>Gauntlet Pairs:</Table.Cell>
+								<Table.Cell>Voyage:</Table.Cell>
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={gauntletThreshold === t ? 'blue' : undefined}
-												onClick={() => setGauntletThreshold(t)}
+											<Button key={t} content={t} color={utilityThresholds.voyage.d === t ? 'blue' : undefined}
+												onClick={() => setThreshold('voyage', t)}
 											/>
 										)}
 									</Button.Group>
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>Voyage Pairs:</Table.Cell>
+								<Table.Cell>Gauntlet:</Table.Cell>
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={voyageThreshold === t ? 'blue' : undefined}
-												onClick={() => setVoyageThreshold(t)}
+											<Button key={t} content={t} color={utilityThresholds.gauntlet.d === t ? 'blue' : undefined}
+												onClick={() => setThreshold('gauntlet', t)}
 											/>
 										)}
 									</Button.Group>
@@ -139,7 +143,7 @@ const UtilityWizardModal = () => {
 					<div style={{ marginTop: '1em' }}>
 						<Form.Field
 							control={Checkbox}
-							label={<label>Only consider 3-skill crew for gauntlet and voyages</label>}
+							label={<label>Only consider 3-skill crew for voyages and gauntlet</label>}
 							checked={preferVersatile}
 							onChange={(e, { checked }) => setPreferVersatile(checked) }
 						/>
@@ -164,6 +168,12 @@ const UtilityWizardModal = () => {
 		return (
 			<Button icon='cogs' content='Crew Utility' size='large' color={enabled ? 'green' : undefined} />
 		)
+	}
+
+	function setThreshold(area: string, value: number): void {
+		const thresholds = utilityThresholds;
+		thresholds[area].d = value;
+		setUtilityThresholds({...thresholds});
 	}
 
 	function scoreUtility(): void {
@@ -213,12 +223,18 @@ const UtilityWizardModal = () => {
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			let firstSkill = CONFIG.SKILLS_SHORT[first].name;
 			ranks[`B_${CONFIG.SKILLS_SHORT[first].short}`] = rankCore(firstSkill);
-			//ranks[`G_${CONFIG.SKILLS_SHORT[first].short}`] = rankGauntlet([firstSkill]);
+			ranks[`G_${CONFIG.SKILLS_SHORT[first].short}`] = rankGauntlet([firstSkill]);
 			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
 				let secondSkill = CONFIG.SKILLS_SHORT[second].name;
 				ranks[`S_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankShuttle([firstSkill, secondSkill]);
 				ranks[`G_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankGauntlet([firstSkill, secondSkill]);
 				ranks[`V_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankVoyage([firstSkill, secondSkill]);
+				/*
+				for (let third = second+1; third < CONFIG.SKILLS_SHORT.length; third++) {
+					let thirdSkill = CONFIG.SKILLS_SHORT[second].name;
+					ranks[`V_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}_${CONFIG.SKILLS_SHORT[third].short}`] = rankVoyage([firstSkill, secondSkill, thirdSkill]);
+				}
+				*/
 			}
 		}
 
@@ -230,10 +246,10 @@ const UtilityWizardModal = () => {
 				myRanks[key] = myRank;
 				let threshold = 0;
 				switch (key.substr(0, 2)) {
-					case 'B_': threshold = coreThreshold; break;
-					case 'S_': threshold = shuttleThreshold; break;
-					case 'G_': threshold = gauntletThreshold; break;
-					case 'V_': threshold = voyageThreshold; break;
+					case 'B_': threshold = utilityThresholds.core.d; break;
+					case 'S_': threshold = utilityThresholds.shuttle.d; break;
+					case 'G_': threshold = utilityThresholds.gauntlet.d; break;
+					case 'V_': threshold = utilityThresholds.voyage.d; break;
 				}
 				if (myRank > 0 && myRank <= threshold) thresholds.push(key);
 			});
@@ -253,28 +269,23 @@ const UtilityWizardModal = () => {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center' onClick={(e) => e.stopPropagation()}>
-					<RanksModal crew={crew}
-						coreThreshold={coreThreshold}
-						shuttleThreshold={shuttleThreshold}
-						gauntletThreshold={gauntletThreshold}
-						voyageThreshold={voyageThreshold}
-					/>
+					<RanksModal crew={crew} utilityThresholds={utilityThresholds} />
 				</Table.Cell>
 				{showBreakdowns &&
 					<React.Fragment>
-						{coreThreshold + shuttleThreshold > 0 &&
+						{utilityThresholds.core.d + utilityThresholds.shuttle.d > 0 &&
 							<Table.Cell textAlign='center'>
 								{renderUtilities(crew, ['B', 'S'])}
 							</Table.Cell>
 						}
-						{gauntletThreshold > 0 &&
-							<Table.Cell textAlign='center'>
-								{renderUtilities(crew, ['G'])}
-							</Table.Cell>
-						}
-						{voyageThreshold > 0 &&
+						{utilityThresholds.voyage.d > 0 &&
 							<Table.Cell textAlign='center'>
 								{renderUtilities(crew, ['V'])}
+							</Table.Cell>
+						}
+						{utilityThresholds.gauntlet.d > 0 &&
+							<Table.Cell textAlign='center'>
+								{renderUtilities(crew, ['G'])}
 							</Table.Cell>
 						}
 					</React.Fragment>
@@ -321,14 +332,11 @@ const UtilityWizardModal = () => {
 
 type RanksModalProps = {
 	crew: any;
-	coreThreshold: number;
-	shuttleThreshold: number;
-	gauntletThreshold: number;
-	voyageThreshold: number;
+	utilityThresholds: any;
 };
 
 const RanksModal = (props: RanksModalProps) => {
-	const { crew } = props;
+	const { crew, utilityThresholds } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
@@ -344,6 +352,7 @@ const RanksModal = (props: RanksModalProps) => {
 		>
 			<Modal.Header>
 				{crew.name}
+				<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} disabled style={{ marginLeft: '1em' }} />
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{modalIsOpen && renderRanks()}
@@ -357,7 +366,7 @@ const RanksModal = (props: RanksModalProps) => {
 	// Adaptation of renderOtherRanks from commoncrewdata.tsx
 	function renderRanks(): JSX.Element {
 		const v = [];
-		const g = [];
+		const g = [], g1 = [];
 		const b = [];
 		const s = [];
 
@@ -367,28 +376,38 @@ const RanksModal = (props: RanksModalProps) => {
 			const utility = crew.utility.ranks[rank];
 			if (rank.startsWith('V_')) {
 				v.push(
-					<Statistic key={rank} color={utility > 0 && utility <= props.voyageThreshold ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.voyage.d ? 'green' : undefined}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
-				g.push(
-					<Statistic key={rank} color={utility > 0 && utility <= props.gauntletThreshold ? 'green' : undefined}>
-						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
-					</Statistic>
-				);
+				if (rank.includes('_', 2)) {
+					g.push(
+						<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.gauntlet.d ? 'green' : undefined}>
+							<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
+						</Statistic>
+					);
+				}
+				else if (utility > 0) {
+					g1.push(
+						<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.gauntlet.d ? 'green' : undefined}>
+							<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
+							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
+						</Statistic>
+					);
+				}
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
-					<Statistic key={rank} color={utility > 0 && utility <= props.coreThreshold ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.core.d ? 'green' : undefined}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('S_')) {
 				s.push(
-					<Statistic key={rank} color={utility > 0 && utility <= props.shuttleThreshold ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.shuttle.d ? 'green' : undefined}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
@@ -409,15 +428,19 @@ const RanksModal = (props: RanksModalProps) => {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as='h5'>Gauntlet pair ranks on your roster</Header>
+					<Header as='h5'>Voyage ranks on your roster</Header>
 					<Statistic.Group widths='three' size={'mini'} style={{ paddingBottom: '0.5em' }}>
-						{g}
+						{v}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage pair ranks on your roster</Header>
+					<Header as='h5'>Gauntlet ranks on your roster</Header>
 					<Statistic.Group widths='three' size={'mini'} style={{ paddingBottom: '0.5em' }}>
-						{v}
+						{g1}
+					</Statistic.Group>
+					<Divider />
+					<Statistic.Group widths='three' size={'mini'} style={{ paddingBottom: '0.5em' }}>
+						{g}
 					</Statistic.Group>
 				</Segment>
 			</React.Fragment>
