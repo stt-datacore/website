@@ -3,7 +3,7 @@ name: First Officer Chekov
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 12
 in_portal: true
 date: 10/04/2017
