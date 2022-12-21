@@ -3,7 +3,7 @@ name: Governor Worf
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 33
 in_portal: true
 date: 01/01/2019
