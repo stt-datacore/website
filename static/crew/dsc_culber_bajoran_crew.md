@@ -4,7 +4,7 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 3
-events: 43
+events: 44
 in_portal: true
 date: 08/04/2021
 obtained: Event

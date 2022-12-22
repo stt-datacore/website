@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 3
-events: 48
+events: 49
 in_portal:
 date: 14/12/2022
 obtained: Event
@@ -26,4 +26,4 @@ Four collections out of the box, including the newly-minted Star Trek: Discovery
 
 Did I mention she has a big ol’ SEC base? Well, she does. NEW NUMBER ONE, baby!  Sorry, High Roller Sisko. You had a good run! J’Vini will hop onto SEC and SEC/CMD requisition shuttles every Faction weekend, plus she’s got the traits to catch bonus seating a few times a year if not more.
  
-Last, but absolutely not least, is her ship ability, and boy oh boy, it's a good one! +10 Attack with an easily ignored -3 EV handicap; 400% instant damage that doesn't require a trigger and that fires off without limited uses; a 6s fuse, making her viable in Arena and Skirmish; and a 20s overall damage cycle, making her a strong contender for Fleet Boss Battles! She's 4 seconds slower than the meta choice of MACO Mayweather (good ol' 16s cycle, they call him), but the +1 Attack gives her an edge in other ways, so they might well draw even, especially considering her other benefits. If you don't have Mayweather, and don't want to spend the ISM, Quantum or the crew slot to retrieve him, and happened to miss the SR alternative, Vindicta Mariner, maybe get yourself a J'Vini or two instead?!
+Last, but absolutely not least, is her ship ability, and boy oh boy, it's a good one! She is an improved Killy clone with 6s init 400% boom, lasting 2 seconds longer for all your Attack boost needs. Still not limitless, but triggerless!  Might want a J’Vini for your arena and skirmish set up!

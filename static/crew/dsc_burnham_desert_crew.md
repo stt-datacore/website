@@ -3,8 +3,8 @@ name: Desert Michael Burnham
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 33
+bigbook_tier: 7
+events: 34
 in_portal: true
 date: 14/02/2018
 obtained: Event
