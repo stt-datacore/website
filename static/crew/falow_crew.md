@@ -3,7 +3,7 @@ name: Master Surchid Falow
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 4
 in_portal:
 date: 21/09/2022
