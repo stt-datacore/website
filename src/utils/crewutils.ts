@@ -6,20 +6,28 @@ import CONFIG from '../components/CONFIG';
 function formatChargePhases(crew): string {
 	let totalTime = 0;
 	let result = [];
-	crew.action.charge_phases.forEach(phase => {
-		totalTime += phase.charge_time;
-		let ps = `After ${totalTime}s `;
+	let charge_time = 0;
+	crew.action.charge_phases.forEach(cp => {
+		charge_time += cp.charge_time;
+		let phaseDescription = `After ${charge_time}s, `;
 
-		if (crew.action.ability?.type && phase.ability_amount) {
-			ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
-		} else {
-			ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+		if (cp.ability_amount) {
+			phaseDescription += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', cp.ability_amount);
 		}
 
-		if (phase.cooldown) {
-			ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
+		if (cp.bonus_amount) {
+			phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
 		}
-		result.push(ps);
+
+		if (cp.duration) {
+			phaseDescription += `, +${cp.duration}s duration`;
+		}
+
+		if (cp.cooldown) {
+			phaseDescription += `, +${cp.cooldown}s cooldown`;
+		}
+
+		result.push(phaseDescription);
 	});
 
 	return result.join('; ');
