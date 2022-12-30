@@ -6,20 +6,28 @@ import CONFIG from '../components/CONFIG';
 function formatChargePhases(crew): string {
 	let totalTime = 0;
 	let result = [];
-	crew.action.charge_phases.forEach(phase => {
-		totalTime += phase.charge_time;
-		let ps = `After ${totalTime}s `;
+	let charge_time = 0;
+	crew.action.charge_phases.forEach(cp => {
+		charge_time += cp.charge_time;
+		let phaseDescription = `After ${charge_time}s, `;
 
-		if (crew.action.ability) {
-			ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
-		} else {
-			ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+		if (cp.ability_amount) {
+			phaseDescription += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', cp.ability_amount);
 		}
 
-		if (phase.cooldown) {
-			ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
+		if (cp.bonus_amount) {
+			phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
 		}
-		result.push(ps);
+
+		if (cp.duration) {
+			phaseDescription += `, +${cp.duration}s duration`;
+		}
+
+		if (cp.cooldown) {
+			phaseDescription += `, +${cp.cooldown}s cooldown`;
+		}
+
+		result.push(phaseDescription);
 	});
 
 	return result.join('; ');
@@ -69,7 +77,7 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Collections',
-			value: (row: any) => row.collections.join(', ')
+			value: (row: any) => row.collections.map(c => c.replace(/,/g, '')).join(', ')
 		},
 		{
 			label: 'Voyage rank',
@@ -182,11 +190,12 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Bonus Ability',
 			value: (row: any) =>
-				row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+				row.action.ability?.type ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
 		},
 		{
 			label: 'Trigger',
-			value: (row: any) => (row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
+			value: (row: any) =>
+				(row.action.ability?.condition ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',
