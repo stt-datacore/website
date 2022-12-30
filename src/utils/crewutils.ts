@@ -10,7 +10,7 @@ function formatChargePhases(crew): string {
 		totalTime += phase.charge_time;
 		let ps = `After ${totalTime}s `;
 
-		if (crew.action.ability) {
+		if (crew.action.ability?.type && phase.ability_amount) {
 			ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
 		} else {
 			ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
@@ -69,7 +69,7 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Collections',
-			value: (row: any) => row.collections.join(', ')
+			value: (row: any) => row.collections.map(c => c.replace(/,/g, '')).join(', ')
 		},
 		{
 			label: 'Voyage rank',
@@ -182,11 +182,12 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Bonus Ability',
 			value: (row: any) =>
-				row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+				row.action.ability?.type ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
 		},
 		{
 			label: 'Trigger',
-			value: (row: any) => (row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
+			value: (row: any) =>
+				(row.action.ability?.condition ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',
