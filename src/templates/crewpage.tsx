@@ -176,7 +176,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 								{crew.action.ability && (
 									<p>
-										Bonus ability:
+										Bonus ability:{` `}
 										{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
 										{crew.action.ability.condition > 0 && (
 											<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
@@ -397,11 +397,11 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				}
 
 				if (cp.duration) {
-					phaseDescription += `, +${cp.duration}s duration`;
+					phaseDescription += `, +${cp.duration-action.duration}s duration`;
 				}
 
 				if (cp.cooldown) {
-					phaseDescription += `, +${cp.cooldown}s cooldown`;
+					phaseDescription += `, +${cp.cooldown-action.cooldown}s cooldown`;
 				}
 
 				phases.push(<p key={idx}>{phaseDescription}</p>);

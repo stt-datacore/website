@@ -20,11 +20,11 @@ function formatChargePhases(crew): string {
 		}
 
 		if (cp.duration) {
-			phaseDescription += `, +${cp.duration}s duration`;
+			phaseDescription += `, +${cp.duration-crew.action.duration}s duration`;
 		}
 
 		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown}s cooldown`;
+			phaseDescription += `, +${cp.cooldown-crew.action.cooldown}s cooldown`;
 		}
 
 		result.push(phaseDescription);
@@ -190,12 +190,12 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Bonus Ability',
 			value: (row: any) =>
-				row.action.ability?.type ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+				(row.action.ability ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : '')
 		},
 		{
 			label: 'Trigger',
 			value: (row: any) =>
-				(row.action.ability?.condition ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
+				(row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',

@@ -72,7 +72,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
 
-	const myCrew = [...props.myCrew];
+	const myCrew = JSON.parse(JSON.stringify(props.myCrew));
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew.map(ac => {
