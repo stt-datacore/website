@@ -3,7 +3,7 @@ name: Union Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 12
 in_portal: true
 date: 30/03/2021
