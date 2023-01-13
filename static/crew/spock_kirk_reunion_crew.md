@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 2
-events: 57
+events: 58
 in_portal:
 date: 22/03/2021
 obtained: Fuse

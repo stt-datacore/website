@@ -3,8 +3,8 @@ name: Interfaced La Forge
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
-events: 29
+bigbook_tier: 6
+events: 30
 in_portal: true
 date: 11/07/2018
 obtained: Event

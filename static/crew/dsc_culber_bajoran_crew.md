@@ -3,8 +3,8 @@ name: Bajoran Culber
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
-events: 42
+bigbook_tier: 4
+events: 44
 in_portal: true
 date: 08/04/2021
 obtained: Event

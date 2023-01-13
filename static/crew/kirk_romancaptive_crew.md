@@ -3,7 +3,7 @@ name: Roman Captive Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 32
 in_portal: true
 date: 19/09/2019

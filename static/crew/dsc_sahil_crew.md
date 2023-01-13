@@ -3,8 +3,8 @@ name: Sahil
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
-events: 20
+bigbook_tier: 10
+events: 22
 in_portal: true
 date: 03/12/2020
 obtained: Event

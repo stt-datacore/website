@@ -3,7 +3,7 @@ name: Boxer Chakotay
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 15
 in_portal: true
 date: 21/12/2016

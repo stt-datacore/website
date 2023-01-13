@@ -3,7 +3,7 @@ name: Insubordinate Mariner
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 15
 in_portal:
 date: 27/07/2022
