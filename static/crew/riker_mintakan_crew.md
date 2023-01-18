@@ -3,7 +3,7 @@ name: Mintakan Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 43
 in_portal: true
 date: 17/04/2017

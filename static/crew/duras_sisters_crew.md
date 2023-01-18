@@ -3,7 +3,7 @@ name: The Duras Sisters
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 17
 in_portal:
 date: 01/01/2016

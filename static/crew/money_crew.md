@@ -3,7 +3,7 @@ name: Private S. Money
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 4
 in_portal: true
 date: 21/07/2016

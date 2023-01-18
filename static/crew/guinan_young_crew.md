@@ -3,7 +3,7 @@ name: Young Guinan
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 5
 in_portal:
 date: 28/11/2022

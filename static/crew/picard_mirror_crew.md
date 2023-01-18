@@ -3,7 +3,7 @@ name: Mirror Jean-Luc Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 39
 in_portal: true
 date: 11/12/2017
