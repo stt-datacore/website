@@ -3,8 +3,8 @@ name: Sybok
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 15
+bigbook_tier: 7
+events: 16
 in_portal: true
 date: 03/04/2017
 obtained: Event

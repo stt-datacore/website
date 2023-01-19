@@ -3,7 +3,7 @@ name: Dreamwalker Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 10
 in_portal: true
 date: 10/08/2021

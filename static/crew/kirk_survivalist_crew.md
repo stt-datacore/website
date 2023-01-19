@@ -3,8 +3,8 @@ name: Survivalist Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 42
+bigbook_tier: 5
+events: 43
 in_portal: true
 date: 20/11/2018
 obtained: Pack

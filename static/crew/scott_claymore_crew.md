@@ -3,7 +3,7 @@ name: Claymore Scotty
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 11
 in_portal: true
 date: 12/03/2020

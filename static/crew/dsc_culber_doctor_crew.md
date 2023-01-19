@@ -3,7 +3,7 @@ name: Dr. Hugh Culber
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 28
 in_portal: true
 date: 28/11/2017

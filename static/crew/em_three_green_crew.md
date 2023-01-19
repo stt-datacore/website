@@ -3,7 +3,7 @@ name: Em/3/Green
 rarity: 4
 series: tas
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 5
 in_portal: true
 date: 06/10/2020

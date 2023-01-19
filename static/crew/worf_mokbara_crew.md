@@ -3,7 +3,7 @@ name: Mok'bara Worf
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 36
 in_portal:
 date: 04/05/2022

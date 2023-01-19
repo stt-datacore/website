@@ -3,7 +3,7 @@ name: Honey Bare Jadzia
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 30
 in_portal: true
 date: 27/11/2017

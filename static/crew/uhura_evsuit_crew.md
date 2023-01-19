@@ -3,8 +3,8 @@ name: Pathfinder Uhura
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 2
-events: 26
+bigbook_tier: 1
+events: 27
 in_portal:
 date: 06/09/2022
 obtained: Giveaway

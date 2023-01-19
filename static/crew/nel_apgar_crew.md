@@ -3,7 +3,7 @@ name: Nel Apgar
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 24
 in_portal:
 date: 22/12/2022

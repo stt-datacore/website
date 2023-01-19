@@ -3,7 +3,7 @@ name: Captain Dathon
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 10
 in_portal: true
 date: 21/07/2016

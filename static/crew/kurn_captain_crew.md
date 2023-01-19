@@ -3,7 +3,7 @@ name: Captain Kurn
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 10
 in_portal: true
 date: 26/05/2016
