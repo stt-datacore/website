@@ -10,9 +10,9 @@ Calculator Worker(): results =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
-import CONFIG from '../components/CONFIG';
+import CONFIG from '../CONFIG';
 
-import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 export const CALCULATORS = {
 	helpers: [
@@ -426,11 +426,10 @@ class USSJohnJayHelper extends Helper {
 			if (bests.length === 1)
 				postscript = 'Recommended for all criteria';
 			else {
-				postscript = '['+(bestId+1)+'/'+bests.length+']';
 				if (recommended.length > 0)
-					postscript += ' Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
+					postscript = ' Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
 				else
-					postscript += ' Alternative for requested strategy';
+					postscript = ' Alternative for requested strategy';
 			}
 			return {
 				entries: best.crew.map((crew, entryId) => ({
