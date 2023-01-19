@@ -14,6 +14,7 @@ import CommonCrewData from '../components/commoncrewdata';
 import ExtraCrewDetails from '../components/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
+import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
 
 type StaticCrewPageProps = {
 	data: {
@@ -165,41 +166,66 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								)}
 
 							<Segment>
-								<Header as='h4'>{crew.action.name}</Header>
-								<p>
-									Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}
-								</p>
-								<p>
-									Initialize: {crew.action.initial_cooldown}s, Cooldown: {crew.action.cooldown}s, Duration: {crew.action.duration}s
-									</p>
-								{crew.action.limit && <p>Uses Per Battle: {crew.action.limit}</p>}
+								<h4 style={{ marginBottom: '.25em' }}>Ship Ability ({crew.action.name})</h4>
+								<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
+									<li>Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}</li>
+									{crew.action.penalty && (
+										<li>Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}</li>
+									)}
+									<li>
+										<b>Initialize</b>: {crew.action.initial_cooldown}s, <b>Cooldown</b>: {crew.action.cooldown}s, <b>Duration</b>: {crew.action.duration}s
+									</li>
+									{crew.action.limit && <li><b>Uses Per Battle</b>: {crew.action.limit}</li>}
+								</ul>
 
 								{crew.action.ability && (
+									<div>
+										<h4 style={{ marginBottom: '.25em' }}>Bonus Ability</h4>
+										<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
+											{crew.action.ability.condition > 0 && (
+												<li><b>Trigger</b>: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</li>
+											)}
+											<li>{getShipBonus(crew)}</li>
+										</ul>
+									</div>
+								)}
+
+								{crew.action.charge_phases && (
+									<div>
+										<h4 style={{ marginBottom: '.25em' }}>Charge Phases</h4>
+										<ol style={{ marginTop: '0', listStylePosition: 'inside', paddingLeft: '0' }}>
+											{getShipChargePhases(crew).map((phase, idx) =>
+												<li key={idx}>{phase}</li>
+											)}
+										</ol>
+									</div>
+								)}
+
+								<div>
+									<h4 style={{ marginBottom: '.25em' }}>Equipment Bonus</h4>
 									<p>
-										Bonus ability:{` `}
-										{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}{' '}
-										{crew.action.ability.condition > 0 && (
-											<span>Trigger: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</span>
+										{crew.ship_battle.accuracy && (
+											<span>
+												<b>Accuracy:</b> +{crew.ship_battle.accuracy}{` `}
+											</span>
+										)}
+										{crew.ship_battle.crit_bonus && (
+											<span>
+												<b>Crit Bonus:</b> +{crew.ship_battle.crit_bonus}{` `}
+											</span>
+										)}
+										{crew.ship_battle.crit_chance && (
+											<span>
+												<b>Crit Rating:</b> +{crew.ship_battle.crit_chance}{` `}
+											</span>
+										)}
+										{crew.ship_battle.evasion && (
+											<span>
+												<b>Evasion:</b> +{crew.ship_battle.evasion}{` `}
+											</span>
 										)}
 									</p>
-								)}
-
-								<p>
-									<b>Accuracy:</b> +{crew.ship_battle.accuracy} <b>Crit Bonus:</b> +{crew.ship_battle.crit_bonus}{' '}
-									{crew.ship_battle.crit_chance && (
-										<span>
-											<b>Crit Rating:</b> +{crew.ship_battle.crit_chance}{' '}
-										</span>
-									)}
-									<b>Evasion:</b> +{crew.ship_battle.evasion}
-								</p>
-								{crew.action.penalty && (
-									<p>
-										Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}
-									</p>
-								)}
-
-								{this.renderChargePhases(crew.action, crew.action.charge_phases)}
+								</div>
 							</Segment>
 						</Grid.Column>
 					</Grid.Row>
@@ -376,44 +402,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				</Grid>
 			</div>
 		);
-	}
-
-	renderChargePhases(action, charge_phases) {
-		if (!charge_phases) {
-			return <span />;
-		} else {
-			let phases = [];
-			let charge_time = 0;
-			charge_phases.forEach((cp, idx) => {
-				charge_time += cp.charge_time;
-				let phaseDescription = `After ${charge_time}s, `;
-
-				if (cp.ability_amount) {
-					phaseDescription += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', cp.ability_amount);
-				}
-
-				if (cp.bonus_amount) {
-					phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
-				}
-
-				if (cp.duration) {
-					phaseDescription += `, +${cp.duration-action.duration}s duration`;
-				}
-
-				if (cp.cooldown) {
-					phaseDescription += `, +${cp.cooldown-action.cooldown}s cooldown`;
-				}
-
-				phases.push(<p key={idx}>{phaseDescription}</p>);
-			});
-
-			return (
-				<div>
-					<h4>Charge phases</h4>
-					<div>{phases}</div>
-				</div>
-			);
-		}
 	}
 }
 

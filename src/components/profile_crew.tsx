@@ -13,6 +13,7 @@ import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../component
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
+import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
@@ -92,8 +93,10 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 			}
 		}
 
-		// Allow for more consistent sorting by action ability
-		if (!crew.action.ability) crew.action.ability = { type: '', condition: '', amount: '' };
+		// Allow for more consistent sorting by ship abilities
+		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
+		crew.action.ability_trigger = crew.action.ability?.condition > 0 ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition] : '';
+		crew.action.charge_text = crew.action.charge_phases ? getShipChargePhases(crew).join('; ') : '';
 	});
 
 	const lockable = [];
@@ -257,9 +260,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
 			{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
 			{ width: 1, column: 'action.limit', title: 'Uses' },
-			{ width: 1, column: 'action.ability.type', title: 'Bonus Ability', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-			{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-			{ width: 1, column: 'action.charge_phases', title: 'Charge Phases' },
+			{ width: 1, column: 'action.ability_text', title: 'Bonus Ability', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+			{ width: 1, column: 'action.ability_trigger', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+			{ width: 1, column: 'action.charge_text', title: 'Charge Phases' },
 			{ width: 1, column: 'ship_battle.accuracy', title: 'Accuracy', reverse: true },
 			{ width: 1, column: 'ship_battle.crit_bonus', title: 'Crit Bonus', reverse: true },
 			{ width: 1, column: 'ship_battle.crit_chance', title: 'Crit Rating', reverse: true },
