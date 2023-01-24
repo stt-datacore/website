@@ -3,7 +3,7 @@ name: Dread Pirate Q
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 33
 in_portal:
 date: 14/11/2022
