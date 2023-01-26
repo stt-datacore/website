@@ -26,18 +26,9 @@ const LineupViewer = (props: LineupViewerProps) => {
 			rank: 1000
 		};
 		Object.keys(crew.skills).forEach(crewSkill => {
-			const skill = skillRankings.find(sr => sr.skill === crewSkill);
-			const rank = skill.roster.filter(c =>
-				Object.keys(c.skills).includes(seatSkill)
-					&& voyScore(c.skills[crewSkill]) >= voyScore(crew.skills[crewSkill])
-					&& !usedCrew.includes(c.id)
-			).sort((c1, c2) => {
-				// Break ties by crew name
-				const s1 = voyScore(c1.skills[crewSkill]);
-				const s2 = voyScore(c2.skills[crewSkill]);
-				if (s1 === s2) return c1.name.localeCompare(c2.name);
-				return s2 - s1;
-			}).map(c => c.id).indexOf(crew.id) + 1;
+			const rank = skillRankings.find(sr => sr.skill === crewSkill)
+				.roster.filter(c => !usedCrew.includes(c.id))
+				.map(c => c.id).indexOf(crew.id) + 1;
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
 			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
@@ -53,7 +44,13 @@ const LineupViewer = (props: LineupViewerProps) => {
 		skill,
 		roster: roster.filter(c => Object.keys(c.skills).includes(skill))
 			.filter(c => c.skills[skill].core > 0)
-			.sort((c1, c2) => voyScore(c2.skills[skill]) - voyScore(c1.skills[skill]))
+			.sort((c1, c2) => {
+				// Break ties by crew name
+				const s1 = voyScore(c1.skills[skill]);
+				const s2 = voyScore(c2.skills[skill]);
+				if (s1 === s2) return c1.name.localeCompare(c2.name);
+				return s2 - s1;
+			})
 	}));
 	const usedCrew = [];
 	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
