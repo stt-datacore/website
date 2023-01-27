@@ -3,36 +3,6 @@ import { calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 
-function formatChargePhases(crew): string {
-	let totalTime = 0;
-	let result = [];
-	let charge_time = 0;
-	crew.action.charge_phases.forEach(cp => {
-		charge_time += cp.charge_time;
-		let phaseDescription = `After ${charge_time}s, `;
-
-		if (cp.ability_amount) {
-			phaseDescription += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', cp.ability_amount);
-		}
-
-		if (cp.bonus_amount) {
-			phaseDescription += `+${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
-		}
-
-		if (cp.duration) {
-			phaseDescription += `, +${cp.duration}s duration`;
-		}
-
-		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown}s cooldown`;
-		}
-
-		result.push(phaseDescription);
-	});
-
-	return result.join('; ');
-}
-
 export function exportCrewFields(): ExportField[] {
 	return [
 		{
@@ -190,12 +160,12 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Bonus Ability',
 			value: (row: any) =>
-				row.action.ability?.type ? CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[row.action.ability.type].replace('%VAL%', row.action.ability.amount) : ''
+				(row.action.ability ? getShipBonus(row) : '')
 		},
 		{
 			label: 'Trigger',
 			value: (row: any) =>
-				(row.action.ability?.condition ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
+				(row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',
@@ -227,7 +197,7 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Charge Phases',
-			value: (row: any) => (row.action.charge_phases ? formatChargePhases(row) : '')
+			value: (row: any) => (row.action.charge_phases ? getShipChargePhases(row).join('; ') : '')
 		},
 		{
 			label: 'Symbol',
@@ -376,4 +346,43 @@ export function formatTierLabel(crew) {
 		return 'none';
 	}
 	return `${crew.bigbook_tier}`;
+}
+
+export function getShipBonus(crew: any): string {
+	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type];
+	if (crew.action.ability.type === 0)
+		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} boost to`);
+	const bonusVal = crew.action.ability.type === 0
+		? crew.action.bonus_amount+crew.action.ability.amount
+		: crew.action.ability.amount;
+	bonusText = bonusText.replace('%VAL%', bonusVal);
+	return bonusText;
+}
+
+export function getShipChargePhases(crew: any): string[] {
+	const phases = [];
+	let charge_time = 0;
+	crew.action.charge_phases.forEach(cp => {
+		charge_time += cp.charge_time;
+		let phaseDescription = `After ${charge_time}s`;
+
+		if (cp.ability_amount) {
+			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', cp.ability_amount);
+		}
+
+		if (cp.bonus_amount) {
+			phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+		}
+
+		if (cp.duration) {
+			phaseDescription += `, +${cp.duration-crew.action.duration}s duration`;
+		}
+
+		if (cp.cooldown) {
+			phaseDescription += `, +${cp.cooldown-crew.action.cooldown}s cooldown`;
+		}
+
+		phases.push(phaseDescription);
+	});
+	return phases;
 }
