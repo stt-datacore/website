@@ -79,15 +79,15 @@ export default class CONFIG {
 	};
 
 	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE: { [index: number]: string } = {
-		0: 'Increase bonus boost by +%VAL%',
+		0: 'Increases bonus boost by +%VAL%',
 		1: 'Immediately deals %VAL%% damage',
-		2: 'Immediately repairs Hulls by %VAL%%',
+		2: 'Immediately repairs Hull by %VAL%%',
 		3: 'Immediately repairs Shields by %VAL%%',
 		4: '+%VAL% to Crit Rating',
 		5: '+%VAL% to Crit Bonus',
-		6: 'Shield regeneration +%VAL%',
+		6: '+%VAL% to Shield Regeneration',
 		7: '+%VAL%% to Attack Speed',
-		8: 'Increase boarding damage by %VAL%%'
+		8: 'Increases boarding damage by %VAL%%'
 	};
 
 	static readonly STATS_CONFIG: { [index: number]: any } = {

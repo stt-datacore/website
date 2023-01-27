@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 5
-events: 36
+events: 37
 in_portal:
 date: 24/02/2022
 obtained: Honor Hall
