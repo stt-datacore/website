@@ -9,7 +9,7 @@ import ItemDisplay from '../itemdisplay';
 import { useStateWithStorage } from '../../utils/storage';
 
 const POPUP_DELAY = 500;
-const voyScore = v => Math.floor(v.core + (v.range_min + v.range_max)/2);
+const voyScore = v => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
 	voyageData: any;
@@ -27,7 +27,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 		};
 		Object.keys(crew.skills).forEach(crewSkill => {
 			const rank = skillRankings.find(sr => sr.skill === crewSkill)
-				.roster.filter(c => !usedCrew.includes(c.id))
+				.roster.filter(c => Object.keys(c.skills).includes(seatSkill) && !usedCrew.includes(c.id))
 				.map(c => c.id).indexOf(crew.id) + 1;
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
@@ -406,7 +406,7 @@ const Aggregates = (props: ViewProps) => {
 								</Table.Row>
 							);
 						} else {
-							const score = voyScore(agg);
+							const score = Math.floor(voyScore(agg));
 							return (
 								<Table.Row key={idx}>
 									<Table.Cell>{CONFIG.SKILLS[entry]}</Table.Cell>
@@ -488,7 +488,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				{Object.keys(crew.skills).map(skill =>
 					<Label key={skill}>
 						{CONFIG.SKILLS_SHORT.find(c => c.name === skill).short}{` `}
-						{voyScore(crew.skills[skill])}
+						{Math.floor(voyScore(crew.skills[skill]))}
 					</Label>
 				)}
 			</React.Fragment>
