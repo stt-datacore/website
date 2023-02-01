@@ -45,11 +45,28 @@ const LineupViewer = (props: LineupViewerProps) => {
 		roster: roster.filter(c => Object.keys(c.skills).includes(skill))
 			.filter(c => c.skills[skill].core > 0)
 			.sort((c1, c2) => {
-				// Break ties by crew name
-				const s1 = voyScore(c1.skills[skill]);
-				const s2 = voyScore(c2.skills[skill]);
-				if (s1 === s2) return c1.name.localeCompare(c2.name);
-				return s2 - s1;
+				// Sort by skill voyage score descending
+				//	Voyage scores are floored before sorting
+				const vs1 = Math.floor(voyScore(c1.skills[skill]));
+				const vs2 = Math.floor(voyScore(c2.skills[skill]));
+				// Break ties by sum of all core skills descending
+				if (vs1 === vs2) {
+					const coreScore = c => Object.keys(c.skills).reduce((prev, curr) => prev + c.skills[curr].core, 0);
+					const cs1 = coreScore(c1);
+					const cs2 = coreScore(c2);
+					// Break ties by max rarity descending (unconfirmed but likely)
+					if (cs1 === cs2) {
+						// Break ties by rarity descending
+						if (c1.max_rarity === c2.max_rarity) {
+							// Break ties by symbol descending
+							if (c1.rarity === c2.rarity) return c2.symbol.localeCompare(c1.symbol);
+							return c2.rarity - c1.rarity;
+						}
+						return c2.max_rarity - c1.max_rarity;
+					}
+					return cs2 - cs1;
+				}
+				return vs2 - vs1;
 			})
 	}));
 	const usedCrew = [];
