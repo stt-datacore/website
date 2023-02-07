@@ -322,7 +322,23 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 			crew.equipment = owned.equipment;
 			if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
 			if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
-			applyCrewBuffs(crew, buffConfig);
+			// Use skills directly from player data when possible
+			if (owned.skills) {
+				for (let skill in CONFIG.SKILLS) {
+					crew[skill] = { core: 0, min: 0, max: 0 };
+				}
+				for (let skill in owned.skills) {
+					crew[skill] = {
+						core: owned.skills[skill].core,
+						min: owned.skills[skill].range_min,
+						max: owned.skills[skill].range_max
+					};
+				}
+			}
+			// Otherwise apply buffs to base_skills
+			else {
+				applyCrewBuffs(crew, buffConfig);
+			}
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 		});
 

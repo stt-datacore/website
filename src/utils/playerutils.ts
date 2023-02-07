@@ -165,6 +165,7 @@ export function stripPlayerData(items: any[], p: any): any {
 			rarity: crew.rarity,
 			equipment: crew.equipment.map(eq => eq[0]),
 			base_skills: crew.base_skills,
+			skills: crew.skills,
 			favorite: crew.favorite,
 			action: {
 				bonus_amount: crew.action.bonus_amount
