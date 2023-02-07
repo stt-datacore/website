@@ -67,9 +67,10 @@ const RarityDepth = (props: RarityDepthProps) => {
 
 		const myOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
 		const myUnfrozen = myCrew.filter(crew => crew.immortal === 0);
-		const myImmortals = myCrew.filter(crew => isImmortal(crew));
+		const myFrozen = myCrew.filter(crew => crew.immortal > 0);
+		const myImmortals = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol && (mc.immortal > 0 || isImmortal(mc))).length > 0);
 		const unfrozenDupes = props.allCrew.filter(crew => myCrew.filter(c => c.symbol === crew.symbol).length > 1).length;
-		const frozenDupes = myCrew.filter(crew => crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
+		const frozenDupes = myFrozen.filter(crew => crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
 		const data = [];
 		data.push(
 			{
@@ -84,7 +85,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 				progressPct: myImmortals.length/props.allCrew.length,
 				immortal: myImmortals.length + frozenDupes,
 				unfrozen: myUnfrozen.length,
-				frozen: myCrew.length - myUnfrozen.length + frozenDupes,
+				frozen: myFrozen.reduce((prev, curr) => prev + curr.immortal, 0),
 				dupes: unfrozenDupes + frozenDupes
 			}
 		);
@@ -92,9 +93,10 @@ const RarityDepth = (props: RarityDepthProps) => {
 			const allRarity = props.allCrew.filter(crew => crew.max_rarity === i);
 			const owned = myOwned.filter(crew => crew.max_rarity === i);
 			const unfrozen = myCrew.filter(crew => crew.max_rarity === i && crew.immortal === 0);
-			const immortals = myCrew.filter(crew => crew.max_rarity === i && isImmortal(crew));
+			const frozen = myCrew.filter(crew => crew.max_rarity === i && crew.immortal > 0);
+			const immortals = myImmortals.filter(crew => crew.max_rarity === i);
 			const unfrozenDupes = allRarity.filter(crew => myCrew.filter(c => c.symbol === crew.symbol).length > 1).length;
-			const frozenDupes = myCrew.filter(crew => crew.max_rarity === i && crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
+			const frozenDupes = frozen.filter(crew => crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
 			data.push(
 				{
 					key: i,
@@ -108,7 +110,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 					progressPct: immortals.length/allRarity.length,
 					immortal: immortals.length + frozenDupes,
 					unfrozen: unfrozen.length,
-					frozen: owned.length - unfrozen.length + frozenDupes,
+					frozen: frozen.reduce((prev, curr) => prev + curr.immortal, 0),
 					dupes: unfrozenDupes + frozenDupes
 				}
 			);
