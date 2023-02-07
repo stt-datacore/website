@@ -4,8 +4,8 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 4
-events: 18
-in_portal:
+events: 19
+in_portal: true
 date: 22/03/2022
 obtained: Campaign
 mega: false

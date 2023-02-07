@@ -3,8 +3,8 @@ name: Off-Duty Stamets
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 9
-events: 23
+bigbook_tier: 8
+events: 24
 in_portal: true
 date: 13/02/2019
 obtained: Event

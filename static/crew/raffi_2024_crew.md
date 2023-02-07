@@ -3,9 +3,9 @@ name: 2024 Raffi
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 6
-in_portal:
+in_portal: true
 date: 05/04/2022
 obtained: Event
 mega: false

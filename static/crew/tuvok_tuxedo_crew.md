@@ -3,8 +3,8 @@ name: Bartender Tuvok
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 22
+bigbook_tier: 7
+events: 23
 in_portal: true
 date: 20/02/2019
 obtained: Event

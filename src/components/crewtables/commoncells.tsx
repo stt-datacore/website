@@ -104,13 +104,13 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.limit && <><b>{crew.action.limit}</b></>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', crew.action.ability.amount)}</>}
+				{crew.action.ability && <>{crew.action.ability_text}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.ability.type !== '' && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</>}
+				{crew.action.ability && <>{crew.action.ability_trigger}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.charge_phases && <>{formatChargePhases(crew)}</>}
+				{crew.action.charge_phases && <>{crew.action.charge_text}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{crew.ship_battle.accuracy && <>+<b>{crew.ship_battle.accuracy}</b></>}
@@ -126,27 +126,4 @@ export const CrewShipCells = (props: CrewCellProps) => {
 			</Table.Cell>
 		</React.Fragment>
 	);
-
-	// Adapted from function of same name in crewutils.ts
-	function formatChargePhases(crew): string {
-		let totalTime = 0;
-		let result = [];
-		crew.action.charge_phases.forEach(phase => {
-			totalTime += phase.charge_time;
-			let ps = `After ${totalTime}s `;
-
-			if (crew.action.ability?.type !== '') {
-				ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
-			} else {
-				ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
-			}
-
-			if (phase.cooldown) {
-				ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
-			}
-			result.push(ps);
-		});
-
-		return result.join('; ');
-	}
 };

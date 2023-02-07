@@ -3,9 +3,9 @@ name: Security Laris
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 20
-in_portal:
+in_portal: true
 date: 02/02/2022
 obtained: Event
 mega: false

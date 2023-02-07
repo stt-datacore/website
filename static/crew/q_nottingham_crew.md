@@ -3,8 +3,8 @@ name: Sheriff of Nottingham Q
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
-events: 31
+bigbook_tier: 8
+events: 32
 in_portal: true
 date: 19/06/2017
 obtained: Event

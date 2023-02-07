@@ -3,7 +3,7 @@ name: Demo Man Scotty
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 10
 in_portal:
 date: 12/07/2022

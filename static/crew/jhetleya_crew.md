@@ -3,8 +3,8 @@ name: Jhet'leya
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 12
+bigbook_tier: 4
+events: 13
 in_portal: true
 date: 09/11/2021
 obtained: Pack

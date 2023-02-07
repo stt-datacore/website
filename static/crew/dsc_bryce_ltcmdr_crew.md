@@ -3,7 +3,7 @@ name: Lt. Commander Bryce
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 35
 in_portal:
 date: 30/11/2022

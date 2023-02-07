@@ -67,27 +67,17 @@ const CrewChallenge = () => {
 		//	https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread
 		const fixes = [
 			/* Missing series */
-			{ symbol: 'abe_lincoln_crew', series: 'tos', audit: '+' },
-			{ symbol: 'borg_queen_crew', series: 'tng', audit: '+' },
 			{ symbol: 'data_mirror_crew', series: 'tng', audit: '+' },
-			{ symbol: 'defiant_helmsman_crew', series: 'tng', audit: '+' },
-			{ symbol: 'laforge_mirror_crew', series: 'tng', audit: '+' },
-			{ symbol: 'lonzak_crew', series: 'voy', audit: '+' },
-			{ symbol: 'neelix_human_crew', series: 'tng', audit: '+' },
 			/* Incorrect series */
 			{ symbol: 'cartwright_crew', series: 'tos', audit: '-tng' },
 			{ symbol: 'chang_general_crew', series: 'tos', audit: '-tng' },
-			{ symbol: 'dsc_guardian_carl_crew', series: 'dsc', audit: '-tos' },
 			{ symbol: 'earp_wyatt_crew', series: 'tos', audit: '-tng' },
-			{ symbol: 'ephraim_dot_crew', series: 'dsc', audit: '-low' },
 			{ symbol: 'janeway_admiral_crew', series: 'tng', audit: '-voy' },
 			{ symbol: 'jarok_crew', series: 'tng', audit: '-ds9' },
 			{ symbol: 'keiko_bride_crew', series: 'tng', audit: '-ds9' },
 			{ symbol: 'kirk_generations_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'laforge_captain_crew', series: 'voy', audit: '-tng' },
 			{ symbol: 'marcus_wok_crew', series: 'tos', audit: '-tng' },
-			{ symbol: 'marla_mcgivers_crew', series: 'tos', audit: '-tng' },
-			{ symbol: 'miss_q_civil_war_crew', series: 'voy', audit: '-tng' },
 			{ symbol: 'scott_movievest_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'spock_ambassador_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'sulu_demora_ensign_crew', series: 'tng', audit: '-tos' },
@@ -164,6 +154,7 @@ const CrewChallengeLayout = () => {
 				<p>A <span style={adjacentStyle}>yellow rarity</span> indicates the mystery crew has a max rarity that is either 1 star higher or 1 star lower than your guess.</p>
 				<p>"<b>Skill Order</b>" lists the guessed crew's skills from highest to lowest base value. A <span style={adjacentStyle}>yellow skill</span> indicates the mystery crew has that skill, but not in the same position as your guess.</p>
 				<p>"<b>Traits in Common</b>" identify the traits* your guess and the mystery crew share in common.</p>
+				<p>If you need a little help, feel free to use the "Show hints" button on the crew picker. Hints identify a crew's series, rarity, and number of skills.</p>
 				<p>* All information used here comes directly from the Star Trek Timelines game data. Variants, series, and traits may not always be what you expect; please see <a href='https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread'>this thread</a> for known issues.</p>
 			</React.Fragment>
 		);
@@ -675,14 +666,15 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 				'female', 'male',
 				'artificial_life', 'nonhuman', 'organic', 'species_8472',
 				'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
-				'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman', 'yeoman',
+				'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
+				'feb2023',
 				'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
 			];
 			const variantTraits = [];
 			traitsHidden.forEach(trait => {
 				if (!series.includes(trait) && !ignore.includes(trait)) {
-					// Also ignore multishow variant traits, e.g. spock_tos, spock_dsc
-					if (!/_[a-z]{3}$/.test(trait) || !series.includes(trait.substr(-3)))
+					// Also ignore exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage
+					if (!/^exclusive_/.test(trait))
 						variantTraits.push(trait);
 				}
 			});
@@ -704,7 +696,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			const traits = variantTraits.slice();
 			['Female', 'Male'].forEach(usable => { if (crew.traits_hidden.includes(usable.toLowerCase())) traits.push(usable); });
 			const usableCollections = [
-				'A Little Stroll', 'Animated', 'Badda-Bing, Badda-Bang', 'Bride of Chaotica', 'Delphic Expanse',
+				'A Little Stroll', 'Animated', 'Badda-Bing, Badda-Bang', 'Bride of Chaotica', 'Convergence Day', 'Delphic Expanse',
 				'Holodeck Enthusiasts', 'Our Man Bashir', 'Pet People', 'Play Ball!', 'Set Sail!', 'Sherwood Forest',
 				'The Big Goodbye', 'The Wild West'
 			];
@@ -858,7 +850,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 				{renderGrid()}
 			</Modal.Content>
 			<Modal.Actions>
-				<Button content='Show hints' onClick={() => setShowHints(!showHints) } />
+				<Button content={`${showHints ? 'Show' : 'Hide'} hints`} onClick={() => setShowHints(!showHints) } />
 				{selectedCrew && (
 					<Button color='blue'
 						content={`Guess ${selectedCrew.name}`}
@@ -921,7 +913,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 								{crew.name}
 							</div>
 							{!showHints && (
-								<div>({[crew.series.toUpperCase(), `${crew.max_rarity}*`].join(', ')})</div>
+								<div>({[crew.series.toUpperCase(), `${crew.max_rarity}*`, `${Object.keys(crew.base_skills).length}`].join(', ')})</div>
 							)}
 						</Grid.Column>
 					))}

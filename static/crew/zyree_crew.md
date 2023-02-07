@@ -3,7 +3,7 @@ name: Zyree
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 3
 in_portal: true
 date: 27/05/2021
