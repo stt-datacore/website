@@ -15,10 +15,11 @@ type LineupViewerProps = {
 	voyageData: any;
 	ship: any;
 	roster: any;
+	dbid: string;
 };
 
 const LineupViewer = (props: LineupViewerProps) => {
-	const { voyageData, ship, roster } = props;
+	const { voyageData, ship, roster, dbid } = props;
 
 	const getBestRank = (crew, seatSkill) => {
 		const best = {
@@ -96,7 +97,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 		shipData.crewBonus = voyageData.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
-	return <ViewPicker voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />;
+	return <ViewPicker voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} dbid={dbid} />;
 };
 
 type ViewPickerProps = {
@@ -104,13 +105,13 @@ type ViewPickerProps = {
 	ship: any;
 	shipData: any;
 	assignments: any[];
+	dbid: string;
 };
 
 const ViewPicker = (props: ViewPickerProps) => {
-	const { voyageData, ship, shipData, assignments } = props;
+	const { voyageData, ship, shipData, assignments, dbid } = props;
 
-	const [layout, setLayout] = React.useState('table-compact');
-	//const [layout, setLayout] = useStateWithStorage(playerData.player.dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+	const [layout, setLayout] = useStateWithStorage(dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
 
 	return (
 		<React.Fragment>
@@ -338,9 +339,11 @@ const GridView = (props: ViewProps) => {
 									<AssignmentCard assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={true} />
 								</Popup.Content>
 							</Popup>
-							<div style={{ textAlign: 'center' }}>
-								<CrewFinder crew={crew} bestRank={bestRank} />
-							</div>
+							{voyageData.state === 'pending' &&
+								<div style={{ textAlign: 'center' }}>
+									<CrewFinder crew={crew} bestRank={bestRank} />
+								</div>
+							}
 						</Grid.Column>
 					);
 				})}

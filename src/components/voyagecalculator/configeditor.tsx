@@ -23,7 +23,6 @@ const ConfigEditor = (props: ConfigEditorProps) => {
 			updateConfig(voyageConfig);
 			setUpdateOnClose(false);
 		}
-
 	}, [modalIsOpen]);
 
 	const defaultSlots = [
@@ -48,7 +47,7 @@ const ConfigEditor = (props: ConfigEditorProps) => {
 			open={modalIsOpen}
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
-			trigger={<Button size='small'><Icon name='edit' />Edit</Button>}
+			trigger={<Button compact><Icon name='edit' />Edit</Button>}
 		>
 			<Modal.Header>Edit Voyage</Modal.Header>
 			<Modal.Content scrolling>

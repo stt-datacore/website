@@ -107,8 +107,7 @@ const Recommender = (props: RecommenderProps) => {
 						/>
 					))}
 				</Form.Group>
-
-				<Button color='green' onClick={() => startCalculation()}>
+				<Button fluid size='big' color='green' onClick={() => startCalculation()}>
 					Recommend Crew
 				</Button>
 			</Form>
@@ -154,13 +153,56 @@ const Recommender = (props: RecommenderProps) => {
 		// In-game voyage crew picker ignores immortalized crew and crew active on shuttles
 		const availableRoster = myCrew.filter(c => c.immortal === 0 && c.active_status !== 2);
 
-		const showPopup = (result) => <Popup basic content={<p>{result.result.postscript}</p>} trigger={<p>{result.name}</p>} />
+		// Compare best values among ALL results
+		const bestValues = {
+			estimate: 0,
+			minimum: 0,
+			moonshot: 0,
+			antimatter: 0,
+			dilemma: {
+				hour: 0,
+				chance: 0
+			}
+		};
+		results.forEach(result => {
+			if (result.result) {
+				const values = flattenEstimate(result.result.estimate);
+				Object.keys(bestValues).forEach((valueKey) => {
+					if (valueKey === 'dilemma') {
+						if (values.dilemma.hour > bestValues.dilemma.hour
+							|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
+								bestValues.dilemma = values.dilemma;
+						}
+					}
+					else if (values[valueKey] > bestValues[valueKey]) {
+						bestValues[valueKey] = values[valueKey];
+					}
+				});
+			}
+		});
+		results.forEach(result => {
+			let compared = '';
+			if (result.result) {
+				const recommended = getRecommendedList(result.result.estimate, bestValues);
+				if (results.length === 1)
+					compared = 'Recommended for all criteria';
+				else {
+					if (recommended.length > 0)
+						compared = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
+					else
+						compared = ' Proposed alternative';
+				}
+				result.compared = compared;
+			}
+		});
+
+		const showPopup = (result) => <Popup basic content={<p>{result.compared}</p>} trigger={<p>{result.name}</p>} />
 		const panes = results.map((result, resultIndex) => ({
 			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
 			render: () => (
-				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultYield={results.length}
+				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultYield={results.length} resultCompared={result.compared}
 					requests={requests} requestId={result.requestId}
-					calcState={result.calcState} abortCalculation={abortCalculation}
+					calcState={result.calcState} abortCalculation={abortCalculation} dismissResult={dismissResult}
 					roster={availableRoster}
 				/>
 			)
@@ -250,6 +292,66 @@ const Recommender = (props: RecommenderProps) => {
 				return [...prevResults];
 			});
 		}
+	}
+
+	function dismissResult(resultIndex: number): void {
+		setResults(prevResults => {
+			prevResults.splice(resultIndex, 1);
+			return [...prevResults];
+		});
+	}
+
+	function flattenEstimate(estimate: any): any {
+		const extent = estimate.refills[0];
+		return {
+			estimate: extent.result,
+			minimum: extent.saferResult,
+			moonshot: extent.moonshotResult,
+			antimatter: estimate.antimatter,
+			dilemma: {
+				hour: extent.lastDil,
+				chance: extent.dilChance
+			}
+		};
+	}
+
+	function getRecommendedList(estimate: any, bestValues: any): string[] {
+		const recommended = [];
+		const values = flattenEstimate(estimate);
+		Object.keys(bestValues).forEach((method) => {
+			if (bestValues[method] === values[method] ||
+				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance))
+					recommended.push(method);
+		});
+		return recommended;
+	};
+
+	function getRecommendedValue(method: number, bestValues: any): string {
+		let sortName = '', sortValue = '';
+		switch (method) {
+			case 'estimate':
+				sortName = 'estimated runtime';
+				sortValue = formatTime(bestValues.estimate);
+				break;
+			case 'minimum':
+				sortName = 'guaranteed minimum';
+				sortValue = formatTime(bestValues.minimum);
+				break;
+			case 'moonshot':
+				sortName = 'moonshot';
+				sortValue = formatTime(bestValues.moonshot);
+				break;
+			case 'dilemma':
+				sortName = 'dilemma chance';
+				sortValue = Math.round(bestValues.dilemma.chance)+'% to reach '+bestValues.dilemma.hour+'h';
+				break;
+			case 'antimatter':
+				sortName = 'starting antimatter';
+				sortValue = bestValues.antimatter;
+				break;
+		}
+		if (sortValue != '') sortValue = ' ('+sortValue+')';
+		return sortName+sortValue;
 	}
 
 	function sendTelemetry(requestId: string, result: any): void {
@@ -456,11 +558,13 @@ type VoyageResultPaneProps = {
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
+	dismissResult: (resultIndex: number) => void;
 	roster: any[];
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
-	const { result, resultIndex, resultYield, requests, requestId, calcState, abortCalculation, roster } = props;
+	const { playerData } = React.useContext(AllDataContext);
+	const { result, resultIndex, resultYield, resultCompared, requests, requestId, calcState, abortCalculation, dismissResult, roster } = props;
 
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
@@ -494,7 +598,8 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 				<>
 					<Image inline size='mini' src='/media/voyage-wait-icon.gif' />
 					Calculation in progress. Please wait...{` `}
-					<Button size='mini' onClick={() => abortCalculation(request.id)}>Abort</Button>
+					<Button compact style={{ marginLeft: '1em' }}
+						content='Abort' onClick={() => abortCalculation(request.id)} />
 				</>
 			);
 		}
@@ -504,6 +609,8 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 			<>
 				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
 				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
+				<Button compact style={{ marginLeft: '1em' }}
+					icon='ban' content='Dismiss' onClick={() => dismissResult(resultIndex)} />
 			</>
 		);
 	};
@@ -515,7 +622,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 					Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
 					(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
 						{formatTime(result.estimate.refills[0].moonshotResult)})
-					{result.postscript && (<div style={{ marginTop: '1em' }}>{result.postscript}</div>)}
+					{resultCompared && (<div style={{ marginTop: '1em' }}>{resultCompared}</div>)}
 				</Message>
 			)}
 			<Tab.Pane>
@@ -525,6 +632,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 					ships={[request.bestShip]}
 					roster={roster}
 					showPanels={['crew']}
+					dbid={playerData.player.dbid}
 				/>
 				<div style={{ marginTop: '1em' }}>
 					{renderCalculatorMessage()}

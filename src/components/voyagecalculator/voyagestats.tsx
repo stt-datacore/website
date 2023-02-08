@@ -19,6 +19,7 @@ type VoyageStatsProps = {
 	estimate?: any;
 	roster?: any[];
 	playerItems?: any[];
+	dbid: string;
 };
 
 type VoyageStatsState = {
@@ -184,8 +185,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const { voyageData, roster } = this.props;
-		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} />;
+		const { voyageData, roster, dbid } = this.props;
+		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={dbid} />;
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -407,15 +408,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		};
 
 		if (voyState !== 'pending') {
-			const msgTypes = {
-				started: ' has been running for ',
-				failed: ' failed at ',
-				recalled: ' ran for ',
-				completed: ' ran for '
-			};
-			const voyagePriSec = Object.values(voyageData.skills)
-																 .map(s1 => CONFIG.SKILLS_SHORT.filter(s2 => s2.name === s1)[0].short)
-																 .join('/');
 			const timeDiscrepency = Math.floor(voyageData.voyage_duration/7200) - Math.floor(voyageData.log_index/360);
 			const voyageDuration = this._formatTime(voyageData.state == 'started' ? voyageData.voyage_duration/3600 : voyageData.log_index/180);
 
@@ -428,7 +420,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate.
 						</Message>
 					}
-					<Message>Your voyage ({voyagePriSec}){msgTypes[voyState] + voyageDuration}.</Message>
 					<Accordion fluid exclusive={false}>
 					{
 						voyState !== 'recalled' && voyState !== 'completed' &&

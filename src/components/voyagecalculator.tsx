@@ -149,6 +149,99 @@ const VoyageMain = (props: VoyageMainProps) => {
 
 	return (
 		<React.Fragment>
+			{voyageConfig.state && (<VoyageOngoingCard voyageConfig={voyageConfig} voyageState={voyageState} setVoyageState={setVoyageState} />)}
+			{voyageState !== 'input' && (<VoyageExisting voyageConfig={voyageConfig} roster={myCrew} />)}
+			{voyageState === 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} />)}
+		</React.Fragment>
+	);
+};
+
+const VoyageOngoingCard = (props: any) => {
+	const { allShips } = React.useContext(AllDataContext);
+	const { voyageConfig, voyageState, setVoyageState } = props;
+
+	const ship = allShips.find(s => s.id === voyageConfig.ship_id);
+	const msgTypes = {
+		started: ' has been running for ',
+		failed: ' failed at ',
+		recalled: ' ran for ',
+		completed: ' ran for '
+	};
+	const voyageDuration = formatTime(voyageConfig.state == 'started' ? voyageConfig.voyage_duration/3600 : voyageConfig.log_index/180);
+
+	return (
+		<Card fluid>
+			<Card.Content>
+				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
+				<Card.Header>{voyageConfig.ship_name}{ship.name !== voyageConfig.ship_name ? ` (${ship.name})` : ''}</Card.Header>
+				<p>
+					Current Voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
+				</p>
+				<p style={{ marginTop: '.5em' }}>Your voyage{msgTypes[voyageConfig.state] + voyageDuration}.</p>
+				{voyageState === 'input' &&
+					<Button content='View current voyage'
+						icon='exchange'
+						size='large'
+						onClick={()=> setVoyageState(voyageConfig.state)}
+						style={{ float: 'right' }}
+					/>
+				}
+				{voyageState !== 'input' &&
+					<Button content='View crew calculator'
+						icon='exchange'
+						size='large'
+						onClick={()=> setVoyageState('input')}
+						style={{ float: 'right' }}
+					/>
+				}
+			</Card.Content>
+		</Card>
+	);
+
+	function formatTime(time: number): string {
+		let hours = Math.floor(time);
+		let minutes = Math.floor((time-hours)*60);
+		return hours+"h " +minutes+"m";
+	}
+};
+
+type VoyageExistingProps = {
+	voyageConfig: any;
+	roster: any[];
+};
+
+const VoyageExisting = (props: VoyageExistingProps) => {
+	const { allShips, playerData } = React.useContext(AllDataContext);
+	const { voyageConfig, roster } = props;
+
+	return (
+		<React.Fragment>
+			<VoyageStats
+				voyageData={voyageConfig}
+				ships={allShips}
+				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
+				playerItems={playerData.player.character.items}
+				roster={roster}
+				dbid={playerData.player.dbid}
+			/>
+			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
+		</React.Fragment>
+	)
+};
+
+type VoyageInputProps = {
+	voyageConfig: any;
+	myCrew: any[];
+};
+
+const VoyageInput = (props: VoyageInputProps) => {
+	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
+	const [voyageConfig, setVoyageConfig] = React.useState(JSON.parse(JSON.stringify(props.voyageConfig)));
+	const allData = {
+		allCrew, allShips, playerData
+	};
+	return (
+		<React.Fragment>
 			<Grid columns={2} stackable>
 				<Grid.Column width={14}>
 					<Card.Group>
@@ -175,82 +268,10 @@ const VoyageMain = (props: VoyageMainProps) => {
 					</Card.Group>
 				</Grid.Column>
 				<Grid.Column width={2} textAlign='right'>
-					{voyageState === 'input' &&
-						<ConfigEditor voyageConfig={voyageConfig} updateConfig={updateConfig} />
-					}
+					<ConfigEditor voyageConfig={voyageConfig} updateConfig={setVoyageConfig} />
 				</Grid.Column>
 			</Grid>
-			<div style={{ marginTop: '1em' }}>
-				{voyageState !== 'input' && (<VoyageExisting voyageConfig={voyageConfig} useCalc={() => setVoyageState('input')} roster={myCrew} />)}
-				{voyageState === 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} useInVoyage={() => setVoyageState(voyageConfig.state)} />)}
-			</div>
-		</React.Fragment>
-	);
-
-	function updateConfig(voyageConfig: any): void {
-		setVoyageConfig({...voyageConfig});
-		// Update stored voyageData with new voyageConfig
-		setVoyageData({
-			voyage_descriptions: [{...voyageConfig}],
-			voyage: []
-		});
-		setVoyageState('input');
-	}
-};
-
-type VoyageExistingProps = {
-	voyageConfig: any;
-	useCalc: () => void;
-	roster: any[];
-};
-
-const VoyageExisting = (props: VoyageExistingProps) => {
-	const { allShips, playerData } = React.useContext(AllDataContext);
-	const { voyageConfig, useCalc, roster } = props;
-
-	return (
-		<React.Fragment>
-			<VoyageStats
-				voyageData={voyageConfig}
-				ships={allShips}
-				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
-				playerItems={playerData.player.character.items}
-				roster={roster}
-			/>
-			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
-			<Button content='Return to crew calculator'
-				icon='exchange'
-				size='large'
-				onClick={()=> useCalc()}
-				style={{ marginTop: '2em' }}
-			/>
-		</React.Fragment>
-	)
-};
-
-type VoyageInputProps = {
-	voyageConfig: any;
-	myCrew: any[];
-	useInVoyage: () => void;
-};
-
-const VoyageInput = (props: VoyageInputProps) => {
-	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
-	const { voyageConfig } = props;
-	const allData = {
-		allCrew, allShips, playerData
-	};
-	return (
-		<React.Fragment>
-			<Recommender voyageConfig={props.voyageConfig} myCrew={props.myCrew} allData={allData} />
-			{voyageConfig.state &&
-				<Button content='Return to current voyage'
-					icon='exchange'
-					size='large'
-					onClick={()=> props.useInVoyage()}
-					style={{ marginTop: '2em' }}
-				/>
-			}
+			<Recommender voyageConfig={voyageConfig} myCrew={props.myCrew} allData={allData} />
 		</React.Fragment>
 	);
 };

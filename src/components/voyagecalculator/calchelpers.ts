@@ -342,8 +342,7 @@ class IAmPicardHelper extends Helper {
 					estimate: message.data.result,
 					entries,
 					aggregates,
-					startAM: config.startAm,
-					postscript: 'Recommended for estimated runtime ('+formatTime(message.data.result.refills[0].result)+')'
+					startAM: config.startAm
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
@@ -394,43 +393,7 @@ class USSJohnJayHelper extends Helper {
 	}
 
 	_messageToResults(bests: any[]): ICalcResult[] {
-		const bestValues = {
-			estimate: 0,
-			minimum: 0,
-			moonshot: 0,
-			antimatter: 0,
-			dilemma: {
-				hour: 0,
-				chance: 0
-			}
-		};
-
-		bests.forEach(best => {
-			const values = this._flattenEstimate(best.estimate);
-			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'dilemma') {
-					if (values.dilemma.hour > bestValues.dilemma.hour
-						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
-							bestValues.dilemma = values.dilemma;
-					}
-				}
-				else if (values[valueKey] > bestValues[valueKey]) {
-					bestValues[valueKey] = values[valueKey];
-				}
-			});
-		});
-
 		return bests.map((best, bestId) => {
-			const recommended = this._getRecommendedList(best.estimate, bestValues);
-			let postscript = '';
-			if (bests.length === 1)
-				postscript = 'Recommended for all criteria';
-			else {
-				if (recommended.length > 0)
-					postscript = ' Recommended for ' + recommended.map((method) => this._getRecommendedValue(method, bestValues)).join(', ');
-				else
-					postscript = ' Alternative for requested strategy';
-			}
 			return {
 				entries: best.crew.map((crew, entryId) => ({
 					slotId: entryId,
@@ -439,63 +402,9 @@ class USSJohnJayHelper extends Helper {
 				})),	// convert to ICalcResult entries
 				estimate: best.estimate,
 				aggregates: best.skills,
-				startAM: best.estimate.antimatter,
-				postscript
+				startAM: best.estimate.antimatter
 			};
 		});
-	}
-
-	_flattenEstimate(estimate: any): any {
-		const extent = estimate.refills[0];
-		return {
-			estimate: extent.result,
-			minimum: extent.saferResult,
-			moonshot: extent.moonshotResult,
-			antimatter: estimate.antimatter,
-			dilemma: {
-				hour: extent.lastDil,
-				chance: extent.dilChance
-			}
-		};
-	}
-
-	_getRecommendedList(estimate: any, bestValues: any): string[] {
-		const recommended = [];
-		const values = this._flattenEstimate(estimate);
-		Object.keys(bestValues).forEach((method) => {
-			if (bestValues[method] === values[method] ||
-				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance))
-					recommended.push(method);
-		});
-		return recommended;
-	};
-
-	_getRecommendedValue(method: number, bestValues: any): string {
-		let sortName = '', sortValue = '';
-		switch (method) {
-			case 'estimate':
-				sortName = 'estimated runtime';
-				sortValue = formatTime(bestValues.estimate);
-				break;
-			case 'minimum':
-				sortName = 'guaranteed minimum';
-				sortValue = formatTime(bestValues.minimum);
-				break;
-			case 'moonshot':
-				sortName = 'moonshot';
-				sortValue = formatTime(bestValues.moonshot);
-				break;
-			case 'dilemma':
-				sortName = 'dilemma chance';
-				sortValue = Math.round(bestValues.dilemma.chance)+'% to reach '+bestValues.dilemma.hour+'h';
-				break;
-			case 'antimatter':
-				sortName = 'starting antimatter';
-				sortValue = bestValues.antimatter;
-				break;
-		}
-		if (sortValue != '') sortValue = ' ('+sortValue+')';
-		return sortName+sortValue;
 	}
 };
 
