@@ -56,6 +56,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			'artificial_life', 'nonhuman', 'organic', 'species_8472',
 			'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 			'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
+			'feb2023',
 			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
 		];
 		let variantTraits = [];
