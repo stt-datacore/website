@@ -7,6 +7,7 @@ import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 type CIVASMessageProps = {
 	voyageConfig: any;
+	estimate?: any;
 };
 
 const CIVASMessage = (props: CIVASMessageProps) => {
@@ -16,16 +17,21 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 	enum ExportState {
 		None,
 		InProgress,
-		Ready
+		Ready,
+		Done
 	};
 
 	const { voyageConfig } = props;
-	const [exportState, setExportState] = React.useState(ExportState.None);
 	const [estimate, setEstimate] = React.useState(undefined);
+	const [exportState, setExportState] = React.useState(ExportState.None);
 
 	React.useEffect(() => {
-		if (estimate) copyToClipboard();
-	}, [estimate]);
+		if (props.estimate) setEstimate(props.estimate);
+	}, [props.estimate]);
+
+	React.useEffect(() => {
+		if (exportState === ExportState.Ready) copyToClipboard();
+	}, [exportState]);
 
 	if (!navigator.clipboard) return (<></>);
 
@@ -34,9 +40,9 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 			<Message style={{ marginTop: '2em' }}>
 				<Message.Content>
 					<Message.Header>Captain Idol's Voyage Analysis Sheet</Message.Header>
-					<p>Pro tip: use <b><a href={CIVASLink} target='_blank'>Captain Idol's Voyage Analysis Sheet</a></b> to help you keep track of your voyagers, runtimes, and estimates. Click the button below to copy the details of your current voyage to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{CIVASVer}).</p>
+					<p>Pro tip: use <b><a href={CIVASLink} target='_blank'>Captain Idol's Voyage Analysis Sheet</a></b> to help you keep track of your voyagers, runtimes, and estimates. Click the button below to copy the details of {voyageConfig.state !== 'pending' ? 'your active voyage' : 'this recommendation'} to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{CIVASVer}).</p>
 					<Popup
-						content={exportState === ExportState.Ready ? 'Copied!' : 'Please wait...'}
+						content={exportState === ExportState.Done ? 'Copied!' : 'Please wait...'}
 						on='click'
 						position='right center'
 						size='tiny'
@@ -70,8 +76,8 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
-				setExportState(ExportState.Ready);
 				setEstimate(message.data.result);
+				setExportState(ExportState.Ready);
 			}
 		});
 		worker.postMessage(ChewableConfig);
@@ -99,6 +105,7 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		);
 
 		navigator.clipboard.writeText(values.join('\t'));
+		setExportState(ExportState.Done);
 	}
 };
 

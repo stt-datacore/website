@@ -6,10 +6,13 @@ import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
 
 import { CALCULATORS, CalculatorState } from './calchelpers';
+import CIVASMessage from './civas';
 import { VoyageStats } from './voyagestats';
 
 import { guessCurrentEvent, getEventData } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
+
+import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 const AllDataContext = React.createContext();
 
@@ -165,7 +168,7 @@ const Recommender = (props: RecommenderProps) => {
 			}
 		};
 		results.forEach(result => {
-			if (result.result) {
+			if (result.calcState === CalculatorState.Done) {
 				const values = flattenEstimate(result.result.estimate);
 				Object.keys(bestValues).forEach((valueKey) => {
 					if (valueKey === 'dilemma') {
@@ -182,7 +185,7 @@ const Recommender = (props: RecommenderProps) => {
 		});
 		results.forEach(result => {
 			let compared = '';
-			if (result.result) {
+			if (result.calcState === CalculatorState.Done) {
 				const recommended = getRecommendedList(result.result.estimate, bestValues);
 				if (results.length === 1)
 					compared = 'Recommended for all criteria';
@@ -196,13 +199,14 @@ const Recommender = (props: RecommenderProps) => {
 			}
 		});
 
-		const showPopup = (result) => <Popup basic content={<p>{result.compared}</p>} trigger={<p>{result.name}</p>} />
+		const showPopup = (result) => <Popup position='top center' content={<p>{result.compared}</p>} trigger={<p>{result.name}</p>} />
 		const panes = results.map((result, resultIndex) => ({
 			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
 			render: () => (
-				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultYield={results.length} resultCompared={result.compared}
+				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultCompared={result.compared}
 					requests={requests} requestId={result.requestId}
-					calcState={result.calcState} abortCalculation={abortCalculation} dismissResult={dismissResult}
+					calcState={result.calcState} abortCalculation={abortCalculation}
+					estimateResult={estimateResult} dismissResult={dismissResult}
 					roster={availableRoster}
 				/>
 			)
@@ -257,7 +261,7 @@ const Recommender = (props: RecommenderProps) => {
 						result.calcState = CalculatorState.Done;
 						sendTelemetry(requestId, reqResult);
 					}
-					result.result = reqResult;
+					result.result = {...reqResult, confidence: 0};
 					return [...prevResults];
 				});
 			}
@@ -268,7 +272,7 @@ const Recommender = (props: RecommenderProps) => {
 					requestId,
 					name: formatTime(reqResult.estimate.refills[0].result),
 					calcState: CalculatorState.Done,
-					result: reqResult
+					result: {...reqResult, confidence: 0}
 				}]);
 			}
 		});
@@ -284,6 +288,7 @@ const Recommender = (props: RecommenderProps) => {
 				if (result.result) {
 					result.name = formatTime(result.result.estimate.refills[0].result);
 					result.calcState = CalculatorState.Done;
+					result.result.confidence = 0;
 				}
 				else {
 					const index = prevResults.findIndex(prev => prev.id === requestId);
@@ -292,13 +297,6 @@ const Recommender = (props: RecommenderProps) => {
 				return [...prevResults];
 			});
 		}
-	}
-
-	function dismissResult(resultIndex: number): void {
-		setResults(prevResults => {
-			prevResults.splice(resultIndex, 1);
-			return [...prevResults];
-		});
 	}
 
 	function flattenEstimate(estimate: any): any {
@@ -352,6 +350,47 @@ const Recommender = (props: RecommenderProps) => {
 		}
 		if (sortValue != '') sortValue = ' ('+sortValue+')';
 		return sortName+sortValue;
+	}
+
+	function estimateResult(resultIndex: number, voyageConfig: any, numSims: number): void {
+		const config = {
+			startAm: voyageConfig.max_hp,
+			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
+			ss: voyageConfig.skill_aggregates[voyageConfig.skills['secondary_skill']],
+			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill)),
+			numSims: numSims
+		};
+		const ChewableConfig = {
+			config,
+			worker: 'chewable'
+		};
+		const worker = new UnifiedWorker();
+		worker.addEventListener('message', message => {
+			if (!message.data.inProgress) {
+				const estimate = message.data.result;
+				setResults(prevResults => {
+					const result = prevResults[resultIndex];
+					result.name = formatTime(estimate.refills[0].result);
+					result.result.estimate = estimate;
+					result.result.confidence = 2;
+					return [...prevResults];
+				});
+			}
+		});
+		worker.postMessage(ChewableConfig);
+		setResults(prevResults => {
+			const result = prevResults[resultIndex];
+			result.name = 'Calculating...';
+			result.result.confidence = 1;
+			return [...prevResults];
+		});
+	}
+
+	function dismissResult(resultIndex: number): void {
+		setResults(prevResults => {
+			prevResults.splice(resultIndex, 1);
+			return [...prevResults];
+		});
 	}
 
 	function sendTelemetry(requestId: string, result: any): void {
@@ -553,18 +592,18 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 type VoyageResultPaneProps = {
 	result: any;
 	resultIndex: number;
-	resultYield: number;
 	requests: any[];
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
+	estimateResult: (resultIndex: number, voyageConfig: any, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
 	roster: any[];
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	const { playerData } = React.useContext(AllDataContext);
-	const { result, resultIndex, resultYield, resultCompared, requests, requestId, calcState, abortCalculation, dismissResult, roster } = props;
+	const { result, resultIndex, resultCompared, requests, requestId, calcState, abortCalculation, estimateResult, dismissResult, roster } = props;
 
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
@@ -579,6 +618,8 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 			</Tab.Pane>
 		);
 	}
+
+	const confidence = ['outline', 'half', 'end'];
 
 	// resultToVoyageData
 	let data = {...request.voyageConfig};
@@ -609,8 +650,6 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 			<>
 				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
 				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
-				<Button compact style={{ marginLeft: '1em' }}
-					icon='ban' content='Dismiss' onClick={() => dismissResult(resultIndex)} />
 			</>
 		);
 	};
@@ -619,10 +658,32 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 		<React.Fragment>
 			{calcState === CalculatorState.Done && (
 				<Message attached>
-					Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
-					(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
-						{formatTime(result.estimate.refills[0].moonshotResult)})
-					{resultCompared && (<div style={{ marginTop: '1em' }}>{resultCompared}</div>)}
+					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
+						<div>
+							Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
+							(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
+								{formatTime(result.estimate.refills[0].moonshotResult)})
+							{resultCompared && (<div style={{ marginTop: '1em' }}>{resultCompared}</div>)}
+						</div>
+						<div>
+							<Button.Group>
+								<Popup position='top center'
+									content={<>Get more confident estimate</>}
+									trigger={
+										<Button icon onClick={() => { if (result.confidence !== 1) estimateResult(resultIndex, data, 30000); }}>
+											<Icon name={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
+										</Button>
+									}
+								/>
+								<Popup position='top center'
+									content={<>Dismiss this recommendation</>}
+									trigger={
+										<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
+									}
+								/>
+							</Button.Group>
+						</div>
+					</div>
 				</Message>
 			)}
 			<Tab.Pane>
@@ -637,6 +698,9 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 				<div style={{ marginTop: '1em' }}>
 					{renderCalculatorMessage()}
 				</div>
+				{calcState === CalculatorState.Done && (
+					<CIVASMessage voyageConfig={data} estimate={result.estimate} />
+				)}
 			</Tab.Pane>
 		</React.Fragment>
 	);

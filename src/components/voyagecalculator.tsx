@@ -126,14 +126,14 @@ const VoyageMain = (props: VoyageMainProps) => {
 
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [voyageConfig, setVoyageConfig] = React.useState(undefined);
-	const [voyageState, setVoyageState] = React.useState('input');	// input or from voyageData: started, recalled
+	const [showInput, setShowInput] = React.useState(true);
 
 	if (!voyageConfig) {
 		if (voyageData) {
 			// Voyage started, config will be full voyage data
 			if (voyageData.voyage && voyageData.voyage.length > 0) {
 				setVoyageConfig(voyageData.voyage[0]);
-				setVoyageState(voyageData.voyage[0].state);
+				setShowInput(false);
 			}
 			// Voyage awaiting input, config will be input parameters only
 			else {
@@ -149,23 +149,23 @@ const VoyageMain = (props: VoyageMainProps) => {
 
 	return (
 		<React.Fragment>
-			{voyageConfig.state && (<VoyageOngoingCard voyageConfig={voyageConfig} voyageState={voyageState} setVoyageState={setVoyageState} />)}
-			{voyageState !== 'input' && (<VoyageExisting voyageConfig={voyageConfig} roster={myCrew} />)}
-			{voyageState === 'input' && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} />)}
+			{voyageConfig.state && (<VoyageActiveCard voyageConfig={voyageConfig} showInput={showInput} setShowInput={setShowInput} />)}
+			{!showInput && (<VoyageActive voyageConfig={voyageConfig} myCrew={myCrew} />)}
+			{showInput && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} />)}
 		</React.Fragment>
 	);
 };
 
-const VoyageOngoingCard = (props: any) => {
+const VoyageActiveCard = (props: any) => {
 	const { allShips } = React.useContext(AllDataContext);
-	const { voyageConfig, voyageState, setVoyageState } = props;
+	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips.find(s => s.id === voyageConfig.ship_id);
 	const msgTypes = {
-		started: ' has been running for ',
-		failed: ' failed at ',
-		recalled: ' ran for ',
-		completed: ' ran for '
+		started: 'has been running for',
+		failed: 'failed at',
+		recalled: 'ran for',
+		completed: 'ran for'
 	};
 	const voyageDuration = formatTime(voyageConfig.state == 'started' ? voyageConfig.voyage_duration/3600 : voyageConfig.log_index/180);
 
@@ -174,26 +174,23 @@ const VoyageOngoingCard = (props: any) => {
 			<Card.Content>
 				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 				<Card.Header>{voyageConfig.ship_name}{ship.name !== voyageConfig.ship_name ? ` (${ship.name})` : ''}</Card.Header>
-				<p>
-					Current Voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
-				</p>
-				<p style={{ marginTop: '.5em' }}>Your voyage{msgTypes[voyageConfig.state] + voyageDuration}.</p>
-				{voyageState === 'input' &&
-					<Button content='View current voyage'
-						icon='exchange'
-						size='large'
-						onClick={()=> setVoyageState(voyageConfig.state)}
-						style={{ float: 'right' }}
-					/>
-				}
-				{voyageState !== 'input' &&
-					<Button content='View crew calculator'
-						icon='exchange'
-						size='large'
-						onClick={()=> setVoyageState('input')}
-						style={{ float: 'right' }}
-					/>
-				}
+				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', rowGap: '1em' }}>
+					<div>
+						<p>
+							Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
+						</p>
+						<p style={{ marginTop: '.5em' }}>
+							Your voyage {msgTypes[voyageConfig.state]} <span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span>.
+						</p>
+					</div>
+					<div>
+						<Button content={showInput ? 'View active voyage' : 'View crew calculator'}
+							icon='exchange'
+							size='large'
+							onClick={()=> setShowInput(showInput ? false : true)}
+						/>
+					</div>
+				</div>
 			</Card.Content>
 		</Card>
 	);
@@ -205,14 +202,14 @@ const VoyageOngoingCard = (props: any) => {
 	}
 };
 
-type VoyageExistingProps = {
+type VoyageActiveProps = {
 	voyageConfig: any;
-	roster: any[];
+	myCrew: any[];
 };
 
-const VoyageExisting = (props: VoyageExistingProps) => {
+const VoyageActive = (props: VoyageActiveProps) => {
 	const { allShips, playerData } = React.useContext(AllDataContext);
-	const { voyageConfig, roster } = props;
+	const { voyageConfig, myCrew } = props;
 
 	return (
 		<React.Fragment>
@@ -221,7 +218,7 @@ const VoyageExisting = (props: VoyageExistingProps) => {
 				ships={allShips}
 				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
 				playerItems={playerData.player.character.items}
-				roster={roster}
+				roster={myCrew}
 				dbid={playerData.player.dbid}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
