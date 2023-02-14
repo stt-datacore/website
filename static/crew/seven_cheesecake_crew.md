@@ -3,7 +3,7 @@ name: Indulgent Seven
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 48
 in_portal:
 date: 30/07/2019
