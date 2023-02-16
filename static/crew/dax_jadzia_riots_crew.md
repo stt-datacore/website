@@ -3,8 +3,8 @@ name: Bell Riots Jadzia Dax
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
-events: 30
+bigbook_tier: 8
+events: 32
 in_portal: true
 date: 06/06/2018
 obtained: Event
