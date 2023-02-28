@@ -90,10 +90,12 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		};
 
 		const skillToShort = skillName => CONFIG.SKILLS_SHORT.find(skill => skill.name === skillName).short;
+		// Pending voyages don't have a created_date yet
+		const createdAt = voyageConfig.created_at ? new Date(voyageConfig.created_at) : new Date();
 
 		let values = [
 			skillToShort(voyageConfig.skills['primary_skill'])+'/'+skillToShort(voyageConfig.skills['secondary_skill']),
-			new Date(voyageConfig.created_at).toISOString().split('T')[0],
+			createdAt.toISOString().split('T')[0],
 			hoursToTime(estimate.refills[0].result)
 		];
 		values.push(voyageConfig.state === 'recalled' ? hoursToTime(voyageConfig.log_index/180) : '');
