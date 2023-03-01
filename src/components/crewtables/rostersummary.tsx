@@ -64,12 +64,12 @@ const RarityDepth = (props: RarityDepthProps) => {
 
 	React.useEffect(() => {
 		const myCrew = JSON.parse(JSON.stringify(props.myCrew));
-
-		const myOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
-		const myUnfrozen = myCrew.filter(crew => crew.immortal === 0);
-		const myImmortals = myCrew.filter(crew => isImmortal(crew));
-		const unfrozenDupes = props.allCrew.filter(crew => myCrew.filter(c => c.symbol === crew.symbol).length > 1).length;
-		const frozenDupes = myCrew.filter(crew => crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
+		const uniqueOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
+		const uniqueImmortal = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol && (mc.immortal > 0 || isImmortal(mc))).length > 0);
+		const anyOwnedCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
+		const anyImmortalCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : (isImmortal(curr) ? 1 : 0)), 0);
+		const anyUnfrozen = myCrew.filter(crew => crew.immortal === 0);
+		const uniqueFrozen = myCrew.filter(crew => crew.immortal > 0);
 		const data = [];
 		data.push(
 			{
@@ -77,39 +77,41 @@ const RarityDepth = (props: RarityDepthProps) => {
 				rarity: 0,
 				name: 'Any',
 				total: props.allCrew.length,
-				owned: myOwned.length,
-				ownedPct: myOwned.length/props.allCrew.length,
-				portalPct: myOwned.filter(crew => !!!crew.in_portal).length/props.allCrew.filter(crew => !!!crew.in_portal).length,
-				progress: myImmortals.length,
-				progressPct: myImmortals.length/props.allCrew.length,
-				immortal: myImmortals.length + frozenDupes,
-				unfrozen: myUnfrozen.length,
-				frozen: myCrew.length - myUnfrozen.length + frozenDupes,
-				dupes: unfrozenDupes + frozenDupes
+				owned: uniqueOwned.length,
+				ownedPct: uniqueOwned.length/props.allCrew.length,
+				portalPct: uniqueOwned.filter(crew => !!!crew.in_portal).length/props.allCrew.filter(crew => !!!crew.in_portal).length,
+				progress: uniqueImmortal.length,
+				progressPct: uniqueImmortal.length/props.allCrew.length,
+				immortal: anyImmortalCount,
+				unfrozen: anyUnfrozen.length,
+				frozen: uniqueFrozen.reduce((prev, curr) => prev + curr.immortal, 0),
+				dupes: anyOwnedCount - uniqueOwned.length
 			}
 		);
 		for (let i = 1; i <= 5; i++) {
 			const allRarity = props.allCrew.filter(crew => crew.max_rarity === i);
-			const owned = myOwned.filter(crew => crew.max_rarity === i);
-			const unfrozen = myCrew.filter(crew => crew.max_rarity === i && crew.immortal === 0);
-			const immortals = myCrew.filter(crew => crew.max_rarity === i && isImmortal(crew));
-			const unfrozenDupes = allRarity.filter(crew => myCrew.filter(c => c.symbol === crew.symbol).length > 1).length;
-			const frozenDupes = myCrew.filter(crew => crew.max_rarity === i && crew.immortal > 1).reduce((prev, curr) => prev + curr.immortal - 1, 0);
+			const myCrewRarity = myCrew.filter(crew => crew.max_rarity === i);
+			const uniqueOwnedRarity = uniqueOwned.filter(crew => crew.max_rarity === i);
+			const uniqueImmortalRarity = uniqueImmortal.filter(crew => crew.max_rarity === i);
+			const anyOwnedRarityCount = myCrewRarity.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
+			const anyImmortalRarityCount = myCrewRarity.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : (isImmortal(curr) ? 1 : 0)), 0);
+			const anyUnfrozenRarity = myCrewRarity.filter(crew => crew.immortal === 0);
+			const uniqueFrozenRarity = myCrewRarity.filter(crew => crew.immortal > 0);
 			data.push(
 				{
 					key: i,
 					rarity: i,
 					name: `${i} - ${CONFIG.RARITIES[i].name}`,
 					total: allRarity.length,
-					owned: owned.length,
-					ownedPct: owned.length/allRarity.length,
-					portalPct: owned.filter(crew => !!crew.in_portal).length/allRarity.filter(crew => !!crew.in_portal).length,
-					progress: immortals.length,
-					progressPct: immortals.length/allRarity.length,
-					immortal: immortals.length + frozenDupes,
-					unfrozen: unfrozen.length,
-					frozen: owned.length - unfrozen.length + frozenDupes,
-					dupes: unfrozenDupes + frozenDupes
+					owned: uniqueOwnedRarity.length,
+					ownedPct: uniqueOwnedRarity.length/allRarity.length,
+					portalPct: uniqueOwnedRarity.filter(crew => !!crew.in_portal).length/allRarity.filter(crew => !!crew.in_portal).length,
+					progress: uniqueImmortalRarity.length,
+					progressPct: uniqueImmortalRarity.length/allRarity.length,
+					immortal: anyImmortalRarityCount,
+					unfrozen: anyUnfrozenRarity.length,
+					frozen: uniqueFrozenRarity.reduce((prev, curr) => prev + curr.immortal, 0),
+					dupes: anyOwnedRarityCount - uniqueOwnedRarity.length
 				}
 			);
 		}

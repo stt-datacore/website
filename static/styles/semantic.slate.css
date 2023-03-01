@@ -40293,35 +40293,19 @@ body.pushable > .pusher {
 }
 
 /*******************************
-         Voyage Stats
+         Voyage Lineups
 *******************************/
-table.voyageRec {
-	border-collapse: collapse;
-}
-table.voyageRec tr td {
-	padding-top: .3em;
-	padding-bottom: .3em;
-}
-table.voyageRec tr.shipRec td,
-table.voyageRec tr.antimatterRow td {
-	padding-bottom: 1em;
-}
-table.voyageRec td {
-	padding-left: .5em;
-	padding-right: .5em;
-}
-table.voyageRec td.iconic {
+.ui.table.voyageLineup td.iconic {
 	text-align: center;
 }
-/* Stripes only work on dark mode for now */
-table.voyageRec tr:nth-child(2n) {
-	background-color: rgba(255, 255, 255, 0.05);
+.ui.table.voyageLineup.compactView:not(:first-child) {
+	margin-top: .5em !important;
 }
-table.voyageRec.aggregates tr td:last-child {
-	text-align: right;
+.ui.table.voyageLineup.compactView:not(:last-child) {
+	margin-bottom: .5em !important;
 }
-table.voyageRec tr:not(:first-child):hover {
-	background: #49515a !important;
+.ui.table.voyageLineup.compactView td {
+	padding: .3em .5em !important;
 }
 
 /*******************************
