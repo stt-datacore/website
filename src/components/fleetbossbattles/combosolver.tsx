@@ -6,6 +6,7 @@ import ComboPossibleTraits from './combopossibletraits';
 import ComboCrewTable from './combocrewtable';
 import ComboChecklist from './combochecklist';
 import { ExportTraits, ExportCrewLists } from './exporter';
+import { getComboIndex, removeCrewNodeCombo } from './fbbutils';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -27,6 +28,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 	const [openNodes, setOpenNodes] = React.useState(undefined);
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
+	const [knownSolves, setKnownSolves] = React.useState([]);
 	const [attemptedCrew, setAttemptedCrew] = React.useState([]);
 
 	React.useEffect(() => {
@@ -47,6 +49,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 		});
 
 		const openNodes = [];
+		const knownSolves = [];
 		let current = false;
 		combo.nodes.forEach((node, nodeIndex) => {
 			const nodeIsOpen = node.hidden_traits.includes('?');
@@ -69,6 +72,10 @@ const ComboSolver = (props: ComboSolverProps) => {
 					hiddenLeft
 				});
 			}
+			if (node.unlocked_crew_archetype_id) {
+				const solve = props.allCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id).symbol;
+				if (!knownSolves.includes(solve)) knownSolves.push(solve);
+			}
 			// You have already solved a node for this chain; not currently used by this tool
 			if (node.unlocked_character?.is_current) current = true;
 		});
@@ -81,6 +88,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 
 		setOpenNodes([...openNodes]);
 		setTraitPool([...traitPool]);
+		setKnownSolves([...knownSolves]);
 	}, [combo]);
 
 	React.useEffect(() => {
@@ -95,17 +103,6 @@ const ComboSolver = (props: ComboSolverProps) => {
 				}
 			}
 			return combos;
-		};
-
-		const findCombo = (combos, combo) => {
-			let comboIndex = -1;
-			for (let i = 0; i < combos.length; i++) {
-				if (combos[i].every(trait => combo.includes(trait))) {
-					comboIndex = i;
-					continue;
-				}
-			}
-			return comboIndex;
 		};
 
 		const allMatchingCrew = [];
@@ -142,16 +139,20 @@ const ComboSolver = (props: ComboSolverProps) => {
 				ignoredCombos.push({ index: nodeIndex, combo });
 		};
 
-		// Ignore combos of attempted crew
-		attemptedCrew.forEach(attempt => {
-			const crew = props.allCrew.find(ac => ac.symbol === attempt);
-			openNodes.forEach(node => {
-				if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
-					const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
-					const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
-					const combos = getAllCombos(traitsMatched, node.hiddenLeft);
-					combos.forEach(combo => ignoreCombo(node.index, combo));
-				}
+		// Ignore combos of:
+		//	1) Crew used to solve other nodes
+		//	2) Attempted crew
+		[knownSolves, attemptedCrew].forEach(group => {
+			group.forEach(attempt => {
+				const crew = props.allCrew.find(ac => ac.symbol === attempt);
+				openNodes.forEach(node => {
+					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
+						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
+						const combos = getAllCombos(traitsMatched, node.hiddenLeft);
+						combos.forEach(combo => ignoreCombo(node.index, combo));
+					}
+				});
 			});
 		});
 
@@ -165,7 +166,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 					nonPortals.forEach(nonportal => {
 						if (nonportal.nodes.includes(node.index)) {
 							nonportal.node_matches[`node-${node.index}`].combos.forEach(combo => {
-								if (!portalsByNode.some(portal => findCombo(portal.node_matches[`node-${node.index}`].combos, combo) >= 0))
+								if (!portalsByNode.some(portal => getComboIndex(portal.node_matches[`node-${node.index}`].combos, combo) >= 0))
 									ignoreCombo(node.index, combo);
 							});
 						}
@@ -176,28 +177,9 @@ const ComboSolver = (props: ComboSolverProps) => {
 
 		// Validate matching combos and traits, factoring ignored combos
 		ignoredCombos.forEach(ignored => {
-			const crewWithCombo = allMatchingCrew.filter(crew =>
-				crew.nodes.includes(ignored.index) && findCombo(crew.node_matches[`node-${ignored.index}`].combos, ignored.combo) >= 0
-			);
-			crewWithCombo.forEach(crew => {
-				const crewMatches = crew.node_matches[`node-${ignored.index}`];
-				const comboIndex = findCombo(crewMatches.combos, ignored.combo);
-				crewMatches.combos.splice(comboIndex, 1);
-				if (crewMatches.combos.length > 0) {
-					const validTraits = [];
-					crewMatches.combos.forEach(combo => {
-						combo.forEach(trait => {
-							if (!validTraits.includes(trait)) validTraits.push(trait);
-						});
-					});
-					crewMatches.traits = validTraits;
-				}
-				else {
-					const nodeIndex = crew.nodes.indexOf(ignored.index);
-					crew.nodes.splice(nodeIndex, 1);
-					delete crew.node_matches[`node-${ignored.index}`]
-					crew.nodes_rarity--;
-				}
+			allMatchingCrew.forEach(crew => {
+				if (crew.nodes.includes(ignored.index) && getComboIndex(crew.node_matches[`node-${ignored.index}`].combos, ignored.combo) >= 0)
+					removeCrewNodeCombo(crew, ignored.index, ignored.combo);
 			});
 		});
 

@@ -3,7 +3,7 @@ import { Header, Dropdown, Form, Checkbox, Table, Rating, Icon, Popup } from 'se
 import { Link } from 'gatsby';
 
 import MarkButtons from './markbuttons';
-import { getOptimalCombos, isCrewOptimal } from './fbbutils';
+import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewTraitMatchesCell } from '../../components/crewtables/commoncells';
@@ -24,23 +24,26 @@ type ComboCrewTableProps = {
 const ComboCrewTable = (props) => {
 	const { comboId, openNodes } = props;
 
+	const [matchingCrew, setMatchingCrew] = React.useState([]);
 	const [optimalCombos, setOptimalCombos] = React.useState([]);
 	const [traitCounts, setTraitCounts] = React.useState({});
 	const [usableFilter, setUsableFilter] = React.useState('');
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
+	const [enableAlphaRule, setEnableAlphaRule] = React.useState(false);
 
 	React.useEffect(() => {
-		if (showOptimalsOnly) {
-			const optimalCombos = getOptimalCombos(props.allMatchingCrew.filter(crew => filterByUsable(crew)));
-			setOptimalCombos([...optimalCombos]);
-		}
-		else {
-			setOptimalCombos([]);
-		}
-	}, [props.allMatchingCrew, usableFilter, showOptimalsOnly]);
+		const finalTraits = [];
+		openNodes.forEach(node => {
+			const finalTrait = node.traitsKnown.sort((a, b) => b.localeCompare(a))[0];
+			finalTraits.push({ index: node.index, trait: finalTrait });
+		});
+		const allMatchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
+		const matchingCrew = enableAlphaRule ? filterCrewByAlphaRule(allMatchingCrew, finalTraits) : allMatchingCrew;
+		setMatchingCrew([...matchingCrew]);
 
-	React.useEffect(() => {
-		const data = props.allMatchingCrew.filter(crew => filterByOptimal(crew));
+		const optimalCombos = showOptimalsOnly ? getOptimalCombos(matchingCrew) : [];
+		setOptimalCombos([...optimalCombos]);
+		const data = matchingCrew.filter(crew => !showOptimalsOnly || isCrewOptimal(crew, optimalCombos));
 		const traitCountsByNode = {};
 		openNodes.forEach(node => {
 			const traitCounts = {};
@@ -50,7 +53,7 @@ const ComboCrewTable = (props) => {
 			traitCountsByNode[`node-${node.index}`] = traitCounts;
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [optimalCombos]);
+	}, [props.allMatchingCrew, openNodes, showOptimalsOnly, enableAlphaRule]);
 
 	const filterByUsable = (crew) => {
 		if (usableFilter === 'portal' && !crew.in_portal) return false;
@@ -126,12 +129,18 @@ const ComboCrewTable = (props) => {
 							checked={showOptimalsOnly}
 							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
 						/>
+						<Form.Field
+							control={Checkbox}
+							label={<label>Apply alpha rule</label>}
+							checked={enableAlphaRule}
+							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
+						/>
 					</Form.Group>
 				</Form>
 			</div>
 			<SearchableTable
 				id={`comboCrewTable/${comboId}`}
-				data={props.allMatchingCrew}
+				data={matchingCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Form, Checkbox } from 'semantic-ui-react';
 
-import { getOptimalCombos, isCrewOptimal } from './fbbutils';
+import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule } from './fbbutils';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
@@ -66,6 +66,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const { openNodes, allMatchingCrew } = props;
 
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
+	const [enableAlphaRule, setEnableAlphaRule] = React.useState(false);
 	const [showTraits, setShowTraits] = React.useState(true);
 
 	const sortedTraits = (traits) => {
@@ -79,7 +80,15 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	};
 
 	const copyPossible = () => {
-		let crewList = allMatchingCrew.slice();
+		let crewList = JSON.parse(JSON.stringify(allMatchingCrew));
+		if (enableAlphaRule) {
+			const finalTraits = [];
+			openNodes.forEach(node => {
+				const finalTrait = node.traitsKnown.sort((a, b) => b.localeCompare(a))[0];
+				finalTraits.push({ index: node.index, trait: finalTrait });
+			});
+			crewList = filterCrewByAlphaRule(crewList, finalTraits);
+		}
 		if (showOptimalsOnly) {
 			const optimalCombos = getOptimalCombos(crewList);
 			crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
@@ -131,6 +140,12 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 							label={<label>Only list optimal crew</label>}
 							checked={showOptimalsOnly}
 							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
+						/>
+						<Form.Field
+							control={Checkbox}
+							label={<label>Apply alpha rule</label>}
+							checked={enableAlphaRule}
+							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
 						/>
 						<Form.Field
 							control={Checkbox}

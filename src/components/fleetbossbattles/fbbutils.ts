@@ -40,3 +40,52 @@ export function isCrewOptimal(crew: any, optimalCombos: any[]): boolean {
 	});
 	return isOptimal;
 }
+
+export function filterCrewByAlphaRule(crewList: any[], finalTraits: any[]): any[] {
+	return crewList.filter(crew => {
+		const unviableCombos = [];
+		Object.values(crew.node_matches).forEach(node => {
+			const finalTrait = finalTraits.find(ft => ft.index === node.index).trait;
+			node.combos.forEach(combo => {
+				if (!combo.every(trait => trait.localeCompare(finalTrait) === 1))
+					unviableCombos.push({ index: node.index, combo: combo });
+			});
+		});
+		unviableCombos.forEach(combo => {
+			removeCrewNodeCombo(crew, combo.index, combo.combo);
+		});
+		return crew.nodes_rarity > 0;
+	});
+}
+
+export function getComboIndex(combos: any[], combo: string[]): number {
+	let comboIndex = -1;
+	for (let i = 0; i < combos.length; i++) {
+		if (combos[i].every(trait => combo.includes(trait))) {
+			comboIndex = i;
+			continue;
+		}
+	}
+	return comboIndex;
+}
+
+export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): void {
+	const crewMatches = crew.node_matches[`node-${nodeIndex}`];
+	const comboIndex = getComboIndex(crewMatches.combos, combo);
+	crewMatches.combos.splice(comboIndex, 1);
+	if (crewMatches.combos.length > 0) {
+		const validTraits = [];
+		crewMatches.combos.forEach(crewCombo => {
+			crewCombo.forEach(trait => {
+				if (!validTraits.includes(trait)) validTraits.push(trait);
+			});
+		});
+		crewMatches.traits = validTraits;
+	}
+	else {
+		const crewNodesIndex = crew.nodes.indexOf(nodeIndex);
+		crew.nodes.splice(crewNodesIndex, 1);
+		delete crew.node_matches[`node-${nodeIndex}`];
+		crew.nodes_rarity--;
+	}
+}
