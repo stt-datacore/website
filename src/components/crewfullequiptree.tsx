@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Header, Popup, Modal, Grid, Icon } from 'semantic-ui-react';
+import { Header, Popup, Modal, Grid, Icon, Button } from 'semantic-ui-react';
 
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
@@ -90,8 +90,32 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 						))}
 					</Grid>
 				</Modal.Content>
+				<Modal.Actions>
+					<Popup
+						content='Copied!'
+						on='click'
+						position='left center'
+						size='tiny'
+						trigger={
+							<Button icon='clipboard' content='Copy to clipboard' onClick={() => copyItems()} />
+						}
+					/>
+					<Button onClick={() => this.props.onClosed()}>Close</Button>
+				</Modal.Actions>
 			</Modal>
 		);
+
+		function copyItems(): void {
+			let output = 'Item,Rarity,Needed,Symbol';
+			demands.sort((a, b) => {
+				if (a.equipment.name === b.equipment.name) return b.equipment.rarity - a.equipment.rarity;
+				return a.equipment.name.localeCompare(b.equipment.name);
+			}).forEach(entry => {
+				if (output !== '') output += '\n';
+				output += `${entry.equipment.name},${entry.equipment.rarity},${entry.count},${entry.equipment.symbol}`;
+			});
+			navigator.clipboard.writeText(output);
+		}
 	}
 }
 
