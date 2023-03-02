@@ -55,6 +55,12 @@ const ComboPicker = () => {
 	const [activeBoss, setActiveBoss] = React.useState(undefined);
 	const [combo, setCombo] = React.useState(undefined);
 
+	const getBossStatus = (boss) => {
+		const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
+		const bossName = allData.bossData.groups.find(group => group.symbol === boss.group).name;
+		return `${bossName}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`;
+	};
+
 	React.useEffect(() => {
 		if (activeBoss) {
 			const boss = allData.bossData.statuses.find(b => b.id === activeBoss);
@@ -64,7 +70,8 @@ const ComboPicker = () => {
 				source: 'playerdata',
 				difficultyId: boss.difficulty_id,
 				traits: boss.combo.traits,
-				nodes: boss.combo.nodes
+				nodes: boss.combo.nodes,
+				status: getBossStatus(boss)
 			};
 			setCombo({...combo});
 		}
@@ -74,9 +81,6 @@ const ComboPicker = () => {
 		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;
 
 	const bossOptions = [];
-	const getBossName = (bossSymbol) => {
-		return allData.bossData.groups.find(group => group.symbol === bossSymbol).name;
-	};
 	allData.bossData.statuses.forEach(boss => {
 		if (boss.ends_in) {
 			const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
@@ -85,7 +89,7 @@ const ComboPicker = () => {
 					{
 						key: boss.id,
 						value: boss.id,
-						text: `${getBossName(boss.group)}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`
+						text: getBossStatus(boss)
 					}
 				);
 			}
@@ -108,7 +112,7 @@ const ComboPicker = () => {
 				}
 				{bossOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
 			</div>
-			{combo && <ComboSolver allCrew={allData.allCrew} combo={combo} />}
+			{combo && <ComboSolver dbid={allData.playerData.player.dbid} allCrew={allData.allCrew} combo={combo} />}
 		</React.Fragment>
 	);
 };

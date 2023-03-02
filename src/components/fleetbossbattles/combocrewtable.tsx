@@ -115,13 +115,10 @@ const ComboCrewTable = (props) => {
 				<Form>
 					<Form.Group inline>
 						<Form.Field
-							placeholder='Filter by availability'
-							control={Dropdown}
-							clearable
-							selection
-							options={usableFilterOptions}
-							value={usableFilter}
-							onChange={(e, { value }) => setUsableFilter(value)}
+							control={Checkbox}
+							label={<label>Apply alpha rule</label>}
+							checked={enableAlphaRule}
+							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
 						/>
 						<Form.Field
 							control={Checkbox}
@@ -130,10 +127,13 @@ const ComboCrewTable = (props) => {
 							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
 						/>
 						<Form.Field
-							control={Checkbox}
-							label={<label>Apply alpha rule</label>}
-							checked={enableAlphaRule}
-							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
+							placeholder='Filter by availability'
+							control={Dropdown}
+							clearable
+							selection
+							options={usableFilterOptions}
+							value={usableFilter}
+							onChange={(e, { value }) => setUsableFilter(value)}
 						/>
 					</Form.Group>
 				</Form>
@@ -147,9 +147,10 @@ const ComboCrewTable = (props) => {
 				showFilterOptions={true}
 			/>
 			<div style={{ marginTop: '1em' }}>
+				<p><i>Alpha Rule</i> is a special filter that can rule out crew based on trait names; this unofficial rule has had a high degree of success, but may be removed from the game at any time.</p>
 				<p><i>Optimal Crew</i> are the crew you should try first for efficient use of valor; they exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
-				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity may be affected by your crew filters.</p>
+				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity is not responsive to crew availability.</p>
 			</div>
 		</div>
 	);

@@ -18,6 +18,7 @@ const MAX_RARITY_BY_DIFFICULTY = {
 };
 
 type ComboSolverProps = {
+	dbid: string;
 	allCrew: string[];
 	combo: any;
 };
@@ -216,7 +217,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 						solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					/>
 					<ComboChecklist comboId={combo.id} crewList={props.allCrew} attemptedCrew={attemptedCrew} updateAttempts={setAttemptedCrew} />
-					<ExportCrewLists openNodes={openNodes} allMatchingCrew={allMatchingCrew} />
+					<ExportCrewLists dbid={props.dbid} combo={combo} openNodes={openNodes} allMatchingCrew={allMatchingCrew} />
 				</React.Fragment>
 			}
 			{(activeStep === 'traits' || openNodes.length === 0) &&
