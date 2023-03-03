@@ -29,16 +29,11 @@ const ComboCrewTable = (props) => {
 	const [traitCounts, setTraitCounts] = React.useState({});
 	const [usableFilter, setUsableFilter] = React.useState('');
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
-	const [enableAlphaRule, setEnableAlphaRule] = React.useState(false);
+	const [enableAlphaRule, setEnableAlphaRule] = React.useState(true);
 
 	React.useEffect(() => {
-		const finalTraits = [];
-		openNodes.forEach(node => {
-			const finalTrait = node.traitsKnown.sort((a, b) => b.localeCompare(a))[0];
-			finalTraits.push({ index: node.index, trait: finalTrait });
-		});
 		const allMatchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
-		const matchingCrew = enableAlphaRule ? filterCrewByAlphaRule(allMatchingCrew, finalTraits) : allMatchingCrew;
+		const matchingCrew = enableAlphaRule ? filterCrewByAlphaRule(allMatchingCrew, openNodes) : allMatchingCrew;
 		setMatchingCrew([...matchingCrew]);
 
 		const optimalCombos = showOptimalsOnly ? getOptimalCombos(matchingCrew) : [];
@@ -110,34 +105,57 @@ const ComboCrewTable = (props) => {
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Search for crew that satisfy the conditions of the remaining unsolved nodes. Use the buttons in the trial column to mark crew that have been tried.</p>
-			<div>
-				<Form>
-					<Form.Group inline>
-						<Form.Field
-							control={Checkbox}
-							label={<label>Apply alpha rule</label>}
-							checked={enableAlphaRule}
-							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
-						/>
-						<Form.Field
-							control={Checkbox}
-							label={<label>Only show optimal crew</label>}
-							checked={showOptimalsOnly}
-							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
-						/>
-						<Form.Field
-							placeholder='Filter by availability'
-							control={Dropdown}
-							clearable
-							selection
-							options={usableFilterOptions}
-							value={usableFilter}
-							onChange={(e, { value }) => setUsableFilter(value)}
-						/>
-					</Form.Group>
-				</Form>
-			</div>
+			<p>Here are crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node.</p>
+			<p style={{ marginTop: '2em' }}>Enable the following 2 options to narrow the list to crew you should try first for most efficient use of valor.</p>
+			<Form>
+				<Form.Group inline>
+					<Form.Field
+						control={Checkbox}
+						label={
+							<label>
+								Apply alpha rule
+								<Popup trigger={<Icon name='question' style={{ marginLeft: '.5em' }} />}
+									content={`Enable this to rule out certain crew based on their trait names. This unofficial rule has had a high degree of success to date, but may not work in 100% of cases. Uncheck this if you've exhausted all other suggested crew.`}
+								/>
+							</label>
+						}
+						checked={enableAlphaRule}
+						onChange={(e, { checked }) => setEnableAlphaRule(checked) }
+					/>
+					<Form.Field
+						control={Checkbox}
+						label={
+							<label>
+								Only show optimal crew
+								<Popup trigger={<Icon name='question' style={{ marginLeft: '.5em' }} />}
+									content={`Enable this to exclude crew whose matching traits are a subset of another possible crew for that node. Uncheck this if you don't own any of the optimal crew.`}
+								/>
+							</label>
+						}
+						checked={showOptimalsOnly}
+						onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
+					/>
+				</Form.Group>
+			</Form>
+			<p style={{ marginTop: '2em' }}>You can filter by availability and search for specific crew. Use the buttons in the trial column to mark crew that have been tried.</p>
+			<Form>
+				<Form.Group inline>
+					<Form.Field
+						placeholder='Filter by availability'
+						control={Dropdown}
+						clearable
+						selection
+						options={usableFilterOptions}
+						value={usableFilter}
+						onChange={(e, { value }) => setUsableFilter(value)}
+					/>
+					{(usableFilter === 'owned' || usableFilter === 'thawed') &&
+						<span>
+							<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed when using this availability setting.
+						</span>
+					}
+				</Form.Group>
+			</Form>
 			<SearchableTable
 				id={`comboCrewTable/${comboId}`}
 				data={matchingCrew}
@@ -147,10 +165,8 @@ const ComboCrewTable = (props) => {
 				showFilterOptions={true}
 			/>
 			<div style={{ marginTop: '1em' }}>
-				<p><i>Alpha Rule</i> is a special filter that can rule out crew based on trait names; this unofficial rule has had a high degree of success, but may be removed from the game at any time.</p>
-				<p><i>Optimal Crew</i> are the crew you should try first for efficient use of valor; they exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
-				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Trait rarity is not responsive to crew availability.</p>
+				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc.</p>
 			</div>
 		</div>
 	);
@@ -201,12 +217,12 @@ const ComboCrewTable = (props) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				{crew.only_frozen && <Icon name='snowflake' />}
 				{!crew.in_portal &&
-					<Popup trigger={<Icon name='warning sign' color='yellow' />}
-						content={`Non-portal crew may be able to solve some nodes, but they are not the intended solution. Their non-viable traits are hidden automatically`}
+					<Popup trigger={<Icon name='info circle' color='yellow' />}
+						content={`Non-portal crew may be able to solve some nodes, but they are not the intended solution. Their non-viable traits are hidden automatically.`}
 					/>
 				}
+				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}

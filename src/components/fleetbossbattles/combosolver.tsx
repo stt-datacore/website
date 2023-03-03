@@ -66,11 +66,13 @@ const ComboSolver = (props: ComboSolverProps) => {
 				}
 			});
 			if (nodeIsOpen) {
+				const alphaTest = node.open_traits.sort((a, b) => b.localeCompare(a))[0];
 				openNodes.push({
 					comboId: combo.id,
 					index: nodeIndex,
 					traitsKnown,
-					hiddenLeft
+					hiddenLeft,
+					alphaTest
 				});
 			}
 			if (node.unlocked_crew_archetype_id) {

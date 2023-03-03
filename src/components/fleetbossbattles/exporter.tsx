@@ -76,7 +76,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const { dbid, combo, openNodes, allMatchingCrew } = props;
 
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
-	const [enableAlphaRule, setEnableAlphaRule] = React.useState(false);
+	const [enableAlphaRule, setEnableAlphaRule] = React.useState(true);
 	const [formattingOptions, setFormattingOptions] = useStateWithStorage(dbid+'/fbb/formatting', formattingDefaults, { rememberForever: true });
 
 	const sortedTraits = (traits) => {
@@ -92,20 +92,18 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const copyPossible = () => {
 		let crewList = JSON.parse(JSON.stringify(allMatchingCrew));
 		if (enableAlphaRule) {
-			const finalTraits = [];
-			openNodes.forEach(node => {
-				const finalTrait = node.traitsKnown.sort((a, b) => b.localeCompare(a))[0];
-				finalTraits.push({ index: node.index, trait: finalTrait });
-			});
-			crewList = filterCrewByAlphaRule(crewList, finalTraits);
+			crewList = filterCrewByAlphaRule(crewList, openNodes);
 		}
 		if (showOptimalsOnly) {
 			const optimalCombos = getOptimalCombos(crewList);
 			crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
 		}
 		let output = '';
-		if (formattingOptions.show_chain === 'always' || formattingOptions.show_chain === 'header')
+		if (formattingOptions.show_chain === 'always') {
 			output += combo.status;
+			if (enableAlphaRule) output += ' alpha';
+			if (showOptimalsOnly) output += ' optimal';
+		}
 		openNodes.forEach(node => {
 			const possibleCombos = [];
 			const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
@@ -245,7 +243,7 @@ const CustomFormatting = (props: CustomFormattingProps) => {
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					You can customize the appearance of and the details included in the export. The following settings are saved.
+					You can customize what details are included in the export. The following settings are saved.
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group>
