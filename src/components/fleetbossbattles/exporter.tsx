@@ -100,9 +100,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 		}
 		let output = '';
 		if (formattingOptions.show_chain === 'always') {
-			output += combo.status;
-			if (enableAlphaRule) output += ' alpha';
-			if (showOptimalsOnly) output += ' optimal';
+			output += `${combo.chain} (${combo.nodes.length-openNodes.length}/${combo.nodes.length})`;
 		}
 		openNodes.forEach(node => {
 			const possibleCombos = [];

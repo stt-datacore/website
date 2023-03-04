@@ -55,10 +55,9 @@ const ComboPicker = () => {
 	const [activeBoss, setActiveBoss] = React.useState(undefined);
 	const [combo, setCombo] = React.useState(undefined);
 
-	const getBossStatus = (boss) => {
-		const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
+	const getBossChain = (boss) => {
 		const bossName = allData.bossData.groups.find(group => group.symbol === boss.group).name;
-		return `${bossName}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`;
+		return `${bossName}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1}`;
 	};
 
 	React.useEffect(() => {
@@ -71,7 +70,7 @@ const ComboPicker = () => {
 				difficultyId: boss.difficulty_id,
 				traits: boss.combo.traits,
 				nodes: boss.combo.nodes,
-				status: getBossStatus(boss)
+				chain: getBossChain(boss)
 			};
 			setCombo({...combo});
 		}
@@ -89,7 +88,7 @@ const ComboPicker = () => {
 					{
 						key: boss.id,
 						value: boss.id,
-						text: getBossStatus(boss)
+						text: `${getBossChain(boss)} (${unlockedNodes.length}/${boss.combo.nodes.length})`
 					}
 				);
 			}
