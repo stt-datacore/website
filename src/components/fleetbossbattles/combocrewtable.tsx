@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Dropdown, Form, Checkbox, Table, Rating, Icon, Popup } from 'semantic-ui-react';
+import { Header, Message, Form, Select, Dropdown, Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import MarkButtons from './markbuttons';
@@ -24,21 +24,22 @@ type ComboCrewTableProps = {
 const ComboCrewTable = (props) => {
 	const { comboId, openNodes } = props;
 
+	const [handleAlpha, setHandleAlpha] = React.useState('flag');
+	const [handleOptimal, setHandleOptimal] = React.useState('hide');
+	const [usableFilter, setUsableFilter] = React.useState('');
+
 	const [matchingCrew, setMatchingCrew] = React.useState([]);
 	const [optimalCombos, setOptimalCombos] = React.useState([]);
 	const [traitCounts, setTraitCounts] = React.useState({});
-	const [usableFilter, setUsableFilter] = React.useState('');
-	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
-	const [enableAlphaRule, setEnableAlphaRule] = React.useState(true);
 
 	React.useEffect(() => {
 		const allMatchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
-		const matchingCrew = enableAlphaRule ? filterCrewByAlphaRule(allMatchingCrew, openNodes) : allMatchingCrew;
+		const matchingCrew = handleAlpha === 'hide' ? filterCrewByAlphaRule(allMatchingCrew, openNodes) : allMatchingCrew;
 		setMatchingCrew([...matchingCrew]);
 
-		const optimalCombos = showOptimalsOnly ? getOptimalCombos(matchingCrew) : [];
+		const optimalCombos = getOptimalCombos(matchingCrew);
 		setOptimalCombos([...optimalCombos]);
-		const data = matchingCrew.filter(crew => !showOptimalsOnly || isCrewOptimal(crew, optimalCombos));
+		const data = matchingCrew.filter(crew => handleOptimal === 'flag' || isCrewOptimal(crew, optimalCombos));
 		const traitCountsByNode = {};
 		openNodes.forEach(node => {
 			const traitCounts = {};
@@ -48,19 +49,7 @@ const ComboCrewTable = (props) => {
 			traitCountsByNode[`node-${node.index}`] = traitCounts;
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [props.allMatchingCrew, openNodes, showOptimalsOnly, enableAlphaRule]);
-
-	const filterByUsable = (crew) => {
-		if (usableFilter === 'portal' && !crew.in_portal) return false;
-		if ((usableFilter === 'owned' || usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
-		if (usableFilter === 'thawed' && crew.only_frozen) return false;
-		return true;
-	};
-
-	const filterByOptimal = (crew) => {
-		if (!showOptimalsOnly) return true;
-		return isCrewOptimal(crew, optimalCombos);
-	};
+	}, [props.allMatchingCrew, openNodes, handleAlpha, handleOptimal]);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -95,49 +84,44 @@ const ComboCrewTable = (props) => {
 
 	tableConfig.push({ width: 1, title: 'Trial' });
 
+	const alphaOptions = [
+		{ key: 'flag', text: 'Flag alpha rule exceptions', value: 'flag' },
+		{ key: 'hide', text: 'Hide alpha rule exceptions', value: 'hide' }
+	];
+
+	const optimalOptions = [
+		{ key: 'flag', text: 'Flag non-optimal crew', value: 'flag' },
+		{ key: 'hide', text: 'Hide non-optimal crew', value: 'hide' }
+	];
+
 	const usableFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'portal', value: 'portal', text: 'Only show crew in portal' },
-		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
-		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' }
+		{ key: 'all', text: 'Show all crew', value: '' },
+		{ key: 'owned', text: 'Only show owned crew', value: 'owned' },
+		{ key: 'thawed', text: 'Only show unfrozen crew', value: 'thawed' }
 	];
 
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Here are crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node.</p>
-			<p style={{ marginTop: '2em' }}>Enable the following 2 options to narrow the list to crew you should try first for most efficient use of valor.</p>
-			<Form>
-				<Form.Group inline>
-					<Form.Field
-						control={Checkbox}
-						label={
-							<label>
-								Apply alpha rule
-								<Popup trigger={<Icon name='question' style={{ marginLeft: '.5em' }} />}
-									content={`Enable this to rule out certain crew based on their trait names. This unofficial rule has had a high degree of success to date, but may not work in 100% of cases. Uncheck this if you've exhausted all other suggested crew.`}
-								/>
-							</label>
-						}
-						checked={enableAlphaRule}
-						onChange={(e, { checked }) => setEnableAlphaRule(checked) }
-					/>
-					<Form.Field
-						control={Checkbox}
-						label={
-							<label>
-								Only show optimal crew
-								<Popup trigger={<Icon name='question' style={{ marginLeft: '.5em' }} />}
-									content={`Enable this to exclude crew whose matching traits are a subset of another possible crew for that node. Uncheck this if you don't own any of the optimal crew.`}
-								/>
-							</label>
-						}
-						checked={showOptimalsOnly}
-						onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
-					/>
-				</Form.Group>
-			</Form>
-			<p style={{ marginTop: '2em' }}>You can filter by availability and search for specific crew. Use the buttons in the trial column to mark crew that have been tried.</p>
+			<p>Here are the crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node. Use the buttons in the trial column to mark crew who have been tried.</p>
+			<Message>
+				<Message.Header>Alpha rule</Message.Header>
+				<p>Crew who might be ruled out based on their trait names are considered <i>alpha exceptions</i>. This unofficial rule has had a high degree of success to date, but may not work in all cases. You should only try alpha exceptions if you've exhausted all other suggested crew.</p>
+				<Select
+					options={alphaOptions}
+					value={handleAlpha}
+					onChange={(e, { value }) => setHandleAlpha(value)}
+				/>
+			</Message>
+			<Message>
+				<Message.Header>Optimal crew</Message.Header>
+				<p>Crew whose matching traits are a subset of another possible crew for that node are considered <i>non-optimal</i>. You should only try non-optimal crew if you don't own any optimal crew.</p>
+				<Select
+					options={optimalOptions}
+					value={handleOptimal}
+					onChange={(e, { value }) => setHandleOptimal(value)}
+				/>
+			</Message>
 			<Form>
 				<Form.Group inline>
 					<Form.Field
@@ -217,20 +201,36 @@ const ComboCrewTable = (props) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				{!crew.in_portal &&
-					<Popup trigger={<Icon name='info circle' color='yellow' />}
-						content={`Non-portal crew may be able to solve some nodes, but they are not the intended solution. Their non-viable traits are hidden automatically.`}
-					/>
-				}
+				{handleAlpha === 'flag' && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
+				{handleOptimal === 'flag' && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (!filterByUsable(crew)) return false;
-		if (!filterByOptimal(crew)) return false;
+		if (handleOptimal === 'hide' && !isCrewOptimal(crew, optimalCombos)) return false;
+		if ((usableFilter === 'owned' || usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
+		if (usableFilter === 'thawed' && crew.only_frozen) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
+	}
+
+	function isCrewAlphaCompliant(crew: any): boolean {
+		let nodesRarity = crew.nodes_rarity;
+		Object.values(crew.node_matches).forEach(node => {
+			const open = openNodes.find(n => n.index === node.index);
+			if (open) {
+				const alphaTest = open.alphaTest;
+				let nodeCombos = node.combos.length;
+				node.combos.forEach(combo => {
+					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
+						nodeCombos--;
+					}
+				});
+				if (nodeCombos === 0) nodesRarity--;
+			}
+		});
+		return nodesRarity > 0;
 	}
 };
 

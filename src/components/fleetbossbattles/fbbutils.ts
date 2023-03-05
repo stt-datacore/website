@@ -43,18 +43,18 @@ export function isCrewOptimal(crew: any, optimalCombos: any[]): boolean {
 
 export function filterCrewByAlphaRule(crewList: any[], openNodes: any[]): any[] {
 	return crewList.filter(crew => {
-		const unviableCombos = [];
+		const exceptions = [];
 		Object.values(crew.node_matches).forEach(node => {
 			const open = openNodes.find(n => n.index === node.index);
 			if (open) {
 				const alphaTest = open.alphaTest;
 				node.combos.forEach(combo => {
 					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1))
-						unviableCombos.push({ index: node.index, combo: combo });
+						exceptions.push({ index: node.index, combo: combo });
 				});
 			}
 		});
-		unviableCombos.forEach(combo => {
+		exceptions.forEach(combo => {
 			removeCrewNodeCombo(crew, combo.index, combo.combo);
 		});
 		return crew.nodes_rarity > 0;

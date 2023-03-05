@@ -25,7 +25,7 @@ const ComboChecklist = (props: ComboChecklistProps) => {
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			Keep track of crew that have been tried for this combo chain.
+			Keep track of crew who have been tried for this combo chain.
 			<Form.Field
 				placeholder='Search for crew'
 				control={Dropdown}

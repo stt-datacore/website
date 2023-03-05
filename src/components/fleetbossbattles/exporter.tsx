@@ -1,10 +1,13 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Icon, Form, Select, Checkbox } from 'semantic-ui-react';
 
-import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule } from './fbbutils';
+import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule, getComboIndex } from './fbbutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import allTraits from '../../../static/structured/translation_en.json';
+
+const ALPHA_FLAG = '\u03B1';
+const OPTIMAL_FLAG = '\u03B9';
 
 type ExportTraitsProps = {
 	nodes: any[];
@@ -58,11 +61,13 @@ export const ExportTraits = (props: ExportTraitsProps) => {
 	);
 };
 
-const formattingDefaults = {
-	show_chain: 'always',
-	show_traits: 'always',
-	bullet_style: 'simple',
-	crew_delimiter: ','
+const exportDefaults = {
+	header: 'chain',
+	traits: 'all',
+	bullet: 'simple',
+	delimiter: ',',
+	alpha: 'flag',
+	optimal: 'hide'
 };
 
 type ExportCrewListsProps = {
@@ -75,31 +80,31 @@ type ExportCrewListsProps = {
 export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	const { dbid, combo, openNodes, allMatchingCrew } = props;
 
-	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
-	const [enableAlphaRule, setEnableAlphaRule] = React.useState(true);
-	const [formattingOptions, setFormattingOptions] = useStateWithStorage(dbid+'/fbb/formatting', formattingDefaults, { rememberForever: true });
+	const [exportPrefs, setExportPrefs] = useStateWithStorage(dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
 
-	const sortedTraits = (traits) => {
-		return traits.map(t => allTraits.trait_names[t]).sort((a, b) => a.localeCompare(b)).join(', ');
+	const sortedTraits = (traits, alphaTest = '') => {
+		const traitName = (trait) => {
+			let name = allTraits.trait_names[trait];
+			if (exportPrefs.alpha === 'flag' && alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
+				name += `-${ALPHA_FLAG}`;
+			return name;
+		};
+		return traits.map(t => traitName(t)).sort((a, b) => a.localeCompare(b)).join(', ');
 	};
 
 	const formatCrewName = (crew) => {
-		let name = formattingOptions.crew_delimiter === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
+		let name = exportPrefs.delimiter === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
 		if (crew.nodes_rarity > 1) name = `*${name}*`;
 		return name;
 	};
 
 	const copyPossible = () => {
 		let crewList = JSON.parse(JSON.stringify(allMatchingCrew));
-		if (enableAlphaRule) {
-			crewList = filterCrewByAlphaRule(crewList, openNodes);
-		}
-		if (showOptimalsOnly) {
-			const optimalCombos = getOptimalCombos(crewList);
-			crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
-		}
+		if (exportPrefs.alpha === 'hide') crewList = crewList = filterCrewByAlphaRule(crewList, openNodes);
+		const optimalCombos = getOptimalCombos(crewList);
+		if (exportPrefs.optimal === 'hide') crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
 		let output = '';
-		if (formattingOptions.show_chain === 'always') {
+		if (exportPrefs.header === 'chain') {
 			output += `${combo.chain} (${combo.nodes.length-openNodes.length}/${combo.nodes.length})`;
 		}
 		openNodes.forEach(node => {
@@ -121,22 +126,31 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 					if (a.nodes_rarity !== b.nodes_rarity)
 						return b.nodes_rarity - a.nodes_rarity;
 					return a.name.localeCompare(b.name);
-				}).map(crew => formatCrewName(crew)).join(`${formattingOptions.crew_delimiter} `);
+				}).map(crew => formatCrewName(crew)).join(`${exportPrefs.delimiter} `);
 				if (nodeList !== '') nodeList += '\n';
-				if (formattingOptions.bullet_style === 'full') nodeList += `${node.index+1}.`;
-				if (formattingOptions.bullet_style === 'full' || formattingOptions.bullet_style === 'number')
-					nodeList += `${idx+1} `;
+				if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
+				if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
+					nodeList += `${idx+1}`;
 				else
-					nodeList += `- `;
-				nodeList += crewList;
-				if (formattingOptions.show_traits === 'always')
-					nodeList += ` (${sortedTraits(combo)})`;
+					nodeList += `-`;
+				if (exportPrefs.alpha === 'flag') {
+					let exceptions = 0;
+					combo.forEach(trait => { if (trait.localeCompare(node.alphaTest) < 0) exceptions++; });
+					if (combo.length - exceptions < node.hiddenLeft) nodeList += ALPHA_FLAG;
+				}
+				if (exportPrefs.optimal === 'flag') {
+					const nodeOptimalCombos = optimalCombos.filter(combos => combos.nodes.includes(node.index)).map(combos => combos.traits);
+					if (getComboIndex(nodeOptimalCombos, combo) === -1) nodeList += OPTIMAL_FLAG;
+				}
+				nodeList += ' '+crewList;
+				if (exportPrefs.traits === 'all')
+					nodeList += ` (${sortedTraits(combo, node.alphaTest)})`;
 			});
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';
 				output += `Node ${node.index+1}`;
-				if (formattingOptions.show_traits === 'always' || formattingOptions.show_traits === 'nodes')
-					output += ` (${sortedTraits(node.traitsKnown)})`;
+				if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
+					output += ` (${sortedTraits(node.traitsKnown)}, ${Array(node.hiddenLeft).fill('?').join(', ')})`;
 				output += '\n' + nodeList;
 			}
 		});
@@ -148,23 +162,7 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 			<Message.Content>
 				<Message.Header>Export Crew Lists</Message.Header>
 				<p>Copy the list of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums. Asterisked crew are possible solutions to multiple nodes.</p>
-				<Form>
-					<Form.Group inline>
-						<Form.Field
-							control={Checkbox}
-							label={<label>Apply alpha rule</label>}
-							checked={enableAlphaRule}
-							onChange={(e, { checked }) => setEnableAlphaRule(checked) }
-						/>
-						<Form.Field
-							control={Checkbox}
-							label={<label>Only list optimal crew</label>}
-							checked={showOptimalsOnly}
-							onChange={(e, { checked }) => setShowOptimalsOnly(checked) }
-						/>
-					</Form.Group>
-				</Form>
-				<CustomFormatting options={formattingOptions} updateOptions={setFormattingOptions} />
+				<CustomExport prefs={exportPrefs} updatePrefs={setExportPrefs} />
 				<Popup
 					content='Copied!'
 					on='click'
@@ -179,47 +177,63 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 	);
 };
 
-type CustomFormattingProps = {
-	options: any;
-	updateOptions: (options: any) => void;
+type CustomExportProps = {
+	prefs: any;
+	updatePrefs: (prefs: any) => void;
 };
 
-const CustomFormatting = (props: CustomFormattingProps) => {
+const CustomExport = (props: CustomExportProps) => {
 	const [isActive, setIsActive] = React.useState(false);
-	const [showChain, setShowChain] = React.useState(props.options.show_chain ?? formattingDefaults.show_chain);
-	const [showTraits, setShowTraits] = React.useState(props.options.show_traits ?? formattingDefaults.show_traits);
-	const [bulletStyle, setBulletStyle] = React.useState(props.options.bullet_style ?? formattingDefaults.bullet_style);
-	const [crewDelimiter, setCrewDelimiter] = React.useState(props.options.crew_delimiter ?? formattingDefaults.crew_delimiter);
+	const [headerPref, setHeaderPref] = React.useState(props.prefs.header ?? exportDefaults.header);
+	const [traitsPref, setTraitsPref] = React.useState(props.prefs.traits ?? exportDefaults.traits);
+	const [bulletPref, setBulletPref] = React.useState(props.prefs.bullet ?? exportDefaults.bullet);
+	const [delimiterPref, setDelimiterPref] = React.useState(props.prefs.delimiter ?? exportDefaults.delimiter);
+	const [alphaPref, setAlphaPref] = React.useState(props.prefs.alpha ?? exportDefaults.alpha);
+	const [optimalPref, setOptimalPref] = React.useState(props.prefs.optimal ?? exportDefaults.optimal);
 
 	React.useEffect(() => {
-		props.updateOptions({
-			show_chain: showChain,
-			show_traits: showTraits,
-			bullet_style: bulletStyle,
-			crew_delimiter: crewDelimiter
+		props.updatePrefs({
+			header: headerPref,
+			traits: traitsPref,
+			bullet: bulletPref,
+			delimiter: delimiterPref,
+			alpha: alphaPref,
+			optimal: optimalPref
 		});
-	}, [showChain, showTraits, bulletStyle, crewDelimiter]);
+	}, [headerPref, traitsPref, bulletPref, delimiterPref, alphaPref, optimalPref]);
 
-	const chainOptions = [
-		{ key: 'always', text: 'Always', value: 'always' },
-		{ key: 'never', text: 'Never', value: 'never' }
+	const headerOptions = [
+		{ key: 'chain', text: 'Show boss chain', value: 'chain' },
+		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
 	const traitsOptions = [
-		{ key: 'always', text: 'Always', value: 'always' },
-		{ key: 'nodes', text: 'Nodes only', value: 'nodes' },
-		{ key: 'never', text: 'Never', value: 'never' }
+		{ key: 'all', text: 'Show on node and crew', value: 'all' },
+		{ key: 'nodes', text: 'Show on nodes only', value: 'nodes' },
+		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
 	const bulletOptions = [
-		{ key: 'simple', text: 'Simple', value: 'simple', example: '- Spock' },
+		{ key: 'simple', text: 'Dash', value: 'simple', example: '- Spock' },
 		{ key: 'number', text: 'Number', value: 'number', example: '1 Spock' },
 		{ key: 'full', text: 'Node and number', value: 'full', example: '2.1 Spock' }
 	];
 
 	const delimiterOptions = [
-		{ key: 'comma', text: ',', value: ',', example: 'Spock, Lt Uhura' },
-		{ key: 'semicolon', text: ';', value: ';', example: 'Spock; Lt. Uhura' }
+		{ key: 'comma', text: 'Comma', value: ',', example: 'Spock, Lt Uhura' },
+		{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
+	];
+
+	const alphaOptions = [
+		{ key: 'flag', text: `Flag exceptions [${ALPHA_FLAG}]`, value: 'flag' },
+		{ key: 'hide', text: 'Hide exceptions', value: 'hide' },
+		{ key: 'ignore', text: 'Ignore', value: 'ignore' }
+	];
+
+	const optimalOptions = [
+		{ key: 'flag', text: `Flag non-optimals [${OPTIMAL_FLAG}]`, value: 'flag' },
+		{ key: 'hide', text: 'Hide non-optimals', value: 'hide' },
+		{ key: 'ignore', text: 'Ignore', value: 'ignore' }
 	];
 
 	return (
@@ -229,63 +243,89 @@ const CustomFormatting = (props: CustomFormattingProps) => {
 					active={isActive}
 					index={1}
 					onTitleClick={() => setIsActive(!isActive)}
-					title={{ content: 'Customize Formatting', icon: `caret ${isActive ? 'down' : 'right'}` }}
-					content={renderOptions}
+					title={{ content: 'Customize Export', icon: `caret ${isActive ? 'down' : 'right'}` }}
+					content={renderPrefsForm}
 				/>
 			</Accordion>
 		</div>
 	);
 
-	function renderOptions(): JSX.Element {
+	function renderPrefsForm(): JSX.Element {
 		if (!isActive) return (<></>);
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					You can customize what details are included in the export. The following settings are saved.
+					You can customize what details are included in the export. All preferences here will be remembered.
 				</div>
 				<Form style={{ marginTop: '1em' }}>
-					<Form.Group>
-						<Form.Field
-							control={Select}
-							label={<label>Show boss chain</label>}
-							options={chainOptions}
-							value={showChain}
-							onChange={(e, { value }) => setShowChain(value)}
-						/>
-						<Form.Field
-							control={Select}
-							label={<label>Show traits</label>}
-							options={traitsOptions}
-							value={showTraits}
-							onChange={(e, { value }) => setShowTraits(value)}
-						/>
-						<Form.Field
-							control={Select}
-							label={<label>Bullet style, e.g. <i>{bulletOptions.find(b => b.value === bulletStyle).example}</i></label>}
-							options={bulletOptions}
-							value={bulletStyle}
-							onChange={(e, { value }) => setBulletStyle(value)}
-						/>
-						<Form.Field
-							control={Select}
-							label={<label>Delimiter, e.g. <i>{delimiterOptions.find(b => b.value === crewDelimiter).example}</i></label>}
-							options={delimiterOptions}
-							value={crewDelimiter}
-							onChange={(e, { value }) => setCrewDelimiter(value)}
-						/>
+					<Form.Group grouped>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Header</label>
+								<Select
+									options={headerOptions}
+									value={headerPref}
+									onChange={(e, { value }) => setHeaderPref(value)}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Traits</label>
+								<Select
+									options={traitsOptions}
+									value={traitsPref}
+									onChange={(e, { value }) => setTraitsPref(value)}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Bullet style, e.g. <i>{bulletOptions.find(b => b.value === bulletPref).example}</i></label>
+								<Select
+									options={bulletOptions}
+									value={bulletPref}
+									onChange={(e, { value }) => setBulletPref(value)}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Crew delimiter, e.g. <i>{delimiterOptions.find(b => b.value === delimiterPref).example}</i></label>
+								<Select
+									options={delimiterOptions}
+									value={delimiterPref}
+									onChange={(e, { value }) => setDelimiterPref(value)}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Alpha rule</label>
+								<Select
+									options={alphaOptions}
+									value={alphaPref}
+									onChange={(e, { value }) => setAlphaPref(value)}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Optimal crew</label>
+								<Select
+									options={optimalOptions}
+									value={optimalPref}
+									onChange={(e, { value }) => setOptimalPref(value)}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Button compact onClick={resetToDefaults}>
+							Reset to defaults
+						</Button>
 					</Form.Group>
 				</Form>
-				<Button compact onClick={resetToDefaults}>
-					Reset to defaults
-				</Button>
 			</div>
 		);
 	}
 
 	function resetToDefaults(): void {
-		setShowChain(formattingDefaults.show_chain);
-		setShowTraits(formattingDefaults.show_traits);
-		setBulletStyle(formattingDefaults.bullet_style);
-		setCrewDelimiter(formattingDefaults.crew_delimiter);
+		setHeaderPref(exportDefaults.header);
+		setTraitsPref(exportDefaults.traits);
+		setBulletPref(exportDefaults.bullet);
+		setDelimiterPref(exportDefaults.delimiter);
+		setAlphaPref(exportDefaults.alpha);
+		setOptimalPref(exportDefaults.optimal);
 	}
 };
