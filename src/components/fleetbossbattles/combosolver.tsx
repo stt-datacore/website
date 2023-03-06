@@ -185,8 +185,24 @@ const ComboSolver = (props: ComboSolverProps) => {
 					removeCrewNodeCombo(crew, ignored.index, ignored.combo);
 			});
 		});
-
 		const validatedCrew = allMatchingCrew.filter(crew => crew.nodes_rarity > 0);
+
+		// Annotate remaining exceptions to alpha rule
+		validatedCrew.forEach(crew => {
+			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] };
+			Object.values(crew.node_matches).forEach(node => {
+				let combosCompliant = node.combos.length;
+				const alphaTest = openNodes.find(n => n.index === node.index).alphaTest;
+				node.combos.forEach(combo => {
+					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
+						crew.alpha_rule.exceptions.push({ index: node.index, combo });
+						combosCompliant--;
+					}
+				});
+				if (combosCompliant === 0) crew.alpha_rule.compliant--;
+			});
+		});
+
 		setAllMatchingCrew([...validatedCrew]);
 	}, [traitPool, attemptedCrew]);
 

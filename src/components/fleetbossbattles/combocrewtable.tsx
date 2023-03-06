@@ -1,9 +1,9 @@
 import React from 'react';
-import { Header, Message, Form, Select, Dropdown, Table, Rating, Label, Icon } from 'semantic-ui-react';
+import { Header, Message, Form, Dropdown, Checkbox, Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import MarkButtons from './markbuttons';
-import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule } from './fbbutils';
+import { getOptimalCombos, isCrewOptimal, filterAlphaExceptions } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewTraitMatchesCell } from '../../components/crewtables/commoncells';
@@ -24,8 +24,8 @@ type ComboCrewTableProps = {
 const ComboCrewTable = (props) => {
 	const { comboId, openNodes } = props;
 
-	const [handleAlpha, setHandleAlpha] = React.useState('flag');
-	const [handleOptimal, setHandleOptimal] = React.useState('hide');
+	const [hideAlphaExceptions, setHideAlphaExceptions] = React.useState(false);
+	const [hideNonOptimals, setHideNonOptimals] = React.useState(true);
 	const [usableFilter, setUsableFilter] = React.useState('');
 
 	const [matchingCrew, setMatchingCrew] = React.useState([]);
@@ -34,12 +34,12 @@ const ComboCrewTable = (props) => {
 
 	React.useEffect(() => {
 		const allMatchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
-		const matchingCrew = handleAlpha === 'hide' ? filterCrewByAlphaRule(allMatchingCrew, openNodes) : allMatchingCrew;
+		const matchingCrew = hideAlphaExceptions ? filterAlphaExceptions(allMatchingCrew) : allMatchingCrew;
 		setMatchingCrew([...matchingCrew]);
 
 		const optimalCombos = getOptimalCombos(matchingCrew);
 		setOptimalCombos([...optimalCombos]);
-		const data = matchingCrew.filter(crew => handleOptimal === 'flag' || isCrewOptimal(crew, optimalCombos));
+		const data = matchingCrew.filter(crew => !hideNonOptimals || isCrewOptimal(crew, optimalCombos));
 		const traitCountsByNode = {};
 		openNodes.forEach(node => {
 			const traitCounts = {};
@@ -49,7 +49,7 @@ const ComboCrewTable = (props) => {
 			traitCountsByNode[`node-${node.index}`] = traitCounts;
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [props.allMatchingCrew, openNodes, handleAlpha, handleOptimal]);
+	}, [props.allMatchingCrew, openNodes, hideAlphaExceptions, hideNonOptimals]);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -103,45 +103,43 @@ const ComboCrewTable = (props) => {
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Here are the crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node. Use the buttons in the trial column to mark crew who have been tried.</p>
-			<Message>
-				<Message.Header>Alpha rule</Message.Header>
-				<p>Crew who might be ruled out based on their trait names are considered <i>alpha exceptions</i>. This unofficial rule has had a high degree of success to date, but may not work in all cases. You should only try alpha exceptions if you've exhausted all other suggested crew.</p>
-				<Select
-					options={alphaOptions}
-					value={handleAlpha}
-					onChange={(e, { value }) => setHandleAlpha(value)}
-				/>
-			</Message>
-			<Message>
-				<Message.Header>Optimal crew</Message.Header>
-				<p>Crew whose matching traits are a subset of another possible crew for that node are considered <i>non-optimal</i>. You should only try non-optimal crew if you don't own any optimal crew.</p>
-				<Select
-					options={optimalOptions}
-					value={handleOptimal}
-					onChange={(e, { value }) => setHandleOptimal(value)}
-				/>
-			</Message>
+			<p>Here are the crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node. Use the <Icon name='check' /><Icon name='x' /> buttons to mark crew who have been tried.</p>
 			<Form>
-				<Form.Group inline>
-					<Form.Field
-						placeholder='Filter by availability'
-						control={Dropdown}
-						clearable
-						selection
-						options={usableFilterOptions}
-						value={usableFilter}
-						onChange={(e, { value }) => setUsableFilter(value)}
-					/>
-					{(usableFilter === 'owned' || usableFilter === 'thawed') &&
-						<span>
-							<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed when using this availability setting.
-						</span>
-					}
+				<Form.Group grouped>
+					<Form.Group inline>
+						<Form.Field
+							placeholder='Filter by availability'
+							control={Dropdown}
+							clearable
+							selection
+							options={usableFilterOptions}
+							value={usableFilter}
+							onChange={(e, { value }) => setUsableFilter(value)}
+						/>
+						{(usableFilter === 'owned' || usableFilter === 'thawed') &&
+							<span>
+								<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed when using this availability setting.
+							</span>
+						}
+					</Form.Group>
+					<Form.Group inline>
+						<Form.Field
+							control={Checkbox}
+							label='Hide alpha rule exceptions'
+							checked={hideAlphaExceptions}
+							onChange={(e, data) => setHideAlphaExceptions(data.checked)}
+						/>
+						<Form.Field
+							control={Checkbox}
+							label='Hide non-optimal crew'
+							checked={hideNonOptimals}
+							onChange={(e, data) => setHideNonOptimals(data.checked)}
+						/>
+					</Form.Group>
 				</Form.Group>
 			</Form>
 			<SearchableTable
-				id={`comboCrewTable/${comboId}`}
+				id={`fbbTool/${comboId}/crewtable_`}
 				data={matchingCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
@@ -150,7 +148,9 @@ const ComboCrewTable = (props) => {
 			/>
 			<div style={{ marginTop: '1em' }}>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
-				<p><i>Trait Colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc.</p>
+				<p><i>Alpha exceptions</i> are crew who might be ruled out based on their trait names. This unofficial rule has had a high degree of success to date, but may not work in all cases. You should only try alpha exceptions if you've exhausted all other listed options.</p>
+				<p><i>Non-optimals</i> are crew whose only matching traits are a subset of traits of another possible crew for that node. You should only try non-optimal crew if you don't own any optimal crew.</p>
+				<p><i>Trait colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that trait exceptions are always orange, regardless of rarity.</p>
 			</div>
 		</div>
 	);
@@ -183,12 +183,10 @@ const ComboCrewTable = (props) => {
 					{crew.nodes_rarity}
 				</Table.Cell>
 				{openNodes.map(node => {
-					const nodeMatches = crew.node_matches[`node-${node.index}`];
-					if (!nodeMatches) return <Table.Cell key={node.index} />;
 					return (
-						<CrewTraitMatchesCell key={node.index} crew={crew}
-							traitList={nodeMatches.traits} traitCounts={traitCounts[`node-${node.index}`]}
-						/>
+						<Table.Cell key={node.index} textAlign='center'>
+							{renderTraits(crew, node.index, traitCounts[`node-${node.index}`])}
+						</Table.Cell>
 					);
 				})}
 				<Table.Cell textAlign='center'>
@@ -201,36 +199,66 @@ const ComboCrewTable = (props) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				{handleAlpha === 'flag' && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
-				{handleOptimal === 'flag' && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
+				{!hideAlphaExceptions && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
+				{!hideNonOptimals && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (handleOptimal === 'hide' && !isCrewOptimal(crew, optimalCombos)) return false;
+		if (hideNonOptimals && !isCrewOptimal(crew, optimalCombos)) return false;
 		if ((usableFilter === 'owned' || usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
 		if (usableFilter === 'thawed' && crew.only_frozen) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
 	function isCrewAlphaCompliant(crew: any): boolean {
-		let nodesRarity = crew.nodes_rarity;
-		Object.values(crew.node_matches).forEach(node => {
-			const open = openNodes.find(n => n.index === node.index);
-			if (open) {
-				const alphaTest = open.alphaTest;
-				let nodeCombos = node.combos.length;
-				node.combos.forEach(combo => {
-					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
-						nodeCombos--;
-					}
-				});
-				if (nodeCombos === 0) nodesRarity--;
+		return crew.alpha_rule.compliant > 0;
+	}
+
+	function renderTraits(crew: any, index: number, traitCounts: any): JSX.Element {
+		const alphaTest = openNodes.find(open => open.index === index).alphaTest;
+		const colorize = (trait: string) => {
+			// Trait is alpha rule exception
+			if (trait.localeCompare(alphaTest) === -1) {
+				return {
+					background: '#f2711c',
+					color: 'white'
+				};
 			}
-		});
-		return nodesRarity > 0;
+			let background = 'grey', color = 'white';
+			if (traitCounts[trait] === 1) {
+				background = '#fdd26a';
+				color = 'black';
+			}
+			else if (traitCounts[trait] === 2) {
+				background = '#aa2deb';
+			}
+			else if (traitCounts[trait] === 3) {
+				background = '#5aaaff';
+			}
+			else if (traitCounts[trait] === 4) {
+				background = '#50aa3c';
+			}
+			else if (traitCounts[trait] === 5) {
+				background = '#9b9b9b';
+			}
+			return { background, color };
+		};
+
+		const nodeMatches = crew.node_matches[`node-${index}`];
+		if (!nodeMatches) return (<></>);
+
+		return (
+			<React.Fragment>
+				{nodeMatches.traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+					<Label key={idx} style={colorize(trait)}>
+						{allTraits.trait_names[trait]}
+					</Label>
+				)).reduce((prev, curr) => [prev, ' ', curr], [])}
+			</React.Fragment>
+		);
 	}
 };
 

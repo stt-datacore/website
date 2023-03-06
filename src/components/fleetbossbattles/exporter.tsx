@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Icon, Form, Select, Checkbox } from 'semantic-ui-react';
 
-import { getOptimalCombos, isCrewOptimal, filterCrewByAlphaRule, getComboIndex } from './fbbutils';
+import { getOptimalCombos, isCrewOptimal, filterAlphaExceptions, getComboIndex } from './fbbutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import allTraits from '../../../static/structured/translation_en.json';
@@ -62,7 +62,7 @@ export const ExportTraits = (props: ExportTraitsProps) => {
 };
 
 const exportDefaults = {
-	header: 'chain',
+	header: 'always',
 	traits: 'all',
 	bullet: 'simple',
 	delimiter: ',',
@@ -100,11 +100,11 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 
 	const copyPossible = () => {
 		let crewList = JSON.parse(JSON.stringify(allMatchingCrew));
-		if (exportPrefs.alpha === 'hide') crewList = crewList = filterCrewByAlphaRule(crewList, openNodes);
+		if (exportPrefs.alpha === 'hide') crewList = filterAlphaExceptions(crewList);
 		const optimalCombos = getOptimalCombos(crewList);
 		if (exportPrefs.optimal === 'hide') crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
 		let output = '';
-		if (exportPrefs.header === 'chain') {
+		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && combo.nodes.length-openNodes.length === 0)) {
 			output += `${combo.chain} (${combo.nodes.length-openNodes.length}/${combo.nodes.length})`;
 		}
 		openNodes.forEach(node => {
@@ -203,7 +203,8 @@ const CustomExport = (props: CustomExportProps) => {
 	}, [headerPref, traitsPref, bulletPref, delimiterPref, alphaPref, optimalPref]);
 
 	const headerOptions = [
-		{ key: 'chain', text: 'Show boss chain', value: 'chain' },
+		{ key: 'always', text: 'Always show boss chain', value: 'always' },
+		{ key: 'initial', text: 'Show on new chains only', value: 'initial' },
 		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
@@ -255,7 +256,7 @@ const CustomExport = (props: CustomExportProps) => {
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					You can customize what details are included in the export. All preferences here will be remembered.
+					You can customize the details that are included in the export. All preferences here will be remembered.
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>
