@@ -49,16 +49,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
 	const tableId = props.id ?? '';
 
-	const hasDate = data.length > 0 && data[0].date_added;
-	const defaultSort = {
-		column: data.length > 0 && hasDate ? 'date_added' : 'name',
-		direction: data.length > 0 && hasDate ? 'descending' : 'ascending'
-	};
-
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
-	const [column, setColumn] = useStateWithStorage(tableId+'column', defaultSort.column);
-	const [direction, setDirection] = useStateWithStorage(tableId+'direction', defaultSort.direction);
+	const [column, setColumn] = useStateWithStorage(tableId+'column', undefined);
+	const [direction, setDirection] = useStateWithStorage(tableId+'direction', undefined);
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
@@ -70,8 +64,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		if (props.initOptions) {
 			setSearchFilter(props.initOptions['search'] ?? '');
 			setFilterType(props.initOptions['filter'] ?? 'Any match');
-			setColumn(props.initOptions['column'] ?? defaultSort.column);
-			setDirection(props.initOptions['direction'] ?? defaultSort.direction);
+			setColumn(props.initOptions['column'] ?? undefined);
+			setDirection(props.initOptions['direction'] ?? undefined);
 			setPaginationRows(props.initOptions['rows'] ?? 10);
 			setPaginationPage(props.initOptions['page'] ?? 1);
 		}
@@ -141,8 +135,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const params = new URLSearchParams();
 		if (searchFilter != '') params.append('search', searchFilter);
 		if (filterType != 'Any match') params.append('filter', filterType);
-		if (column != defaultSort.column) params.append('column', column);
-		if (direction != defaultSort.direction) params.append('direction', direction);
+		if (column) params.append('column', column);
+		if (direction) params.append('direction', direction);
 		if (pagination_rows != 10) params.append('rows', pagination_rows);
 		if (pagination_page != 1) params.append('page', pagination_page);
 		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
@@ -175,36 +169,52 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 
 	// Sorting
-	if (column) {
-		const sortConfig: IConfigSortData = {
-			field: column,
-			direction: direction,
-			keepSortOptions: true
-		};
-
-		// Define tiebreaker rules with names in alphabetical order as default
-		//	Hack here to sort rarity in the same direction as max_rarity
-		let subsort = [];
-		const columnConfig = props.config.find(col => col.column === column);
-		if (columnConfig && columnConfig.tiebreakers) {
-			subsort = columnConfig.tiebreakers.map(subfield => {
-				const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? direction : 'ascending';
-				return { field: subfield, direction: subdirection };
-			});
+	let sortColumn = column;
+	let sortDirection = direction;
+	// If no column set, use date_added as default column when available
+	if (!sortColumn) {
+		if (data.length > 0 && data[0].date_added) {
+			sortColumn = 'date_added';
+			sortDirection = 'descending';
 		}
-		if (column != 'name') subsort.push({ field: 'name', direction: 'ascending' });
-		sortConfig.subsort = subsort;
-
-		// Use original dataset for sorting
-		const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
-		data = sorted.result;
-
-		// Sorting by pre-calculated ranks should filter out crew without matching skills
-		//	Otherwise crew without skills show up first (because 0 comes before 1)
-		if (column.substr(0, 5) === 'ranks') {
-			const rank = column.split('.')[1];
-			data = data.filter(row => row.ranks[rank] > 0);
+		else {
+			sortColumn = 'name';
+			sortDirection = 'ascending';
 		}
+	}
+	// If no direction set, determine direction from tableConfig when possible
+	if (!sortDirection) {
+		const columnConfig = props.config.find(col => col.column === sortColumn);
+		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
+	}
+	const sortConfig: IConfigSortData = {
+		field: sortColumn,
+		direction: sortDirection,
+		keepSortOptions: true
+	};
+
+	// Define tiebreaker rules with names in alphabetical order as default
+	//	Hack here to sort rarity in the same direction as max_rarity
+	let subsort = [];
+	const columnConfig = props.config.find(col => col.column === sortColumn);
+	if (columnConfig && columnConfig.tiebreakers) {
+		subsort = columnConfig.tiebreakers.map(subfield => {
+			const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			return { field: subfield, direction: subdirection };
+		});
+	}
+	if (column !== 'name') subsort.push({ field: 'name', direction: 'ascending' });
+	sortConfig.subsort = subsort;
+
+	// Use original dataset for sorting
+	const sorted: IResultSortDataBy = sortDataBy([...props.data], sortConfig);
+	data = sorted.result;
+
+	// Sorting by pre-calculated ranks should filter out crew without matching skills
+	//	Otherwise crew without skills show up first (because 0 comes before 1)
+	if (sortColumn.substr(0, 5) === 'ranks') {
+		const rank = column.split('.')[1];
+		data = data.filter(row => row.ranks[rank] > 0);
 	}
 
 	// Filtering
