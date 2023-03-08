@@ -3,8 +3,8 @@ name: Xahean Adira
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 32
+bigbook_tier: 6
+events: 33
 in_portal: true
 date: 08/04/2021
 obtained: Event

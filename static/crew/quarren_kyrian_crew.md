@@ -3,7 +3,7 @@ name: Quarren of the Kyrian
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 2
 in_portal: true
 date: 02/12/2021

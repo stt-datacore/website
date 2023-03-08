@@ -3,8 +3,8 @@ name: EDF Adira
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 27
+bigbook_tier: 6
+events: 28
 in_portal: true
 date: 17/12/2020
 obtained: Event
