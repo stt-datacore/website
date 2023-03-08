@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Button, Popup, Message, Accordion, Icon, Form, Select, Checkbox } from 'semantic-ui-react';
+import { Header, Button, Popup, Message, Accordion, Icon, Form, Select } from 'semantic-ui-react';
 
 import { getOptimalCombos, isCrewOptimal, filterAlphaExceptions, getComboIndex } from './fbbutils';
 import { useStateWithStorage } from '../../utils/storage';
@@ -8,58 +8,6 @@ import allTraits from '../../../static/structured/translation_en.json';
 
 const ALPHA_FLAG = '\u03B1';
 const OPTIMAL_FLAG = '\u03B9';
-
-type ExportTraitsProps = {
-	nodes: any[];
-	traits: string[];
-};
-
-export const ExportTraits = (props: ExportTraitsProps) => {
-	const { nodes, traits } = props;
-
-	const CABLink = 'https://docs.google.com/spreadsheets/d/1aGdAhgDJqknJKz-im4jxASxcE-cmVL8w2FQEKxpK4Uw/edit#gid=631453914';
-	const CABVer = '3.02';
-
-	const copyTraits = () => {
-		let output = '';
-		for (let n = 0; n < 6; n++) {
-			if (n >= nodes.length) {
-				output += '\n\n';
-				continue;
-			}
-			const node = nodes[n];
-			for (let m = 0; m < 2; m++) {
-				if (m < node.open_traits.length)
-					output += allTraits.trait_names[node.open_traits[m]];
-				if (m == 0) output += '\n';
-			}
-			output += '\t\t' + node.hidden_traits.length + '\n';
-		}
-		output += '\n';
-		traits.forEach(trait => {
-			output += allTraits.trait_names[trait] + '\n';
-		});
-		navigator.clipboard.writeText(output);
-	};
-
-	return (
-		<Message style={{ margin: '2em 0' }}>
-			<Message.Content>
-				<Message.Header>CAB's FBB Combo Chain Helper</Message.Header>
-				<p>The <b><a href={CABLink} target='_blank'>FBB Combo Chain Helper</a></b> is another tool that can help you and your fleet coordinate attacks in a Fleet Boss Battle. Click the button below to copy the known traits and the list of possible traits for use with this Google Sheet (currently v{CABVer}).</p>
-				<Popup
-					content='Copied!'
-					on='click'
-					position='right center'
-					size='tiny'
-					trigger={
-						<Button icon='clipboard' content='Copy traits to clipboard' onClick={() => copyTraits()} />
-					}
-				/>
-			</Message.Content>
-		</Message>
-	);
-};
 
 const exportDefaults = {
 	header: 'always',
@@ -70,17 +18,16 @@ const exportDefaults = {
 	optimal: 'hide'
 };
 
-type ExportCrewListsProps = {
-	dbid: string;
-	combo: any;
+type CrewFullExporterProps = {
+	chain: any;
 	openNodes: any[];
 	allMatchingCrew: any[];
 };
 
-export const ExportCrewLists = (props: ExportCrewListsProps) => {
-	const { dbid, combo, openNodes, allMatchingCrew } = props;
+export const CrewFullExporter = (props: CrewFullExporterProps) => {
+	const { chain, openNodes, allMatchingCrew } = props;
 
-	const [exportPrefs, setExportPrefs] = useStateWithStorage(dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
+	const [exportPrefs, setExportPrefs] = useStateWithStorage(chain.dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
 
 	const sortedTraits = (traits, alphaTest = '') => {
 		const traitName = (trait) => {
@@ -104,8 +51,8 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 		const optimalCombos = getOptimalCombos(crewList);
 		if (exportPrefs.optimal === 'hide') crewList = crewList.filter(crew => isCrewOptimal(crew, optimalCombos));
 		let output = '';
-		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && combo.nodes.length-openNodes.length === 0)) {
-			output += `${combo.chain} (${combo.nodes.length-openNodes.length}/${combo.nodes.length})`;
+		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && chain.nodes.length-openNodes.length === 0)) {
+			output += `${chain.description} (${chain.nodes.length-openNodes.length}/${chain.nodes.length})`;
 		}
 		openNodes.forEach(node => {
 			const possibleCombos = [];

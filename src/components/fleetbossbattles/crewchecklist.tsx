@@ -1,15 +1,15 @@
 import React from 'react';
 import { Dropdown, Form } from 'semantic-ui-react';
 
-type ComboChecklistProps = {
-	comboId: string;
+type CrewChecklistProps = {
+	chainId: string;
 	crewList: string[];
 	attemptedCrew: string[];
 	updateAttempts: (crewSymbols: string[]) => void;
 };
 
-const ComboChecklist = (props: ComboChecklistProps) => {
-	const { comboId, updateAttempts } = props;
+const CrewChecklist = (props: CrewChecklistProps) => {
+	const { chainId, updateAttempts } = props;
 
 	const [options, setOptions] = React.useState(undefined);
 
@@ -66,4 +66,4 @@ const ComboChecklist = (props: ComboChecklistProps) => {
 	}
 };
 
-export default ComboChecklist;
+export default CrewChecklist;
