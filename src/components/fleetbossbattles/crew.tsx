@@ -4,8 +4,10 @@ import { Header, Form, Button, Dropdown, Checkbox, Icon } from 'semantic-ui-reac
 import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
-import { CrewFullExporter } from './crewexporter';
-import { getOptimalCombos, isCrewOptimal, filterAlphaExceptions } from './fbbutils';
+import { CrewFullExporter, exportDefaults } from './crewexporter';
+import { getOptimalCombos, filterAlphaExceptions, getTraitCountsByNode } from './fbbutils';
+
+import { useStateWithStorage } from '../../utils/storage';
 
 type ChainCrewProps = {
 	chain: any;
@@ -19,10 +21,13 @@ type ChainCrewProps = {
 const ChainCrew = (props: ChainCrewProps) => {
 	const { chain, spotter, updateSpotter } = props;
 
+	const [exportPrefs, setExportPrefs] = useStateWithStorage(chain.dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
+
 	return (
 		<React.Fragment>
 			<CrewFinder chain={chain} spotter={spotter} updateSpotter={updateSpotter}
 				openNodes={props.openNodes} allMatchingCrew={props.allMatchingCrew}
+				exportPrefs={exportPrefs}
 			/>
 			<CrewChecklist chainId={chain.id}
 				crewList={props.allCrew}
@@ -30,6 +35,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 			/>
 			<CrewFullExporter chain={chain}
 				openNodes={props.openNodes} allMatchingCrew={props.allMatchingCrew}
+				exportPrefs={exportPrefs} setExportPrefs={setExportPrefs}
 			/>
 		</React.Fragment>
 	);
@@ -45,6 +51,7 @@ type CrewFinderProps = {
 	updateSpotter: (spotter: any) => void;
 	openNodes: any[];
 	allMatchingCrew: any[];
+	exportPrefs: any;
 };
 
 const CrewFinder = (props: CrewFinderProps) => {
@@ -60,8 +67,8 @@ const CrewFinder = (props: CrewFinderProps) => {
 	const [traitCounts, setTraitCounts] = React.useState({});
 
 	React.useEffect(() => {
-		const allMatchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
-		const matchingCrew = hideAlphaExceptions ? filterAlphaExceptions(allMatchingCrew) : allMatchingCrew;
+		let matchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
+		if (hideAlphaExceptions) matchingCrew = filterAlphaExceptions(matchingCrew);
 		setMatchingCrew([...matchingCrew]);
 
 		const optimalCombos = getOptimalCombos(matchingCrew);
@@ -69,28 +76,10 @@ const CrewFinder = (props: CrewFinderProps) => {
 
 		const traitCountsByNode = {};
 		openNodes.forEach(node => {
-			const traitCounts = {};
-			const possibleCombos = [];
-			const crewByNode = matchingCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
-			crewByNode.forEach(crew => {
-				const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
-				const exists = possibleCombos.find(combo =>
-					combo.length === crewNodeTraits.length && combo.every(trait => crewNodeTraits.includes(trait))
-				);
-				if (exists)
-					exists.count++;
-				else
-					possibleCombos.push({ count: 1, traits: crewNodeTraits });
-			});
-			possibleCombos.forEach(combo => {
-				combo.traits.forEach(trait => {
-					traitCounts[trait] = traitCounts[trait] ? traitCounts[trait] + combo.count : combo.count;
-				});
-			});
-			traitCountsByNode[`node-${node.index}`] = traitCounts;
+			traitCountsByNode[`node-${node.index}`] = getTraitCountsByNode(node, matchingCrew);
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [props.allMatchingCrew, openNodes, hideAlphaExceptions, hideNonOptimals]);
+	}, [props.allMatchingCrew, openNodes, hideAlphaExceptions]);
 
 	const alphaOptions = [
 		{ key: 'flag', text: 'Flag alpha rule exceptions', value: 'flag' },
@@ -109,7 +98,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 	];
 
 	const crewFilters = {
-		hideAlphaExceptions, hideNonOptimals, usableFilter
+		hideNonOptimals, usableFilter
 	};
 
 	return (
@@ -156,16 +145,17 @@ const CrewFinder = (props: CrewFinderProps) => {
 
 			{groupNodes &&
 				<CrewGroups
-					chainId={chain.id} openNodes={openNodes}
-					matchingCrew={matchingCrew} crewFilters={crewFilters} optimalCombos={optimalCombos} traitCounts={traitCounts}
-					solveNode={onNodeSolved} markAsTried={onCrewMarked}
+					chainId={chain.id} openNodes={openNodes} allMatchingCrew={props.allMatchingCrew}
+					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
+					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
+					dbid={chain.dbid} exportPrefs={props.exportPrefs}
 				/>
 			}
 			{!groupNodes &&
 				<CrewTable
 					chainId={chain.id} openNodes={openNodes}
-					matchingCrew={matchingCrew} crewFilters={crewFilters} optimalCombos={optimalCombos} traitCounts={traitCounts}
-					solveNode={onNodeSolved} markAsTried={onCrewMarked}
+					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
+					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
 				/>
 			}
 

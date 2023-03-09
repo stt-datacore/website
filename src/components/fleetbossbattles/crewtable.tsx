@@ -3,7 +3,6 @@ import { Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import MarkButtons from './markbuttons';
-import { isCrewOptimal } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 
@@ -129,6 +128,19 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function isCrewAlphaCompliant(crew: any): boolean {
 		return crew.alpha_rule.compliant > 0;
+	}
+
+	function isCrewOptimal(crew: any, optimalCombos: any[]): boolean {
+		let isOptimal = false;
+		Object.values(crew.node_matches).forEach(node => {
+			if (optimalCombos.find(optimal =>
+					optimal.nodes.includes(node.index) &&
+					node.traits.length === optimal.traits.length &&
+					optimal.traits.every(trait => node.traits.includes(trait))
+				))
+				isOptimal = true;
+		});
+		return isOptimal;
 	}
 
 	function renderTraits(crew: any, index: number, traitCounts: any): JSX.Element {
