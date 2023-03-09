@@ -14,6 +14,7 @@ const ChainTraits = (props: ChainTraitsProps) => {
 		<React.Fragment>
 			<TraitsProgress chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
 			<TraitsPossible chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
+			<TraitsChecklist chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
 			<TraitsExporter chain={props.chain} />
 		</React.Fragment>
 	);
@@ -28,20 +29,13 @@ type TraitsProgressProps = {
 const TraitsProgress = (props: TraitsProgressProps) => {
 	const { chain, spotter } = props;
 
-	const [traitOptions, setTraitOptions] = React.useState(undefined);
-
-	React.useEffect(() => {
-		const options = chain.traits.map((trait, traitIndex) => {
-			return {
-				key: traitIndex,
-				value: trait,
-				text: allTraits.trait_names[trait]
-			};
-		}).sort((a, b) => a.text.localeCompare(b.text));
-		setTraitOptions([...options]);
-	}, [chain.traits]);
-
-	if (!traitOptions) return (<></>);
+	const traitOptions = chain.traits.map((trait, traitIndex) => {
+		return {
+			key: traitIndex,
+			value: trait,
+			text: allTraits.trait_names[trait]
+		};
+	}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
 		<div style={{ margin: '2em 0' }}>
@@ -81,7 +75,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 							{hiddenTraits.map((trait, traitIndex) =>
 								<TraitPicker key={`${chain.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
-									options={traitOptions}
+									options={traitOptions} readonly={!node.hidden_traits.includes('?')}
 									trait={trait} setTrait={onTraitChange}
 								/>
 							)}
@@ -111,6 +105,7 @@ type TraitPickerProps = {
 	nodeIndex: number;
 	traitIndex: number;
 	options: any[];
+	readonly: boolean;
 	trait: string;
 	setTrait: (newTrait: string) => void;
 };
@@ -122,6 +117,10 @@ const TraitPicker = (props: TraitPickerProps) => {
 		setActiveTrait(props.trait);
 	}, [props.trait]);
 
+	const readonlyOptions = [
+		{ key: activeTrait, value: activeTrait, text: allTraits.trait_names[activeTrait] }
+	];
+
 	return (
 		<Form.Field>
 			<Dropdown
@@ -129,7 +128,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 				clearable
 				search
 				selection
-				options={props.options}
+				options={props.readonly ? readonlyOptions : props.options}
 				value={activeTrait}
 				onChange={(e, { value }) => onTraitChange(value)}
 				closeOnChange
@@ -137,6 +136,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 		</Form.Field>
 	);
 	function onTraitChange(newTrait: string): void {
+		if (props.readonly) return;
 		setActiveTrait(newTrait);
 		props.setTrait(props.nodeIndex, props.traitIndex, newTrait);
 	}
@@ -198,6 +198,47 @@ const TraitsPossible = (props: TraitsPossibleProps) => {
 		</div>
 	);
 };
+
+type TraitsChecklistProps = {
+	chain: any;
+	spotter: any;
+	updateSpotter: (spotter: any) => void;
+};
+
+const TraitsChecklist = (props: TraitsChecklistProps) => {
+	const { chain, spotter, updateSpotter } = props;
+
+	const traits = [];
+	chain.traits.forEach(trait => {
+		if (!traits.includes(trait)) traits.push(trait);
+	});
+	const traitOptions = traits.map(trait => {
+			return {
+				key: trait,
+				value: trait,
+				text: allTraits.trait_names[trait]
+			};
+		}).sort((a, b) => a.text.localeCompare(b.text));
+
+	return (
+		<div style={{ margin: '2em 0' }}>
+			You can manually exclude traits from consideration.
+			<Form.Field
+				placeholder='Search for traits'
+				control={Dropdown}
+				clearable
+				fluid
+				multiple
+				search
+				selection
+				options={traitOptions}
+				value={spotter.ignoredTraits}
+				onChange={(e, { value }) => updateSpotter({...spotter, ignoredTraits: value})}
+			/>
+		</div>
+	);
+};
+
 
 type TraitsExporterProps = {
 	chain: any;

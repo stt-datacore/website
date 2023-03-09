@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Dropdown, Message, Form } from 'semantic-ui-react';
+import { Dropdown, Message } from 'semantic-ui-react';
 
 import ChainSpotter from '../components/fleetbossbattles/chainspotter';
 
@@ -113,7 +113,7 @@ const ChainPicker = () => {
 				}
 				{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
 			</div>
-			{chain && <ChainSpotter chain={chain} allCrew={allData.allCrew} />}
+			{chain && <ChainSpotter key={chain.id} chain={chain} allCrew={allData.allCrew} />}
 		</React.Fragment>
 	);
 };

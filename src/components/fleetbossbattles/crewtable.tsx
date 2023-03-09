@@ -58,14 +58,17 @@ const CrewTable = (props: CrewTableProps) => {
 	tableConfig.push({ width: 1, title: 'Trial' });
 
 	return (
-		<SearchableTable
-			id={`fbbTool/${chainId}/crewtable_`}
-			data={props.matchingCrew}
-			config={tableConfig}
-			renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
-			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-			showFilterOptions={true}
-		/>
+		<React.Fragment>
+			<p>Use the <Icon name='check' /><Icon name='x' /> buttons to mark crew who have been tried.</p>
+			<SearchableTable
+				id={`fbb/${chainId}/crewtable_`}
+				data={props.matchingCrew}
+				config={tableConfig}
+				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				showFilterOptions={true}
+			/>
+		</React.Fragment>
 	);
 
 	function renderTableRow(crew: any, idx: number): JSX.Element {

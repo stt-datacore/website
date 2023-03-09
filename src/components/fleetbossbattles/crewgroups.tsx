@@ -3,14 +3,13 @@ import { InView } from 'react-intersection-observer';
 import { Message, Table, Label, Button, Icon, Grid } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
-import MarkButtons from './markbuttons';
 import { filterCombosByNode } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
-const ChainContext = React.createContext();
+const FinderContext = React.createContext();
 
 type CrewGroupsProps = {
 	chainId: string;
@@ -20,7 +19,7 @@ type CrewGroupsProps = {
 	optimalCombos: any[];
 	traitCounts: any[];
 	crewFilters: any;
-	solveNode: (nodeIndex: number, traits: string[]) => void;
+	solveTrait: (nodeIndex: number, trait: string) => void;
 	markAsTried: (crewSymbol: string) => void;
 	dbid: string;
 	exportPrefs: any;
@@ -30,11 +29,12 @@ const CrewGroups = (props: CrewGroupsProps) => {
 	const { openNodes } = props;
 
 	return (
-		<ChainContext.Provider value={props}>
+		<FinderContext.Provider value={props}>
+			<p>Tap a trait if it solves a node. Tap a crew to mark as tried.</p>
 			{openNodes.map(node =>
 				<NodeCombos key={node.index} node={node} />
 			)}
-		</ChainContext.Provider>
+		</FinderContext.Provider>
 	);
 };
 
@@ -43,7 +43,7 @@ type NodeCombosProps = {
 };
 
 const NodeCombos = (props: NodeCombosProps) => {
-	const chainData = React.useContext(ChainContext);
+	const finderData = React.useContext(FinderContext);
 	const { node } = props;
 
 	const formattedOpen = node.traitsKnown.map((trait, idx) => (
@@ -53,8 +53,8 @@ const NodeCombos = (props: NodeCombosProps) => {
 	)).reduce((prev, curr) => [prev, curr], []);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const traitCounts = chainData.traitCounts[`node-${node.index}`];
-	const data = filterCombosByNode(node, chainData.matchingCrew, chainData.optimalCombos, traitCounts, chainData.crewFilters);
+	const traitCounts = finderData.traitCounts[`node-${node.index}`];
+	const data = filterCombosByNode(node, finderData.matchingCrew, finderData.optimalCombos, traitCounts, finderData.crewFilters);
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -66,25 +66,35 @@ const NodeCombos = (props: NodeCombosProps) => {
 					</div>
 					<div>
 						<CrewNodeExporter
-							node={node} allMatchingCrew={chainData.allMatchingCrew}
-							dbid={chainData.dbid} exportPrefs={chainData.exportPrefs}
+							node={node} allMatchingCrew={finderData.allMatchingCrew}
+							dbid={finderData.dbid} exportPrefs={finderData.exportPrefs}
 						/>
 					</div>
 				</div>
 			</Message>
-			<ComboTable data={data} traitCounts={traitCounts} alphaTest={node.alphaTest} />
+			{data.length === 0 &&
+				<Message>
+					No possible solutions found for this node. You may need to change your filter settings or reset the list of attempted crew.
+				</Message>
+			}
+			{data.length > 0 && <ComboTable data={data} traitCounts={traitCounts} alphaTest={node.alphaTest} solveTrait={onTraitSolved} />}
 		</div>
 	);
+
+	function onTraitSolved(trait: string): void {
+		finderData.solveTrait(node.index, trait);
+	}
 };
 
 type ComboTableProps = {
 	data: any[];
 	traitCounts: any;
 	alphaTest: string;
+	solveTrait: (trait: string) => void;
 };
 
 const ComboTable = (props: ComboTableProps) => {
-	const chainData = React.useContext(ChainContext);
+	const finderData = React.useContext(FinderContext);
 	const { traitCounts, alphaTest } = props;
 
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -248,9 +258,11 @@ const ComboTable = (props: ComboTableProps) => {
 		return (
 			<React.Fragment>
 				{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
-					<Label key={idx} style={colorize(trait)}>
+					<Button key={idx} compact style={colorize(trait)}
+						onClick={() => props.solveTrait(trait)}
+					>
 						{allTraits.trait_names[trait]}
-					</Label>
+					</Button>
 				)).reduce((prev, curr) => [prev, ' ', curr], [])}
 			</React.Fragment>
 		);
@@ -275,7 +287,9 @@ const ComboCrew = (props: ComboCrewProps) => {
 			}
 			{showCrew &&
 				<Grid doubling columns={3} textAlign='center'>
-					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew => <CrewCard key={crew.symbol} crew={crew} />)}
+					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
+						<CrewCard key={crew.symbol} crew={crew} />
+					)}
 				</Grid>
 			}
 		</React.Fragment>
@@ -287,20 +301,27 @@ type CrewCardProps = {
 };
 
 const CrewCard = (props: CrewCardProps) => {
+	const finderData = React.useContext(FinderContext);
 	const { crew } = props;
+
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+
 	return (
 		<Grid.Column key={crew.symbol} textAlign='center'>
-			<ItemDisplay
-				src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-				size={48}
-				maxRarity={crew.max_rarity}
-				rarity={crew.highest_owned_rarity}
-			/>
+			<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => finderData.markAsTried(crew.symbol)}>
+				<ItemDisplay
+					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
+					size={48}
+					maxRarity={crew.max_rarity}
+					rarity={crew.highest_owned_rarity}
+				/>
+			</span>
 			<div>
-				{crew.only_frozen && <Icon name='snowflake' />}
-				<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
-					{crew.name}
+				<span style={{ cursor: 'pointer' }} onClick={() => finderData.markAsTried(crew.symbol)}>
+					{crew.only_frozen && <Icon name='snowflake' />}
+					<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
+						{crew.name}
+					</span>
 				</span>
 			</div>
 		</Grid.Column>

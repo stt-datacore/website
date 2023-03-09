@@ -5,7 +5,7 @@ import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
 import { CrewFullExporter, exportDefaults } from './crewexporter';
-import { getOptimalCombos, filterAlphaExceptions, getTraitCountsByNode } from './fbbutils';
+import { filterAlphaExceptions, getOptimalCombos, getTraitCountsByNode } from './fbbutils';
 
 import { useStateWithStorage } from '../../utils/storage';
 
@@ -45,6 +45,13 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 };
 
+const finderDefaults = {
+	view: 'groups',
+	alpha: 'flag',
+	optimal: 'hide',
+	usable: ''
+};
+
 type CrewFinderProps = {
 	chain: any;
 	spotter: any;
@@ -57,10 +64,7 @@ type CrewFinderProps = {
 const CrewFinder = (props: CrewFinderProps) => {
 	const { chain, spotter, updateSpotter, openNodes } = props;
 
-	const [groupNodes, setGroupNodes] = React.useState(true);
-	const [hideAlphaExceptions, setHideAlphaExceptions] = React.useState(false);
-	const [hideNonOptimals, setHideNonOptimals] = React.useState(true);
-	const [usableFilter, setUsableFilter] = React.useState('');
+	const [finderPrefs, setFinderPrefs] = useStateWithStorage(chain.dbid+'/fbb/finder', finderDefaults, { rememberForever: true });
 
 	const [matchingCrew, setMatchingCrew] = React.useState([]);
 	const [optimalCombos, setOptimalCombos] = React.useState([]);
@@ -68,7 +72,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 
 	React.useEffect(() => {
 		let matchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
-		if (hideAlphaExceptions) matchingCrew = filterAlphaExceptions(matchingCrew);
+		if (finderPrefs.alpha === 'hide') matchingCrew = filterAlphaExceptions(matchingCrew);
 		setMatchingCrew([...matchingCrew]);
 
 		const optimalCombos = getOptimalCombos(matchingCrew);
@@ -79,7 +83,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 			traitCountsByNode[`node-${node.index}`] = getTraitCountsByNode(node, matchingCrew);
 		});
 		setTraitCounts({...traitCountsByNode});
-	}, [props.allMatchingCrew, openNodes, hideAlphaExceptions]);
+	}, [props.allMatchingCrew, openNodes, finderPrefs.alpha]);
 
 	const alphaOptions = [
 		{ key: 'flag', text: 'Flag alpha rule exceptions', value: 'flag' },
@@ -98,29 +102,33 @@ const CrewFinder = (props: CrewFinderProps) => {
 	];
 
 	const crewFilters = {
-		hideNonOptimals, usableFilter
+		hideNonOptimals: finderPrefs.optimal === 'hide',
+		usableFilter: finderPrefs.usable
 	};
+
+	if (matchingCrew.length === 0)
+		return (<div><Icon loading name='spinner' /> Loading...</div>);
 
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Crew</Header>
-			<p>Here are the crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node. Use the <Icon name='check' /><Icon name='x' /> buttons to mark crew who have been tried.</p>
+			<p>Here are the crew who satisfy the conditions of the remaining unsolved nodes. At least 1 correct solution should be listed for every node.</p>
 			<Form>
 				<Form.Group grouped>
 					<Form.Group inline>
-						<Button content='Group by traits' size='large' color={groupNodes ? 'blue' : undefined} onClick={() => setGroupNodes(!groupNodes)} />
-					</Form.Group>
-					<Form.Group inline>
+						<Button content={finderPrefs.view === 'groups' ? 'Search for crew' : 'Group by traits'}
+							size='large' icon={finderPrefs.view === 'groups' ? 'search' : 'object group'}
+							onClick={() => setFinderPrefs({...finderPrefs, view: finderPrefs.view === 'groups' ? 'table' : 'groups'})} />
 						<Form.Field
 							placeholder='Filter by availability'
 							control={Dropdown}
 							clearable
 							selection
 							options={usableFilterOptions}
-							value={usableFilter}
-							onChange={(e, { value }) => setUsableFilter(value)}
+							value={finderPrefs.usable}
+							onChange={(e, { value }) => setFinderPrefs({...finderPrefs, usable: value})}
 						/>
-						{(usableFilter === 'owned' || usableFilter === 'thawed') &&
+						{(finderPrefs.usable === 'owned' || finderPrefs.usable === 'thawed') &&
 							<span>
 								<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed when using this availability setting.
 							</span>
@@ -130,28 +138,28 @@ const CrewFinder = (props: CrewFinderProps) => {
 						<Form.Field
 							control={Checkbox}
 							label='Hide alpha rule exceptions'
-							checked={hideAlphaExceptions}
-							onChange={(e, data) => setHideAlphaExceptions(data.checked)}
+							checked={finderPrefs.alpha === 'hide'}
+							onChange={(e, data) => setFinderPrefs({...finderPrefs, alpha: data.checked ? 'hide' : 'flag'})}
 						/>
 						<Form.Field
 							control={Checkbox}
 							label='Hide non-optimal crew'
-							checked={hideNonOptimals}
-							onChange={(e, data) => setHideNonOptimals(data.checked)}
+							checked={finderPrefs.optimal === 'hide'}
+							onChange={(e, data) => setFinderPrefs({...finderPrefs, optimal: data.checked ? 'hide' : 'flag'})}
 						/>
 					</Form.Group>
 				</Form.Group>
 			</Form>
 
-			{groupNodes &&
+			{finderPrefs.view === 'groups' &&
 				<CrewGroups
 					chainId={chain.id} openNodes={openNodes} allMatchingCrew={props.allMatchingCrew}
 					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
-					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
+					crewFilters={crewFilters} solveTrait={onTraitSolved} markAsTried={onCrewMarked}
 					dbid={chain.dbid} exportPrefs={props.exportPrefs}
 				/>
 			}
-			{!groupNodes &&
+			{finderPrefs.view === 'table' &&
 				<CrewTable
 					chainId={chain.id} openNodes={openNodes}
 					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
@@ -160,13 +168,38 @@ const CrewFinder = (props: CrewFinderProps) => {
 			}
 
 			<div style={{ marginTop: '1em' }}>
-				{!groupNodes && <p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>}
+				{finderPrefs.view === 'table' && <p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>}
 				<p><i>Alpha exceptions</i> are crew who might be ruled out based on their trait names. This unofficial rule has had a high degree of success to date, but may not work in all cases. You should only try alpha exceptions if you've exhausted all other listed options.</p>
 				<p><i>Non-optimals</i> are crew whose only matching traits are a subset of traits of another possible crew for that node. You should only try non-optimal crew if you don't own any optimal crew.</p>
 				<p><i>Trait colors</i> are used to help visualize the rarity of each trait per node (column), e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that trait exceptions are always orange, regardless of rarity.</p>
 			</div>
 		</div>
 	);
+
+	function onTraitSolved(nodeIndex: number, trait: string): void {
+		const solves = spotter.solves;
+		const solve = solves.find(solve => solve.node === nodeIndex);
+		const hiddenTraits = solve ? solve.traits : chain.nodes[nodeIndex].hidden_traits;
+		if (hiddenTraits.includes(trait)) return;
+		let usedTrait = false;
+		const solvedTraits = hiddenTraits.map(hiddenTrait => {
+			if (hiddenTrait === '?' && !usedTrait) {
+				usedTrait = true;
+				return trait;
+			}
+			return hiddenTrait;
+		});
+		if (solve) {
+			solve.traits = solvedTraits;
+		}
+		else {
+			solves.push({
+				node: nodeIndex,
+				traits: solvedTraits
+			});
+		}
+		updateSpotter({...spotter, solves});
+	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
 		let solvedIndex = 0;

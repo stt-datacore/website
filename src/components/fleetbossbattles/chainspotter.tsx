@@ -16,6 +16,12 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
+const defaultSpotter = {
+	solves: [],
+	attemptedCrew: [],
+	ignoredTraits: []
+};
+
 type ChainSpotterProps = {
 	chain: any;
 	allCrew: string[];
@@ -24,7 +30,7 @@ type ChainSpotterProps = {
 const ChainSpotter = (props: ChainSpotterProps) => {
 	const { chain } = props;
 
-	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}`, { solves: [], attemptedCrew: [] });
+	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`, defaultSpotter);
 	const [openNodes, setOpenNodes] = React.useState(undefined);
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
@@ -77,7 +83,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 
 		const traitPool = [];
 		chain.traits.forEach(trait => {
-			if (!traitPool.includes(trait) && traits[trait].consumed < traits[trait].listed)
+			if (!traitPool.includes(trait) && traits[trait].consumed < traits[trait].listed && !spotter.ignoredTraits.includes(trait))
 				traitPool.push(trait);
 		});
 
