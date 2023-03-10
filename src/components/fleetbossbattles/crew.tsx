@@ -177,23 +177,23 @@ const CrewFinder = (props: CrewFinderProps) => {
 	);
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
+		const solve = spotter.solves.find(solve => solve.node === nodeIndex);
+		const hiddenTraits = solve ? solve.traits : chain.nodes[nodeIndex].hidden_traits;
 		let solvedIndex = 0;
-		const solvedTraits = chain.nodes[nodeIndex].hidden_traits.map(hiddenTrait => {
+		const solvedTraits = hiddenTraits.map(hiddenTrait => {
 			if (hiddenTrait === '?') return traits[solvedIndex++];
 			return hiddenTrait;
 		});
-		const solves = spotter.solves;
-		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = solvedTraits;
 		}
 		else {
-			solves.push({
+			spotter.solves.push({
 				node: nodeIndex,
 				traits: solvedTraits
 			});
 		}
-		updateSpotter({...spotter, solves});
+		updateSpotter({...spotter, solves: spotter.solves});
 	}
 
 	function onCrewMarked(crewSymbol: string): void {
