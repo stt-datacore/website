@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import MarkButtons from './markbuttons';
+import { MarkCrew } from './markbuttons';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 
@@ -106,7 +106,7 @@ const CrewTable = (props: CrewTableProps) => {
 					);
 				})}
 				<Table.Cell textAlign='center'>
-					<MarkButtons crew={crew} openNodes={openNodes} solveNode={props.solveNode} markAsTried={props.markAsTried} />
+					<MarkCrew crew={crew} openNodes={openNodes} solveNode={props.solveNode} markAsTried={props.markAsTried} />
 				</Table.Cell>
 			</Table.Row>
 		);

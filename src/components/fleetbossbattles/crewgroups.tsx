@@ -3,6 +3,7 @@ import { InView } from 'react-intersection-observer';
 import { Message, Table, Label, Button, Icon, Grid } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
+import { MarkGroup } from './markbuttons';
 import { filterCombosByNode } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
@@ -19,7 +20,7 @@ type CrewGroupsProps = {
 	optimalCombos: any[];
 	traitCounts: any[];
 	crewFilters: any;
-	solveTrait: (nodeIndex: number, trait: string) => void;
+	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	dbid: string;
 	exportPrefs: any;
@@ -77,25 +78,20 @@ const NodeCombos = (props: NodeCombosProps) => {
 					No possible solutions found for this node. You may need to change your filter settings or reset the list of attempted crew.
 				</Message>
 			}
-			{data.length > 0 && <ComboTable data={data} traitCounts={traitCounts} alphaTest={node.alphaTest} solveTrait={onTraitSolved} />}
+			{data.length > 0 && <ComboTable data={data} node={node} traitCounts={traitCounts} />}
 		</div>
 	);
-
-	function onTraitSolved(trait: string): void {
-		finderData.solveTrait(node.index, trait);
-	}
 };
 
 type ComboTableProps = {
 	data: any[];
+	node: any;
 	traitCounts: any;
-	alphaTest: string;
-	solveTrait: (trait: string) => void;
 };
 
 const ComboTable = (props: ComboTableProps) => {
 	const finderData = React.useContext(FinderContext);
-	const { traitCounts, alphaTest } = props;
+	const { node, traitCounts } = props;
 
 	const [state, dispatch] = React.useReducer(reducer, {
 		data: props.data,
@@ -109,6 +105,7 @@ const ComboTable = (props: ComboTableProps) => {
 	}, [props.data]);
 
 	const hasNotes = data.filter(row => row.alphaException || row.nonOptimal).length > 0;
+	const possibleCombos = data.map(row => row.combo);
 
 	const tableConfig = [
 		{ column: 'traits', title: 'Traits', width: hasNotes ? 6 : 8, center: true, reverse: true },
@@ -136,7 +133,7 @@ const ComboTable = (props: ComboTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							{renderTraits(row.combo, traitCounts)}
+							<MarkGroup node={node} possibleCombos={possibleCombos} traits={row.combo} traitCounts={traitCounts} solveNode={finderData.solveNode} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
@@ -223,50 +220,6 @@ const ComboTable = (props: ComboTableProps) => {
 		sortBy([compareTraits, compareNotesAsc, compareCrew, compareScore]);
 		return;
 	}
-
-	function renderTraits(traits: string[], traitCounts: any): JSX.Element {
-		const colorize = (trait: string) => {
-			// Trait is alpha rule exception
-			if (trait.localeCompare(alphaTest) === -1) {
-				return {
-					background: '#f2711c',
-					color: 'white'
-				};
-			}
-			let background = 'grey', color = 'white';
-			if (traitCounts[trait] === 1) {
-				background = '#fdd26a';
-				color = 'black';
-			}
-			else if (traitCounts[trait] === 2) {
-				background = '#aa2deb';
-			}
-			else if (traitCounts[trait] === 3) {
-				background = '#5aaaff';
-			}
-			else if (traitCounts[trait] === 4) {
-				background = '#50aa3c';
-			}
-			else if (traitCounts[trait] === 5) {
-				background = '#9b9b9b';
-			}
-			return { background, color };
-		};
-
-		if (traits.length === 0) return (<></>);
-
-		return (
-			<React.Fragment>
-				{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
-					<Button key={idx} compact style={colorize(trait)}
-						onClick={() => props.solveTrait(trait)}
-					>
-						{allTraits.trait_names[trait]}
-					</Button>
-				)).reduce((prev, curr) => [prev, ' ', curr], [])}
-			</React.Fragment>
-		);
-	}
 };
 
 type ComboCrewProps = {
@@ -281,8 +234,11 @@ const ComboCrew = (props: ComboCrewProps) => {
 	return (
 		<React.Fragment>
 			{!showCrew &&
-				<InView as='div' onChange={(inView, entry) => { if (inView) setShowCrew(true); }}>
-					<Icon loading name='spinner' /> Loading...
+				<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
+					onChange={(inView, entry) => { if (inView) setShowCrew(true); }}
+				>
+					<Icon loading name='spinner' />
+					<br />Loading...
 				</InView>
 			}
 			{showCrew &&

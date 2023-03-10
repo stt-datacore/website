@@ -30,7 +30,7 @@ type ChainSpotterProps = {
 const ChainSpotter = (props: ChainSpotterProps) => {
 	const { chain } = props;
 
-	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`, defaultSpotter);
+	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`, {...defaultSpotter, id: chain.id});
 	const [openNodes, setOpenNodes] = React.useState(undefined);
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
@@ -38,7 +38,8 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 	const [activeStep, setActiveStep] = React.useState('crew');
 
 	React.useEffect(() => {
-		if (!chain) return;
+		// Ensure spotter matches chain, i.e. not in between switching bosses
+		if (!chain || chain.id !== spotter.id) return;
 
 		// The trait pool consists of only remaining possible hidden_traits
 		const traits = {};
@@ -200,8 +201,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		setAllMatchingCrew([...validatedCrew]);
 	}, [chain, spotter]);
 
-	if (!chain || !openNodes)
-		return (<></>);
+	if (!openNodes) return (<></>);
 
 	return (
 		<React.Fragment>

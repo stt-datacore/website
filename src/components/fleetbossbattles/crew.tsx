@@ -155,7 +155,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 				<CrewGroups
 					chainId={chain.id} openNodes={openNodes} allMatchingCrew={props.allMatchingCrew}
 					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
-					crewFilters={crewFilters} solveTrait={onTraitSolved} markAsTried={onCrewMarked}
+					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					dbid={chain.dbid} exportPrefs={props.exportPrefs}
 				/>
 			}
@@ -175,31 +175,6 @@ const CrewFinder = (props: CrewFinderProps) => {
 			</div>
 		</div>
 	);
-
-	function onTraitSolved(nodeIndex: number, trait: string): void {
-		const solves = spotter.solves;
-		const solve = solves.find(solve => solve.node === nodeIndex);
-		const hiddenTraits = solve ? solve.traits : chain.nodes[nodeIndex].hidden_traits;
-		if (hiddenTraits.includes(trait)) return;
-		let usedTrait = false;
-		const solvedTraits = hiddenTraits.map(hiddenTrait => {
-			if (hiddenTrait === '?' && !usedTrait) {
-				usedTrait = true;
-				return trait;
-			}
-			return hiddenTrait;
-		});
-		if (solve) {
-			solve.traits = solvedTraits;
-		}
-		else {
-			solves.push({
-				node: nodeIndex,
-				traits: solvedTraits
-			});
-		}
-		updateSpotter({...spotter, solves});
-	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
 		let solvedIndex = 0;

@@ -111,7 +111,7 @@ export function filterCombosByNode(node: any, matchingCrew: any[], optimalCombos
 			combo.length === crew.node_matches[`node-${node.index}`].traits.length
 			&& combo.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
 			&& (crewFilters.usableFilter !== 'owned' || crew.highest_owned_rarity > 0)
-			&& (crewFilters.usableFilter !== 'thawed' || !crew.only_frozen)
+			&& (crewFilters.usableFilter !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
 		);
 
 		let exceptions = 0;

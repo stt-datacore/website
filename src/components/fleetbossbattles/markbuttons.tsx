@@ -3,14 +3,14 @@ import { Header, Icon, Button, Popup, Modal, Grid, Label } from 'semantic-ui-rea
 
 import allTraits from '../../../static/structured/translation_en.json';
 
-type MarkButtonProps = {
+type MarkCrewProps = {
 	crew: any;
 	openNodes: any[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
-const MarkButtons = (props: MarkButtonProps) => {
+export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, openNodes } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -146,4 +146,143 @@ const MarkButtons = (props: MarkButtonProps) => {
 	}
 };
 
-export default MarkButtons;
+type MarkGroupProps = {
+	node: any;
+	possibleCombos: any[];
+	traits: string[];
+	traitCounts: any;
+	solveNode: (nodeIndex: number, traits: string[]) => void;
+};
+
+export const MarkGroup = (props: MarkGroupProps) => {
+	const { node, possibleCombos, traits, traitCounts } = props;
+
+	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [firstTrait, setFirstTrait] = React.useState('');
+
+	React.useEffect(() => {
+		if (!modalIsOpen) setFirstTrait('');
+	}, [modalIsOpen]);
+
+	const SolvePicker = () => {
+		const validCombos = possibleCombos.filter(combo => combo.includes(firstTrait));
+		const validSolves = [];
+		validCombos.forEach(combo => {
+			if (combo.length === node.hiddenLeft && !validSolves.find(solve => solve.every(trait => combo.includes(trait)))) {
+				validSolves.push(combo);
+			}
+			else if (combo.length > node.hiddenLeft) {
+				for (let i = 0; i < combo.length; i++) {
+					for (let j = i + 1; j < combo.length; j++) {
+						const pair = [combo[i], combo[j]];
+						if (pair.includes(firstTrait) && !validSolves.find(solve => solve.every(trait => pair.includes(trait))))
+							validSolves.push(pair);
+					}
+				}
+			}
+		});
+
+		const solveOptions = validSolves.map((combo, idx) => {
+			return {
+				key: idx,
+				value: combo,
+				text: combo.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => allTraits.trait_names[trait]).join(' + ')
+			};
+		});
+
+		return (
+			<Modal
+				open={true}
+				onClose={() => setModalIsOpen(false)}
+				size='tiny'
+			>
+				<Modal.Header>
+					Confirm the traits used to solve Node {node.index}
+				</Modal.Header>
+				<Modal.Content scrolling style={{ textAlign: 'center' }}>
+					<Header as='h4'>
+						{node.traitsKnown.map((trait, traitIndex) => (
+							<span key={traitIndex}>
+								{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
+							</span>
+						)).reduce((prev, curr) => [prev, curr], [])}
+					</Header>
+					{solveOptions.map(option => (
+						<div key={option.key} style={{ paddingBottom: '.5em' }}>
+							<Button onClick={() => handlePairClick(option.value)}>
+								{option.text}
+							</Button>
+						</div>
+					)).reduce((prev, curr) => [prev, curr], [])}
+				</Modal.Content>
+				<Modal.Actions>
+					<Button onClick={() => setModalIsOpen(false)}>
+						Close
+					</Button>
+				</Modal.Actions>
+			</Modal>
+		);
+
+		function handlePairClick(traits: string[]): void {
+			props.solveNode(node.index, traits);
+			setModalIsOpen(false);
+		}
+	};
+
+	return (
+		<React.Fragment>
+			{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+				<Button key={idx} compact style={colorize(trait)}
+					onClick={() => handleFirstTrait(trait)}
+				>
+					{allTraits.trait_names[trait]}
+				</Button>
+			)).reduce((prev, curr) => [prev, ' ', curr], [])}
+			{modalIsOpen && <SolvePicker />}
+		</React.Fragment>
+	);
+
+	function colorize(trait: string): any {
+		// Trait is alpha rule exception
+		if (trait.localeCompare(node.alphaTest) === -1) {
+			return {
+				background: '#f2711c',
+				color: 'white'
+			};
+		}
+		let background = 'grey', color = 'white';
+		if (traitCounts[trait] === 1) {
+			background = '#fdd26a';
+			color = 'black';
+		}
+		else if (traitCounts[trait] === 2) {
+			background = '#aa2deb';
+		}
+		else if (traitCounts[trait] === 3) {
+			background = '#5aaaff';
+		}
+		else if (traitCounts[trait] === 4) {
+			background = '#50aa3c';
+		}
+		else if (traitCounts[trait] === 5) {
+			background = '#9b9b9b';
+		}
+		return { background, color };
+	}
+
+	function handleFirstTrait(trait: string): void {
+		if (node.hiddenLeft === 1) {
+			props.solveNode(node.index, [trait]);
+			return;
+		}
+
+		const validCombos = possibleCombos.filter(combo => combo.includes(trait));
+		if (validCombos.length === 1 && validCombos[0].length === node.hiddenLeft) {
+			props.solveNode(node.index, validCombos[0]);
+			return;
+		}
+
+		setFirstTrait(trait);
+		setModalIsOpen(true);
+	}
+};
