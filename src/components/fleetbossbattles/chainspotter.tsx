@@ -16,12 +16,6 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
-const defaultSpotter = {
-	solves: [],
-	attemptedCrew: [],
-	ignoredTraits: []
-};
-
 type ChainSpotterProps = {
 	chain: any;
 	allCrew: string[];
@@ -30,7 +24,15 @@ type ChainSpotterProps = {
 const ChainSpotter = (props: ChainSpotterProps) => {
 	const { chain } = props;
 
-	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`, {...defaultSpotter, id: chain.id});
+	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`,
+		{
+			id: chain.id,
+			solves: [],
+			attemptedCrew: [],
+			ignoredTraits: []
+		}
+	);
+
 	const [openNodes, setOpenNodes] = React.useState(undefined);
 	const [traitPool, setTraitPool] = React.useState([]);
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
@@ -100,6 +102,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		};
 
 		const allMatchingCrew = [];
+		const allComboCounts = [];
 		props.allCrew.forEach(crew => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
 				const nodes = [];
@@ -114,6 +117,20 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 							nodes.push(node.index);
 							const combos = getAllCombos(traitsMatched, node.hiddenLeft);
 							matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched, combos };
+							combos.forEach(combo => {
+								const existing = allComboCounts.find(cc =>
+									cc.index === node.index
+									&& cc.combo.length === combo.length
+									&& cc.combo.every(trait => combo.includes(trait))
+								);
+								if (existing) {
+									existing.crew.push(crew.symbol);
+									if (crew.in_portal) existing.portals++;
+								}
+								else {
+									allComboCounts.push({ index: node.index, combo, crew: [crew.symbol], portals: crew.in_portal ? 1 : 0});
+								}
+							});
 						}
 					}
 				});
@@ -153,23 +170,10 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		});
 
 		// Also ignore unique combos of non-portal crew
-		const nonPortals = allMatchingCrew.filter(crew => !crew.in_portal);
-		if (nonPortals.length > 0) {
-			openNodes.forEach(node => {
-				const nonPortalsByNode = nonPortals.filter(crew => crew.nodes.includes(node.index));
-				if (nonPortalsByNode.length > 0) {
-					const portalsByNode = allMatchingCrew.filter(crew => crew.in_portal && crew.nodes.includes(node.index));
-					nonPortals.forEach(nonportal => {
-						if (nonportal.nodes.includes(node.index)) {
-							nonportal.node_matches[`node-${node.index}`].combos.forEach(combo => {
-								if (!portalsByNode.some(portal => getComboIndex(portal.node_matches[`node-${node.index}`].combos, combo) >= 0))
-									ignoreCombo(node.index, combo);
-							});
-						}
-					});
-				}
-			});
-		}
+		//	Set to <= 1 to ignore ALL unique combos
+		allComboCounts.filter(count => count.portals <= 0).forEach(count => {
+			ignoreCombo(count.index, count.combo);
+		});
 
 		// Validate matching combos and traits, factoring ignored combos
 		ignoredCombos.forEach(ignored => {
@@ -180,8 +184,8 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		});
 		const validatedCrew = allMatchingCrew.filter(crew => crew.nodes_rarity > 0);
 
-		// Annotate remaining exceptions to alpha rule
 		validatedCrew.forEach(crew => {
+			// Annotate remaining exceptions to alpha rule
 			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] };
 			Object.values(crew.node_matches).forEach(node => {
 				let combosCompliant = node.combos.length;

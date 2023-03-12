@@ -5,7 +5,7 @@ import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
 import { CrewFullExporter, exportDefaults } from './crewexporter';
-import { filterAlphaExceptions, getOptimalCombos, getTraitCountsByNode } from './fbbutils';
+import { filterAlphaExceptions, getOptimalCombos, getRaritiesByNode } from './fbbutils';
 
 import { useStateWithStorage } from '../../utils/storage';
 
@@ -67,22 +67,22 @@ const CrewFinder = (props: CrewFinderProps) => {
 	const [finderPrefs, setFinderPrefs] = useStateWithStorage(chain.dbid+'/fbb/finder', finderDefaults, { rememberForever: true });
 
 	const [matchingCrew, setMatchingCrew] = React.useState([]);
+	const [matchingRarities, setMatchingRarities] = React.useState({});
 	const [optimalCombos, setOptimalCombos] = React.useState([]);
-	const [traitCounts, setTraitCounts] = React.useState({});
 
 	React.useEffect(() => {
 		let matchingCrew = JSON.parse(JSON.stringify(props.allMatchingCrew));
 		if (finderPrefs.alpha === 'hide') matchingCrew = filterAlphaExceptions(matchingCrew);
 		setMatchingCrew([...matchingCrew]);
 
+		const matchingRarities = {};
+		openNodes.forEach(node => {
+			matchingRarities[`node-${node.index}`] = getRaritiesByNode(node, matchingCrew);
+		});
+		setMatchingRarities({...matchingRarities});
+
 		const optimalCombos = getOptimalCombos(matchingCrew);
 		setOptimalCombos([...optimalCombos]);
-
-		const traitCountsByNode = {};
-		openNodes.forEach(node => {
-			traitCountsByNode[`node-${node.index}`] = getTraitCountsByNode(node, matchingCrew);
-		});
-		setTraitCounts({...traitCountsByNode});
 	}, [props.allMatchingCrew, openNodes, finderPrefs.alpha]);
 
 	const alphaOptions = [
@@ -154,7 +154,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 			{finderPrefs.view === 'groups' &&
 				<CrewGroups
 					chainId={chain.id} openNodes={openNodes} allMatchingCrew={props.allMatchingCrew}
-					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
+					matchingCrew={matchingCrew} matchingRarities={matchingRarities} optimalCombos={optimalCombos}
 					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					dbid={chain.dbid} exportPrefs={props.exportPrefs}
 				/>
@@ -162,7 +162,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 			{finderPrefs.view === 'table' &&
 				<CrewTable
 					chainId={chain.id} openNodes={openNodes}
-					matchingCrew={matchingCrew} optimalCombos={optimalCombos} traitCounts={traitCounts}
+					matchingCrew={matchingCrew} matchingRarities={matchingRarities} optimalCombos={optimalCombos}
 					crewFilters={crewFilters} solveNode={onNodeSolved} markAsTried={onCrewMarked}
 				/>
 			}

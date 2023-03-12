@@ -14,15 +14,15 @@ type CrewTableProps = {
 	chainId: string;
 	openNodes: any[];
 	matchingCrew: any[];
+	matchingRarities: any;
 	optimalCombos: any[];
-	traitCounts: any[];
 	crewFilters: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
 const CrewTable = (props: CrewTableProps) => {
-	const { chainId, openNodes, optimalCombos, traitCounts, crewFilters } = props;
+	const { chainId, openNodes, matchingRarities, optimalCombos, crewFilters } = props;
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -101,7 +101,7 @@ const CrewTable = (props: CrewTableProps) => {
 				{openNodes.map(node => {
 					return (
 						<Table.Cell key={node.index} textAlign='center'>
-							{renderTraits(crew, node.index, traitCounts[`node-${node.index}`])}
+							{renderTraits(crew, node.index, matchingRarities[`node-${node.index}`].traits)}
 						</Table.Cell>
 					);
 				})}

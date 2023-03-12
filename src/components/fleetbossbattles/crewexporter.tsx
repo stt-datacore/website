@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Icon } from 'semantic-ui-react';
 
-import { filterAlphaExceptions, getOptimalCombos, filterCombosByNode, getTraitCountsByNode } from './fbbutils';
+import { filterAlphaExceptions, getRaritiesByNode, getOptimalCombos, filterGroupsByNode } from './fbbutils';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
@@ -250,15 +250,13 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 };
 
 const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: any) => {
-	const compareTraits = (a, b) => b.combo.length - a.combo.length;
+	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
 	const compareNotesAsc = (a, b) => {
-		const aScore = a.alphaException || a.nonOptimal ? 1 : 0;
-		const bScore = b.alphaException || b.nonOptimal ? 1 : 0;
-		return aScore - bScore;
+		return Object.values(a.notes).filter(note => !!note).length - Object.values(b.notes).filter(note => !!note).length;
 	};
-	const sortCombos = (a, b) => {
+	const sortGroups = (a, b) => {
 		const comps = [compareTraits, compareNotesAsc, compareCrew, compareScore];
 		let test = 0;
 		while (comps.length > 0 && test === 0) {
@@ -296,9 +294,9 @@ const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: an
 	let output = '';
 	nodes.forEach(node => {
 		let nodeList = '';
-		const traitCounts = getTraitCountsByNode(node, matchingCrew);
-		filterCombosByNode(node, matchingCrew, optimalCombos, traitCounts, crewFilters)
-			.sort((a, b) => sortCombos(a, b))
+		const matchingRarities = getRaritiesByNode(node, matchingCrew);
+		filterGroupsByNode(node, matchingCrew, matchingRarities, optimalCombos, crewFilters)
+			.sort((a, b) => sortGroups(a, b))
 			.forEach((row, idx) => {
 				if (nodeList !== '') nodeList += '\n';
 				if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
@@ -306,14 +304,14 @@ const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: an
 					nodeList += `${idx+1}`;
 				else
 					nodeList += `-`;
-				if (exportPrefs.alpha === 'flag' && row.alphaException) nodeList += ALPHA_FLAG;
-				if (exportPrefs.optimal === 'flag' && row.nonOptimal) nodeList += OPTIMAL_FLAG;
+				if (exportPrefs.alpha === 'flag' && row.notes.alphaException) nodeList += ALPHA_FLAG;
+				if (exportPrefs.optimal === 'flag' && row.notes.nonOptimal) nodeList += OPTIMAL_FLAG;
 				const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
 					.map(crew => formatCrewName(crew))
 					.join(`${exportPrefs.delimiter} `);
 				nodeList += ' '+matchingCrew;
 				if (exportPrefs.traits === 'all')
-					nodeList += ` (${sortedTraits(row.combo, node.alphaTest)})`;
+					nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
 			});
 		if (nodeList !== '') {
 			if (output !== '') output += '\n\n';

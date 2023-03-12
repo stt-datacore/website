@@ -148,14 +148,13 @@ export const MarkCrew = (props: MarkCrewProps) => {
 
 type MarkGroupProps = {
 	node: any;
-	possibleCombos: any[];
 	traits: string[];
-	traitCounts: any;
+	rarities: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
 export const MarkGroup = (props: MarkGroupProps) => {
-	const { node, possibleCombos, traits, traitCounts } = props;
+	const { node, traits } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [firstTrait, setFirstTrait] = React.useState('');
@@ -164,30 +163,20 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		if (!modalIsOpen) setFirstTrait('');
 	}, [modalIsOpen]);
 
-	const SolvePicker = () => {
-		const validCombos = possibleCombos.filter(combo => combo.includes(firstTrait));
-		const validSolves = [];
-		validCombos.forEach(combo => {
-			if (combo.length === node.hiddenLeft && !validSolves.find(solve => solve.every(trait => combo.includes(trait)))) {
-				validSolves.push(combo);
-			}
-			else if (combo.length > node.hiddenLeft) {
-				for (let i = 0; i < combo.length; i++) {
-					for (let j = i + 1; j < combo.length; j++) {
-						const pair = [combo[i], combo[j]];
-						if (pair.includes(firstTrait) && !validSolves.find(solve => solve.every(trait => pair.includes(trait))))
-							validSolves.push(pair);
-					}
-				}
-			}
-		});
+	const comboRarity = props.rarities.combos;
+	const traitRarity = props.rarities.traits;
 
-		const solveOptions = validSolves.map((combo, idx) => {
-			return {
-				key: idx,
-				value: combo,
-				text: combo.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => allTraits.trait_names[trait]).join(' + ')
-			};
+	const SolvePicker = () => {
+		const validPairs = comboRarity.filter(rarity => rarity.combo.includes(firstTrait));
+		const pairOptions = validPairs
+			.sort((a, b) => b.crew.length - a.crew.length)
+			.map((rarity, idx) => {
+				return {
+					key: idx,
+					value: rarity.combo,
+					text: rarity.combo.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => allTraits.trait_names[trait]).join(' + '),
+					rarity: rarity.crew.length
+				};
 		});
 
 		return (
@@ -197,7 +186,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				size='tiny'
 			>
 				<Modal.Header>
-					Confirm the traits used to solve Node {node.index}
+					Confirm the traits used to solve Node {node.index+1}
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
 					<Header as='h4'>
@@ -207,13 +196,19 @@ export const MarkGroup = (props: MarkGroupProps) => {
 							</span>
 						)).reduce((prev, curr) => [prev, curr], [])}
 					</Header>
-					{solveOptions.map(option => (
+					{pairOptions.map(option => (
 						<div key={option.key} style={{ paddingBottom: '.5em' }}>
-							<Button onClick={() => handlePairClick(option.value)}>
+							<Button style={colorize(option.value, option.rarity)} onClick={() => handlePairClick(option.value)}>
 								{option.text}
 							</Button>
 						</div>
 					)).reduce((prev, curr) => [prev, curr], [])}
+					<div style={{ marginTop: '2em' }}>
+						<Header as='h4'>Partial Solve</Header>
+						<Button style={colorize([firstTrait], traitRarity[firstTrait])} onClick={() => handlePairClick([firstTrait, '?'])}>
+							{allTraits.trait_names[firstTrait]} + ?
+						</Button>
+					</div>
 				</Modal.Content>
 				<Modal.Actions>
 					<Button onClick={() => setModalIsOpen(false)}>
@@ -222,6 +217,17 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				</Modal.Actions>
 			</Modal>
 		);
+
+		function colorize(traits: string[], rarity: number): any {
+			// Traits include alpha rule exception
+			if (traits.filter(trait => trait.localeCompare(node.alphaTest) === -1).length > 0) {
+				return {
+					background: '#f2711c',
+					color: 'white'
+				};
+			}
+			return getRarityStyle(rarity);
+		}
 
 		function handlePairClick(traits: string[]): void {
 			props.solveNode(node.index, traits);
@@ -250,24 +256,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				color: 'white'
 			};
 		}
-		let background = 'grey', color = 'white';
-		if (traitCounts[trait] === 1) {
-			background = '#fdd26a';
-			color = 'black';
-		}
-		else if (traitCounts[trait] === 2) {
-			background = '#aa2deb';
-		}
-		else if (traitCounts[trait] === 3) {
-			background = '#5aaaff';
-		}
-		else if (traitCounts[trait] === 4) {
-			background = '#50aa3c';
-		}
-		else if (traitCounts[trait] === 5) {
-			background = '#9b9b9b';
-		}
-		return { background, color };
+		return getRarityStyle(traitRarity[trait]);
 	}
 
 	function handleFirstTrait(trait: string): void {
@@ -276,13 +265,38 @@ export const MarkGroup = (props: MarkGroupProps) => {
 			return;
 		}
 
-		const validCombos = possibleCombos.filter(combo => combo.includes(trait));
-		if (validCombos.length === 1 && validCombos[0].length === node.hiddenLeft) {
-			props.solveNode(node.index, validCombos[0]);
+		const validPairs = comboRarity.filter(rarity => rarity.combo.includes(trait));
+		if (validPairs.length === 1 && validPairs[0].crew.length > 0) {
+			props.solveNode(node.index, validPairs[0].combo);
 			return;
 		}
 
 		setFirstTrait(trait);
 		setModalIsOpen(true);
 	}
+};
+
+const getRarityStyle = (rarity: number) => {
+	let background = 'grey', color = 'white';
+	if (rarity === 0) {
+		background = '#000000';
+		color = '#fdd26a';
+	}
+	else if (rarity === 1) {
+		background = '#fdd26a';
+		color = 'black';
+	}
+	else if (rarity === 2) {
+		background = '#aa2deb';
+	}
+	else if (rarity === 3) {
+		background = '#5aaaff';
+	}
+	else if (rarity === 4) {
+		background = '#50aa3c';
+	}
+	else if (rarity === 5) {
+		background = '#9b9b9b';
+	}
+	return { background, color };
 };

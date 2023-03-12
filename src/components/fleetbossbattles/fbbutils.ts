@@ -8,6 +8,30 @@ export function filterAlphaExceptions(crewList: any[]): any[] {
 	});
 }
 
+export function getRaritiesByNode(node: any, matchingCrew: any[]): any {
+	const possibleCombos = [];
+	const traitRarity = {};
+	const crewByNode = matchingCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+	crewByNode.forEach(crew => {
+		const crewTraits = crew.node_matches[`node-${node.index}`].traits;
+		getAllCombos(crewTraits, node.hiddenLeft).forEach(combo => {
+			const existing = possibleCombos.find(possible => possible.combo.every(trait => combo.includes(trait)));
+			if (existing) {
+				if (crew.in_portal) existing.crew.push(crew.symbol);
+			}
+			else {
+				possibleCombos.push({ combo, crew: crew.in_portal ? [crew.symbol] : []});
+			}
+		});
+		const portalValue = crew.in_portal ? 1 : 0;
+		crewTraits.forEach(trait => {
+			traitRarity[trait] = traitRarity[trait] ? traitRarity[trait] + portalValue : portalValue;
+		});
+	});
+
+	return { combos: possibleCombos, traits: traitRarity };
+}
+
 export function getOptimalCombos(crewList: any[]): any[] {
 	const viableCombos = [];
 	crewList.forEach(crew => {
@@ -70,63 +94,69 @@ export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): v
 	}
 }
 
-export function getTraitCountsByNode(node: any, matchingCrew: any[]): any {
-	const traitCounts = {};
-	const possibleCombos = [];
+export function filterGroupsByNode(node: any, matchingCrew: any[], matchingRarities: any, optimalCombos: any[], crewFilters: any): any {
+	const comboRarity = matchingRarities.combos;
+	const traitRarity = matchingRarities.traits;
+	const traitGroups = [];
 	const crewByNode = matchingCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
 	crewByNode.forEach(crew => {
 		const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
-		const exists = possibleCombos.find(combo =>
-			combo.traits.length === crewNodeTraits.length && combo.traits.every(trait => crewNodeTraits.includes(trait))
+		const exists = !!traitGroups.find(traits =>
+			traits.length === crewNodeTraits.length && traits.every(trait => crewNodeTraits.includes(trait))
 		);
-		if (exists)
-			exists.count++;
-		else
-			possibleCombos.push({ count: 1, traits: crewNodeTraits });
+		if (!exists) traitGroups.push(crewNodeTraits);
 	});
 
-	possibleCombos.forEach(combo => {
-		combo.traits.forEach(trait => {
-			traitCounts[trait] = traitCounts[trait] ? traitCounts[trait] + combo.count : combo.count;
-		});
-	});
-	return traitCounts;
-}
-
-export function filterCombosByNode(node: any, matchingCrew: any[], optimalCombos: any[], traitCounts: any, crewFilters: any): any {
-	const possibleCombos = [];
-	const crewByNode = matchingCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
-	crewByNode.forEach(crew => {
-		const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
-		const exists = !!possibleCombos.find(combo =>
-			combo.length === crewNodeTraits.length && combo.every(trait => crewNodeTraits.includes(trait))
-		);
-		if (!exists) possibleCombos.push(crewNodeTraits);
-	});
-
-	return possibleCombos.map(combo => {
-		const score = combo.reduce((prev, curr) => prev + traitCounts[curr], 0);
+	return traitGroups.map(traits => {
+		const score = traits.reduce((prev, curr) => prev + traitRarity[curr], 0);
 
 		const crewList = crewByNode.filter(crew =>
-			combo.length === crew.node_matches[`node-${node.index}`].traits.length
-			&& combo.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
-			&& (crewFilters.usableFilter !== 'owned' || crew.highest_owned_rarity > 0)
-			&& (crewFilters.usableFilter !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
+			traits.length === crew.node_matches[`node-${node.index}`].traits.length
+				&& traits.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
+				&& (crewFilters.usableFilter !== 'owned' || crew.highest_owned_rarity > 0)
+				&& (crewFilters.usableFilter !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
 		);
 
-		let exceptions = 0;
-		combo.forEach(trait => { if (trait.localeCompare(node.alphaTest) < 0) exceptions++; });
-		const alphaException = combo.length - exceptions < node.hiddenLeft;
+		let alphaExceptions = 0;
+		traits.forEach(trait => { if (trait.localeCompare(node.alphaTest) < 0) alphaExceptions++; });
+		const alphaException = traits.length - alphaExceptions < node.hiddenLeft;
+
+		const crewSet = [];
+		getAllCombos(traits, node.hiddenLeft).forEach(combo => {
+			const combos = comboRarity.find(rarity => rarity.combo.every(trait => combo.includes(trait)));
+			if (combos) {
+				combos.crew.forEach(crew => {
+					if (!crewSet.includes(crew)) crewSet.push(crew);
+				});
+			}
+		});
+		const uniqueCrew = crewSet.length === 1;
+		const nonPortal = crewSet.length === 0;	// Should never see this, if everything working as expected
 
 		const nodeOptimalCombos = optimalCombos.filter(combos => combos.nodes.includes(node.index)).map(combos => combos.traits);
-		const nonOptimal = getComboIndex(nodeOptimalCombos, combo) === -1;
+		const nonOptimal = getComboIndex(nodeOptimalCombos, traits) === -1;
+
+		const notes = { alphaException, uniqueCrew, nonPortal, nonOptimal };
 
 		return {
-			combo,
+			traits,
 			score,
 			crewList,
-			alphaException,
-			nonOptimal
+			notes
 		};
-	}).filter(row => row.crewList.length > 0 && (!crewFilters.hideNonOptimals || !row.nonOptimal));
+	}).filter(row =>
+		row.crewList.length > 0
+			&& (!crewFilters.hideNonOptimals || !row.notes.nonOptimal)
+	);
+}
+
+function getAllCombos(traits: string[], count: number): any[] {
+	if (count === 1) return traits.map(trait => [trait]);
+	const combos = [];
+	for (let i = 0; i < traits.length; i++) {
+		for (let j = i+1; j < traits.length; j++) {
+			combos.push([traits[i], traits[j]]);
+		}
+	}
+	return combos;
 }
