@@ -160,3 +160,28 @@ function getAllCombos(traits: string[], count: number): any[] {
 	}
 	return combos;
 }
+
+export function getStyleByRarity(rarity: number): any {
+	let background = 'grey', color = 'white';
+	if (rarity === 0) {
+		background = '#000000';
+		color = '#fdd26a';
+	}
+	else if (rarity === 1) {
+		background = '#fdd26a';
+		color = 'black';
+	}
+	else if (rarity === 2) {
+		background = '#aa2deb';
+	}
+	else if (rarity === 3) {
+		background = '#5aaaff';
+	}
+	else if (rarity === 4) {
+		background = '#50aa3c';
+	}
+	else if (rarity === 5) {
+		background = '#9b9b9b';
+	}
+	return { background, color };
+}

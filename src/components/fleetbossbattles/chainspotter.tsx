@@ -50,10 +50,13 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 			traits[trait].listed++;
 		});
 
+		// Keep track of duplicate traits in original pool
+		const dupeTest = Object.entries(traits).filter(entry => entry[1].listed > 1).map(entry => entry[0]);
+
 		const openNodes = [];
 		let current = false;
 		chain.nodes.forEach((node, nodeIndex) => {
-			let hiddenTraits = node.hidden_traits;
+			let hiddenTraits = node.hidden_traits.slice();
 			if (hiddenTraits.includes('?')) {
 				const solve = spotter.solves.find(solve => solve.node === nodeIndex);
 				if (solve) hiddenTraits = solve.traits;
@@ -71,12 +74,13 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 				}
 			});
 			if (nodeIsOpen) {
-				const alphaTest = node.open_traits.sort((a, b) => b.localeCompare(a))[0];
+				const alphaTest = node.open_traits.slice().sort((a, b) => b.localeCompare(a))[0];
 				openNodes.push({
 					chainId: chain.id,
 					index: nodeIndex,
 					traitsKnown,
 					hiddenLeft,
+					dupeTest,
 					alphaTest
 				});
 			}

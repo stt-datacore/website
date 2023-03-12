@@ -3,6 +3,7 @@ import { Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { MarkCrew } from './markbuttons';
+import { getStyleByRarity } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 
@@ -146,34 +147,18 @@ const CrewTable = (props: CrewTableProps) => {
 		return isOptimal;
 	}
 
-	function renderTraits(crew: any, index: number, traitCounts: any): JSX.Element {
-		const alphaTest = openNodes.find(open => open.index === index).alphaTest;
+	function renderTraits(crew: any, index: number, traitRarity: any): JSX.Element {
+		const node = openNodes.find(open => open.index === index);
 		const colorize = (trait: string) => {
 			// Trait is alpha rule exception
-			if (trait.localeCompare(alphaTest) === -1) {
+			if (trait.localeCompare(node.alphaTest) === -1) {
 				return {
 					background: '#f2711c',
 					color: 'white'
 				};
 			}
-			let background = 'grey', color = 'white';
-			if (traitCounts[trait] === 1) {
-				background = '#fdd26a';
-				color = 'black';
-			}
-			else if (traitCounts[trait] === 2) {
-				background = '#aa2deb';
-			}
-			else if (traitCounts[trait] === 3) {
-				background = '#5aaaff';
-			}
-			else if (traitCounts[trait] === 4) {
-				background = '#50aa3c';
-			}
-			else if (traitCounts[trait] === 5) {
-				background = '#9b9b9b';
-			}
-			return { background, color };
+			let style = getStyleByRarity(traitRarity[trait]);
+			return {...style, fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal'};
 		};
 
 		const nodeMatches = crew.node_matches[`node-${index}`];

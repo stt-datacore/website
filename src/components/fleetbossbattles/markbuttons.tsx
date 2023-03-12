@@ -1,6 +1,8 @@
 import React from 'react';
 import { Header, Icon, Button, Popup, Modal, Grid, Label } from 'semantic-ui-react';
 
+import { getStyleByRarity } from './fbbutils';
+
 import allTraits from '../../../static/structured/translation_en.json';
 
 type MarkCrewProps = {
@@ -174,7 +176,6 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				return {
 					key: idx,
 					value: rarity.combo,
-					text: rarity.combo.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => allTraits.trait_names[trait]).join(' + '),
 					rarity: rarity.crew.length
 				};
 		});
@@ -199,14 +200,17 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					{pairOptions.map(option => (
 						<div key={option.key} style={{ paddingBottom: '.5em' }}>
 							<Button style={colorize(option.value, option.rarity)} onClick={() => handlePairClick(option.value)}>
-								{option.text}
+								{renderTraits(option.value)}
 							</Button>
 						</div>
 					)).reduce((prev, curr) => [prev, curr], [])}
 					<div style={{ marginTop: '2em' }}>
 						<Header as='h4'>Partial Solve</Header>
 						<Button style={colorize([firstTrait], traitRarity[firstTrait])} onClick={() => handlePairClick([firstTrait, '?'])}>
-							{allTraits.trait_names[firstTrait]} + ?
+							<span style={{ fontStyle: node.dupeTest.includes(firstTrait) ? 'italic' : 'normal' }}>
+								{allTraits.trait_names[firstTrait]}
+							</span>
+							{` `}+ ?
 						</Button>
 					</div>
 				</Modal.Content>
@@ -218,6 +222,18 @@ export const MarkGroup = (props: MarkGroupProps) => {
 			</Modal>
 		);
 
+		function renderTraits(traits: string[]): JSX.Element {
+			return (
+				<React.Fragment>
+					{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+						<span key={idx} style={{ fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal' }}>
+							{allTraits.trait_names[trait]}
+						</span>
+					)).reduce((prev, curr) => [prev, prev.length > 0  ? ' + ' : '', curr], [])}
+				</React.Fragment>
+			);
+		}
+
 		function colorize(traits: string[], rarity: number): any {
 			// Traits include alpha rule exception
 			if (traits.filter(trait => trait.localeCompare(node.alphaTest) === -1).length > 0) {
@@ -226,7 +242,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					color: 'white'
 				};
 			}
-			return getRarityStyle(rarity);
+			return getStyleByRarity(rarity);
 		}
 
 		function handlePairClick(traits: string[]): void {
@@ -256,7 +272,8 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				color: 'white'
 			};
 		}
-		return getRarityStyle(traitRarity[trait]);
+		let style = getStyleByRarity(traitRarity[trait]);
+		return {...style, fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal'};
 	}
 
 	function handleFirstTrait(trait: string): void {
@@ -266,37 +283,15 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		}
 
 		const validPairs = comboRarity.filter(rarity => rarity.combo.includes(trait));
-		if (validPairs.length === 1 && validPairs[0].crew.length > 0) {
-			props.solveNode(node.index, validPairs[0].combo);
-			return;
+		if (validPairs.length === 1) {
+			// Always show confirmation modal if pair is unique or has alpha exception
+			if (validPairs[0].crew.length > 1 && !validPairs[0].alphaException) {
+				props.solveNode(node.index, validPairs[0].combo);
+				return;
+			}
 		}
 
 		setFirstTrait(trait);
 		setModalIsOpen(true);
 	}
-};
-
-const getRarityStyle = (rarity: number) => {
-	let background = 'grey', color = 'white';
-	if (rarity === 0) {
-		background = '#000000';
-		color = '#fdd26a';
-	}
-	else if (rarity === 1) {
-		background = '#fdd26a';
-		color = 'black';
-	}
-	else if (rarity === 2) {
-		background = '#aa2deb';
-	}
-	else if (rarity === 3) {
-		background = '#5aaaff';
-	}
-	else if (rarity === 4) {
-		background = '#50aa3c';
-	}
-	else if (rarity === 5) {
-		background = '#9b9b9b';
-	}
-	return { background, color };
 };
