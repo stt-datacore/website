@@ -3,7 +3,7 @@ name: Tribble Sulu
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 21
 in_portal: true
 date: 12/08/2021

@@ -3,8 +3,8 @@ name: Army Chaplain Odo
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 7
-events: 17
+bigbook_tier: 6
+events: 18
 in_portal: true
 date: 05/09/2018
 obtained: Event

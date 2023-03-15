@@ -4,7 +4,7 @@ rarity: 4
 series: snw
 memory_alpha:
 bigbook_tier: 2
-events: 36
+events: 37
 in_portal:
 date: 24/10/2022
 obtained: Pack
