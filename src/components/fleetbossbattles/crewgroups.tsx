@@ -13,8 +13,7 @@ const FinderContext = React.createContext();
 
 type CrewGroupsProps = {
 	solver: any;
-	matchingGroups: any;
-	matchingRarities: any;
+	resolver: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	exportPrefs: any;
@@ -49,7 +48,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 	)).reduce((prev, curr) => [prev, curr], []);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const matchingGroups = finderData.matchingGroups[`node-${node.index}`];
+	const nodeGroups = finderData.resolver.filtered.groups[`node-${node.index}`];
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -60,16 +59,16 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>Node {node.index+1}</p>
 					</div>
 					<div>
-						<CrewNodeExporter node={node} matchingGroups={matchingGroups} exportPrefs={finderData.exportPrefs} />
+						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={finderData.solver.traits} exportPrefs={finderData.exportPrefs} />
 					</div>
 				</div>
 			</Message>
-			{matchingGroups.length === 0 &&
+			{nodeGroups.length === 0 &&
 				<Message>
 					No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.
 				</Message>
 			}
-			{matchingGroups.length > 0 && <GroupTable node={node} data={matchingGroups} />}
+			{nodeGroups.length > 0 && <GroupTable node={node} data={nodeGroups} />}
 		</div>
 	);
 };
@@ -95,7 +94,7 @@ const GroupTable = (props: GroupTableProps) => {
 	}, [props.data]);
 
 	const hasNotes = data.filter(row => Object.values(row.notes).filter(note => !!note).length > 0).length > 0;
-	const matchingRarities = finderData.matchingRarities[`node-${node.index}`];
+	const nodeRarities = finderData.resolver.rarities[`node-${node.index}`];
 
 	const tableConfig = [
 		{ column: 'traits', title: 'Traits', width: hasNotes ? 6 : 8, center: true, reverse: true },
@@ -130,7 +129,7 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} rarities={matchingRarities} solveNode={finderData.solveNode} renderName={traitNameInstance} />
+							<MarkGroup node={node} traits={row.traits} rarities={nodeRarities} solveNode={finderData.solveNode} renderName={traitNameInstance} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>

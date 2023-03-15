@@ -13,16 +13,13 @@ import allTraits from '../../../static/structured/translation_en.json';
 
 type CrewTableProps = {
 	solver: any;
-	matchingCrew: any[];
-	matchingRarities: any;
-	optimalCombos: any[];
-	finderPrefs: any;
+	resolver: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
 const CrewTable = (props: CrewTableProps) => {
-	const { solver, matchingRarities, optimalCombos, finderPrefs } = props;
+	const { solver, resolver } = props;
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -61,7 +58,7 @@ const CrewTable = (props: CrewTableProps) => {
 	return (
 		<SearchableTable
 			id={`fbb/${solver.id}/crewtable_`}
-			data={props.matchingCrew}
+			data={resolver.crew}
 			config={tableConfig}
 			renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
 			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
@@ -99,7 +96,7 @@ const CrewTable = (props: CrewTableProps) => {
 				{openNodes.map(node => {
 					return (
 						<Table.Cell key={node.index} textAlign='center'>
-							{renderTraits(crew, node.index, matchingRarities[`node-${node.index}`].traits)}
+							{renderTraits(crew, node.index, resolver.rarities[`node-${node.index}`].traits)}
 						</Table.Cell>
 					);
 				})}
@@ -113,17 +110,17 @@ const CrewTable = (props: CrewTableProps) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				{finderPrefs.alpha === 'flag' && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
-				{finderPrefs.nonoptimal === 'flag' && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
+				{resolver.filtered.settings.alpha === 'flag' && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
+				{resolver.filtered.settings.nonoptimal === 'flag' && !isCrewOptimal(crew, resolver.optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (finderPrefs.nonoptimal === 'hide' && !isCrewOptimal(crew, optimalCombos)) return false;
-		if ((finderPrefs.usable === 'owned' || finderPrefs.usable === 'thawed') && crew.highest_owned_rarity === 0) return false;
-		if (finderPrefs.usable === 'thawed' && crew.only_frozen) return false;
+		if (resolver.filtered.settings.nonoptimal === 'hide' && !isCrewOptimal(crew, resolver.optimalCombos)) return false;
+		if ((resolver.filtered.settings.usable === 'owned' || resolver.filtered.settings.usable === 'thawed') && crew.highest_owned_rarity === 0) return false;
+		if (resolver.filtered.settings.usable === 'thawed' && crew.only_frozen) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 

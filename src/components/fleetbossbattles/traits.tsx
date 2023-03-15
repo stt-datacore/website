@@ -48,18 +48,21 @@ type TraitsProgressProps = {
 const TraitsProgress = (props: TraitsProgressProps) => {
 	const { solver } = props;
 
+	const traitPool = solver.traits.filter(t => t.source === 'pool');
+
 	const traitOptions = solver.traits.filter(t => t.source === 'pool').map(t => {
 		return {
 			key: t.id,
 			value: t.trait,
-			text: t.name
+			text: t.name,
+			consumed: t.consumed
 		};
 	}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
-		<div style={{ margin: '1em 0' }}>
-			<Header as='h4'>Current Combo Chain</Header>
-			<p>This table shows the progress of the current combo solver. Update the mystery traits when a node is solved.</p>
+		<div style={{ margin: '2em 0' }}>
+			<Header as='h4'>Current Solutions</Header>
+			<p>This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.</p>
 			<Table celled selectable striped unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
@@ -80,7 +83,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 		return (
 			<Table.Row key={nodeIndex}>
 				<Table.Cell>
-					{!node.open && <Icon name='check' color={node.spotSolve ? 'green' : undefined} />}
+					{!node.open && <Icon name='check' color='green' />}
 					{givenTraitIds.map(traitId => traitNameInstance(solver.traits[traitId])).join(' + ')}
 				</Table.Cell>
 				<Table.Cell>
@@ -89,7 +92,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 							{solve.map((trait, traitIndex) =>
 								<TraitPicker key={`${solver.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
-									options={traitOptions} readonly={!node.open && !node.spotSolve}
+									traitPool={traitPool} readonly={!node.open && !node.spotSolve}
 									trait={trait} setTrait={onTraitChange}
 								/>
 							)}
@@ -110,7 +113,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 type TraitPickerProps = {
 	nodeIndex: number;
 	traitIndex: number;
-	options: any[];
+	traitPool: any[];
 	readonly: boolean;
 	trait: string;
 	setTrait: (newTrait: string) => void;
@@ -123,9 +126,15 @@ const TraitPicker = (props: TraitPickerProps) => {
 		setActiveTrait(props.trait);
 	}, [props.trait]);
 
-	const readonlyOptions = [
-		{ key: activeTrait, value: activeTrait, text: allTraits.trait_names[activeTrait] }
-	];
+	const traitOptions = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
+		.map(t => {
+			return {
+				key: t.id,
+				value: t.trait,
+				text: t.name,
+				consumed: t.consumed
+			};
+		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
 		<Form.Field>
@@ -134,7 +143,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 				clearable
 				search
 				selection
-				options={props.readonly ? readonlyOptions : props.options}
+				options={traitOptions}
 				value={activeTrait}
 				onChange={(e, { value }) => onTraitChange(value)}
 				closeOnChange

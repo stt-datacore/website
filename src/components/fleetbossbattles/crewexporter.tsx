@@ -9,24 +9,147 @@ const FLAG_NONOPTIMAL = '\u03B9';
 
 export const exportDefaults = {
 	header: 'always',
+	solve: 'hide',
 	traits: 'all',
+	duplicates: 'number',
 	bullet: 'simple',
 	delimiter: ',',
+	coverage: 'asterisk',
 	flag_alpha: FLAG_ALPHA,
 	flag_unique: FLAG_UNIQUE,
 	flag_nonoptimal: FLAG_NONOPTIMAL
 };
 
+const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPrefs: any) => {
+	const compareTraits = (a, b) => b.traits.length - a.traits.length;
+	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
+	const compareScore = (a, b) => b.score - a.score;
+	const compareNotesAsc = (a, b) => {
+		return Object.values(a.notes).filter(note => !!note).length - Object.values(b.notes).filter(note => !!note).length;
+	};
+	const sortGroups = (a, b) => {
+		const comps = [compareTraits, compareNotesAsc, compareCrew, compareScore];
+		let test = 0;
+		while (comps.length > 0 && test === 0) {
+			test = comps.shift()(a, b);
+		}
+		return test;
+	};
+
+	const sortedTraits = (traits: string[], alphaTest: string = '') => {
+		const traitNameInstance = (trait: string) => {
+			let name = allTraits.trait_names[trait];
+			if (exportPrefs.duplicates === 'number') {
+				const instances = traitData.filter(t => t.trait === trait);
+				if (instances.length > 1) {
+					const needed = instances.length - instances.filter(t => t.consumed).length;
+					name += ` ${needed}`;
+				}
+			}
+			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
+				name += `-${exportPrefs.flag_alpha}`;
+			return name;
+		};
+		return traits.map(t => traitNameInstance(t)).sort((a, b) => a.localeCompare(b)).join(', ');
+	};
+
+	const formatCrewName = (crew: any) => {
+		let name = exportPrefs.delimiter === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
+		if (crew.nodes_rarity > 1 && exportPrefs.coverage === 'asterisk') name = `*${name}*`;
+		return name;
+	};
+
+	let output = '';
+	let nodeList = '';
+	nodeGroups.sort((a, b) => sortGroups(a, b))
+		.forEach((row, idx) => {
+			if (nodeList !== '') nodeList += '\n';
+			if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
+			if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
+				nodeList += `${idx+1}`;
+			else
+				nodeList += `-`;
+			if (row.notes.nonOptimal) nodeList += exportPrefs.flag_nonoptimal;
+			if (row.notes.alphaException) nodeList += exportPrefs.flag_alpha;
+			if (row.notes.uniqueCrew) nodeList += exportPrefs.flag_unique;
+			const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
+				.map(crew => formatCrewName(crew))
+				.join(`${exportPrefs.delimiter} `);
+			nodeList += ' '+matchingCrew;
+			if (exportPrefs.traits === 'all')
+				nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
+		});
+
+	if (nodeList === '')
+		nodeList = 'No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.';
+
+	if (output !== '') output += '\n\n';
+	output += `Node ${node.index+1}`;
+	if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
+		output += ` (${nodeTraits(node)})`;
+	output += '\n' + nodeList;
+
+	return output;
+};
+
+const nodeTraits = (node: any) => {
+	const traitName = (trait: string, index: number) => {
+		let name = allTraits.trait_names[trait];
+		if (node.spotSolve && index >= node.givenTraitIds.length)
+			name = `[${name}]`;
+		return name;
+	};
+	const solved = node.traitsKnown.map((t, idx) => traitName(t, idx));
+	const unsolved = Array(node.hiddenLeft).fill('?');
+	return solved.concat(unsolved).join(', ');
+};
+
+type CrewNodeExporterProps = {
+	node: any;
+	nodeGroups: any;
+	traits: any[];
+	exportPrefs: any;
+};
+
+export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
+	const { node, nodeGroups, traits, exportPrefs } = props;
+
+	const copyNode = () => {
+		const output = exportNodeGroups(node, nodeGroups, traits, exportPrefs);
+		navigator.clipboard.writeText(output);
+	};
+
+	return (
+		<React.Fragment>
+			<Popup
+				content='Copied!'
+				on='click'
+				position='bottom center'
+				size='tiny'
+				trigger={
+					<Button animated onClick={() => copyNode()}>
+						<Button.Content visible>
+							<Icon name='clipboard list' />
+						</Button.Content>
+						<Button.Content hidden>
+							Copy
+						</Button.Content>
+					</Button>
+				}
+			/>
+		</React.Fragment>
+	);
+};
+
 type CrewFullExporterProps = {
 	solver: any;
-	openNodes: any[];
-	matchingGroups: any;
+	resolver: any;
 	exportPrefs: any;
 	setExportPrefs: (prefs: any) => void;
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const { solver, matchingGroups, exportPrefs } = props;
+	const { solver, resolver, exportPrefs } = props;
 
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
@@ -36,8 +159,16 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 			header += '\n\n';
 		}
 		let output = '';
-		openNodes.forEach(node => {
-			const nodeList = exportNodeGroups(node, matchingGroups[`node-${node.index}`], exportPrefs);
+		solver.nodes.forEach(node => {
+			let nodeList = '';
+			if (node.open) {
+				nodeList = exportNodeGroups(node, resolver.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
+			}
+			else {
+				if (exportPrefs.solve === 'always' || (exportPrefs.solve === 'spot' && node.spotSolve)) {
+					nodeList = `Node ${node.index+1} (${nodeTraits(node)})`;
+				}
+			}
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';
 				output += nodeList;
@@ -50,7 +181,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		<Message style={{ margin: '2em 0' }}>
 			<Message.Content>
 				<Message.Header>Export Crew Lists</Message.Header>
-				<p>Copy the lists of possible crew shown above to share on Discord or other forums. Asterisked crew are possible solutions to multiple nodes.</p>
+				<p>Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.</p>
 				<ExportOptions prefs={exportPrefs} updatePrefs={props.setExportPrefs} />
 				<Popup
 					content='Copied!'
@@ -72,26 +203,9 @@ type ExportOptionsProps = {
 };
 
 const ExportOptions = (props: ExportOptionsProps) => {
-	const [isActive, setIsActive] = React.useState(false);
-	const [headerPref, setHeaderPref] = React.useState(props.prefs.header ?? exportDefaults.header);
-	const [traitsPref, setTraitsPref] = React.useState(props.prefs.traits ?? exportDefaults.traits);
-	const [bulletPref, setBulletPref] = React.useState(props.prefs.bullet ?? exportDefaults.bullet);
-	const [delimiterPref, setDelimiterPref] = React.useState(props.prefs.delimiter ?? exportDefaults.delimiter);
-	const [alphaPref, setAlphaPref] = React.useState(props.prefs.flag_alpha ?? exportDefaults.flag_alpha);
-	const [uniquePref, setUniquePref] = React.useState(props.prefs.flag_unique ?? exportDefaults.flag_unique);
-	const [optimalPref, setOptimalPref] = React.useState(props.prefs.flag_nonoptimal ?? exportDefaults.flag_nonoptimal);
+	const { prefs, updatePrefs } = props;
 
-	React.useEffect(() => {
-		props.updatePrefs({
-			header: headerPref,
-			traits: traitsPref,
-			bullet: bulletPref,
-			delimiter: delimiterPref,
-			flag_alpha: alphaPref,
-			flag_unique: uniquePref,
-			flag_nonoptimal: optimalPref
-		});
-	}, [headerPref, traitsPref, bulletPref, delimiterPref, alphaPref, uniquePref, optimalPref]);
+	const [isActive, setIsActive] = React.useState(false);
 
 	const headerOptions = [
 		{ key: 'always', text: 'Always show boss chain', value: 'always' },
@@ -99,10 +213,21 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
+	const solveOptions = [
+		{ key: 'always', text: 'Always show solutions', value: 'always' },
+		{ key: 'spot', text: 'Show unconfirmed solutions only', value: 'spot' },
+		{ key: 'hide', text: 'Do not show', value: 'hide' }
+	];
+
 	const traitsOptions = [
 		{ key: 'all', text: 'Show on node and crew', value: 'all' },
 		{ key: 'nodes', text: 'Show on nodes only', value: 'nodes' },
 		{ key: 'hide', text: 'Do not show', value: 'hide' }
+	];
+
+	const duplicatesOptions = [
+		{ key: 'number', text: 'Show number needed', value: 'number' },
+		{ key: 'ignore', text: 'Do not number', value: 'ignore' }
 	];
 
 	const bulletOptions = [
@@ -114,6 +239,11 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	const delimiterOptions = [
 		{ key: 'comma', text: 'Comma', value: ',', example: 'Spock, Lt Uhura' },
 		{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
+	];
+
+	const coverageOptions = [
+		{ key: 'asterisk', text: 'Asterisk (italicize)', value: 'asterisk' },
+		{ key: 'ignore', text: 'Do nothing', value: 'ignore' }
 	];
 
 	const alphaOptions = [
@@ -130,7 +260,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		{ key: 'none', text: 'None', value: '' }
 	];
 
-	const optimalOptions = [
+	const nonoptimalOptions = [
 		{ key: 'iota', text: `Subset [${FLAG_NONOPTIMAL}]`, value: FLAG_NONOPTIMAL },
 		{ key: 'n', text: 'Letter n', value: 'n' },
 		{ key: 'dash', text: 'Double dash', value: '--' },
@@ -160,65 +290,92 @@ const ExportOptions = (props: ExportOptionsProps) => {
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>
+						<Header as='h5'>Bullet, e.g. <i>{bulletOptions.find(b => b.value === prefs.bullet).example}</i></Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Header (full export only)</label>
-								<Select
-									options={headerOptions}
-									value={headerPref}
-									onChange={(e, { value }) => setHeaderPref(value)}
-								/>
-							</Form.Field>
-							<Form.Field>
-								<label>Traits</label>
-								<Select
-									options={traitsOptions}
-									value={traitsPref}
-									onChange={(e, { value }) => setTraitsPref(value)}
-								/>
-							</Form.Field>
-						</Form.Group>
-						<Form.Group inline>
-							<Form.Field>
-								<label>Bullet style, e.g. <i>{bulletOptions.find(b => b.value === bulletPref).example}</i></label>
+								<label>Bullet</label>
 								<Select
 									options={bulletOptions}
-									value={bulletPref}
-									onChange={(e, { value }) => setBulletPref(value)}
+									value={prefs.bullet ?? exportDefaults.bullet}
+									onChange={(e, { value }) => updatePrefs({...prefs, bullet: value})}
 								/>
 							</Form.Field>
-							<Form.Field>
-								<label>Crew delimiter, e.g. <i>{delimiterOptions.find(b => b.value === delimiterPref).example}</i></label>
-								<Select
-									options={delimiterOptions}
-									value={delimiterPref}
-									onChange={(e, { value }) => setDelimiterPref(value)}
-								/>
-							</Form.Field>
-						</Form.Group>
-						<div>
-							<Header as='h5'>Flags (when not hidden by filters)</Header>
-						</div>
-						<Form.Group inline>
 							<Form.Field>
 								<label>Non-optimal</label>
 								<Input style={{ width: '5em' }}
-									value={optimalPref}
-									onChange={(e, { value }) => setOptimalPref(value)}
+									value={prefs.flag_nonoptimal ?? exportDefaults.flag_nonoptimal}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_nonoptimal: value})}
 								/>
 							</Form.Field>
 							<Form.Field>
 								<label>Unique</label>
 								<Input style={{ width: '5em' }}
-									value={uniquePref}
-									onChange={(e, { value }) => setUniquePref(value)}
+									value={prefs.flag_unique ?? exportDefaults.flag_unique}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_unique: value})}
 								/>
 							</Form.Field>
 							<Form.Field>
 								<label>Alpha exception</label>
 								<Input style={{ width: '5em' }}
-									value={alphaPref}
-									onChange={(e, { value }) => setAlphaPref(value)}
+									value={prefs.flag_alpha ?? exportDefaults.flag_alpha}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_alpha: value})}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Header as='h5'>Crew, e.g. <i>{delimiterOptions.find(b => b.value === prefs.delimiter).example}</i></Header>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Delimiter</label>
+								<Select
+									options={delimiterOptions}
+									value={prefs.delimiter ?? exportDefaults.delimiter}
+									onChange={(e, { value }) => updatePrefs({...prefs, delimiter: value})}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Coverage potential</label>
+								<Select
+									options={coverageOptions}
+									value={prefs.coverage ?? exportDefaults.coverage}
+									onChange={(e, { value }) => updatePrefs({...prefs, coverage: value})}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Header as='h5'>Traits</Header>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Traits</label>
+								<Select
+									options={traitsOptions}
+									value={prefs.traits ?? exportDefaults.traits}
+									onChange={(e, { value }) => updatePrefs({...prefs, traits: value})}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Duplicates</label>
+								<Select
+									options={duplicatesOptions}
+									value={prefs.duplicates ?? exportDefaults.duplicates}
+									onChange={(e, { value }) => updatePrefs({...prefs, duplicates: value})}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Header as='h5'>Full exports only</Header>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Header</label>
+								<Select
+									options={headerOptions}
+									value={prefs.header ?? exportDefaults.header}
+									onChange={(e, { value }) => updatePrefs({...prefs, header: value})}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Solved nodes</label>
+								<Select
+									options={solveOptions}
+									value={prefs.solve ?? exportDefaults.solve}
+									onChange={(e, { value }) => updatePrefs({...prefs, solve: value})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -232,111 +389,6 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	}
 
 	function resetToDefaults(): void {
-		setHeaderPref(exportDefaults.header);
-		setTraitsPref(exportDefaults.traits);
-		setBulletPref(exportDefaults.bullet);
-		setDelimiterPref(exportDefaults.delimiter);
-		setAlphaPref(exportDefaults.flag_alpha);
-		setUniquePref(exportDefaults.flag_unique);
-		setOptimalPref(exportDefaults.flag_nonoptimal);
+		updatePrefs({...exportDefaults});
 	}
-};
-
-type CrewNodeExporterProps = {
-	node: any;
-	matchingGroups: any;
-	exportPrefs: any;
-};
-
-export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
-	const { node, matchingGroups, exportPrefs } = props;
-
-	const copyNode = () => {
-		const output = exportNodeGroups(node, matchingGroups, exportPrefs);
-		navigator.clipboard.writeText(output);
-	};
-
-	return (
-		<React.Fragment>
-			<Popup
-				content='Copied!'
-				on='click'
-				position='bottom center'
-				size='tiny'
-				trigger={
-					<Button animated onClick={() => copyNode()}>
-						<Button.Content visible>
-							<Icon name='clipboard list' />
-						</Button.Content>
-						<Button.Content hidden>
-							Copy
-						</Button.Content>
-					</Button>
-				}
-			/>
-		</React.Fragment>
-	);
-};
-
-const exportNodeGroups = (node: any, nodeGroup: any, exportPrefs: any) => {
-	const compareTraits = (a, b) => b.traits.length - a.traits.length;
-	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
-	const compareScore = (a, b) => b.score - a.score;
-	const compareNotesAsc = (a, b) => {
-		return Object.values(a.notes).filter(note => !!note).length - Object.values(b.notes).filter(note => !!note).length;
-	};
-	const sortGroups = (a, b) => {
-		const comps = [compareTraits, compareNotesAsc, compareCrew, compareScore];
-		let test = 0;
-		while (comps.length > 0 && test === 0) {
-			test = comps.shift()(a, b);
-		}
-		return test;
-	};
-
-	const sortedTraits = (traits, alphaTest = '') => {
-		const traitName = (trait) => {
-			let name = allTraits.trait_names[trait];
-			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
-				name += `-${exportPrefs.flag_alpha}`;
-			return name;
-		};
-		return traits.map(t => traitName(t)).sort((a, b) => a.localeCompare(b)).join(', ');
-	};
-
-	const formatCrewName = (crew) => {
-		let name = exportPrefs.delimiter === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
-		if (crew.nodes_rarity > 1) name = `*${name}*`;
-		return name;
-	};
-
-	let output = '';
-	let nodeList = '';
-	nodeGroup.sort((a, b) => sortGroups(a, b))
-		.forEach((row, idx) => {
-			if (nodeList !== '') nodeList += '\n';
-			if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
-			if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
-				nodeList += `${idx+1}`;
-			else
-				nodeList += `-`;
-			if (row.notes.nonOptimal) nodeList += exportPrefs.flag_nonoptimal;
-			if (row.notes.alphaException) nodeList += exportPrefs.flag_alpha;
-			if (row.notes.uniqueCrew) nodeList += exportPrefs.flag_unique;
-			const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
-				.map(crew => formatCrewName(crew))
-				.join(`${exportPrefs.delimiter} `);
-			nodeList += ' '+matchingCrew;
-			if (exportPrefs.traits === 'all')
-				nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
-		});
-	if (nodeList !== '') {
-		if (output !== '') output += '\n\n';
-		output += `Node ${node.index+1}`;
-		if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
-			output += ` (${sortedTraits(node.traitsKnown)}, ${Array(node.hiddenLeft).fill('?').join(', ')})`;
-		output += '\n' + nodeList;
-	}
-
-	return output;
 };

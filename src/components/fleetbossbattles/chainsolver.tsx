@@ -18,6 +18,10 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
+const userDefaults = {
+	view: 'crewgroups'
+};
+
 type ChainSolverProps = {
 	chain: any;
 	allCrew: string[];
@@ -26,6 +30,8 @@ type ChainSolverProps = {
 
 const ChainSolver = (props: ChainSolverProps) => {
 	const { chain } = props;
+
+	const [userPrefs, setUserPrefs] = useStateWithStorage(props.dbid+'/fbb/prefs', userDefaults, { rememberForever: true });
 
 	const [solver, setSolver] = React.useState(undefined);
 	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`,
@@ -36,8 +42,6 @@ const ChainSolver = (props: ChainSolverProps) => {
 			ignoredTraits: []
 		}
 	);
-
-	const [activeStep, setActiveStep] = React.useState('crew');
 
 	React.useEffect(() => {
 		if (!chain) return;
@@ -233,15 +237,22 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 	return (
 		<React.Fragment>
-			<Step.Group>
-				<Step active={activeStep === 'crew' && openNodes > 0} onClick={() => setActiveStep('crew')}>
+			<Step.Group fluid>
+				<Step active={userPrefs.view === 'crewgroups' && openNodes > 0} onClick={() => setUserPrefs({...userPrefs, view: 'crewgroups'})}>
+					<Icon name='object group' />
+					<Step.Content>
+						<Step.Title>Groups</Step.Title>
+						<Step.Description>View solutions grouped by traits</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step active={userPrefs.view === 'crewtable' && openNodes > 0} onClick={() => setUserPrefs({...userPrefs, view: 'crewtable'})}>
 					<Icon name='users' />
 					<Step.Content>
 						<Step.Title>Crew</Step.Title>
-						<Step.Description>View possible solutions</Step.Description>
+						<Step.Description>Search for individual crew</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step active={activeStep === 'traits' || openNodes === 0} onClick={() => setActiveStep('traits')}>
+				<Step active={userPrefs.view === 'traits' || openNodes === 0} onClick={() => setUserPrefs({...userPrefs, view: 'traits'})}>
 					<Icon name='tasks' />
 					<Step.Content>
 						<Step.Title>Traits</Step.Title>
@@ -249,10 +260,13 @@ const ChainSolver = (props: ChainSolverProps) => {
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			{activeStep === 'crew' && openNodes > 0 &&
-				<ChainCrew solver={solver} spotter={spotter} updateSpotter={setSpotter} allCrew={props.allCrew} dbid={props.dbid} />
+			{(userPrefs.view === 'crewgroups' || userPrefs.view === 'crewtable') && openNodes > 0 &&
+				<ChainCrew view={userPrefs.view}
+					solver={solver} spotter={spotter} updateSpotter={setSpotter}
+					allCrew={props.allCrew} dbid={props.dbid}
+				/>
 			}
-			{(activeStep === 'traits' || openNodes === 0) &&
+			{(userPrefs.view === 'traits' || openNodes === 0) &&
 				<React.Fragment>
 					{openNodes === 0 &&
 						<Message positive>

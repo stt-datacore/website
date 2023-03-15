@@ -2,14 +2,13 @@ import React from 'react';
 import { Dropdown, Form } from 'semantic-ui-react';
 
 type CrewChecklistProps = {
-	chainId: string;
 	crewList: string[];
 	attemptedCrew: string[];
 	updateAttempts: (crewSymbols: string[]) => void;
 };
 
 const CrewChecklist = (props: CrewChecklistProps) => {
-	const { chainId, updateAttempts } = props;
+	const { updateAttempts } = props;
 
 	const [options, setOptions] = React.useState(undefined);
 
