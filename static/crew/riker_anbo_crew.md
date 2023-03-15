@@ -12,4 +12,11 @@ mega: false
 published: true
 ---
 
-The Ultimate Evolution in looking goofy is an insta-freeze after he helps with a tricky node unlock, but Anbo offers at least some additional value. The Riker name brand and a slew of traits pair pretty well with the most common "and" seat on event shuttles to earn him a couple of thaws each year. And while Pilot is the only of his traits to see significant action so far, he has several of them that combine to produce a high likelihood of future collection and event bonus bumps down the line.
+We were at the beach
+Everybody had matching towels
+Somebody went under a dock
+And there they saw a rock
+It wasn't a rock
+It was Anbo-jyutsu Riker
+
+The Ultimate Evolution in looking goofy is an insta-freeze after he helps with a tricky Pilot/SEC node unlock, but Anbo offers at least some additional value. The Riker name brand and a slew of traits pair pretty well with the most common "and" seat on event shuttles to earn him a couple of thaws each year With a strong collection ceiling in tow, this is a fine low end behold pick for players who don’t need daily help.

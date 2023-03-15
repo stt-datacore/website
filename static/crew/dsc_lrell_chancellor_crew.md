@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-L'rell's inagural note warned of an overcrowded DIP skill and the tenuousness of Discovery megas continuing. Since then, Disco megas seem to have indeed stopped, while that DIP base has tumbled dozens of ranks as more DIP primaries join the game hourly. Not all hope is lost, though. L'Rell's voyage power is fine for her age and even if event work will be spotty moving forward, her spot in two collections which still need legendary crew to complete is a handy value buoy and makes her an above average behold target as we all crawl toward the bevy of boosts provided by collections.
+L'rell's inaugural note warned of an overcrowded DIP skill and the tenuousness of Discovery megas continuing. Look, .500 is a great batting average. Disco will never die, even picking up a collection along the way, and in conjunction with a skill set that’s as good as it gets for non-guaranteed retrieval crew, collections and weekend shuttles are indeed her two chances to shine.
+
+There’s nothing that constitutes ‘must have’ status here, but as she lacks a guaranteed retrieval combination of polestars, you can forgo her tier to some extent if mulling her over as a behold option. Just be prepared to accept a crew slot-eating dud until she approaches immortalized status.

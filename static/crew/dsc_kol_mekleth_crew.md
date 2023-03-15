@@ -12,4 +12,4 @@ mega: true
 published: true
 ---
 
-The chapter seemingly closed on Discovery megas, Kol will be seeking a pivot to Klingon for continued weekend relevance. A rewarding collection has already helped his value in that regard, but with his ceaselessly overbloated skill set in tow and few other points of relevance, you're looking primarily at that big Klingon collection and one or two traits to supplement whatever juice is left in his surface level ranks.
+Discovery Klingons are much the same. Printed years ago, they lack the power to compete in modern Timelines, but have a handful of collections and two handfuls of events for sporadic periods of relevance. Considering Kol was a disappointment even at the time of his release as a mega recurring crew, you can safely eschew him in all beholds except those in which collections are your only consideration. He’s merely a stocking stuffer to tide you over until that silver Lexus with a giant red ribbon rolls up your driveway. Who the fuck buys those as a gift?
