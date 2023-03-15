@@ -3,9 +3,11 @@ import { Step, Icon, Message } from 'semantic-ui-react';
 
 import ChainCrew from './crew';
 import ChainTraits from './traits';
-import { getComboIndex, removeCrewNodeCombo } from './fbbutils';
+import { getAllCombos, getComboIndex, removeCrewNodeCombo } from './fbbutils';
 
 import { useStateWithStorage } from '../../utils/storage';
+
+import allTraits from '../../../static/structured/translation_en.json';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -16,14 +18,16 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
-type ChainSpotterProps = {
+type ChainSolverProps = {
 	chain: any;
 	allCrew: string[];
+	dbid: string;
 };
 
-const ChainSpotter = (props: ChainSpotterProps) => {
+const ChainSolver = (props: ChainSolverProps) => {
 	const { chain } = props;
 
+	const [solver, setSolver] = React.useState(undefined);
 	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`,
 		{
 			id: chain.id,
@@ -33,77 +37,87 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		}
 	);
 
-	const [openNodes, setOpenNodes] = React.useState(undefined);
-	const [traitPool, setTraitPool] = React.useState([]);
-	const [allMatchingCrew, setAllMatchingCrew] = React.useState([]);
-
 	const [activeStep, setActiveStep] = React.useState('crew');
 
 	React.useEffect(() => {
-		// Ensure spotter matches chain, i.e. not in between switching bosses
-		if (!chain || chain.id !== spotter.id) return;
+		if (!chain) return;
 
-		// The trait pool consists of only remaining possible hidden_traits
-		const traits = {};
-		chain.traits.forEach(trait => {
-			if (!traits[trait]) traits[trait] = { listed: 0, consumed: 0 };
-			traits[trait].listed++;
+		const solverNodes = [];
+		const solverTraits = [];
+		const traitsConsumed = [];
+
+		chain.nodes.forEach((node, nodeIndex) => {
+			const givenTraitIds = [];
+			node.open_traits.forEach((trait, traitIndex) => {
+				const instance = solverTraits.filter(t => t.trait === trait).length + 1;
+				const id = solverTraits.length;
+				solverTraits.push({
+					id,
+					trait,
+					name: allTraits.trait_names[trait],
+					poolCount: 0,
+					instance,
+					source: 'open',
+					consumed: true
+				});
+				givenTraitIds.push(id);
+				traitsConsumed.push(trait);
+			});
+
+			let solve = node.hidden_traits;
+			const spotSolve = spotter.solves.find(solve => solve.node === nodeIndex);
+			if (solve.includes('?') && spotSolve) solve = spotSolve.traits;
+			const traitsKnown = node.open_traits.slice();
+			solve.forEach(trait => {
+				if (trait !== '?') traitsKnown.push(trait);
+			});
+			const hiddenLeft = solve.filter(trait => trait === '?').length;
+
+			solverNodes.push({
+				index: nodeIndex,
+				givenTraitIds,
+				solve,
+				traitsKnown,
+				hiddenLeft,
+				open: hiddenLeft > 0,
+				spotSolve: !!spotSolve,
+				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a))[0]
+			});
 		});
 
-		// Keep track of duplicate traits in original pool
-		const dupeTest = Object.entries(traits).filter(entry => entry[1].listed > 1).map(entry => entry[0]);
+		chain.traits.forEach((trait, traitIndex) => {
+			const instances = solverTraits.filter(t => t.trait === trait);
+			const traitCount = instances.length + 1;
+			instances.forEach(t => t.poolCount = traitCount);
+			solverTraits.push({
+				id: solverTraits.length,
+				trait,
+				name: allTraits.trait_names[trait],
+				poolCount: traitCount,
+				instance: traitCount,
+				source: 'pool',
+				consumed: false
+			});
+		});
 
-		const openNodes = [];
-		let current = false;
-		chain.nodes.forEach((node, nodeIndex) => {
-			let hiddenTraits = node.hidden_traits.slice();
-			if (hiddenTraits.includes('?')) {
-				const solve = spotter.solves.find(solve => solve.node === nodeIndex);
-				if (solve) hiddenTraits = solve.traits;
-			}
-			const nodeIsOpen = hiddenTraits.includes('?');
-			const traitsKnown = node.open_traits.slice();
-			let hiddenLeft = hiddenTraits.length;
-			hiddenTraits.forEach(trait => {
+		// Mark consumed pool traits
+		solverNodes.forEach((node, nodeIndex) => {
+			node.solve.forEach(trait => {
 				if (trait !== '?') {
-					traits[trait].consumed++;
-					if (nodeIsOpen) {
-						traitsKnown.push(trait);
-						hiddenLeft--;
-					}
+					traitsConsumed.push(trait);
+					const instanceCount = traitsConsumed.filter(t => t === trait).length;
+					const consumed = solverTraits.find(t => t.trait === trait && t.instance === instanceCount);
+					consumed.consumed = true;
 				}
 			});
-			if (nodeIsOpen) {
-				const alphaTest = node.open_traits.slice().sort((a, b) => b.localeCompare(a))[0];
-				openNodes.push({
-					chainId: chain.id,
-					index: nodeIndex,
-					traitsKnown,
-					hiddenLeft,
-					dupeTest,
-					alphaTest
-				});
-			}
-			// You have already solved a node for this chain; not currently used by this tool
-			if (node.unlocked_character?.is_current) current = true;
 		});
 
+		// Update trait pool to filter out consumed traits
 		const traitPool = [];
-		chain.traits.forEach(trait => {
-			if (!traitPool.includes(trait) && traits[trait].consumed < traits[trait].listed && !spotter.ignoredTraits.includes(trait))
-				traitPool.push(trait);
+		solverTraits.filter(t => t.source === 'pool').forEach(t => {
+			if (!traitPool.includes(t.trait) && !t.consumed && !spotter.ignoredTraits.includes(t.trait))
+				traitPool.push(t.trait);
 		});
-
-		const getAllCombos = (traits, count) => {
-			if (count === 1) return traits.map(trait => [trait]);
-			const combos = [];
-			for (let i = 0; i < traits.length; i++) {
-				for (let j = i+1; j < traits.length; j++) {
-					combos.push([traits[i], traits[j]]);
-				}
-			}
-			return combos;
-		};
 
 		const allMatchingCrew = [];
 		const allComboCounts = [];
@@ -111,7 +125,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
 				const nodes = [];
 				const matchesByNode = {};
-				openNodes.forEach(node => {
+				solverNodes.filter(node => node.open).forEach(node => {
 					// Crew must have every known trait
 					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
 						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
@@ -162,7 +176,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 		[knownSolves, spotter.attemptedCrew].forEach(group => {
 			group.forEach(attempt => {
 				const crew = props.allCrew.find(ac => ac.symbol === attempt);
-				openNodes.forEach(node => {
+				solverNodes.filter(node => node.open).forEach(node => {
 					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
 						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
 						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
@@ -193,7 +207,7 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] };
 			Object.values(crew.node_matches).forEach(node => {
 				let combosCompliant = node.combos.length;
-				const alphaTest = openNodes.find(n => n.index === node.index).alphaTest;
+				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index).alphaTest;
 				node.combos.forEach(combo => {
 					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
 						crew.alpha_rule.exceptions.push({ index: node.index, combo });
@@ -204,24 +218,30 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 			});
 		});
 
-		setOpenNodes([...openNodes]);
-		setTraitPool([...traitPool]);
-		setAllMatchingCrew([...validatedCrew]);
+		setSolver({
+			id: chain.id,
+			description: chain.description,
+			nodes: solverNodes,
+			traits: solverTraits,
+			crew: validatedCrew,
+		});
 	}, [chain, spotter]);
 
-	if (!openNodes) return (<></>);
+	if (!solver) return (<></>);
+
+	const openNodes = solver.nodes.filter(node => node.open).length;
 
 	return (
 		<React.Fragment>
 			<Step.Group>
-				<Step active={activeStep === 'crew' && openNodes.length > 0} onClick={() => setActiveStep('crew')}>
+				<Step active={activeStep === 'crew' && openNodes > 0} onClick={() => setActiveStep('crew')}>
 					<Icon name='users' />
 					<Step.Content>
 						<Step.Title>Crew</Step.Title>
-						<Step.Description>Search for possible crew</Step.Description>
+						<Step.Description>View possible solutions</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step active={activeStep === 'traits' || openNodes.length === 0} onClick={() => setActiveStep('traits')}>
+				<Step active={activeStep === 'traits' || openNodes === 0} onClick={() => setActiveStep('traits')}>
 					<Icon name='tasks' />
 					<Step.Content>
 						<Step.Title>Traits</Step.Title>
@@ -229,23 +249,21 @@ const ChainSpotter = (props: ChainSpotterProps) => {
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			{activeStep === 'crew' && openNodes.length > 0 &&
-				<ChainCrew chain={chain} spotter={spotter} updateSpotter={setSpotter}
-					openNodes={openNodes} allMatchingCrew={allMatchingCrew} allCrew={props.allCrew}
-				/>
+			{activeStep === 'crew' && openNodes > 0 &&
+				<ChainCrew solver={solver} spotter={spotter} updateSpotter={setSpotter} allCrew={props.allCrew} dbid={props.dbid} />
 			}
-			{(activeStep === 'traits' || openNodes.length === 0) &&
+			{(activeStep === 'traits' || openNodes === 0) &&
 				<React.Fragment>
-					{openNodes.length === 0 &&
+					{openNodes === 0 &&
 						<Message positive>
 							Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.
 						</Message>
 					}
-					<ChainTraits chain={chain} spotter={spotter} updateSpotter={setSpotter} />
+					<ChainTraits solver={solver} spotter={spotter} updateSpotter={setSpotter} />
 				</React.Fragment>
 			}
 		</React.Fragment>
 	);
 };
 
-export default ChainSpotter;
+export default ChainSolver;

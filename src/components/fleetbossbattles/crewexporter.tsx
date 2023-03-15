@@ -1,40 +1,48 @@
 import React from 'react';
-import { Header, Button, Popup, Message, Accordion, Form, Select, Icon } from 'semantic-ui-react';
-
-import { filterAlphaExceptions, getRaritiesByNode, getOptimalCombos, filterGroupsByNode } from './fbbutils';
+import { Header, Button, Popup, Message, Accordion, Form, Select, Input, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
-const ALPHA_FLAG = '\u03B1';
-const OPTIMAL_FLAG = '\u03B9';
+const FLAG_ALPHA = '\u03B1';
+const FLAG_UNIQUE = '\u00B5';
+const FLAG_NONOPTIMAL = '\u03B9';
 
 export const exportDefaults = {
 	header: 'always',
 	traits: 'all',
 	bullet: 'simple',
 	delimiter: ',',
-	alpha: 'flag',
-	optimal: 'hide'
+	flag_alpha: FLAG_ALPHA,
+	flag_unique: FLAG_UNIQUE,
+	flag_nonoptimal: FLAG_NONOPTIMAL
 };
 
 type CrewFullExporterProps = {
-	chain: any;
+	solver: any;
 	openNodes: any[];
-	allMatchingCrew: any[];
+	matchingGroups: any;
 	exportPrefs: any;
 	setExportPrefs: (prefs: any) => void;
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const { chain, openNodes, allMatchingCrew, exportPrefs, setExportPrefs } = props;
+	const { solver, matchingGroups, exportPrefs } = props;
 
 	const copyFull = () => {
+		const openNodes = solver.nodes.filter(node => node.open);
 		let header = '';
-		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && chain.nodes.length-openNodes.length === 0)) {
-			header += `${chain.description} (${chain.nodes.length-openNodes.length}/${chain.nodes.length})`;
+		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && solver.nodes.length-openNodes.length === 0)) {
+			header += `${solver.description} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
 			header += '\n\n';
 		}
-		const output = exportCrewByNodes(allMatchingCrew, openNodes, exportPrefs);
+		let output = '';
+		openNodes.forEach(node => {
+			const nodeList = exportNodeGroups(node, matchingGroups[`node-${node.index}`], exportPrefs);
+			if (nodeList !== '') {
+				if (output !== '') output += '\n\n';
+				output += nodeList;
+			}
+		});
 		navigator.clipboard.writeText(header + output);
 	};
 
@@ -42,8 +50,8 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		<Message style={{ margin: '2em 0' }}>
 			<Message.Content>
 				<Message.Header>Export Crew Lists</Message.Header>
-				<p>Copy the lists of possible crew for remaining unsolved nodes, for easier sharing on Discord or other forums. Asterisked crew are possible solutions to multiple nodes.</p>
-				<ExportOptions prefs={exportPrefs} updatePrefs={setExportPrefs} />
+				<p>Copy the lists of possible crew shown above to share on Discord or other forums. Asterisked crew are possible solutions to multiple nodes.</p>
+				<ExportOptions prefs={exportPrefs} updatePrefs={props.setExportPrefs} />
 				<Popup
 					content='Copied!'
 					on='click'
@@ -69,8 +77,9 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	const [traitsPref, setTraitsPref] = React.useState(props.prefs.traits ?? exportDefaults.traits);
 	const [bulletPref, setBulletPref] = React.useState(props.prefs.bullet ?? exportDefaults.bullet);
 	const [delimiterPref, setDelimiterPref] = React.useState(props.prefs.delimiter ?? exportDefaults.delimiter);
-	const [alphaPref, setAlphaPref] = React.useState(props.prefs.alpha ?? exportDefaults.alpha);
-	const [optimalPref, setOptimalPref] = React.useState(props.prefs.optimal ?? exportDefaults.optimal);
+	const [alphaPref, setAlphaPref] = React.useState(props.prefs.flag_alpha ?? exportDefaults.flag_alpha);
+	const [uniquePref, setUniquePref] = React.useState(props.prefs.flag_unique ?? exportDefaults.flag_unique);
+	const [optimalPref, setOptimalPref] = React.useState(props.prefs.flag_nonoptimal ?? exportDefaults.flag_nonoptimal);
 
 	React.useEffect(() => {
 		props.updatePrefs({
@@ -78,10 +87,11 @@ const ExportOptions = (props: ExportOptionsProps) => {
 			traits: traitsPref,
 			bullet: bulletPref,
 			delimiter: delimiterPref,
-			alpha: alphaPref,
-			optimal: optimalPref
+			flag_alpha: alphaPref,
+			flag_unique: uniquePref,
+			flag_nonoptimal: optimalPref
 		});
-	}, [headerPref, traitsPref, bulletPref, delimiterPref, alphaPref, optimalPref]);
+	}, [headerPref, traitsPref, bulletPref, delimiterPref, alphaPref, uniquePref, optimalPref]);
 
 	const headerOptions = [
 		{ key: 'always', text: 'Always show boss chain', value: 'always' },
@@ -107,15 +117,24 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	];
 
 	const alphaOptions = [
-		{ key: 'flag', text: `Flag exceptions [${ALPHA_FLAG}]`, value: 'flag' },
-		{ key: 'hide', text: 'Hide exceptions', value: 'hide' },
-		{ key: 'ignore', text: 'Ignore', value: 'ignore' }
+		{ key: 'alpha', text: `Alpha [${FLAG_ALPHA}]`, value: FLAG_ALPHA },
+		{ key: 'a', text: 'Letter a', value: 'a' },
+		{ key: 'x', text: 'Letter x', value: 'x' },
+		{ key: 'none', text: 'None', value: '' }
+	];
+
+	const uniqueOptions = [
+		{ key: 'alpha', text: `Uniqueness [${FLAG_UNIQUE}]`, value: FLAG_UNIQUE },
+		{ key: 'u', text: 'Letter u', value: 'u' },
+		{ key: 'x', text: 'Letter x', value: 'x' },
+		{ key: 'none', text: 'None', value: '' }
 	];
 
 	const optimalOptions = [
-		{ key: 'flag', text: `Flag non-optimals [${OPTIMAL_FLAG}]`, value: 'flag' },
-		{ key: 'hide', text: 'Hide non-optimals', value: 'hide' },
-		{ key: 'ignore', text: 'Ignore', value: 'ignore' }
+		{ key: 'iota', text: `Subset [${FLAG_NONOPTIMAL}]`, value: FLAG_NONOPTIMAL },
+		{ key: 'n', text: 'Letter n', value: 'n' },
+		{ key: 'dash', text: 'Double dash', value: '--' },
+		{ key: 'none', text: 'None', value: '' }
 	];
 
 	return (
@@ -137,13 +156,13 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					You can customize the details that are included when exporting. Preferences here will be remembered on all subsequent exports.
+					You can customize the appearance of the export. The following preferences will be remembered on all subsequent exports.
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Header (all nodes only)</label>
+								<label>Header (full export only)</label>
 								<Select
 									options={headerOptions}
 									value={headerPref}
@@ -158,6 +177,8 @@ const ExportOptions = (props: ExportOptionsProps) => {
 									onChange={(e, { value }) => setTraitsPref(value)}
 								/>
 							</Form.Field>
+						</Form.Group>
+						<Form.Group inline>
 							<Form.Field>
 								<label>Bullet style, e.g. <i>{bulletOptions.find(b => b.value === bulletPref).example}</i></label>
 								<Select
@@ -175,21 +196,29 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
+						<div>
+							<Header as='h5'>Flags (when not hidden by filters)</Header>
+						</div>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Alpha rule</label>
-								<Select
-									options={alphaOptions}
-									value={alphaPref}
-									onChange={(e, { value }) => setAlphaPref(value)}
+								<label>Non-optimal</label>
+								<Input style={{ width: '5em' }}
+									value={optimalPref}
+									onChange={(e, { value }) => setOptimalPref(value)}
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Optimal crew</label>
-								<Select
-									options={optimalOptions}
-									value={optimalPref}
-									onChange={(e, { value }) => setOptimalPref(value)}
+								<label>Unique</label>
+								<Input style={{ width: '5em' }}
+									value={uniquePref}
+									onChange={(e, { value }) => setUniquePref(value)}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Alpha exception</label>
+								<Input style={{ width: '5em' }}
+									value={alphaPref}
+									onChange={(e, { value }) => setAlphaPref(value)}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -207,23 +236,23 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		setTraitsPref(exportDefaults.traits);
 		setBulletPref(exportDefaults.bullet);
 		setDelimiterPref(exportDefaults.delimiter);
-		setAlphaPref(exportDefaults.alpha);
-		setOptimalPref(exportDefaults.optimal);
+		setAlphaPref(exportDefaults.flag_alpha);
+		setUniquePref(exportDefaults.flag_unique);
+		setOptimalPref(exportDefaults.flag_nonoptimal);
 	}
 };
 
 type CrewNodeExporterProps = {
 	node: any;
-	allMatchingCrew: any[];
-	dbid: string;
+	matchingGroups: any;
 	exportPrefs: any;
 };
 
 export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
-	const { node, allMatchingCrew, dbid, exportPrefs } = props;
+	const { node, matchingGroups, exportPrefs } = props;
 
 	const copyNode = () => {
-		const output = exportCrewByNodes(allMatchingCrew, [node], exportPrefs);
+		const output = exportNodeGroups(node, matchingGroups, exportPrefs);
 		navigator.clipboard.writeText(output);
 	};
 
@@ -249,7 +278,7 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 	);
 };
 
-const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: any) => {
+const exportNodeGroups = (node: any, nodeGroup: any, exportPrefs: any) => {
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -268,8 +297,8 @@ const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: an
 	const sortedTraits = (traits, alphaTest = '') => {
 		const traitName = (trait) => {
 			let name = allTraits.trait_names[trait];
-			if (exportPrefs.alpha === 'flag' && alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
-				name += `-${ALPHA_FLAG}`;
+			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
+				name += `-${exportPrefs.flag_alpha}`;
 			return name;
 		};
 		return traits.map(t => traitName(t)).sort((a, b) => a.localeCompare(b)).join(', ');
@@ -281,46 +310,33 @@ const exportCrewByNodes = (allMatchingCrew: any[], nodes: any[], exportPrefs: an
 		return name;
 	};
 
-	let matchingCrew = JSON.parse(JSON.stringify(allMatchingCrew));
-	if (exportPrefs.alpha === 'hide') matchingCrew = filterAlphaExceptions(matchingCrew);
-
-	const optimalCombos = getOptimalCombos(matchingCrew);
-
-	const crewFilters = {
-		hideNonOptimals: exportPrefs.optimal === 'hide',
-		usableFilter: ''
-	};
-
 	let output = '';
-	nodes.forEach(node => {
-		let nodeList = '';
-		const matchingRarities = getRaritiesByNode(node, matchingCrew);
-		filterGroupsByNode(node, matchingCrew, matchingRarities, optimalCombos, crewFilters)
-			.sort((a, b) => sortGroups(a, b))
-			.forEach((row, idx) => {
-				if (nodeList !== '') nodeList += '\n';
-				if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
-				if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
-					nodeList += `${idx+1}`;
-				else
-					nodeList += `-`;
-				if (exportPrefs.alpha === 'flag' && row.notes.alphaException) nodeList += ALPHA_FLAG;
-				if (exportPrefs.optimal === 'flag' && row.notes.nonOptimal) nodeList += OPTIMAL_FLAG;
-				const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
-					.map(crew => formatCrewName(crew))
-					.join(`${exportPrefs.delimiter} `);
-				nodeList += ' '+matchingCrew;
-				if (exportPrefs.traits === 'all')
-					nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
-			});
-		if (nodeList !== '') {
-			if (output !== '') output += '\n\n';
-			output += `Node ${node.index+1}`;
-			if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
-				output += ` (${sortedTraits(node.traitsKnown)}, ${Array(node.hiddenLeft).fill('?').join(', ')})`;
-			output += '\n' + nodeList;
-		}
-	});
+	let nodeList = '';
+	nodeGroup.sort((a, b) => sortGroups(a, b))
+		.forEach((row, idx) => {
+			if (nodeList !== '') nodeList += '\n';
+			if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
+			if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
+				nodeList += `${idx+1}`;
+			else
+				nodeList += `-`;
+			if (row.notes.nonOptimal) nodeList += exportPrefs.flag_nonoptimal;
+			if (row.notes.alphaException) nodeList += exportPrefs.flag_alpha;
+			if (row.notes.uniqueCrew) nodeList += exportPrefs.flag_unique;
+			const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
+				.map(crew => formatCrewName(crew))
+				.join(`${exportPrefs.delimiter} `);
+			nodeList += ' '+matchingCrew;
+			if (exportPrefs.traits === 'all')
+				nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
+		});
+	if (nodeList !== '') {
+		if (output !== '') output += '\n\n';
+		output += `Node ${node.index+1}`;
+		if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
+			output += ` (${sortedTraits(node.traitsKnown)}, ${Array(node.hiddenLeft).fill('?').join(', ')})`;
+		output += '\n' + nodeList;
+	}
 
 	return output;
 };

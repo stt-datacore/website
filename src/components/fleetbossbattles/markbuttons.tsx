@@ -152,11 +152,12 @@ type MarkGroupProps = {
 	node: any;
 	traits: string[];
 	rarities: any;
+	renderName: (trait: string) => string;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
 export const MarkGroup = (props: MarkGroupProps) => {
-	const { node, traits } = props;
+	const { node, traits, renderName } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [firstTrait, setFirstTrait] = React.useState('');
@@ -207,9 +208,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					<div style={{ marginTop: '2em' }}>
 						<Header as='h4'>Partial Solve</Header>
 						<Button style={colorize([firstTrait], traitRarity[firstTrait])} onClick={() => handlePairClick([firstTrait, '?'])}>
-							<span style={{ fontStyle: node.dupeTest.includes(firstTrait) ? 'italic' : 'normal' }}>
-								{allTraits.trait_names[firstTrait]}
-							</span>
+							{renderName(firstTrait)}
 							{` `}+ ?
 						</Button>
 					</div>
@@ -226,8 +225,8 @@ export const MarkGroup = (props: MarkGroupProps) => {
 			return (
 				<React.Fragment>
 					{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
-						<span key={idx} style={{ fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal' }}>
-							{allTraits.trait_names[trait]}
+						<span key={idx}>
+							{renderName(trait)}
 						</span>
 					)).reduce((prev, curr) => [prev, prev.length > 0  ? ' + ' : '', curr], [])}
 				</React.Fragment>
@@ -257,7 +256,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				<Button key={idx} compact style={colorize(trait)}
 					onClick={() => handleFirstTrait(trait)}
 				>
-					{allTraits.trait_names[trait]}
+					{renderName(trait)}
 				</Button>
 			)).reduce((prev, curr) => [prev, ' ', curr], [])}
 			{modalIsOpen && <SolvePicker />}
@@ -272,8 +271,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				color: 'white'
 			};
 		}
-		let style = getStyleByRarity(traitRarity[trait]);
-		return {...style, fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal'};
+		return getStyleByRarity(traitRarity[trait]);
 	}
 
 	function handleFirstTrait(trait: string): void {

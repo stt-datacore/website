@@ -94,7 +94,7 @@ export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): v
 	}
 }
 
-export function filterGroupsByNode(node: any, matchingCrew: any[], matchingRarities: any, optimalCombos: any[], crewFilters: any): any {
+export function filterGroupsByNode(node: any, matchingCrew: any[], matchingRarities: any, optimalCombos: any[], finderPrefs: any): any {
 	const comboRarity = matchingRarities.combos;
 	const traitRarity = matchingRarities.traits;
 	const traitGroups = [];
@@ -113,8 +113,8 @@ export function filterGroupsByNode(node: any, matchingCrew: any[], matchingRarit
 		const crewList = crewByNode.filter(crew =>
 			traits.length === crew.node_matches[`node-${node.index}`].traits.length
 				&& traits.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
-				&& (crewFilters.usableFilter !== 'owned' || crew.highest_owned_rarity > 0)
-				&& (crewFilters.usableFilter !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
+				&& (finderPrefs.usable !== 'owned' || crew.highest_owned_rarity > 0)
+				&& (finderPrefs.usable !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
 		);
 
 		let alphaExceptions = 0;
@@ -146,11 +146,11 @@ export function filterGroupsByNode(node: any, matchingCrew: any[], matchingRarit
 		};
 	}).filter(row =>
 		row.crewList.length > 0
-			&& (!crewFilters.hideNonOptimals || !row.notes.nonOptimal)
+			&& (finderPrefs.nonoptimal === 'flag' || !row.notes.nonOptimal)
 	);
 }
 
-function getAllCombos(traits: string[], count: number): any[] {
+export function getAllCombos(traits: string[], count: number): any[] {
 	if (count === 1) return traits.map(trait => [trait]);
 	const combos = [];
 	for (let i = 0; i < traits.length; i++) {

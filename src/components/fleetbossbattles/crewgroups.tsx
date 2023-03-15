@@ -1,10 +1,9 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Message, Table, Label, Button, Icon, Grid } from 'semantic-ui-react';
+import { Message, Table, Label, Icon, Grid } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup } from './markbuttons';
-import { filterGroupsByNode } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
@@ -13,25 +12,21 @@ import allTraits from '../../../static/structured/translation_en.json';
 const FinderContext = React.createContext();
 
 type CrewGroupsProps = {
-	chainId: string;
-	openNodes: any[];
-	allMatchingCrew: any[];
-	matchingCrew: any[];
+	solver: any;
+	matchingGroups: any;
 	matchingRarities: any;
-	optimalCombos: any[];
-	crewFilters: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
-	dbid: string;
 	exportPrefs: any;
 };
 
 const CrewGroups = (props: CrewGroupsProps) => {
-	const { openNodes } = props;
+	const { solver } = props;
+
+	const openNodes = solver.nodes.filter(node => node.open);
 
 	return (
 		<FinderContext.Provider value={props}>
-			<p>Tap a trait if it solves a node. Tap a crew to mark as tried.</p>
 			{openNodes.map(node =>
 				<NodeGroups key={node.index} node={node} />
 			)}
@@ -54,8 +49,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 	)).reduce((prev, curr) => [prev, curr], []);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const matchingRarities = finderData.matchingRarities[`node-${node.index}`];
-	const data = filterGroupsByNode(node, finderData.matchingCrew, matchingRarities, finderData.optimalCombos, finderData.crewFilters);
+	const matchingGroups = finderData.matchingGroups[`node-${node.index}`];
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -66,19 +60,16 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>Node {node.index+1}</p>
 					</div>
 					<div>
-						<CrewNodeExporter
-							node={node} allMatchingCrew={finderData.allMatchingCrew}
-							dbid={finderData.dbid} exportPrefs={finderData.exportPrefs}
-						/>
+						<CrewNodeExporter node={node} matchingGroups={matchingGroups} exportPrefs={finderData.exportPrefs} />
 					</div>
 				</div>
 			</Message>
-			{data.length === 0 &&
+			{matchingGroups.length === 0 &&
 				<Message>
-					No possible solutions found for this node. You may need to change your filter settings, doublecheck your solved traits, or reset the list of attempted crew.
+					No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.
 				</Message>
 			}
-			{data.length > 0 && <GroupTable node={node} data={data} />}
+			{matchingGroups.length > 0 && <GroupTable node={node} data={matchingGroups} />}
 		</div>
 	);
 };
@@ -104,7 +95,7 @@ const GroupTable = (props: GroupTableProps) => {
 	}, [props.data]);
 
 	const hasNotes = data.filter(row => Object.values(row.notes).filter(note => !!note).length > 0).length > 0;
-	const nodeRarities = finderData.matchingRarities[`node-${node.index}`];
+	const matchingRarities = finderData.matchingRarities[`node-${node.index}`];
 
 	const tableConfig = [
 		{ column: 'traits', title: 'Traits', width: hasNotes ? 6 : 8, center: true, reverse: true },
@@ -112,6 +103,13 @@ const GroupTable = (props: GroupTableProps) => {
 		{ column: 'crew', title: 'Crew', width: 8, center: true, reverse: true }
 	];
 	if (!hasNotes) tableConfig.splice(1, 1);
+
+	const traitNameInstance = (trait: string) => {
+		const instances = finderData.solver.traits.filter(t => t.trait === trait);
+		if (instances.length === 1) return allTraits.trait_names[trait];
+		const needed = instances.length - instances.filter(t => t.consumed).length;
+		return `${allTraits.trait_names[trait]} (${needed})`;
+	};
 
 	return (
 		<Table sortable celled selectable striped>
@@ -132,7 +130,7 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} rarities={nodeRarities} solveNode={finderData.solveNode} />
+							<MarkGroup node={node} traits={row.traits} rarities={matchingRarities} solveNode={finderData.solveNode} renderName={traitNameInstance} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>

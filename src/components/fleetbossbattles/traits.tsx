@@ -4,43 +4,62 @@ import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popu
 import allTraits from '../../../static/structured/translation_en.json';
 
 type ChainTraitsProps = {
-	chain: any;
+	solver: any;
 	spotter: any;
 	updateSpotter: (spotter: any) => void;
 };
 
 const ChainTraits = (props: ChainTraitsProps) => {
+	const { solver, spotter, updateSpotter } = props;
+
 	return (
 		<React.Fragment>
-			<TraitsProgress chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
-			<TraitsPossible chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
-			<TraitsChecklist chain={props.chain} spotter={props.spotter} updateSpotter={props.updateSpotter} />
-			<TraitsExporter chain={props.chain} />
+			<TraitsProgress solver={solver} solveNode={onNodeSolved} />
+			<TraitsPossible solver={solver} />
+			<TraitsChecklist solver={solver} spotter={spotter} updateSpotter={updateSpotter} />
+			<TraitsExporter solver={solver} />
 		</React.Fragment>
 	);
+
+	function onNodeSolved(nodeIndex: number, traits: string[]): void {
+		const solves = spotter.solves;
+		let solve = solves.find(solve => solve.node === nodeIndex);
+		if (solve) {
+			solve.traits = traits;
+		}
+		else {
+			solve = solver.nodes[nodeIndex].solve;
+			spotter.solves.push({ node: nodeIndex, traits });
+		}
+		updateSpotter({...spotter, solves: spotter.solves});
+	}
+};
+
+const traitNameInstance = (trait: any) => {
+	if (trait.poolCount > 1) return `${trait.name} (${trait.instance})`;
+	return trait.name;
 };
 
 type TraitsProgressProps = {
-	chain: any;
-	spotter: any;
-	updateSpotter: (spotter: any) => void;
+	solver: any;
+	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
 const TraitsProgress = (props: TraitsProgressProps) => {
-	const { chain, spotter } = props;
+	const { solver } = props;
 
-	const traitOptions = chain.traits.map((trait, traitIndex) => {
+	const traitOptions = solver.traits.filter(t => t.source === 'pool').map(t => {
 		return {
-			key: traitIndex,
-			value: trait,
-			text: allTraits.trait_names[trait]
+			key: t.id,
+			value: t.trait,
+			text: t.name
 		};
 	}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
-		<div style={{ margin: '2em 0' }}>
+		<div style={{ margin: '1em 0' }}>
 			<Header as='h4'>Current Combo Chain</Header>
-			<p>This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.</p>
+			<p>This table shows the progress of the current combo solver. Update the mystery traits when a node is solved.</p>
 			<Table celled selectable striped unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
@@ -49,33 +68,28 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{chain.nodes.map((node, nodeIndex) => renderRow(node, nodeIndex))}
+					{solver.nodes.map((node, nodeIndex) => renderRow(node, nodeIndex))}
 				</Table.Body>
 			</Table>
 		</div>
 	);
 
 	function renderRow(node: any, nodeIndex: number): JSX.Element {
-		let hiddenTraits = node.hidden_traits;
-		if (hiddenTraits.includes('?')) {
-			const solve = spotter.solves.find(solve => solve.node === nodeIndex);
-			if (solve) hiddenTraits = solve.traits;
-		}
-		const nodeIsOpen = hiddenTraits.includes('?');
+		const { givenTraitIds, solve } = node;
 
 		return (
 			<Table.Row key={nodeIndex}>
 				<Table.Cell>
-					{!nodeIsOpen && <Icon name='check' color='green' />}
-					{node.open_traits.map(trait => allTraits.trait_names[trait]).join(' + ')}
+					{!node.open && <Icon name='check' color={node.spotSolve ? 'green' : undefined} />}
+					{givenTraitIds.map(traitId => traitNameInstance(solver.traits[traitId])).join(' + ')}
 				</Table.Cell>
 				<Table.Cell>
 					<Form>
 						<Form.Group inline>
-							{hiddenTraits.map((trait, traitIndex) =>
-								<TraitPicker key={`${chain.id}-${nodeIndex}-${traitIndex}`}
+							{solve.map((trait, traitIndex) =>
+								<TraitPicker key={`${solver.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
-									options={traitOptions} readonly={!node.hidden_traits.includes('?')}
+									options={traitOptions} readonly={!node.open && !node.spotSolve}
 									trait={trait} setTrait={onTraitChange}
 								/>
 							)}
@@ -87,17 +101,9 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 	}
 
 	function onTraitChange(nodeIndex: number, traitIndex: number, newTrait: string): void {
-		const solves = spotter.solves;
-		let solve = solves.find(solve => solve.node === nodeIndex);
-		if (solve) {
-			solve.traits[traitIndex] = newTrait !== '' ? newTrait : '?';
-		}
-		else {
-			const hiddenTraits = chain.nodes[nodeIndex].hidden_traits.slice();
-			hiddenTraits[traitIndex] = newTrait !== '' ? newTrait: '?';
-			spotter.solves.push({ node: nodeIndex, traits: hiddenTraits });
-		}
-		props.updateSpotter({...spotter, solves});
+		const solve = solver.nodes[nodeIndex].solve;
+		solve[traitIndex] = newTrait !== '' ? newTrait : '?';
+		props.solveNode(nodeIndex, solve);
 	}
 };
 
@@ -143,54 +149,22 @@ const TraitPicker = (props: TraitPickerProps) => {
 };
 
 type TraitsPossibleProps = {
-	chain: any;
-	spotter: any;
-	updateSpotter: (spotter: any) => void;
+	solver: any;
 };
 
 const TraitsPossible = (props: TraitsPossibleProps) => {
-	const { chain, spotter } = props;
-
-	const traitsConsumed = [];
-	chain.nodes.forEach((node, nodeIndex) => {
-		let hiddenTraits = node.hidden_traits;
-		if (hiddenTraits.includes('?')) {
-			const solve = spotter.solves.find(solve => solve.node === nodeIndex);
-			if (solve) hiddenTraits = solve.traits;
-		}
-		const nodeIsOpen = hiddenTraits.includes('?');
-		if (!nodeIsOpen) {
-			hiddenTraits.forEach(trait => {
-				if (trait !== '?') traitsConsumed.push(trait);
-			});
-		}
-	});
-
-	const traitList = [];
-	chain.traits.forEach((trait, traitIndex) => {
-		const instance = traitList.filter(t => t.trait === trait).length+1;
-		traitList.push({
-			id: traitIndex,
-			trait,
-			instance,
-			consumed: traitsConsumed.filter(t => t === trait).length >= instance,
-			name: allTraits.trait_names[trait]
-		});
-	});
-	traitList.forEach(trait => {
-		trait.count = traitList.filter(t => t.trait === trait.trait).length;
-	});
+	const { solver } = props;
 
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Possible Traits</Header>
 			<p>This table should match the list of possible traits in-game.</p>
 			<Grid doubling columns={6} style={{ margin: '1em 0' }}>
-				{traitList.map(trait =>
-					<Grid.Column key={trait.id} style={{ textAlign: 'center', padding: '1px' }}>
+				{solver.traits.filter(t => t.source === 'pool').map(t =>
+					<Grid.Column key={t.id} style={{ textAlign: 'center', padding: '1px' }}>
 						<Label size='large'>
-							{trait.consumed && <Icon name='check' color='green' />}
-							{trait.name}{trait.count > 1 ? ` (${trait.instance})`: ''}
+							{t.consumed && <Icon name='check' color='green' />}
+							{traitNameInstance(t)}
 						</Label>
 					</Grid.Column>
 				)}
@@ -200,17 +174,17 @@ const TraitsPossible = (props: TraitsPossibleProps) => {
 };
 
 type TraitsChecklistProps = {
-	chain: any;
+	solver: any;
 	spotter: any;
 	updateSpotter: (spotter: any) => void;
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
-	const { chain, spotter, updateSpotter } = props;
+	const { solver, spotter, updateSpotter } = props;
 
 	const traits = [];
-	chain.traits.forEach(trait => {
-		if (!traits.includes(trait)) traits.push(trait);
+	solver.traits.forEach(t => {
+		if (!traits.includes(t.trait)) traits.push(t.trait);
 	});
 	const traitOptions = traits.map(trait => {
 			return {
@@ -239,14 +213,13 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 	);
 };
 
-
 type TraitsExporterProps = {
-	chain: any;
+	solver: any;
 };
 
 const TraitsExporter = (props: TraitsExporterProps) => {
-	const { chain } = props;
-	const { nodes, traits } = chain;
+	const { solver } = props;
+	const { nodes, traits } = solver;
 
 	const CABLink = 'https://docs.google.com/spreadsheets/d/1aGdAhgDJqknJKz-im4jxASxcE-cmVL8w2FQEKxpK4Uw/edit#gid=631453914';
 	const CABVer = '3.02';
@@ -260,15 +233,15 @@ const TraitsExporter = (props: TraitsExporterProps) => {
 			}
 			const node = nodes[n];
 			for (let m = 0; m < 2; m++) {
-				if (m < node.open_traits.length)
-					output += allTraits.trait_names[node.open_traits[m]];
+				if (m < node.givenTraitIds.length)
+					output += traits[node.givenTraitIds[m]].name;
 				if (m == 0) output += '\n';
 			}
-			output += '\t\t' + node.hidden_traits.length + '\n';
+			output += '\t\t' + node.solvedTraitIds.length + '\n';
 		}
 		output += '\n';
-		traits.forEach(trait => {
-			output += allTraits.trait_names[trait] + '\n';
+		traits.filter(t => t.source === 'pool').forEach(t => {
+			output += t.name + '\n';
 		});
 		navigator.clipboard.writeText(output);
 	};

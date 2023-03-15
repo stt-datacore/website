@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown, Message } from 'semantic-ui-react';
 
-import ChainSpotter from '../components/fleetbossbattles/chainspotter';
+import ChainSolver from '../components/fleetbossbattles/chainsolver';
 
 import { useStateWithStorage } from '../utils/storage';
 
@@ -68,7 +68,6 @@ const ChainPicker = () => {
 			const chain = {
 				id: `${boss.id}-${chainIndex}`,
 				source: 'playerdata',
-				dbid: allData.playerData.player.dbid,
 				difficultyId: boss.difficulty_id,
 				traits: boss.combo.traits,
 				nodes: boss.combo.nodes,
@@ -102,18 +101,16 @@ const ChainPicker = () => {
 
 	return (
 		<React.Fragment>
-			<div style={{ margin: '2em 0' }}>
-				{chainOptions.length > 0 &&
-					<Dropdown fluid selection
-						placeholder='Select a difficulty'
-						options={chainOptions}
-						value={activeBoss}
-						onChange={(e, { value }) => setActiveBoss(value)}
-					/>
-				}
-				{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
-			</div>
-			{chain && <ChainSpotter key={chain.id} chain={chain} allCrew={allData.allCrew} />}
+			{chainOptions.length > 0 &&
+				<Dropdown fluid selection
+					placeholder='Select a difficulty'
+					options={chainOptions}
+					value={activeBoss}
+					onChange={(e, { value }) => setActiveBoss(value)}
+				/>
+			}
+			{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
+			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.allCrew} dbid={allData.playerData.player.dbid} />}
 		</React.Fragment>
 	);
 };

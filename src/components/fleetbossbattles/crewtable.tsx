@@ -12,18 +12,17 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import allTraits from '../../../static/structured/translation_en.json';
 
 type CrewTableProps = {
-	chainId: string;
-	openNodes: any[];
+	solver: any;
 	matchingCrew: any[];
 	matchingRarities: any;
 	optimalCombos: any[];
-	crewFilters: any;
+	finderPrefs: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
 const CrewTable = (props: CrewTableProps) => {
-	const { chainId, openNodes, matchingRarities, optimalCombos, crewFilters } = props;
+	const { solver, matchingRarities, optimalCombos, finderPrefs } = props;
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -31,6 +30,7 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true }
 	];
 
+	const openNodes = solver.nodes.filter(node => node.open);
 	openNodes.forEach(node => {
 		const renderTitle = (node) => {
 			const formattedOpen = node.traitsKnown.map((trait, idx) => (
@@ -59,17 +59,14 @@ const CrewTable = (props: CrewTableProps) => {
 	tableConfig.push({ width: 1, title: 'Trial' });
 
 	return (
-		<React.Fragment>
-			<p>Use the <Icon name='check' /><Icon name='x' /> buttons to mark crew who have been tried.</p>
-			<SearchableTable
-				id={`fbb/${chainId}/crewtable_`}
-				data={props.matchingCrew}
-				config={tableConfig}
-				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-				showFilterOptions={true}
-			/>
-		</React.Fragment>
+		<SearchableTable
+			id={`fbb/${solver.id}/crewtable_`}
+			data={props.matchingCrew}
+			config={tableConfig}
+			renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
+			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+			showFilterOptions={true}
+		/>
 	);
 
 	function renderTableRow(crew: any, idx: number): JSX.Element {
@@ -116,17 +113,17 @@ const CrewTable = (props: CrewTableProps) => {
 	function descriptionLabel(crew: any): JSX.Element {
 		return (
 			<div>
-				{!crewFilters.hideAlphaExceptions && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
-				{!crewFilters.hideNonOptimals && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
+				{finderPrefs.alpha === 'flag' && !isCrewAlphaCompliant(crew) && <Label color='orange'>Alpha exception</Label>}
+				{finderPrefs.nonoptimal === 'flag' && !isCrewOptimal(crew, optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}
 
 	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
-		if (crewFilters.hideNonOptimals && !isCrewOptimal(crew, optimalCombos)) return false;
-		if ((crewFilters.usableFilter === 'owned' || crewFilters.usableFilter === 'thawed') && crew.highest_owned_rarity === 0) return false;
-		if (crewFilters.usableFilter === 'thawed' && crew.only_frozen) return false;
+		if (finderPrefs.nonoptimal === 'hide' && !isCrewOptimal(crew, optimalCombos)) return false;
+		if ((finderPrefs.usable === 'owned' || finderPrefs.usable === 'thawed') && crew.highest_owned_rarity === 0) return false;
+		if (finderPrefs.usable === 'thawed' && crew.only_frozen) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -157,8 +154,13 @@ const CrewTable = (props: CrewTableProps) => {
 					color: 'white'
 				};
 			}
-			let style = getStyleByRarity(traitRarity[trait]);
-			return {...style, fontStyle: node.dupeTest.includes(trait) ? 'italic' : 'normal'};
+			return getStyleByRarity(traitRarity[trait]);
+		};
+		const traitNameInstance = (trait: string) => {
+			const instances = solver.traits.filter(t => t.trait === trait);
+			if (instances.length === 1) return allTraits.trait_names[trait];
+			const needed = instances.length - instances.filter(t => t.consumed).length;
+			return `${allTraits.trait_names[trait]} (${needed})`;
 		};
 
 		const nodeMatches = crew.node_matches[`node-${index}`];
@@ -168,7 +170,7 @@ const CrewTable = (props: CrewTableProps) => {
 			<React.Fragment>
 				{nodeMatches.traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
 					<Label key={idx} style={colorize(trait)}>
-						{allTraits.trait_names[trait]}
+						{traitNameInstance(trait)}
 					</Label>
 				)).reduce((prev, curr) => [prev, ' ', curr], [])}
 			</React.Fragment>
