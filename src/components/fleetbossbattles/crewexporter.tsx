@@ -39,7 +39,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	const sortedTraits = (traits: string[], alphaTest: string = '') => {
 		const traitNameInstance = (trait: string) => {
 			let name = allTraits.trait_names[trait];
-			if (exportPrefs.duplicates === 'number') {
+			if (prefValue(exportPrefs, 'duplicates') === 'number') {
 				const instances = traitData.filter(t => t.trait === trait);
 				if (instances.length > 1) {
 					const needed = instances.length - instances.filter(t => t.consumed).length;
@@ -47,15 +47,15 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 				}
 			}
 			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
-				name += `-${exportPrefs.flag_alpha}`;
+				name += `-${prefValue(exportPrefs, 'flag_alpha')}`;
 			return name;
 		};
 		return traits.map(t => traitNameInstance(t)).sort((a, b) => a.localeCompare(b)).join(', ');
 	};
 
 	const formatCrewName = (crew: any) => {
-		let name = exportPrefs.delimiter === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
-		if (crew.nodes_rarity > 1 && exportPrefs.coverage === 'asterisk') name = `*${name}*`;
+		let name = prefValue(exportPrefs, 'delimiter') === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
+		if (crew.nodes_rarity > 1 && prefValue(exportPrefs, 'coverage') === 'asterisk') name = `*${name}*`;
 		return name;
 	};
 
@@ -64,19 +64,19 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	nodeGroups.sort((a, b) => sortGroups(a, b))
 		.forEach((row, idx) => {
 			if (nodeList !== '') nodeList += '\n';
-			if (exportPrefs.bullet === 'full') nodeList += `${node.index+1}.`;
-			if (exportPrefs.bullet === 'full' || exportPrefs.bullet === 'number')
+			if (prefValue(exportPrefs, 'bullet') === 'full') nodeList += `${node.index+1}.`;
+			if (prefValue(exportPrefs, 'bullet') === 'full' || prefValue(exportPrefs, 'bullet') === 'number')
 				nodeList += `${idx+1}`;
 			else
 				nodeList += `-`;
-			if (row.notes.nonOptimal) nodeList += exportPrefs.flag_nonoptimal;
-			if (row.notes.alphaException) nodeList += exportPrefs.flag_alpha;
-			if (row.notes.uniqueCrew) nodeList += exportPrefs.flag_unique;
+			if (row.notes.nonOptimal) nodeList += prefValue(exportPrefs, 'flag_nonoptimal');
+			if (row.notes.alphaException) nodeList += prefValue(exportPrefs, 'flag_alpha');
+			if (row.notes.uniqueCrew) nodeList += prefValue(exportPrefs, 'flag_unique');
 			const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
 				.map(crew => formatCrewName(crew))
-				.join(`${exportPrefs.delimiter} `);
+				.join(`${prefValue(exportPrefs, 'delimiter')} `);
 			nodeList += ' '+matchingCrew;
-			if (exportPrefs.traits === 'all')
+			if (prefValue(exportPrefs, 'traits') === 'all')
 				nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
 		});
 
@@ -85,11 +85,15 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 
 	if (output !== '') output += '\n\n';
 	output += `Node ${node.index+1}`;
-	if (exportPrefs.traits === 'all' || exportPrefs.traits === 'nodes')
+	if (prefValue(exportPrefs, 'traits') === 'all' || prefValue(exportPrefs, 'traits') === 'nodes')
 		output += ` (${nodeTraits(node)})`;
 	output += '\n' + nodeList;
 
 	return output;
+};
+
+const prefValue = (prefs: any, field: string) => {
+	return prefs[field] ?? exportDefaults[field];
 };
 
 const nodeTraits = (node: any) => {
@@ -154,7 +158,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
 		let header = '';
-		if (exportPrefs.header === 'always' || (exportPrefs.header === 'initial' && solver.nodes.length-openNodes.length === 0)) {
+		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solver.nodes.length-openNodes.length === 0)) {
 			header += `${solver.description} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
 			header += '\n\n';
 		}
@@ -165,7 +169,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 				nodeList = exportNodeGroups(node, resolver.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
 			}
 			else {
-				if (exportPrefs.solve === 'always' || (exportPrefs.solve === 'spot' && node.spotSolve)) {
+				if (prefValue(exportPrefs, 'solve') === 'always' || (prefValue(exportPrefs, 'solve') === 'spot' && node.spotSolve)) {
 					nodeList = `Node ${node.index+1} (${nodeTraits(node)})`;
 				}
 			}
@@ -244,27 +248,6 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	const coverageOptions = [
 		{ key: 'asterisk', text: 'Asterisk (italicize)', value: 'asterisk' },
 		{ key: 'ignore', text: 'Do nothing', value: 'ignore' }
-	];
-
-	const alphaOptions = [
-		{ key: 'alpha', text: `Alpha [${FLAG_ALPHA}]`, value: FLAG_ALPHA },
-		{ key: 'a', text: 'Letter a', value: 'a' },
-		{ key: 'x', text: 'Letter x', value: 'x' },
-		{ key: 'none', text: 'None', value: '' }
-	];
-
-	const uniqueOptions = [
-		{ key: 'alpha', text: `Uniqueness [${FLAG_UNIQUE}]`, value: FLAG_UNIQUE },
-		{ key: 'u', text: 'Letter u', value: 'u' },
-		{ key: 'x', text: 'Letter x', value: 'x' },
-		{ key: 'none', text: 'None', value: '' }
-	];
-
-	const nonoptimalOptions = [
-		{ key: 'iota', text: `Subset [${FLAG_NONOPTIMAL}]`, value: FLAG_NONOPTIMAL },
-		{ key: 'n', text: 'Letter n', value: 'n' },
-		{ key: 'dash', text: 'Double dash', value: '--' },
-		{ key: 'none', text: 'None', value: '' }
 	];
 
 	return (
