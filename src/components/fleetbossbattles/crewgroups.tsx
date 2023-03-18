@@ -3,9 +3,7 @@ import { InView } from 'react-intersection-observer';
 import { Message, Table, Label, Icon, Grid } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
-import { MarkGroup } from './markbuttons';
-
-import ItemDisplay from '../itemdisplay';
+import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
@@ -94,7 +92,6 @@ const GroupTable = (props: GroupTableProps) => {
 	}, [props.data]);
 
 	const hasNotes = data.filter(row => Object.values(row.notes).filter(note => !!note).length > 0).length > 0;
-	const nodeRarities = finderData.resolver.rarities[`node-${node.index}`];
 
 	const tableConfig = [
 		{ column: 'traits', title: 'Traits', width: hasNotes ? 6 : 8, center: true, reverse: true },
@@ -129,7 +126,7 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} rarities={nodeRarities} solveNode={finderData.solveNode} renderName={traitNameInstance} />
+							<MarkGroup node={node} traits={row.traits} solver={finderData.solver} resolver={finderData.resolver} solveNode={finderData.solveNode} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
@@ -218,6 +215,7 @@ type GroupCrewProps = {
 };
 
 const GroupCrew = (props: GroupCrewProps) => {
+	const finderData = React.useContext(FinderContext);
 	const { crewList } = props;
 
 	const [showCrew, setShowCrew] = React.useState(false);
@@ -235,43 +233,14 @@ const GroupCrew = (props: GroupCrewProps) => {
 			{showCrew &&
 				<Grid doubling columns={3} textAlign='center'>
 					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
-						<CrewCard key={crew.symbol} crew={crew} />
+						<MarkCrew key={crew.symbol} crew={crew} trigger='card'
+							solver={finderData.solver} resolver={finderData.resolver}
+							solveNode={finderData.solveNode} markAsTried={finderData.markAsTried}
+						/>
 					)}
 				</Grid>
 			}
 		</React.Fragment>
-	);
-};
-
-type CrewCardProps = {
-	crew: any;
-};
-
-const CrewCard = (props: CrewCardProps) => {
-	const finderData = React.useContext(FinderContext);
-	const { crew } = props;
-
-	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
-
-	return (
-		<Grid.Column key={crew.symbol} textAlign='center'>
-			<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => finderData.markAsTried(crew.symbol)}>
-				<ItemDisplay
-					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-					size={48}
-					maxRarity={crew.max_rarity}
-					rarity={crew.highest_owned_rarity}
-				/>
-			</span>
-			<div>
-				<span style={{ cursor: 'pointer' }} onClick={() => finderData.markAsTried(crew.symbol)}>
-					{crew.only_frozen && <Icon name='snowflake' />}
-					<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
-						{crew.name}
-					</span>
-				</span>
-			</div>
-		</Grid.Column>
 	);
 };
 

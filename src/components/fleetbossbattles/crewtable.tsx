@@ -101,7 +101,10 @@ const CrewTable = (props: CrewTableProps) => {
 					);
 				})}
 				<Table.Cell textAlign='center'>
-					<MarkCrew crew={crew} openNodes={openNodes} solveNode={props.solveNode} markAsTried={props.markAsTried} />
+					<MarkCrew crew={crew} trigger='trial'
+						solver={solver} resolver={resolver}
+						solveNode={props.solveNode} markAsTried={props.markAsTried}
+					/>
 				</Table.Cell>
 			</Table.Row>
 		);
