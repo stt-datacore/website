@@ -50,15 +50,6 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 
 	const traitPool = solver.traits.filter(t => t.source === 'pool');
 
-	const traitOptions = solver.traits.filter(t => t.source === 'pool').map(t => {
-		return {
-			key: t.id,
-			value: t.trait,
-			text: t.name,
-			consumed: t.consumed
-		};
-	}).sort((a, b) => a.text.localeCompare(b.text));
-
 	return (
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>Current Solutions</Header>
@@ -131,8 +122,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 			return {
 				key: t.id,
 				value: t.trait,
-				text: t.name,
-				consumed: t.consumed
+				text: t.name
 			};
 		}).sort((a, b) => a.text.localeCompare(b.text));
 

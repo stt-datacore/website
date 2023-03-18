@@ -276,6 +276,15 @@ export const MarkGroup = (props: MarkGroupProps) => {
 
 	function handleFirstTrait(trait: string): void {
 		if (node.hiddenLeft === 1) {
+			if (node.solve.length > 1) {
+				let solvedIndex = 0;
+				const solve = node.solve.map(hiddenTrait => {
+					if (hiddenTrait === '?') return trait;
+					return hiddenTrait;
+				});
+				props.solveNode(node.index, solve);
+				return;
+			}
 			props.solveNode(node.index, [trait]);
 			return;
 		}
