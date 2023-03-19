@@ -325,6 +325,12 @@ type SolveButtonProps = {
 const SolveButton = (props: SolveButtonProps) => {
 	const { node, traits, rarity, traitData, compact } = props;
 
+	const traitSort = (a: string, b: string) => {
+		if (a === '?') return 1;
+		if (b === '?') return -1;
+		return allTraits.trait_names[a].localeCompare(allTraits.trait_names[b]);
+	};
+
 	return (
 		<Button compact={compact} style={getTraitsStyle(rarity)} onClick={() => props.solveNode(node.index, traits)}>
 			{renderTraits()}
@@ -334,7 +340,7 @@ const SolveButton = (props: SolveButtonProps) => {
 	function renderTraits(): JSX.Element {
 		return (
 			<React.Fragment>
-				{traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+				{traits.sort((a, b) => traitSort(a, b)).map((trait, idx) => (
 					<span key={idx}>
 						{trait === '?' ? '?' : getTraitName(trait)}
 					</span>
