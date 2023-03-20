@@ -30,7 +30,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 	const traitRarity = nodeRarities.traits;
 
 	const GroupSolvePicker = () => {
-		const solveOptions = comboRarity.filter(rarity => rarity.combo.includes(firstTrait))
+		const solveOptions = comboRarity.filter(rarity => rarity.combo.includes(firstTrait) && rarity.crew.length > 0)
 			.sort((a, b) => b.crew.length - a.crew.length)
 			.map((rarity, idx) => {
 				return {
@@ -53,7 +53,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					<Header as='h4'>
 						{node.traitsKnown.map((trait, traitIndex) => (
 							<span key={traitIndex}>
-								{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
+								{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
 							</span>
 						)).reduce((prev, curr) => [prev, curr], [])}
 					</Header>
@@ -109,17 +109,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 			return;
 		}
 
-		// Auto-solve when only 1 valid pair that includes clicked trait
-		//	(unless pair is unique or has alpha exception)
-		//	Otherwise show confirmation dialog
-		const validPairs = comboRarity.filter(rarity => rarity.combo.includes(trait));
-		if (validPairs.length === 1) {
-			if (validPairs[0].crew.length > 1 && !validPairs[0].alphaException) {
-				props.solveNode(node.index, validPairs[0].combo);
-				return;
-			}
-		}
-
+		// Otherwise show confirmation dialog
 		setFirstTrait(trait);
 		setModalIsOpen(true);
 	}
@@ -257,16 +247,15 @@ const SolvePicker = (props: SolvePickerProps) => {
 		const nodes = nodeMatches.map(node => {
 			const open = props.solver.nodes.find(n => n.index === node.index);
 
-			const solveOptions = props.resolver.rarities[`node-${node.index}`].combos
-				.filter(rarity => rarity.combo.every(trait => node.traits.includes(trait)))
-				.sort((a, b) => b.crew.length - a.crew.length)
-				.map((rarity, idx) => {
-					return {
-						key: idx,
-						value: rarity.combo,
-						rarity: rarity.crew.length
-					};
-			});
+			const comboRarities = props.resolver.rarities[`node-${node.index}`].combos;
+			const solveOptions = node.combos.map((combo, idx) => {
+				const rarity = comboRarities.find(rarity => rarity.combo.every(trait => combo.includes(trait)));
+				return {
+					key: idx,
+					value: combo,
+					rarity: rarity.crew.length
+				};
+			}).sort((a, b) => b.rarity - a.rarity);
 
 			return {
 				...open,
@@ -276,13 +265,13 @@ const SolvePicker = (props: SolvePickerProps) => {
 		});
 
 		return (
-			<Grid doubling columns={3} textAlign='center'>
+			<Grid doubling columns={nodes.length} textAlign='center'>
 				{nodes.map(node =>
 					<Grid.Column key={node.index}>
 						<Header as='h4' style={{ marginBottom: '0' }}>
 							{node.traitsKnown.map((trait, traitIndex) => (
 								<span key={traitIndex}>
-									{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
+									{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
 								</span>
 							)).reduce((prev, curr) => [prev, curr], [])}
 						</Header>
