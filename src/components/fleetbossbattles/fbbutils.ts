@@ -43,8 +43,7 @@ export function getRaritiesByNode(node: any, crewList: any[]): any {
 	const traitRarity = {};
 	const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
 	crewByNode.forEach(crew => {
-		const crewTraits = crew.node_matches[`node-${node.index}`].traits;
-		getAllCombos(crewTraits, node.hiddenLeft).forEach(combo => {
+		crew.node_matches[`node-${node.index}`].combos.forEach(combo => {
 			const existing = possibleCombos.find(possible => possible.combo.every(trait => combo.includes(trait)));
 			if (existing) {
 				if (crew.in_portal) existing.crew.push(crew.symbol);
@@ -54,7 +53,7 @@ export function getRaritiesByNode(node: any, crewList: any[]): any {
 			}
 		});
 		const portalValue = crew.in_portal ? 1 : 0;
-		crewTraits.forEach(trait => {
+		crew.node_matches[`node-${node.index}`].traits.forEach(trait => {
 			traitRarity[trait] = traitRarity[trait] ? traitRarity[trait] + portalValue : portalValue;
 		});
 	});

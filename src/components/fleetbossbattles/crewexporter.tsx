@@ -55,7 +55,10 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 
 	const formatCrewName = (crew: any) => {
 		let name = prefValue(exportPrefs, 'delimiter') === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
-		if (crew.nodes_rarity > 1 && prefValue(exportPrefs, 'coverage') === 'asterisk') name = `*${name}*`;
+		if (crew.nodes_rarity > 1) {
+			if (prefValue(exportPrefs, 'coverage') === 'asterisk') name = `*${name}*`;
+			else if (prefValue(exportPrefs, 'coverage') === 'bold') name = `**${name}**`;
+		}
 		return name;
 	};
 
@@ -247,6 +250,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 
 	const coverageOptions = [
 		{ key: 'asterisk', text: 'Asterisk (italicize)', value: 'asterisk' },
+		{ key: 'bold', text: 'Double asterisk (bold)', value: 'bold' },
 		{ key: 'ignore', text: 'Do nothing', value: 'ignore' }
 	];
 
