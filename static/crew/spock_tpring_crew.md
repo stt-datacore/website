@@ -4,7 +4,7 @@ rarity: 5
 series: snw
 memory_alpha:
 bigbook_tier: 5
-events: 36
+events: 37
 in_portal:
 date: 31/10/2022
 obtained: Campaign

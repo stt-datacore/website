@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The event rate is likely to slow for this particular Torres variant due to a few previously tapped traits, but with THREE variant-best bases, she can pick her seat to any Torres or Klingon events down the line. More frequently useful to most players is voyage work that compares almost identically to former mega Determined Janeway - someone who might be on your voyage right now. Another year or two of value there plus a spot in the huge Klingon collection makes 'Lanna a fine card to behold, even if she's not a top line citation name.
+A shame Torres can’t collect points for her snappy uniform. Released as an appetite whetter just a month before the superior Determined Janeway, Torres’ traits can’t compare to her Captain’s comp, yet that’s all she has. Spotty variant events aside, B'Elanna is left with trait triggers to comprise a portfolio that once included voyages and daily shuttle work.
+
+More dire options surely exist, but without standout numbers in any area, she’s unlikely to make many retrieval lists, meaning it will take several low end beholds before she approaches immortalization status for your roster.

@@ -3,8 +3,8 @@ name: Ambassador Spock
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 49
+bigbook_tier: 5
+events: 50
 in_portal: true
 date: 10/03/2016
 obtained: Pack

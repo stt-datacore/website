@@ -4,7 +4,7 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 6
-events: 45
+events: 46
 in_portal: true
 date: 24/04/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-She offers no impressive stats for daily use but a DIP base over 900 with bonuses paired with Kira and trait events have her in and out of the freezer. Her equp cost is on the expensive side and littered with faction items, but the weekend work, including three big bonus features, generally pays it off. If you're not a fan of Faction events, a pair of collections including the huge 100 threshold Costume Party offers something to veteran players while her trait lineup has the potential to boost both of those attributes.
+‘Licensed to sit in cryo’ doesn’t have the same ring to it, but if you thought you’d be using a 2017 Super Rare crew on every voyage, well then we can’t help you. This is still a fine Kira variant, though, especially considering her age and lack of a third skill. More collections are bound to amass and she has a fantastic event count/skill set combo to eat your merits for quarterly thaws. Now fire up the dirigible, we’re getting out of here. Very slowly.
