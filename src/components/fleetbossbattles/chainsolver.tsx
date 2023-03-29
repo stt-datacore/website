@@ -3,7 +3,7 @@ import { Step, Icon, Message } from 'semantic-ui-react';
 
 import ChainCrew from './crew';
 import ChainTraits from './traits';
-import { getAllCombos, getComboIndex, removeCrewNodeCombo } from './fbbutils';
+import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
 
 import { useStateWithStorage } from '../../utils/storage';
 
@@ -175,9 +175,9 @@ const ChainSolver = (props: ChainSolverProps) => {
 		// Ignore combos of:
 		//	1) Crew used to solve other nodes
 		//	2) Attempted crew
-		const knownSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
+		const confirmedSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
 			.map(node => props.allCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id).symbol);
-		[knownSolves, spotter.attemptedCrew].forEach(group => {
+		[confirmedSolves, spotter.attemptedCrew].forEach(group => {
 			group.forEach(attempt => {
 				const crew = props.allCrew.find(ac => ac.symbol === attempt);
 				solverNodes.filter(node => node.open).forEach(node => {
@@ -194,13 +194,15 @@ const ChainSolver = (props: ChainSolverProps) => {
 		// Also ignore unique combos of non-portal crew
 		//	Set to <= 1 to ignore ALL unique combos
 		allComboCounts.filter(count => count.portals <= 0).forEach(count => {
+			// Allow unique portal crew for Nightmare Node 5
+			if (chain.difficultyId === 5 && count.index === 4 && count.portals === 1) return;
 			ignoreCombo(count.index, count.combo);
 		});
 
 		// Validate matching combos and traits, factoring ignored combos
 		ignoredCombos.forEach(ignored => {
 			allMatchingCrew.forEach(crew => {
-				if (crew.nodes.includes(ignored.index) && getComboIndex(crew.node_matches[`node-${ignored.index}`].combos, ignored.combo) >= 0)
+				if (crew.nodes.includes(ignored.index))
 					removeCrewNodeCombo(crew, ignored.index, ignored.combo);
 			});
 		});

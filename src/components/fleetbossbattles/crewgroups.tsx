@@ -50,7 +50,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
-			<Message>
+			<Message style={{ position: 'sticky', top: 45, zIndex: 2 }}>
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<div>
 						<Message.Header>{formattedOpen} + {hidden}</Message.Header>

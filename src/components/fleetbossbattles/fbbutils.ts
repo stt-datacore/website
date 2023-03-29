@@ -101,7 +101,7 @@ export function filterGroupsByNode(node: any, crewList: any[], rarities: any, op
 		const nonPortal = crewSet.length === 0;	// Should never see this, if everything working as expected
 
 		const nodeOptimalCombos = optimalCombos.filter(combos => combos.nodes.includes(node.index)).map(combos => combos.traits);
-		const nonOptimal = getComboIndex(nodeOptimalCombos, traits) === -1;
+		const nonOptimal = getComboIndexOf(nodeOptimalCombos, traits) === -1;
 
 		const notes = { alphaException, uniqueCrew, nonPortal, nonOptimal };
 
@@ -128,21 +128,22 @@ export function getAllCombos(traits: string[], count: number): any[] {
 	return combos;
 }
 
-export function getComboIndex(combos: any[], combo: string[]): number {
-	let comboIndex = -1;
+function getComboIndexOf(combos: any[], combo: string[]): number {
+	let combosIndex = -1;
 	for (let i = 0; i < combos.length; i++) {
 		if (combos[i].every(trait => combo.includes(trait))) {
-			comboIndex = i;
+			combosIndex = i;
 			continue;
 		}
 	}
-	return comboIndex;
+	return combosIndex;
 }
 
 export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): void {
 	const crewMatches = crew.node_matches[`node-${nodeIndex}`];
-	const comboIndex = getComboIndex(crewMatches.combos, combo);
-	crewMatches.combos.splice(comboIndex, 1);
+	const combosIndex = getComboIndexOf(crewMatches.combos, combo);
+	if (combosIndex === -1) return;
+	crewMatches.combos.splice(combosIndex, 1);
 	if (crewMatches.combos.length > 0) {
 		const validTraits = [];
 		crewMatches.combos.forEach(crewCombo => {

@@ -32,22 +32,6 @@ const ChainCrew = (props: ChainCrewProps) => {
 
 	const [resolver, setResolver] = React.useState(undefined);
 
-	const handleKeyPress = React.useCallback((event) => {
-		if (event.altKey && event.key === 'i') {
-			setFilterPrefs(prev => {
-				const newState = prev.nonoptimal === 'hide' ? 'flag' : 'hide';
-				return {...prev, nonoptimal: newState};
-			});
-		}
-	}, []);
-
-	React.useEffect(() => {
-		document.addEventListener('keydown', handleKeyPress);
-		return () => {
-			document.removeEventListener('keydown', handleKeyPress);
-		};
-	}, [handleKeyPress]);
-
 	React.useEffect(() => {
 		let resolvedCrew = JSON.parse(JSON.stringify(solver.crew));
 		if (filterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);

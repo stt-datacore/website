@@ -127,24 +127,15 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 	};
 
 	return (
-		<React.Fragment>
-			<Popup
-				content='Copied!'
-				on='click'
-				position='bottom center'
-				size='tiny'
-				trigger={
-					<Button animated onClick={() => copyNode()}>
-						<Button.Content visible>
-							<Icon name='clipboard list' />
-						</Button.Content>
-						<Button.Content hidden>
-							Copy
-						</Button.Content>
-					</Button>
-				}
-			/>
-		</React.Fragment>
+		<Popup
+			content='Copied!'
+			on='click'
+			position='bottom center'
+			size='tiny'
+			trigger={
+				<Button icon='clipboard' onClick={() => copyNode()} />
+			}
+		/>
 	);
 };
 
@@ -196,7 +187,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 					position='right center'
 					size='tiny'
 					trigger={
-						<Button icon='clipboard list' content='Copy possible crew to clipboard' onClick={() => copyFull()} />
+						<Button icon='clipboard' content='Copy possible crew to clipboard' onClick={() => copyFull()} />
 					}
 				/>
 			</Message.Content>

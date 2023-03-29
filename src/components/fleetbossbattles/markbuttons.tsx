@@ -149,7 +149,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 					<ItemDisplay
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-						size={48}
+						size={60}
 						maxRarity={crew.max_rarity}
 						rarity={crew.highest_owned_rarity}
 					/>
