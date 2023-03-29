@@ -3,7 +3,7 @@ name: Jhamel
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 14
 in_portal: true
 date: 20/08/2020
