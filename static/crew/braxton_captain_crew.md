@@ -3,7 +3,7 @@ name: Captain Braxton
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 14
 in_portal: true
 date: 16/01/2019

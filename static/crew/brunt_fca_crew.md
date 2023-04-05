@@ -3,7 +3,7 @@ name: Brunt, F.C.A.
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 20
 in_portal:
 date: 15/06/2022

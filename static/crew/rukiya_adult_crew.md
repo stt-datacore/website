@@ -3,7 +3,7 @@ name: Adult Rukiya
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 5
 in_portal:
 date: 09/11/2022
