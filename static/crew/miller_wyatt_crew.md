@@ -3,7 +3,7 @@ name: Wyatt Miller
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 8
 in_portal: true
 date: 18/02/2021
