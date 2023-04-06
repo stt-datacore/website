@@ -191,9 +191,8 @@ const ChainSolver = (props: ChainSolverProps) => {
 			});
 		});
 
-		// Also ignore unique combos of non-portal crew
-		//	Set to <= 1 to ignore ALL unique combos
-		allComboCounts.filter(count => count.portals <= 0).forEach(count => {
+		// Ignore ALL unique combos
+		allComboCounts.filter(count => count.portals <= 1).forEach(count => {
 			// Allow unique portal crew for Nightmare Node 5
 			if (chain.difficultyId === 5 && count.index === 4 && count.portals === 1) return;
 			ignoreCombo(count.index, count.combo);
