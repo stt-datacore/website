@@ -3,7 +3,7 @@ name: Fury Kes
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 6
 in_portal: true
 date: 30/04/2019

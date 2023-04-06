@@ -3,7 +3,7 @@ name: Sanctuary Booker
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 34
 in_portal: true
 date: 09/02/2022
