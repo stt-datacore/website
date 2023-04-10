@@ -41,7 +41,7 @@ const citeOptimizer = (playerData, allCrew) => {
   return new Promise((resolve, reject) => {
     Optimizer.assessCrewRoster(playerData, allCrew);
     Optimizer.sortVoyageRankings();
-
+    Optimizer.findCurrentBestCrew();
     Optimizer.findBestForRarity();
     Optimizer.findCrewToTrain();
     Optimizer.findEVContributionOfCrewToTrain();
