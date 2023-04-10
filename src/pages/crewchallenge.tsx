@@ -667,15 +667,16 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 				'artificial_life', 'nonhuman', 'organic', 'species_8472',
 				'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 				'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-				'feb2023',
 				'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
+			];
+			const ignoreRe = [
+				/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
+				/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 			];
 			const variantTraits = [];
 			traitsHidden.forEach(trait => {
-				if (!series.includes(trait) && !ignore.includes(trait)) {
-					// Also ignore exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage
-					if (!/^exclusive_/.test(trait))
-						variantTraits.push(trait);
+				if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
+					variantTraits.push(trait);
 				}
 			});
 			return variantTraits;
