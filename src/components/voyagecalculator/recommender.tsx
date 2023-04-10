@@ -360,9 +360,9 @@ const Recommender = (props: RecommenderProps) => {
 			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill)),
 			numSims: numSims
 		};
-		const ChewableConfig = {
+		const VoyageEstConfig = {
 			config,
-			worker: 'chewable'
+			worker: 'voyageEstimate'
 		};
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
@@ -377,7 +377,7 @@ const Recommender = (props: RecommenderProps) => {
 				});
 			}
 		});
-		worker.postMessage(ChewableConfig);
+		worker.postMessage(VoyageEstConfig);
 		setResults(prevResults => {
 			const result = prevResults[resultIndex];
 			result.name = 'Calculating...';
