@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Daily work was an option back when this Kim debuted (and everything was truly in black and white), but his ranks have taken a mighty tumble since then and leave in their wake two points of interest; collections and events. Both are better than you'd expect for a sidekick.
+Daily work was an option back when this Kim debuted (and everything was truly in black and white), but his ranks have taken a mighty tumble since then and leave in their wake two points of interest; collections and events.
 
-Two collections span the spectrum from vanity to monstrous 100 threshold stat-booster and he's fairly essential for both. And as the best (only) non-gold SEC option for Kim events, he's probably worth the thaw there too. Despite never making lieutenant, Kim's event count is significant, keeping pace with the likes of Spock and Sisko.
+Harry’s two collections span the spectrum from old vanity to monstrous 140 milestone stat-booster, leaving him middling in that area. Same story for events where his SEC base situationally merits a thaw, but he fails to make the podium for best Kim Super Rare for event work. He’s an acceptable low end behold pickup, but it’s clear why Buster is stuck playing second fiddle.
