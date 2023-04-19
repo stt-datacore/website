@@ -14,6 +14,6 @@ published: true
 
 "Will, I sense that we should have retracted the plank, not removed the plank."
 
-Any roster still using super rares on voyages should welcome aboard MED at every opportunity and AoS Troi certainly qualifies. The raw numbers there are worthwhile and in combination with a plus skill set should earn use into the mid-game.
+Any crew who relies on their voyage ability below the Legendary rarity level absolutely needs ancillary benefits to have any staying power. While Marina’s med-led skill set gives her a chance to still contribute there on new rosters, it’s really the rest of the card that will decide if she’s earned her crew slot on your team.
 
-If voyaging the high seas aboard the HMS Enterprise doesn't suit your fancy, Troi has a few other noteworthy offerings. Her MED base won't find much work without a bonus, but edges out Assimilated Troi for tops among super rare variants and comes with double collections and a (brief) +9 attack boost on ships. Troi is a fantastic get for early-midgame rosters with some valuable collection equity for long time players.
+If voyaging the high seas aboard the HMS Enterprise doesn't work out, this variant’s MED base is tops among Super Rare Troi options, her +9 attack boost on ships is relevant for newcomers, and there’s a reasonable collection ceiling for her to hit if WRG ever decides to favor Troi’s standard Betazoid-y, counselor-y traits in the cryo vault.
