@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import voymod from './voymod.js';
-import chewable from './chewable.js';
+import transwarp from './transwarp.js';
 import voyagers from './voyagers.js';
 import Optimizer from './optimizer.js';
 
@@ -10,31 +10,29 @@ self.addEventListener('message', message => {
     self.postMessage({ result, inProgress });
     if (!inProgress) self.close();
   };
-
-  if (message.data.worker === 'chewable') {
-    chewableEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+  const messageHandlers = {
+    'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
       postResult(estimate, false)
-    );
-  } else if (message.data.worker == 'citeOptimizer') {
-    citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false));
-  }
-  else if (message.data.worker === 'iampicard') {
-    voymod().then(mod => {
-      let result = mod.calculate(JSON.stringify(message.data), res => {
-        postResult(res, true);
-      });
-      postResult(result, false);
-    });
-  }
-  else if (message.data.worker === 'ussjohnjay') {
-    voyagers.forDataCore(message.data, postResult, chewable.getEstimate);
-  }
+    ),
+    'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
+    'iampicard': () => voymod().then(mod => {
+        let result = mod.calculate(JSON.stringify(message.data), res => {
+          postResult(res, true);
+        });
+        postResult(result, false);
+      }),
+    'ussjohnjay': () =>  voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
+  };
+
+  //console.log(message.data.worker);
+  
+  messageHandlers[message.data.worker]();
 });
 
 // This worker can estimate a single lineup from input config
-const chewableEstimate = (config, progress) => {
+const voyageEstimate = (config, progress) => {
   return new Promise((resolve, reject) => {
-    let estimate = chewable.getEstimate(config, progress);
+    let estimate = transwarp.getEstimate(config, progress);
     resolve(estimate);
   });
 };

@@ -27,6 +27,7 @@ type VoyageStatsState = {
 	activePanels: [];
 	currentAm: number;
 	currentDuration: number;
+	voyageBugDetected: boolean;
 };
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
@@ -41,7 +42,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		this.state = {
 			estimate: estimate,
 			activePanels: showPanels ? showPanels : [],
-			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360)
+			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360),
+			currentAm: props.voyageData.hp ?? voyageData.max_hp
 		};
 
 		if (!voyageData)
@@ -77,7 +79,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 			this.worker = new Worker();
 			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
-			this.worker.postMessage({ worker: 'chewable', config: this.config });
+			this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
 		}
 	}
 
@@ -239,7 +241,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					</tbody></Table>
 					<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
 					{estimate.final && this._renderChart()}
-					<small>Powered by Chewable C++</small>
 				</div>
 			);
 		}
