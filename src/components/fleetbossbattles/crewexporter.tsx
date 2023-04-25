@@ -10,14 +10,31 @@ const FLAG_NONOPTIMAL = '\u03B9';
 export const exportDefaults = {
 	header: 'always',
 	solve: 'hide',
-	traits: 'all',
-	duplicates: 'number',
+	node_format: 'bold',
+	node_traits: 'show',
 	bullet: 'simple',
 	delimiter: ',',
-	coverage: 'asterisk',
+	coverage_format: 'italic',
+	crew_traits: 'show',
+	duplicates: 'number',
 	flag_alpha: FLAG_ALPHA,
 	flag_unique: FLAG_UNIQUE,
 	flag_nonoptimal: FLAG_NONOPTIMAL
+};
+
+const exportCompact = {
+	header: 'hide',
+	solve: 'hide',
+	node_format: 'none',
+	node_traits: 'hide',
+	bullet: 'none',
+	delimiter: ',',
+	coverage_format: 'none',
+	crew_traits: 'hide',
+	duplicates: 'ignore',
+	flag_alpha: '',
+	flag_unique: '',
+	flag_nonoptimal: ''
 };
 
 const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPrefs: any) => {
@@ -56,8 +73,8 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	const formatCrewName = (crew: any) => {
 		let name = prefValue(exportPrefs, 'delimiter') === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
 		if (crew.nodes_rarity > 1) {
-			if (prefValue(exportPrefs, 'coverage') === 'asterisk') name = `*${name}*`;
-			else if (prefValue(exportPrefs, 'coverage') === 'bold') name = `**${name}**`;
+			if (prefValue(exportPrefs, 'coverage_format') === 'italic') name = `*${name}*`;
+			else if (prefValue(exportPrefs, 'coverage_format') === 'bold') name = `**${name}**`;
 		}
 		return name;
 	};
@@ -67,30 +84,38 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	nodeGroups.sort((a, b) => sortGroups(a, b))
 		.forEach((row, idx) => {
 			if (nodeList !== '') nodeList += '\n';
-			if (prefValue(exportPrefs, 'bullet') === 'full') nodeList += `${node.index+1}.`;
+			let groupList = '';
+			if (prefValue(exportPrefs, 'bullet') === 'full') groupList += `${node.index+1}.`;
 			if (prefValue(exportPrefs, 'bullet') === 'full' || prefValue(exportPrefs, 'bullet') === 'number')
-				nodeList += `${idx+1}`;
-			else
-				nodeList += `-`;
-			if (row.notes.nonOptimal) nodeList += prefValue(exportPrefs, 'flag_nonoptimal');
-			if (row.notes.alphaException) nodeList += prefValue(exportPrefs, 'flag_alpha');
-			if (row.notes.uniqueCrew) nodeList += prefValue(exportPrefs, 'flag_unique');
+				groupList += `${idx+1}`;
+			else if (prefValue(exportPrefs, 'bullet') === 'simple')
+				groupList += `-`;
+			if (row.notes.nonOptimal) groupList += prefValue(exportPrefs, 'flag_nonoptimal');
+			if (row.notes.alphaException) groupList += prefValue(exportPrefs, 'flag_alpha');
+			if (row.notes.uniqueCrew) groupList += prefValue(exportPrefs, 'flag_unique');
+			if (groupList !== '') groupList += ' ';
 			const matchingCrew = row.crewList.sort((a, b) => a.name.localeCompare(b.name))
 				.map(crew => formatCrewName(crew))
 				.join(`${prefValue(exportPrefs, 'delimiter')} `);
-			nodeList += ' '+matchingCrew;
-			if (prefValue(exportPrefs, 'traits') === 'all')
-				nodeList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
+			groupList += matchingCrew;
+			if (prefValue(exportPrefs, 'crew_traits') === 'show')
+				groupList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
+			nodeList += groupList;
 		});
 
 	if (nodeList === '')
 		nodeList = 'No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.';
 
 	if (output !== '') output += '\n\n';
-	output += `Node ${node.index+1}`;
-	if (prefValue(exportPrefs, 'traits') === 'all' || prefValue(exportPrefs, 'traits') === 'nodes')
-		output += ` (${nodeTraits(node)})`;
-	output += '\n' + nodeList;
+
+	let nodeHeader = `Node ${node.index+1}`;
+	if (prefValue(exportPrefs, 'node_traits') === 'show')
+		nodeHeader += ` (${nodeTraits(node)})`;
+	if (prefValue(exportPrefs, 'node_format') === 'italic') nodeHeader = `*${nodeHeader}*`;
+	else if (prefValue(exportPrefs, 'node_format') === 'bold') nodeHeader = `**${nodeHeader}**`;
+	else if (prefValue(exportPrefs, 'node_format') === 'bolditalic') nodeHeader = `***${nodeHeader}***`;
+
+	output += nodeHeader + '\n' + nodeList;
 
 	return output;
 };
@@ -217,21 +242,23 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
-	const traitsOptions = [
-		{ key: 'all', text: 'Show on node and crew', value: 'all' },
-		{ key: 'nodes', text: 'Show on nodes only', value: 'nodes' },
-		{ key: 'hide', text: 'Do not show', value: 'hide' }
+	const nodeFormatOptions = [
+		{ key: 'italic', text: 'Asterisk (italic)', value: 'italic' },
+		{ key: 'bold', text: 'Double asterisk (bold)', value: 'bold' },
+		{ key: 'bolditalic', text: 'Triple asterisk (bold italic)', value: 'bolditalic' },
+		{ key: 'none', text: 'Do nothing', value: 'none' }
 	];
 
-	const duplicatesOptions = [
-		{ key: 'number', text: 'Show number needed', value: 'number' },
-		{ key: 'ignore', text: 'Do not number', value: 'ignore' }
+	const showOptions = [
+		{ key: 'show', text: 'Show', value: 'show' },
+		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
 	const bulletOptions = [
 		{ key: 'simple', text: 'Dash', value: 'simple', example: '- Spock' },
 		{ key: 'number', text: 'Number', value: 'number', example: '1 Spock' },
-		{ key: 'full', text: 'Node and number', value: 'full', example: '2.1 Spock' }
+		{ key: 'full', text: 'Node and number', value: 'full', example: '2.1 Spock' },
+		{ key: 'none', text: 'None', value: 'none', example: 'Spock' }
 	];
 
 	const delimiterOptions = [
@@ -239,10 +266,15 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
 	];
 
-	const coverageOptions = [
-		{ key: 'asterisk', text: 'Asterisk (italicize)', value: 'asterisk' },
+	const coverageFormatOptions = [
+		{ key: 'italic', text: 'Asterisk (italic)', value: 'italic' },
 		{ key: 'bold', text: 'Double asterisk (bold)', value: 'bold' },
-		{ key: 'ignore', text: 'Do nothing', value: 'ignore' }
+		{ key: 'none', text: 'Do nothing', value: 'none' }
+	];
+
+	const duplicatesOptions = [
+		{ key: 'number', text: 'Show number needed', value: 'number' },
+		{ key: 'ignore', text: 'Do not number', value: 'ignore' }
 	];
 
 	return (
@@ -268,7 +300,26 @@ const ExportOptions = (props: ExportOptionsProps) => {
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>
-						<Header as='h5'>Bullet, e.g. <i>{bulletOptions.find(b => b.value === prefs.bullet).example}</i></Header>
+						<Header as='h5'>Node header</Header>
+						<Form.Group inline>
+							<Form.Field>
+								<label>Formatting</label>
+								<Select
+									options={nodeFormatOptions}
+									value={prefs.node_format ?? exportDefaults.node_format}
+									onChange={(e, { value }) => updatePrefs({...prefs, node_format: value})}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>Traits</label>
+								<Select
+									options={showOptions}
+									value={prefs.node_traits ?? exportDefaults.node_traits}
+									onChange={(e, { value }) => updatePrefs({...prefs, node_traits: value})}
+								/>
+							</Form.Field>
+						</Form.Group>
+						<Header as='h5' style={{ marginTop: '1.5em' }}>Possible solutions</Header>
 						<Form.Group inline>
 							<Form.Field>
 								<label>Bullet</label>
@@ -300,10 +351,9 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Header as='h5'>Crew, e.g. <i>{delimiterOptions.find(b => b.value === prefs.delimiter).example}</i></Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Delimiter</label>
+								<label>Crew delimiter</label>
 								<Select
 									options={delimiterOptions}
 									value={prefs.delimiter ?? exportDefaults.delimiter}
@@ -313,24 +363,23 @@ const ExportOptions = (props: ExportOptionsProps) => {
 							<Form.Field>
 								<label>Coverage potential</label>
 								<Select
-									options={coverageOptions}
-									value={prefs.coverage ?? exportDefaults.coverage}
-									onChange={(e, { value }) => updatePrefs({...prefs, coverage: value})}
+									options={coverageFormatOptions}
+									value={prefs.coverage_format ?? exportDefaults.coverage_format}
+									onChange={(e, { value }) => updatePrefs({...prefs, coverage_format: value})}
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Header as='h5'>Traits</Header>
 						<Form.Group inline>
 							<Form.Field>
 								<label>Traits</label>
 								<Select
-									options={traitsOptions}
-									value={prefs.traits ?? exportDefaults.traits}
-									onChange={(e, { value }) => updatePrefs({...prefs, traits: value})}
+									options={showOptions}
+									value={prefs.crew_traits ?? exportDefaults.crew_traits}
+									onChange={(e, { value }) => updatePrefs({...prefs, crew_traits: value})}
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Duplicates</label>
+								<label>Duplicate traits</label>
 								<Select
 									options={duplicatesOptions}
 									value={prefs.duplicates ?? exportDefaults.duplicates}
@@ -338,10 +387,10 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Header as='h5'>Full exports only</Header>
+						<Header as='h5' style={{ marginTop: '1.5em' }}>Full exports only</Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Header</label>
+								<label>Export header</label>
 								<Select
 									options={headerOptions}
 									value={prefs.header ?? exportDefaults.header}
@@ -357,16 +406,21 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Button compact onClick={resetToDefaults}>
-							Reset to defaults
-						</Button>
+						<Form.Group inline>
+							<Button compact onClick={() => setPresets(exportCompact)}>
+								Compact
+							</Button>
+							<Button compact onClick={() => setPresets(exportDefaults)}>
+								Defaults
+							</Button>
+						</Form.Group>
 					</Form.Group>
 				</Form>
 			</div>
 		);
 	}
 
-	function resetToDefaults(): void {
-		updatePrefs({...exportDefaults});
+	function setPresets(presetPrefs: any): void {
+		updatePrefs({...presetPrefs});
 	}
 };
