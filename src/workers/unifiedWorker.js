@@ -24,7 +24,7 @@ self.addEventListener('message', message => {
     'ussjohnjay': () =>  voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
   };
 
-  console.log(message.data.worker);
+  //console.log(message.data.worker);
   
   messageHandlers[message.data.worker]();
 });
