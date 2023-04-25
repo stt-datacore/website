@@ -1,5 +1,5 @@
 ---
-name: Huntress Z’ymira
+name: Huntress Z'ymira
 rarity: 4
 series: snw
 memory_alpha:

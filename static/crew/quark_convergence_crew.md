@@ -3,7 +3,7 @@ name: Convergence Day Quark
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 32
 in_portal: true
 date: 11/01/2017
