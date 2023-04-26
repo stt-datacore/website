@@ -71,7 +71,7 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		};
 		const VoyageEstConfig = {
 			config,
-			worker: 'VoyageEstimate'
+			worker: 'voyageEstimate'
 		};
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
