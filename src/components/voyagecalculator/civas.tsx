@@ -69,9 +69,9 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 			ss: voyageConfig.skill_aggregates[voyageConfig.skills['secondary_skill']],
 			others: Object.values(voyageConfig.skill_aggregates).filter(s => !Object.values(voyageConfig.skills).includes(s.skill))
 		};
-		const ChewableConfig = {
+		const VoyageEstConfig = {
 			config,
-			worker: 'chewable'
+			worker: 'voyageEstimate'
 		};
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
@@ -80,7 +80,7 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 				setExportState(ExportState.Ready);
 			}
 		});
-		worker.postMessage(ChewableConfig);
+		worker.postMessage(VoyageEstConfig);
 	}
 
 	function copyToClipboard(): void {

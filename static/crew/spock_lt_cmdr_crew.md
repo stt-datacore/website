@@ -3,7 +3,7 @@ name: Lt. Commander Spock
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 45
 in_portal: true
 date: 01/06/2022

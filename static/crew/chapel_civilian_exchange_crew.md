@@ -3,7 +3,7 @@ name: Civilian Exchange Chapel
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 9
 in_portal:
 date: 28/06/2022

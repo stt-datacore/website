@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 5
-events: 25
+events: 26
 in_portal: true
 date: 22/06/2021
 obtained: Pack

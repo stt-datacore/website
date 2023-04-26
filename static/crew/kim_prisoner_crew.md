@@ -3,8 +3,8 @@ name: Prisoner Kim
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 37
+bigbook_tier: 5
+events: 38
 in_portal: true
 date: 01/09/2020
 obtained: Pack

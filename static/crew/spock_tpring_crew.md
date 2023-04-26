@@ -3,7 +3,7 @@ name: Spock as T'Pring
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 37
 in_portal:
 date: 31/10/2022

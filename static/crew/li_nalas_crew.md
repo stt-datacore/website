@@ -3,7 +3,7 @@ name: Li Nalas
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 15
 in_portal: true
 date: 11/11/2021

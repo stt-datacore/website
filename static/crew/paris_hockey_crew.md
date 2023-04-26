@@ -4,7 +4,7 @@ rarity: 3
 series: voy
 memory_alpha:
 bigbook_tier: 3
-events: 32
+events: 33
 in_portal: true
 date: 23/06/2016
 obtained: Post-Launch
@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Paris' ranking here is mostly dependent on his lucrative spot in the huge, 100 threshold Costume Party collection. He's an automatic immortalize for late game players, but should be eschewed early on unless he's the first option available to you for the one crew threshold stat boost. 
-
-If he *is* that first choice, you'll at least be able to lockpick a few nodes across the galaxy map missions thanks to his fairly generous trait set which includes a number of options which may hit on a second collection at any time if they catch WRG's fancy.
+Paris' tier hinges primarily on his fantastic collection value. He's an automatic immortalize for late game players, but can easily be eschewed for those of you just starting out thanks to his lack of cadet eligibility and limited early game utility. If he *is* one of your first leveling projects, you'll at least be able to lockpick a few nodes across the galaxy map missions thanks to his fairly generous trait set.
