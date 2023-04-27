@@ -330,9 +330,9 @@ class IAmPicardHelper extends Helper {
 			Object.values(aggregates)
 				.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
 
-		const ChewableConfig = {
+		const VoyageEstConfig = {
 			config,
-			worker: 'chewable'
+			worker: 'voyageEstimate'
 		};
 
 		const worker = new UnifiedWorker();
@@ -352,7 +352,7 @@ class IAmPicardHelper extends Helper {
 				this.resultsCallback(this.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});
-		worker.postMessage(ChewableConfig);
+		worker.postMessage(VoyageEstConfig);
 	}
 };
 
