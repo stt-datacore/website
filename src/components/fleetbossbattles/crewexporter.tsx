@@ -72,10 +72,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 
 	const formatCrewName = (crew: any) => {
 		let name = prefValue(exportPrefs, 'delimiter') === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
-		if (crew.nodes_rarity > 1) {
-			if (prefValue(exportPrefs, 'coverage_format') === 'italic') name = `*${name}*`;
-			else if (prefValue(exportPrefs, 'coverage_format') === 'bold') name = `**${name}**`;
-		}
+		if (crew.nodes_rarity > 1) name = formatValue(prefValue(exportPrefs, 'coverage_format'), name);
 		return name;
 	};
 
@@ -111,17 +108,23 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	let nodeHeader = `Node ${node.index+1}`;
 	if (prefValue(exportPrefs, 'node_traits') === 'show')
 		nodeHeader += ` (${nodeTraits(node)})`;
-	if (prefValue(exportPrefs, 'node_format') === 'italic') nodeHeader = `*${nodeHeader}*`;
-	else if (prefValue(exportPrefs, 'node_format') === 'bold') nodeHeader = `**${nodeHeader}**`;
-	else if (prefValue(exportPrefs, 'node_format') === 'bolditalic') nodeHeader = `***${nodeHeader}***`;
 
-	output += nodeHeader + '\n' + nodeList;
+	output += formatValue(prefValue(exportPrefs, 'node_format'), nodeHeader) + '\n' + nodeList;
 
 	return output;
 };
 
 const prefValue = (prefs: any, field: string) => {
 	return prefs[field] ?? exportDefaults[field];
+};
+
+const formatValue = (format: string, value: string) => {
+	let formattedValue = value;
+	if (format.indexOf('underline') >= 0) formattedValue = `__${formattedValue}__`;
+	if (format.indexOf('bolditalic') >= 0) formattedValue = `***${formattedValue}***`;
+	else if (format.indexOf('bold') >= 0) formattedValue = `**${formattedValue}**`;
+	else if (format.indexOf('italic') >= 0) formattedValue = `*${formattedValue}*`;
+	return formattedValue;
 };
 
 const nodeTraits = (node: any) => {
@@ -242,11 +245,15 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		{ key: 'hide', text: 'Do not show', value: 'hide' }
 	];
 
-	const nodeFormatOptions = [
-		{ key: 'italic', text: 'Asterisk (italic)', value: 'italic' },
-		{ key: 'bold', text: 'Double asterisk (bold)', value: 'bold' },
-		{ key: 'bolditalic', text: 'Triple asterisk (bold italic)', value: 'bolditalic' },
-		{ key: 'none', text: 'Do nothing', value: 'none' }
+	const formatOptions = [
+		{ key: 'italic', text: 'Italic (*)', value: 'italic' },
+		{ key: 'bold', text: 'Bold (**)', value: 'bold' },
+		{ key: 'bolditalic', text: 'Bold italic (***)', value: 'bolditalic' },
+		{ key: 'underline', text: 'Underline (__)', value: 'underline' },
+		{ key: 'italicunderline', text: 'Italic underline (*__)', value: 'italicunderline' },
+		{ key: 'boldunderline', text: 'Bold underline (**__)', value: 'boldunderline' },
+		{ key: 'bolditalicunderline', text: 'Bold italic underline (***__)', value: 'bolditalicunderline' },
+		{ key: 'none', text: 'No formatting', value: 'none' }
 	];
 
 	const showOptions = [
@@ -264,12 +271,6 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	const delimiterOptions = [
 		{ key: 'comma', text: 'Comma', value: ',', example: 'Spock, Lt Uhura' },
 		{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
-	];
-
-	const coverageFormatOptions = [
-		{ key: 'italic', text: 'Asterisk (italic)', value: 'italic' },
-		{ key: 'bold', text: 'Double asterisk (bold)', value: 'bold' },
-		{ key: 'none', text: 'Do nothing', value: 'none' }
 	];
 
 	const duplicatesOptions = [
@@ -305,7 +306,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 							<Form.Field>
 								<label>Formatting</label>
 								<Select
-									options={nodeFormatOptions}
+									options={formatOptions}
 									value={prefs.node_format ?? exportDefaults.node_format}
 									onChange={(e, { value }) => updatePrefs({...prefs, node_format: value})}
 								/>
@@ -363,7 +364,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 							<Form.Field>
 								<label>Coverage potential</label>
 								<Select
-									options={coverageFormatOptions}
+									options={formatOptions}
 									value={prefs.coverage_format ?? exportDefaults.coverage_format}
 									onChange={(e, { value }) => updatePrefs({...prefs, coverage_format: value})}
 								/>
@@ -406,12 +407,13 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Form.Group inline>
-							<Button compact onClick={() => setPresets(exportCompact)}>
-								Compact
-							</Button>
+						<Form.Group inline style={{ marginTop: '1.5em' }}>
+							<Header as='h5' style={{ marginRight: '1em' }}>Load preset values:</Header>
 							<Button compact onClick={() => setPresets(exportDefaults)}>
 								Defaults
+							</Button>
+							<Button compact onClick={() => setPresets(exportCompact)}>
+								Compact
 							</Button>
 						</Form.Group>
 					</Form.Group>

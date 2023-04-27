@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Form, Button, Step, Dropdown, Checkbox, Icon } from 'semantic-ui-react';
+import { Header, Form, Button, Step, Dropdown, Checkbox, Icon, Message } from 'semantic-ui-react';
 
 import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
@@ -12,6 +12,7 @@ import { useStateWithStorage } from '../../utils/storage';
 const filterDefaults = {
 	alpha: 'flag',
 	nonoptimal: 'hide',
+	noncoverage: 'show',
 	usable: ''
 };
 
@@ -102,6 +103,12 @@ const ChainCrew = (props: ChainCrewProps) => {
 							checked={filterPrefs.nonoptimal === 'hide'}
 							onChange={(e, data) => setFilterPrefs({...filterPrefs, nonoptimal: data.checked ? 'hide' : 'flag'})}
 						/>
+						<Form.Field
+							control={Checkbox}
+							label='Prioritize crew with coverage'
+							checked={filterPrefs.noncoverage === 'hide'}
+							onChange={(e, data) => setFilterPrefs({...filterPrefs, noncoverage: data.checked ? 'hide' : 'show'})}
+						/>
 						{showWarning &&
 							<div>
 								<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed with the selected filters.
@@ -123,18 +130,21 @@ const ChainCrew = (props: ChainCrewProps) => {
 				/>
 			}
 
-			<div style={{ marginTop: '1em' }}>
-				{view === 'crewtable' && <p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>}
-				<p><i>Alpha exceptions</i> are crew who might be ruled out based on an unofficial rule that eliminates some of their traits by name. You should only try alpha exceptions if you've exhausted all other listed options.</p>
-				<p><i>Uniques</i> are crew whose possible solutions are exclusive to exactly 1 crew in the portal. You should only try unique crew if you've exhausted all other listed options.</p>
-				<p><i>Non-optimals</i> are crew whose only matching traits are a subset of traits of another possible solution for that node. You should only try non-optimal crew if you don't own any optimal crew.</p>
-				<p><i>Trait colors</i> help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.</p>
-				<p><i>Trait numbers</i> identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution.</p>
-			</div>
-
 			<CrewChecklist key={solver.id} crewList={props.allCrew}
 				attemptedCrew={spotter.attemptedCrew} updateAttempts={updateCrewAttempts}
 			/>
+
+			<Message style={{ margin: '1em 0' }}>
+				<Message.Content>
+					<Message.Header>Tips</Message.Header>
+					<p><i>Alpha exceptions</i> are crew who might be ruled out based on an unofficial rule that eliminates some of their traits by name. You should only try alpha exceptions if you've exhausted all other listed options.</p>
+					<p><i>Non-optimals</i> are crew whose only matching traits are a subset of traits of another possible solution for that node. You should only try non-optimal crew if you don't own any optimal crew.</p>
+					<p><i>Uniques</i> are crew whose possible solutions are exclusive to exactly 1 crew in the portal. Unique crew are only viable solutions for Nightmare Node 5.</p>
+					<p><i>Coverage</i> identifies crew who might be solutions to multiple nodes. In group view, crew with coverage are italicized. In crew view, the number of potential nodes is listed.</p>
+					<p><i>Trait colors</i> help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.</p>
+					<p><i>Trait numbers</i> identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution.</p>
+				</Message.Content>
+			</Message>
 
 			<CrewFullExporter solver={solver} resolver={resolver}
 				exportPrefs={exportPrefs} setExportPrefs={setExportPrefs}

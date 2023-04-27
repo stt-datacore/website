@@ -77,9 +77,13 @@ export function filterGroupsByNode(node: any, crewList: any[], rarities: any, op
 	return traitGroups.map(traits => {
 		const score = traits.reduce((prev, curr) => prev + traitRarity[curr], 0);
 
-		const crewList = crewByNode.filter(crew =>
+		const matchingCrew = crewByNode.filter(crew =>
 			traits.length === crew.node_matches[`node-${node.index}`].traits.length
 				&& traits.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
+		);
+		const highestCoverage = matchingCrew.reduce((prev, curr) => Math.max(prev, curr.nodes_rarity), 0);
+		const crewList = matchingCrew.filter(crew =>
+			(filters.noncoverage !== 'hide' || highestCoverage === 1 || crew.nodes_rarity > 1)
 				&& (filters.usable !== 'owned' || crew.highest_owned_rarity > 0)
 				&& (filters.usable !== 'thawed' || (crew.highest_owned_rarity > 0 && !crew.only_frozen))
 		);
