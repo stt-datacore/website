@@ -3,8 +3,8 @@ name: Fenris Ranger Seven
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 6
-events: 25
+bigbook_tier: 5
+events: 26
 in_portal: true
 date: 23/04/2020
 obtained: Event

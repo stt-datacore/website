@@ -3,8 +3,8 @@ name: Heist Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 3
-events: 28
+bigbook_tier: 2
+events: 30
 in_portal: true
 date: 26/01/2021
 obtained: Pack
