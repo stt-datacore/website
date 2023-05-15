@@ -3,8 +3,8 @@ name: La'an Noonien Singh
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 7
-events: 6
+bigbook_tier: 6
+events: 5
 in_portal:
 date: 15/03/2023
 obtained: Event

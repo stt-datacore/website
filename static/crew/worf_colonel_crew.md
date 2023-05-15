@@ -3,7 +3,7 @@ name: Colonel Worf
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 12
 in_portal:
 date: 08/11/2017

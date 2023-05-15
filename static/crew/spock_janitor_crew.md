@@ -3,8 +3,8 @@ name: Laborer Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
-events: 47
+bigbook_tier: 5
+events: 46
 in_portal: true
 date: 25/09/2017
 obtained: Event

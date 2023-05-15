@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 5
-events: 26
+events: 23
 in_portal: true
 date: 17/08/2016
 obtained: Post-Launch
