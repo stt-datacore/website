@@ -3,7 +3,7 @@ name: Krem
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 19
 in_portal:
 date: 07/02/2023

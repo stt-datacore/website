@@ -3,8 +3,8 @@ name: Mirror Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 37
+bigbook_tier: 9
+events: 38
 in_portal: true
 date: 02/01/2016
 obtained: Launch

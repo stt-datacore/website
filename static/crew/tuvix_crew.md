@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 7
-events: 25
+events: 26
 in_portal:
 date: 01/01/2016
 obtained: Fuse
