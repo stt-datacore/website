@@ -3,8 +3,8 @@ name: Musketeer Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 2
-events: 35
+bigbook_tier: 3
+events: 36
 in_portal: true
 date: 15/07/2021
 obtained: Event

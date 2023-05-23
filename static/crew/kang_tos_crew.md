@@ -4,7 +4,7 @@ rarity: 3
 series: tos
 memory_alpha:
 bigbook_tier: 1
-events: 11
+events: 12
 in_portal: true
 date: 09/06/2016
 obtained: Post-Launch
