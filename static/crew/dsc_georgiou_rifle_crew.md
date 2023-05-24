@@ -3,8 +3,8 @@ name: Armed Philippa Georgiou
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
-events: 33
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 14/11/2017
 obtained: Pack
