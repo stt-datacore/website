@@ -36,7 +36,7 @@ class StatLabel extends React.Component<StatLabelProps> {
 		const { title, value } = this.props;
 
 		return (
-			<Label size="small" style={{ marginBottom: '0.5em' }}>
+			<Label size="small" style={{ marginBottom: '0.5em', width: "12em" }}>
 				{title}
 				<Label.Detail>{value}</Label.Detail>
 			</Label>
@@ -299,13 +299,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
 							{this.state.currentCrew && 
 								<div style={{display: "flex", flexDirection:"row"}}>
-									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "128px", marginRight: "8px"}} />
+									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "9.5em", marginRight: "8px"}} />
 				
-									<div style={{display: "flex", flexDirection:"column", height: "128px", justifyContent: "space-between"}}>	
+									<div style={{display: "flex", flexDirection:"column", minHeight: "8em", justifyContent: "space-between", width: "32em"}}>	
 										<div>
 											<h3>{this.crew.name}</h3>
 										</div>
-										<div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+										<div style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", marginTop: "4px", marginBottom: "2px"}}>
 											<CrewStat												
 												skill_name="security_skill"
 												data={this.crew.base_skills.security_skill}
@@ -341,6 +341,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											/>
 											<div style={{width: "4px"}} />
 										</div>
+										<div style={{textAlign: "left", fontStyle: "italic", fontSize: "0.85em", marginTop: "2px", marginBottom: "4px"}}>
+											{this.crew.traits_named.join(", ")}
+										</div>
 										<div>
 											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
@@ -355,6 +358,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												<StatLabel title="Big Book Tier" value={formatTierLabel(this.crew)} />
 											</div>
 										</div>
+										
 									</div>
 
 								</div>
