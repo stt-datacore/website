@@ -114,18 +114,25 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
 		
-		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
-			e.nativeEvent.stopPropagation();
-			e.nativeEvent.preventDefault();
+		var dt = new Date();
+		var dtn = 0;
+		var urln = false;
+
+		const activate = (target: HTMLElement, data: any) => {
+
 			let el = document.getElementById("ttref_id");
+
 			if (el) {
-				let target: HTMLElement | null = e.target as HTMLElement;				
+
 				if (target.tagName != "IMG") return;
+
 				while (target && (target.tagName != "TD")) {
-					target = target?.parentElement;
+					if (target.parentElement == null) break;
+					target = target.parentElement;
 				}
 				
-				if (!target) return;
+				if (target.tagName != "TD") return;
+
 				console.log(target);
 				console.log(data);
 				let x = target.offsetLeft + 72;
@@ -140,6 +147,53 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				
 				setCurrentCrew(this.props.allCrew?.filter(x=>x.symbol == data.symbol)[0]);
 			}
+		}
+
+		const deactivate = (target: HTMLElement | null) => {
+			let el = document.getElementById("ttref_id");
+			if (el) {
+				if (target && target.tagName != "IMG") return;
+				console.log("Out");
+
+				el.style.display = "none";
+				el.style.zIndex = "-1000";
+				setCurrentCrew(null);
+			}
+		}
+
+		const touchStart = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
+			dt = new Date();
+			urln = false;
+			dtn = window.setTimeout(() => {
+				urln = true;		
+			}, 50);
+		}
+		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
+			if (dtn) {
+				window.clearTimeout(dtn);
+				dtn = 0;
+			} 
+
+			// if (!urln) {
+			// 	window.location.href = ("/crew/" + data.symbol);		
+			// 	return;
+			// } 
+
+			let el = document.getElementById("ttref_id");
+			if (el) {
+				let target: HTMLElement | null = e.target as HTMLElement;				
+				if (target) activate(target, data);
+			}		
+		}
+
+		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+			e.nativeEvent.stopPropagation();
+			e.nativeEvent.preventDefault();
+			let el = document.getElementById("ttref_id");
+			if (el) {
+				let target: HTMLElement | null = e.target as HTMLElement;				
+				if (target) activate(target, data);
+			}
 		};
 
 		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
@@ -148,13 +202,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			let el = document.getElementById("ttref_id");
 			if (el) {
 				let target: HTMLElement | null = e.target as HTMLElement;				
-				if (target.tagName != "IMG") return;
-
-				console.log("Out");
-
-				el.style.display = "none";
-				el.style.zIndex = "-1000";
-				setCurrentCrew(null);
+				if (target) deactivate(target);
 			}
 		};
 
@@ -180,10 +228,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (
-							<Table.Row key={idx}>
+							<Table.Row key={idx} onTouchStart={(e) => deactivate(null)}
+							>
 								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
 								<Table.Cell>
-									<div
+									<div										
 										style={{
 											display: 'grid',
 											gridTemplateColumns: '60px auto',
@@ -193,12 +242,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<a href={"/crew/" + crew.symbol}>
-												<img 
+											<img 
+												style={{cursor: "pointer"}}
+												onTouchStart={(e) => touchStart(e, crew)}
+												onTouchEnd={(e) => touchEnd(e, crew)}
 												onMouseEnter={(e) => hoverIn(e, crew)}
 												onMouseLeave={(e) => hoverOut(e, crew)}
-												width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-											</a>
+												width={48} 
+												src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
+												/>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
 											<a href={"/crew/" + crew.symbol}>
@@ -319,11 +371,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<div style={{display: "flex", flexDirection:"row"}}>
 									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "9.5em", marginRight: "8px"}} />
 				
-									<div style={{display: "flex", flexDirection:"column", minHeight: "8em", justifyContent: "space-between", width: "32em"}}>	
+									<div style={{display: "flex", flexDirection:"column", minHeight: "8em", justifyContent: "space-between", width: window.innerWidth <= 768 ? "15m" : "32em"}}>	
 										<div>
 											<h3>{this.crew.name}</h3>
 										</div>
-										<div style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", marginTop: "4px", marginBottom: "2px"}}>
+										<div style={{display: "flex", flexWrap: "wrap", flexDirection: window.innerWidth <= 768 ? "column" : "row", justifyContent: "flex-start", marginTop: "4px", marginBottom: "2px"}}>
 											<CrewStat												
 												skill_name="security_skill"
 												data={this.crew.base_skills.security_skill}
@@ -363,14 +415,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											{this.crew.traits_named.join(", ")}
 										</div>
 										<div>
-											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
 												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
 												<StatLabel title="CAB Grade" value={(<div style={{fontWeight: "bold", color: this.gradeToColor(this.crew.cab_ov_grade)}}>{this.crew.cab_ov_grade}</div>)} />
 												<StatLabel title="CAB Rank" value={this.crew.cab_ov_rank} />
 											</div>
 										</div>
 										<div>
-											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
 												<StatLabel title="Voyage Rank" value={this.crew.ranks.voyRank} />
 												<StatLabel title="Gauntlet Rank" value={this.crew.ranks.gauntletRank} />
 												<StatLabel title="Big Book Tier" value={formatTierLabel(this.crew)} />
