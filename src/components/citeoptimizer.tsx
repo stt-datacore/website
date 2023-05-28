@@ -30,6 +30,8 @@ type CiteOptimizerState = {
 	paginationRows: number;
 	citeData: any;
 	currentCrew: any;
+	touchCrew: any;
+	touchToggled: boolean;
 };
 class StatLabel extends React.Component<StatLabelProps> {
 	render() {
@@ -52,7 +54,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			trainingPage: 1,
 			paginationRows: 20,
 			citeData: undefined,
-			currentCrew: undefined
+			currentCrew: undefined,
+			touchCrew: undefined,
+			touchToggled: false
 		};
 	}
 	gradeToColor(grade: string) {
@@ -90,6 +94,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						
 		}
 	}
+
 	componentDidMount() {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.props;
@@ -110,22 +115,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = createStateAccessors('paginationRows');
 		const [currentCrew, setCurrentCrew] = createStateAccessors('currentCrew');
+		const [touchToggled, setTouchToggled] = createStateAccessors('touchToggled');
+		const [touchCrew, setTouchCrew] = createStateAccessors('touchCrew');
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
 		
-		var dt = new Date();
-		var dtn = 0;
-		var urln = false;
-
 		const activate = (target: HTMLElement, data: any) => {
-
 			let el = document.getElementById("ttref_id");
-
 			if (el) {
-
 				if (target.tagName != "IMG") return;
-
 				while (target && (target.tagName != "TD")) {
 					if (target.parentElement == null) break;
 					target = target.parentElement;
@@ -148,7 +147,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				setCurrentCrew(this.props.allCrew?.filter(x=>x.symbol == data.symbol)[0]);
 			}
 		}
-
 		const deactivate = (target: HTMLElement | null) => {
 			let el = document.getElementById("ttref_id");
 			if (el) {
@@ -161,32 +159,35 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		}
 
-		const touchStart = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
-			dt = new Date();
-			urln = false;
-			dtn = window.setTimeout(() => {
-				urln = true;		
-			}, 50);
+		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
+			console.log("imageClick");
+			if (matchMedia('(hover: hover)').matches) {
+				window.location.href = "/crew/" + data.symbol;
+			}
 		}
+
 		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
-			if (dtn) {
-				window.clearTimeout(dtn);
-				dtn = 0;
-			} 
-
-			// if (!urln) {
-			// 	window.location.href = ("/crew/" + data.symbol);		
-			// 	return;
-			// } 
-
+			console.log("touchEnd");
 			let el = document.getElementById("ttref_id");
 			if (el) {
-				let target: HTMLElement | null = e.target as HTMLElement;				
-				if (target) activate(target, data);
-			}		
+				let target: HTMLElement | null = e.target as HTMLElement;
+				if (target && target.tagName != "IMG") return;
+
+				if (touchToggled && data.symbol === touchCrew?.symbol) {					
+					deactivate(target);
+					setTouchToggled(false);
+					setTouchCrew(null);
+				}
+				else {
+					if (target) activate(target, data);
+					setTouchToggled(true);
+					setTouchCrew(data);
+				}		
+			}
 		}
 
-		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {			
+			console.log("hoverIn");
 			e.nativeEvent.stopPropagation();
 			e.nativeEvent.preventDefault();
 			let el = document.getElementById("ttref_id");
@@ -197,6 +198,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		};
 
 		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+			console.log("hoverOut");
 			e.nativeEvent.stopPropagation();
 			e.nativeEvent.preventDefault();
 			let el = document.getElementById("ttref_id");
@@ -244,10 +246,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										>
 											<img 
 												style={{cursor: "pointer"}}
-												onTouchStart={(e) => touchStart(e, crew)}
 												onTouchEnd={(e) => touchEnd(e, crew)}
 												onMouseEnter={(e) => hoverIn(e, crew)}
 												onMouseLeave={(e) => hoverOut(e, crew)}
+												onClick={(e) => imageClick(e, crew)}
 												width={48} 
 												src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
 												/>
