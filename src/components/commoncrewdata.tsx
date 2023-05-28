@@ -12,7 +12,7 @@ import CABExplanation from './cabexplanation';
 
 export type StatLabelProps = {
 	title: string;
-	value: string;
+	value: string | JSX.Element;
 };
 
 class StatLabel extends Component<StatLabelProps> {

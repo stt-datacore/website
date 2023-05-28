@@ -55,7 +55,41 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			currentCrew: undefined
 		};
 	}
+	gradeToColor(grade: string) {
+		switch(grade) {
+			case "A":
+			case "A-":
+			case "A+":
+				return "lightgreen";
 
+			case "B":
+			case "B-":
+			case "B+":
+				return "aquamarine";
+
+			case "C":
+			case "C-":
+			case "C+":
+				return "yellow";
+
+			case "D":
+			case "D-":
+			case "D+":
+				return "orange";
+
+			case "E":
+			case "E-":
+			case "E+":
+				return "tomato";
+
+			case "F":
+			case "F-":
+			case "F+":
+				return "tomato";
+
+						
+		}
+	}
 	componentDidMount() {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.props;
@@ -310,15 +344,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div>
 											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
-												<StatLabel title="CAB Grade" value={this.crew.cab_ov_grade} />
+												<StatLabel title="CAB Grade" value={(<div style={{fontWeight: "bold", color: this.gradeToColor(this.crew.cab_ov_grade)}}>{this.crew.cab_ov_grade}</div>)} />
 												<StatLabel title="CAB Rank" value={this.crew.cab_ov_rank} />
 											</div>
 										</div>
 										<div>
 											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-												<StatLabel title="Voyage rank" value={this.crew.ranks.voyRank} />
-												<StatLabel title="Gauntlet rank" value={this.crew.ranks.gauntletRank} />
-												<StatLabel title="Big book tier" value={formatTierLabel(this.crew)} />
+												<StatLabel title="Voyage Rank" value={this.crew.ranks.voyRank} />
+												<StatLabel title="Gauntlet Rank" value={this.crew.ranks.gauntletRank} />
+												<StatLabel title="Big Book Tier" value={formatTierLabel(this.crew)} />
 											</div>
 										</div>
 									</div>
