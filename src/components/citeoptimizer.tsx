@@ -271,36 +271,55 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div>
 											<h3>{this.crew.name}</h3>
 										</div>
-										<div>
-											<div style={{ textAlign: 'center' }}>
-												<StatLabel title="Voyage rank" value={this.crew.ranks.voyRank} />
-												<StatLabel title="Gauntlet rank" value={this.crew.ranks.gauntletRank} />
-												<StatLabel title="Big book tier" value={formatTierLabel(this.crew)} />
-											</div>
-										</div>
-										<div style={{display: "flex", flexDirection: "row"}}>
-											<CrewStat
+										<div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+											<CrewStat												
 												skill_name="security_skill"
 												data={this.crew.base_skills.security_skill}
 												scale={compact ? 0.75 : 1}
 											/>
-											<CrewStat skill_name="command_skill" data={this.crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+											<div style={{width: "4px"}} />
+											<CrewStat 
+												skill_name="command_skill" 
+												data={this.crew.base_skills.command_skill} 
+												scale={compact ? 0.75 : 1} />
+											<div style={{width: "4px"}} />
 											<CrewStat
 												skill_name="diplomacy_skill"
 												data={this.crew.base_skills.diplomacy_skill}
 												scale={compact ? 0.75 : 1}
 											/>
-											<CrewStat skill_name="science_skill" data={this.crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+											<div style={{width: "4px"}} />
+											<CrewStat 
+												skill_name="science_skill" 
+												data={this.crew.base_skills.science_skill} 
+												scale={compact ? 0.75 : 1} />
+											<div style={{width: "4px"}} />
 											<CrewStat
 												skill_name="medicine_skill"
 												data={this.crew.base_skills.medicine_skill}
 												scale={compact ? 0.75 : 1}
 											/>
+											<div style={{width: "4px"}} />
 											<CrewStat
 												skill_name="engineering_skill"
 												data={this.crew.base_skills.engineering_skill}
 												scale={compact ? 0.75 : 1}
 											/>
+											<div style={{width: "4px"}} />
+										</div>
+										<div>
+											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
+												<StatLabel title="CAB Grade" value={this.crew.cab_ov_grade} />
+												<StatLabel title="CAB Rank" value={this.crew.cab_ov_rank} />
+											</div>
+										</div>
+										<div>
+											<div style={{ textAlign: 'center', display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+												<StatLabel title="Voyage rank" value={this.crew.ranks.voyRank} />
+												<StatLabel title="Gauntlet rank" value={this.crew.ranks.gauntletRank} />
+												<StatLabel title="Big book tier" value={formatTierLabel(this.crew)} />
+											</div>
 										</div>
 									</div>
 
