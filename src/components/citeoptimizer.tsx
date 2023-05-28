@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label } from 'semantic-ui-react';
+import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion } from 'semantic-ui-react';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -158,7 +158,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		};
 
-		return (<>
+		return (<div style={{overflowX: "auto"}}>			
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -257,7 +257,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			</>);
+			</div>);
 	}
 
 	get crew(): any | null {
@@ -269,33 +269,51 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		let compact = true;
 		return (
 			<>
+				<Accordion
+					defaultActiveIndex={-1}
+					panels={[
+						{
+							index: 0,
+							key: 0,
+							title: 'Explanation',
+							content: {
+								content: (
+									<div>
+										{/* <h3>Explanation</h3> */}
+										<p>
+											A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.
+										</p>
+										<p>
+											A crew's EV for a voyage is found by finding the crew's average for the skill "Base + (Min + Max) / 2", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.
+										</p>
+										<p>
+											"Training" is considered simply leveling and equipping the considered crew <u>at their current rarity</u>. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>at current rarity</u>.
+										</p>
+										<p>
+											"Citing" considered <u>fully fusing</u>, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>and fused</u>.
+										</p>
+									</div>
+								)
+							}
+						}
+					]}
+				/>					
+
 				<Segment>
 					{!citeData &&
 						<>
 							<Icon loading name='spinner' /> Loading citation optimizer ...
 						</>
 					}
+
 					{citeData &&
-						<Tab panes={[
+						<Tab						
+						 	panes={[
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData.crewToCite, false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData.crewToTrain, true) }
 						]} />
 					}
-					<Rail position='right'>
-						<h3>Explanation</h3>
-						<p>
-							A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.
-						</p>
-						<p>
-							A crew's EV for a voyage is found by finding the crew's average for the skill "Base + (Min + Max) / 2", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.
-						</p>
-						<p>
-							"Training" is considered simply leveling and equipping the considered crew <u>at their current rarity</u>. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>at current rarity</u>.
-						</p>
-						<p>
-							"Citing" considered <u>fully fusing</u>, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>and fused</u>.
-						</p>
-					</Rail>
+
 					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
 							{this.state.currentCrew && 
 								<div style={{display: "flex", flexDirection:"row"}}>
