@@ -265,7 +265,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
 							{this.state.currentCrew && 
 								<div style={{display: "flex", flexDirection:"row"}}>
-									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "128px"}} />
+									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "128px", marginRight: "8px"}} />
 				
 									<div style={{display: "flex", flexDirection:"column", height: "128px", justifyContent: "space-between"}}>	
 										<div>
