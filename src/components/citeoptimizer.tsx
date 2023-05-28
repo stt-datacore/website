@@ -2,11 +2,11 @@ import React from 'react';
 import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab } from 'semantic-ui-react';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
-
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+import { Tooltip } from 'react-tooltip';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -28,7 +28,7 @@ type CiteOptimizerState = {
 };
 
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
-	constructor(props) {
+	constructor(props: CiteOptimizerProps | Readonly<CiteOptimizerProps>) {
 		super(props);
 
 		this.state = {
@@ -42,7 +42,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	componentDidMount() {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.props;
-		worker.addEventListener('message', message => this.setState({ citeData: message.data.result }));
+		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
 		worker.postMessage({
 			worker: 'citeOptimizer',
 			playerData,
@@ -53,7 +53,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderTable(data, training = true) {
 		const createStateAccessors = (name) => [
 			this.state[name],
-			(value) => this.setState((prevState) => { prevState[name] = value; return prevState; })
+			(value: any) => this.setState((prevState) => { prevState[name] = value; return prevState; })
 		];
 		const [paginationPage, setPaginationPage] = createStateAccessors(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
@@ -61,6 +61,19 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
+
+		const renderTooltip = (crew) => {
+			 return '<div style=" border: 0px solid transparent", borderRadius: "8px", padding: "8px;">'
+				 + '<div style="display: flex", flexDirection: "row;">'
+					 + '<div>'
+						 + '<img src=' + process.env.GATSBY_ASSETS_URL + crew.imageUrlFullBody + ' style="height: 64px;" />'
+					 + '</div>'
+					 + '<div style="flexGrow: 1; margin-left: 8px">'
+						 + '<i>' + crew.flavor + '</i>'
+					 + '</div>'
+				 + '</div>'
+			 + '</div>'
+		};
 
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -80,7 +93,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{data.slice(baseRow, baseRow + paginationRows).map((row, idx) => {
+					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (
@@ -94,12 +107,20 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											gridTemplateAreas: `'icon stats' 'icon description'`,
 											gridGap: '1px'
 										}}>
-										<div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+										<div style={{ gridArea: 'icon' }}
+											data-tooltip-id='snarfus'
+											data-tooltip-html={renderTooltip(crew)}
+										>
+											<a href={"/crew/" + crew.symbol}>
+												<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+											</a>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+											<a href={"/crew/" + crew.symbol}>
+												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+											</a>											
 										</div>
+										<Tooltip id='snarfus' />
 									</div>
 								</Table.Cell>
 								<Table.Cell>
