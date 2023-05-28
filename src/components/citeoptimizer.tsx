@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab } from 'semantic-ui-react';
+import React, { useRef, useState } from 'react';
+import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label } from 'semantic-ui-react';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -7,6 +7,10 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import { Tooltip } from 'react-tooltip';
+import CommonCrewData, { StatLabelProps } from './commoncrewdata';
+import marked from 'marked';
+import CrewStat from './crewstat';
+import { formatTierLabel } from '../utils/crewutils';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -25,17 +29,30 @@ type CiteOptimizerState = {
 	trainingPage: number;
 	paginationRows: number;
 	citeData: any;
+	currentCrew: any;
 };
+class StatLabel extends React.Component<StatLabelProps> {
+	render() {
+		const { title, value } = this.props;
 
+		return (
+			<Label size="small" style={{ marginBottom: '0.5em' }}>
+				{title}
+				<Label.Detail>{value}</Label.Detail>
+			</Label>
+		);
+	}
+}
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
 	constructor(props: CiteOptimizerProps | Readonly<CiteOptimizerProps>) {
 		super(props);
-
+		
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,
 			paginationRows: 20,
-			citeData: undefined
+			citeData: undefined,
+			currentCrew: undefined
 		};
 	}
 
@@ -49,7 +66,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			allCrew
 		})
 	}
-
+	cc = false;
 	renderTable(data, training = true) {
 		const createStateAccessors = (name) => [
 			this.state[name],
@@ -58,24 +75,56 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [paginationPage, setPaginationPage] = createStateAccessors(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = createStateAccessors('paginationRows');
+		const [currentCrew, setCurrentCrew] = createStateAccessors('currentCrew');
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
+		
+		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+			e.nativeEvent.stopPropagation();
+			e.nativeEvent.preventDefault();
+			let el = document.getElementById("ttref_id");
+			if (el) {
+				let target: HTMLElement | null = e.target as HTMLElement;				
+				if (target.tagName != "IMG") return;
+				while (target && (target.tagName != "TD")) {
+					target = target?.parentElement;
+				}
+				
+				if (!target) return;
+				console.log(target);
+				console.log(data);
+				let x = target.offsetLeft + 72;
+				let y = target.offsetTop - 72;
+				if (!x && !y) return;
 
-		const renderTooltip = (crew) => {
-			 return '<div style=" border: 0px solid transparent", borderRadius: "8px", padding: "8px;">'
-				 + '<div style="display: flex", flexDirection: "row;">'
-					 + '<div>'
-						 + '<img src=' + process.env.GATSBY_ASSETS_URL + crew.imageUrlFullBody + ' style="height: 64px;" />'
-					 + '</div>'
-					 + '<div style="flexGrow: 1; margin-left: 8px">'
-						 + '<i>' + crew.flavor + '</i>'
-					 + '</div>'
-				 + '</div>'
-			 + '</div>'
+				el.style.position = "absolute";
+				el.style.left = x + "px";
+				el.style.top = y + "px";
+				el.style.display = "block";
+				el.style.zIndex = "100";
+				
+				setCurrentCrew(this.props.allCrew?.filter(x=>x.symbol == data.symbol)[0]);
+			}
 		};
 
-		return (
+		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+			e.nativeEvent.stopPropagation();
+			e.nativeEvent.preventDefault();
+			let el = document.getElementById("ttref_id");
+			if (el) {
+				let target: HTMLElement | null = e.target as HTMLElement;				
+				if (target.tagName != "IMG") return;
+
+				console.log("Out");
+
+				el.style.display = "none";
+				el.style.zIndex = "-1000";
+				setCurrentCrew(null);
+			}
+		};
+
+		return (<>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -108,11 +157,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											gridGap: '1px'
 										}}>
 										<div style={{ gridArea: 'icon' }}
-											data-tooltip-id='snarfus'
-											data-tooltip-html={renderTooltip(crew)}
+											
 										>
 											<a href={"/crew/" + crew.symbol}>
-												<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+												<img 
+												onMouseEnter={(e) => hoverIn(e, crew)}
+												onMouseLeave={(e) => hoverOut(e, crew)}
+												width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 											</a>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
@@ -172,12 +223,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-		);
+			</>);
 	}
 
+	get crew(): any | null {
+		return this.state.currentCrew;
+	}
+	
 	render() {
 		let { citeData } = this.state;
-
+		let compact = true;
 		return (
 			<>
 				<Segment>
@@ -207,6 +262,53 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							"Citing" considered <u>fully fusing</u>, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>and fused</u>.
 						</p>
 					</Rail>
+					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
+							{this.state.currentCrew && 
+								<div style={{display: "flex", flexDirection:"row"}}>
+									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "128px"}} />
+				
+									<div style={{display: "flex", flexDirection:"column", height: "128px", justifyContent: "space-between"}}>	
+										<div>
+											<h3>{this.crew.name}</h3>
+										</div>
+										<div>
+											<div style={{ textAlign: 'center' }}>
+												<StatLabel title="Voyage rank" value={this.crew.ranks.voyRank} />
+												<StatLabel title="Gauntlet rank" value={this.crew.ranks.gauntletRank} />
+												<StatLabel title="Big book tier" value={formatTierLabel(this.crew)} />
+											</div>
+										</div>
+										<div style={{display: "flex", flexDirection: "row"}}>
+											<CrewStat
+												skill_name="security_skill"
+												data={this.crew.base_skills.security_skill}
+												scale={compact ? 0.75 : 1}
+											/>
+											<CrewStat skill_name="command_skill" data={this.crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+											<CrewStat
+												skill_name="diplomacy_skill"
+												data={this.crew.base_skills.diplomacy_skill}
+												scale={compact ? 0.75 : 1}
+											/>
+											<CrewStat skill_name="science_skill" data={this.crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+											<CrewStat
+												skill_name="medicine_skill"
+												data={this.crew.base_skills.medicine_skill}
+												scale={compact ? 0.75 : 1}
+											/>
+											<CrewStat
+												skill_name="engineering_skill"
+												data={this.crew.base_skills.engineering_skill}
+												scale={compact ? 0.75 : 1}
+											/>
+										</div>
+									</div>
+
+								</div>
+						
+								}
+						</div>
+					}	
 				</Segment>
 			</>
 		);

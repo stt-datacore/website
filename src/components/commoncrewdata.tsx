@@ -10,7 +10,7 @@ import { getCoolStats } from '../utils/misc';
 import { formatTierLabel } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
 
-type StatLabelProps = {
+export type StatLabelProps = {
 	title: string;
 	value: string;
 };
