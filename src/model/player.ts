@@ -866,10 +866,6 @@ export interface Player {
   }
 
   export interface PlayerCollection extends CryoCollection {
-    id: number;
-    name: string;
-    progress: number;
-    milestone: Milestone;
     crew?: string[];
     simpleDescription?: string;
     progressPct?: number;
@@ -877,7 +873,7 @@ export interface Player {
     needed?: number;
     totalRewards?: number;
     owned: number;
-}
+  }
 
 export interface BuffBase {
     symbol: string
