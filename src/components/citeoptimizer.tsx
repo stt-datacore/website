@@ -11,6 +11,7 @@ import marked from 'marked';
 import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
+import { PlayerCrew, PlayerData } from '../model/player';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -20,7 +21,7 @@ const pagingOptions = [
 ];
 
 type CiteOptimizerProps = {
-	playerData: any;
+	playerData: PlayerData;
 	allCrew: CrewMember[];
 };
 
@@ -107,7 +108,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 	cc = false;
 	
-	renderTable(data, training = true) {
+	renderTable(data: PlayerCrew[], training = true) {
 		const createStateAccessors = (name) => [
 			this.state[name],
 			(value: any) => this.setState((prevState) => { prevState[name] = value; return prevState; })
@@ -124,7 +125,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const resizer = (e: any) => {
 			setCurrentCrew(currentCrew);
 		}	
-		const activate = (target: HTMLElement, data: any) => {
+		const activate = (target: HTMLElement, data: CrewMember) => {
 			let el = document.getElementById("ttref_id");
 			if (el) {
 				if (target.tagName != "IMG") return;
@@ -172,7 +173,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// }
 		}
 
-		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
+		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: CrewMember) => {
 			console.log("touchEnd");
 			let el = document.getElementById("ttref_id");
 			if (el) {
@@ -192,7 +193,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		}
 
-		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {			
+		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: CrewMember) => {			
 			console.log("hoverIn");
 			e.nativeEvent.stopPropagation();
 			e.nativeEvent.preventDefault();
@@ -203,7 +204,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		};
 
-		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: any) => {
+		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: CrewMember) => {
 			console.log("hoverOut");
 			e.nativeEvent.stopPropagation();
 			e.nativeEvent.preventDefault();
@@ -235,7 +236,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
-						return (
+						return (crew &&
 							<Table.Row key={idx} onTouchStart={(e) => deactivate(null)}
 							>
 								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
@@ -271,21 +272,21 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
 								<Table.Cell>
-									{Math.ceil(training ? row.addedEV : row.totalEVContribution)}
+									{Math.ceil(training ? (row.addedEV ?? 0) : (row.totalEVContribution ?? 0))}
 								</Table.Cell>
 								{
 									!training &&
 									<React.Fragment>
 										<Table.Cell>
-											{Math.ceil(row.totalEVRemaining)}
+											{Math.ceil(row.totalEVRemaining ?? 0)}
 										</Table.Cell>
 										<Table.Cell>
-											{Math.ceil(row.evPerCitation)}
+											{Math.ceil(row.evPerCitation ?? 0)}
 										</Table.Cell>
 									</React.Fragment>
 								}
 								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved.length}</b>} content={row.voyagesImproved.join(', ')} />
+									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
 							</Table.Row>
 						);

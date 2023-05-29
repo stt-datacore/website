@@ -347,8 +347,13 @@ export interface Player {
     ship_battle: ShipBattle
     action: Action
     default_avatar: boolean
-    cross_fuse_targets: string[]
+    cross_fuse_targets: string[]    
     cap_achiever: CapAchiever
+    addedEV?: number;
+    totalEVContribution?: number;
+    totalEVRemaining?: number;
+    evPerCitation?: number;
+    voyagesImproved?: string[];
   }
   
   export interface CapAchiever {
