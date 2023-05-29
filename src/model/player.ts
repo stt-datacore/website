@@ -915,7 +915,7 @@ export interface BuffBase {
     item_sources: any[]
   }
   
-  export interface AdvancementBuff {
+  export interface AdvancementBuff extends BuffBase {
     short_name: string
     operator: string
     value: number
