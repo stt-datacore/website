@@ -3,16 +3,18 @@ import { Item, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
+import { CrewMember } from '../model/crew';
+import { Collection } from '../model/game-elements';
 
 type CollectionsPageProps = {};
 
 type CollectionsPageState = {
-	collections?: any;
-	allcrew?: any;
+	collections?: Collection[];
+	allcrew?: CrewMember[];
 };
 
 class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPageState> {
-	state = { collections: undefined, allcrew: undefined };
+	state: CollectionsPageState = { collections: undefined, allcrew: undefined };
 
 	componentDidMount() {
 		fetch('/structured/crew.json')

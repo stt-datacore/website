@@ -7,21 +7,24 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
+import { CrewMember } from '../model/crew';
+import { Collection } from '../model/game-elements';
+import { BuffBase, CryoCollection, ImmortalReward, Milestone, PlayerCollection } from '../model/player';
 
 type CollectionsToolProps = {
 	playerData: any;
-	allCrew: any[];
+	allCrew: CrewMember[];
 };
 
 const CollectionsTool = (props: CollectionsToolProps) => {
 	const { playerData } = props;
 
-	const [allCollections, setAllCollections] = React.useState(undefined);
+	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
 	if (!allCollections) {
 		fetch('/structured/collections.json')
 			.then(response => response.json())
-			.then(collections => {
+			.then((collections: Collection[]) => {
 				setAllCollections(collections);
 			});
 		return (<><Icon loading name='spinner' /> Loading...</>);
@@ -52,9 +55,9 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		}
 		return crew;
 	});
-
+	
 	const playerCollections = allCollections.map(ac => {
-		let collection = { name: ac.name, progress: 0, milestone: { goal: 0 } };
+		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0 };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
 			if (pc) collection = JSON.parse(JSON.stringify(pc));
@@ -65,7 +68,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		collection.progressPct = collection.milestone.goal > 0 ? collection.progress / collection.milestone.goal : 1;
 		collection.neededPct = 1 - collection.progressPct;
 		collection.needed = collection.milestone.goal > 0 ? Math.max(collection.milestone.goal - collection.progress, 0) : 0;
-		collection.totalRewards = collection.milestone.buffs?.length + collection.milestone.rewards?.length;
+		collection.totalRewards = (collection.milestone.buffs?.length ?? 0) + (collection.milestone.rewards?.length ?? 0);
 		collection.owned = 0;
 		ac.crew.forEach(acs => {
 			let cc = collectionCrew.find(crew => crew.symbol === acs);
@@ -86,12 +89,12 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		<CollectionsUI playerCollections={playerCollections} collectionCrew={collectionCrew} />
 	);
 
-	function mergeRewards(current: any[], rewards: any[]): void {
-		if (rewards.length == 0) return;
+	function mergeRewards(current: ImmortalReward[], rewards: BuffBase[] | null | undefined): void {
+		if (!rewards || rewards.length == 0) return;
 		rewards.forEach(reward => {
 			const existing = current.find(c => c.symbol === reward.symbol);
 			if (existing) {
-				existing.quantity += reward.quantity;
+				existing.quantity += reward.quantity ?? 1;
 			}
 			else {
 				current.push(JSON.parse(JSON.stringify(reward)));
@@ -119,7 +122,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', []);
 
-	const crewAnchor = React.useRef(null);
+	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 	return (
 		<React.Fragment>
@@ -132,9 +135,10 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	function filterCrewByCollection(collectionId: number): void {
 		if (!crewAnchor.current) return;
 		setCollectionsFilter([collectionId]);
+		let opt: ScrollOptions
 		crewAnchor.current.scrollIntoView({
-			behavior: 'smooth'
-		}, 500);
+			behavior: 'smooth',			
+		});
 	}
 };
 
@@ -199,11 +203,11 @@ const ProgressTable = (props: ProgressTableProps) => {
 					</Form.Group>
 				</Form>
 			</div>
-			<SearchableTable
+			<SearchableTable			
 				id='collections/progress'
 				data={playerCollections}
 				config={tableConfig}
-				renderTableRow={(collection, idx) => renderCollectionRow(collection, idx)}
+				renderTableRow={(collection, idx) => renderCollectionRow(collection, idx ?? -1)}
 				filterRow={(collection, filter) => showCollectionRow(collection, filter)}
 				explanation={
 					<div>
@@ -214,19 +218,19 @@ const ProgressTable = (props: ProgressTableProps) => {
 		</React.Fragment>
 	);
 
-	function showCollectionRow(collection: any, filters: []): boolean {
+	function showCollectionRow(collection: PlayerCollection, filters: []): boolean {
 		if (!showMaxed && collection.milestone.goal == 0) return false;
 
 		if (rewardFilter && rewardFilter != '*any') {
 			let re;
 			if (rewardFilter == '*buffs') {
-				if (collection.milestone.buffs.length == 0) return false;
+				if (collection.milestone?.buffs?.length == 0) return false;
 			}
 			else if (rewardFilter.substr(0, 1) == '=') {
 				re = new RegExp(rewardFilter.substr(1));
-				if (!collection.milestone.rewards.find(reward => re.test(reward.symbol))) return false;
+				if (!collection.milestone.rewards?.find(reward => re.test(reward.symbol))) return false;
 			}
-			else if (!collection.milestone.rewards.find(reward => reward.symbol == rewardFilter)) {
+			else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
 				return false;
 			}
 		}
@@ -243,7 +247,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 			if (filter.conditionArray.length === 0) {
 				// text search only
 				for (let segment of filter.textSegments) {
-					let segmentResult =
+					let segmentResult = 
 						matchesFilter(collection.name, segment.text) ||
 						matchesFilter(collection.simpleDescription, segment.text) ||
 						collection.traits?.some(t => matchesFilter(t, segment.text));

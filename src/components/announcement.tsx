@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql, StaticQuery, navigate } from 'gatsby';
-import { Message, Icon, Button } from 'semantic-ui-react';
+import { Message, Icon, Button, SemanticCOLORS } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../utils/storage';
 
@@ -62,12 +62,13 @@ const Announcement = () => {
 
 		const isExcerpt = announcement.html !== announcement.excerpt;
 
-		let color = null;
+		let color: SemanticCOLORS;
 		switch (announcement.frontmatter.class) {
 			case 'info': color = 'blue'; break;
 			case 'warning': color = 'yellow'; break;
 			case 'positive': color = 'green'; break;
 			case 'negative': color = 'red'; break;
+			default: color = 'blue'; break;
 		}
 
 		return (

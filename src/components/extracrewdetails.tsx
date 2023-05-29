@@ -2,20 +2,23 @@ import React, { Component } from 'react';
 import { Header, Grid, Segment, Table, Pagination, Dropdown } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import { Link } from 'gatsby';
+import { BaseSkills, CrewMember } from '../model/crew';
+import { Constellation, Keystone, PolestarCombo, Variant } from '../model/game-elements';
+
 
 type ExtraCrewDetailsProps = {
 	crew_archetype_id: number,
 	max_rarity: number,
-	base_skills: any,
-	traits: any[],
-	traits_hidden: any[],
-	unique_polestar_combos: any[]
+	base_skills: BaseSkills,
+	traits: string[],
+	traits_hidden: string[],
+	unique_polestar_combos: string[]
 };
 
 type ExtraCrewDetailsState = {
-	variants: any[],
-	constellation: any,
-	optimalpolestars: any,
+	variants: Variant[],
+	constellation?: Constellation,
+	optimalpolestars?: PolestarCombo[],
 	pagination_rows: number;
 	pagination_page: number;
 };
@@ -40,10 +43,10 @@ const filterTraits = (polestar, trait) => {
 }
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
-	state = {
-		variants: [],
+	state: ExtraCrewDetailsState = {
+		variants: [] as Variant[],
 		constellation: undefined,
-		optimals: undefined,
+		optimalpolestars: undefined,
 		pagination_rows: 10,
 		pagination_page: 1
 	};
@@ -62,7 +65,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
 			/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 		];
-		const variantTraits = [];
+		const variantTraits = [] as string[];
 		this.props.traits_hidden.forEach(trait => {
 			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
 				variantTraits.push(trait);
@@ -72,22 +75,23 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let self = this;
 		fetch('/structured/keystones.json')
 			.then(response => response.json())
-			.then(allkeystones => {
-				let crew_keystone_crate = allkeystones.find((k: any) => k.crew_archetype_id === this.props.crew_archetype_id);
-
+			.then((allkeystones: Keystone[]) => {
+				let crew_keystone_crate = allkeystones.find((k) => k.crew_archetype_id === this.props.crew_archetype_id);
+				
 				// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
 				let raritystone = allkeystones.filter((keystone) =>
 					keystone.filter && keystone.filter.type === 'rarity' && keystone.filter.rarity === this.props.max_rarity
 				);
 				let skillstones = allkeystones.filter((keystone) =>
-					keystone.filter && keystone.filter.type === 'skill' && this.props.base_skills[keystone.filter.skill]
+					keystone.filter && keystone.filter.type === 'skill' && keystone.filter.skill && this.props.base_skills[keystone.filter.skill]
 				);
 
-				if (crew_keystone_crate) {
+				if (crew_keystone_crate && crew_keystone_crate.keystones) {
 					self.setState({
 						constellation: {
-							name: crew_keystone_crate.name, flavor: crew_keystone_crate.flavor,
-							keystones: crew_keystone_crate.keystones.map((kid: any) => allkeystones.find((k: any) => k.id === kid)),
+							name: crew_keystone_crate.name, 
+							flavor: crew_keystone_crate.flavor,
+							keystones: (crew_keystone_crate.keystones.map((kid) => allkeystones.find((k) => k.id === kid)) ?? []) as Keystone[],
 							raritystone,
 							skillstones
 						}
@@ -98,14 +102,15 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		fetch('/structured/crew.json')
 			.then(response => response.json())
-			.then(allcrew => {
+			.then((allcrew: CrewMember[]) => {
 				// Use precalculated unique polestars combos if any, otherwise get best chances
 				let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
 					this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
 					this._findOptimalPolestars(allcrew);
 
 				// Get variants
-				let variants = [];
+				let variants: Variant[] = [];
+
 				variantTraits.forEach(function (trait) {
 					let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
 					// Ignore variant group if crew is the only member of the group
@@ -125,7 +130,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			});
 	}
 
-	_findOptimalPolestars(allcrew: []) {
+	_findOptimalPolestars(allcrew: CrewMember[]) {
 		// Generate crewman's list of polestars (traits + rarity + skills)
 		let polestars = this.props.traits.slice();
 		polestars.push('crew_max_rarity_'+this.props.max_rarity);
@@ -134,8 +139,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		}
 		polestars = polestars.sort((a, b) => a.localeCompare(b));
 		// Initialize all valid combinations of polestars with a zero count
-		let crewPolestarCombos = [];
-		let f = function(prepoles, traits) {
+		let crewPolestarCombos: PolestarCombo[] = [];
+		let f = function(prepoles: string[], traits: string[]) {
 			for (let t = 0; t < traits.length; t++) {
 				const newpoles = prepoles.slice();
 				newpoles.push(traits[t]);
@@ -149,12 +154,12 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				f(newpoles, traits.slice(t+1));
 			}
 		}
-		f([], polestars);
+		f([] as string[], polestars);
 
 		// Find all crew who have any polestars in common
 		for (let i = 0; i < allcrew.length; i++) {
 			if (!allcrew[i].in_portal) continue;
-			let polesInCommon = [];
+			let polesInCommon = [] as string[];
 			for (let t = 0; t < this.props.traits.length; t++) {
 				if (allcrew[i].traits.indexOf(this.props.traits[t]) >= 0)
 					polesInCommon.push(this.props.traits[t]);
@@ -169,10 +174,11 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						polesInCommon.push(skill);
 				}
 				crewPolestarCombos.forEach(combo => {
-					if (polesInCommon.length >= combo.polestars.length) {
-						if (combo.polestars.every(polestar => polesInCommon.indexOf(polestar) >= 0)) {
+					if (polesInCommon.length >= (combo.polestars?.length ?? 0)) {
+						if (combo.polestars?.every(polestar => polesInCommon.indexOf(polestar) >= 0)) {
 							combo.count++;
 							if (allcrew[i].archetype_id != this.props.crew_archetype_id) {
+								if (!combo.alts) combo.alts = [];
 								combo.alts.push({
 									'symbol': allcrew[i].symbol,
 									'name': allcrew[i].name
@@ -186,14 +192,14 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
 		crewPolestarCombos.sort((a, b) => {
-			if (a.count == b.count)
+			if (a.count == b.count && a.polestars && b.polestars)
 				return a.polestars.length - b.polestars.length;
 			return a.count - b.count;
 		});
 
 		let iBestCount = crewPolestarCombos[0].count;
 
-		let optimals = [];
+		let optimals = [] as PolestarCombo[];
 		for (let i = 0; i < crewPolestarCombos.length; i++) {
 			let testcombo = crewPolestarCombos[i];
 
@@ -205,7 +211,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			// Ignore supersets of an already optimal subset
 			let bIsSuperset = false;
 			for (let j = 0; j < optimals.length; j++) {
-				if (testcombo.polestars.length <= optimals[j].length) continue;
+				if (testcombo.polestars.length <= optimals[j].polestars.length) continue;
 				bIsSuperset = true;
 				optimals[j].polestars.forEach(polestar => {
 					bIsSuperset = bIsSuperset && testcombo.polestars.indexOf(polestar) >= 0;
@@ -221,7 +227,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	_optimizeUniquePolestars(crewPolestarCombos: any[]) {
 		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
-		let optimals = [];
+		let optimals = [] as PolestarCombo[];
 		for (let i = 0; i < crewPolestarCombos.length; i++) {
 			let testpolestars = crewPolestarCombos[i];
 			optimals.push({

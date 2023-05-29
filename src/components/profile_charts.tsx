@@ -14,13 +14,14 @@ import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree } from '../utils/statutils';
 import { demandsPerSlot, IDemand } from '../utils/equipment';
+import { CrewMember } from '../model/crew';
 
 type ProfileChartsProps = {
 	playerData: any;
 };
 
 type ProfileChartsState = {
-	allcrew: any[];
+	allcrew?: CrewMember[];
 	items: any[];
 	data_ownership: any[];
 	skill_distribution: any;

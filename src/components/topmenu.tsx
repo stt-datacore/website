@@ -172,7 +172,7 @@ const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
 
 	return (
-		<MediaContextProvider>
+		<MediaContextProvider>			
 			<Media at='mobile'>
 				<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
 					{children}
@@ -189,6 +189,7 @@ const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 
 type TopMenuProps = {
 	narrowLayout?: boolean;
+	children?: React.ReactNode
 };
 
 type TopMenuState = {

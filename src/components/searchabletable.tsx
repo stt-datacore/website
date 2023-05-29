@@ -39,8 +39,8 @@ type SearchableTableProps = {
 	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
 	filterRow: (row: any, filter: any, filterType?: string) => boolean;
 	initOptions?: any;
-    showFilterOptions: boolean;
-	showPermalink: boolean;
+    showFilterOptions?: boolean;
+	showPermalink?: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
 };

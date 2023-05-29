@@ -6,6 +6,7 @@ import TopMenu from './topmenu';
 type LayoutProps = {
 	title?: string;
 	narrowLayout?: boolean;
+	children?: React.ReactNode[]
 };
 
 type LayoutState = {};

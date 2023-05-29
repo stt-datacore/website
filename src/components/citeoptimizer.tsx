@@ -10,6 +10,7 @@ import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
+import { CrewMember } from '../model/crew';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -20,7 +21,7 @@ const pagingOptions = [
 
 type CiteOptimizerProps = {
 	playerData: any;
-	allCrew: any;
+	allCrew: CrewMember[];
 };
 
 type CiteOptimizerState = {
@@ -28,8 +29,8 @@ type CiteOptimizerState = {
 	trainingPage: number;
 	paginationRows: number;
 	citeData: any;
-	currentCrew: any;
-	touchCrew: any;
+	currentCrew: CrewMember | null | undefined;
+	touchCrew: CrewMember | null | undefined;
 	touchToggled: boolean;
 };
 class StatLabel extends React.Component<StatLabelProps> {
