@@ -105,6 +105,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		})
 	}
 	cc = false;
+	
 	renderTable(data, training = true) {
 		const createStateAccessors = (name) => [
 			this.state[name],
@@ -119,7 +120,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-		
+		const resizer = (e: any) => {
+			setCurrentCrew(currentCrew);
+		}	
 		const activate = (target: HTMLElement, data: any) => {
 			let el = document.getElementById("ttref_id");
 			if (el) {
@@ -143,6 +146,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				el.style.display = "block";
 				el.style.zIndex = "100";
 				
+				window.addEventListener("resize", resizer);
 				setCurrentCrew(this.props.allCrew?.filter(x=>x.symbol == data.symbol)[0]);
 			}
 		}
@@ -154,15 +158,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 				el.style.display = "none";
 				el.style.zIndex = "-1000";
+
+				window.removeEventListener("resize", resizer);
 				setCurrentCrew(null);
 			}
 		}
 
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
-			if (matchMedia('(hover: hover)').matches) {
-				window.location.href = "/crew/" + data.symbol;
-			}
+			// if (matchMedia('(hover: hover)').matches) {
+			// 	window.location.href = "/crew/" + data.symbol;
+			// }
 		}
 
 		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: any) => {
@@ -244,7 +250,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											
 										>
 											<img 
-												style={{cursor: "pointer"}}
 												onTouchEnd={(e) => touchEnd(e, crew)}
 												onMouseEnter={(e) => hoverIn(e, crew)}
 												onMouseLeave={(e) => hoverOut(e, crew)}
@@ -376,7 +381,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div>
 											<h3>{this.crew.name}</h3>
 										</div>
-										<div style={{display: "flex", flexWrap: "wrap", flexDirection: window.innerWidth <= 768 ? "column" : "row", justifyContent: "flex-start", marginTop: "4px", marginBottom: "2px"}}>
+										<div style={{
+											display: "flex", 
+											flexWrap: "wrap", 
+											flexDirection: window.innerWidth <= 512 ? "column" : "row", 
+											justifyContent: "flex-start", 
+											marginTop: "4px", 
+											marginBottom: "2px"}}>
+
 											<CrewStat												
 												skill_name="security_skill"
 												data={this.crew.base_skills.security_skill}
