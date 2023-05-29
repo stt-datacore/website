@@ -1,13 +1,10 @@
 import React, { PureComponent } from 'react';
+import { Skill } from '../model/crew';
 
 type CrewStatProps = {
 	skill_name: string;
 	scale?: number;
-	data?: {
-		core: number;
-		range_min: number;
-		range_max: number;
-	};
+	data?: Skill;
 };
 
 class CrewStat extends PureComponent<CrewStatProps> {

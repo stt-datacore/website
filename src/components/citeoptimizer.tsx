@@ -319,8 +319,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			</div>);
 	}
 
-	get crew(): any | null {
-		return this.state.currentCrew;
+	get crew(): CrewMember | null {
+		return this.state.currentCrew ?? null;
 	}
 	
 	render() {
@@ -374,7 +374,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}
 
 					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
-							{this.state.currentCrew && 
+							{this.state.currentCrew && this.crew &&
 								<div style={{display: "flex", flexDirection:"row"}}>
 									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "9.5em", marginRight: "8px"}} />
 				
@@ -432,13 +432,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
 												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
 												<StatLabel title="CAB Grade" value={(<div style={{fontWeight: "bold", color: this.gradeToColor(this.crew.cab_ov_grade)}}>{this.crew.cab_ov_grade}</div>)} />
-												<StatLabel title="CAB Rank" value={this.crew.cab_ov_rank} />
+												<StatLabel title="CAB Rank" value={"" + this.crew.cab_ov_rank} />
 											</div>
 										</div>
 										<div>
 											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
-												<StatLabel title="Voyage Rank" value={this.crew.ranks.voyRank} />
-												<StatLabel title="Gauntlet Rank" value={this.crew.ranks.gauntletRank} />
+												<StatLabel title="Voyage Rank" value={"" + this.crew.ranks.voyRank} />
+												<StatLabel title="Gauntlet Rank" value={"" + this.crew.ranks.gauntletRank} />
 												<StatLabel title="Big Book Tier" value={formatTierLabel(this.crew)} />
 											</div>
 										</div>
