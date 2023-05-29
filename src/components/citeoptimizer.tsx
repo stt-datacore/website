@@ -6,7 +6,6 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
-import { Tooltip } from 'react-tooltip';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
