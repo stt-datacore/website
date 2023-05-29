@@ -258,7 +258,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 											</a>											
 										</div>
-										<Tooltip id='snarfus' />
+										
 									</div>
 								</Table.Cell>
 								<Table.Cell>
