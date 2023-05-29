@@ -6,7 +6,7 @@ import { Link } from 'gatsby';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
 
-import * as SearchString from 'search-string';
+import SearchString from 'search-string/src/searchString';
 import * as localForage from 'localforage';
 
 const filterTypeOptions = [
@@ -24,7 +24,7 @@ const pagingOptions = [
 
 export interface ITableConfigRow {
 	width: number;
-	column: string;
+	column?: string;
 	title: string | JSX.Element;
 	pseudocolumns?: string[];
 	reverse?: boolean;
@@ -119,7 +119,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					<Table.HeaderCell
 						key={idx}
 						width={cell.width as any}
-						sorted={((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null}
+						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null) ?? undefined}
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
@@ -195,7 +195,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
-	let subsort = [];
+	let subsort = [] as IConfigSortData[];
 	const columnConfig = props.config.find(col => col.column === sortColumn);
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
@@ -218,7 +218,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 
 	// Filtering
-	let filters = [];
+	let filters: SearchString[] = [];
 	if (searchFilter) {
 		let grouped = searchFilter.split(/\s+OR\s+/i);
 		grouped.forEach(group => {
@@ -348,14 +348,14 @@ const LockButtons = (props: LockButtonsProps) => {
 
 // Check for custom initial table options from URL or <Link state>
 export const initSearchableOptions = (location: any) => {
-	let initOptions = false;
+	let initOptions: Object | false = false;
 	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
 
 	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
 	const linkState = location.state;
 
 	OPTIONS.forEach((option) => {
-		let value = undefined;
+		let value: string | null = null;
 		// Always use URL parameters if found
 		if (urlParams?.has(option)) value = urlParams.get(option);
 		// Otherwise check <Link state>
@@ -371,7 +371,7 @@ export const initSearchableOptions = (location: any) => {
 
 // Check for other initial option from URL or <Link state> by custom name
 export const initCustomOption = (location: any, option: string, defaultValue: any) => {
-	let value = undefined;
+	let value: string | string[] | null = null;
 	// Always use URL parameters if found
 	if (location?.search) {
 		const urlParams = new URLSearchParams(location.search);

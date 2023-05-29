@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
-import { Collection } from '../model/game-elements';
+import { Collection, Filter } from '../model/game-elements';
 import { BuffBase, CryoCollection, ImmortalReward, Milestone, PlayerCollection } from '../model/player';
 
 type CollectionsToolProps = {
@@ -218,7 +218,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 		</React.Fragment>
 	);
 
-	function showCollectionRow(collection: PlayerCollection, filters: []): boolean {
+	function showCollectionRow(collection: PlayerCollection, filters: Filter[]): boolean {
 		if (!showMaxed && collection.milestone.goal == 0) return false;
 
 		if (rewardFilter && rewardFilter != '*any') {
@@ -244,14 +244,14 @@ const ProgressTable = (props: ProgressTableProps) => {
 
 		for (let filter of filters) {
 			let meetsAllConditions = true;
-			if (filter.conditionArray.length === 0) {
+			if (filter.conditionArray?.length === 0) {
 				// text search only
-				for (let segment of filter.textSegments) {
+				for (let segment of filter.textSegments ?? []) {
 					let segmentResult = 
 						matchesFilter(collection.name, segment.text) ||
-						matchesFilter(collection.simpleDescription, segment.text) ||
+						matchesFilter(collection.simpleDescription ?? "", segment.text) ||
 						collection.traits?.some(t => matchesFilter(t, segment.text));
-					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
+					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult ?? false);
 				}
 			}
 			if (meetsAllConditions) {
@@ -393,14 +393,15 @@ const CrewTable = (props: CrewTableProps) => {
 				id='collections/crew'
 				data={collectionCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx) => renderCrewRow(crew, idx)}
+				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 			/>
 		</React.Fragment>
 	);
 
-	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
+	function showThisCrew(crew: any, filters: Filter[], filterType: string | null | undefined): boolean {
 		if (crew.immortal) return false;
+		if (!filterType) return true;
 		if (collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < collectionsFilter.length; i++) {

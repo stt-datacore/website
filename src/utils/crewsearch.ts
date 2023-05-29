@@ -1,7 +1,8 @@
 import CONFIG from '../components/CONFIG';
+import { Filter } from '../model/game-elements';
 
-export function crewMatchesSearchFilter(crew: any, filters: [], filterType: string): boolean {
-	if (filters.length == 0) return true;
+export function crewMatchesSearchFilter(crew: any, filters: Filter[], filterType: string | null | undefined): boolean {
+	if (filters.length == 0 || !filterType) return true;
 
     const filterTypes = {
         'Exact': (input: string, searchString: string) => input.toLowerCase() == searchString.toLowerCase(),
@@ -13,9 +14,9 @@ export function crewMatchesSearchFilter(crew: any, filters: [], filterType: stri
 
 	for (let filter of filters) {
 		let meetsAllConditions = true;
-		if (filter.conditionArray.length === 0) {
+		if (filter.conditionArray?.length === 0) {
 			// text search only
-			for (let segment of filter.textSegments) {
+			for (let segment of filter.textSegments ?? []) {
 				let segmentResult =
 					matchesFilter(crew.name, segment.text) ||
 					matchesFilter(crew.short_name, segment.text) ||
@@ -25,8 +26,8 @@ export function crewMatchesSearchFilter(crew: any, filters: [], filterType: stri
 				meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
 			}
 		} else {
-			let rarities = [];
-			for (let condition of filter.conditionArray) {
+			let rarities = [] as number[];
+			for (let condition of filter.conditionArray ?? []) {
 				let conditionResult = true;
 				if (condition.keyword === 'name') {
 					conditionResult = matchesFilter(crew.name, condition.value);
@@ -36,7 +37,16 @@ export function crewMatchesSearchFilter(crew: any, filters: [], filterType: stri
 						crew.traits_hidden.some(t => matchesFilter(t, condition.value));
 				} else if (condition.keyword === 'rarity') {
 					if (!condition.negated) {
-						rarities.push(Number.parseInt(condition.value));
+						if (typeof condition.value === "number") {
+							rarities.push(condition.value);
+						}
+						else if (typeof condition.value === "string") {
+							rarities.push(Number.parseInt(condition.value));
+						}
+						else if (condition.value?.toString) {
+							rarities.push(Number.parseInt(condition.value.toString()));
+						}
+						
 						continue;
 					}
 
@@ -61,7 +71,7 @@ export function crewMatchesSearchFilter(crew: any, filters: [], filterType: stri
 				meetsAllConditions = meetsAllConditions && rarities.includes(crew.max_rarity);
 			}
 
-			for (let segment of filter.textSegments) {
+			for (let segment of filter.textSegments ?? []) {
 				let segmentResult =
 					matchesFilter(crew.name, segment.text) ||
 					crew.traits_named.some(t => matchesFilter(t, segment.text)) ||

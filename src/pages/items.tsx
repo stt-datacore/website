@@ -6,6 +6,7 @@ import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
+import { Filter } from '../model/game-elements';
 
 type ItemsPageProps = {};
 
@@ -79,7 +80,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 			});
 	}
 
-	_filterItem(item: any, filters: []): boolean {
+	_filterItem(item: any, filters: Filter[]): boolean {
 		if (filters.length == 0) return true;
 
 		const matchesFilter = (input: string, searchString: string) =>
@@ -89,9 +90,9 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 
 		for (let filter of filters) {
 			let meetsAllConditions = true;
-			if (filter.conditionArray.length === 0) {
+			if (filter.conditionArray?.length === 0) {
 				// text search only
-				for (let segment of filter.textSegments) {
+				for (let segment of filter.textSegments ?? []) {
 					let segmentResult = matchesFilter(item.name, segment.text) || matchesFilter(item.flavor, segment.text);
 					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
 				}

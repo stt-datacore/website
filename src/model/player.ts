@@ -354,6 +354,7 @@ export interface Player {
     totalEVRemaining?: number;
     evPerCitation?: number;
     voyagesImproved?: string[];
+    highest_owned_rarity?: number;
   }
   
   export interface CapAchiever {
@@ -487,7 +488,7 @@ export interface Player {
   }
   
   export interface Milestone {
-    goal: number
+    goal: number | "n/a"
     rewards?: Reward[]
     claimed?: boolean
     claimable?: boolean
@@ -863,7 +864,7 @@ export interface Player {
     name: string
     image?: string
     description?: string
-    progress: number
+    progress: number | "n/a"
     traits?: string[]
     extra_crew?: number[]
     claimable_milestone_index?: number
