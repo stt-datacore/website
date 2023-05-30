@@ -414,13 +414,17 @@ export interface Player {
     nodes?: number[];
     node_matches?: NodeMatches;
     nodes_rarity?: number;
+
+    ssId?: string;
+    score?: number;
   }
 
 
   export interface NodeMatch { 
     index: number, 
     traits: string[];
-    combos: string[][]
+    combos: string[][];
+    nodes?: number[];
   }
 
   export interface NodeMatches {

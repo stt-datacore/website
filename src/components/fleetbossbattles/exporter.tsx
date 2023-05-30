@@ -4,9 +4,11 @@ import { Header, Button, Popup, Message, Form, Checkbox } from 'semantic-ui-reac
 import { getOptimalCombos, isCrewOptimal } from './fbbutils';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { Combo, ComboNode, OpenNode } from '../../model/boss';
+import { PlayerCrew } from '../../model/player';
 
 type ExportTraitsProps = {
-	nodes: any[];
+	nodes: ComboNode[];
 	traits: string[];
 };
 
@@ -58,8 +60,8 @@ export const ExportTraits = (props: ExportTraitsProps) => {
 };
 
 type ExportCrewListsProps = {
-	openNodes: any[];
-	allMatchingCrew: any[];
+	openNodes: OpenNode[];
+	allMatchingCrew: PlayerCrew[];
 };
 
 export const ExportCrewLists = (props: ExportCrewListsProps) => {
@@ -86,10 +88,10 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 		}
 		let output = '';
 		openNodes.forEach(node => {
-			const possibleCombos = [];
-			const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+			const possibleCombos = [] as string[][];
+			const crewByNode = crewList.filter(crew => crew.node_matches && crew.node_matches[`node-${node.index}`]);
 			crewByNode.forEach(crew => {
-				const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
+				const crewNodeTraits = crew.node_matches ? crew.node_matches[`node-${node.index}`].traits : [];
 				const exists = !!possibleCombos.find(combo =>
 					combo.length === crewNodeTraits.length && combo.every(trait => crewNodeTraits.includes(trait))
 				);
@@ -98,11 +100,13 @@ export const ExportCrewLists = (props: ExportCrewListsProps) => {
 			let nodeList = '';
 			possibleCombos.sort((a, b) => b.length - a.length).forEach(combo => {
 				const crewList = crewByNode.filter(crew =>
-					combo.length === crew.node_matches[`node-${node.index}`].traits.length
-					&& combo.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
+					combo.length === (crew.node_matches ? crew.node_matches[`node-${node.index}`].traits.length : 0)
+					&& combo.every(trait => crew.node_matches && crew.node_matches[`node-${node.index}`].traits.includes(trait))
 				).sort((a, b) => {
-					if (a.nodes_rarity !== b.nodes_rarity)
-						return b.nodes_rarity - a.nodes_rarity;
+					if (a.nodes_rarity && b.nodes_rarity) {
+						if (a.nodes_rarity !== b.nodes_rarity)
+							return b.nodes_rarity - a.nodes_rarity;
+					}
 					return a.name.localeCompare(b.name);
 				}).map(crew => formatCrewName(crew)).join(', ');
 				if (nodeList !== '') nodeList += '\n';

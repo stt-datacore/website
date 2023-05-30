@@ -90,6 +90,8 @@ const ComboPicker = () => {
 	};
 	allData?.bossData.statuses.forEach(boss => {
 		if (boss.ends_in) {
+			console.log("Boss Active");
+			console.log(boss);
 			const unlockedNodes = boss.combo?.nodes.filter(node => node.unlocked_character) ?? [];
 			if (boss.combo?.nodes && boss.combo.nodes.length - unlockedNodes.length > 0) {
 				bossOptions.push(
@@ -99,6 +101,12 @@ const ComboPicker = () => {
 						text: `${getBossName(boss.group)}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`
 					}
 				);
+			}
+			else {
+				console.log("Debugging What...");
+				console.log(boss.combo);
+				console.log(boss.combo?.nodes);
+				console.log(unlockedNodes);
 			}
 		}
 	});

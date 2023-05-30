@@ -1,4 +1,4 @@
-import { Reward } from './player';
+import { PlayerCrew, Reward } from './player';
 import { Icon } from './game-elements';
 import { Action as ShipAction } from './crew';
 
@@ -148,4 +148,17 @@ export interface BossBattlesRoot {
     symbol: string
     name: string
   }
+
+  
+export interface OpenNode {
+	comboId?: string;
+	index: number;
+	traitsKnown: string[],
+	hiddenLeft: number;
+}
+
+export interface IgnoredCombo {
+	index: number;
+	combo: string[];
+}
   

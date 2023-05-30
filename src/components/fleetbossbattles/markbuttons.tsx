@@ -2,10 +2,12 @@ import React from 'react';
 import { Header, Icon, Button, Popup, Modal, Grid, Label } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { OpenNode } from '../../model/boss';
+import { NodeMatch, PlayerCrew } from '../../model/player';
 
 type MarkButtonProps = {
-	crew: any;
-	openNodes: any[];
+	crew: PlayerCrew;
+	openNodes: OpenNode[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
@@ -16,8 +18,8 @@ const MarkButtons = (props: MarkButtonProps) => {
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
 	const SolvePicker = () => {
-		const [solvedNode, setSolvedNode] = React.useState(undefined);
-		const [solvedTraits, setSolvedTraits] = React.useState([]);
+		const [solvedNode, setSolvedNode] = React.useState<number | undefined>(undefined);
+		const [solvedTraits, setSolvedTraits] = React.useState<number[]>([]);
 
 		React.useEffect(() => {
 			if (!modalIsOpen) {
@@ -27,13 +29,13 @@ const MarkButtons = (props: MarkButtonProps) => {
 		}, [modalIsOpen]);
 
 		let traitId = 0;
-		const nodes = Object.values(crew.node_matches).map(node => {
+		const nodes = crew.node_matches ? Object.values(crew.node_matches).map(node => {
 			const open = openNodes.find(n => n.index === node.index);
 			return {
 				...open,
 				possible: node.traits.map(trait => { return { id: traitId++, trait: trait }; }),
 			};
-		});
+		}) : [];
 
 		return (
 			<Modal
@@ -49,24 +51,24 @@ const MarkButtons = (props: MarkButtonProps) => {
 						{nodes.map(node =>
 							<Grid.Column key={node.index}>
 								<Header as='h4' style={{ marginBottom: '0' }}>
-									{node.traitsKnown.map((trait, traitIndex) => (
+									{node.traitsKnown?.map((trait, traitIndex) => (
 										<span key={traitIndex}>
 											{traitIndex > 0 ? <br /> : <></>}{traitIndex > 0 ? '+ ': ''}{allTraits.trait_names[trait]}
 										</span>
-									)).reduce((prev, curr) => [prev, curr], [])}
+									)).reduce((prev, curr) => <>{prev}{curr}</>)}
 								</Header>
 								<p>{node.hiddenLeft} required:</p>
 								{node.possible.map(trait => (
 									<div key={trait.id} style={{ paddingBottom: '.5em' }}>
 										<Label
 											style={{ cursor: 'pointer' }}
-											onClick={() => handleLabelClick(node.index, trait.id)}
+											onClick={() => handleLabelClick(node.index as number, trait.id)}
 										>
 											{solvedTraits.includes(trait.id) && <Icon name='check' color='green' />}
 											{allTraits.trait_names[trait.trait]}
 										</Label>
 									</div>
-								)).reduce((prev, curr) => [prev, curr], [])}
+								)).reduce((prev, curr) => <>{prev}{curr}</>)}
 							</Grid.Column>
 						)}
 					</Grid>
@@ -89,10 +91,10 @@ const MarkButtons = (props: MarkButtonProps) => {
 			}
 			const newTraits = solvedNode === nodeIndex ? solvedTraits : [];
 			newTraits.push(traitId);
-			const neededTraits = openNodes.find(node => node.index === nodeIndex).hiddenLeft;
+			const neededTraits = openNodes.find(node => node.index === nodeIndex)?.hiddenLeft;
 			if (newTraits.length === neededTraits) {
 				const traits = newTraits.map(traitId =>
-					nodes.find(node => node.index === nodeIndex).possible.find(p => p.id === traitId).trait
+					nodes.find(node => node.index === nodeIndex)?.possible?.find(p => p.id === traitId)?.trait ?? ""
 				);
 				props.solveNode(nodeIndex, traits);
 				setModalIsOpen(false);
@@ -133,10 +135,10 @@ const MarkButtons = (props: MarkButtonProps) => {
 	);
 
 	function handleSolveClick(): void {
-		let solvedNode = false;
-		if (Object.values(crew.node_matches).length === 1) {
+		let solvedNode: NodeMatch | false = false;
+		if (crew.node_matches && Object.values(crew.node_matches).length === 1) {
 			const match = Object.values(crew.node_matches)[0];
-			if (match.traits.length === openNodes.find(node => node.index === match.index).hiddenLeft)
+			if (match.traits.length === openNodes.find(node => node.index === match.index)?.hiddenLeft)
 				solvedNode = match;
 		}
 		if (solvedNode)

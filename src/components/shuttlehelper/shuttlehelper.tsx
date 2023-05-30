@@ -5,21 +5,24 @@ import CONFIG from '../CONFIG';
 
 import MissionsList from './missionslist';
 import AssignmentsList from './assignmentslist';
-import { Shuttlers, Shuttle, ShuttleSeat, CrewScores, getSkillSetId } from './shuttleutils';
+import { Shuttlers, Shuttle, ShuttleSeat, CrewScores, getSkillSetId, ShuttleAdventure } from './shuttleutils';
 import { useStateWithStorage } from '../../utils/storage';
+import { Event, PlayerCrew } from '../../model/player';
+import { EventData } from '../../utils/events';
+import { AssignedCrew, ShuttleOccupant } from './shuttleutils';
 
 type ShuttleHelperProps = {
 	helperId: string;
 	groupId: string;
 	dbid: string;
-	crew: any[];
-	eventData?: any;
+	crew: PlayerCrew[];
+	eventData?: EventData;
 };
 
 const ShuttleHelper = (props: ShuttleHelperProps) => {
 	const [shuttlers, setShuttlers] = useStateWithStorage(props.dbid+'/shuttlers/setups', new Shuttlers(), { rememberForever: true, onInitialize: variableReady });
-	const [assigned, setAssigned] = useStateWithStorage(props.dbid+'/shuttlers/assigned', [], { rememberForever: true, onInitialize: variableReady });
-	const [activeShuttles, setActiveShuttles] = useStateWithStorage('tools/activeShuttles', undefined);
+	const [assigned, setAssigned] = useStateWithStorage<AssignedCrew[]>(props.dbid+'/shuttlers/assigned', [], { rememberForever: true, onInitialize: variableReady });
+	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
 
 	const [considerActive, setConsiderActive] = useStateWithStorage(props.helperId+'/considerActive', true);
 	const [considerVoyage, setConsiderVoyage] = useStateWithStorage(props.helperId+'/considerVoyage', false);
@@ -93,7 +96,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			{activeStep === 'missions' && (
+			{activeStep === 'missions' && activeShuttles && (
 				<MissionsList groupId={props.groupId}
 					setActiveStep={setActiveStep} recommendShuttlers={recommendShuttlers}
 					shuttlers={shuttlers} setShuttlers={setShuttlers} activeShuttles={activeShuttles} />
@@ -117,7 +120,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 		const expireDate = new Date();
 		expireDate.setDate(expireDate.getDate()-DAYS_TO_EXPIRE);
 
-		const oldIds = [];
+		const oldIds = [] as string[];
 		shuttlers.shuttles.forEach(shuttle => {
 			if (!shuttle.groupId || shuttle.created < expireDate.getTime())
 				oldIds.push(shuttle.id);
@@ -160,7 +163,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	function recommendShuttlers(): void {
 		if (calcState > 0) return;
 
-		const todo = [], todoIds = [];
+		const todo = [] as ShuttleSeat[], todoIds = [] as string[];
 		shuttlers.shuttles.filter(shuttle => shuttle.groupId === props.groupId && shuttle.priority > 0).forEach(shuttle => {
 			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
 				const seat = shuttle.seats[seatNum];
@@ -183,7 +186,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 
 	function updateCrewScores(todo: ShuttleSeat[] = [], doneCallback?: () => void): void {
 		const newSkills = {};
-		const newScores = [];
+		const newScores = [] as ShuttleOccupant[];
 
 		for (let i = 0; i < props.crew.length; i++) {
 			if (!considerActive && props.crew[i].active_status === 2)
@@ -207,9 +210,9 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					if (props.crew[i][skill].core === 0) continue;
 
 					let iMultiplier = 1;
-					if (props.eventData?.featured.indexOf(props.crew[i].symbol) >= 0)
+					if (props.eventData?.featured?.indexOf(props.crew[i].symbol) ?? 0 >= 0)
 						iMultiplier = 3;
-					else if (props.eventData?.bonus.indexOf(props.crew[i].symbol) >= 0)
+					else if (props.eventData?.bonus?.indexOf(props.crew[i].symbol) ?? 0 >= 0)
 						iMultiplier = 2;
 					const iSkillScore = props.crew[i][skill].core*iMultiplier;
 
@@ -232,7 +235,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 				if (currentIndex >= 0) crewScores.ranked.splice(currentIndex, 1);
 
 				if (iSeatScore > 0) {
-					const crewman = {
+					const crewman: ShuttleOccupant = {
 						id: props.crew[i].id,
 						symbol: props.crew[i].symbol,
 						name: props.crew[i].name,
@@ -261,17 +264,18 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 			.filter(shuttle => shuttle.groupId === props.groupId && shuttle.priority > 0)
 			.sort((a, b) => a.priority - b.priority);
 
-		const seats = [];
+		const seats = [] as AssignedCrew[];
 		data.forEach(shuttle => {
 			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
 				const ssId = getSkillSetId(shuttle.seats[seatNum]);
-				const newSeat = {
+				const newSeat: AssignedCrew = {
 					shuttleId: shuttle.id,
 					seatNum,
 					ssId,
 					assignedId: -1,
 					assignedSymbol: '',
-					seatScore: 0
+					seatScore: 0,
+					locked: false
 				};
 				const seated = assigned.find(seat => seat.shuttleId === shuttle.id && seat.seatNum === seatNum);
 				if (seated?.locked) {

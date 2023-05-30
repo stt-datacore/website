@@ -6,7 +6,7 @@ import ComboPossibleTraits from './combopossibletraits';
 import ComboCrewTable from './combocrewtable';
 import ComboChecklist from './combochecklist';
 import { ExportTraits, ExportCrewLists } from './exporter';
-import { Combo, ComboNode } from '../../model/boss';
+import { Combo, ComboNode, IgnoredCombo, OpenNode } from '../../model/boss';
 import { PlayerCrew } from '../../model/player';
 
 const MAX_RARITY_BY_DIFFICULTY = {
@@ -18,19 +18,7 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
-interface OpenNode {
-	comboId?: string;
-	index: number;
-	traitsKnown: string[],
-	hiddenLeft: number;
-}
-
-interface IgnoredCombo {
-	index: number;
-	combo: string[];
-}
-
-type ComboSolverProps = {
+export interface ComboSolverProps {
 	allCrew: PlayerCrew[];
 	combo: Combo;
 };
@@ -245,7 +233,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 			{activeStep === 'crew' && openNodes.length > 0 &&
 				<React.Fragment>
 					<ComboCrewTable
-						comboId={combo.id} openNodes={openNodes} traitPool={traitPool}
+						comboId={combo.id as string} openNodes={openNodes} traitPool={traitPool}
 						allMatchingCrew={allMatchingCrew}
 						solveNode={onNodeSolved} markAsTried={onCrewMarked}
 					/>

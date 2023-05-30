@@ -2,14 +2,22 @@ import React from 'react';
 import { Header, Grid, Label, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { ComboNode } from '../../model/boss';
 
 type ComboPossibleTraitsProps = {
-	nodes: any[];
+	nodes: ComboNode[];
 	traits: string[];
 };
-
-const ComboPossibleTraits = (props) => {
-	const traitsConsumed = [];
+interface TraitItem {
+	id: number;
+	trait: string;
+	instance: number;
+	consumed: boolean;
+	name: string;
+	count: number;
+}
+const ComboPossibleTraits = (props: ComboPossibleTraitsProps) => {
+	const traitsConsumed = [] as string[];
 	props.nodes.forEach(node => {
 		if (!node.hidden_traits.includes('?')) {
 			node.hidden_traits.forEach(trait => {
@@ -18,7 +26,7 @@ const ComboPossibleTraits = (props) => {
 		}
 	});
 
-	const traitList = [];
+	const traitList = [] as TraitItem[];
 	props.traits.forEach((trait, traitIndex) => {
 		const instance = traitList.filter(t => t.trait === trait).length+1;
 		traitList.push({
@@ -26,7 +34,8 @@ const ComboPossibleTraits = (props) => {
 			trait,
 			instance,
 			consumed: traitsConsumed.filter(t => t === trait).length >= instance,
-			name: allTraits.trait_names[trait]
+			name: allTraits.trait_names[trait],
+			count: 0
 		});
 	});
 	traitList.forEach(trait => {

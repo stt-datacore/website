@@ -11,20 +11,22 @@ import { CrewTraitMatchesCell } from '../../components/crewtables/commoncells';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { OpenNode } from '../../model/boss'
+import { NodeMatch, Player, PlayerCrew } from '../../model/player';
 
 type ComboCrewTableProps = {
 	comboId: string;
-	openNodes: any[];
+	openNodes: OpenNode[];
 	traitPool: string[];
-	allMatchingCrew: any[];
+	allMatchingCrew: PlayerCrew[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
-const ComboCrewTable = (props) => {
+const ComboCrewTable = (props: ComboCrewTableProps) => {
 	const { comboId, openNodes } = props;
 
-	const [optimalCombos, setOptimalCombos] = React.useState([]);
+	const [optimalCombos, setOptimalCombos] = React.useState<NodeMatch[]>([]);
 	const [traitCounts, setTraitCounts] = React.useState({});
 	const [usableFilter, setUsableFilter] = React.useState('');
 	const [showOptimalsOnly, setShowOptimalsOnly] = React.useState(true);
@@ -45,7 +47,7 @@ const ComboCrewTable = (props) => {
 		openNodes.forEach(node => {
 			const traitCounts = {};
 			props.traitPool.forEach(trait => {
-				traitCounts[trait] = data.filter(crew => crew.node_matches[`node-${node.index}`]?.traits.includes(trait)).length;
+				traitCounts[trait] = data.filter(crew => crew.node_matches ? crew.node_matches[`node-${node.index}`]?.traits.includes(trait) : false).length;
 			});
 			traitCountsByNode[`node-${node.index}`] = traitCounts;
 		});
@@ -133,8 +135,8 @@ const ComboCrewTable = (props) => {
 				id={`comboCrewTable/${comboId}`}
 				data={props.allMatchingCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? -1)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType as string)}
 				showFilterOptions={true}
 			/>
 			<div style={{ marginTop: '1em' }}>
@@ -145,7 +147,7 @@ const ComboCrewTable = (props) => {
 		</div>
 	);
 
-	function renderTableRow(crew: any, idx: number): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -173,7 +175,7 @@ const ComboCrewTable = (props) => {
 					{crew.nodes_rarity}
 				</Table.Cell>
 				{openNodes.map(node => {
-					const nodeMatches = crew.node_matches[`node-${node.index}`];
+					const nodeMatches = crew.node_matches ? crew.node_matches[`node-${node.index}`] : null;
 					if (!nodeMatches) return <Table.Cell key={node.index} />;
 					return (
 						<CrewTraitMatchesCell key={node.index} crew={crew}
@@ -188,7 +190,7 @@ const ComboCrewTable = (props) => {
 		);
 	}
 
-	function descriptionLabel(crew: any): JSX.Element {
+	function descriptionLabel(crew: PlayerCrew): JSX.Element {
 		return (
 			<div>
 				{crew.only_frozen && <Icon name='snowflake' />}
@@ -201,7 +203,7 @@ const ComboCrewTable = (props) => {
 		);
 	}
 
-	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
+	function showThisCrew(crew: PlayerCrew, filters: [], filterType: string): boolean {
 		if (!filterByUsable(crew)) return false;
 		if (!filterByOptimal(crew)) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
