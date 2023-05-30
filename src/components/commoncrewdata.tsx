@@ -9,10 +9,12 @@ import CONFIG from '../components/CONFIG';
 import { getCoolStats } from '../utils/misc';
 import { formatTierLabel } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player';
 
 export type StatLabelProps = {
 	title: string;
-	value: string | JSX.Element;
+	value: number | string | JSX.Element;
 };
 
 class StatLabel extends Component<StatLabelProps> {
@@ -29,11 +31,11 @@ class StatLabel extends Component<StatLabelProps> {
 }
 
 type CommonCrewDataProps = {
-	crew: any;
+	crew: CrewMember;
 	markdownRemark: any;
 	compact?: boolean;
 	crewDemands?: any;
-	roster?: any[];
+	roster?: PlayerCrew[];
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
@@ -231,7 +233,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev} {curr}</>)}
 					{', '}
 					{crew.traits_hidden
 						.map(trait => (
@@ -239,7 +241,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev} {curr}</>)}
 				</p>
 
 				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
@@ -258,7 +260,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 									{col}
 								</Link>
 							))
-							.reduce((prev, curr) => [prev, ', ', curr])}
+							.reduce((prev, curr) => <>{prev} {curr}</>)}
 					</p>
 				)}
 
@@ -273,33 +275,33 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							.map((nick, idx) => (
 							<span key={idx}>{nick.cleverThing}{nick.creator ? <> (coined by <i>{nick.creator}</i>)</> : ''}</span>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev} {curr}</>)}
 					</p>
 				)}
 			</React.Fragment>
 		);
 	}
 
-	rosterComparisonTitle(crew, roster) {
+	rosterComparisonTitle(crew: CrewMember, roster: PlayerCrew[]) {
 		let skillCount = Object.entries(crew.base_skills).length;
-		const rankHandler = prefix => {
+		const rankHandler = (prefix: string) => {
 			let [name, rank] = Object.entries(crew.ranks)
-															 .filter(([k, v]) => k.startsWith(prefix))
-															 .map(([k, v]) => [k, roster.filter(c => c.ranks[k] < crew.ranks[k]).length + 1])
-															 .sort(([k1, v1], [k2, v2]) => v1 - v2)[0];
+				.filter(([k, v]) => k.startsWith(prefix))
+				.map(([k, v]) => [k, roster.filter((c) => c.ranks[k] < crew.ranks[k]).length + 1])
+				.sort(([k1, v1], [k2, v2]) => (v1 as number) - (v2 as number))[0];
 			return [
-				name.substr(2).replace('_', '/'),
+				(name as string).slice(2).replace('_', '/'),
 				rank
 			];
 		}
 
 		if (skillCount == 3) {
-			let rank = roster.filter(c =>
-													 c.ranks['voyTriplet'] &&
-													 c.ranks['voyTriplet'].name == crew.ranks['voyTriplet'].name &&
-													 crew.ranks['voyTriplet'].rank > c.ranks['voyTriplet'].rank).length + 1
+			let rank = roster.filter((c) =>
+				c.ranks.voyTriplet &&
+				c.ranks.voyTriplet.name == crew.ranks.voyTriplet?.name &&
+				crew.ranks.voyTriplet.rank > c.ranks.voyTriplet.rank).length + 1
 
-			return `#${rank} ${crew.ranks['voyTriplet'].name} on your roster`;
+			return `#${rank} ${crew.ranks.voyTriplet?.name} on your roster`;
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
@@ -316,26 +318,33 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		}
 	}
 
-	renderOtherRanks(crew, roster = false) {
-		let v = [];
-		let g = [];
-		let b = [];
+	renderOtherRanks(crew: CrewMember, roster: CrewMember[] | false = false) {
+		let v = [] as JSX.Element[];
+		let g = [] as JSX.Element[];
+		let b = [] as JSX.Element[];
 
-		const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
-		const rankHandler = rank => roster
+
+		const skillName = (shortName: string) => {
+			let ns = CONFIG?.SKILLS_SHORT?.find(c => c.short === shortName)?.name;
+			if (ns) return CONFIG.SKILLS[ns];
+			else return null;
+		}
+
+		const rankHandler = (rank: string) => roster
 			? roster.filter(c => c.ranks[rank] && crew.ranks[rank] > c.ranks[rank]).length + 1
 			: crew.ranks[rank];
-		const tripletHandler = rank => roster
+
+		const tripletHandler = (rank: string) => roster
 			? roster.filter(c => c.ranks[rank] &&
-													 c.ranks[rank].name == crew.ranks[rank].name &&
-													 crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
+			c.ranks[rank].name == crew.ranks[rank].name &&
+			crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
 			: crew.ranks[rank].rank;
 
 		// Need to filter by skills first before sorting by voyage triplet
 		const tripletFilter = crew.ranks.voyTriplet
 								? crew.ranks.voyTriplet.name.split('/')
-									.map(s => 'skill:'+s.trim())
-									.reduce((prev, curr) => prev+' '+curr)
+									.map((s: string) => 'skill:'+s.trim())
+									.reduce((prev: string, curr: string) => prev+' '+curr)
 								: '';
 
 		for (let rank in crew.ranks) {
@@ -343,21 +352,21 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				v.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.substr(2)).name, 'descending')}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
 					</Statistic>
 				);
 			}
@@ -378,7 +387,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
 									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
-									<Statistic.Value>{rankLinker(roster, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
+									<Statistic.Value>{rankLinker(roster !== false, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
 							<Divider />
@@ -399,7 +408,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 	}
 }
 
-const rankLinker = (roster: any, rank: number, symbol: string, column: string, direction: string, search: string) => {
+const rankLinker = (roster: boolean, rank: number, symbol: string, column: string, direction: string = 'ascending', search: string | undefined = undefined) => {
 	if (roster) return (<>{rank}</>);
 	const linkState = {
 		search: search ?? '',
@@ -421,7 +430,7 @@ const rankLinker = (roster: any, rank: number, symbol: string, column: string, d
 	);
 
 	// On left clicks, use state instead of URL params because it's a little faster and cleaner
-	function clickLink(e) {
+	function clickLink(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
 		if (e.button === 0) {
 			e.preventDefault();
 			navigate(baseUrl, { state: linkState });

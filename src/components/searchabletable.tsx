@@ -8,6 +8,7 @@ import { useStateWithStorage } from '../utils/storage';
 
 import SearchString from 'search-string/src/searchString';
 import * as localForage from 'localforage';
+import { InitialOptions } from '../model/game-elements';
 
 const filterTypeOptions = [
     { key : '0', value : 'Exact', text : 'Exact match only' },
@@ -348,13 +349,13 @@ const LockButtons = (props: LockButtonsProps) => {
 
 // Check for custom initial table options from URL or <Link state>
 export const initSearchableOptions = (location: any) => {
-	let initOptions: Object | false = false;
+	let initOptions: InitialOptions | undefined = undefined;
 	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
 
 	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
 	const linkState = location.state;
 
-	OPTIONS.forEach((option) => {
+	for(let option of OPTIONS) {
 		let value: string | null = null;
 		// Always use URL parameters if found
 		if (urlParams?.has(option)) value = urlParams.get(option);
@@ -364,7 +365,7 @@ export const initSearchableOptions = (location: any) => {
 			if (!initOptions) initOptions = {};
 			initOptions[option] = value;
 		}
-	});
+	}
 
 	return initOptions;
 };

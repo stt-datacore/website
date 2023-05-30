@@ -16,11 +16,14 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { LockedProspect, SymbolName } from '../model/game-elements';
+import { CrewMember } from '../model/crew';
 
 type ProfileCrewProps = {
-	playerData: any;
+	playerData: PlayerData;
 	isTools?: boolean;
-	allCrew?: any[];
+	allCrew?: PlayerCrew[];
 	location: any;
 };
 
@@ -34,11 +37,11 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	const initHighlight = initCustomOption(props.location, 'highlight', '');
 	const initProspects = initCustomOption(props.location, 'prospect', []);
 	// Clear history state now so that new stored values aren't overriden by outdated parameters
-	if (window.location.state && (initOptions || initHighlight || initProspects))
+	if ("state" in window.location && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
 
 	if (props.isTools) {
-		const allCrew = [...props.allCrew].sort((a, b)=>a.name.localeCompare(b.name));
+		const allCrew = [...props.allCrew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
 			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
@@ -46,7 +49,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		);
 	}
 
-	const lockable = [];
+	const lockable = [] as SymbolName[];
 	if (initHighlight != '') {
 		const highlighted = myCrew.find(c => c.symbol === initHighlight);
 		if (highlighted) {
@@ -60,8 +63,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 };
 
 type ProfileCrewTools = {
-	myCrew: any[];
-	allCrew: any[];
+	myCrew: PlayerCrew[];
+	allCrew: CrewMember[];
 	buffConfig: any;
 	initOptions: any;
 	initHighlight: string;
@@ -70,13 +73,13 @@ type ProfileCrewTools = {
 
 const ProfileCrewTools = (props: ProfileCrewTools) => {
 	const { allCrew, buffConfig, initOptions } = props;
-	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', [] as LockedProspect[]);
+	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[]>('tools/activeCrew', [] as PlayerCrew[]);
 
-	const myCrew = JSON.parse(JSON.stringify(props.myCrew));
+	const myCrew = JSON.parse(JSON.stringify(props.myCrew)) as PlayerCrew[];
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
-	const activeCrewIds = activeCrew.map(ac => {
+	const activeCrewIds = activeCrew?.map(ac => {
 		return {
 			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
@@ -84,9 +87,9 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 	});
 	myCrew.forEach((crew, crewId) => {
 		crew.active_status = 0;
-		if (crew.immortal === 0) {
+		if (!crew.immortal) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
-			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crew.active_status = active.active_status;
 				active.id = '';	// Clear this id so that dupes are counted properly
@@ -95,15 +98,15 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 
 		// Allow for more consistent sorting by ship abilities
 		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
-		crew.action.ability_trigger = crew.action.ability?.condition > 0 ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition] : '';
+		if (crew?.action?.ability?.condition) crew.action.ability_trigger = (crew.action.ability?.condition ?? -1) > 0 ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition] : '';
 		crew.action.charge_text = crew.action.charge_phases ? getShipChargePhases(crew).join('; ') : '';
 	});
 
-	const lockable = [];
+	const lockable = [] as LockedProspect[];
 
 	React.useEffect(() => {
 		if (props.initProspects?.length > 0) {
-			const newProspects = [];
+			const newProspects = [] as LockedProspect[];
 			props.initProspects.forEach(p => {
 				const newProspect = allCrew.find(c => c.symbol === p);
 				if (newProspect) {
@@ -112,7 +115,9 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 						name: newProspect.name,
 						imageUrlPortrait: newProspect.imageUrlPortrait,
 						rarity: newProspect.max_rarity,
-						max_rarity: newProspect.max_rarity
+						max_rarity: newProspect.max_rarity,
+						prospect: true,
+						level: 100
 					});
 				}
 			});
@@ -121,15 +126,15 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 	}, [props.initProspects]);
 
 	prospects.forEach((p) => {
-		let prospect = allCrew.find((c) => c.symbol == p.symbol);
-		if (prospect) {
-			prospect = JSON.parse(JSON.stringify(prospect));
+		let crew = allCrew.find((c) => c.symbol == p.symbol);
+		if (crew) {
+			let prospect = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
-			prospect.immortal = 0;
+			prospect.immortal = CompletionState.NotComplete;
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score = { "core": 0, "min": 0, "max" : 0 };
 				if (prospect.base_skills[skill.name]) {
@@ -140,7 +145,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 				}
 				prospect[skill.name] = score;
 			});
-			if (!prospect.action.ability) prospect.action.ability = { type: '', condition: '', amount: '' };
+			if (!prospect.action.ability) prospect.action.ability = { type: 0, condition: 0, amount: 0 };
 			myCrew.push(prospect);
 			lockable.push({
 				symbol: prospect.symbol,
@@ -157,7 +162,11 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		if (highlighted) {
 			lockable.push({
 				symbol: highlighted.symbol,
-				name: highlighted.name
+				name: highlighted.name,
+				max_rarity: highlighted.max_rarity,
+				rarity: highlighted.rarity,
+				level: 100,
+				prospect: highlighted.prospect ?? false
 			});
 		}
 	}
@@ -194,8 +203,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
 	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
-	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', []);
-	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', []);
+	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
+	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 
 	React.useEffect(() => {
@@ -279,10 +288,10 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		});
 	}
 
-	function showThisCrew(crew: any, filters: [], filterType: string): boolean {
+	function showThisCrew(crew: PlayerCrew, filters: [], filterType: string): boolean {
 		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
 		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
-		if (usableFilter === 'frozen' && crew.immortal === 0) return false;
+		if (usableFilter === 'frozen' && crew.immortal <= 0) return false;
 		if (rosterFilter === 'freezable' && (crew.immortal > 0 || !isImmortal(crew))) return false;
 		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
@@ -290,11 +299,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (traitFilter.length > 0 && crew.traits_matched.length < minTraitMatches) return false;
+		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
@@ -339,14 +348,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			<span key={idx} style={{ whiteSpace: 'nowrap' }}>
 				{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
 			</span>
-		)).reduce((prev, curr) => [prev, ' ', curr]);
+		)).reduce((prev, curr) => <>{prev} {curr}</>);
 		return (
 			<div>
 				{crew.favorite && <Icon name='heart' />}
 				{immortal &&
 					<React.Fragment>
 						{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
-						{crew.immortal === 0 && <span>Immortalized</span>}
+						{crew.immortal === CompletionState.Immortalized && <span>Immortalized</span>}
 					</React.Fragment>
 				}
 				{!immortal &&
@@ -362,37 +371,37 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	// Adapted from function of same name in crewutils.ts
-	function formatChargePhases(crew): string {
-		let totalTime = 0;
-		let result = [];
-		crew.action.charge_phases.forEach(phase => {
-			totalTime += phase.charge_time;
-			let ps = `After ${totalTime}s `;
+	// function formatChargePhases(crew): string {
+	// 	let totalTime = 0;
+	// 	let result = [] as string[];
+	// 	crew.action.charge_phases.forEach(phase => {
+	// 		totalTime += phase.charge_time;
+	// 		let ps = `After ${totalTime}s `;
 
-			if (crew.action.ability?.type !== '') {
-				ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
-			} else {
-				ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
-			}
+	// 		if (crew.action.ability?.type !== '') {
+	// 			ps += CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', phase.ability_amount);
+	// 		} else {
+	// 			ps += `+${phase.bonus_amount - crew.action.bonus_amount} ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+	// 		}
 
-			if (phase.cooldown) {
-				ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
-			}
-			result.push(ps);
-		});
+	// 		if (phase.cooldown) {
+	// 			ps += ` (+${phase.cooldown - crew.action.cooldown}s Cooldown)`;
+	// 		}
+	// 		result.push(ps);
+	// 	});
 
-		return result.join('; ');
-	}
+	// 	return result.join('; ');
+	// }
 
 	return (
 		<React.Fragment>
 			{pageId === 'crewTool' && (
 				<Button.Group>
-					<Button onClick={() => setTableView('base')} positive={tableView === 'base' ? true : null} size='large'>
+					<Button onClick={() => setTableView('base')} positive={tableView === 'base' ? true : false} size='large'>
 						Base Skills
 					</Button>
 					<Button.Or />
-					<Button onClick={() => setTableView('ship')} positive={tableView === 'ship' ? true : null} size='large'>
+					<Button onClick={() => setTableView('ship')} positive={tableView === 'ship' ? true : false} size='large'>
 						Ship Abilities
 					</Button>
 				</Button.Group>
@@ -432,8 +441,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				id={`${pageId}/table_`}
 				data={myCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx ?? -1, highlighted ?? false)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType as string)}
 				showFilterOptions={true}
 				initOptions={props.initOptions}
 				lockable={props.lockable}
@@ -443,7 +452,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 }
 
 type ProspectsProps = {
-	pool: any[];
+	pool: CrewMember[];
+	prospects: LockedProspect[],
+	setProspects: (data: LockedProspect[]) => void;
 };
 
 const Prospects = (props: ProspectsProps) => {

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Dropdown, Form } from 'semantic-ui-react';
+import { PlayerCrew } from '../../model/player';
+import { RetrievalOptions } from '../../model/game-elements';
 
 type ComboChecklistProps = {
 	comboId: string;
-	crewList: string[];
+	crewList: PlayerCrew[];
 	attemptedCrew: string[];
 	updateAttempts: (crewSymbols: string[]) => void;
 };
@@ -11,7 +13,7 @@ type ComboChecklistProps = {
 const ComboChecklist = (props: ComboChecklistProps) => {
 	const { comboId, updateAttempts } = props;
 
-	const [options, setOptions] = React.useState(undefined);
+	const [options, setOptions] = React.useState<RetrievalOptions>({ initialized: false, list: []});
 
 	React.useEffect(() => {
 		if (props.attemptedCrew)
@@ -43,7 +45,7 @@ const ComboChecklist = (props: ComboChecklistProps) => {
 	);
 
 	function populatePlaceholders(): void {
-		const options = { initialized: false, list: [] };
+		const options: RetrievalOptions = { initialized: false, list: [] };
 		if (props.attemptedCrew.length > 0) {
 			let crewList = [...props.crewList];
 			options.list = crewList.filter(c => props.attemptedCrew.includes(c.symbol)).map(c => {

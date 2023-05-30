@@ -3,7 +3,7 @@ import { Header, Grid, Segment, Table, Pagination, Dropdown } from 'semantic-ui-
 import ItemDisplay from '../components/itemdisplay';
 import { Link } from 'gatsby';
 import { BaseSkills, CrewMember } from '../model/crew';
-import { Constellation, Keystone, PolestarCombo, Variant } from '../model/game-elements';
+import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo, Variant, categorizeKeystones } from '../model/game-elements';
 
 
 type ExtraCrewDetailsProps = {
@@ -17,7 +17,7 @@ type ExtraCrewDetailsProps = {
 
 type ExtraCrewDetailsState = {
 	variants: Variant[],
-	constellation?: Constellation,
+	constellation?: ConstellationMap,
 	optimalpolestars?: PolestarCombo[],
 	pagination_rows: number;
 	pagination_page: number;
@@ -75,14 +75,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let self = this;
 		fetch('/structured/keystones.json')
 			.then(response => response.json())
-			.then((allkeystones: Keystone[]) => {
-				let crew_keystone_crate = allkeystones.find((k) => k.crew_archetype_id === this.props.crew_archetype_id);
+			.then((allkeystones: KeystoneBase[]) => {
+				let crew_keystone_crate = allkeystones.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
 				
+				let [crates, keystones] = categorizeKeystones(allkeystones);
+
 				// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
-				let raritystone = allkeystones.filter((keystone) =>
+				let raritystone = keystones.filter((keystone) =>
 					keystone.filter && keystone.filter.type === 'rarity' && keystone.filter.rarity === this.props.max_rarity
 				);
-				let skillstones = allkeystones.filter((keystone) =>
+				let skillstones = keystones.filter((keystone) =>
 					keystone.filter && keystone.filter.type === 'skill' && keystone.filter.skill && this.props.base_skills[keystone.filter.skill]
 				);
 
@@ -91,7 +93,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						constellation: {
 							name: crew_keystone_crate.name, 
 							flavor: crew_keystone_crate.flavor,
-							keystones: (crew_keystone_crate.keystones.map((kid) => allkeystones.find((k) => k.id === kid)) ?? []) as Keystone[],
+							keystones: (crew_keystone_crate.keystones.map((kid) => keystones.find((k) => k.id === kid)) ?? [] as Polestar[]) as Polestar[],
 							raritystone,
 							skillstones
 						}

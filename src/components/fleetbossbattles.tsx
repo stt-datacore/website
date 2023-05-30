@@ -4,6 +4,10 @@ import { Header, Dropdown, Message, Form } from 'semantic-ui-react';
 import ComboSolver from '../components/fleetbossbattles/combosolver';
 
 import { useStateWithStorage } from '../utils/storage';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember } from '../model/crew';
+import { FuseOptions } from '../model/game-elements';
+import { BossBattlesRoot, Combo } from '../model/boss';
 
 const DIFFICULTY_NAME = {
 	1: 'Easy',
@@ -14,31 +18,35 @@ const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
-const AllDataContext = React.createContext();
-
-type FleetBossBattlesProps = {
-	playerData: any;
-	allCrew: any[];
+interface FleetBossBattlesProps {
+	playerData: PlayerData;
+	allCrew: PlayerCrew[];
 };
+
+interface AllData extends FleetBossBattlesProps {
+	bossData: BossBattlesRoot;
+}
+
+const AllDataContext = React.createContext<AllData | null>(null);
 
 const FleetBossBattles = (props: FleetBossBattlesProps) => {
 	const { playerData } = props;
 
-	const [fleetbossData, ] = useStateWithStorage('tools/fleetbossData', undefined);
+	const [fleetbossData, ] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
 
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew));
+	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
 		const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
 		ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
-		ac.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal === 0).length === 0;
+		ac.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
 	});
 
-	const allData = {
+	const allData: AllData = {
 		playerData,
 		allCrew,
-		bossData: fleetbossData
+		bossData: fleetbossData ?? {} as BossBattlesRoot
 	};
 
 	return (
@@ -52,39 +60,42 @@ const FleetBossBattles = (props: FleetBossBattlesProps) => {
 const ComboPicker = () => {
 	const allData = React.useContext(AllDataContext);
 
-	const [activeBoss, setActiveBoss] = React.useState(undefined);
-	const [combo, setCombo] = React.useState(undefined);
+	const [activeBoss, setActiveBoss] = React.useState<number | undefined>(undefined);
+	const [combo, setCombo] = React.useState<Combo | undefined>(undefined);
 
 	React.useEffect(() => {
-		if (activeBoss) {
+		if (activeBoss && allData) {
 			const boss = allData.bossData.statuses.find(b => b.id === activeBoss);
-			const comboIndex = boss.combo.previous_node_counts.length;
-			const combo = {
-				id: `${boss.id}-${comboIndex}`,
-				source: 'playerdata',
-				difficultyId: boss.difficulty_id,
-				traits: boss.combo.traits,
-				nodes: boss.combo.nodes
-			};
-			setCombo({...combo});
+			if (boss && boss.combo) {
+				const comboIndex = boss.combo?.previous_node_counts.length;
+				const combo: Combo = {
+					... boss.combo,
+					id: `${boss.id}-${comboIndex}`,
+					source: 'playerdata',
+					difficultyId: boss.difficulty_id,
+					traits: boss.combo?.traits ?? [],
+					nodes: boss.combo?.nodes ?? []
+				};
+				setCombo({...combo});
+			}
 		}
 	}, [activeBoss]);
 
-	if (!allData.bossData)
+	if (!allData?.bossData)
 		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;
 
-	const bossOptions = [];
+	const bossOptions: FuseOptions[] = [];
 	const getBossName = (bossSymbol) => {
-		return allData.bossData.groups.find(group => group.symbol === bossSymbol).name;
+		return allData?.bossData?.groups?.find(group => group.symbol === bossSymbol)?.name;
 	};
-	allData.bossData.statuses.forEach(boss => {
+	allData?.bossData.statuses.forEach(boss => {
 		if (boss.ends_in) {
-			const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
-			if (boss.combo.nodes.length - unlockedNodes.length > 0) {
+			const unlockedNodes = boss.combo?.nodes.filter(node => node.unlocked_character) ?? [];
+			if (boss.combo?.nodes && boss.combo.nodes.length - unlockedNodes.length > 0) {
 				bossOptions.push(
 					{
-						key: boss.id,
-						value: boss.id,
+						key: boss.id as number,
+						value: boss.id as number,
 						text: `${getBossName(boss.group)}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1} (${unlockedNodes.length}/${boss.combo.nodes.length})`
 					}
 				);
@@ -103,7 +114,7 @@ const ComboPicker = () => {
 						placeholder='Select a difficulty'
 						options={bossOptions}
 						value={activeBoss}
-						onChange={(e, { value }) => setActiveBoss(value)}
+						onChange={(e, { value }) => setActiveBoss(value as number)}
 					/>
 				}
 				{bossOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}

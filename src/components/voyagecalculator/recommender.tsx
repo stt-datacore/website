@@ -154,7 +154,7 @@ const Recommender = (props: RecommenderProps) => {
 			return (<></>);
 
 		// In-game voyage crew picker ignores immortalized crew and crew active on shuttles
-		const availableRoster = myCrew.filter(c => c.immortal === 0 && c.active_status !== 2);
+		const availableRoster = myCrew.filter(c => c.immortal <= 0 && c.active_status !== 2);
 
 		// Compare best values among ALL results
 		const bestValues = {
@@ -567,7 +567,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 		const options = { initialized: false, list: [] };
 		if (props.excludedCrew.length > 0) {
 			let crewList = [...props.myCrew];
-			if (!props.showFrozen) crewList = crewList.filter(c => c.immortal === 0);
+			if (!props.showFrozen) crewList = crewList.filter(c => c.immortal <= 0);
 			options.list = crewList.filter(c => props.excludedCrew.includes(c.id)).map(c => {
 				return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
 			});

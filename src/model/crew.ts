@@ -85,6 +85,10 @@ export interface Action {
   limit?: number
   ability?: Ability
   charge_phases?: ChargePhase[]
+
+  ability_text?: string;
+  ability_trigger?: string;
+  charge_text?: string;
 }
 
 export interface Penalty {

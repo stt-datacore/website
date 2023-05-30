@@ -7,7 +7,7 @@ import allTraits from '../../../static/structured/translation_en.json';
 
 type CrewRarityFilterProps = {
 	rarityFilter: number[];
-	setFilterRarity: (rarityFilter: number[]) => void;
+	setRarityFilter: (rarityFilter: number[]) => void;
 };
 
 export const CrewRarityFilter = (props: CrewRarityFilterProps) => {

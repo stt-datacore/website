@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
+import { CrewRoster } from '../../model/player';
 
 type RosterSummaryProps = {
 	myCrew: any[];
@@ -68,9 +69,9 @@ const RarityDepth = (props: RarityDepthProps) => {
 		const uniqueImmortal = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol && (mc.immortal > 0 || isImmortal(mc))).length > 0);
 		const anyOwnedCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
 		const anyImmortalCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : (isImmortal(curr) ? 1 : 0)), 0);
-		const anyUnfrozen = myCrew.filter(crew => crew.immortal === 0);
+		const anyUnfrozen = myCrew.filter(crew => crew.immortal <= 0);
 		const uniqueFrozen = myCrew.filter(crew => crew.immortal > 0);
-		const data = [];
+		const data = [] as CrewRoster[];
 		data.push(
 			{
 				key: 0,
@@ -95,7 +96,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 			const uniqueImmortalRarity = uniqueImmortal.filter(crew => crew.max_rarity === i);
 			const anyOwnedRarityCount = myCrewRarity.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
 			const anyImmortalRarityCount = myCrewRarity.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : (isImmortal(curr) ? 1 : 0)), 0);
-			const anyUnfrozenRarity = myCrewRarity.filter(crew => crew.immortal === 0);
+			const anyUnfrozenRarity = myCrewRarity.filter(crew => crew.immortal <= 0);
 			const uniqueFrozenRarity = myCrewRarity.filter(crew => crew.immortal > 0);
 			data.push(
 				{

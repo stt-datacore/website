@@ -2,18 +2,25 @@ import React from 'react';
 import { Header, Dropdown, Form, Table, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { ComboNode } from '../../model/boss';
 
 type ComboNodesTableProps = {
 	comboId: string;
-	nodes: any[];
+	nodes: ComboNode[];
 	traits: string[];
-	updateNodes: (nodes: any[]) => void;
+	updateNodes: (nodes: ComboNode[]) => void;
 };
+
+export interface TraitOptions {
+	key: number;
+	value: string;
+	text: string;
+}
 
 const ComboNodesTable = (props: ComboNodesTableProps) => {
 	const { comboId, nodes } = props;
 
-	const [traitOptions, setTraitOptions] = React.useState(undefined);
+	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		const options = props.traits.map((trait, traitIndex) => {
@@ -21,7 +28,7 @@ const ComboNodesTable = (props: ComboNodesTableProps) => {
 				key: traitIndex,
 				value: trait,
 				text: allTraits.trait_names[trait]
-			};
+			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
 	}, [props.traits]);
@@ -77,7 +84,7 @@ type TraitPickerProps = {
 	traitIndex: number;
 	options: any[];
 	trait: string;
-	setTrait: (newTrait: string) => void;
+	setTrait: (nodeIndex: number, traitIndex: number, newTrait: string) => void;
 };
 
 const TraitPicker = (props: TraitPickerProps) => {
@@ -96,7 +103,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 				selection
 				options={props.options}
 				value={activeTrait}
-				onChange={(e, { value }) => onTraitChange(value)}
+				onChange={(e, { value }) => onTraitChange(value as string)}
 				closeOnChange
 			/>
 		</Form.Field>

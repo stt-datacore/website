@@ -9,7 +9,7 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
-import { Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneCrate, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
+import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { CryoCollection, PlayerCrew, PlayerData } from '../model/player';
 
@@ -60,8 +60,7 @@ type CrewRetrievalProps = {
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
 	const { playerData } = props;
-
-	const [allKeystones, setAllKeystones] = React.useState<Polestar[] | undefined>(undefined);
+	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
 
 	if (!playerData?.forte_root) {
 		return (
@@ -177,15 +176,15 @@ const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 type RetrievalFormProps = {
 	ownedPolestars: Polestar[];
 	allCrew: PlayerCrew[];
-	allKeystones: KeystoneCrate[];
+	allKeystones: KeystoneBase[];
 	myCrew: PlayerCrew[];
 };
 
 const RetrievalForm = (props: RetrievalFormProps) => {
 	const { ownedPolestars, allCrew, allKeystones, myCrew } = props;
 
-	const [disabledPolestars, setDisabledPolestars] = useStateWithStorage('crewretrieval/disabledPolestars', []);
-	const [addedPolestars, setAddedPolestars] = useStateWithStorage('crewretrieval/addedPolestars', []);
+	const [disabledPolestars, setDisabledPolestars] = useStateWithStorage<number[]>('crewretrieval/disabledPolestars', []);
+	const [addedPolestars, setAddedPolestars] = useStateWithStorage<string[]>('crewretrieval/addedPolestars', []);
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('crewretrieval/ownedFilter', ownedFilterOptions[0].value);
 	const [minRarity, setMinRarity] = useStateWithStorage('crewretrieval/minRarity', null);
 	const [collection, setCollection] = useStateWithStorage('crewretrieval/collection', null);
@@ -403,7 +402,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 type PolestarProspectModalProps = {
 	ownedPolestars: Polestar[];
 	addedPolestars: string[];
-	allKeystones: KeystoneCrate[];
+	allKeystones: KeystoneBase[];
 	allCrew: CrewMember[];
 	updateProspects: (prospects: string[]) => void;
 };
@@ -418,17 +417,17 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	const [activeConstellation, setActiveConstellation] = React.useState('');
 	const [activePolestar, setActivePolestar] = React.useState<string>('');
 
-	const [allKeystones, setAllKeystones] = React.useState<Polestar[]>([]);
+	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[]>([]);
 	const [control, setControl] = React.useState([] as CrewMember[]);
 	const [crewCrates, setCrewCrates] = React.useState(0);
-	const [ownedConstellations, setOwnedConstellations] = React.useState<Polestar[]>([]);
+	const [ownedConstellations, setOwnedConstellations] = React.useState<Constellation[]>([]);
 
 	React.useEffect(() => {
 		if (allKeystones) {
 			// Chances assume you can't get rarity, skill constellations from scans
 			setCrewCrates(allKeystones.filter(k => k.type == 'crew_keystone_crate').length);
 			const owned = allKeystones.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && (k.quantity ?? 0) > 0)
-				.sort((a, b) => a.name.localeCompare(b.name));
+				.sort((a, b) => a.name.localeCompare(b.name)).map(ks => ks as Constellation);
 			setOwnedConstellations([...owned]);
 		}
 	}, [allKeystones]);
@@ -475,16 +474,19 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	}
 
 	function calculateKeystoneOdds(): void {
-		const allkeystones = JSON.parse(JSON.stringify(props.allKeystones)) as Polestar[];
+		const allkeystones = JSON.parse(JSON.stringify(props.allKeystones)) as KeystoneBase[];
+
+		const [constellations, keystones] = categorizeKeystones(allkeystones);
+
 		let totalCrates = 0, totalDrops = 0;
-		allkeystones.forEach(keystone => {
+		constellations.forEach(keystone => {
 			if (keystone.type == 'crew_keystone_crate') {
 				totalCrates++;
 				totalDrops += keystone.keystones?.length ?? 0;
 			}
 		});
-		allkeystones.filter(k => k.type == 'keystone').forEach(polestar => {
-			const crates = allkeystones.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones?.includes(polestar.id));
+		keystones.filter(k => k.type == 'keystone').forEach(polestar => {
+			const crates = constellations.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones?.includes(polestar.id));
 			const nochance = polestar.filter?.type == 'rarity' || polestar.filter?.type == 'skill' || crates.length == 0;
 			polestar.crate_count = nochance ? 0 : crates.length;
 			//polestar.scan_odds = nochance ? 0 : crates.length/totalDrops; // equal chance of dropping
@@ -535,7 +537,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			});
 
 		// !! Always filter polestars by crew_count to hide deprecated polestars !!
-		let data = allKeystones.filter(k => k.type == 'keystone' && (k.crew_count ?? 0) > 0);
+		let [constellations, data] = categorizeKeystones(allKeystones);
 		if (activeCrew != '') {
 			const crew = allCrew.find(c => c.symbol === activeCrew);
 			if (crew) {
@@ -548,7 +550,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			}
 		}
 		if (activeConstellation != '') {
-			const crewKeystones = allKeystones.find(k => k.symbol === activeConstellation)?.keystones ?? [];
+			const crewKeystones = constellations.find(k => k.symbol === activeConstellation)?.keystones ?? [];
 			data = data.filter(k => crewKeystones.includes(k.id));
 		}
 		data.forEach(p => {
@@ -765,7 +767,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	}
 
 	function renderPolestarDetail(): JSX.Element {
-		const polestar = allKeystones.find(k => k.symbol === activePolestar) ?? {} as Polestar;
+		const polestar = allKeystones.find(k => k.symbol === activePolestar) as Polestar ?? {} as Polestar;
 		polestar.loaned = addedPolestars.filter(added => added === polestar.symbol).length;
 
 		return (
@@ -815,7 +817,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	}
 
 	function renderConstellationsWithPolestar(polestar: Polestar): JSX.Element {
-		const constellations = [] as Polestar[];
+		const constellations = [] as Constellation[];
 		ownedConstellations.filter(k => k.keystones?.includes(polestar.id))
 			.forEach(k => {
 				for (let i = 0; i < k.quantity; i++) {

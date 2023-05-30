@@ -1,6 +1,39 @@
 import allEvents from '../../static/structured/event_instances.json';
+import { CrewMember } from '../model/crew';
+import { Content, Event, FeaturedCrew, Phase, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
 
-export class EventData {
+export class EventData implements Event {
+	constructor(data: Event | undefined = undefined) {
+		if (data) {
+			for (let key of Object.keys(data)) {
+				this[key] = data[key];
+			}
+		}
+	}
+
+	id: number;
+	rules: string;
+	rewards_teaser: string;
+	shop_layout: string;
+	featured_crew: FeaturedCrew[];
+	threshold_rewards: ThresholdReward[];
+	ranked_brackets: RankedBracket[];
+	squadron_ranked_brackets: SquadronRankedBracket[];
+	content: Content;
+	instance_id: number;
+	status: number;
+	seconds_to_start: number;
+	seconds_to_end: number;
+	phases: Phase[];
+	opened?: boolean | undefined;
+	opened_phase?: number | undefined;
+	victory_points?: number | undefined;
+	bonus_victory_points?: number | undefined;
+	claimed_threshold_reward_points?: number | undefined;
+	unclaimed_threshold_rewards?: any[] | undefined;
+	last_threshold_points?: number | undefined;
+	next_threshold_points?: number | undefined;
+	next_threshold_rewards?: any[] | undefined;
 	symbol: string = '';
     name: string = '';
 	image: string = '';
@@ -9,6 +42,7 @@ export class EventData {
 	content_types: string[] = [];	/* shuttles, gather, etc. */
     bonus: string[] = [];	/* ALL bonus crew by symbol */
 	featured: string[] = [];	/* ONLY featured crew by symbol */
+	bonusGuessed?: boolean;
 };
 
 export function getEventData(activeEvent: any, allCrew: any[] = []): EventData | undefined {
@@ -79,7 +113,7 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 }
 
 // Current event here refers to an ongoing event, or the next event if none is ongoing
-export function guessCurrentEvent(): EventData {
+export async function guessCurrentEvent(): Promise<EventData> {
 	const { start, end } = getCurrentStartEndTimes();
 
 	// Use penultimate event instance if current time is:
@@ -93,7 +127,7 @@ export function guessCurrentEvent(): EventData {
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = getEventData(json);
+				const activeEvent = new EventData(getEventData(json) as Event);
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
@@ -103,7 +137,7 @@ export function guessCurrentEvent(): EventData {
 }
 
 // Get seconds to event start, end from current time
-function getCurrentStartEndTimes(): { start: 0, end: 0 } {
+function getCurrentStartEndTimes(): { start: number, end: number } {
 	const currentTime = new Date();
 	const utcDay = currentTime.getUTCDay(), utcHour = currentTime.getUTCHours();
 
@@ -122,19 +156,20 @@ function getCurrentStartEndTimes(): { start: 0, end: 0 } {
 	startTime.setDate(startTime.getDate()-4);
 
 	let start = 0;
-	const end = Math.floor((endTime-currentTime)/1000);
+	let diff = endTime.getTime() - currentTime.getTime();
+	const end = Math.floor((diff)/1000);
 
 	// Event hasn't started yet
 	if (eventDay < 3) {
-		start = Math.floor((startTime-currentTime)/1000);
+		start = Math.floor((diff)/1000);
 	}
 
 	return { start, end };
 }
 
-function guessBonusCrew(activeEvent: any, allCrew: any[]): { bonus: string[], featured: string[] } {
-	const bonus = [];
-	const featured = [];
+function guessBonusCrew(activeEvent: Event, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
+	const bonus = [] as string[];
+	const featured = [] as string[];
 
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written

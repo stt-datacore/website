@@ -9,22 +9,25 @@ import ProspectPicker from '../components/prospectpicker';
 import ShuttleHelper from '../components/shuttlehelper/shuttlehelper';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { guessCurrentEvent, getEventData } from '../utils/events';
+import { guessCurrentEvent, getEventData, EventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import { BestCombos, CompletionState, Event, EventCombos, EventPair, EventSkill, PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember } from '../model/crew';
+import { InitialOptions, LockedProspect } from '../model/game-elements';
 
 type EventPlannerProps = {
-	playerData: any;
-	allCrew: any;
+	playerData: PlayerData;
+	allCrew: PlayerCrew[];
 };
 
 const EventPlanner = (props: EventPlannerProps) => {
 	const { playerData, allCrew } = props;
 
-	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', []);
+	const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);
 
-	const [activeEvents, setActiveEvents] = React.useState(undefined);
+	const [activeEvents, setActiveEvents] = React.useState<EventData[] | undefined>(undefined);
 	if (!activeEvents) {
 		identifyActiveEvents();
 		return (<></>);
@@ -41,10 +44,10 @@ const EventPlanner = (props: EventPlannerProps) => {
 		};
 	});
 
-	const myCrew = [];
+	const myCrew = [] as PlayerCrew[];
 	let fakeId = 1;
 	playerData.player.character.crew.forEach(crew => {
-		const crewman = JSON.parse(JSON.stringify(crew));
+		const crewman = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 		crewman.id = fakeId++;
 
 		crewman.active_status = 0;
@@ -61,10 +64,11 @@ const EventPlanner = (props: EventPlannerProps) => {
 			//	allCrew stores immortalized numbers as base_skills,
 			//	but playerData base_skills of unleveled crew are unbuffed skills at current level
 			const ff = allCrew.find((c) => c.symbol == crew.symbol);
-			crewman.skill_data.push({
-				rarity: crew.max_rarity,
-				base_skills: ff.base_skills
-			});
+			if (ff)
+				crewman.skill_data.push({
+					rarity: crew.max_rarity,
+					base_skills: ff.base_skills
+				});
 		}
 
 		myCrew.push(crewman);
@@ -80,8 +84,9 @@ const EventPlanner = (props: EventPlannerProps) => {
 		// Get event data from recently uploaded playerData
 		if (eventData) {
 			let currentEvents = eventData.map((ev) => getEventData(ev, allCrew))
-				.filter((ev) => ev.seconds_to_end > 0)
-				.sort((a, b) => (a.seconds_to_start - b.seconds_to_start));
+				.filter(ev => ev !== undefined).map(ev => ev as EventData)
+				.filter((ev) => ev && ev.seconds_to_end > 0)
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
 			setActiveEvents([...currentEvents]);
 		}
 		// Otherwise guess event from autosynced events
@@ -94,21 +99,27 @@ const EventPlanner = (props: EventPlannerProps) => {
 };
 
 type EventPickerProps = {
-	playerData: any;
-	events: any[];
-	crew: any[];
+	playerData: PlayerData;
+	events: EventData[];
+	crew: PlayerCrew[];
 	buffConfig: any;
-	allCrew: any[];
+	allCrew: CrewMember[];
 };
+
+interface EventMap {
+	key: string;
+	value: number;
+	text: string;
+}
 
 const EventPicker = (props: EventPickerProps) => {
 	const { playerData, events, crew, buffConfig, allCrew } = props;
 
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
-	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', []);
+	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', [] as LockedProspect[]);
 
-	const eventsList = [];
+	const eventsList = [] as EventMap[];
 	events.forEach((activeEvent, eventId) => {
 		eventsList.push(
 			{
@@ -127,7 +138,7 @@ const EventPicker = (props: EventPickerProps) => {
 		'skirmish': 'Skirmish'
 	};
 
-	const phaseList = [];
+	const phaseList = [] as EventMap[];
 	eventData.content_types.forEach((contentType, phaseId) => {
 		if (!phaseList.find((phase) => phase.key == contentType)) {
 			phaseList.push(
@@ -144,18 +155,18 @@ const EventPicker = (props: EventPickerProps) => {
 	allBonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 
 	const myCrew = JSON.parse(JSON.stringify(crew));
-	const lockable = [];
+	const lockable = [] as LockedProspect[];
 
 	prospects.forEach((p) => {
-		let prospect = allCrew.find((c) => c.symbol == p.symbol);
-		if (prospect) {
-			prospect = JSON.parse(JSON.stringify(prospect));
+		let crew = allCrew.find((c) => c.symbol == p.symbol);
+		if (crew) {
+			let prospect = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
-			prospect.immortal = 0;
+			prospect.immortal = CompletionState.NotComplete;
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score = { core: 0, min: 0, max: 0 };
 				if (prospect.base_skills[skill.name]) {
@@ -189,7 +200,7 @@ const EventPicker = (props: EventPickerProps) => {
 				/>
 				<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${eventData.image}`} />
 				<div>{eventData.description}</div>
-				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value) } /></div>)}
+				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } /></div>)}
 			</Form>
 			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
 			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
@@ -213,9 +224,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
-	const [initOptions, setInitOptions] = React.useState({});
+	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
 
-	const crewAnchor = React.useRef(null);
+	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 	React.useEffect(() => {
 		setInitOptions({});
@@ -262,9 +273,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
-	let bestCombos = {};
+	let bestCombos: BestCombos = {};
 
-	const zeroCombos = {};
+	const zeroCombos: EventCombos = {};
 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 		let firstSkill = CONFIG.SKILLS_SHORT[first];
 		zeroCombos[firstSkill.name] = 0;
@@ -274,11 +285,11 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 	}
 
-	let myCrew = JSON.parse(JSON.stringify(props.crew));
+	let myCrew = JSON.parse(JSON.stringify(props.crew)) as PlayerCrew[];
 
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) myCrew = myCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
-	if (!showFrozen) myCrew = myCrew.filter((c) => c.immortal == 0);
+	if (!showFrozen) myCrew = myCrew.filter((c) => c.immortal <= 0);
 
 	const getPairScore = (crew: any, primary: string, secondary: string) => {
 		if (phaseType === 'shuttles') {
@@ -304,7 +315,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
-						if (showPotential && crew.immortal === 0 && !crew.prospect) {
+						if (showPotential && crew.immortal === CompletionState.Immortalized && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
@@ -314,9 +325,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			}
 		}
 		// Then calculate skill combination scores
-		let combos = {...zeroCombos};
-		let bestPair = { score: 0 };
-		let bestSkill = { score: 0 };
+		let combos: EventCombos = {...zeroCombos};
+		let bestPair: EventPair = { score: 0, skillA: "", skillB: "" };
+		let bestSkill: EventSkill = { score: 0, skill: "" };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			const firstSkill = CONFIG.SKILLS_SHORT[first];
 			const single = {
@@ -352,7 +363,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
 	});
-
+	
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
@@ -390,8 +401,8 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				id='eventplanner'
 				data={myCrew}
 				config={tableConfig}
-				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx, highlighted)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx ?? -1, highlighted ?? false)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType ?? "")}
 				initOptions={initOptions}
 				showFilterOptions={true}
 				lockable={props.lockable}
@@ -491,7 +502,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 		else {
 			// Order of combo match order of skills in CONFIG
-			const customSkills = [];
+			const customSkills = [] as string[];
 			CONFIG.SKILLS_SHORT.forEach((skill) => {
 				if (skillA === skill.name || skillB === skill.name)
 					customSkills.push(skill.name);
@@ -504,7 +515,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		if (!crewAnchor.current) return;
 		crewAnchor.current.scrollIntoView({
 			behavior: 'smooth'
-		}, 500);
+		});
 	}
 };
 
@@ -601,7 +612,7 @@ type EventShuttlesProps = {
 const EventShuttles = (props: EventShuttlesProps) => {
 	const { playerData, eventData } = props;
 
-	const [fullEventData, setFullEventData] = useStateWithStorage('tools/eventData', undefined);
+	const [fullEventData, setFullEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
 
 	//playerData.player.shuttle_rental_tokens
 
@@ -615,7 +626,8 @@ const EventShuttles = (props: EventShuttlesProps) => {
 		let currentVP = 0, secondsToEndShuttles = eventData.seconds_to_end, endType = 'event';
 		if (fullEventData) {
 			const activeEvent = fullEventData.find(event => event.symbol === eventData.symbol);
-			currentVP = activeEvent.victory_points;
+			if (!activeEvent) return (<></>);
+			currentVP = activeEvent.victory_points ?? 0;
 			if (activeEvent.content_types.length > 1) {
 				activeEvent.phases.forEach((phase, phaseIdx) => {
 					if (activeEvent.content_types[phaseIdx] === 'shuttles')

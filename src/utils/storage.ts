@@ -17,19 +17,26 @@ const StorageDefaultOptions: StorageOptions = {
 	onInitialize: undefined
 };
 
-export const useStateWithStorage = (itemKey: string, itemDefault: any, options?: StorageOptions) => {
+/**
+ * Create a React state based on localStorage or sessionStorage
+ * @param itemKey The item's storage key
+ * @param itemDefault The item's default value
+ * @param options StorageOptions
+ * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} stateful value and setter method
+ */
+export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?: StorageOptions): [T, React.Dispatch<React.SetStateAction<T>>] {
 	if (!options) options = StorageDefaultOptions;
 
 	// Set initial value in state
 	let updateWithLocalValue = false;
-	const [value, setValue] = React.useState(() => {
+	const [value, setValue] = React.useState<T>(() => {
 		// Use default value if requested
-		if (options.useAndStoreDefault) {
-			storeItem(itemKey, itemDefault, options.rememberForever);
+		if (options?.useAndStoreDefault) {
+			storeItem(itemKey, itemDefault, options?.rememberForever ?? false);
 			return itemDefault;
 		}
-		if (options.useDefault) return itemDefault;
-		if (options.rememberForever) {
+		if (options?.useDefault) return itemDefault;
+		if (options?.rememberForever) {
 			// Always use session value if set, even if set to remember forever
 			let sessionValue = getStoredItem(itemKey, undefined);
 			if (sessionValue != undefined) {
@@ -49,12 +56,12 @@ export const useStateWithStorage = (itemKey: string, itemDefault: any, options?:
 	React.useEffect(() => {
 		if (updateWithLocalValue)  {
 			getStoredItemPromise(itemKey, itemDefault).then((storedValue) => {
-				setValue(storedValue);
-				if (options.onInitialize) options.onInitialize(itemKey, storedValue);
+				setValue(storedValue as T);
+				if (options?.onInitialize) options.onInitialize(itemKey, storedValue);
 			});
 		}
-		else if (options.onInitialize) {
-			options.onInitialize(itemKey, value);
+		else if (options?.onInitialize) {
+			options?.onInitialize(itemKey, value);
 		}
 	}, []);
 
@@ -65,7 +72,7 @@ export const useStateWithStorage = (itemKey: string, itemDefault: any, options?:
 			removeStoredItem(itemKey);
 		}
 		else {
-			storeItem(itemKey, value, options.rememberForever);
+			storeItem(itemKey, value, options?.rememberForever ?? false);
 		}
 	}, [value]);
 
@@ -100,7 +107,7 @@ const getStoredItemPromise = (itemKey: string, itemDefault: any) => {
 				resolve(itemDefault);
 			}
 			else {
-				resolve(JSON.parse(localValue));
+				resolve(JSON.parse(localValue as string));
 			}
 		});
 	});

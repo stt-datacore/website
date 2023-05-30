@@ -97,6 +97,7 @@ export interface Player {
     can_purchase_shuttle_bay: boolean
     crew_avatar: CrewAvatar
     stored_immortals: StoredImmortal[]
+    c_stored_immortals?: number[]
     replay_energy_max: number
     replay_energy_rate: number
     seconds_from_replay_energy_basis: number
@@ -305,7 +306,36 @@ export interface Player {
     max_crew_rarity: number
     setup?: Setup
   }
- 
+  export enum CompletionState {
+    Immortalized=-1,
+    Frozen=1,
+    NotComplete=0
+  }
+	
+  export interface BestCombo {
+		id: number;
+		score: number;
+	}
+	
+  export interface BestCombos {
+    [key: string]: BestCombo;
+  }
+
+  export interface EventCombos {
+		[key: string]: number; 
+	}
+	
+  export interface EventPair {
+		score: number;
+		skillA: string;
+		skillB: string;
+	}
+	
+  export interface EventSkill {
+		score: number;
+		skill: string;
+	}
+
   export interface PlayerCrew extends CrewMember {
     id: number
     symbol: string
@@ -316,6 +346,7 @@ export interface Player {
     xp: number
     xp_for_current_level: number
     xp_for_next_level: number
+    bonus: number
     max_xp: number
     favorite: boolean
     level: number
@@ -355,6 +386,45 @@ export interface Player {
     evPerCitation?: number;
     voyagesImproved?: string[];
     highest_owned_rarity?: number;
+    highest_owned_level?: number;
+    
+    /**
+     * Immortalized count or CompletionState.
+     * 
+     * If this value is greater than zero, that's the number of 
+     * frozen copies.
+     * 
+     * If this number is less than zero, this character is immortalized.
+     * 
+     * If this number is zero, this character is not immortalized.
+     */
+    immortal: CompletionState | number;
+    collectionIds?: number[];
+    unmaxedIds?: number[];
+    immortalRewards?: ImmortalReward[];    
+    prospect?: boolean;
+    have?: boolean;
+    traits_matched?: string[];
+    only_frozen?: boolean;
+
+    combos?: EventCombos;
+    bestPair?: EventPair;
+    bestSkill?: EventSkill;
+
+    nodes?: number[];
+    node_matches?: NodeMatches;
+    nodes_rarity?: number;
+  }
+
+
+  export interface NodeMatch { 
+    index: number, 
+    traits: string[];
+    combos: string[][]
+  }
+
+  export interface NodeMatches {
+    [key: string]: NodeMatch;
   }
   
   export interface CapAchiever {
@@ -542,7 +612,7 @@ export interface Player {
     next_threshold_rewards?: any[]
   }
   
-  export interface FeaturedCrew {
+  export interface FeaturedCrew extends CrewMember {
     type: number
     id: number
     symbol: string
@@ -907,7 +977,7 @@ export interface BuffBase {
     ship?: Ship
     item_type?: number
     bonuses?: Bonuses
-    faction_id?: number
+    faction_id?: number    
   }
 
   export interface MilestoneBuff extends BuffBase {
@@ -1373,3 +1443,19 @@ export interface BuffBase {
     version: string
   }
   
+  export interface CrewRoster {
+    key: number;
+    rarity: number;
+    name: string;
+    total: number;
+    owned: number;
+    ownedPct: number;
+    portalPct?: number;
+    progress: number;
+    progressPct: number;
+    immortal: number;
+    unfrozen: number;
+    frozen: number;
+    dupes: number;
+
+  }

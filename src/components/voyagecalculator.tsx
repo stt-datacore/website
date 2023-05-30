@@ -11,6 +11,7 @@ import { VoyageStats } from '../components/voyagecalculator/voyagestats';
 
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
+import { CompletionState } from '../model/player';
 
 const AllDataContext = React.createContext();
 
@@ -56,7 +57,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 		// Voyage roster generation looks for active_status property
 		crew.active_status = 0;
-		if (crew.immortal === 0) {
+		if (crew.immortal === CompletionState.Immortalized) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {

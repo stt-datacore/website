@@ -9,10 +9,10 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
 import { Collection, Filter } from '../model/game-elements';
-import { BuffBase, CryoCollection, ImmortalReward, Milestone, PlayerCollection } from '../model/player';
+import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
 
 type CollectionsToolProps = {
-	playerData: any;
+	playerData: PlayerData;
 	allCrew: CrewMember[];
 };
 
@@ -30,14 +30,14 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew));
-	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew));
+	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as CrewMember[];
+	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
 
 	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
-		const crew = JSON.parse(JSON.stringify(allCrew.find(ac => ac.symbol == acs)));
+		const crew = JSON.parse(JSON.stringify(allCrew.find(ac => ac.symbol == acs))) as PlayerCrew;
 		crew.highest_owned_rarity = 0;
 		crew.highest_owned_level = 0;
-		crew.immortal = false;
+		crew.immortal = CompletionState.NotComplete;
 		crew.collectionIds = [];
 		crew.unmaxedIds = [];
 		crew.immortalRewards = [];
@@ -49,7 +49,10 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 			return b.rarity - a.rarity;
 		});
 		if (owned.length > 0) {
-			crew.immortal = owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment.length == 4;
+			if (owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment.length == 4) {
+				crew.immortal = CompletionState.Immortalized;
+			}
+
 			crew.highest_owned_rarity = owned[0].rarity;
 			crew.highest_owned_level = owned[0].level;
 		}
@@ -65,22 +68,31 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		collection.id = ac.id; // Use allCollections ids instead of ids in player data
 		collection.crew = ac.crew;
 		collection.simpleDescription = collection.description ? simplerDescription(collection.description) : '';
-		collection.progressPct = collection.milestone.goal > 0 ? collection.progress / collection.milestone.goal : 1;
-		collection.neededPct = 1 - collection.progressPct;
-		collection.needed = collection.milestone.goal > 0 ? Math.max(collection.milestone.goal - collection.progress, 0) : 0;
+
+		if (collection.milestone.goal != 'n/a' && collection.progress != 'n/a') {
+			collection.progressPct = collection.milestone.goal > 0 ? collection.progress / collection.milestone.goal : 1;
+			collection.neededPct = 1 - collection.progressPct;
+			collection.needed = collection.milestone.goal > 0 ? Math.max(collection.milestone.goal - collection.progress, 0) : 0;
+		}
+		
 		collection.totalRewards = (collection.milestone.buffs?.length ?? 0) + (collection.milestone.rewards?.length ?? 0);
 		collection.owned = 0;
+
 		ac.crew.forEach(acs => {
 			let cc = collectionCrew.find(crew => crew.symbol === acs);
+			if (!cc) return;
+			if (!cc.collectionIds) cc.collectionIds = [] as number[];
 			cc.collectionIds.push(collection.id);
-			if (collection.milestone.goal > 0) {
+			if (collection.milestone.goal != 'n/a' && collection.milestone.goal > 0) {
+				if (!cc.unmaxedIds) cc.unmaxedIds = [];
+				if (!cc.immortalRewards) cc.immortalRewards = [];
 				cc.unmaxedIds.push(collection.id);
-				if (collection.milestone.goal - collection.progress <= 1) {
+				if (collection.progress != 'n/a' && collection.milestone.goal - collection.progress <= 1) {
 					mergeRewards(cc.immortalRewards, collection.milestone.buffs);
 					mergeRewards(cc.immortalRewards, collection.milestone.rewards);
 				}
 			}
-			if (cc.highest_owned_rarity > 0) collection.owned++;
+			if ((cc.highest_owned_rarity ?? 0) > 0) collection.owned++;
 		});
 		return collection;
 	});
@@ -120,7 +132,7 @@ type CollectionsUIProps = {
 const CollectionsUI = (props: CollectionsUIProps) => {
 	const { playerCollections, collectionCrew } = props;
 
-	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', []);
+	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', [] as number[]);
 
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
@@ -150,7 +162,7 @@ type ProgressTableProps = {
 const ProgressTable = (props: ProgressTableProps) => {
 	const { playerCollections, filterCrewByCollection } = props;
 
-	const [rewardFilter, setRewardFilter] = useStateWithStorage('collectionstool/rewardFilter', undefined);
+	const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
 	const [showMaxed, setShowMaxed] = useStateWithStorage('collectionstool/showMaxed', false);
 
 	const tableConfig: ITableConfigRow[] = [
@@ -295,7 +307,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
-	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', []);
+	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew' },
@@ -399,27 +411,27 @@ const CrewTable = (props: CrewTableProps) => {
 		</React.Fragment>
 	);
 
-	function showThisCrew(crew: any, filters: Filter[], filterType: string | null | undefined): boolean {
-		if (crew.immortal) return false;
+	function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
+		if (crew.immortal > 0) return false;
 		if (!filterType) return true;
 		if (collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < collectionsFilter.length; i++) {
-				if (!crew.unmaxedIds.includes(collectionsFilter[i])) {
+				if (!crew.unmaxedIds?.includes(collectionsFilter[i])) {
 					hasAllCollections = false;
 					break;
 				}
 			}
 			if (!hasAllCollections) return false;
 		}
-		if (ownedFilter === 'unowned' && crew.highest_owned_rarity > 0) return false;
+		if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 		if (ownedFilter.substr(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
-		if (ownedFilter === 'owned-impact' && crew.max_rarity - crew.highest_owned_rarity > 1) return false;
+		if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
 		if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (fuseFilter.substr(0, 6) === 'portal' && !crew.in_portal) return false;
-		if (fuseFilter === 'portal-unique' && crew.unique_polestar_combos.length === 0) return false;
-		if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos.length > 0) return false;
+		if (fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
+		if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
 		if (fuseFilter === 'nonportal' && crew.in_portal) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
@@ -473,7 +485,7 @@ const CrewTable = (props: CrewTableProps) => {
 	}
 
 	function descriptionLabel(crew: any): JSX.Element {
-		if (crew.immortal) {
+		if (crew.immortal > 0) {
 			return (
 				<div>
 					<Icon name='snowflake' /> <span>{crew.immortal} frozen</span>
@@ -517,6 +529,7 @@ const RewardsGrid = (props: any) => {
 							src={`${process.env.GATSBY_ASSETS_URL}${img}`}
 							size={32}
 							maxRarity={reward.rarity}
+							rarity={reward.rarity}
 						/>
 						{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}
 					</Grid.Column>

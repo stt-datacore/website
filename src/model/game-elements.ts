@@ -11,22 +11,43 @@ export type PolestarCombo = {
   polestars: string[];
 };
 
-export interface KeystoneCrate {
+export function categorizeKeystones(data: KeystoneBase[]): [Constellation[], Polestar[]] {
+  let cons = [] as Constellation[];
+  let pols = [] as Polestar[];
+
+  data.forEach((k) => {
+    if (k.type === "keystone") {
+      pols.push(k as Polestar);
+    }
+    else {
+      cons.push(k as Constellation);
+    }
+  });
+
+  return [cons, pols];
+}
+
+export interface KeystoneBase {
   id: number;
   symbol: string;
-  type: string;
+  type: "keystone_crate" | "crew_keystone_crate" | "keystone";
   name: string;
   short_name: string;
   flavor: string;
   icon: Icon;
   rarity?: number;
-  filter?: Filter;
-  keystones?: number[];
   crew_archetype_id?: number;
   quantity?: number;
 }
 
-export interface Polestar extends KeystoneCrate {
+export interface Constellation extends KeystoneBase {
+  type: "keystone_crate" | "crew_keystone_crate";
+  keystones: number[];
+  quantity: number;
+}
+
+export interface Polestar extends KeystoneBase {
+  type: "keystone";
   quantity: number;
   loaned: number;
   crew_count: number;
@@ -58,7 +79,7 @@ export interface TextSegment extends Negatable {
 }
 
 export interface Filter {
-  type: string;
+  type: "trait" | "rarity" | "skill";
   trait?: string;
   rarity?: number;
   skill?: string;
@@ -66,12 +87,12 @@ export interface Filter {
   conditionArray?: FilterCondition[];
 }
 
-export interface Constellation {
+export interface ConstellationMap {
   name: string;
   flavor: string;
-  keystones: KeystoneCrate[];
-  raritystone: KeystoneCrate[];
-  skillstones: KeystoneCrate[];
+  keystones: Polestar[];
+  raritystone: Polestar[];
+  skillstones: Polestar[];
 };
 
 export interface Collection {
@@ -123,4 +144,28 @@ export interface FuseOptions {
   key: number;
   value: number;
   text: string;
+}
+
+export interface LockedProspect {
+  symbol: string;
+  name: string;
+  rarity: number;
+  level: number;
+  prospect: boolean;
+  imageUrlPortrait?: string;
+  max_rarity?: number;
+}
+
+export interface InitialOptions {
+  search?: string;
+  filter?: string;
+  column?: string;
+  direction?: 'ascending' | 'descending';
+  rows?: number;
+  page?: number;  
+}
+
+export interface SymbolName {
+  symbol: string;
+  name: string;
 }

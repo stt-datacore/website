@@ -2,6 +2,8 @@ import { simplejson2csv, ExportField } from './misc';
 import { calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember } from '../model/crew';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -263,13 +265,13 @@ export function download(filename, text) {
     } else {
         var a = new FileReader();
         a.onload = (e) => {
-            downloadData(e.target.result, filename);
+            downloadData(e.target?.result, filename);
         };
         a.readAsDataURL(text);
     }
 }
 
-export function prepareProfileData(allcrew, playerData, lastModified) {
+export function prepareProfileData(allcrew, playerData: PlayerData, lastModified) {
 	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
 
 	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
@@ -288,24 +290,24 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 	let buffConfig = calculateBuffConfig(playerData.player);
 
 	// Merge with player crew
-	let ownedCrew = [];
-	let unOwnedCrew = [];
+	let ownedCrew = [] as PlayerCrew[];
+	let unOwnedCrew = [] as CrewMember[];
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
-		let crew = JSON.parse(JSON.stringify(oricrew));
+		let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
 		crew.rarity = crew.max_rarity;
 		crew.level = 100;
 		crew.have = false;
-		crew.equipment = [0, 1, 2, 3];
+		//crew.equipment = [0, 1, 2, 3];
 		crew.favorite = false;
 
-		if (playerData.player.character.c_stored_immortals.includes(crew.archetype_id)) {
-			crew.immortal = 1;
+		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
+			crew.immortal = CompletionState.Frozen;
 		} else {
 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-			crew.immortal = immortal ? immortal.quantity : 0;
+			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
 		}
-		if (crew.immortal > 0) {
+		if (crew.immortal != CompletionState.NotComplete) {
 			crew.have = true;
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
@@ -313,7 +315,7 @@ export function prepareProfileData(allcrew, playerData, lastModified) {
 
 		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
 		inroster.forEach(owned => {
-			crew.immortal = 0;
+			crew.immortal = CompletionState.NotComplete;
 			crew.rarity = owned.rarity;
 			crew.base_skills = owned.base_skills;
 			crew.level = owned.level;

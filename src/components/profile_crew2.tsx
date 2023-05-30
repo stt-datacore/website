@@ -195,7 +195,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const { isMobile } = this.props;
 
 		if (!includeFrozen) {
-			data = data.filter(crew => crew.immortal === 0);
+			data = data.filter(crew => crew.immortal <= 0);
 		}
 
 		if (excludeFF) {
@@ -213,7 +213,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 		const zoomFactor = isMobile ? 0.65 : 0.85;
 
-		let opts = [];
+		let opts = [] as string[];
 		if (activeItem === '' || activeItem === this.state.defaultColumn) {
 			opts = ['Default Sort', 'Crew Level', 'Crew Rarity', 'Alphabetical'];
 		} else {
@@ -227,7 +227,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			settings.push(`Only event bonus (${eventCrew.eventName})`);
 
 			if (onlyEvent) {
-				data = data.filter(crew => eventCrew.eventCrew[crew.symbol]);
+				data = data.filter(crew => eventCrew?.eventCrew[crew.symbol]);
 			}
 		}
 
