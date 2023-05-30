@@ -7,7 +7,7 @@ yarn-error.log
 node_modules/
 typings/
 .scripts/
-
+.prettierrc
 # Gatsby files
 .cache/
 public

@@ -274,20 +274,16 @@ export function download(filename, text) {
 export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
 	console.log("prepareProfileData enter...");
 	console.log("Caller: " + caller);
-	console.log(playerData.player.character);
-	
-	playerData.player.character.c_stored_immortals = playerData.player.character.stored_immortals.map(si => si.id);
+
 	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
 
-	// playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
-	console.log(numImmortals);
+	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
 	playerData.player.character.crew.forEach(crew => {
 		if (crew.level === 100 && crew.equipment.length === 4) {
 			numImmortals.add(crew.archetype_id);
 		}
 	});
-	console.log(numImmortals);
-
+	
 	playerData.calc = {
 		numImmortals: numImmortals.size,
 		lastModified
@@ -309,14 +305,11 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;
-			console.log("Stored Immortal " + crew.name)
 		} else {
 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
 			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
-			if (crew.immortal) console.log("Stored Immortal " + crew.name)
 		}
-		if (crew.immortal) {
-			console.log("Immortalized " + crew.name)
+		if (crew.immortal !== 0) {
 			crew.have = true;
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
@@ -324,7 +317,6 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 		else {
 			let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
 			inroster.forEach(owned => {
-				crew.immortal = CompletionState.NotComplete;
 				crew.rarity = owned.rarity;
 				crew.base_skills = owned.base_skills;
 				crew.level = owned.level;
@@ -350,6 +342,8 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 				else {
 					applyCrewBuffs(crew, buffConfig);
 				}
+
+				crew.immortal = (!crew.equipment || crew.equipment.length === 4) && crew.level === 100 && crew.rarity === crew.max_rarity ? CompletionState.Immortalized : CompletionState.NotComplete;
 				ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 			});
 		}
@@ -359,6 +353,20 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			// Add a copy to the list
 			unOwnedCrew.push(JSON.parse(JSON.stringify(crew)));
 		}
+		// else {
+		// 	if (crew.immortal === CompletionState.Immortalized) {
+		// 		console.log(crew.name + ": Immortalized");
+		// 	}
+		// 	else if (crew.immortal === CompletionState.Frozen) {
+		// 		console.log(crew.name + ": Frozen");
+		// 	}
+		// 	else if (crew.immortal > 1) {
+		// 		console.log(crew.name + ": Frozen (" + crew.immortal + " copies)");
+		// 	}
+		// 	else {
+		// 		console.log(crew.name + ": In Progress (Level " + crew.level + "; " + crew.rarity + " / " + crew.max_rarity + " Stars; " + (crew.equipment?.length ?? 0) + " / 4 Equipment)");
+		// 	}
+		// }
 	}
 
 	playerData.player.character.crew = ownedCrew;
