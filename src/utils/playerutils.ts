@@ -178,9 +178,9 @@ export function stripPlayerData(items: any[], p: any): any {
 		console.log(p.player.character.stored_immortals);
 		console.log(p.player.character.c_stored_immortals);
 	
-	let c_stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity >= 1).map(im => im.id);
+	let c_stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity === 1).map(im => im.id);
 	
-	p.player.character.stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity < 1);
+	p.player.character.stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity !== 1);
 	p.player.character.c_stored_immortals = c_stored_immortals;
 	
 	console.log("Stored Immortals After");
