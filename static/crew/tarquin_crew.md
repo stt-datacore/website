@@ -3,8 +3,8 @@ name: Tarquin
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 4
+bigbook_tier: 9
+events: 5
 in_portal: true
 date: 09/10/2018
 obtained: Pack
