@@ -13,7 +13,7 @@ import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../component
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
+import { getShipBonus, getShipChargePhases, isImmortal } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
@@ -279,8 +279,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
-
 	const myCrew = [...props.crew];
 	if (traitFilter.length > 0) {
 		myCrew.forEach(crew => {
@@ -292,12 +290,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
 		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
 		if (usableFilter === 'frozen' && crew.immortal <= 0) return false;
-		if (rosterFilter === 'freezable' && (crew.immortal > 0 || !isImmortal(crew))) return false;
+		if (rosterFilter === 'freezable' && (crew.immortal !== -1 || !isImmortal(crew))) return false;
 		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
 		if (rosterFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
-		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
+		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1 && crew.immortal <= 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
@@ -355,7 +353,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				{immortal &&
 					<React.Fragment>
 						{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
-						{crew.immortal === CompletionState.Immortalized && <span>Immortalized</span>}
+						{crew.immortal === CompletionState.Immortalized && <span>Immortalized, {formattedCounts}</span>}
 					</React.Fragment>
 				}
 				{!immortal &&

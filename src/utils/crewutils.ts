@@ -271,6 +271,15 @@ export function download(filename, text) {
     }
 }
 
+/**
+ * Returns true if the crew member is immortalized
+ * @param crew 
+ * @returns 
+ */
+export function isImmortal(crew: PlayerCrew) {
+	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
+}
+
 export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
 	console.log("prepareProfileData enter...");
 	console.log("Caller: " + caller);
@@ -343,7 +352,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 					applyCrewBuffs(crew, buffConfig);
 				}
 
-				crew.immortal = (!crew.equipment || crew.equipment.length === 4) && crew.level === 100 && crew.rarity === crew.max_rarity ? CompletionState.Immortalized : CompletionState.NotComplete;
+				crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
 				ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 			});
 		}
