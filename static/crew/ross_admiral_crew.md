@@ -3,7 +3,7 @@ name: Admiral Ross
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 11
 in_portal: true
 date: 08/08/2018
