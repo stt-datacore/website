@@ -130,7 +130,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			for (const skill in crew.base_skills) {
 				if (crew.base_skills[skill].core > 0) {
 					let rsr = radar_skill_rarity.find((r) => r.name === CONFIG.SKILLS[skill]);
-					rsr[CONFIG.RARITIES[crew.max_rarity].name]++;
+					if (rsr) rsr[CONFIG.RARITIES[crew.max_rarity].name]++;
 				}
 			}
 
@@ -151,7 +151,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				for (const skill in pcrew.base_skills) {
 					if (pcrew.base_skills[skill].core > 0) {
 						let rsro = radar_skill_rarity_owned.find((r) => r.name === CONFIG.SKILLS[skill]);
-						rsro[CONFIG.RARITIES[pcrew.max_rarity].name]++;
+						if (rsro) rsro[CONFIG.RARITIES[pcrew.max_rarity].name]++;
 					}
 				}
 
