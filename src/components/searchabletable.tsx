@@ -53,7 +53,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
 	const [column, setColumn] = useStateWithStorage(tableId+'column', undefined);
-	const [direction, setDirection] = useStateWithStorage(tableId+'direction', undefined);
+	const [direction, setDirection] = useStateWithStorage<'ascending' | 'descending' | null>(tableId+'direction', null);
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
@@ -264,7 +264,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					<Dropdown inline
 								options={filterTypeOptions}
 								value={filterType}
-								onChange={(event, {value}) => setFilterType(value as number)}
+								onChange={(event, {value}) => setFilterType(value as string)}
 					/>
 				</span>
 			)}

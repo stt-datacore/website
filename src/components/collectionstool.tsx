@@ -13,7 +13,7 @@ import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, P
 
 type CollectionsToolProps = {
 	playerData: PlayerData;
-	allCrew: CrewMember[];
+	allCrew: PlayerCrew[];
 };
 
 const CollectionsTool = (props: CollectionsToolProps) => {
@@ -30,7 +30,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as CrewMember[];
+	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as PlayerCrew[];
 	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
 
 	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
@@ -49,10 +49,17 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 			return b.rarity - a.rarity;
 		});
 		if (owned.length > 0) {
-			if (owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment.length == 4) {
+			crew.immortal = owned[0].immortal;
+			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment?.length == 4)) {
 				crew.immortal = CompletionState.Immortalized;
 			}
-
+			if (owned[0].immortal > 0) {
+				crew.immortal = owned[0].immortal;
+			}
+			console.log(crew.immortal);
+			if (crew.immortal) {
+				console.log("We should be filtering " + crew.name);
+			}
 			crew.highest_owned_rarity = owned[0].rarity;
 			crew.highest_owned_level = owned[0].level;
 		}
@@ -297,7 +304,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 
 type CrewTableProps = {
 	playerCollections: any[];
-	collectionCrew: any[];
+	collectionCrew: PlayerCrew[];
 	collectionsFilter: number[];
 	setCollectionsFilter: (collectionIds: number[]) => void;
 };
@@ -412,8 +419,13 @@ const CrewTable = (props: CrewTableProps) => {
 	);
 
 	function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
-		if (crew.immortal > 0) return false;
+
+		if (crew.immortal) {
+			return false;
+		}
+		
 		if (!filterType) return true;
+		
 		if (collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < collectionsFilter.length; i++) {
@@ -436,9 +448,9 @@ const CrewTable = (props: CrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderCrewRow(crew: any, idx: number): JSX.Element {
-		const unmaxed = crew.unmaxedIds.map(id => { return playerCollections.find(pc => pc.id === id) });
-		const tabledProgress = unmaxed.sort((a, b) => a.needed - b.needed).map(collection => {
+	function renderCrewRow(crew: PlayerCrew, idx: number): JSX.Element {
+		const unmaxed = crew.unmaxedIds?.map(id => { return playerCollections.find(pc => pc.id === id) });
+		const tabledProgress = unmaxed?.sort((a, b) => a.needed - b.needed).map(collection => {
 			return (
 				<tr key={collection.id}>
 					<td style={{ whiteSpace: 'nowrap', fontSize: '.95em' }}>{collection.name}</td>

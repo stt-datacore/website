@@ -14,15 +14,15 @@ import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree } from '../utils/statutils';
 import { demandsPerSlot, IDemand } from '../utils/equipment';
-import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player'
 
 type ProfileChartsProps = {
 	playerData: any;
 };
 
 type ProfileChartsState = {
-	allcrew?: CrewMember[];
-	items: any[];
+	allcrew?: PlayerCrew[];
+	items?: any[];
 	data_ownership: any[];
 	skill_distribution: any;
 	flat_skill_distribution: any[];
@@ -33,7 +33,7 @@ type ProfileChartsState = {
 	radar_skill_rarity_owned: any[];
 	demands: IDemand[];
 	excludeFulfilled: boolean;
-	honordebt: {
+	honordebt?: {
 		ownedStars: number[];
 		totalStars: number[];
 		craftCost: number;
@@ -111,8 +111,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let dupeChecker = new Set<string>();
 
 		let skill_distribution = [];
-		for (let crew of allcrew) {
-			let pcrew = undefined;
+		for (let crew of allcrew ?? []) {
+			let pcrew: PlayerCrew | undefined = undefined;
 
 			// If multiple copies, find the "best one"
 			let pcrewlist = playerData.player.character.crew.filter((bc) => bc.symbol === crew.symbol);
@@ -156,7 +156,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				}
 
 				let startLevel = pcrew.max_level ? pcrew.max_level - 10 : pcrew.level - (pcrew.level % 10);
-				if (pcrew.equipment.length < 4) {
+				if (pcrew.equipment?.length < 4) {
 					// If it's not fully equipped for this level band, we include the previous band as well
 					startLevel = Math.max(1, startLevel - 10);
 				}

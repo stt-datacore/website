@@ -105,7 +105,7 @@ export function stripPlayerData(items: any[], p: any): any {
 		icon: da.icon
 	}));
 
-	let newItems = [];
+	let newItems = [] as Object[];
 	p.player.character.items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol);
 		if (itemEntry) {
@@ -173,8 +173,8 @@ export function stripPlayerData(items: any[], p: any): any {
 			ship_battle: crew.ship_battle
 		}));
 
-	let c_stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity === 1).map(im => im.id);
-	p.player.character.stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity !== 1);
+	let c_stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity >= 1).map(im => im.id);
+	p.player.character.stored_immortals = p.player.character.stored_immortals.filter(im => im.quantity < 1);
 	p.player.character.c_stored_immortals = c_stored_immortals;
 
 	return p;

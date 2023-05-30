@@ -291,7 +291,7 @@ export function prepareProfileData(allcrew, playerData: PlayerData, lastModified
 
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
-	let unOwnedCrew = [] as CrewMember[];
+	let unOwnedCrew = [] as PlayerCrew[];
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
 		let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
@@ -312,38 +312,38 @@ export function prepareProfileData(allcrew, playerData: PlayerData, lastModified
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 		}
-
-		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
-		inroster.forEach(owned => {
-			crew.immortal = CompletionState.NotComplete;
-			crew.rarity = owned.rarity;
-			crew.base_skills = owned.base_skills;
-			crew.level = owned.level;
-			crew.have = true;
-			crew.favorite = owned.favorite;
-			crew.equipment = owned.equipment;
-			if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
-			if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
-			// Use skills directly from player data when possible
-			if (owned.skills) {
-				for (let skill in CONFIG.SKILLS) {
-					crew[skill] = { core: 0, min: 0, max: 0 };
+		else {
+			let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+			inroster.forEach(owned => {
+				crew.immortal = CompletionState.NotComplete;
+				crew.rarity = owned.rarity;
+				crew.base_skills = owned.base_skills;
+				crew.level = owned.level;
+				crew.have = true;
+				crew.favorite = owned.favorite;
+				crew.equipment = owned.equipment;
+				if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
+				if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
+				// Use skills directly from player data when possible
+				if (owned.skills) {
+					for (let skill in CONFIG.SKILLS) {
+						crew[skill] = { core: 0, min: 0, max: 0 };
+					}
+					for (let skill in owned.skills) {
+						crew[skill] = {
+							core: owned.skills[skill].core,
+							min: owned.skills[skill].range_min,
+							max: owned.skills[skill].range_max
+						};
+					}
 				}
-				for (let skill in owned.skills) {
-					crew[skill] = {
-						core: owned.skills[skill].core,
-						min: owned.skills[skill].range_min,
-						max: owned.skills[skill].range_max
-					};
+				// Otherwise apply buffs to base_skills
+				else {
+					applyCrewBuffs(crew, buffConfig);
 				}
-			}
-			// Otherwise apply buffs to base_skills
-			else {
-				applyCrewBuffs(crew, buffConfig);
-			}
-			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-		});
-
+				ownedCrew.push(JSON.parse(JSON.stringify(crew)));
+			});
+		}
 		if (!crew.have) {
 			// Crew is not immortal or in the active roster
 			applyCrewBuffs(crew, buffConfig);

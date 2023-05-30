@@ -113,6 +113,7 @@ export interface Player {
     pvp_timer: PvpTimer
     fbb_difficulties: FbbDifficulty[]
     crew: PlayerCrew[]
+    unOwnedCrew?: PlayerCrew[];
     items: Item[]
     crew_borrows: any[]
     crew_shares: any[]
