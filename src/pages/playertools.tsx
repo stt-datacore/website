@@ -95,7 +95,7 @@ const PlayerToolsPage = (props: any) =>  {
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 	const [allItems, setAllItems] = React.useState(undefined);
 
-	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
+	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [fleetbossData, setFleetbossData] = useStateWithStorage('tools/fleetbossData', undefined);
@@ -204,14 +204,14 @@ const PlayerToolsPage = (props: any) =>  {
 		//	so other components don't have to keep calculating the same data
 		// After this point, playerData should always be preparedProfileData, here and in all components
 		let preparedProfileData = {...strippedData};
-		prepareProfileData(allCrew, preparedProfileData, dtImported);
+		prepareProfileData("prepareProfileDataFromInput", allCrew ?? [], preparedProfileData, dtImported);
 		setPlayerData(preparedProfileData);
 		setDataSource('input');
 	}
 
 	function prepareProfileDataFromSession() {
 		let preparedProfileData = {...strippedPlayerData};
-		prepareProfileData(allCrew, preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
+		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
 		setPlayerData(preparedProfileData);
 		setDataSource('session');
 	}

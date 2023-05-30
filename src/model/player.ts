@@ -1,5 +1,7 @@
 
 
+import { BossBattlesRoot } from "./boss";
+import { CaptainsBridgeRoot } from "./bridge";
 import { Action, BaseSkills, CrewMember, EquipmentSlot, ShipBattle, Skill } from "./crew"
 import { Icon } from "./game-elements"
 
@@ -9,6 +11,8 @@ export interface AtlasIcon extends Icon {
 
 export interface PlayerData {
     player: Player;
+    fleet_boss_battles_root: BossBattlesRoot;
+    captains_bridge_root: CaptainsBridgeRoot;
     [key: string]: any;
 }
 
@@ -358,7 +362,7 @@ export interface Player {
     equipment_rank: number
     max_equipment_rank: number
     equipment_slots: EquipmentSlot[]
-    equipment: number[][]
+    equipment: number[][] | number[]
     kwipment: any[]
     q_bits: number
     icon: Icon

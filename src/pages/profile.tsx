@@ -18,13 +18,15 @@ import { mergeItems, exportItems, exportItemFields } from '../utils/itemutils';
 import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
+import { CrewMember } from '../model/crew';
+import { PlayerData } from '../model/player';
 
 type ProfilePageProps = {};
 
 type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
-	playerData?: any;
+	playerData?: PlayerData;
 	mobile: boolean;
 };
 
@@ -46,7 +48,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			this.setState({ mobile: true });
 		}
 		if (urlParams.has('dbid')) {
-			this.setState({ dbid: urlParams.get('dbid') });
+			this.setState({ dbid: urlParams.get('dbid') as string });
 		} else if (urlParams.has('discord') && window.location.hash !== '') {
 			let discordUsername = urlParams.get('discord');
 			let discordDiscriminator = window.location.hash.replace('#', '');
@@ -79,10 +81,9 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				.then(playerData => {
 					fetch('/structured/crew.json')
 						.then(response => response.json())
-						.then(allcrew => {
+						.then((allcrew: CrewMember[]) => {
 							// Do some computation on the data to avoid doing it on every render
-							prepareProfileData(allcrew, playerData, lastModified);
-
+							prepareProfileData("profile->componentDidUpdate", allcrew, playerData, lastModified);
 							this.setState({ playerData });
 						});
 				})

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
@@ -210,7 +210,7 @@ const EventPicker = (props: EventPickerProps) => {
 };
 
 type EventCrewTableProps = {
-	crew: any[];
+	crew: PlayerCrew[];
 	eventData: any;
 	phaseIndex: number;
 	buffConfig: any;

@@ -271,17 +271,22 @@ export function download(filename, text) {
     }
 }
 
-export function prepareProfileData(allcrew, playerData: PlayerData, lastModified) {
-
-	playerData.player.character.c_stored_immortals = [];
+export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
+	console.log("prepareProfileData enter...");
+	console.log("Caller: " + caller);
+	console.log(playerData.player.character);
+	
+	playerData.player.character.c_stored_immortals = playerData.player.character.stored_immortals.map(si => si.id);
 	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
-	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
 
+	// playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
+	console.log(numImmortals);
 	playerData.player.character.crew.forEach(crew => {
 		if (crew.level === 100 && crew.equipment.length === 4) {
 			numImmortals.add(crew.archetype_id);
 		}
 	});
+	console.log(numImmortals);
 
 	playerData.calc = {
 		numImmortals: numImmortals.size,
@@ -304,11 +309,14 @@ export function prepareProfileData(allcrew, playerData: PlayerData, lastModified
 
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;
+			console.log("Stored Immortal " + crew.name)
 		} else {
 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
 			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
+			if (crew.immortal) console.log("Stored Immortal " + crew.name)
 		}
 		if (crew.immortal) {
+			console.log("Immortalized " + crew.name)
 			crew.have = true;
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
