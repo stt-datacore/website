@@ -272,8 +272,9 @@ export function download(filename, text) {
 }
 
 export function prepareProfileData(allcrew, playerData: PlayerData, lastModified) {
-	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
 
+	playerData.player.character.c_stored_immortals = [];
+	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
 	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
 
 	playerData.player.character.crew.forEach(crew => {
@@ -307,7 +308,7 @@ export function prepareProfileData(allcrew, playerData: PlayerData, lastModified
 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
 			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
 		}
-		if (crew.immortal != CompletionState.NotComplete) {
+		if (crew.immortal) {
 			crew.have = true;
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));

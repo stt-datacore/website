@@ -22,6 +22,7 @@ import FleetBossBattles from '../components/fleetbossbattles';
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
 import { stripPlayerData, doShareProfile } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
+import { PlayerCrew, PlayerData } from '../model/player';
 
 export const playerTools = {
 	'voyage': {
@@ -86,12 +87,12 @@ export const playerTools = {
 };
 
 const PlayerToolsPage = (props: any) =>  {
-	const [playerData, setPlayerData] = React.useState(undefined);
-	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
+	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
 
 	// allCrew will always be set and can be passed as a prop to subcomponents that need it, saving a fetch to crew.json
 	// allItems is NOT always set; it can be passed to subcomponents but requires a check to see if defined
-	const [allCrew, setAllCrew] = React.useState(undefined);
+	const [allCrew, setAllCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 	const [allItems, setAllItems] = React.useState(undefined);
 
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
@@ -175,7 +176,8 @@ const PlayerToolsPage = (props: any) =>  {
 
 		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
 		//	so store a copy for player tools (i.e. voyage calculator, event planner)
-		let activeCrew = [];
+		if (!inputPlayerData) return false;
+		let activeCrew = [] as Object[];
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
@@ -222,13 +224,13 @@ const PlayerToolsPage = (props: any) =>  {
 }
 
 type PlayerToolsPanesProps = {
-	playerData: any;
+	playerData: PlayerData;
 	strippedPlayerData: any;
 	voyageData: any;
 	eventData: any;
 	activeCrew: string[];
 	dataSource: string;
-	allCrew: any[];
+	allCrew: PlayerCrew[];
 	allItems?: any;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;

@@ -74,8 +74,8 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		});
 
 		// Check for custom columns (currently only available from URL/state)
-		const customColumns = [];
-		if (initOptions.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1)
+		const customColumns = [] as string[];
+		if (initOptions && initOptions.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1)
 			customColumns.push(initOptions.column);
 		customColumns.forEach(column => {
 			tableConfig.push({

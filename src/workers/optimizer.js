@@ -195,10 +195,14 @@ const Optimizer = {
           fullyLeveled = true;
         }
 
-        if ((crewProgress.level >= 99) && crewProgress.equipment.length == 4) {
+        if ((crewProgress?.level >= 99) && crewProgress.equipment?.length == 4) {
           fullyEquipped = true;
         }
-
+        // if (!crewProgress.equipment) {
+        //   console.log("Equipment is missing for this crew");
+        //   console.log(crew)
+        //   console.log(crewProgress)
+        // }
         if (crewProgress.rarity == crew.max_rarity) {
           fullyFused = true;
         }
