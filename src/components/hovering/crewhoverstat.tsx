@@ -3,7 +3,7 @@ import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps } from "./hoverstat";
 import { StatLabelProps } from "../commoncrewdata";
-import { Label } from "semantic-ui-react";
+import { Label, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import { formatTierLabel, gradeToColor } from "../../utils/crewutils";
 
@@ -63,8 +63,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         width: window.innerWidth <= 768 ? "15m" : "32em",
                     }}
                 >
-                    <div>
+                    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                         <h3>{crew.name}</h3>
+                        <div style={{margin: "4px"}}>
+                            <Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+                        </div>
                     </div>
                     <div
                         style={{
