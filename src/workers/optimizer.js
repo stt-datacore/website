@@ -143,6 +143,11 @@ const Optimizer = {
         frozenCrewIDArray.push(crew.id);
       }
     });
+    saveData.player.character.c_stored_immortals?.forEach(crew => {
+      if (!frozenCrewIDArray.includes(crew)) {
+        frozenCrewIDArray.push(crew);
+      }
+    });
 
     //Populates relevant data for acquired crew
     //Data processed differently if immortalized or not
@@ -195,7 +200,7 @@ const Optimizer = {
           fullyLeveled = true;
         }
 
-        if ((crewProgress?.level >= 99) && crewProgress.equipment?.length == 4) {
+        if ((crewProgress?.level >= 99) && (!crewProgress.equipment || crewProgress.equipment?.length == 4)) {
           fullyEquipped = true;
         }
         // if (!crewProgress.equipment) {
