@@ -21,17 +21,19 @@ export interface HoverStatProps {
 export interface HoverStatTargetProps<T> {
 
     /**
-     * The item to be displayed
+     * The item to be displayed (or null)
      */
-    displayItem: T;
+    displayItem: T | null;
     
     /**
-     * The function that is used to set the display item to the value of the displayItem property
+     * The function that is used to set the display item to the value of the displayItem property.
      * 
-     * When the hover is hit for a particular item, that item will call this function
-     * to set the stateful property that is bound to the main hover component
+     * _When the hover is hit for a particular item, that item will call this function_
+     * _to set the stateful property that is bound to the main hover component._
+     * 
+     * _When the hover over is exited, this function will be called with __null__._
      */
-    setDisplayItem: React.Dispatch<React.SetStateAction<T>>;
+    setDisplayItem: React.Dispatch<React.SetStateAction<T | null>>;
 
     /**
      * The wrapped content
@@ -63,20 +65,26 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
     }
 
     /**
-     * Override this method to do data transformations before the setDisplayItem function is called
-     * @param dataIn The data to transform
-     * @returns Transformed data
+     * Optionally override this method to do data transformations on the display item
+     * before the setDisplayItem function is called.
+     * 
+     * _This method will be called even if the displayItem is null, so that a default value may be provided
+     * when required._
+     * 
+     * _(The default behavior is to return the input item)_
+     * @param displayItem The displayItem to transform
+     * @returns The transformed displayItem
      */
-    protected prepareData(dataIn: T): T {
-        return dataIn;
+    protected prepareDisplayItem(displayItem: T | null): T | null {
+        return displayItem;
     }
 
     render(): React.ReactNode {
         const { targetGroup, children, setDisplayItem } = this.props;
-        const displayItem = this.prepareData(this.props.displayItem);
+        const displayItem = this.prepareDisplayItem(this.props.displayItem);
 
         return (<>        
-            <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} onMouseOut={(e) => setDisplayItem(null)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
             </div>            
         </>)        
@@ -92,7 +100,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     /**
      * Override this abstract method to render the content of the hover window 
      * 
-     * Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here.
+     * _(Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here)_
      */
     protected abstract renderContent(): JSX.Element;
 
@@ -124,11 +132,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     }	
 
     /**
-     * Custom function to determine the correct offset of the hover box relative to the visible portion of the page (from StackOverflow with modifications)
+     * Custom function to determine the correct offset of the hover box relative to the visible portion of the page
      * @param fromEl 
      * @returns top and left
      */
-    protected getOffset( fromEl: HTMLElement ) {
+    protected getOffset(fromEl: HTMLElement) {
         var el: HTMLElement | null = fromEl;
 
         var _x = 0;
