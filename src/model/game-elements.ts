@@ -1,4 +1,5 @@
 import { Action, CrewMember } from "./crew";
+import { PlayerCrew } from "./player";
 
 export type Variant = {
   name: string;
@@ -152,8 +153,8 @@ export interface LockedProspect {
   rarity: number;
   level: number;
   prospect: boolean;
-  imageUrlPortrait?: string;
-  max_rarity?: number;
+  imageUrlPortrait: string;
+  max_rarity: number;
 }
 
 export interface InitialOptions {

@@ -38,7 +38,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	let initOptions = initSearchableOptions(window.location);
 	// Check for custom initial profile_crew options from URL or <Link state>
 	const initHighlight = initCustomOption(props.location, 'highlight', '');
-	const initProspects = initCustomOption(props.location, 'prospect', []);
+	const initProspects = initCustomOption(props.location, 'prospect', [] as string[]);
 	// Clear history state now so that new stored values aren't overriden by outdated parameters
 	if ("state" in window.location && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
@@ -112,9 +112,10 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		if (props.initProspects?.length > 0) {
 			const newProspects = [] as LockedProspect[];
 			props.initProspects.forEach(p => {
-				const newProspect = allCrew.find(c => c.symbol === p);
+				const newProspect = allCrew.find(c => c.symbol === p) as PlayerCrew | undefined;
 				if (newProspect) {
 					newProspects.push({
+						... newProspect,
 						symbol: newProspect.symbol,
 						name: newProspect.name,
 						imageUrlPortrait: newProspect.imageUrlPortrait,
@@ -152,6 +153,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 			if (!prospect.action.ability) prospect.action.ability = { type: 0, condition: 0, amount: 0 };
 			myCrew.push(prospect);
 			lockable.push({
+				...prospect,
 				symbol: prospect.symbol,
 				name: prospect.name,
 				rarity: prospect.rarity,
@@ -165,6 +167,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		const highlighted = myCrew.find(c => c.symbol === props.initHighlight);
 		if (highlighted) {
 			lockable.push({
+				...highlighted,
 				symbol: highlighted.symbol,
 				name: highlighted.name,
 				max_rarity: highlighted.max_rarity,
@@ -213,7 +216,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 
-	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
+	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -311,7 +314,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | undefined>> | undefined = undefined): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
@@ -331,7 +334,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget allCrew={allCrew} displayItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget allCrew={allCrew} inputItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
@@ -490,7 +493,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 initOptions={props.initOptions}
                 lockable={props.lockable}
             />
-            <CrewHoverStat crew={focusedCrew} targetGroup="targetClass" />
+            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
         </React.Fragment>
     );
 }

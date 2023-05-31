@@ -381,7 +381,7 @@ export const initSearchableOptions = (location: any) => {
 };
 
 // Check for other initial option from URL or <Link state> by custom name
-export const initCustomOption = (location: any, option: string, defaultValue: any) => {
+export function initCustomOption<T>(location: any, option: string, defaultValue: T) {
 	let value: string | string[] | undefined = undefined;
 	// Always use URL parameters if found
 	if (location?.search) {
@@ -393,7 +393,7 @@ export const initCustomOption = (location: any, option: string, defaultValue: an
 		const linkState = location.state;
 		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
 	}
-	return value ?? defaultValue;
+	return (value ?? defaultValue) as T;
 };
 
 export const prettyCrewColumnTitle = (column: string) => {
