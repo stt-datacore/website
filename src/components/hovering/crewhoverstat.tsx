@@ -39,12 +39,9 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 }
 
 export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatState> {
-    constructor(props: CrewHoverStatProps) {
-        super(props);
-        // this.state = {
-        //     divId: this.state.divId
-        // };
 
+    constructor(props: CrewHoverStatProps) {
+        super(props);        
         console.log(this.state.divId);
     }    
     protected renderContent = (): JSX.Element =>  {

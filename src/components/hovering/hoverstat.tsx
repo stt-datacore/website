@@ -96,6 +96,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
  */
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
     protected _elems: HTMLElement[] | undefined = undefined;
+    protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
 
     /**
      * Override this abstract method to render the content of the hover window 
@@ -264,12 +265,18 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     componentDidMount(): void {
         console.log("componentDidMount");
+        this.doWireup();
+        this.observer.observe(document, { subtree: true, childList: true });
+    }
+
+    doWireup(): void {
         var els = document.getElementsByClassName(this.props.targetGroup);
-        this._elems = [];
+        this._elems ??= [];
         for (let pl of els) {
             let el = pl as HTMLElement;            
 
             if (el) {
+                if (this._elems.includes(el)) continue;
                 this._elems.push(el);
                 console.log("Wiring up element " + el.id ?? el.tagName);
                 el.addEventListener("mouseover", this.targetEnter);
@@ -281,6 +288,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
  
     componentWillUnmount(): void {
         console.log("componentWillUnmount");
+        this.observer.disconnect();
         if (!this._elems) return;
         for (let pl of this._elems) {
             let el = pl as HTMLElement;
