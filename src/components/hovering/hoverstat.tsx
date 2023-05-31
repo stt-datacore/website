@@ -4,27 +4,69 @@ import { PlayerCrew, PlayerData } from "../../model/player";
 import { Label } from "semantic-ui-react";
 import * as uuid from 'uuid';
 
+/**
+ * Default HoverStatProps
+ */
 export interface HoverStatProps {
+    
+    /**
+     * The target group (required to bind)
+     */
     targetGroup: string;
 }
 
+/**
+ * Default HoverStatTargetProps
+ */
 export interface HoverStatTargetProps<T> {
+
+    /**
+     * The item to be displayed
+     */
     displayItem: T;
+    
+    /**
+     * The function that is used to set the display item to the value of the displayItem property
+     * 
+     * When the hover is hit for a particular item, that item will call this function
+     * to set the stateful property that is bound to the main hover component
+     */
     setDisplayItem: React.Dispatch<React.SetStateAction<T>>;
+
+    /**
+     * The wrapped content
+     */
     children: JSX.Element;
+
+    /**
+     * The target group (required to bind)
+     */
     targetGroup: string;
 }
 
+/**
+ * Default HoverStatState
+ */
 export interface HoverStatState {
     divId: string;
     touchToggled: boolean;
 }
 
+/**
+ * HoverStatTarget abstract class
+ * 
+ * Use this to wrap a hover target element
+ */
 export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>> extends React.Component<TProps> {
     constructor(props: TProps) {
         super(props);
     }
 
+    /**
+     * Override this method to do data transformations before the setDisplayItem function is called
+     * @param dataIn The data to transform
+     * @returns Transformed data
+     */
     protected prepareData(dataIn: T): T {
         return dataIn;
     }
@@ -32,7 +74,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
     render(): React.ReactNode {
         const { targetGroup, children, setDisplayItem } = this.props;
         const displayItem = this.prepareData(this.props.displayItem);
-        
+
         return (<>        
             <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
@@ -41,9 +83,17 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
     }
 }
 
+/**
+ * HoverStat abstract hover window class
+ */
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
     protected _elems: HTMLElement[] | undefined = undefined;
 
+    /**
+     * Override this abstract method to render the content of the hover window 
+     * 
+     * Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here.
+     */
     protected abstract renderContent(): JSX.Element;
 
     constructor(props: TProps) {
@@ -64,10 +114,20 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 		);
 	}
     
+    /**
+     * This method is an event listener for the window.resize event that is only
+     * wired up while the hover box is showing
+     * @param e Event
+     */
     protected resizer = (e: any) => {
         this.state = { ... this.state };
     }	
 
+    /**
+     * Custom function to determine the correct offset of the hover box relative to the visible portion of the page (from StackOverflow with modifications)
+     * @param fromEl 
+     * @returns top and left
+     */
     protected getOffset( fromEl: HTMLElement ) {
         var el: HTMLElement | null = fromEl;
 
@@ -82,6 +142,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         return { top: _y, left: _x };
     }        
 
+    /**
+     * Activate the hover window
+     * @param target the hover target that initiated the activation
+     */
     protected activate = (target: HTMLElement): void => {
         const { divId } = this.state;
 
@@ -110,6 +174,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     }
 
+    /**
+     * Deactivate the hover window
+     * @param target The current target
+     */
     protected deactivate = (target: HTMLElement) => {
         const { divId } = this.state;
         let hoverstat = document.getElementById(divId);
@@ -120,6 +188,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         }
     }
 
+    /**
+     * Target mouseOver
+     * @param e 
+     * @returns 
+     */
     protected targetEnter = (e: MouseEvent) => {
         const { divId } = this.state;
 
@@ -141,6 +214,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         }
     }
 
+    /**
+     * Target mouseOut
+     * @param e 
+     * @returns 
+     */
     protected targetLeave = (e: MouseEvent) => {        
         let target = e.target as HTMLElement;
         if (!target) return;
@@ -151,6 +229,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         this.deactivate(target);
     }
 
+    /**
+     * Target touchEnd
+     * @param e 
+     * @returns 
+     */
     protected touchEnd = (e: TouchEvent) => {
         let target = e.target as HTMLElement;
         console.log("touchEnd");
