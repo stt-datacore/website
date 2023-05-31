@@ -53,7 +53,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <img
-                    src={`${process.env.GATSBY_ASSETS_URL}${crew?.imageUrlFullBody}`}
+                    src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                     style={{ height: "9.5em", marginRight: "8px" }}
                 />
 
@@ -67,7 +67,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     }}
                 >
                     <div>
-                        <h3>{crew?.name}</h3>
+                        <h3>{crew.name}</h3>
                     </div>
                     <div
                         style={{
@@ -82,37 +82,37 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     >
                         <CrewStat
                             skill_name="security_skill"
-                            data={crew?.base_skills.security_skill}
+                            data={crew.base_skills.security_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
                         <CrewStat
                             skill_name="command_skill"
-                            data={crew?.base_skills.command_skill}
+                            data={crew.base_skills.command_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
                         <CrewStat
                             skill_name="diplomacy_skill"
-                            data={crew?.base_skills.diplomacy_skill}
+                            data={crew.base_skills.diplomacy_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
                         <CrewStat
                             skill_name="science_skill"
-                            data={crew?.base_skills.science_skill}
+                            data={crew.base_skills.science_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
                         <CrewStat
                             skill_name="medicine_skill"
-                            data={crew?.base_skills.medicine_skill}
+                            data={crew.base_skills.medicine_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
                         <CrewStat
                             skill_name="engineering_skill"
-                            data={crew?.base_skills.engineering_skill}
+                            data={crew.base_skills.engineering_skill}
                             scale={compact ? 0.75 : 1}
                         />
                         <div style={{ width: "4px" }} />
@@ -126,7 +126,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                             marginBottom: "4px",
                         }}
                     >
-                        {crew?.traits_named.join(", ")}
+                        {crew.traits_named.join(", ")}
                     </div>
                     <div>
                         <div
@@ -140,7 +140,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         >
                             <StatLabel
                                 title="CAB Rating"
-                                value={crew?.cab_ov as string}
+                                value={crew.cab_ov as string}
                             />
                             <StatLabel
                                 title="CAB Grade"
@@ -149,17 +149,17 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                                         style={{
                                             fontWeight: "bold",
                                             color: gradeToColor(
-                                                crew?.cab_ov_grade as string
+                                                crew.cab_ov_grade as string
                                             ),
                                         }}
                                     >
-                                        {crew?.cab_ov_grade}
+                                        {crew.cab_ov_grade}
                                     </div>
                                 }
                             />
                             <StatLabel
                                 title="CAB Rank"
-                                value={"" + crew?.cab_ov_rank}
+                                value={"" + crew.cab_ov_rank}
                             />
                         </div>
                     </div>
@@ -175,11 +175,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         >
                             <StatLabel
                                 title="Voyage Rank"
-                                value={"" + crew?.ranks.voyRank}
+                                value={"" + crew.ranks.voyRank}
                             />
                             <StatLabel
                                 title="Gauntlet Rank"
-                                value={"" + crew?.ranks.gauntletRank}
+                                value={"" + crew.ranks.gauntletRank}
                             />
                             <StatLabel
                                 title="Big Book Tier"
