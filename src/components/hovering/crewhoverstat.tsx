@@ -44,10 +44,17 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         super(props);        
         console.log(this.state.divId);
     }    
+
     protected renderContent = (): JSX.Element =>  {
         const { crew } = this.props;
         const compact = true;
         
+        if (!crew) {
+            console.log("Deactivating empty popover");
+            this.cancelled = false;
+            this.deactivate();
+        } 
+
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <img
                     src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
