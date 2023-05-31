@@ -23,7 +23,7 @@ export interface HoverStatTargetProps<T> {
     /**
      * The item to be displayed (or null)
      */
-    displayItem: T | null;
+    inputItem: T | null;
     
     /**
      * The function that is used to set the display item to the value of the displayItem property.
@@ -81,7 +81,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
 
     render(): React.ReactNode {
         const { targetGroup, children, setDisplayItem } = this.props;
-        const displayItem = this.prepareDisplayItem(this.props.displayItem);
+        const displayItem = this.prepareDisplayItem(this.props.inputItem);
 
         return (<>        
             <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} onMouseOut={(e) => setDisplayItem(null)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>

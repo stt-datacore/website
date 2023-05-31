@@ -23,6 +23,16 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+export enum SortDirection {
+	Ascending = 'ascending',
+	Descending = 'descending'	
+}
+
+export interface SortConfig {
+	field?: string;
+	direction?: SortDirection | 'ascending' | 'descending';
+}
+
 export interface ITableConfigRow {
 	width: number;
 	column?: string;
@@ -52,8 +62,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
-	const [column, setColumn] = useStateWithStorage(tableId+'column', undefined);
-	const [direction, setDirection] = useStateWithStorage<'ascending' | 'descending' | null>(tableId+'direction', null);
+	const [column, setColumn] = useStateWithStorage<string | undefined>(tableId+'column', undefined);
+	const [direction, setDirection] = useStateWithStorage<SortDirection | 'ascending' | 'descending' | undefined>(tableId+'direction', undefined);
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
@@ -84,7 +94,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 		const lastColumn = column, lastDirection = direction;
 
-		const sortConfig = {
+		const sortConfig: SortConfig = {
 			field: newColumn.column,
 			direction: lastDirection === 'ascending' ? 'descending' : 'ascending'
 		};
@@ -113,14 +123,14 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		setPaginationPage(1);
 	}
 
-	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | null): JSX.Element {
+	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | undefined): JSX.Element {
 		return (
 			<Table.Row>
 				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
 						width={cell.width as any}
-						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : null) ?? undefined}
+						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
@@ -138,8 +148,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		if (filterType != 'Any match') params.append('filter', filterType);
 		if (column) params.append('column', column);
 		if (direction) params.append('direction', direction);
-		if (pagination_rows != 10) params.append('rows', pagination_rows);
-		if (pagination_page != 1) params.append('page', pagination_page);
+		if (pagination_rows != 10) params.append('rows', "" + pagination_rows);
+		if (pagination_page != 1) params.append('page', "" + pagination_page);
 		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
 		if (params.toString() != '') permalink += '?' + params.toString();
 		return (
@@ -196,7 +206,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
-	let subsort = [] as IConfigSortData[];
+	let subsort = [] as SortConfig[];
 	const columnConfig = props.config.find(col => col.column === sortColumn);
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
@@ -214,8 +224,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	// Sorting by pre-calculated ranks should filter out crew without matching skills
 	//	Otherwise crew without skills show up first (because 0 comes before 1)
 	if (sortColumn.substr(0, 5) === 'ranks') {
-		const rank = column.split('.')[1];
-		data = data.filter(row => row.ranks[rank] > 0);
+		const rank = column?.split('.')[1];
+		if (rank) data = data.filter(row => row.ranks[rank] > 0);
 	}
 
 	// Filtering
@@ -356,9 +366,9 @@ export const initSearchableOptions = (location: any) => {
 	const linkState = location.state;
 
 	for(let option of OPTIONS) {
-		let value: string | null = null;
+		let value: string | undefined = undefined;
 		// Always use URL parameters if found
-		if (urlParams?.has(option)) value = urlParams.get(option);
+		if (urlParams?.has(option)) value = urlParams.get(option) ?? undefined;
 		// Otherwise check <Link state>
 		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
 		if (value) {
@@ -372,11 +382,11 @@ export const initSearchableOptions = (location: any) => {
 
 // Check for other initial option from URL or <Link state> by custom name
 export const initCustomOption = (location: any, option: string, defaultValue: any) => {
-	let value: string | string[] | null = null;
+	let value: string | string[] | undefined = undefined;
 	// Always use URL parameters if found
 	if (location?.search) {
 		const urlParams = new URLSearchParams(location.search);
-		if (urlParams.has(option)) value = Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option);
+		if (urlParams.has(option)) value = (Array.isArray(defaultValue) ? urlParams.getAll(option) : urlParams.get(option)) ?? undefined;
 	}
 	// Otherwise check <Link state>
 	if (!value && location?.state) {

@@ -12,6 +12,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { CryoCollection, PlayerCrew, PlayerData } from '../model/player';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -996,16 +997,17 @@ const ProspectInventory = (props: ProspectInventoryProps) => {
 };
 
 type CrewTableProps = {
-	data: CrewMember[];
+	data: PlayerCrew[];
 	polestars: Polestar[];
 };
 
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
 
-	const [activeCrew, setActiveCrew] = React.useState(null);
-	const [activeCollections, setActiveCollections] = React.useState(null);
+	const [activeCrew, setActiveCrew] = React.useState<string | null>(null);
+	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
 
+	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | null | undefined>(null);
 	if (!data) return (<></>);
 
 	const tableConfig: ITableConfigRow[] = [
@@ -1019,6 +1021,7 @@ const CrewTable = (props: CrewTableProps) => {
 	];
 
 	return (
+		<>
 		<SearchableTable
 			id={"crewretrieval"}
 			data={data}
@@ -1027,9 +1030,12 @@ const CrewTable = (props: CrewTableProps) => {
 			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
+		<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
+		
+		</>
 	);
 
-	function renderTableRow(crew: any, idx: number): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -1042,7 +1048,9 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget inputItem={crew} setDisplayItem={setHoverCrew} allCrew={props.data} targetGroup='retrievalGroup'>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
@@ -1058,7 +1066,7 @@ const CrewTable = (props: CrewTableProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 					<b>{crew.cab_ov}</b><br />
-					<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+					<small>{rarityLabels[parseInt(crew.max_rarity?.toString())-1]} #{crew.cab_ov_rank}</small>
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 					<b>#{crew.ranks.voyRank}</b><br />
