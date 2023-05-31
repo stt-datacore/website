@@ -12,6 +12,8 @@ import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
+import { gradeToColor } from '../utils/crewutils';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -34,7 +36,7 @@ type CiteOptimizerState = {
 	touchCrew: CrewMember | null | undefined;
 	touchToggled: boolean;
 };
-class StatLabel extends React.Component<StatLabelProps> {
+export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
 		const { title, value } = this.props;
 
@@ -60,41 +62,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			touchToggled: false
 		};
 	}
-	gradeToColor(grade: string) {
-		switch(grade) {
-			case "A":
-			case "A-":
-			case "A+":
-				return "lightgreen";
-
-			case "B":
-			case "B-":
-			case "B+":
-				return "aquamarine";
-
-			case "C":
-			case "C-":
-			case "C+":
-				return "yellow";
-
-			case "D":
-			case "D-":
-			case "D+":
-				return "orange";
-
-			case "E":
-			case "E-":
-			case "E+":
-				return "tomato";
-
-			case "F":
-			case "F-":
-			case "F+":
-				return "tomato";
-
-						
-		}
-	}
 
 	componentDidMount() {
 		const worker = new UnifiedWorker();
@@ -117,54 +84,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = createStateAccessors('paginationRows');
 		const [currentCrew, setCurrentCrew] = createStateAccessors('currentCrew');
-		const [touchToggled, setTouchToggled] = createStateAccessors('touchToggled');
-		const [touchCrew, setTouchCrew] = createStateAccessors('touchCrew');
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-		const resizer = (e: any) => {
-			setCurrentCrew(currentCrew);
-		}	
-		const activate = (target: HTMLElement, data: CrewMember) => {
-			let el = document.getElementById("ttref_id");
-			if (el) {
-				if (target.tagName != "IMG") return;
-				while (target && (target.tagName != "TD")) {
-					if (target.parentElement == null) break;
-					target = target.parentElement;
-				}
-				
-				if (target.tagName != "TD") return;
-
-				console.log(target);
-				console.log(data);
-				let x = target.offsetLeft + 72;
-				let y = target.offsetTop - 72;
-				if (!x && !y) return;
-
-				el.style.position = "absolute";
-				el.style.left = x + "px";
-				el.style.top = y + "px";
-				el.style.display = "block";
-				el.style.zIndex = "100";
-				
-				window.addEventListener("resize", resizer);
-				setCurrentCrew(this.props.allCrew?.filter(x=>x.symbol == data.symbol)[0]);
-			}
-		}
-		const deactivate = (target: HTMLElement | null) => {
-			let el = document.getElementById("ttref_id");
-			if (el) {
-				if (target && target.tagName != "IMG") return;
-				console.log("Out");
-
-				el.style.display = "none";
-				el.style.zIndex = "-1000";
-
-				window.removeEventListener("resize", resizer);
-				setCurrentCrew(null);
-			}
-		}
 
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -172,48 +94,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-
-		const touchEnd = (e: React.TouchEvent<HTMLImageElement>, data: CrewMember) => {
-			console.log("touchEnd");
-			let el = document.getElementById("ttref_id");
-			if (el) {
-				let target: HTMLElement | null = e.target as HTMLElement;
-				if (target && target.tagName != "IMG") return;
-
-				if (touchToggled && data.symbol === touchCrew?.symbol) {					
-					deactivate(target);
-					setTouchToggled(false);
-					setTouchCrew(null);
-				}
-				else {
-					if (target) activate(target, data);
-					setTouchToggled(true);
-					setTouchCrew(data);
-				}		
-			}
-		}
-
-		const hoverIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: CrewMember) => {			
-			console.log("hoverIn");
-			e.nativeEvent.stopPropagation();
-			e.nativeEvent.preventDefault();
-			let el = document.getElementById("ttref_id");
-			if (el) {
-				let target: HTMLElement | null = e.target as HTMLElement;				
-				if (target) activate(target, data);
-			}
-		};
-
-		const hoverOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, data: CrewMember) => {
-			console.log("hoverOut");
-			e.nativeEvent.stopPropagation();
-			e.nativeEvent.preventDefault();
-			let el = document.getElementById("ttref_id");
-			if (el) {
-				let target: HTMLElement | null = e.target as HTMLElement;				
-				if (target) deactivate(target);
-			}
-		};
 
 		return (<div style={{overflowX: "auto"}}>			
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -237,7 +117,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
-							<Table.Row key={idx} onTouchStart={(e) => deactivate(null)}
+							<Table.Row key={idx}
 							>
 								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
 								<Table.Cell>
@@ -251,14 +131,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<img 
-												onTouchEnd={(e) => touchEnd(e, crew)}
-												onMouseEnter={(e) => hoverIn(e, crew)}
-												onMouseLeave={(e) => hoverOut(e, crew)}
-												onClick={(e) => imageClick(e, crew)}
-												width={48} 
-												src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
-												/>
+											<CrewTarget allCrew={this.props.allCrew} targetGroup='crewTarget' displayItem={crew} setDisplayItem={setCurrentCrew}>
+												<img 
+													onClick={(e) => imageClick(e, crew)}
+													width={48} 
+													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
+													/>
+											</CrewTarget>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
 											<a href={"/crew/" + crew.symbol}>
@@ -317,11 +196,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Footer>
 			</Table>
+			<CrewHoverStat targetGroup='crewTarget' crew={this.state.currentCrew ?? undefined} />
 			</div>);
 	}
 
-	get crew(): CrewMember | null {
-		return this.state.currentCrew ?? null;
+	get crew(): CrewMember | undefined {
+		return this.state.currentCrew ?? undefined;
 	}
 	
 	render() {
@@ -358,7 +238,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 					]}
 				/>					
-
+				
 				<Segment>
 					{!citeData &&
 						<>
@@ -372,85 +252,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData.crewToCite, false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData.crewToTrain, true) }
 						]} />
-					}
-
-					{<div id='ttref_id' className='ui segment' style={{position: "absolute", zIndex: -1000, display: "none", padding: "8px", borderRadius: "8px"}}>
-							{this.state.currentCrew && this.crew &&
-								<div style={{display: "flex", flexDirection:"row"}}>
-									<img src={`${process.env.GATSBY_ASSETS_URL}${this.state.currentCrew?.imageUrlFullBody}`} style={{height: "9.5em", marginRight: "8px"}} />
-				
-									<div style={{display: "flex", flexDirection:"column", minHeight: "8em", justifyContent: "space-between", width: window.innerWidth <= 768 ? "15m" : "32em"}}>	
-										<div>
-											<h3>{this.crew.name}</h3>
-										</div>
-										<div style={{
-											display: "flex", 
-											flexWrap: "wrap", 
-											flexDirection: window.innerWidth <= 512 ? "column" : "row", 
-											justifyContent: "flex-start", 
-											marginTop: "4px", 
-											marginBottom: "2px"}}>
-
-											<CrewStat												
-												skill_name="security_skill"
-												data={this.crew.base_skills.security_skill}
-												scale={compact ? 0.75 : 1}
-											/>
-											<div style={{width: "4px"}} />
-											<CrewStat 
-												skill_name="command_skill" 
-												data={this.crew.base_skills.command_skill} 
-												scale={compact ? 0.75 : 1} />
-											<div style={{width: "4px"}} />
-											<CrewStat
-												skill_name="diplomacy_skill"
-												data={this.crew.base_skills.diplomacy_skill}
-												scale={compact ? 0.75 : 1}
-											/>
-											<div style={{width: "4px"}} />
-											<CrewStat 
-												skill_name="science_skill" 
-												data={this.crew.base_skills.science_skill} 
-												scale={compact ? 0.75 : 1} />
-											<div style={{width: "4px"}} />
-											<CrewStat
-												skill_name="medicine_skill"
-												data={this.crew.base_skills.medicine_skill}
-												scale={compact ? 0.75 : 1}
-											/>
-											<div style={{width: "4px"}} />
-											<CrewStat
-												skill_name="engineering_skill"
-												data={this.crew.base_skills.engineering_skill}
-												scale={compact ? 0.75 : 1}
-											/>
-											<div style={{width: "4px"}} />
-										</div>
-										<div style={{textAlign: "left", fontStyle: "italic", fontSize: "0.85em", marginTop: "2px", marginBottom: "4px"}}>
-											{this.crew.traits_named.join(", ")}
-										</div>
-										<div>
-											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
-												<StatLabel title="CAB Rating" value={this.crew.cab_ov} />
-												<StatLabel title="CAB Grade" value={(<div style={{fontWeight: "bold", color: this.gradeToColor(this.crew.cab_ov_grade)}}>{this.crew.cab_ov_grade}</div>)} />
-												<StatLabel title="CAB Rank" value={"" + this.crew.cab_ov_rank} />
-											</div>
-										</div>
-										<div>
-											<div style={{ textAlign: 'center', display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "space-between" }}>
-												<StatLabel title="Voyage Rank" value={"" + this.crew.ranks.voyRank} />
-												<StatLabel title="Gauntlet Rank" value={"" + this.crew.ranks.gauntletRank} />
-												<StatLabel title="Big Book Tier" value={formatTierLabel(this.crew)} />
-											</div>
-										</div>
-										
-									</div>
-
-								</div>
-						
-								}
-						</div>
-					}	
+					}						
 				</Segment>
 			</>
 		);

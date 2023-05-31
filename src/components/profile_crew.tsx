@@ -13,14 +13,16 @@ import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../component
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { getShipBonus, getShipChargePhases, isImmortal } from '../utils/crewutils';
+import { getShipBonus, getShipChargePhases, gradeToColor, isImmortal } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { LockedProspect, SymbolName } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
-import HoverStat from './hoverstat';
-
+import CrewStat from './crewstat';
+import { formatTierLabel } from '../utils/crewutils';
+import { StatLabel } from './citeoptimizer';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 type ProfileCrewProps = {
 	playerData: PlayerData;
 	isTools?: boolean;
@@ -41,8 +43,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if ("state" in window.location && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
 
+	const allCrew = [...props.allCrew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 	if (props.isTools) {
-		const allCrew = [...props.allCrew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
 			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
@@ -60,7 +62,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 			});
 		}
 	}
-	return (<ProfileCrewTable crew={myCrew} initOptions={initOptions} lockable={lockable} />);
+	console.log(allCrew);
+	return (<ProfileCrewTable crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
 type ProfileCrewTools = {
@@ -172,18 +175,10 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		}
 	}
 
+
 	return (
 		<React.Fragment>
-			<p>
-				<div>
-					<HoverStat popOver={(<div className="ui">Hello World2</div>)}>
-						
-					<button>Candor</button>
-					</HoverStat>
-				</div>
-			</p>
-
-			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} />
+			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
 		</React.Fragment>
@@ -203,7 +198,8 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 
 type ProfileCrewTableProps = {
 	pageId?: string;
-	crew: any[];
+	crew: PlayerCrew[];
+	allCrew: CrewMember[];
 	initOptions: any;
 	lockable?: any[];
 };
@@ -216,6 +212,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
+
+	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -290,6 +288,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	const myCrew = [...props.crew];
+	const allCrew = [...props.allCrew];
+
 	if (traitFilter.length > 0) {
 		myCrew.forEach(crew => {
 			crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
@@ -311,13 +311,16 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | undefined>> | undefined = undefined): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
 
+		setCrew ??= (e) => { return; };
+		let referenceCrew = allCrew.find(c => c.symbol == crew.symbol);
+		
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
 				<Table.Cell className='sticky'>
 					<div
 						style={{
@@ -328,7 +331,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget allCrew={allCrew} displayItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
@@ -400,63 +405,94 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	// 	return result.join('; ');
 	// }
-
+	const compact = true;
+	
 	return (
-		<React.Fragment>
-			{pageId === 'crewTool' && (
-				<Button.Group>
-					<Button onClick={() => setTableView('base')} positive={tableView === 'base' ? true : false} size='large'>
-						Base Skills
-					</Button>
-					<Button.Or />
-					<Button onClick={() => setTableView('ship')} positive={tableView === 'ship' ? true : false} size='large'>
-						Ship Abilities
-					</Button>
-				</Button.Group>
-			)}
-			<div style={{ margin: '1em 0' }}>
-				<Form>
-					<Form.Group inline>
-						<Form.Field
-							placeholder='Filter by availability'
-							control={Dropdown}
-							clearable
-							selection
-							options={usableFilterOptions.filter(option => pageId === 'crewTool' || option.tool !== 'true')}
-							value={usableFilter}
-							onChange={(e, { value }) => setUsableFilter(value)}
-						/>
-						{usableFilter !== 'frozen' && (
-							<Form.Field
-								placeholder='Roster maintenance'
-								control={Dropdown}
-								clearable
-								selection
-								options={rosterFilterOptions}
-								value={rosterFilter}
-								onChange={(e, { value }) => setRosterFilter(value)}
-							/>
-						)}
-						<CrewRarityFilter rarityFilter={rarityFilter} setRarityFilter={setRarityFilter} />
-						<CrewTraitFilter
-							traitFilter={traitFilter} setTraitFilter={setTraitFilter}
-							minTraitMatches={minTraitMatches} setMinTraitMatches={setMinTraitMatches}
-						/>
-					</Form.Group>
-				</Form>
-			</div>
-			<SearchableTable
-				id={`${pageId}/table_`}
-				data={myCrew}
-				config={tableConfig}
-				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx ?? -1, highlighted ?? false)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType as string)}
-				showFilterOptions={true}
-				initOptions={props.initOptions}
-				lockable={props.lockable}
-			/>
-		</React.Fragment>
-	);
+        <React.Fragment>
+            {pageId === "crewTool" && (
+                <Button.Group>
+                    <Button
+                        onClick={() => setTableView("base")}
+                        positive={tableView === "base" ? true : false}
+                        size="large"
+                    >
+                        Base Skills
+                    </Button>
+                    <Button.Or />
+                    <Button
+                        onClick={() => setTableView("ship")}
+                        positive={tableView === "ship" ? true : false}
+                        size="large"
+                    >
+                        Ship Abilities
+                    </Button>
+                </Button.Group>
+            )}
+
+            <div style={{ margin: "1em 0" }}>
+                <Form>
+                    <Form.Group inline>
+                        <Form.Field
+                            placeholder="Filter by availability"
+                            control={Dropdown}
+                            clearable
+                            selection
+                            options={usableFilterOptions.filter(
+                                (option) =>
+                                    pageId === "crewTool" ||
+                                    option.tool !== "true"
+                            )}
+                            value={usableFilter}
+                            onChange={(e, { value }) => setUsableFilter(value)}
+                        />
+                        {usableFilter !== "frozen" && (
+                            <Form.Field
+                                placeholder="Roster maintenance"
+                                control={Dropdown}
+                                clearable
+                                selection
+                                options={rosterFilterOptions}
+                                value={rosterFilter}
+                                onChange={(e, { value }) =>
+                                    setRosterFilter(value)
+                                }
+                            />
+                        )}
+                        <CrewRarityFilter
+                            rarityFilter={rarityFilter}
+                            setRarityFilter={setRarityFilter}
+                        />
+                        <CrewTraitFilter
+                            traitFilter={traitFilter}
+                            setTraitFilter={setTraitFilter}
+                            minTraitMatches={minTraitMatches}
+                            setMinTraitMatches={setMinTraitMatches}
+                        />
+                    </Form.Group>
+                </Form>
+            </div>
+            <SearchableTable
+                id={`${pageId}/table_`}
+                data={myCrew}
+                config={tableConfig}
+                renderTableRow={(crew, idx, highlighted) =>
+                    renderTableRow(
+                        crew,
+                        idx ?? -1,
+                        highlighted ?? false,
+                        setFocusedCrew
+                    )
+                }
+                filterRow={(crew, filters, filterType) =>
+                    showThisCrew(crew, filters, filterType as string)
+                }
+                showFilterOptions={true}
+                initOptions={props.initOptions}
+                lockable={props.lockable}
+            />
+            <CrewHoverStat crew={focusedCrew} targetGroup="targetClass" />
+        </React.Fragment>
+    );
 }
 
 type ProspectsProps = {

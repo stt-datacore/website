@@ -24,7 +24,16 @@ import { stripPlayerData, doShareProfile } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew, PlayerData } from '../model/player';
 
-export const playerTools = {
+export interface PlayerTool {
+	title: string;
+	render: (props: {playerData: PlayerData, allCrew: PlayerCrew[], location?: any}) => JSX.Element;	
+}
+
+export interface PlayerTools {
+	[key: string]: PlayerTool;
+}
+
+export const playerTools: PlayerTools = {
 	'voyage': {
 		title: 'Voyage Calculator',
 		render: ({playerData, allCrew}) => <VoyageCalculator playerData={playerData} allCrew={allCrew} />

@@ -430,3 +430,38 @@ export function getShipChargePhases(crew: any): string[] {
 	});
 	return phases;
 }
+export function gradeToColor(grade: string) {
+	switch(grade) {
+		case "A":
+		case "A-":
+		case "A+":
+			return "lightgreen";
+
+		case "B":
+		case "B-":
+		case "B+":
+			return "aquamarine";
+
+		case "C":
+		case "C-":
+		case "C+":
+			return "yellow";
+
+		case "D":
+		case "D-":
+		case "D+":
+			return "orange";
+
+		case "E":
+		case "E-":
+		case "E+":
+			return "tomato";
+
+		case "F":
+		case "F-":
+		case "F+":
+			return "tomato";
+
+					
+	}
+}
