@@ -64,6 +64,18 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
         super(props);
     }
 
+    protected get cancelTokenKey(): string {
+        return "__display_cancel_" + this.props.targetGroup;
+    }
+
+    protected get cancelled(): boolean {
+        return window.sessionStorage.getItem(this.cancelTokenKey) === "yes";
+    }
+
+    protected set cancelled(value: boolean) {
+        window.sessionStorage.setItem(this.cancelTokenKey, value ? "yes" : "no");
+    }
+
     /**
      * Optionally override this method to do data transformations on the display item
      * before the setDisplayItem function is called.
@@ -78,13 +90,20 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
     protected prepareDisplayItem(displayItem: T | null): T | null {
         return displayItem;
     }
-
+    
     render(): React.ReactNode {
         const { targetGroup, children, setDisplayItem } = this.props;
         const displayItem = this.prepareDisplayItem(this.props.inputItem);
+        const containerLeave = (e) =>{
+            if (this.cancelled) {
+                this.cancelled = false;
+                return;
+            }
 
+            setDisplayItem(null);
+        }
         return (<>        
-            <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} onMouseOut={(e) => setDisplayItem(null)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} onMouseOut={(e) => containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
             </div>            
         </>)        
@@ -97,6 +116,18 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
     protected _elems: HTMLElement[] | undefined = undefined;
     protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
+
+    protected get cancelTokenKey(): string {
+        return "__display_cancel_" + this.props.targetGroup;
+    }
+
+    protected get cancelled(): boolean {
+        return window.sessionStorage.getItem(this.cancelTokenKey) === "yes";
+    }
+
+    protected set cancelled(value: boolean) {
+        window.sessionStorage.setItem(this.cancelTokenKey, value ? "yes" : "no");
+    }
 
     /**
      * Override this abstract method to render the content of the hover window 
@@ -115,9 +146,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     render() {
         const { divId } = this.state;
-        
+        const containerOver = (e) => {
+            this.cancelled = true;
+        }
         return (
-            <div id={divId} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
+            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => { this.cancelled = false; this.deactivate();}} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
                 {this.renderContent()}
             </div>
 		);
@@ -177,7 +210,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             hoverstat.style.left = x + "px";
             hoverstat.style.top = y + "px";
             hoverstat.style.zIndex = "100";
-
+            
             window.addEventListener("resize", this.resizer);
         }
 
@@ -187,14 +220,23 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * Deactivate the hover window
      * @param target The current target
      */
-    protected deactivate = (target: HTMLElement) => {
-        const { divId } = this.state;
-        let hoverstat = document.getElementById(divId);
-        if (hoverstat) {
-            hoverstat.style.zIndex = "-100";        
-            hoverstat.style.display = "none";
-            window.removeEventListener("resize", this.resizer);
-        }
+    protected deactivate = (target: HTMLElement | undefined = undefined) => {
+
+        window.setTimeout(() => {
+            if (this.cancelled) {
+                this.cancelled = false;
+                return;
+            }
+
+            const { divId } = this.state;
+            let hoverstat = document.getElementById(divId);
+            if (hoverstat) {
+                hoverstat.style.zIndex = "-100";        
+                hoverstat.style.display = "none";
+
+                window.removeEventListener("resize", this.resizer);
+            }
+        }, 0);
     }
 
     /**
@@ -209,7 +251,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         console.log(divId);
 
         let hoverstat = document.getElementById(divId);        
-
+        window.sessionStorage.setItem(this.cancelTokenKey, "yes");
         if (hoverstat) {
             console.log("Found Correct HoverStat");
 
