@@ -10,6 +10,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
 import { Collection, Filter } from '../model/game-elements';
 import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 type CollectionsToolProps = {
 	playerData: PlayerData;
@@ -105,7 +106,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 	});
 
 	return (
-		<CollectionsUI playerCollections={playerCollections} collectionCrew={collectionCrew} />
+		<CollectionsUI allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} />
 	);
 
 	function mergeRewards(current: ImmortalReward[], rewards: BuffBase[] | null | undefined): void {
@@ -133,11 +134,12 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 
 type CollectionsUIProps = {
 	playerCollections: any[];
-	collectionCrew: any[];
+	collectionCrew: PlayerCrew[];
+	allCrew: PlayerCrew[];
 };
 
 const CollectionsUI = (props: CollectionsUIProps) => {
-	const { playerCollections, collectionCrew } = props;
+	const { allCrew, playerCollections, collectionCrew } = props;
 
 	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', [] as number[]);
 
@@ -147,7 +149,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		<React.Fragment>
 			<ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
 			<div ref={crewAnchor} />
-			<CrewTable playerCollections={playerCollections} collectionCrew={collectionCrew} collectionsFilter={collectionsFilter} setCollectionsFilter={setCollectionsFilter} />
+			<CrewTable allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} collectionsFilter={collectionsFilter} setCollectionsFilter={setCollectionsFilter} />
 		</React.Fragment>
 	);
 
@@ -303,6 +305,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 };
 
 type CrewTableProps = {
+	allCrew: CrewMember[] | PlayerCrew[];
 	playerCollections: any[];
 	collectionCrew: PlayerCrew[];
 	collectionsFilter: number[];
@@ -310,8 +313,10 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
-	const { playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
+	const { allCrew, playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
 
+	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | undefined | null>(undefined);
+	
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
@@ -415,6 +420,7 @@ const CrewTable = (props: CrewTableProps) => {
 				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 			/>
+			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='collectionsTarget' />
 		</React.Fragment>
 	);
 
@@ -471,7 +477,9 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew} targetGroup='collectionsTarget'>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>

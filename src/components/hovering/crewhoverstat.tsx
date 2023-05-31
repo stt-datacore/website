@@ -34,7 +34,7 @@ export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewM
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps> {
     
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
-        return this.props.allCrew.find(c => c.symbol === dataIn?.symbol);
+        return this.props.allCrew.find(c => c.symbol === dataIn?.symbol) ?? dataIn;
     }
 }
 

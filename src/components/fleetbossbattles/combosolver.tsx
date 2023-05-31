@@ -31,6 +31,8 @@ const ComboSolver = (props: ComboSolverProps) => {
 	const [allMatchingCrew, setAllMatchingCrew] = React.useState<PlayerCrew[]>([]);
 	const [attemptedCrew, setAttemptedCrew] = React.useState<string[]>([]);
 
+	const { allCrew } = props;
+	
 	React.useEffect(() => {
 		if (props.combo) {
 			setCombo({...props.combo});
@@ -233,6 +235,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 			{activeStep === 'crew' && openNodes.length > 0 &&
 				<React.Fragment>
 					<ComboCrewTable
+						allCrew={allCrew}
 						comboId={combo.id as string} openNodes={openNodes} traitPool={traitPool}
 						allMatchingCrew={allMatchingCrew}
 						solveNode={onNodeSolved} markAsTried={onCrewMarked}

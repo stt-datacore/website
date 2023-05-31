@@ -13,19 +13,23 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import allTraits from '../../../static/structured/translation_en.json';
 import { OpenNode } from '../../model/boss'
 import { NodeMatch, Player, PlayerCrew } from '../../model/player';
+import { CrewMember } from '../../model/crew';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 type ComboCrewTableProps = {
 	comboId: string;
 	openNodes: OpenNode[];
 	traitPool: string[];
 	allMatchingCrew: PlayerCrew[];
+	allCrew: PlayerCrew[] | CrewMember[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
 const ComboCrewTable = (props: ComboCrewTableProps) => {
-	const { comboId, openNodes } = props;
+	const { allCrew, comboId, openNodes } = props;
 
+	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | undefined | null>(undefined);
 	const [optimalCombos, setOptimalCombos] = React.useState<NodeMatch[]>([]);
 	const [traitCounts, setTraitCounts] = React.useState({});
 	const [usableFilter, setUsableFilter] = React.useState('');
@@ -139,6 +143,7 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType as string)}
 				showFilterOptions={true}
 			/>
+			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='comboCrewTarget' />
 			<div style={{ marginTop: '1em' }}>
 				<p><i>Optimal Crew</i> are the crew you should try first for efficient use of valor; they exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>
@@ -160,7 +165,9 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget targetGroup='comboCrewTarget' allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew}>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>

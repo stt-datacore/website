@@ -131,7 +131,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<CrewTarget allCrew={this.props.allCrew} targetGroup='crewTarget' displayItem={crew} setDisplayItem={setCurrentCrew}>
+											<CrewTarget allCrew={this.props.allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
 												<img 
 													onClick={(e) => imageClick(e, crew)}
 													width={48} 
@@ -196,7 +196,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<CrewHoverStat targetGroup='crewTarget' crew={this.state.currentCrew ?? undefined} />
+			<CrewHoverStat targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
 			</div>);
 	}
 

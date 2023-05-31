@@ -15,6 +15,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { BestCombos, CompletionState, Event, EventCombos, EventPair, EventSkill, PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 type EventPlannerProps = {
 	playerData: PlayerData;
@@ -202,7 +203,7 @@ const EventPicker = (props: EventPickerProps) => {
 				<div>{eventData.description}</div>
 				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } /></div>)}
 			</Form>
-			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
+			<EventCrewTable allCrew={allCrew} crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
 			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
 			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
@@ -210,6 +211,7 @@ const EventPicker = (props: EventPickerProps) => {
 };
 
 type EventCrewTableProps = {
+	allCrew: CrewMember[] | PlayerCrew[];
 	crew: PlayerCrew[];
 	eventData: any;
 	phaseIndex: number;
@@ -218,14 +220,14 @@ type EventCrewTableProps = {
 };
 
 const EventCrewTable = (props: EventCrewTableProps) => {
-	const { eventData, phaseIndex, buffConfig } = props;
+	const { allCrew, eventData, phaseIndex, buffConfig } = props;
 
 	const [showBonus, setShowBonus] = useStateWithStorage('eventplanner/showBonus', true);
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
-
+	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | null | undefined>(undefined);
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 	React.useEffect(() => {
@@ -407,6 +409,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
+			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
@@ -417,7 +420,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		};
 
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
+			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -428,7 +431,9 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget allCrew={allCrew} targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
