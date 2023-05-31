@@ -19,6 +19,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { LockedProspect, SymbolName } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
+import HoverStat from './hoverstat';
 
 type ProfileCrewProps = {
 	playerData: PlayerData;
@@ -173,6 +174,15 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 
 	return (
 		<React.Fragment>
+			<p>
+				<div>
+					<HoverStat popOver={(<div className="ui">Hello World2</div>)}>
+						
+					<button>Candor</button>
+					</HoverStat>
+				</div>
+			</p>
+
 			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
