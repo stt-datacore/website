@@ -180,6 +180,7 @@ const EventPicker = (props: EventPickerProps) => {
 			});
 			myCrew.push(prospect);
 			lockable.push({
+				...prospect,
 				symbol: prospect.symbol,
 				name: prospect.name,
 				rarity: prospect.rarity,
