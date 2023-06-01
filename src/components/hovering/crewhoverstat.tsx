@@ -98,7 +98,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                     cm = this.props.allCrew.find(c => c.symbol === dataIn.symbol);
                 }
     
-                if (cm) {
+                if (cm && showImmortal === true) {
                     item = JSON.parse(JSON.stringify(cm)) as PlayerCrew;
                 }
                 else {
