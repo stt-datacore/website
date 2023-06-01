@@ -23,8 +23,6 @@ export class StatLabel extends React.Component<StatLabelProps> {
 
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
-    setImmo?: React.Dispatch<React.SetStateAction<boolean>>;
-    setBuffs?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface CrewHoverStatState extends HoverStatState {
@@ -33,8 +31,6 @@ export interface CrewHoverStatState extends HoverStatState {
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
     allCrew: CrewMember[] | PlayerCrew[]
     buffConfig?: BuffStatTable;
-    showImmortal?: boolean;
-    applyBuffs?: boolean;
 }
 
 export interface CrewTargetState extends HoverStatTargetState {
@@ -85,11 +81,10 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
         const { buffConfig } = this.props;
 
-        let applyBuffs = this.showBuffs;
-        let showImmortal = this.showImmo;
+        const applyBuffs = this.showBuffs;
+        const showImmortal = this.showImmo;
 
         if (dataIn) {            
-
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
                 let item: PlayerCrew;
                 let cm: CrewMember | undefined = undefined;
@@ -168,7 +163,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
         const activeStyle: React.CSSProperties = {
             background: 'transparent',
-            color: 'gold',
+            color: '#FFE623',
             cursor: "pointer"
         }
 
@@ -189,9 +184,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                         style={{ height: "9.5em", marginRight: "8px" }}
                     />
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                        <i className="arrow alternate circle up icon" style={this.showBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                        <i className="user icon" style={this.showImmo ? activeStyle : dormantStyle} onClick={(e) => immoToggle(e)} />
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flexGrow: "1"}}>
+                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
+                            <i className="arrow alternate circle up icon" title="Apply Buffs" style={this.showBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
+                            <i className="star icon" title="Show Immortalized" style={this.showImmo ? activeStyle : dormantStyle} onClick={(e) => immoToggle(e)} />
+                        </div>
                     </div>
                 </div>
                 <div
