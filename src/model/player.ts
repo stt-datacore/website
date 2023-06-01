@@ -14,6 +14,7 @@ export interface PlayerData {
     player: Player;
     fleet_boss_battles_root: BossBattlesRoot;
     captains_bridge_root: CaptainsBridgeRoot;
+    calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
     [key: string]: any;
 }
 

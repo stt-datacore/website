@@ -207,7 +207,7 @@ const PlayerToolsPage = (props: any) =>  {
 		let dtImported = new Date();
 
 		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
-		let strippedData = stripPlayerData(allItems, {...inputPlayerData});
+		let strippedData = stripPlayerData(allItems ?? [], {...inputPlayerData});
 		strippedData.calc = { 'lastImported': dtImported };
 		setStrippedPlayerData(JSON.parse(JSON.stringify(strippedData)));
 
@@ -222,7 +222,7 @@ const PlayerToolsPage = (props: any) =>  {
 
 	function prepareProfileDataFromSession() {
 		let preparedProfileData = {...strippedPlayerData} as PlayerData;
-		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
+		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData?.calc?.lastImported as string)));
 		setPlayerData(preparedProfileData);
 		setDataSource('session');
 	}
@@ -273,13 +273,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const tools = playerTools;
 	React.useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('tool') && tools[urlParams.get('tool')])
-			setActiveTool(urlParams.get('tool'));
+		if (urlParams.has('tool') && tools[urlParams.get('tool') as string])
+			setActiveTool(urlParams.get('tool') as string);
 	}, [window.location.search]);
 
 	const StaleMessage = () => {
 		const STALETHRESHOLD = 3;	// in hours
-		if (showIfStale && new Date().getTime()-playerData.calc.lastModified.getTime() > STALETHRESHOLD*60*60*1000) {
+		if (showIfStale && new Date().getTime()-(playerData.calc?.lastModified?.getTime() ?? 0) > STALETHRESHOLD*60*60*1000) {
 			return (
 				<Message
 					warning
@@ -370,7 +370,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			<StaleMessage />
 			<Menu compact stackable>
 				<Menu.Item>
-					Last imported: {playerData.calc.lastModified.toLocaleString()}
+					Last imported: {playerData.calc?.lastModified?.toLocaleString()}
 				</Menu.Item>
 				<Dropdown item text='Profile options'>
 					<Dropdown.Menu>
@@ -426,12 +426,12 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	}
 
 	function exportCrewTool() {
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
+		let text = playerData.player.character.unOwnedCrew ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew)) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	function exportCrewToClipboard() {
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t');
+		let text = playerData.player.character.unOwnedCrew ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t') : "";
 		navigator.clipboard.writeText(text);
 	}
 }
@@ -448,9 +448,9 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 	const [fullInput, setFullInput] = React.useState('');
 	const [displayedInput, setDisplayedInput] = React.useState('');
-	const [errorMessage, setErrorMessage] = React.useState(undefined);
+	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
-	let inputUploadFile = null;
+	let inputUploadFile: HTMLInputElement | null = null;
 
 	if (fullInput != "")
 		parseInput();
@@ -487,8 +487,8 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				<TextArea
 					placeholder='Paste your player data here'
 					value={displayedInput}
-					onChange={(e, { value }) => setDisplayedInput(value)}
-					onPaste={(e) => { return onInputPaste(e) }}
+					onChange={(e, { value }) => setDisplayedInput(value as string)}
+					onPaste={(e: ClipboardEvent) => { return onInputPaste(e) }}
 				/>
 				<input
 					type='file'
@@ -538,7 +538,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			</p>
 
 			<Button
-				onClick={() => inputUploadFile.click()}
+				onClick={() => inputUploadFile?.click()}
 				content='Upload data file'
 				icon='file'
 				labelPosition='right'
@@ -587,8 +587,8 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		setFullInput('');
 	}
 
-	function onInputPaste(event) {
-		let paste = event.clipboardData || window.clipboardData;
+	function onInputPaste(event: ClipboardEvent) {
+		let paste = event.clipboardData;
 		if (paste) {
 			let fullPaste = paste.getData('text');
 			setFullInput(fullPaste);
@@ -603,7 +603,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		// use FileReader to read file content in browser
 		const fReader = new FileReader();
 		fReader.onload = (e) => {
-			let data = e.target.result.toString();
+			let data = e.target?.result?.toString() ?? "";
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.

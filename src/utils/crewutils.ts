@@ -294,7 +294,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	});
 	
 	playerData.calc = {
-		numImmortals: numImmortals.size,
+		numImmortals: numImmortals?.size ?? 0,
 		lastModified
 	};
 
