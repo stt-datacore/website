@@ -169,6 +169,9 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         }
         var me = this;
         const immoToggle = (e) => {
+            if (crew && "immortal" in crew && crew.immortal) {
+                return;
+            }
             me.showImmo = !me.showImmo;
         }
         const buffToggle = (e) => {
