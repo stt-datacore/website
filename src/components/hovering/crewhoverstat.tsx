@@ -1,11 +1,12 @@
 import React from "react";
-import { CrewMember } from "../../model/crew";
+import { CrewMember, Skill } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps } from "./hoverstat";
 import { StatLabelProps } from "../commoncrewdata";
 import { Label, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
-import { formatTierLabel, gradeToColor } from "../../utils/crewutils";
+import { applySkillBuff, formatTierLabel, gradeToColor } from "../../utils/crewutils";
+import { BuffStatTable } from "../../utils/voyageutils";
 
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
@@ -29,12 +30,32 @@ export interface CrewHoverStatState extends HoverStatState {
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
     allCrew: CrewMember[] | PlayerCrew[]
+    buffConfig?: BuffStatTable;
+    showImmortal?: boolean;
 }
 
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps> {
     
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
-        return this.props.allCrew.find(c => c.symbol === dataIn?.symbol) ?? dataIn;
+        const { buffConfig, showImmortal } = this.props;
+        if (dataIn) {
+            let item = showImmortal ? this.props.allCrew.find(c => c.symbol === dataIn?.symbol) ?? dataIn : dataIn;
+            if (buffConfig) {
+                item = {...item, base_skills: { ... item.base_skills }};
+
+                for (let key of Object.keys(item.base_skills)) {
+                    let sb = applySkillBuff(buffConfig, key, item.base_skills[key]);
+                    item.base_skills[key] = {
+                        core: sb.core,
+                        range_max: sb.max,
+                        range_min: sb.min
+                    } as Skill;
+                }
+            }
+            
+            return item;
+        }
+        else return undefined;
     }
 }
 
@@ -157,7 +178,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                                             fontWeight: "bold",
                                             color: gradeToColor(
                                                 crew.cab_ov_grade as string
-                                            ),
+                                            ) ?? undefined,
                                         }}
                                     >
                                         {crew.cab_ov_grade}

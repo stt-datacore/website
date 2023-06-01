@@ -181,9 +181,9 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
+			<ProfileCrewTable buffConfig={buffConfig} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
-			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
+			<RosterSummary myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig} />
 		</React.Fragment>
 	);
 
@@ -205,6 +205,7 @@ type ProfileCrewTableProps = {
 	allCrew: CrewMember[];
 	initOptions: any;
 	lockable?: any[];
+	buffConfig?: BuffStatTable;
 };
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
@@ -314,11 +315,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined): JSX.Element {
+	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined, buffConfig: BuffStatTable | undefined = undefined): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
-
+				
 		setCrew ??= (e) => { return; };
 		let referenceCrew = allCrew.find(c => c.symbol == crew.symbol);
 		
@@ -334,7 +335,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget allCrew={allCrew} inputItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget buffConfig={props.buffConfig} allCrew={allCrew} inputItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
