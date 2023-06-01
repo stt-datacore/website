@@ -1,8 +1,255 @@
-import React, { PureComponent, ReactNode, useRef } from "react";
-import { CrewMember } from "../../model/crew";
-import { PlayerCrew, PlayerData } from "../../model/player";
-import { Label } from "semantic-ui-react";
+import React from "react";
 import * as uuid from 'uuid';
+
+/**
+ * A Tiny Store
+ */
+export class TinyStore {
+    private static readonly notify: Map<string, TinyStore> = new Map<string, TinyStore>();
+    static getStore(targetGroup: string): TinyStore {
+        console.log("Create Tiny Store");
+        
+        if (this.notify.has(targetGroup)) {
+            let ts = this.notify.get(targetGroup);
+            if (!ts) {
+                ts = new TinyStore(targetGroup);
+                this.notify.set(targetGroup, ts);
+            }
+            return ts;
+        }
+        else {
+            let ts = new TinyStore(targetGroup);
+            this.notify.set(targetGroup, ts);
+            return ts;
+        }
+    }
+
+    private mapCounter: number = 0;
+    private readonly subscribers = new Map<string, (key: string) => void>();
+
+    subscribe(func: (key: string) => void): number {
+        this.subscribers.set(this.mapCounter.toString(), func);
+        return this.mapCounter++;
+    }
+
+    unsubscribe(subscriber: number | ((key: string) => void)): boolean {
+        if (typeof subscriber === 'number') {
+            let key = subscriber.toString();
+            if (this.subscribers.has(key)){
+                this.subscribers.delete(key);
+                return true;
+            }
+        }
+        else {
+            for (let key of this.subscribers.keys()) {
+                if (this.subscribers.get(key) === subscriber) {
+                    this.subscribers.delete(key);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private onPropertyChanged(name: string): void {
+        for (let [, func] of this.subscribers) {
+            func(name);
+        }
+    }
+
+    private readonly targetGroup: string;
+    private readonly prefix = "___tinyhover_";
+    private readonly defaultSticky: boolean;
+
+    /**
+     * Compose the internal key used to store the values
+     * @param key 
+     * @returns 
+     */
+    protected composeKey(key: string): string {
+        //console.log("Tiny Store ComposeKey: " + `${this.prefix}_${this.targetGroup}_${key}`);
+        return `${this.prefix}_${this.targetGroup}_${key}`;
+    }
+    
+    /**
+     * Get all keys owned by this store
+     * @returns 
+     */
+    public getKeys(): string[] {
+        let keys = [] as string[];
+        let c = window.sessionStorage.length;
+        let pfx = this.composeKey("");
+        for (let i = 0; i < c; i++) {
+            let key = window.sessionStorage.key(i);
+            if (key && key.startsWith(pfx)) {
+                key = key.replace(pfx, "");                
+                if (!(key in keys)) keys.push(key);
+            }
+        }
+
+        c = window.localStorage.length;
+        for (let i = 0; i < c; i++) {
+            let key = window.localStorage.key(i);
+            if (key && key.startsWith(pfx)) {
+                key = key.replace(pfx, "");                               
+                if (!(key in keys)) keys.push(key);
+            }
+        }
+
+        return keys;
+    }
+
+    /**
+     * Get all values owned by this store
+     * @returns 
+     */
+    public getValues(): string[] {
+        let keys = this.getKeys();
+        let objs = [] as string[];
+        let pfx = this.composeKey("");
+        for (let key of keys){
+            let v = window.sessionStorage.getItem(pfx + key);
+            if (v) {
+                objs.push(v);
+            }
+            else {
+                v = window.localStorage.getItem(pfx + key);
+                if (v) {
+                    objs.push(v);
+                }
+            }
+        }
+
+        return objs;
+    }
+    
+    /**
+     * Create a new store
+     * @param targetGroup The target group that is associated 
+     * @param defaultSticky The default stickiness of new values
+     */
+    private constructor(targetGroup: string, defaultSticky: boolean = false) {
+        this.targetGroup = targetGroup;
+        this.defaultSticky = defaultSticky ?? false;
+    }
+
+    /**
+     * Returns true if the key refers to a sticky value
+     * @param key 
+     * @returns 
+     */
+    public isSticky(key: string): boolean {
+        let tkey = this.composeKey(key);
+        let t2 = window.localStorage.getItem(tkey);
+        return (t2 !== null);
+    }
+
+    /**
+     * Make the value for the specified key sticky
+     * @param key 
+     * @returns 
+     */
+    public makeSticky(key: string): boolean {
+        if (!this.containsKey(key)) return false;
+        if (!this.isSticky(key)) return false;
+        let tkey = this.composeKey(key);
+        window.localStorage.setItem(tkey, window.sessionStorage.getItem(tkey) as string);
+        window.sessionStorage.removeItem(tkey);
+        return true;
+    }
+
+    /**
+     * Make the value for the specified key not sticky
+     * @param key 
+     * @returns 
+     */
+    public makeUnsticky(key: string): boolean {
+        if (!this.containsKey(key)) return false;
+        if (this.isSticky(key)) return false;
+        let tkey = this.composeKey(key);
+        window.sessionStorage.setItem(tkey, window.localStorage.getItem(tkey) as string);
+        window.localStorage.removeItem(tkey);
+        return true;
+    }
+
+    /**
+     * Check if this store owns a value with the specified key
+     * @param key 
+     * @returns 
+     */
+    public containsKey(key: string): boolean {
+        let tkey = this.composeKey(key);
+        let t1 = window.sessionStorage.getItem(tkey);
+        let t2 = window.localStorage.getItem(tkey);
+        return t1 !== null || t2 !== null;
+    }
+
+    /**
+     * Remove the key from store
+     * @param key 
+     */
+    public removeValue(key: string) {
+        let tkey = this.composeKey(key);
+        window.sessionStorage.removeItem(tkey);
+        window.localStorage.removeItem(tkey);
+    }
+
+    /**
+     * Set a value to the store
+     * @param key The key of the value to set
+     * @param value The value to set
+     * @param sticky Create/Set sticky (if not specified, the defaultSticky value is used)
+     */
+    public setValue<T>(key: string, value: T, sticky: boolean | undefined = undefined): void {
+        let tkey = this.composeKey(key);
+        sticky ??= this.defaultSticky;
+        if (sticky) {
+            window.localStorage.setItem(tkey, JSON.stringify(value));
+            window.sessionStorage.removeItem(tkey);
+        }
+        else {
+            window.sessionStorage.setItem(tkey, JSON.stringify(value));
+            window.localStorage.removeItem(tkey);
+        }
+        this.onPropertyChanged(key);
+    }
+
+    /**
+     * Get a value from the store
+     * @param key The key of the value to get
+     * @param defaultValue A default value if no value is present
+     * @returns A value or the defaultValue or undefined
+     */
+    public getValue<T>(key: string, defaultValue: T | undefined = undefined) {
+        let tkey = this.composeKey(key);
+        let item: string | null;
+
+        if (this.defaultSticky){
+            item = window.localStorage.getItem(tkey);
+        }
+        else {
+            item = window.sessionStorage.getItem(tkey);
+        }
+
+        if (!item) {
+            if (!this.defaultSticky){
+                item = window.localStorage.getItem(tkey);
+            }
+            else {
+                item = window.sessionStorage.getItem(tkey);
+            }                
+        }
+
+        if (item) {
+            return JSON.parse(item) as T;
+        }
+
+        if (defaultValue) this.setValue(key, defaultValue as T);
+        return defaultValue;
+    }
+}
+
 
 /**
  * Default HoverStatProps
@@ -54,26 +301,32 @@ export interface HoverStatState {
     touchToggled: boolean;
 }
 
+export interface HoverStatTargetState {
+    isCurrent: boolean;
+}
+
 /**
  * HoverStatTarget abstract class
  * 
  * Use this to wrap a hover target element
  */
-export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>> extends React.Component<TProps> {
+export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>, TState extends HoverStatTargetState> extends React.Component<TProps, TState> {
+    protected readonly tiny: TinyStore;
+
     constructor(props: TProps) {
         super(props);
+        this.tiny = TinyStore.getStore(props.targetGroup);        
+        this.state = { isCurrent: false } as TState;
     }
 
-    protected get cancelTokenKey(): string {
-        return "__display_cancel_" + this.props.targetGroup;
-    }
+    protected abstract propertyChanged: (key: string) => void;
 
     protected get cancelled(): boolean {
-        return window.sessionStorage.getItem(this.cancelTokenKey) === "yes";
+        return this.tiny.getValue('cancelled', false) ?? false;
     }
 
     protected set cancelled(value: boolean) {
-        window.sessionStorage.setItem(this.cancelTokenKey, value ? "yes" : "no");
+        this.tiny.setValue('cancelled', value);
     }
 
     /**
@@ -94,19 +347,30 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>>
     render(): React.ReactNode {
         const { targetGroup, children, setDisplayItem } = this.props;
         const displayItem = this.prepareDisplayItem(this.props.inputItem);
-        const containerLeave = (e) =>{
+        
+        const containerLeave = (e) => {
             if (this.cancelled) {
                 this.cancelled = false;
                 return;
             }
 
             setDisplayItem(null);
-        }
-        return (<>        
-            <div className={targetGroup} onMouseOver={(e) => setDisplayItem(displayItem)} onMouseOut={(e) => containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            this.setState({ ...this.state, isCurrent: false } as TState);
+        };
+        
+        const containerEnter = (e) => {
+            setDisplayItem(displayItem);            
+            this.setState({ ...this.state, isCurrent: true } as TState);
+        };
+
+        return (    
+            <div className={targetGroup} onMouseOver={(e) => containerEnter(e)} onMouseOut={(e) => containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
-            </div>            
-        </>)        
+            </div>)         
+    }
+
+    componentWillUnmount(): void {
+        this.tiny.unsubscribe(this.propertyChanged);
     }
 }
 
@@ -117,17 +381,16 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected _elems: HTMLElement[] | undefined = undefined;
     protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
 
-    protected get cancelTokenKey(): string {
-        return "__display_cancel_" + this.props.targetGroup;
-    }
+    protected readonly tiny: TinyStore;
 
     protected get cancelled(): boolean {
-        return window.sessionStorage.getItem(this.cancelTokenKey) === "yes";
+        return this.tiny.getValue('cancelled', false) ?? false;
     }
 
     protected set cancelled(value: boolean) {
-        window.sessionStorage.setItem(this.cancelTokenKey, value ? "yes" : "no");
+        this.tiny.setValue('cancelled', value);
     }
+
 
     /**
      * Override this abstract method to render the content of the hover window 
@@ -138,10 +401,18 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     constructor(props: TProps) {
         super(props);
+        this.tiny = TinyStore.getStore(props.targetGroup);
+        this.tiny.subscribe(this.propertyChanged);
+
         this.state = {
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
             touchToggled: false
         } as TState;
+    }
+
+    protected propertyChanged = (key: string): void => {
+        if (key === 'cancelled') return;
+        this.forceUpdate();
     }
 
     render() {
@@ -190,10 +461,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected activate = (target: HTMLElement): void => {
         const { divId } = this.state;
-
-        console.log("HoverStat Target Enter");
-        console.log(divId);
-
         let hoverstat = document.getElementById(divId);        
 
         if (hoverstat) {
@@ -247,14 +514,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected targetEnter = (e: MouseEvent) => {
         const { divId } = this.state;
 
-        console.log("HoverStat Target Enter");
-        console.log(divId);
-
         let hoverstat = document.getElementById(divId);        
-        window.sessionStorage.setItem(this.cancelTokenKey, "yes");
-        if (hoverstat) {
-            console.log("Found Correct HoverStat");
+        this.cancelled = true;
 
+        if (hoverstat) {
             let target = e.target as HTMLElement;
             if (!target) return;
 
@@ -287,7 +550,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected touchEnd = (e: TouchEvent) => {
         let target = e.target as HTMLElement;
-        console.log("touchEnd");
         if (!target) return;
 
         if (target.children.length !== 0) {
@@ -306,7 +568,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     }
 
     componentDidMount(): void {
-        console.log("componentDidMount");
         this.doWireup();
         this.observer.observe(document, { subtree: true, childList: true });
     }
@@ -320,7 +581,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             if (el) {
                 if (this._elems.includes(el)) continue;
                 this._elems.push(el);
-                console.log("Wiring up element " + el.id ?? el.tagName);
                 el.addEventListener("mouseover", this.targetEnter);
                 el.addEventListener("mouseout", this.targetLeave);
                 el.addEventListener("touchend", this.touchEnd);
@@ -329,13 +589,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     }
  
     componentWillUnmount(): void {
-        console.log("componentWillUnmount");
         this.observer.disconnect();
         if (!this._elems) return;
         for (let pl of this._elems) {
             let el = pl as HTMLElement;
             if (el) {
-                console.log("Unwiring element " + el.id ?? el.tagName);
                 el.removeEventListener("mouseover", this.targetEnter);
                 el.removeEventListener("mouseout", this.targetLeave);
                 el.removeEventListener("touchend", this.touchEnd);

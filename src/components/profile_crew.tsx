@@ -216,6 +216,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
+	const [showImmo, setShowImmo] = React.useState<boolean>(false);
+	const [showBuffs, setShowBuffs] = React.useState<boolean>(false);
 
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
@@ -335,7 +337,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget buffConfig={props.buffConfig} allCrew={allCrew} inputItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget showImmortal={showImmo} applyBuffs={showBuffs} buffConfig={props.buffConfig} allCrew={allCrew} inputItem={referenceCrew} setDisplayItem={setCrew} targetGroup='targetClass'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
@@ -494,7 +496,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 initOptions={props.initOptions}
                 lockable={props.lockable}
             />
-            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
+            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" setBuffs={setShowBuffs} setImmo={setShowImmo} />
         </React.Fragment>
     );
 }
