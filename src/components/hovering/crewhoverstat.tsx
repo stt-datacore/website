@@ -147,7 +147,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         const compact = true;    
 
         if (!crew) {
-            console.log("Deactivating empty popover");
+            // console.log("Deactivating empty popover");
             this.cancelled = false;
             this.deactivate();
         } 

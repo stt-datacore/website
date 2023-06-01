@@ -6,9 +6,7 @@ import * as uuid from 'uuid';
  */
 export class TinyStore {
     private static readonly notify: Map<string, TinyStore> = new Map<string, TinyStore>();
-    static getStore(targetGroup: string): TinyStore {
-        console.log("Create Tiny Store");
-        
+    static getStore(targetGroup: string): TinyStore {        
         if (this.notify.has(targetGroup)) {
             let ts = this.notify.get(targetGroup);
             if (!ts) {
@@ -561,7 +559,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         if (!target) return;
 
         if (target.children.length !== 0) {
-            console.log(target.className);
             return;
         }
 
