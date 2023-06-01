@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
-import { Event } from '../../model/player';
+import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { EventData, getEventData } from '../../utils/events';
 import CrewCard from './crew_card';
@@ -41,7 +41,7 @@ function sortCrew(crewArray: PlayerCrew[]) {
 	return groups.flat();
 }
 
-function EventInformationTab(props: { eventData: EventData | Event }) {
+function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 	const { eventData } = props;
 	const { crewJson } = useStaticQuery(graphql`
 		query {

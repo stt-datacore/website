@@ -12,7 +12,7 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { guessCurrentEvent, getEventData, EventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
-import { BestCombos, CompletionState, Event, EventCombos, EventPair, EventSkill, PlayerCrew, PlayerData } from '../model/player';
+import { BestCombos, CompletionState, GameEvent, EventCombos, EventPair, EventSkill, PlayerCrew, PlayerData } from '../model/player';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';

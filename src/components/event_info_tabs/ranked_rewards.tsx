@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { Event } from '../../model/player';
+import { GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 
 function getBracketLabel(bracket) {
@@ -16,7 +16,7 @@ function getBracketLabel(bracket) {
 	return `${bracket.first} - ${bracket.last}`;
 }
 
-function RankedRewardsTab(props: {eventData: Event | EventData}) {
+function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {ranked_brackets} = props.eventData;
 
 	return (

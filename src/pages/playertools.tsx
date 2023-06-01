@@ -22,7 +22,7 @@ import FleetBossBattles from '../components/fleetbossbattles';
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
 import { stripPlayerData } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompactCrew, Event, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GameEvent, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 
@@ -108,7 +108,7 @@ const PlayerToolsPage = (props: any) =>  {
 
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage<{ voyage_descriptions: VoyageDescription[], voyage: Voyage[] } | undefined>('tools/voyageData', undefined);
-	const [eventData, setEventData] = useStateWithStorage<Event[] | undefined>('tools/eventData', undefined);
+	const [eventData, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
 	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);

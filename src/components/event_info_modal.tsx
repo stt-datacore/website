@@ -5,7 +5,7 @@ import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
 import RankedRewardsTab from './event_info_tabs/ranked_rewards';
 import LeaderboardTab from './event_info_tabs/leaderboard';
-import { Event } from '../model/player';
+import { GameEvent } from '../model/player';
 import { EventData } from '../utils/events';
 
 type EventInfoModalProps = {
@@ -17,7 +17,7 @@ type EventInfoModalProps = {
 
 function EventInfoModal(props: EventInfoModalProps) {
 	const {instanceId, image, hasDetails, leaderboard} = props;
-	const [eventData, setEventData] = React.useState<Event | EventData | null>(null);
+	const [eventData, setEventData] = React.useState<GameEvent | EventData | null>(null);
 
 	React.useEffect(() => {
 		async function fetchEventData() {

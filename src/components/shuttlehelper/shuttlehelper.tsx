@@ -7,7 +7,7 @@ import MissionsList from './missionslist';
 import AssignmentsList from './assignmentslist';
 import { Shuttlers, Shuttle, ShuttleSeat, CrewScores, getSkillSetId, ShuttleAdventure } from './shuttleutils';
 import { useStateWithStorage } from '../../utils/storage';
-import { Event, PlayerCrew } from '../../model/player';
+import { GameEvent, PlayerCrew } from '../../model/player';
 import { EventData } from '../../utils/events';
 import { AssignedCrew, ShuttleOccupant } from './shuttleutils';
 

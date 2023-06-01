@@ -2,10 +2,10 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { Event } from '../../model/player';
+import { GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 
-function ThresholdRewardsTab(props: {eventData: Event | EventData}) {
+function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
 
 	return (

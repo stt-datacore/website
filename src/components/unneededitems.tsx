@@ -13,9 +13,9 @@ type UnneededItemsProps = {
 };
 
 type UnneededItemsState = {
-	fuelschematics: any[];
-	fuelspecific: any[];
-	fuelgeneric: any[];
+	fuelschematics: EquipmentCommon[];
+	fuelspecific: EquipmentCommon[];
+	fuelgeneric: EquipmentCommon[];
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {

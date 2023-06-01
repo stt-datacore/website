@@ -147,7 +147,7 @@ export interface Player {
     next_fleet_activity_reset?: number
     freestanding_quests?: any[]
     daily_rewards_state?: DailyRewardsState
-    events?: Event[]
+    events?: GameEvent[]
     dispute_histories: DisputeHistory[]
     stimpack?: Stimpack
     tutorials?: Tutorial[]
@@ -632,7 +632,7 @@ export interface Player {
     double_at_vip?: number
   }
     
-  export interface Event {
+  export interface GameEvent {
     id: number
     symbol: string
     name: string

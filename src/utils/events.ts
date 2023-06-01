@@ -1,9 +1,9 @@
 import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { Content, Event, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
+import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
 
-export class EventData implements Event {
-	constructor(data: Event | undefined = undefined) {
+export class EventData implements GameEvent {
+	constructor(data: GameEvent | undefined = undefined) {
 		if (data) {
 			for (let key of Object.keys(data)) {
 				this[key] = data[key];
@@ -45,7 +45,7 @@ export class EventData implements Event {
 	bonusGuessed?: boolean;
 };
 
-export function getEventData(activeEvent: Event, allCrew: PlayerCrew[] = []): EventData | undefined {
+export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): EventData | undefined {
 	const result = new EventData();
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
@@ -127,7 +127,7 @@ export async function guessCurrentEvent(): Promise<EventData> {
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = new EventData(getEventData(json) as Event);
+				const activeEvent = new EventData(getEventData(json) as GameEvent);
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
@@ -167,7 +167,7 @@ function getCurrentStartEndTimes(): { start: number, end: number } {
 	return { start, end };
 }
 
-function guessBonusCrew(activeEvent: Event, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
+function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
 	const bonus = [] as string[];
 	const featured = [] as string[];
 
