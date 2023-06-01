@@ -1,9 +1,10 @@
 import React from 'react';
 import { Card, Image } from 'semantic-ui-react';
 import { getRarityColor } from '../../utils/assets';
+import { PlayerCrew } from '../../model/player';
 
 function getRarityStars(rarity: number) {
-	const retVal = [];
+	const retVal = [] as string[];
 	for (let i = 0; i < rarity; ++i) {
 		retVal.push('\u2605');
 	}

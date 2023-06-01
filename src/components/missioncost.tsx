@@ -29,7 +29,7 @@ class MissionCost extends PureComponent<MissionCostProps> {
 						<span style={{ display: 'inline-block' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>
-						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost.toFixed(2)}` : ''})`}
+						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost?.toFixed(2)}` : ''})`}
 					</span>
 				)}
 			</span>

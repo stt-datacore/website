@@ -5,6 +5,12 @@ import CONFIG from '../../components/CONFIG';
 
 import allTraits from '../../../static/structured/translation_en.json';
 
+export interface TraitOptions {
+	key: string;
+	value: string;
+	text: string;
+}
+
 type CrewRarityFilterProps = {
 	rarityFilter: number[];
 	setRarityFilter: (rarityFilter: number[]) => void;
@@ -28,7 +34,7 @@ export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
 				selection
 				options={rarityFilterOptions}
 				value={props.rarityFilter}
-				onChange={(e, { value }) => props.setRarityFilter(value)}
+				onChange={(e, { value }) => props.setRarityFilter(value as number[])}
 				closeOnChange
 			/>
 		</Form.Field>
@@ -43,7 +49,7 @@ type CrewTraitFilterProps = {
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
-	const [traitOptions, setTraitOptions] = React.useState(undefined);
+	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		const options = Object.keys(allTraits.trait_names).map(trait => {
@@ -51,7 +57,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				key: trait,
 				value: trait,
 				text: allTraits.trait_names[trait]
-			};
+			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
 	}, []);
@@ -75,7 +81,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 					selection
 					options={traitOptions}
 					value={props.traitFilter}
-					onChange={(e, { value }) => props.setTraitFilter(value)}
+					onChange={(e, { value }) => props.setTraitFilter(value as string[])}
 					closeOnChange
 				/>
 			</Form.Field>
@@ -86,7 +92,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 						selection
 						options={minMatchOptions.filter(option => option.value > 0)}
 						value={props.minTraitMatches}
-						onChange={(e, { value }) => props.setMinTraitMatches(value)}
+						onChange={(e, { value }) => props.setMinTraitMatches(value as number)}
 					/>
 				</Form.Field>
 			)}

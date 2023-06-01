@@ -2,9 +2,11 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
+import { Event } from '../../model/player';
+import { EventData } from '../../utils/events';
 
-function ThresholdRewardsTab({eventData}) {
-	const {threshold_rewards} = eventData;
+function ThresholdRewardsTab(props: {eventData: Event | EventData}) {
+	const {threshold_rewards} = props.eventData;
 
 	return (
 		<Table celled striped compact='very'>
@@ -14,6 +16,7 @@ function ThresholdRewardsTab({eventData}) {
 						<Table.Cell>{row.points}</Table.Cell>
 						<Table.Cell>
 							{row.rewards.map(reward => (
+								reward && reward.icon &&
 								<Label key={`reward_${reward.id}`} color="black">
 									<Image
 										src={getIconPath(reward.icon)}

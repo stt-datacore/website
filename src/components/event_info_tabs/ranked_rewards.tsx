@@ -2,6 +2,8 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
+import { Event } from '../../model/player';
+import { EventData } from '../../utils/events';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range
@@ -14,8 +16,8 @@ function getBracketLabel(bracket) {
 	return `${bracket.first} - ${bracket.last}`;
 }
 
-function RankedRewardsTab({eventData}) {
-	const {ranked_brackets} = eventData;
+function RankedRewardsTab(props: {eventData: Event | EventData}) {
+	const {ranked_brackets} = props.eventData;
 
 	return (
 		<Table celled striped compact='very'>
@@ -26,6 +28,7 @@ function RankedRewardsTab({eventData}) {
 						<Table.Cell width={14}>
 							{row.rewards.map(reward => (
 								<Label key={`reward_${reward.id}`} color="black">
+									{reward.icon &&
 									<Image
 										src={getIconPath(reward.icon)}
 										size="small"
@@ -38,7 +41,7 @@ function RankedRewardsTab({eventData}) {
 											maxHeight: '27px'
 										}}
 										alt={reward.full_name}
-									/>
+									/>}
 									{reward.full_name}
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 								</Label>

@@ -1,7 +1,11 @@
+import { CrewMember, EquipmentSlot } from '../model/crew';
+import { EquipmentItem } from '../model/equipment';
+import { PlayerCrew } from '../model/player';
+
 export interface IDemand {
 	count: number;
 	symbol: string;
-	equipment: any;
+	equipment?: EquipmentItem;
 	factionOnly: boolean;
 	have: number;
 }
@@ -13,11 +17,13 @@ export interface ICrewDemands {
 	craftCost: number;
 }
 
-export function demandsPerSlot(es: any, items: any[], dupeChecker: Set<string>, demands: IDemand[]): number {
+export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[]): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
+	if (!equipment) return 0;
 	if (!equipment.recipe) {
 		if (dupeChecker.has(equipment.symbol)) {
-			demands.find(d => d.symbol === equipment.symbol).count += 1;
+			let demand = demands.find(d => d.symbol === equipment?.symbol);
+			if (demand) demand.count++;
 		} else {
 			dupeChecker.add(equipment.symbol);
 
@@ -25,7 +31,8 @@ export function demandsPerSlot(es: any, items: any[], dupeChecker: Set<string>, 
 				count: 1,
 				symbol: equipment.symbol,
 				equipment: equipment,
-				factionOnly: equipment.factionOnly
+				factionOnly: false,
+				have: 0
 			});
 		}
 
@@ -35,11 +42,12 @@ export function demandsPerSlot(es: any, items: any[], dupeChecker: Set<string>, 
 	for (let iter of equipment.recipe.list) {
 		let recipeEquipment = items.find(item => item.symbol === iter.symbol);
 		if (dupeChecker.has(iter.symbol)) {
-			demands.find(d => d.symbol === iter.symbol).count += iter.count;
+			let demand = demands.find(d => d.symbol === iter.symbol)
+			if (demand) demand.count += iter.count;
 			continue;
 		}
 
-		if (recipeEquipment.item_sources.length === 0) {
+		if (recipeEquipment?.item_sources.length === 0) {
 			console.error(`Oops: equipment with no recipe and no sources: `, recipeEquipment);
 		}
 
@@ -49,14 +57,15 @@ export function demandsPerSlot(es: any, items: any[], dupeChecker: Set<string>, 
 			count: iter.count,
 			symbol: iter.symbol,
 			equipment: recipeEquipment,
-			factionOnly: iter.factionOnly
+			factionOnly: iter.factionOnly,
+			have: 0
 		});
 	}
 
 	return equipment.recipe.craftCost;
 }
 
-export function calculateCrewDemands(crew: any, items: any[]): ICrewDemands {
+export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[]): ICrewDemands {
 	let craftCost = 0;
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
@@ -64,7 +73,7 @@ export function calculateCrewDemands(crew: any, items: any[]): ICrewDemands {
 		craftCost += demandsPerSlot(es, items, dupeChecker, demands);
 	});
 
-	const reducer = (accumulator, currentValue) => accumulator + currentValue.count;
+	const reducer = (accumulator: number, currentValue: IDemand) => accumulator + currentValue.count;
 
 	return {
 		craftCost,
@@ -74,18 +83,18 @@ export function calculateCrewDemands(crew: any, items: any[]): ICrewDemands {
 	};
 }
 
-function estimateChronitonCost(equipment) {
-	let sources = equipment.item_sources.filter(e => e.type === 0 || e.type === 2);
+function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
+	let sources = equipment?.item_sources.filter(e => e.type === 0 || e.type === 2);
 
 	// If faction only
-	if (sources.length === 0) {
+	if (!sources || sources.length === 0) {
 		return 0;
 	}
 
 	// TODO: figure out a better way to calculate these
 	const RNGESUS = 1.8;
 
-	let costCalc = [];
+	let costCalc = [] as number[];
 	for (let source of sources) {
 		if (!source.cost) {
 			//console.log("Mission information not available!", source);

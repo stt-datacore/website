@@ -1,10 +1,11 @@
 import React from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
-
+import { Event } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { getEventData } from '../../utils/events';
+import { EventData, getEventData } from '../../utils/events';
 import CrewCard from './crew_card';
+import { CompactCrew, PlayerCrew } from '../../model/player';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -19,7 +20,7 @@ function getEventType(contentTypes: string[]) {
 	return [...items].join(' / ');
 }
 
-function sortCrew(crewArray) {
+function sortCrew(crewArray: PlayerCrew[]) {
 	let groups = [
 		[],
 		[], // common
@@ -27,7 +28,7 @@ function sortCrew(crewArray) {
 		[], // rare
 		[], // very rare
 		[]  // legendary
-	];
+	] as PlayerCrew[][];
 	// organize each crew into rarity buckets
 	crewArray.forEach(crew => {
 		groups[crew.max_rarity].push(crew);
@@ -40,7 +41,7 @@ function sortCrew(crewArray) {
 	return groups.flat();
 }
 
-function EventInformationTab({ eventData }) {
+function EventInformationTab(props: { eventData: EventData | Event }) {
 	const { crewJson } = useStaticQuery(graphql`
 		query {
 			crewJson: allCrewJson {
@@ -78,8 +79,8 @@ function EventInformationTab({ eventData }) {
 			}
 		}
 	`);
-	const crewData = crewJson.edges.map(edge => edge.node);
-	const crewMap = {};
+	const crewData = crewJson.edges.map(edge => edge.node) as PlayerCrew[];
+	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
 		crewMap[crew.symbol] = crew;
 	})
@@ -89,10 +90,14 @@ function EventInformationTab({ eventData }) {
 		description,
 		bonus_text,
 		content_types,
-	} = eventData;
+	} = props.eventData;
 
-	const { bonus, featured } = getEventData(eventData, crewData);
-	const featuredCrewData = featured.map(symbol => {
+	const currEvent = getEventData(props.eventData, crewData);
+
+	const bonus = currEvent?.bonus;
+	const featured = currEvent?.featured;
+
+	const featuredCrewData = featured?.map(symbol => {
 		const crew = crewMap[symbol];
 		return {
 			key: `crew_${crew.symbol}`,
@@ -109,7 +114,7 @@ function EventInformationTab({ eventData }) {
 			traits: crew.traits_named,
 		};
 	});
-	const bonusCrew = crewData.filter(crew => bonus.includes(crew.symbol) && !featured.includes(crew.symbol));
+	const bonusCrew = crewData.filter(crew => bonus?.includes(crew.symbol) && !featured?.includes(crew.symbol));
 
 	return (
 		<>
@@ -125,7 +130,7 @@ function EventInformationTab({ eventData }) {
 			</Card>
 			<Header as="h3">Featured Crew</Header>
 			<Card.Group>
-				{featuredCrewData.map(crew => (
+				{featuredCrewData?.map(crew => (
 					<CrewCard key={crew.key} crew={crew} />
 				))}
 			</Card.Group>

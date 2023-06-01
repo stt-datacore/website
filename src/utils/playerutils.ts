@@ -1,5 +1,7 @@
+import { CompactCrew, Item, PlayerCrew, PlayerData } from "../model/player";
+
 // Remove any unnecessary fields from the player data
-export function stripPlayerData(items: any[], p: any): any {
+export function stripPlayerData(items: any[], p: PlayerData): any {
     delete p.item_archetype_cache;
 
     delete p.player.entitlements;
@@ -7,11 +9,18 @@ export function stripPlayerData(items: any[], p: any): any {
     delete p.player.motd;
     delete p.player.community_links;
     delete p.player.currency_exchanges;
-    delete p.player.commerce;
+    if ("commerce" in p.player) delete p.player["commerce"];
     delete p.player.chats;
     delete p.player.environment;
     delete p.player.fleet_invite;
     delete p.player.npe_complete;
+
+    if ("reroll_descriptions" in p.player.character) delete p.player.character.reroll_descriptions;
+    if ("seconds_to_scan_cooldown" in p.player.character) delete p.player.character.seconds_to_scan_cooldown;
+    if ("scan_speedups_today" in p.player.character) delete p.player.character.scan_speedups_today;
+
+    delete p.player.character.active_conflict;
+    delete p.player.character.next_shuttle_bay_cost;
 
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
@@ -19,11 +28,9 @@ export function stripPlayerData(items: any[], p: any): any {
     delete p.player.character.voyage;
     delete p.player.character.voyage_descriptions;
     delete p.player.character.voyage_summaries;
-    delete p.player.character.reroll_descriptions;
     delete p.player.character.boost_windows;
     delete p.player.character.cadet_schedule;
     delete p.player.character.cadet_tickets;
-    delete p.player.character.reroll_descriptions;
     delete p.player.character.daily_rewards_state;
     delete p.player.character.location;
     delete p.player.character.destination;
@@ -36,11 +43,7 @@ export function stripPlayerData(items: any[], p: any): any {
     delete p.player.character.honor_reward_by_rarity;
     delete p.player.character.using_default_name;
     delete p.player.character.max_level;
-    delete p.player.character.active_conflict;
-    delete p.player.character.next_shuttle_bay_cost;
     delete p.player.character.can_purchase_shuttle_bay;
-    delete p.player.character.seconds_to_scan_cooldown;
-    delete p.player.character.scan_speedups_today;
     delete p.player.character.replay_energy_rate;
     delete p.player.character.seconds_from_replay_energy_basis;
     delete p.player.character.seconds_from_last_boost_claim;
@@ -66,11 +69,12 @@ export function stripPlayerData(items: any[], p: any): any {
         p.player.character.crew_avatar.symbol
     ) {
         p.player.character.crew_avatar = {
-            symbol: p.player.character.crew_avatar.symbol,
-            portrait:
-                p.player.character.crew_avatar.portrait.file
-                    .substr(1)
-                    .replace("/", "_") + ".png",
+            ... p.player.character.crew_avatar,
+            portrait: {
+                file: p.player.character.crew_avatar.portrait.file
+                .slice(1)
+                .replace("/", "_") + ".png",
+            }
         };
     }
 
@@ -117,7 +121,7 @@ export function stripPlayerData(items: any[], p: any): any {
             icon: da.icon,
         }));
 
-    let newItems = [] as Object[];
+    let newItems = [] as Item[];
     p.player.character.items.forEach((item) => {
         let itemEntry = items.find((i) => i.symbol === item.symbol);
         if (itemEntry) {
@@ -137,7 +141,7 @@ export function stripPlayerData(items: any[], p: any): any {
                 type: item.type,
                 name: item.name,
                 flavor: item.flavor,
-                imageUrl: item.icon.file.substr(1).replace(/\//g, "_") + ".png",
+                imageUrl: item.icon?.file.slice(1).replace(/\//g, "_") + ".png",
             });
         }
     });
@@ -182,10 +186,10 @@ export function stripPlayerData(items: any[], p: any): any {
             skills: crew.skills,
             favorite: crew.favorite,
             action: {
-                bonus_amount: crew.action.bonus_amount,
+                bonus_amount: crew.action?.bonus_amount,
             },
             ship_battle: crew.ship_battle,
-        }));
+        } as PlayerCrew));
 
     let c_stored_immortals = p.player.character.stored_immortals
         .filter((im) => im.quantity === 1)

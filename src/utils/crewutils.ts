@@ -9,210 +9,210 @@ export function exportCrewFields(): ExportField[] {
 	return [
 		{
 			label: 'Name',
-			value: (row: any) => row.name
+			value: (row: PlayerCrew) => row.name
 		},
 		{
 			label: 'Have',
-			value: (row: any) => row.have
+			value: (row: PlayerCrew) => row.have
 		},
 		{
 			label: 'Short name',
-			value: (row: any) => row.short_name
+			value: (row: PlayerCrew) => row.short_name
 		},
 		{
 			label: 'Max rarity',
-			value: (row: any) => row.max_rarity
+			value: (row: PlayerCrew) => row.max_rarity
 		},
 		{
 			label: 'Rarity',
-			value: (row: any) => row.rarity
+			value: (row: PlayerCrew) => row.rarity
 		},
 		{
 			label: 'Level',
-			value: (row: any) => row.level
+			value: (row: PlayerCrew) => row.level
 		},
 		{
 			label: 'Immortal',
-			value: (row: any) => row.immortal
+			value: (row: PlayerCrew) => row.immortal
 		},
 		{
 			label: 'Equipment',
-			value: (row: any) => row.equipment.join(' ')
+			value: (row: PlayerCrew) => row.equipment.join(' ')
 		},
 		{
 			label: 'Tier',
-			value: (row: any) => row.bigbook_tier
+			value: (row: PlayerCrew) => row.bigbook_tier
 		},
 		{
 			label: 'In portal',
-			value: (row: any) => (row.in_portal === undefined ? 'N/A' : row.in_portal)
+			value: (row: PlayerCrew) => (row.in_portal === undefined ? 'N/A' : row.in_portal)
 		},
 		{
 			label: 'Collections',
-			value: (row: any) => row.collections.map(c => c.replace(/,/g, '')).join(', ')
+			value: (row: PlayerCrew) => row.collections.map(c => c.replace(/,/g, '')).join(', ')
 		},
 		{
 			label: 'Voyage rank',
-			value: (row: any) => row.ranks.voyRank
+			value: (row: PlayerCrew) => row.ranks.voyRank
 		},
 		{
 			label: 'Gauntlet rank',
-			value: (row: any) => row.ranks.gauntletRank
+			value: (row: PlayerCrew) => row.ranks.gauntletRank
 		},
 		{
 			label: 'Command core',
-			value: (row: any) => row.command_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.command_skill?.core
 		},
 		{
 			label: 'Command min',
-			value: (row: any) => row.command_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.command_skill?.range_min
 		},
 		{
 			label: 'Command max',
-			value: (row: any) => row.command_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.command_skill?.range_max
 		},
 		{
 			label: 'Diplomacy core',
-			value: (row: any) => row.diplomacy_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.core
 		},
 		{
 			label: 'Diplomacy min',
-			value: (row: any) => row.diplomacy_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.range_min
 		},
 		{
 			label: 'Diplomacy max',
-			value: (row: any) => row.diplomacy_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.range_max
 		},
 		{
 			label: 'Engineering core',
-			value: (row: any) => row.engineering_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.core
 		},
 		{
 			label: 'Engineering min',
-			value: (row: any) => row.engineering_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.range_min
 		},
 		{
 			label: 'Engineering max',
-			value: (row: any) => row.engineering_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.range_max
 		},
 		{
 			label: 'Medicine core',
-			value: (row: any) => row.medicine_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.core
 		},
 		{
 			label: 'Medicine min',
-			value: (row: any) => row.medicine_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.range_min
 		},
 		{
 			label: 'Medicine max',
-			value: (row: any) => row.medicine_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.range_max
 		},
 		{
 			label: 'Science core',
-			value: (row: any) => row.science_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.science_skill?.core
 		},
 		{
 			label: 'Science min',
-			value: (row: any) => row.science_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.science_skill?.range_min
 		},
 		{
 			label: 'Science max',
-			value: (row: any) => row.science_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.science_skill?.range_max
 		},
 		{
 			label: 'Security core',
-			value: (row: any) => row.security_skill.core
+			value: (row: PlayerCrew) => row.base_skills?.security_skill?.core
 		},
 		{
 			label: 'Security min',
-			value: (row: any) => row.security_skill.min
+			value: (row: PlayerCrew) => row.base_skills?.security_skill?.range_min
 		},
 		{
 			label: 'Security max',
-			value: (row: any) => row.security_skill.max
+			value: (row: PlayerCrew) => row.base_skills?.security_skill?.range_max
 		},
 		{
 			label: 'Traits',
-			value: (row: any) => row.traits_named.concat(row.traits_hidden)
+			value: (row: PlayerCrew) => row.traits_named.concat(row.traits_hidden)
 		},
 		{
 			label: 'Action name',
-			value: (row: any) => row.action.name
+			value: (row: PlayerCrew) => row.action.name
 		},
 		{
 			label: 'Boosts',
-			value: (row: any) => CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.bonus_type]
+			value: (row: PlayerCrew) => CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.bonus_type]
 		},
 		{
 			label: 'Amount',
-			value: (row: any) => row.action.bonus_amount
+			value: (row: PlayerCrew) => row.action.bonus_amount
 		},
 		{
 			label: 'Initialize',
-			value: (row: any) => row.action.initial_cooldown
+			value: (row: PlayerCrew) => row.action.initial_cooldown
 		},
 		{
 			label: 'Duration',
-			value: (row: any) => row.action.duration
+			value: (row: PlayerCrew) => row.action.duration
 		},
 		{
 			label: 'Cooldown',
-			value: (row: any) => row.action.cooldown
+			value: (row: PlayerCrew) => row.action.cooldown
 		},
 		{
 			label: 'Bonus Ability',
-			value: (row: any) =>
+			value: (row: PlayerCrew) =>
 				(row.action.ability ? getShipBonus(row) : '')
 		},
 		{
 			label: 'Trigger',
-			value: (row: any) =>
+			value: (row: PlayerCrew) =>
 				(row.action.ability ? CONFIG.CREW_SHIP_BATTLE_TRIGGER[row.action.ability.condition] : '')
 		},
 		{
 			label: 'Uses per Battle',
-			value: (row: any) => row.action.limit || ''
+			value: (row: PlayerCrew) => row.action.limit || ''
 		},
 		{
 			label: 'Handicap Type',
-			value: (row: any) => (row.action.penalty ? CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.penalty.type] : '')
+			value: (row: PlayerCrew) => (row.action.penalty ? CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[row.action.penalty.type] : '')
 		},
 		{
 			label: 'Handicap Amount',
-			value: (row: any) => (row.action.penalty ? row.action.penalty.amount : '')
+			value: (row: PlayerCrew) => (row.action.penalty ? row.action.penalty.amount : '')
 		},
 		{
 			label: 'Accuracy',
-			value: (row: any) => row.ship_battle.accuracy || ''
+			value: (row: PlayerCrew) => row.ship_battle.accuracy || ''
 		},
 		{
 			label: 'Crit Bonus',
-			value: (row: any) => row.ship_battle.crit_bonus || ''
+			value: (row: PlayerCrew) => row.ship_battle.crit_bonus || ''
 		},
 		{
 			label: 'Crit Rating',
-			value: (row: any) => row.ship_battle.crit_chance || ''
+			value: (row: PlayerCrew) => row.ship_battle.crit_chance || ''
 		},
 		{
 			label: 'Evasion',
-			value: (row: any) => row.ship_battle.evasion || ''
+			value: (row: PlayerCrew) => row.ship_battle.evasion || ''
 		},
 		{
 			label: 'Charge Phases',
-			value: (row: any) => (row.action.charge_phases ? getShipChargePhases(row).join('; ') : '')
+			value: (row: PlayerCrew) => (row.action.charge_phases ? getShipChargePhases(row).join('; ') : '')
 		},
 		{
 			label: 'Symbol',
-			value: (row: any) => row.symbol
+			value: (row: PlayerCrew) => row.symbol
 		}
 	];
 }
 
-export function exportCrew(crew, delimeter = ','): string {
+export function exportCrew(crew: PlayerCrew[] | CrewMember[], delimeter = ','): string {
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
-export function applyCrewBuffs(crew: any, buffConfig: any) {
+export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: any) {
 	const getMultiplier = (skill: string, stat: string) => {
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 	};
@@ -231,9 +231,9 @@ export function applyCrewBuffs(crew: any, buffConfig: any) {
 	}
 }
 
-export function downloadData(dataUrl, name: string) {
+export function downloadData(dataUrl: string | URL, name: string): void {
 	let pom = document.createElement('a');
-	pom.setAttribute('href', dataUrl);
+	pom.setAttribute('href', `${dataUrl}`);
 	pom.setAttribute('download', name);
 
 	if (document.createEvent) {
@@ -265,7 +265,7 @@ export function download(filename, text) {
     } else {
         var a = new FileReader();
         a.onload = (e) => {
-            downloadData(e.target?.result, filename);
+			if (e.target && e.target.result) downloadData(e.target.result as string, filename);
         };
         a.readAsDataURL(text);
     }
@@ -276,7 +276,7 @@ export function download(filename, text) {
  * @param crew 
  * @returns 
  */
-export function isImmortal(crew: PlayerCrew) {
+export function isImmortal(crew: PlayerCrew): boolean {
 	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
 }
 
@@ -382,7 +382,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
 
-export function formatTierLabel(crew) {
+export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 	if (!crew.in_portal && crew.obtained === "WebStore") {
 		return '$';
 	}
@@ -392,26 +392,29 @@ export function formatTierLabel(crew) {
 	return `${crew.bigbook_tier}`;
 }
 
-export function getShipBonus(crew: any): string {
+export function getShipBonus(crew: PlayerCrew | CrewMember): string {
+	if (!crew.action || !crew.action.ability) return "";
 	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type];
 	if (crew.action.ability.type === 0)
 		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} boost to`);
 	const bonusVal = crew.action.ability.type === 0
 		? crew.action.bonus_amount+crew.action.ability.amount
 		: crew.action.ability.amount;
-	bonusText = bonusText.replace('%VAL%', bonusVal);
+	bonusText = bonusText.replace('%VAL%', `${bonusVal}`);
 	return bonusText;
 }
 
-export function getShipChargePhases(crew: any): string[] {
-	const phases = [];
+export function getShipChargePhases(crew: PlayerCrew | CrewMember): string[] {
+	const phases = [] as string[];
 	let charge_time = 0;
+	if (!crew.action || !crew.action.ability || !crew.action.charge_phases) return phases;
+	
 	crew.action.charge_phases.forEach(cp => {
 		charge_time += cp.charge_time;
 		let phaseDescription = `After ${charge_time}s`;
 
-		if (cp.ability_amount) {
-			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', cp.ability_amount);
+		if (cp.ability_amount && crew?.action?.ability) {
+			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
 		}
 
 		if (cp.bonus_amount) {
@@ -430,7 +433,8 @@ export function getShipChargePhases(crew: any): string[] {
 	});
 	return phases;
 }
-export function gradeToColor(grade: string) {
+
+export function gradeToColor(grade: string): string | null {
 	switch(grade) {
 		case "A":
 		case "A-":
@@ -464,4 +468,5 @@ export function gradeToColor(grade: string) {
 
 					
 	}
+	return null;
 }

@@ -5,6 +5,8 @@ import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
 import RankedRewardsTab from './event_info_tabs/ranked_rewards';
 import LeaderboardTab from './event_info_tabs/leaderboard';
+import { Event } from '../model/player';
+import { EventData } from '../utils/events';
 
 type EventInfoModalProps = {
 	instanceId: number,
@@ -14,7 +16,7 @@ type EventInfoModalProps = {
 }
 
 function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoModalProps) {
-	const [eventData, setEventData] = React.useState(null);
+	const [eventData, setEventData] = React.useState<Event | EventData | null>(null);
 
 	React.useEffect(() => {
 		async function fetchEventData() {
@@ -33,7 +35,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Event Information',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<EventInformationTab eventData={eventData} />
+					{eventData && <EventInformationTab eventData={eventData} />}
 				</Tab.Pane>
 			),
 		},
@@ -41,7 +43,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Threshold Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<ThresholdRewardsTab eventData={eventData} />
+					{eventData && <ThresholdRewardsTab eventData={eventData} />}
 				</Tab.Pane>
 			),
 		},
@@ -49,7 +51,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Ranked Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<RankedRewardsTab eventData={eventData} />
+					{eventData && <RankedRewardsTab eventData={eventData} />}
 				</Tab.Pane>
 			),
 		},

@@ -1,7 +1,9 @@
 import CONFIG from '../components/CONFIG';
+import { CrewMember } from '../model/crew';
 import { Filter } from '../model/game-elements';
+import { PlayerCrew } from '../model/player';
 
-export function crewMatchesSearchFilter(crew: any, filters: Filter[], filterType: string | null | undefined): boolean {
+export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: Filter[], filterType: string | null | undefined): boolean {
 	if (filters.length == 0 || !filterType) return true;
 
     const filterTypes = {
@@ -60,7 +62,7 @@ export function crewMatchesSearchFilter(crew: any, filters: Filter[], filterType
 					conditionResult = condition.value.toLowerCase() === 'true' ? crew.in_portal : !crew.in_portal;
 				} else if (condition.keyword === 'ship') {
 					conditionResult = matchesFilter(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type], condition.value) ||
-						(crew.action.ability && crew.action.ability.type !== '' &&
+						(crew.action.ability && crew.action.ability.type !== undefined &&
 							(matchesFilter(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type], condition.value) ||
 								matchesFilter(CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition], condition.value)));
 				}

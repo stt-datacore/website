@@ -62,6 +62,29 @@ export interface Skill {
   range_min: number
   range_max: number
 }
+
+export interface SkillsSummary {
+	key: string;
+	skills: string[];
+	total: number;
+	owned: number;
+	ownedPct: number;
+	average: number;
+	best: {
+		score: number;
+		name: string;
+	},
+	tenAverage: number;
+	maxPct: number;
+};
+
+
+export interface ComputedBuff {
+  core: number
+  min: number
+  max: number
+}
+
 export interface ShipBattle {
   accuracy?: number
   evasion?: number

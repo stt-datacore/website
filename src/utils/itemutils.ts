@@ -1,11 +1,13 @@
+import { EquipmentItem } from '../model/equipment';
 import { simplejson2csv, ExportField } from './misc';
 
-export function mergeItems(player_items: any, items: any): any {
-	let data = [];
+export function mergeItems(player_items: EquipmentItem[], items: EquipmentItem[]) {
+	let data = [] as EquipmentItem[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol);
 		if (itemEntry) {
 			data.push({
+				... itemEntry,
 				name: itemEntry.name,
 				type: itemEntry.type,
 				rarity: itemEntry.rarity,
@@ -17,6 +19,7 @@ export function mergeItems(player_items: any, items: any): any {
 			});
 		} else {
 			data.push({
+				...item,
 				name: item.name,
 				type: item.type,
 				rarity: item.rarity,
@@ -35,35 +38,35 @@ export function exportItemFields(): ExportField[] {
 	return [
 		{
 			label: 'Name',
-			value: (row: any) => row.name
+			value: (row: EquipmentItem) => row.name
 		},
 		{
 			label: 'Rarity',
-			value: (row: any) => row.rarity
+			value: (row: EquipmentItem) => row.rarity
 		},
 		{
 			label: 'Quantity',
-			value: (row: any) => row.quantity
+			value: (row: EquipmentItem) => row.quantity
 		},
 		{
 			label: 'Type',
-			value: (row: any) => row.type
+			value: (row: EquipmentItem) => row.type
 		},
 		{
 			label: 'Flavor',
-			value: (row: any) => row.flavor
+			value: (row: EquipmentItem) => row.flavor
 		},
 		{
 			label: 'Symbol',
-			value: (row: any) => row.symbol
+			value: (row: EquipmentItem) => row.symbol
 		},
 		{
 			label: 'Bonuses',
-			value: (row: any) => (row.bonuses ? JSON.stringify(row.bonuses) : '')
+			value: (row: EquipmentItem) => (row.bonuses ? JSON.stringify(row.bonuses) : '')
 		},
 		{
 			label: 'Image',
-			value: (row: any) => row.imageUrl
+			value: (row: EquipmentItem) => row.imageUrl
 		}
 	];
 }

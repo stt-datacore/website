@@ -1,6 +1,6 @@
 import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { Content, Event, FeaturedCrew, Phase, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
+import { Content, Event, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
 
 export class EventData implements Event {
 	constructor(data: Event | undefined = undefined) {
@@ -45,7 +45,7 @@ export class EventData implements Event {
 	bonusGuessed?: boolean;
 };
 
-export function getEventData(activeEvent: any, allCrew: any[] = []): EventData | undefined {
+export function getEventData(activeEvent: Event, allCrew: PlayerCrew[] = []): EventData | undefined {
 	const result = new EventData();
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;

@@ -30,28 +30,31 @@ export interface Player {
     shuttle_rental_tokens: number
     vip_points: number
     vip_level: number
-    currency_exchanges: CurrencyExchange[]
+    currency_exchanges?: CurrencyExchange[]
     replicator_uses_today: number
     replicator_limit: number
     replicator_ration_types: ReplicatorRationType[]
     character: Character
     fleet: Fleet
     squad: Squad
-    mailbox: Mailbox
-    fleet_invite: FleetInvite
-    entitlements: Entitlements
-    chats: Chats
-    environment: Environment
-    motd: Motd
-    npe_complete: boolean
-    community_links: CommunityLink[]
+    mailbox?: Mailbox
+    fleet_invite?: FleetInvite
+    entitlements?: Entitlements
+    chats?: Chats
+    environment?: Environment
+    motd?: Motd
+    npe_complete?: boolean
+    community_links?: CommunityLink[]
     legal_update: boolean
     legal_popup_variant: number
     ads_consent_required: boolean
     consent: boolean
     ccpa_opted_out: boolean
     u_13: boolean
+
   }
+  
+
   
   export interface CurrencyExchange {
     id: number
@@ -85,71 +88,71 @@ export interface Player {
   export interface Character {
     id: number
     display_name: string
-    using_default_name: boolean
+    using_default_name?: boolean
     level: number
-    max_level: number
+    max_level?: number
     xp: number
     xp_for_current_level: number
     xp_for_next_level: number
-    location: Location
-    destination: Location
-    navmap: Navmap
+    location?: Location
+    destination?: Location
+    navmap?: Navmap
     accepted_missions: AcceptedMission[]
     active_conflict: any
     shuttle_bays: number
     next_shuttle_bay_cost: any
-    can_purchase_shuttle_bay: boolean
+    can_purchase_shuttle_bay?: boolean
     crew_avatar: CrewAvatar
     stored_immortals: StoredImmortal[]
     c_stored_immortals?: number[]
     replay_energy_max: number
-    replay_energy_rate: number
-    seconds_from_replay_energy_basis: number
+    replay_energy_rate?: number
+    seconds_from_replay_energy_basis?: number
     replay_energy_overflow: number
-    boost_windows: BoostWindow[]
-    seconds_from_last_boost_claim: number
-    video_ad_chroniton_boost_reward: Reward
-    cadet_tickets: Tickets
-    pvp_tickets: Tickets
-    event_tickets: Tickets
-    cadet_schedule: CadetSchedule
-    pvp_divisions: PvpDivision[]
-    pvp_timer: PvpTimer
+    boost_windows?: BoostWindow[]
+    seconds_from_last_boost_claim?: number
+    video_ad_chroniton_boost_reward?: Reward
+    cadet_tickets?: Tickets
+    pvp_tickets?: Tickets
+    event_tickets?: Tickets
+    cadet_schedule?: CadetSchedule
+    pvp_divisions?: PvpDivision[]
+    pvp_timer?: PvpTimer
     fbb_difficulties: FbbDifficulty[]
-    crew: PlayerCrew[]
+    crew: PlayerCrew[];
     unOwnedCrew?: PlayerCrew[];
     items: Item[]
-    crew_borrows: any[]
-    crew_shares: any[]
+    crew_borrows?: any[]
+    crew_shares?: any[]
     crew_limit: number
-    crew_limit_increase_per_purchase: number
-    next_crew_limit_increase_cost: NextCrewLimitIncreaseCost
-    can_purchase_crew_limit_increase: boolean
-    item_limit: number
+    crew_limit_increase_per_purchase?: number
+    next_crew_limit_increase_cost?: NextCrewLimitIncreaseCost
+    can_purchase_crew_limit_increase?: boolean
+    item_limit?: number
     alert_item_limit: number
     ships: Ship[]
     current_ship_id: number
-    shuttle_adventures: any[]
+    shuttle_adventures?: any[]
     factions: Faction[]
-    disputes: any[]
-    tng_the_game_level: number
-    open_packs: any[]
+    disputes?: any[]
+    tng_the_game_level?: number
+    open_packs?: any[]
     daily_activities: DailyActivity[]
-    next_daily_activity_reset: number
-    next_starbase_donation_reset: number
-    fleet_activities: FleetActivity[]
-    next_fleet_activity_reset: number
-    freestanding_quests: any[]
-    daily_rewards_state: DailyRewardsState
-    events: Event[]
+    next_daily_activity_reset?: number
+    next_starbase_donation_reset?: number
+    fleet_activities?: FleetActivity[]
+    next_fleet_activity_reset?: number
+    freestanding_quests?: any[]
+    daily_rewards_state?: DailyRewardsState
+    events?: Event[]
     dispute_histories: DisputeHistory[]
-    stimpack: Stimpack
-    tutorials: Tutorial[]
-    location_channel_prefix: string
-    honor_reward_by_rarity: number[]
-    voyage_descriptions: VoyageDescription[]
-    voyage: Voyage[]
-    voyage_summaries: VoyageSummaries
+    stimpack?: Stimpack
+    tutorials?: Tutorial[]
+    location_channel_prefix?: string
+    honor_reward_by_rarity?: number[]
+    voyage_descriptions?: VoyageDescription[]
+    voyage?: Voyage[]
+    voyage_summaries?: VoyageSummaries
     cryo_collections: CryoCollection[]
     crew_collection_buffs: AdvancementBuff[]
     collection_buffs_cap_hash: CollectionBuffsCapHash
@@ -205,18 +208,18 @@ export interface Player {
   export interface AcceptedMission {
     id: number
     symbol: string
-    description: string
-    episode: number
-    episode_title: string
-    episode_portrait: Icon
-    marker: number[]
-    marker_icon: Icon
+    description?: string
+    episode?: number
+    episode_title?: string
+    episode_portrait?: Icon
+    marker?: number[]
+    marker_icon?: Icon
     exclude_from_timeline?: boolean
     stars_earned: number
     total_stars: number
     accepted: boolean
     state: number
-    main_story: boolean
+    main_story?: boolean
   }
   
   export interface CrewAvatar {
@@ -341,7 +344,21 @@ export interface Player {
 		skill: string;
 	}
 
-  export interface PlayerCrew extends CrewMember {
+  export interface CompactCrew {
+    symbol: string;
+    name?: string;
+    archetype_id: number;
+    level: number;
+    max_level: number;
+    rarity: number;
+    equipment: number[][] | number[];
+    base_skills: BaseSkills;
+    skills: BaseSkills;
+    favorite: boolean;
+    ship_battle: ShipBattle;
+  }
+
+  export interface PlayerCrew extends CrewMember, CompactCrew {
     id: number
     symbol: string
     name: string
@@ -442,22 +459,23 @@ export interface Player {
   }
   
   export interface Item {
-    id: number
-    type: number
+    id?: number
+    type?: number
     symbol: string
-    name: string
-    flavor: string
+    name?: string
+    flavor?: string
     archetype_id: number
     quantity: number
-    icon: Icon
+    icon?: Icon
     rarity: number
-    expires_in: any
+    expires_in?: number
     short_name?: string
     bonuses?: Bonuses
     time_modifier?: number
     cr_modifier?: number
     reward_modifier?: number
     crafting_bonuses?: Bonuses    
+    imageUrl?: string;
   }
   
   export interface Bonuses {
@@ -470,15 +488,15 @@ export interface Player {
   }
   
   export interface Ship {
-    archetype_id: number
+    archetype_id?: number
     symbol: string
-    name: string
+    name?: string
     rarity: number
-    icon: Icon
-    flavor: string
-    model: string
-    max_level: number
-    actions: Action[]
+    icon?: Icon
+    flavor?: string
+    model?: string
+    max_level?: number
+    actions?: Action[]
     shields: number
     hull: number
     attack: number
@@ -488,15 +506,15 @@ export interface Player {
     crit_bonus: number
     attacks_per_second: number
     shield_regen: number
-    traits: string[]
-    traits_hidden: any[]
+    traits?: string[]
+    traits_hidden?: any[]
     antimatter: number
     id: number
     level: number
-    schematic_gain_cost_next_level: number
-    schematic_id: number
-    schematic_icon: Icon
-    battle_stations: BattleStation[]
+    schematic_gain_cost_next_level?: number
+    schematic_id?: number
+    schematic_icon?: Icon
+    battle_stations?: BattleStation[]
   }
   
   export interface BattleStation {
@@ -507,18 +525,18 @@ export interface Player {
     id: number
     name: string
     reputation: number
-    discovered: number
+    discovered?: number
     completed_shuttle_adventures: number
-    icon: Icon
-    representative_icon: Icon
-    representative_full_body: Icon
-    reputation_icon: Icon
-    reputation_item_icon: Icon
-    home_system: string
-    shop_layout: string
-    shuttle_token_id: number
-    shuttle_token_preview_item: ShuttleTokenPreviewItem
-    event_winner_rewards: any[]
+    icon?: Icon
+    representative_icon?: Icon
+    representative_full_body?: Icon
+    reputation_icon?: Icon
+    reputation_item_icon?: Icon
+    home_system?: string
+    shop_layout?: string
+    shuttle_token_id?: number
+    shuttle_token_preview_item?: ShuttleTokenPreviewItem
+    event_winner_rewards?: any[]
   }
 
   export interface ShuttleTokenPreviewItem extends Item {
@@ -535,13 +553,13 @@ export interface Player {
   }
   
   export interface DailyActivity {
-    id: number
+    id?: number
     name: string
     description: string
-    icon: AtlasIcon
-    area: string
-    weight: number
-    category: any
+    icon?: AtlasIcon
+    area?: string
+    weight?: number
+    category?: any
     lifetime?: number
     rewards?: Reward[]
     goal?: number
@@ -820,15 +838,15 @@ export interface Player {
   export interface DisputeHistory {
     id: number
     symbol: string
-    name: string
-    episode: number
-    marker: number[]
+    name?: string
+    episode?: number
+    marker?: number[]
     completed: boolean
-    mission_ids: number[]
+    mission_ids?: number[]
     stars_earned: number
     total_stars: number
-    exclude_from_timeline: boolean
-    faction_id: number
+    exclude_from_timeline?: boolean
+    faction_id?: number;    
   }
   
   export interface Stimpack {
@@ -961,10 +979,10 @@ export interface Player {
   }
 
 export interface BuffBase {
-    symbol: string
-    name: string
-    icon: AtlasIcon
-    flavor: string
+    symbol?: string
+    name?: string
+    icon?: AtlasIcon
+    flavor?: string
     quantity?: number;
   }
 
@@ -997,11 +1015,11 @@ export interface BuffBase {
   }
   
   export interface AdvancementBuff extends BuffBase {
-    short_name: string
+    short_name?: string
     operator: string
     value: number
     stat: string
-    source: string
+    source?: string
   }
 
   export interface CollectionBuffsCapHash {

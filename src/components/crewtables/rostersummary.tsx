@@ -2,11 +2,12 @@ import React from 'react';
 import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
-import { CrewRoster } from '../../model/player';
+import { CompactCrew, CrewRoster, PlayerCrew } from '../../model/player';
+import { ComputedBuff, CrewMember, Skill, SkillsSummary } from '../../model/crew';
 
 type RosterSummaryProps = {
-	myCrew: any[];
-	allCrew: any[];
+	myCrew: PlayerCrew[];
+	allCrew: CrewMember[];
 	buffConfig: any;
 };
 
@@ -25,11 +26,11 @@ const RosterSummary = (props: RosterSummaryProps) => {
 			<Modal.Header>
 				Roster Summary
 				<Button.Group floated='right'>
-					<Button onClick={() => setTableView('rarity')} positive={tableView === 'rarity' ? true : null}>
+					<Button onClick={() => setTableView('rarity')} positive={tableView === 'rarity' ? true : undefined}>
 						By Rarity
 					</Button>
 					<Button.Or />
-					<Button onClick={() => setTableView('skill')} positive={tableView === 'skill' ? true : null}>
+					<Button onClick={() => setTableView('skill')} positive={tableView === 'skill' ? true : undefined}>
 						By Skill
 					</Button>
 				</Button.Group>
@@ -54,12 +55,12 @@ const RosterSummary = (props: RosterSummaryProps) => {
 };
 
 type RarityDepthProps = {
-	myCrew: any[];
-	allCrew: any[];
+	myCrew: PlayerCrew[];
+	allCrew: CrewMember[];
 };
 
 const RarityDepth = (props: RarityDepthProps) => {
-	const [rarityData, setRarityData] = React.useState(undefined);
+	const [rarityData, setRarityData] = React.useState<CrewRoster[] | undefined>(undefined);
 
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
@@ -255,7 +256,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
+	function firstSort(data: any[], column: string, reverse: boolean = false) {
 		data.sort((a, b) => {
 			if (reverse)
 				return b[column] - a[column];
@@ -265,24 +266,24 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 };
 
 type SkillDepthProps = {
-	myCrew: any[];
-	allCrew: any[];
+	myCrew: PlayerCrew[];
+	allCrew: CrewMember[];
 	buffConfig: any;
 };
 
 const SkillDepth = (props: SkillDepthProps) => {
 	const { buffConfig } = props;
 
-	const [skillData, setSkillData] = React.useState(undefined);
+	const [skillData, setSkillData] = React.useState<SkillsSummary[] | undefined>(undefined);
 	const [scoreOption, setScoreOption] = React.useState('core');
 	const [comboOption, setComboOption] = React.useState('all');
 	const [preferVersatile, setPreferVersatile] = React.useState(false);
 
 	React.useEffect(() => {
-		const myCrew = JSON.parse(JSON.stringify(props.myCrew));
+		const myCrew = JSON.parse(JSON.stringify(props.myCrew)) as CompactCrew[];
 		const myOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
 
-		const data = [];
+		const data = [] as SkillsSummary[];
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			let firstSkill = CONFIG.SKILLS_SHORT[first].name;
 			if (comboOption === 'all' || comboOption === 'singles' || [firstSkill].includes(comboOption))
@@ -304,12 +305,12 @@ const SkillDepth = (props: SkillDepthProps) => {
 		}
 		setSkillData([...data]);
 
-		function getSkillData(skills: string[]): any {
-			const skillScore = (crew) => {
+		function getSkillData(skills: string[]): SkillsSummary {
+			const skillScore = (crew: PlayerCrew | CompactCrew) => {
 				if (preferVersatile && Object.entries(crew.base_skills).length !== 3) return 0;
-				const scores = [];
+				const scores = [] as Skill[];
 				skills.forEach(skill => {
-					if (crew[skill].core > 0) scores.push(crew[skill]);
+					if (crew.base_skills[skill].core > 0) scores.push(crew.base_skills[skill]);
 				});
 				if (scores.length < skills.length) return 0;
 				return getSkillScore(scores);
@@ -340,7 +341,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 				average: skillAverage,
 				best: {
 					score: crewBySkill.length > 0 ? skillScore(crewBySkill[0]) : 0,
-					name: crewBySkill.length > 0 ? crewBySkill[0].name : 'None'
+					name: crewBySkill.length > 0 ? crewBySkill[0].name ?? 'None' : 'None'
 				},
 				tenAverage: myBestTenAverage,
 				maxPct: myBestTen.length > 0 ? getMaxPct(skills, myBestTen.length, myBestTenSum) : 0
@@ -348,7 +349,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 		}
 
 		function getMaxPct(skills: string[], myBestCount: number, myBestSum: number): number {
-			const skillScore = (crew) => {
+			const skillScore = (crew: PlayerCrew) => {
 				if (preferVersatile && Object.entries(crew.base_skills).length !== 3) return 0;
 				const scores = [];
 				skills.forEach(skill => {
@@ -377,7 +378,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 			return scores[0].core;
 		}
 
-		function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
+		function applySkillBuff(buffConfig: any, skill: string, base_skill: Skill): ComputedBuff {
 			const getMultiplier = (skill: string, stat: string) => {
 				return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 			};
