@@ -4,11 +4,13 @@ import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } fro
 import CONFIG from '../../components/CONFIG';
 import { CompactCrew, CrewRoster, PlayerCrew } from '../../model/player';
 import { ComputedBuff, CrewMember, Skill, SkillsSummary } from '../../model/crew';
+import { BuffStatTable } from '../../utils/voyageutils';
+import { applySkillBuff } from '../../utils/crewutils';
 
 type RosterSummaryProps = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
-	buffConfig: any;
+	buffConfig: BuffStatTable;
 };
 
 const RosterSummary = (props: RosterSummaryProps) => {
@@ -268,7 +270,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 type SkillDepthProps = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
-	buffConfig: any;
+	buffConfig: BuffStatTable;
 };
 
 const SkillDepth = (props: SkillDepthProps) => {
@@ -349,9 +351,9 @@ const SkillDepth = (props: SkillDepthProps) => {
 		}
 
 		function getMaxPct(skills: string[], myBestCount: number, myBestSum: number): number {
-			const skillScore = (crew: PlayerCrew) => {
+			const skillScore = (crew: PlayerCrew | CrewMember) => {
 				if (preferVersatile && Object.entries(crew.base_skills).length !== 3) return 0;
-				const scores = [];
+				const scores = [] as ComputedBuff[];
 				skills.forEach(skill => {
 					if (crew.base_skills[skill]) scores.push(applySkillBuff(buffConfig, skill, crew.base_skills[skill]));
 				});
@@ -378,16 +380,16 @@ const SkillDepth = (props: SkillDepthProps) => {
 			return scores[0].core;
 		}
 
-		function applySkillBuff(buffConfig: any, skill: string, base_skill: Skill): ComputedBuff {
-			const getMultiplier = (skill: string, stat: string) => {
-				return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-			};
-			return {
-				core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
-				min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
-				max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
-			};
-		}
+		// function applySkillBuff(buffConfig: any, skill: string, base_skill: Skill): ComputedBuff {
+		// 	const getMultiplier = (skill: string, stat: string) => {
+		// 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+		// 	};
+		// 	return {
+		// 		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
+		// 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
+		// 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+		// 	};
+		// }
 	}, [props.myCrew, scoreOption, comboOption, preferVersatile]);
 
 	const scoreOptions = [
@@ -550,7 +552,7 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
+	function firstSort(data: any[], column: string, reverse: boolean = false) {
 		data.sort((a, b) => {
 			if (column === 'skills') {
 				if (a.skills.length === b.skills.length) {

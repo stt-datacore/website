@@ -1,9 +1,9 @@
 import { simplejson2csv, ExportField } from './misc';
-import { calculateBuffConfig } from './voyageutils';
+import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { CrewMember } from '../model/crew';
+import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -212,7 +212,7 @@ export function exportCrew(crew: PlayerCrew[] | CrewMember[], delimeter = ','): 
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
-export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: any) {
+export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable) {
 	const getMultiplier = (skill: string, stat: string) => {
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 	};
@@ -470,3 +470,22 @@ export function gradeToColor(grade: string): string | null {
 	}
 	return null;
 }
+
+export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedBuff {
+	const getMultiplier = (skill: string, stat: string) => {
+		let buffkey = `${skill}_${stat}`;
+		if (buffkey in buffConfig) {
+			return buffConfig[buffkey].multiplier + buffConfig[buffkey].percent_increase;
+		}
+		else {
+			return 0;
+		}		
+	};
+
+	return {
+		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
+		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
+		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+	};
+}
+

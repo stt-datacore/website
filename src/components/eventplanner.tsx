@@ -11,11 +11,12 @@ import ShuttleHelper from '../components/shuttlehelper/shuttlehelper';
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { guessCurrentEvent, getEventData, EventData } from '../utils/events';
 import { useStateWithStorage } from '../utils/storage';
-import { calculateBuffConfig } from '../utils/voyageutils';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { BestCombos, CompletionState, Event, EventCombos, EventPair, EventSkill, PlayerCrew, PlayerData } from '../model/player';
-import { CrewMember } from '../model/crew';
+import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { applySkillBuff } from '../utils/crewutils';
 
 type EventPlannerProps = {
 	playerData: PlayerData;
@@ -103,7 +104,7 @@ type EventPickerProps = {
 	playerData: PlayerData;
 	events: EventData[];
 	crew: PlayerCrew[];
-	buffConfig: any;
+	buffConfig: BuffStatTable;
 	allCrew: CrewMember[];
 };
 
@@ -169,7 +170,7 @@ const EventPicker = (props: EventPickerProps) => {
 			prospect.level = 100;
 			prospect.immortal = CompletionState.NotComplete;
 			CONFIG.SKILLS_SHORT.forEach(skill => {
-				let score = { core: 0, min: 0, max: 0 };
+				let score: ComputedBuff = { core: 0, min: 0, max: 0 };
 				if (prospect.base_skills[skill.name]) {
 					if (prospect.rarity == prospect.max_rarity)
 						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
@@ -216,7 +217,7 @@ type EventCrewTableProps = {
 	crew: PlayerCrew[];
 	eventData: any;
 	phaseIndex: number;
-	buffConfig: any;
+	buffConfig: BuffStatTable;
 	lockable?: any[];
 };
 
@@ -668,17 +669,6 @@ const EventShuttles = (props: EventShuttlesProps) => {
 		</React.Fragment>
 	);
 };
-
-function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
-	const getMultiplier = (skill: string, stat: string) => {
-		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-	};
-	return {
-		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
-		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
-		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
-	};
-}
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
 function calculateGalaxyChance(skillValue: number) : number {

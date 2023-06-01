@@ -13,11 +13,11 @@ import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../component
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { getShipBonus, getShipChargePhases, gradeToColor, isImmortal } from '../utils/crewutils';
+import { applySkillBuff, getShipBonus, getShipChargePhases, gradeToColor, isImmortal } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
-import { calculateBuffConfig } from '../utils/voyageutils';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { LockedProspect, SymbolName } from '../model/game-elements';
+import { InitialOptions, LockedProspect, SymbolName } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
@@ -69,8 +69,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 type ProfileCrewTools = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
-	buffConfig: any;
-	initOptions: any;
+	buffConfig: BuffStatTable;
+	initOptions?: InitialOptions;
 	initHighlight: string;
 	initProspects: string[];
 };
@@ -187,16 +187,16 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 		</React.Fragment>
 	);
 
-	function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
-		const getMultiplier = (skill: string, stat: string) => {
-			return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-		};
-		return {
-			core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
-			min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
-			max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
-		};
-	}
+	// function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
+	// 	const getMultiplier = (skill: string, stat: string) => {
+	// 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+	// 	};
+	// 	return {
+	// 		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
+	// 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
+	// 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+	// 	};
+	// }
 };
 
 type ProfileCrewTableProps = {
