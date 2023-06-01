@@ -245,8 +245,8 @@ export class TinyStore {
             return JSON.parse(item) as T;
         }
 
-        if (defaultValue) this.setValue(key, defaultValue as T);
-        return defaultValue;
+        if (defaultValue !== undefined) this.setValue(key, defaultValue as T);
+        return defaultValue as T;
     }
 }
 
@@ -302,7 +302,7 @@ export interface HoverStatState {
 }
 
 export interface HoverStatTargetState {
-    isCurrent: boolean;
+    targetId: string;
 }
 
 /**
@@ -316,7 +316,15 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
     constructor(props: TProps) {
         super(props);
         this.tiny = TinyStore.getStore(props.targetGroup);        
-        this.state = { isCurrent: false } as TState;
+        this.state = { targetId: uuid.v4() } as TState;
+    }
+
+    protected get current(): string {
+        return this.tiny.getValue<string>('current', "") ?? false;
+    }
+
+    protected set current(value: string) {
+        this.tiny.setValue<string>('current', value, false);
     }
 
     protected abstract propertyChanged: (key: string) => void;
@@ -343,28 +351,28 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
     protected prepareDisplayItem(displayItem: T | null): T | null {
         return displayItem;
     }
-    
-    render(): React.ReactNode {
-        const { targetGroup, children, setDisplayItem } = this.props;
-        const displayItem = this.prepareDisplayItem(this.props.inputItem);
-        
-        const containerLeave = (e) => {
-            if (this.cancelled) {
-                this.cancelled = false;
-                return;
-            }
 
-            setDisplayItem(null);
-            this.setState({ ...this.state, isCurrent: false } as TState);
-        };
-        
-        const containerEnter = (e) => {
-            setDisplayItem(displayItem);            
-            this.setState({ ...this.state, isCurrent: true } as TState);
-        };
+    protected containerLeave = (e) => {
+        if (this.cancelled) {
+            this.cancelled = false;
+            return;
+        }
+        this.current = "";
+        this.props.setDisplayItem(null);
+    };
+    
+    protected containerEnter = (e) => {
+        const displayItem = this.prepareDisplayItem(this.props.inputItem);
+
+        this.current = this.state.targetId;
+        this.props.setDisplayItem(displayItem);            
+    };
+
+    render(): React.ReactNode {
+        const { targetGroup, children } = this.props;
 
         return (    
-            <div className={targetGroup} onMouseOver={(e) => containerEnter(e)} onMouseOut={(e) => containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} onMouseOver={(e) => this.containerEnter(e)} onMouseOut={(e) => this.containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
             </div>)         
     }

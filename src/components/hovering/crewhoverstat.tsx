@@ -7,7 +7,7 @@ import { Label, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import { applySkillBuff, formatTierLabel, gradeToColor } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-
+import * as uuid from 'uuid';
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
 		const { title, value } = this.props;
@@ -42,15 +42,11 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     
     constructor(props: CrewTargetProps){
         super(props);        
-        this.tiny.subscribe(this.propertyChanged);
-        this.state = {
-            ... this.state,
-            isCurrent: false
-        }
+        this.tiny.subscribe(this.propertyChanged);        
     }
     
     protected get showBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', false) ?? false;
+        return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
 
     protected set showBuffs(value: boolean) {
@@ -58,7 +54,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
 
     protected get showImmo(): boolean {
-        return this.tiny.getValue<boolean>('immo', false) ?? false;
+        return this.tiny.getValue<boolean>('immo', true) ?? false;
     }
 
     protected set showImmo(value: boolean) {
@@ -68,8 +64,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     protected propertyChanged = (key: string) => {
         if (key === 'cancelled') return;
         if (key === 'buff' || key === 'immo') {
-            const { isCurrent } = this.state;
-            if (isCurrent) {
+            const { targetId } = this.state;
+            if (this.current === targetId) {
                 this.props.setDisplayItem(this.prepareDisplayItem(this.props.inputItem ?? undefined));
             }            
         }
@@ -130,7 +126,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }    
 
     protected get showBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', false) ?? false;
+        return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
 
     protected set showBuffs(value: boolean) {
@@ -138,7 +134,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
 
     protected get showImmo(): boolean {
-        return this.tiny.getValue<boolean>('immo', false) ?? false;
+        return this.tiny.getValue<boolean>('immo', true) ?? false;
     }
 
     protected set showImmo(value: boolean) {
@@ -187,7 +183,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flexGrow: "1"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
                             <i className="arrow alternate circle up icon" title="Apply Buffs" style={this.showBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                            <i className="star icon" title="Show Immortalized" style={this.showImmo ? activeStyle : dormantStyle} onClick={(e) => immoToggle(e)} />
+                            <i className="star icon" title={("immortal" in crew && crew.immortal != 0) ? "Crew Is Immortalized" : "Show Immortalized"} style={this.showImmo || ("immortal" in crew && crew.immortal != 0) ? activeStyle : dormantStyle} onClick={(e) => immoToggle(e)} />
                         </div>
                     </div>
                 </div>
