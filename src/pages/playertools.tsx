@@ -20,9 +20,11 @@ import UnneededItems from '../components/unneededitems';
 import FleetBossBattles from '../components/fleetbossbattles';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
-import { stripPlayerData, doShareProfile } from '../utils/playerutils';
+import { stripPlayerData } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerCrew, PlayerData } from '../model/player';
+import { CompactCrew, Event, Item, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { BossBattlesRoot } from '../model/boss';
+import { ShuttleAdventure } from '../model/shuttle';
 
 export interface PlayerTool {
 	title: string;
@@ -102,26 +104,26 @@ const PlayerToolsPage = (props: any) =>  {
 	// allCrew will always be set and can be passed as a prop to subcomponents that need it, saving a fetch to crew.json
 	// allItems is NOT always set; it can be passed to subcomponents but requires a check to see if defined
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
-	const [allItems, setAllItems] = React.useState(undefined);
+	const [allItems, setAllItems] = React.useState<Item[] | undefined>(undefined);
 
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
-	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
-	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [fleetbossData, setFleetbossData] = useStateWithStorage('tools/fleetbossData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
-	const [activeShuttles, setActiveShuttles] = useStateWithStorage('tools/activeShuttles', undefined);
+	const [voyageData, setVoyageData] = useStateWithStorage<{ voyage_descriptions: VoyageDescription[], voyage: Voyage[] } | undefined>('tools/voyageData', undefined);
+	const [eventData, setEventData] = useStateWithStorage<Event[] | undefined>('tools/eventData', undefined);
+	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
+	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
 
-	const [dataSource, setDataSource] = React.useState(undefined);
+	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 	const [showForm, setShowForm] = React.useState(false);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm) {
+	if (playerData && !showForm && activeCrew && dataSource && allCrew && fleetbossData) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
 					strippedPlayerData={strippedPlayerData}
 					voyageData={voyageData}
 					eventData={eventData}
-					fleetbossData={fleetbossData}
+					
 					activeCrew={activeCrew}
 					dataSource={dataSource}
 					allCrew={allCrew}
@@ -186,21 +188,21 @@ const PlayerToolsPage = (props: any) =>  {
 		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
 		//	so store a copy for player tools (i.e. voyage calculator, event planner)
 		if (!inputPlayerData) return false;
-		let activeCrew = [] as Object[];
+		let activeCrew = [] as CompactCrew[];
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 			}
 		});
 		let voyageData = {
-			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions],
-			voyage: [...inputPlayerData.player.character.voyage],
+			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions ?? []],
+			voyage: [...inputPlayerData.player.character.voyage ?? []],
 		}
 		setVoyageData(voyageData);
-		setEventData([...inputPlayerData.player.character.events]);
+		setEventData([...inputPlayerData.player.character.events ?? []]);
 		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
 		setActiveCrew(activeCrew);
-		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures]);
+		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures ?? []]);
 
 		let dtImported = new Date();
 
@@ -219,7 +221,7 @@ const PlayerToolsPage = (props: any) =>  {
 	}
 
 	function prepareProfileDataFromSession() {
-		let preparedProfileData = {...strippedPlayerData};
+		let preparedProfileData = {...strippedPlayerData} as PlayerData;
 		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
 		setPlayerData(preparedProfileData);
 		setDataSource('session');
@@ -237,7 +239,7 @@ type PlayerToolsPanesProps = {
 	strippedPlayerData: any;
 	voyageData: any;
 	eventData: any;
-	activeCrew: string[];
+	activeCrew: CompactCrew[];
 	dataSource: string;
 	allCrew: PlayerCrew[];
 	allItems?: any;

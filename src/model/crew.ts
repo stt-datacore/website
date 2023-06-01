@@ -1,5 +1,16 @@
 import { Icon } from "./game-elements"
 
+export interface CrossFuseTarget {
+  symbol: string;
+  name?: string;
+}
+
+/**
+ * The is the crew roster model from crew.json
+ * 
+ * This is the model for the master list of all crew in STT.
+ * PlayerCrew derives from this and CompactCrew.
+ */
 export interface CrewMember {
   symbol: string
   name: string
@@ -14,7 +25,7 @@ export interface CrewMember {
   base_skills: BaseSkills
   ship_battle: ShipBattle
   action: Action
-  cross_fuse_targets: any
+  cross_fuse_targets: CrossFuseTarget | [];
   skill_data: SkillData[]
   intermediate_skill_data: IntermediateSkillData[]
   is_craftable: boolean

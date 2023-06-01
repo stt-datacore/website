@@ -2,8 +2,9 @@
 
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { Action, BaseSkills, CrewMember, EquipmentSlot, ShipBattle, Skill } from "./crew"
+import { Action, BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, ShipBattle, Skill } from "./crew"
 import { Icon } from "./game-elements"
+import { ShuttleAdventure } from "./shuttle";
 
 export interface AtlasIcon extends Icon {
     atlas_info: string
@@ -132,7 +133,7 @@ export interface Player {
     alert_item_limit: number
     ships: Ship[]
     current_ship_id: number
-    shuttle_adventures?: any[]
+    shuttle_adventures?: ShuttleAdventure[]
     factions: Faction[]
     disputes?: any[]
     tng_the_game_level?: number
@@ -344,20 +345,34 @@ export interface Player {
 		skill: string;
 	}
 
+  /**
+   * This object is the smallest representation of a crew member,
+   * and contains only minimal information.
+   * 
+   * PlayerCrew derives from this and CrewMember
+   */
   export interface CompactCrew {
     symbol: string;
     name?: string;
-    archetype_id: number;
+    archetype_id?: number;
     level: number;
-    max_level: number;
+    max_level?: number;
     rarity: number;
     equipment: number[][] | number[];
-    base_skills: BaseSkills;
-    skills: BaseSkills;
-    favorite: boolean;
-    ship_battle: ShipBattle;
+    base_skills?: BaseSkills;
+    skills?: BaseSkills;
+    favorite?: boolean;
+    ship_battle?: ShipBattle;
+    active_status?: number;
   }
 
+  /**
+   * This is the model for crew that has come from the player's roster
+   * and either been merged with the main crew.json source (CrewMember), or whittled
+   * down into CompactCrew.
+   * 
+   * This interface inherits from both CrewMember and CompactCrew
+   */
   export interface PlayerCrew extends CrewMember, CompactCrew {
     id: number
     symbol: string
@@ -379,9 +394,16 @@ export interface Player {
     equipment_rank: number
     max_equipment_rank: number
     equipment_slots: EquipmentSlot[]
+
+    /**
+     * Input equipment slots are nested arrays,
+     * they are mapped to 1-dimensional arrays during processing
+     */
     equipment: number[][] | number[]
+
     kwipment: any[]
     q_bits: number
+    
     icon: Icon
     portrait: Icon
     full_body: Icon
@@ -400,7 +422,7 @@ export interface Player {
     ship_battle: ShipBattle
     action: Action
     default_avatar: boolean
-    cross_fuse_targets: string[]    
+    cross_fuse_targets: CrossFuseTarget;
     cap_achiever: CapAchiever
     addedEV?: number;
     totalEVContribution?: number;

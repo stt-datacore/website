@@ -244,7 +244,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						.reduce((prev, curr) => <>{prev} {curr}</>)}
 				</p>
 
-				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
+				{crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
 					<p>
 						Can cross-fuse with{' '}
 						<Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.

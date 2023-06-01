@@ -1,7 +1,7 @@
 import { CompactCrew, Item, PlayerCrew, PlayerData } from "../model/player";
 
 // Remove any unnecessary fields from the player data
-export function stripPlayerData(items: any[], p: PlayerData): any {
+export function stripPlayerData(items: Item[], p: PlayerData): any {
     delete p.item_archetype_cache;
 
     delete p.player.entitlements;
