@@ -3,6 +3,7 @@
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { Action, BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, ShipBattle, Skill } from "./crew"
+import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
 
@@ -123,7 +124,7 @@ export interface Player {
     fbb_difficulties: FbbDifficulty[]
     crew: PlayerCrew[];
     unOwnedCrew?: PlayerCrew[];
-    items: Item[]
+    items: PlayerEquipmentItem[]
     crew_borrows?: any[]
     crew_shares?: any[]
     crew_limit: number
@@ -481,14 +482,14 @@ export interface Player {
     date: number
   }
   
-  export interface Item {
+  export interface PlayerEquipmentItem {
     id?: number
     type?: number
     symbol: string
     name?: string
     flavor?: string
     archetype_id: number
-    quantity: number
+    quantity?: number
     icon?: Icon
     rarity: number
     expires_in?: number
@@ -562,7 +563,7 @@ export interface Player {
     event_winner_rewards?: any[]
   }
 
-  export interface ShuttleTokenPreviewItem extends Item {
+  export interface ShuttleTokenPreviewItem extends PlayerEquipmentItem {
     type: number
     id: number
     symbol: string

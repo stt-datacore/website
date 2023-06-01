@@ -4,10 +4,12 @@ import { Header, Message, Grid, Icon } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import { mergeItems } from '../utils/itemutils';
 import { mergeShips } from '../utils/shiputils';
+import { PlayerData } from '../model/player';
+import { EquipmentCommon } from '../model/equipment';
 
 
 type UnneededItemsProps = {
-	playerData: any;
+	playerData: PlayerData;
 };
 
 type UnneededItemsState = {
@@ -17,7 +19,7 @@ type UnneededItemsState = {
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
-	constructor(props) {
+	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
 
 		this.state = {
@@ -38,7 +40,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		const allitems = await itemsResponse.json();
 		const allships = await shipsResponse.json();
 
-		let items = mergeItems(playerData.player.character.items, allitems);
+		let items = mergeItems(playerData.player.character.items as EquipmentCommon[], allitems);
 		let ships = mergeShips(allships, playerData.player.character.ships);
 
 		// Calculate unneeded schematics
@@ -63,7 +65,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let equipmentEquipped = new Set();
 		let equipmentNeeded = new Set();
 		// Handle dupes as either all fully-equipped or as all needing items
-		let crewBySymbol = [];
+		let crewBySymbol = [] as string[];
 		playerData.player.character.crew.forEach(crew => {
 			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
 		});
@@ -71,7 +73,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			const crewList = playerData.player.character.crew.filter(crew => crew.symbol === crewSymbol);
 			let allFullyEquipped = true;
 			crewList.forEach(crew => {
-				if (crew.level < 99 || crew.equipment.length < 4)
+				if (crew.level < 99 || (crew.equipment && crew.equipment?.length < 4))
 					allFullyEquipped = false;
 			});
 			const crew = crewList[0];

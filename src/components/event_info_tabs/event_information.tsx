@@ -42,6 +42,7 @@ function sortCrew(crewArray: PlayerCrew[]) {
 }
 
 function EventInformationTab(props: { eventData: EventData | Event }) {
+	const { eventData } = props;
 	const { crewJson } = useStaticQuery(graphql`
 		query {
 			crewJson: allCrewJson {
@@ -90,9 +91,9 @@ function EventInformationTab(props: { eventData: EventData | Event }) {
 		description,
 		bonus_text,
 		content_types,
-	} = props.eventData;
+	} = eventData;
 
-	const currEvent = getEventData(props.eventData, crewData);
+	const currEvent = getEventData(eventData, crewData);
 
 	const bonus = currEvent?.bonus;
 	const featured = currEvent?.featured;

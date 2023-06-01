@@ -22,7 +22,7 @@ import FleetBossBattles from '../components/fleetbossbattles';
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
 import { stripPlayerData } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompactCrew, Event, Item, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, Event, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 
@@ -104,7 +104,7 @@ const PlayerToolsPage = (props: any) =>  {
 	// allCrew will always be set and can be passed as a prop to subcomponents that need it, saving a fetch to crew.json
 	// allItems is NOT always set; it can be passed to subcomponents but requires a check to see if defined
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
-	const [allItems, setAllItems] = React.useState<Item[] | undefined>(undefined);
+	const [allItems, setAllItems] = React.useState<PlayerEquipmentItem[] | undefined>(undefined);
 
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 	const [voyageData, setVoyageData] = useStateWithStorage<{ voyage_descriptions: VoyageDescription[], voyage: Voyage[] } | undefined>('tools/voyageData', undefined);

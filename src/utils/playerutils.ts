@@ -1,7 +1,7 @@
-import { CompactCrew, Item, PlayerCrew, PlayerData } from "../model/player";
+import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData } from "../model/player";
 
 // Remove any unnecessary fields from the player data
-export function stripPlayerData(items: Item[], p: PlayerData): any {
+export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
     delete p.item_archetype_cache;
 
     delete p.player.entitlements;
@@ -121,7 +121,7 @@ export function stripPlayerData(items: Item[], p: PlayerData): any {
             icon: da.icon,
         }));
 
-    let newItems = [] as Item[];
+    let newItems = [] as PlayerEquipmentItem[];
     p.player.character.items.forEach((item) => {
         let itemEntry = items.find((i) => i.symbol === item.symbol);
         if (itemEntry) {

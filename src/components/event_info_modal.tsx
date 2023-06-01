@@ -15,7 +15,8 @@ type EventInfoModalProps = {
 	leaderboard: Array<object>,
 }
 
-function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoModalProps) {
+function EventInfoModal(props: EventInfoModalProps) {
+	const {instanceId, image, hasDetails, leaderboard} = props;
 	const [eventData, setEventData] = React.useState<Event | EventData | null>(null);
 
 	React.useEffect(() => {
@@ -35,7 +36,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Event Information',
 			render: () => (
 				<Tab.Pane attached={false}>
-					{eventData && <EventInformationTab eventData={eventData} />}
+					{eventData ? <EventInformationTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},
@@ -43,7 +44,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Threshold Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					{eventData && <ThresholdRewardsTab eventData={eventData} />}
+					{eventData ? <ThresholdRewardsTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},
@@ -51,7 +52,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Ranked Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					{eventData && <RankedRewardsTab eventData={eventData} />}
+					{eventData ? <RankedRewardsTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},

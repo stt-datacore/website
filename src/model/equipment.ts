@@ -1,16 +1,30 @@
+import { PlayerEquipmentItem } from "./player"
 
-export interface EquipmentItem {
+export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
   type: number
   name: string
   flavor: string
   rarity: number
-  item_sources: EquipmentItemSource[]
   short_name?: string
   imageUrl: string
-  recipe?: EquipmentRecipe
   bonuses?: EquipmentBonuses
   quantity?: number;
+}
+
+export interface EquipmentItem extends EquipmentCommon {
+  symbol: string
+  type: number
+  name: string
+  flavor: string
+  rarity: number
+  short_name?: string
+  imageUrl: string
+  bonuses?: EquipmentBonuses
+  quantity?: number;
+
+  item_sources: EquipmentItemSource[]
+  recipe?: EquipmentRecipe
 }
 
 export interface EquipmentItemSource {
