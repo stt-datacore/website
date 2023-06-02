@@ -202,6 +202,18 @@ const PlayerToolsPage = (props: any) =>  {
 		setEventData([...inputPlayerData.player.character.events ?? []]);
 		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
 		setActiveCrew(activeCrew);
+    
+		if (inputPlayerData.player.character.shuttle_adventures) {
+			inputPlayerData.player.character.crew
+				.filter(crew => crew.active_status === 2)
+				.forEach(crew => {
+					let shuttle = inputPlayerData.player.character.shuttle_adventures?.find(x => x.shuttles[0].id === crew.active_id);
+					if (shuttle) {
+						shuttle.shuttles[0].slots[crew.active_index].crew_symbol = crew.symbol;
+					}
+				});
+		}
+
 		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures ?? []]);
 
 		let dtImported = new Date();

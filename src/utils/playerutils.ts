@@ -199,12 +199,6 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         p.player.character.stored_immortals.filter((im) => im.quantity !== 1);
     p.player.character.c_stored_immortals = c_stored_immortals;
 	
-	console.log("Trimmed Data");
-	console.log(p);
-
-	console.log("Trimmed Data JSON");
-	console.log(JSON.stringify(p));
-
 	return p;
 }
 

@@ -28,7 +28,7 @@ export class ShuttleSeat {
 
 export class CrewScores {
 	skillsets: any = {};
-	ranked: any[] = [];
+	ranked: ShuttleOccupant[] = [];
 	constructor () {}
 };
 
@@ -73,6 +73,7 @@ export interface ShuttleAdventure {
 	required_trait: any
 	skills: string[]
 	trait_bonuses: TraitBonuses
+	crew_symbol?: string;
   }
   
   export interface TraitBonuses {
