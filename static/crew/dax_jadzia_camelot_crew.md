@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-This crew note update for the Royal will be the first one that isn't absolutely glowing. Greater SCI bases and a plethora of strong(er) voyagers have brought her down to earth a bit, which is how you'd describe an event count that will likely never again reach 2017's lofty tally of seven. You'll still have plenty of chances to relieve her of collection duties and thaw this capable event shuttler, but her punch lacks the power that it once had, leaving her mid-level for daily work with fairly worthwhile long term value.
+There’s a reason your awful weatherman is still employed - forecasting is hard. In days of yore, the Princess boasted ample stat ranks and had just gobbled up seven Dax bonuses in one year. Some time after that, as her numbers fell and the crowd of Super Rares surged past her in collection value, the commoners began sharpening the guillotine. 
+
+Now she’s once again on the upswing and we’re advising you to Buy, Buy, Buy! Even if Jadzia is an easy freeze for players past the early game, she comes preloaded with strong collection value (including room to grow) and a prolific event portfolio which has seen her traits carry Jadzia through lean years for variant events.

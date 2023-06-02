@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 17
+events: 16
 in_portal: true
 date: 08/03/2018
 obtained: Event
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Typically, non-event 2-skill crew are stuffed somewhere near the bottom of many rankings. But Pulaski's yuuuge DIP is the second strongest base stat of all Super Rare crew and higher than the primary of over a dozen FF legendary crew. She'll be a shuttle anchor even going into the late game until 3/5s and better replace her.
+For a time, Pulaski was rubbing elbows with Legendary crew and owned the top base among all Super Rare options. But despite whatever reputation she may have cultivated with an admittedly impressive run as top DIP base, she’s a poor card in modern Timelines.
 
-If mid-game shuttles aren't your jam, Pulaski's inclusion in two collections including the enormous Costume Party makes her a worthwhile addition to rosters of every level.
+Stat boosts have pushed veteran players’ shuttles right up against the hard success cap and Pulaski is below average everywhere else. She’ll certainly be worth a thaw once or twice a year with an event bonus, but is hardly a top behold choice any longer.

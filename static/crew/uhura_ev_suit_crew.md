@@ -3,7 +3,7 @@ name: EV Suit Uhura
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 18
 in_portal:
 date: 12/12/2022

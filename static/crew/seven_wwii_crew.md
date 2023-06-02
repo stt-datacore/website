@@ -3,8 +3,8 @@ name: Mademoiselle de Neuf
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 24
+bigbook_tier: 6
+events: 28
 in_portal: true
 date: 09/05/2016
 obtained: Pack

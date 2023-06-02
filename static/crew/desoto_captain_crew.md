@@ -3,8 +3,8 @@ name: Captain Robert DeSoto
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 9
+bigbook_tier: 5
+events: 8
 in_portal: true
 date: 19/05/2022
 obtained: Event

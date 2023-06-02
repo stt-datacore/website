@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 16
+events: 15
 in_portal: true
 date: 05/12/2018
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Don’t judge a card by the haircut his mom gave him when he was six (was 1996 just like that?). The skill set and handicapped arena work are bummers, but this card is an alright voyage piece early on if you have him fused and in tandem with intermittent Chakotay events and a handful of traits, he's a crew whose event pace has the potential to increase in the future. Owning a spot in the Costumed collection, he's a name to target for late game players looking to stack skill boosts.
+Don’t judge a card by the haircut his mom gave him when he was six (was 1996 just like that?), or maybe do. Chakotay is already forgettable enough for some, while yet another CMD/DIP/SUCK skill set isn’t doing anyone any favors on voyages. But the man for all seasons has a nice, eclectic trait lineup which should see his collection count grow and helps keep his event tally moving while WRG fawns over nuTrek characters.

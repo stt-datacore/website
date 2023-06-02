@@ -3,8 +3,8 @@ name: Doopler Emissary
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 3
-events: 7
+bigbook_tier: 4
+events: 3
 in_portal:
 date: 28/09/2022
 obtained: Mega

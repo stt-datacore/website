@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 9
-events: 22
+events: 23
 in_portal:
 date: 05/09/2018
 obtained: Voyage

@@ -3,8 +3,8 @@ name: GI Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 20
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 05/09/2016
 obtained: Pack

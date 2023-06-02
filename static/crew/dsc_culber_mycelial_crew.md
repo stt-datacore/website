@@ -3,8 +3,8 @@ name: Mycelial Culber
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
-events: 33
+bigbook_tier: 5
+events: 32
 in_portal: true
 date: 21/01/2020
 obtained: Pack

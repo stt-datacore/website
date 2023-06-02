@@ -3,7 +3,7 @@ name: Henry Starling
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 11
 in_portal: true
 date: 08/06/2021

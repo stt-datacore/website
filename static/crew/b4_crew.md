@@ -3,8 +3,8 @@ name: B-4
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 5
+bigbook_tier: 7
+events: 4
 in_portal: true
 date: 09/01/2019
 obtained: Event

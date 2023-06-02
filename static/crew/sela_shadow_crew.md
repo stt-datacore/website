@@ -3,8 +3,8 @@ name: Sela in Shadow
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 23
+bigbook_tier: 5
+events: 22
 in_portal:
 date: 02/11/2022
 obtained: Event
