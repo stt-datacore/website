@@ -18,6 +18,11 @@ type IndexPageProps = {
 	location: any;
 };
 
+interface Lockable {
+	symbol: string;
+	name: string;
+}
+
 type IndexPageState = {
 	botcrew: any[];
 	tableConfig: any[];
@@ -85,7 +90,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			});
 		});
 
-		const lockable = [];
+		const lockable = [] as Lockable[];
 		if (initHighlight != '') {
 			const highlighted = botcrew.find(c => c.symbol === initHighlight);
 			if (highlighted) {
@@ -113,7 +118,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			<span key={idx} style={{ whiteSpace: 'nowrap' }}>
 				{count.count} {count.name}{count.count != 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
 			</span>
-		)).reduce((prev, curr) => [prev, ' ', curr]);
+		)).reduce((prev, curr) => <>{prev} {curr}</>);
 
 		return (
 			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
@@ -200,7 +205,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					id="index"
 					data={botcrew}
 					config={tableConfig}
-					renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx, highlighted)}
+					renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
 					filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
 					initOptions={initOptions}
 					showFilterOptions={true}
