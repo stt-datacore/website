@@ -318,8 +318,36 @@ export interface Player {
     setup?: Setup
   }
   export enum CompletionState {
+    
+    /**
+     * Display as immortal, owned crew.
+     */
+    DisplayAsImmortalOwned=-4,
+
+    /**
+     * Display as immortal, unowned crew.
+     * Also, generally for unowned crew.
+     */
+    DisplayAsImmortalUnowned=-3,
+    
+    /**
+     * Display as immortal. Owned state not known/not needed.
+     */
+    DisplayAsImmortal=-2,
+
+    /**
+     * Crew is immortalized (owned)
+     */
     Immortalized=-1,
+
+    /**
+     * Crew is frozen (1 or greater is the count)
+     */
     Frozen=1,
+
+    /**
+     * Crew is owned, not completed.
+     */
     NotComplete=0
   }
 	
