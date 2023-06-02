@@ -15,6 +15,7 @@ import { OpenNode } from '../../model/boss'
 import { NodeMatch, Player, PlayerCrew } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { calculateBuffConfig } from '../../utils/voyageutils';
 
 type ComboCrewTableProps = {
 	comboId: string;
@@ -153,6 +154,8 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 	);
 
 	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -165,7 +168,7 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget targetGroup='comboCrewTarget' allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget buffConfig={buffConfig} targetGroup='comboCrewTarget' allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

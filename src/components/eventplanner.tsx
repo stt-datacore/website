@@ -420,6 +420,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		const attributes = {
 			positive: highlighted
 		};
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
 
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
@@ -433,7 +434,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget allCrew={allCrew} targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget buffConfig={buffConfig} allCrew={allCrew} targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

@@ -3,7 +3,7 @@ import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, S
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
-import { calculateBuffConfig } from '../utils/voyageutils';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
@@ -87,7 +87,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
 			// if (matchMedia('(hover: hover)').matches) {
@@ -131,7 +132,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<CrewTarget allCrew={this.props.allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
+											<CrewTarget buffConfig={buffConfig} allCrew={this.props.allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
 												<img 
 													onClick={(e) => imageClick(e, crew)}
 													width={48} 

@@ -11,6 +11,7 @@ import { CrewMember } from '../model/crew';
 import { Collection, Filter } from '../model/game-elements';
 import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
 type CollectionsToolProps = {
 	playerData: PlayerData;
@@ -464,6 +465,7 @@ const CrewTable = (props: CrewTableProps) => {
 				</tr>
 			);
 		});
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
 
 		return (
 			<Table.Row key={crew.symbol}>
@@ -477,7 +479,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew} targetGroup='collectionsTarget'>
+							<CrewTarget buffConfig={buffConfig} allCrew={allCrew} inputItem={crew} setDisplayItem={setHoverCrew} targetGroup='collectionsTarget'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

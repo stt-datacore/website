@@ -13,6 +13,7 @@ import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, Fu
 import { CrewMember } from '../model/crew';
 import { CryoCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -1036,6 +1037,8 @@ const CrewTable = (props: CrewTableProps) => {
 	);
 
 	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -1048,7 +1051,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} setDisplayItem={setHoverCrew} allCrew={props.data} targetGroup='retrievalGroup'>
+							<CrewTarget buffConfig={buffConfig} inputItem={crew} setDisplayItem={setHoverCrew} allCrew={props.data} targetGroup='retrievalGroup'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

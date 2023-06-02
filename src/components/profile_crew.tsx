@@ -47,7 +47,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if (props.isTools) {
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
-			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+			<ProfileCrewTools playerData={props.playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
 				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects} />
 		);
 	}
@@ -63,7 +63,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 	}
 	console.log(allCrew);
-	return (<ProfileCrewTable crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
+	return (<ProfileCrewTable playerData={props.playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
 type ProfileCrewTools = {
@@ -73,6 +73,7 @@ type ProfileCrewTools = {
 	initOptions?: InitialOptions;
 	initHighlight: string;
 	initProspects: string[];
+	playerData: PlayerData;
 };
 
 const ProfileCrewTools = (props: ProfileCrewTools) => {
@@ -181,7 +182,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable buffConfig={buffConfig} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
+			<ProfileCrewTable playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<RosterSummary myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig} />
 		</React.Fragment>
@@ -205,7 +206,7 @@ type ProfileCrewTableProps = {
 	allCrew: CrewMember[];
 	initOptions: any;
 	lockable?: any[];
-	buffConfig?: BuffStatTable;
+	playerData: PlayerData;
 };
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
@@ -217,6 +218,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
+	const buffConfig = calculateBuffConfig(props.playerData.player);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');
@@ -313,14 +315,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
-
-	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined, buffConfig: BuffStatTable | undefined = undefined): JSX.Element {
+	
+	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
 				
 		setCrew ??= (e) => { return; };
-		let referenceCrew = allCrew.find(c => c.symbol == crew.symbol);
 		
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
@@ -334,7 +335,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget buffConfig={props.buffConfig} allCrew={allCrew} inputItem={crew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget buffConfig={buffConfig} allCrew={allCrew} inputItem={crew} setDisplayItem={setCrew} targetGroup='targetClass'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
@@ -483,7 +484,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                         crew,
                         idx ?? -1,
                         highlighted ?? false,
-                        setFocusedCrew
+                        setFocusedCrew						
                     )
                 }
                 filterRow={(crew, filters, filterType) =>
