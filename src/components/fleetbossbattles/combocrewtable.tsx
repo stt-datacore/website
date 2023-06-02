@@ -12,7 +12,7 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { OpenNode } from '../../model/boss'
-import { NodeMatch, Player, PlayerCrew } from '../../model/player';
+import { NodeMatch, Player, PlayerCrew, PlayerData } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { calculateBuffConfig } from '../../utils/voyageutils';
@@ -25,6 +25,7 @@ type ComboCrewTableProps = {
 	allCrew: PlayerCrew[] | CrewMember[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
+	playerData: PlayerData;
 };
 
 const ComboCrewTable = (props: ComboCrewTableProps) => {
@@ -154,7 +155,7 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 	);
 
 	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		const buffConfig = calculateBuffConfig(props.playerData.player);
 
 		return (
 			<Table.Row key={idx}>

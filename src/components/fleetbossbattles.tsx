@@ -127,7 +127,7 @@ const ComboPicker = () => {
 				}
 				{bossOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
 			</div>
-			{combo && <ComboSolver allCrew={allData.allCrew} combo={combo} />}
+			{combo && <ComboSolver playerData={allData.playerData} allCrew={allData.allCrew} combo={combo} />}
 		</React.Fragment>
 	);
 };

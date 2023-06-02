@@ -7,7 +7,8 @@ import ComboCrewTable from './combocrewtable';
 import ComboChecklist from './combochecklist';
 import { ExportTraits, ExportCrewLists } from './exporter';
 import { Combo, ComboNode, IgnoredCombo, OpenNode } from '../../model/boss';
-import { PlayerCrew } from '../../model/player';
+import { PlayerCrew, PlayerData } from '../../model/player';
+import { BaseSkills } from '../../model/crew';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -21,6 +22,7 @@ const MAX_RARITY_BY_DIFFICULTY = {
 export interface ComboSolverProps {
 	allCrew: PlayerCrew[];
 	combo: Combo;
+	playerData: PlayerData;
 };
 
 const ComboSolver = (props: ComboSolverProps) => {
@@ -135,6 +137,15 @@ const ComboSolver = (props: ComboSolverProps) => {
 					matchedCrew.nodes = nodes;
 					matchedCrew.nodes_rarity = nodes.length;
 					matchedCrew.node_matches = matchesByNode;
+					if (matchedCrew.highest_owned_rarity) {
+						let pcrew = props.playerData.player.character.crew.find(cr => cr.symbol === matchedCrew.symbol);
+						if (pcrew) {
+							matchedCrew.level = pcrew.level;
+							matchedCrew.rarity = pcrew.rarity;
+							matchedCrew.base_skills = JSON.parse(JSON.stringify(pcrew.base_skills)) as BaseSkills;
+							matchedCrew.immortal = pcrew.immortal;
+						}
+					}
 					allMatchingCrew.push(matchedCrew);
 				}
 			}
@@ -235,6 +246,7 @@ const ComboSolver = (props: ComboSolverProps) => {
 			{activeStep === 'crew' && openNodes.length > 0 &&
 				<React.Fragment>
 					<ComboCrewTable
+						playerData={props.playerData}
 						allCrew={allCrew}
 						comboId={combo.id as string} openNodes={openNodes} traitPool={traitPool}
 						allMatchingCrew={allMatchingCrew}

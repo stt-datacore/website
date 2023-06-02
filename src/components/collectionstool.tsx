@@ -55,9 +55,12 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment?.length == 4)) {
 				crew.immortal = CompletionState.Immortalized;
 			}
-			if (owned[0].immortal > 0) {
+			if (owned[0].immortal !== 0) {
 				crew.immortal = owned[0].immortal;
 			}
+			crew.rarity = owned[0].rarity;
+			crew.level = owned[0].level;
+			crew.base_skills = {...owned[0].base_skills};
 			console.log(crew.immortal);
 			if (crew.immortal) {
 				console.log("We should be filtering " + crew.name);
@@ -107,7 +110,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 	});
 
 	return (
-		<CollectionsUI allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} />
+		<CollectionsUI playerData={playerData} allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} />
 	);
 
 	function mergeRewards(current: ImmortalReward[], rewards: BuffBase[] | null | undefined): void {
@@ -137,6 +140,7 @@ type CollectionsUIProps = {
 	playerCollections: any[];
 	collectionCrew: PlayerCrew[];
 	allCrew: PlayerCrew[];
+	playerData: PlayerData;
 };
 
 const CollectionsUI = (props: CollectionsUIProps) => {
@@ -150,7 +154,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		<React.Fragment>
 			<ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
 			<div ref={crewAnchor} />
-			<CrewTable allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} collectionsFilter={collectionsFilter} setCollectionsFilter={setCollectionsFilter} />
+			<CrewTable playerData={props.playerData} allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} collectionsFilter={collectionsFilter} setCollectionsFilter={setCollectionsFilter} />
 		</React.Fragment>
 	);
 
@@ -311,6 +315,7 @@ type CrewTableProps = {
 	collectionCrew: PlayerCrew[];
 	collectionsFilter: number[];
 	setCollectionsFilter: (collectionIds: number[]) => void;
+	playerData: PlayerData;
 };
 
 const CrewTable = (props: CrewTableProps) => {
@@ -465,7 +470,7 @@ const CrewTable = (props: CrewTableProps) => {
 				</tr>
 			);
 		});
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		const buffConfig = calculateBuffConfig(props.playerData.player);
 
 		return (
 			<Table.Row key={crew.symbol}>

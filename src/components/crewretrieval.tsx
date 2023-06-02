@@ -10,7 +10,7 @@ import { formatTierLabel } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
-import { CrewMember } from '../model/crew';
+import { BaseSkills, CrewMember } from '../model/crew';
 import { CryoCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
@@ -94,7 +94,13 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
 		const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
-		ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
+		if (owned && owned.length) {
+			ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
+		}
+		else {
+			ac.highest_owned_level = 0;
+		}
+		
 	});
 
 	let cArr = [...new Set(allCrew.map(a => a.collections).flat())].sort();
@@ -124,6 +130,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		<React.Fragment>
 			<RetrievalEnergy energy={playerData.crew_crafting_root.energy} />
 			<RetrievalForm
+				playerData={playerData}
 				ownedPolestars={ownedPolestars}
 				allCrew={allCrew}
 				allKeystones={allKeystones}
@@ -180,6 +187,7 @@ type RetrievalFormProps = {
 	allCrew: PlayerCrew[];
 	allKeystones: KeystoneBase[];
 	myCrew: PlayerCrew[];
+	playerData: PlayerData;
 };
 
 const RetrievalForm = (props: RetrievalFormProps) => {
@@ -193,6 +201,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 
 	const [polestars, setPolestars] = React.useState<Polestar[] | null>(null);
 	const [data, setData] = React.useState<PlayerCrew[] | null>(null);
+	const { playerData } = props;
 
 	// Update polestar list on filter, prospect change
 	React.useEffect(() => {
@@ -221,7 +230,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				)
 			)
 		);
-
+		
 		retrievable = retrievable.filter(ownedFilters[ownedFilter](myCrew));
 		if (ownedFilterOptions[2].value === ownedFilter) {
 			retrievable = retrievable.filter(crew => (crew.max_rarity ?? 0) > (crew?.highest_owned_rarity ?? 0));
@@ -234,6 +243,19 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 		if (collection) {
 			retrievable = retrievable.filter((crew) => crew.collections.indexOf(collection) !== -1);
 		}
+		retrievable = JSON.parse(JSON.stringify(retrievable)) as PlayerCrew[];
+		retrievable.forEach(ret => {
+			let mc = myCrew.find(m => m.symbol === ret.symbol);
+			if (mc) {
+				ret.level = mc.level;
+				ret.base_skills = JSON.parse(JSON.stringify(mc.base_skills)) as BaseSkills;
+				ret.rarity = mc.rarity;		
+				ret.immortal = mc.immortal;
+			}
+			else {
+				ret.immortal = -2;
+			}
+		});
 
 		setData([...retrievable]);
 	}, [polestars, ownedFilter, minRarity, collection]);
@@ -270,7 +292,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 					/>
 				</Form.Group>
 			</Form>
-		 	{data && polestars && <CrewTable data={data} polestars={polestars} /> }
+		 	{data && polestars && <CrewTable allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
 		</React.Fragment>
 	);
 };
@@ -1000,15 +1022,19 @@ const ProspectInventory = (props: ProspectInventoryProps) => {
 type CrewTableProps = {
 	data: PlayerCrew[];
 	polestars: Polestar[];
+	playerData: PlayerData;
+	allCrew: CrewMember[]
 };
 
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
-
+	const { allCrew } = props;
 	const [activeCrew, setActiveCrew] = React.useState<string | null>(null);
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
 
 	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | null | undefined>(null);
+	const { playerData } = props;
+
 	if (!data) return (<></>);
 
 	const tableConfig: ITableConfigRow[] = [
@@ -1027,7 +1053,7 @@ const CrewTable = (props: CrewTableProps) => {
 			id={"crewretrieval"}
 			data={data}
 			config={tableConfig}
-			renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? 0)}
+			renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? 0, playerData)}
 			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
@@ -1036,8 +1062,8 @@ const CrewTable = (props: CrewTableProps) => {
 		</>
 	);
 
-	function renderTableRow(crew: PlayerCrew, idx: number): JSX.Element {
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
+		const buffConfig = calculateBuffConfig(playerData.player);
 
 		return (
 			<Table.Row key={idx}>
@@ -1051,7 +1077,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget buffConfig={buffConfig} inputItem={crew} setDisplayItem={setHoverCrew} allCrew={props.data} targetGroup='retrievalGroup'>
+							<CrewTarget buffConfig={buffConfig} inputItem={crew} setDisplayItem={setHoverCrew} allCrew={allCrew} targetGroup='retrievalGroup'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

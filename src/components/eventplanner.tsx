@@ -420,7 +420,6 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		const attributes = {
 			positive: highlighted
 		};
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
 
 		return (
 			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
@@ -484,7 +483,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 					{crew.favorite && <Icon name='heart' />}
 					{crew.immortal > 0 && <Icon name='snowflake' />}
 					{crew.prospect && <Icon name='add user' />}
-					<span>{crew.immortal ? (`${crew.immortal} frozen`) : (`Level ${crew.level}`)}</span>
+					<span>{crew.immortal > 0 ? (`${crew.immortal} frozen`) : crew.immortal < 0 ? `Immortalized` : (`Level ${crew.level}`)}</span>
 				</div>
 			</div>
 		);
