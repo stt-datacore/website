@@ -99,7 +99,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     
                 if (cm && showImmortal === true) {
                     item = JSON.parse(JSON.stringify(cm)) as PlayerCrew;
-                    item.immortal = -2;
+                    if (item.immortal > -2) item.immortal = -2;
                 }
                 else {
                     item = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;
