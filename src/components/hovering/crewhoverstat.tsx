@@ -217,7 +217,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                 <>
                     <div style={{marginBottom: "4px", fontSize: "0.75em"}}>
                         <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                            <h4 style={{ marginBottom: '.25em' }}>{crew.action.name}</h4>
+                            <h4 style={{ marginBottom: '.25em', maxWidth: "75%" }}>{crew.action.name}</h4>
                             <div style={{ width: "auto", display:"flex", flexDirection: "column", alignItems: "center", alignContent: "center", backgroundColor: getActionColor(crew.action.bonus_type), padding: "2px 4px" }}>
                                 <div style={{display:"flex", height: "2em", flexDirection:"row", justifyContent: "center", alignItems: "center"}}>
                                     <span style={{margin: 0, padding: 0, marginRight:"2px", fontSize: "1.5em", fontWeight: "bold"}}>+ {crew.action.bonus_amount}</span>
