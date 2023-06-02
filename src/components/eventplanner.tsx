@@ -319,7 +319,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
-						if (showPotential && crew.immortal !== CompletionState.Immortalized && !crew.prospect) {
+						if (showPotential && !crew.immortal && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
