@@ -71,6 +71,12 @@ export default class CONFIG {
 		3: 'Shield Regeneration'
 	};
 
+	static readonly CREW_SHIP_BATTLE_BONUS_COLORS: { [index: number]: string } = {
+		0: "#d04444",
+		1: "#7eb1e8",
+		2: "#eca50b",
+	}
+
 	static readonly CREW_SHIP_BATTLE_TRIGGER: { [index: number]: string } = {
 		0: 'None',
 		1: 'Position',
