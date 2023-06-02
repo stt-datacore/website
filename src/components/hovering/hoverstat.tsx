@@ -6,31 +6,156 @@ import * as uuid from 'uuid';
  */
 export class TinyStore {
     private static readonly notify: Map<string, TinyStore> = new Map<string, TinyStore>();
-    static getStore(targetGroup: string): TinyStore {        
+
+    private readonly targetGroup: string;
+    private readonly prefix = "___tinyhover_";
+
+    private mapCounter: number = 0;
+    private readonly subscribers = new Map<string, (key: string) => void>();
+
+    
+    /**
+     * Fire this to execute all listeners on a property changed
+     * @param name 
+     */
+    protected onPropertyChanged(name: string): void {
+        for (let [, func] of this.subscribers) {
+            func(name);
+        }
+    }
+
+    /**
+     * Compose the internal key used to store the values
+     * @param key 
+     * @returns 
+     */
+    protected composeKey(key: string): string {
+        //console.log("Tiny Store ComposeKey: " + `${this.prefix}_${this.targetGroup}_${key}`);
+        return `${this.prefix}_${this.targetGroup}_${key}`;
+    }
+    
+    /**
+     * Create a new store
+     * @param targetGroup The target group that is associated 
+     * @param defaultSticky The default stickiness of new values
+     */
+    private constructor(targetGroup: string, defaultSticky: boolean = false) {
+        this.targetGroup = targetGroup;
+        this.defaultSticky = defaultSticky ?? false;
+    }
+
+    /**
+     * Returns true if this store defaults to creating sticky properties
+     */
+    public readonly defaultSticky: boolean;
+
+    /**
+     * Get or create a tiny store for the specified targetGroup. You must use this 
+     * static method to get a store. There is no public constructor for this class.
+     * @param targetGroup The name of the targetGroup
+     * @param defaultSticky The default stickiness of new values. defaultSticky will only be set for new stores, and is immutable.
+     * @returns A new or existing TinyStore
+     */
+    static getStore(targetGroup: string, defaultSticky: boolean = false): TinyStore {        
         if (this.notify.has(targetGroup)) {
             let ts = this.notify.get(targetGroup);
             if (!ts) {
-                ts = new TinyStore(targetGroup);
+                ts = new TinyStore(targetGroup, defaultSticky);
                 this.notify.set(targetGroup, ts);
             }
             return ts;
         }
         else {
-            let ts = new TinyStore(targetGroup);
+            let ts = new TinyStore(targetGroup, defaultSticky);
             this.notify.set(targetGroup, ts);
             return ts;
         }
     }
 
-    private mapCounter: number = 0;
-    private readonly subscribers = new Map<string, (key: string) => void>();
+    /**
+     * Check if the store for a targetGroup exists
+     * @param targetGroup The targetGroup to check
+     * @returns true if the store exists, otherwise false.
+     */
+    static storeExists(targetGroup: string): boolean {
+        return this.notify.has(targetGroup) && this.notify.get(targetGroup) !== undefined;
+    }
 
-    subscribe(func: (key: string) => void): number {
+    /**
+     * Create a new store from an existing store, and copies all values from the old store to the new store
+     * @param targetGroup The new target group to create.
+     * @param store The source store
+     * @param defaultSticky The default stickiness of new values. defaultSticky will only be set for new stores, and is immutable.
+     * @returns A new store or false if the targetGroup already exists, the store has the same targetGroup, or any other error condition.
+     */
+    static createFrom(targetGroup: string, store: TinyStore, defaultSticky: boolean = false) {
+        if (!store || !targetGroup) return false;
+        if (store.targetGroup === targetGroup) return false;
+        if (this.storeExists(targetGroup)) return false;
+        
+        let newStore = this.getStore(targetGroup, defaultSticky);
+        if (newStore){
+            let pfxa = store.composeKey("");
+            let pfxb = newStore.composeKey("");
+
+            let keys = store.getKeys();
+            for (let key of keys) {
+                let value = window.localStorage.getItem(pfxa + key);
+                if (!value) value = window.sessionStorage.getItem(pfxa + key);
+
+                if (value) {
+                    if (defaultSticky) {
+                        window.localStorage.setItem(pfxb + key, value);
+                    }
+                    else {
+                        window.sessionStorage.setItem(pfxb + key, value);
+                    }                    
+                }
+            }
+
+            return newStore;
+        }
+
+        return false;
+    }
+
+    /**
+     * Destroys all values in and deletes the store for the specified targetGroup and removes the static reference.
+     * @param targetGroup The targetGroup to delete
+     */
+    static destroy(targetGroup: string) {
+        if (this.notify.has(targetGroup)) {
+            this.notify.get(targetGroup)?.innerDestroy();
+            this.notify.delete(targetGroup);
+        }
+    }
+
+    /**
+     * Called by destroy() and clear() to delete all values
+     */
+    private innerDestroy() {
+        let keys = this.getKeys();
+        for (let key of keys) {
+            this.removeValue(key);
+        }
+    }
+
+    /**
+     * Subscribe to property changed events
+     * @param func The callback
+     * @returns A subscription token that can be used to unsubscribe
+     */
+    public subscribe(func: (key: string) => void): number {
         this.subscribers.set(this.mapCounter.toString(), func);
         return this.mapCounter++;
     }
 
-    unsubscribe(subscriber: number | ((key: string) => void)): boolean {
+    /**
+     * Unsubscribe from property changed events
+     * @param subscriber Either the subscription token or the function, itself, can be used.
+     * @returns True if successfully unsubscribed, false for all other conditions (including not found)
+     */
+    public unsubscribe(subscriber: number | ((key: string) => void)): boolean {
         if (typeof subscriber === 'number') {
             let key = subscriber.toString();
             if (this.subscribers.has(key)){
@@ -48,26 +173,6 @@ export class TinyStore {
         }
 
         return false;
-    }
-
-    private onPropertyChanged(name: string): void {
-        for (let [, func] of this.subscribers) {
-            func(name);
-        }
-    }
-
-    private readonly targetGroup: string;
-    private readonly prefix = "___tinyhover_";
-    private readonly defaultSticky: boolean;
-
-    /**
-     * Compose the internal key used to store the values
-     * @param key 
-     * @returns 
-     */
-    protected composeKey(key: string): string {
-        //console.log("Tiny Store ComposeKey: " + `${this.prefix}_${this.targetGroup}_${key}`);
-        return `${this.prefix}_${this.targetGroup}_${key}`;
     }
     
     /**
@@ -120,16 +225,6 @@ export class TinyStore {
         }
 
         return objs;
-    }
-    
-    /**
-     * Create a new store
-     * @param targetGroup The target group that is associated 
-     * @param defaultSticky The default stickiness of new values
-     */
-    private constructor(targetGroup: string, defaultSticky: boolean = false) {
-        this.targetGroup = targetGroup;
-        this.defaultSticky = defaultSticky ?? false;
     }
 
     /**
@@ -191,6 +286,13 @@ export class TinyStore {
         let tkey = this.composeKey(key);
         window.sessionStorage.removeItem(tkey);
         window.localStorage.removeItem(tkey);
+    }
+
+    /**
+     * Clear and delete all values in the store
+     */
+    public clear() {
+        this.innerDestroy();
     }
 
     /**
