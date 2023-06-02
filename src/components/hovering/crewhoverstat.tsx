@@ -43,6 +43,13 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     constructor(props: CrewTargetProps){
         super(props);        
         this.tiny.subscribe(this.propertyChanged);        
+        if (props.inputItem) {
+            const url = `${process.env.GATSBY_ASSETS_URL}${props.inputItem.imageUrlFullBody}`;
+            for (let i = 0; i < 1; i++) {
+                let img = new Image();
+                img.src = url;                    
+            }
+        }
     }
     
     protected get showBuffs(): boolean {
@@ -81,8 +88,9 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         const showImmortal = this.showImmo;
 
         if (dataIn) {            
+            let item: PlayerCrew = dataIn as PlayerCrew;
+
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
-                let item: PlayerCrew;
                 let cm: CrewMember | undefined = undefined;
     
                 if (showImmortal === true) {
@@ -107,8 +115,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                         } as Skill;
                     }
                 }
-                return item;
             }
+         
         }        
         return dataIn;
     }
