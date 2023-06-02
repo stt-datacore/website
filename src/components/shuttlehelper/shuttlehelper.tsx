@@ -23,7 +23,6 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	const [shuttlers, setShuttlers] = useStateWithStorage(props.dbid+'/shuttlers/setups', new Shuttlers(), { rememberForever: true, onInitialize: variableReady });
 	const [assigned, setAssigned] = useStateWithStorage<AssignedCrew[]>(props.dbid+'/shuttlers/assigned', [], { rememberForever: true, onInitialize: variableReady });
 	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
-
 	const [considerActive, setConsiderActive] = useStateWithStorage(props.helperId+'/considerActive', true);
 	const [considerVoyage, setConsiderVoyage] = useStateWithStorage(props.helperId+'/considerVoyage', false);
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage(props.helperId+'/considerFrozen', false);
@@ -40,6 +39,10 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	// Prune old shuttles from stored values, import open shuttles from player data
 	React.useEffect(() => {
 		if (loadState === 2) initializeShuttlers();
+		else if (loadState === 3) {
+			updateAssignments();
+			
+		}
 	}, [loadState]);
 
 	// Prune assignments from other events, dismissed shuttles
@@ -129,6 +132,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 			const shuttleNum = shuttlers.shuttles.findIndex(shuttle => shuttle.id === shuttleId);
 			shuttlers.shuttles.splice(shuttleNum, 1);
 		});
+		let currCrew: AssignedCrew[] = [];
 
 		// Import missions from player data (during an active event, if specified)
 		if (activeShuttles && (!props.eventData || props.eventData.seconds_to_start === 0)) {
@@ -137,6 +141,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					const shuttle = new Shuttle(props.groupId, adventure.symbol, true);
 					shuttle.name = adventure.name;
 					shuttle.faction = adventure.faction_id;
+					let x = 0;					
 					adventure.shuttles[0].slots.forEach(slot => {
 						const seat = new ShuttleSeat();
 						if (slot.skills.length > 1) {
@@ -148,16 +153,66 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 							const skills = slot.skills[0].split(',');
 							seat.skillA = skills[0];
 							if (skills.length > 1) seat.skillB = skills[1];
+						}												
+						if (slot.crew_symbol) {
+							updateCrewScores([ seat ], () => {
+								let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
+								let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
+								if (item) {
+									currCrew.push({
+										shuttleId: shuttle.id,
+										seatNum: x,
+										ssId: getSkillSetId(seat),
+										assignedId: item.id,
+										assignedSymbol: item.symbol,
+										seatScore: score?.score ?? 0,
+										locked: true
+									})
+								}
+							}, slot.crew_symbol);
 						}
+						x++;
 						shuttle.seats.push(seat);
 					});
 					shuttlers.shuttles.push(shuttle);
 				}
+				else {
+					const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === adventure.symbol);
+					if (shuttle) {
+						let x = 0;
+						adventure.shuttles[0].slots.forEach(slot => {
+							const seat = shuttle.seats[x];
+							if (slot.crew_symbol) {
+								updateCrewScores([ seat ], () => {
+									let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
+									let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
+									if (item) {
+										currCrew.push({
+											shuttleId: shuttle.id,
+											seatNum: x,
+											ssId: getSkillSetId(seat),
+											assignedId: item.id,
+											assignedSymbol: item.symbol,
+											seatScore: score?.score ?? 0,
+											locked: true
+										})
+									}
+								}, slot.crew_symbol);
+							}
+							x++;
+						});
+					}
+				}
 			});
+		}
+		if (currCrew) {
+			setAssigned(currCrew);
 		}
 		setShuttlers({...shuttlers});
 		if (shuttlers.shuttles.filter(shuttle => shuttle.groupId === props.groupId && shuttle.priority > 0).length > 0)
 			setActiveStep('assignments');
+
+		setLoadState(3);
 	}
 
 	function recommendShuttlers(): void {
@@ -184,19 +239,22 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 		updateAssignments();
 	}
 
-	function updateCrewScores(todo: ShuttleSeat[] = [], doneCallback?: () => void): void {
+	function updateCrewScores(todo: ShuttleSeat[] = [], doneCallback?: () => void, justCrew?: string): void {
 		const newSkills = {};
 		const newScores = [] as ShuttleOccupant[];
 
 		for (let i = 0; i < props.crew.length; i++) {
-			if (!considerActive && props.crew[i].active_status === 2)
-				continue;
+			if (justCrew && props.crew[i].symbol != justCrew) continue;
+			if (!justCrew) {
+				if (!considerActive && props.crew[i].active_status === 2)
+					continue;
 
-			if (!considerVoyage && props.crew[i].active_status === 3)
-				continue;
+				if (!considerVoyage && props.crew[i].active_status === 3)
+					continue;
 
-			if (!considerFrozen && props.crew[i].immortal > 0)
-				continue;
+				if (!considerFrozen && props.crew[i].immortal > 0)
+					continue;
+			}
 
 			todo.forEach(seat => {
 				const skillOperand = seat.operand;
