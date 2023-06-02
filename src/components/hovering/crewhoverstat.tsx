@@ -116,6 +116,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                     }
                 }
             }
+
+            return item;
          
         }        
         return dataIn;
