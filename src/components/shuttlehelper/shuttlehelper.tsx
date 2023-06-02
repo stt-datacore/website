@@ -142,7 +142,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					shuttle.name = adventure.name;
 					shuttle.faction = adventure.faction_id;
 
-					// TODO: The commented-out code maps existing shuttle crew to running shuttles
+					// TODO: The commented-out code maps existing shuttle crew to running shuttles. Also, the code is not complete.
 					// let x = 0;					
 					adventure.shuttles[0].slots.forEach(slot => {
 						const seat = new ShuttleSeat();
