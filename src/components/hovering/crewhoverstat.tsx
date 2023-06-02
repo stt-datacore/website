@@ -186,7 +186,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
         var me = this;
         const immoToggle = (e) => {
-            if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal != -2) {
+            if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal > -2) {
                 return;
             }
             me.showImmo = !me.showImmo;
@@ -205,8 +205,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
                             <i className="arrow alternate circle up icon" title="Apply Buffs" style={this.showBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
                             <i className="star icon" 
-                                title={("immortal" in crew && crew.immortal != -2 && crew.immortal != 0) ? "Crew Is Immortalized" : "Show Immortalized"} 
-                                style={("immortal" in crew && crew.immortal != 0 && crew.immortal != -2) ? completeStyle : this.showImmo ? activeStyle : dormantStyle} 
+                                title={("immortal" in crew && crew.immortal > -2 && crew.immortal != 0) ? "Crew Is Immortalized" : "Show Immortalized"} 
+                                style={("immortal" in crew && crew.immortal != 0 && crew.immortal > -2) ? completeStyle : this.showImmo ? activeStyle : dormantStyle} 
                                 onClick={(e) => immoToggle(e)} />
                         </div>
                     </div>
@@ -224,7 +224,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
                         <div style={{margin: "4px", display: "flex", flexDirection: "row", alignItems: "center"}}>
                             <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment">
-                                {(("immortal" in crew && crew.immortal === 0) ) ? (<b>{crew.level}</b>) : (<i title={"immortal" in crew && crew.immortal === -2 ? "Crew Is Shown Immortalized" : "Crew Is Immortalized"} className="check icon" style={checkedStyle} />)}
+                                {(("immortal" in crew && crew.immortal === 0) ) ? (<b>{crew.level}</b>) : (<i title={"immortal" in crew && crew.immortal <= -2 ? "Crew Is Shown Immortalized" : "Crew Is Immortalized"} className="check icon" style={checkedStyle} />)}
                             </h4>
                             <Rating icon='star' rating={!this.showImmo && "rarity" in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
                         </div>
