@@ -141,7 +141,9 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					const shuttle = new Shuttle(props.groupId, adventure.symbol, true);
 					shuttle.name = adventure.name;
 					shuttle.faction = adventure.faction_id;
-					let x = 0;					
+
+					// TODO: The commented-out code maps existing shuttle crew to running shuttles
+					// let x = 0;					
 					adventure.shuttles[0].slots.forEach(slot => {
 						const seat = new ShuttleSeat();
 						if (slot.skills.length > 1) {
@@ -154,55 +156,55 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 							seat.skillA = skills[0];
 							if (skills.length > 1) seat.skillB = skills[1];
 						}												
-						if (slot.crew_symbol) {
-							updateCrewScores([ seat ], () => {
-								let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
-								let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
-								if (item) {
-									currCrew.push({
-										shuttleId: shuttle.id,
-										seatNum: x,
-										ssId: getSkillSetId(seat),
-										assignedId: item.id,
-										assignedSymbol: item.symbol,
-										seatScore: score?.score ?? 0,
-										locked: true
-									})
-								}
-							}, slot.crew_symbol);
-						}
-						x++;
+						// if (slot.crew_symbol) {
+						// 	updateCrewScores([ seat ], () => {
+						// 		let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
+						// 		let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
+						// 		if (item) {
+						// 			currCrew.push({
+						// 				shuttleId: shuttle.id,
+						// 				seatNum: x,
+						// 				ssId: getSkillSetId(seat),
+						// 				assignedId: item.id,
+						// 				assignedSymbol: item.symbol,
+						// 				seatScore: score?.score ?? 0,
+						// 				locked: true
+						// 			})
+						// 		}
+						// 	}, slot.crew_symbol);
+						// }
+						// x++;
 						shuttle.seats.push(seat);
 					});
 					shuttlers.shuttles.push(shuttle);
 				}
-				else {
-					const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === adventure.symbol);
-					if (shuttle) {
-						let x = 0;
-						adventure.shuttles[0].slots.forEach(slot => {
-							const seat = shuttle.seats[x];
-							if (slot.crew_symbol) {
-								updateCrewScores([ seat ], () => {
-									let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
-									let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
-									if (item) {
-										currCrew.push({
-											shuttleId: shuttle.id,
-											seatNum: x,
-											ssId: getSkillSetId(seat),
-											assignedId: item.id,
-											assignedSymbol: item.symbol,
-											seatScore: score?.score ?? 0,
-											locked: true
-										})
-									}
-								}, slot.crew_symbol);
-							}
-							x++;
-						});
-					}
-				}
+				// else {
+				// 	const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === adventure.symbol);
+				// 	if (shuttle) {
+				// 		let x = 0;
+				// 		adventure.shuttles[0].slots.forEach(slot => {
+				// 			const seat = shuttle.seats[x];
+				// 			if (slot.crew_symbol) {
+				// 				updateCrewScores([ seat ], () => {
+				// 					let item = props.crew.find(crew => crew.symbol === slot.crew_symbol);
+				// 					let score = crewScores.ranked.find(item => item.symbol === slot.crew_symbol);
+				// 					if (item) {
+				// 						currCrew.push({
+				// 							shuttleId: shuttle.id,
+				// 							seatNum: x,
+				// 							ssId: getSkillSetId(seat),
+				// 							assignedId: item.id,
+				// 							assignedSymbol: item.symbol,
+				// 							seatScore: score?.score ?? 0,
+				// 							locked: true
+				// 						})
+				// 					}
+				// 				}, slot.crew_symbol);
+				// 			}
+				// 			x++;
+				// 		});
+				// 	}
+				// }
 			});
 		}
 		if (currCrew) {
