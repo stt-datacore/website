@@ -16,7 +16,10 @@ import ExtraCrewDetails from '../components/extracrewdetails';
 import CONFIG from '../components/CONFIG';
 import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { TinyStore } from '../components/hovering/hoverstat';
+import { BuffStatTable } from '../utils/voyageutils';
+import { CrewMember } from '../model/crew';
 
 export interface CrewPageOptions {
 	key: string;
@@ -74,8 +77,22 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			items: []
 		};
 	}
+	
+	owned: PlayerCrew[] | undefined = undefined;
+	ownedCrew: PlayerCrew[] | undefined = undefined;
+	buffs: BuffStatTable | undefined = undefined;
 
 	componentDidMount() {
+
+		let stash = TinyStore.getStore('staticStash', false);
+		if (stash.containsKey('owned')) {
+			this.ownedCrew = stash.getValue('owned');
+			//stash.removeValue('owned');				
+		}			
+		if (stash.containsKey('buffs')) {
+			this.buffs = stash.getValue('buffs');				
+		}			
+		
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => this.setState({ items }));
@@ -116,9 +133,18 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		const userName = this._getCurrentUsername();
 
-		let crew = crewJson.edges[0].node;
+		let crew = crewJson.edges[0].node as PlayerCrew;
+		crew.immortal = CompletionState.DisplayAsImmortalStatic;
+
+		if (this.ownedCrew) {
+			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
+			if (discovered) {
+				crew.immortal = discovered.immortal;
+			}
+		}
+
 		if (markdownRemark && markdownRemark.frontmatter) {
-			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier;
+			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
 		}
 		return (
 			<Layout narrowLayout={true}>
@@ -153,10 +179,15 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Column width={12}>
 							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
+							
 							<div style={{ margin: '1em 0', textAlign: 'right' }}>
+								{crew.immortal !== CompletionState.DisplayAsImmortalStatic &&
+								(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
+								||
 								<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
+								}
 							</div>
-
+							
 							{this.state.items.length > 0 ? (
 								<React.Fragment>
 									{this.renderEquipment(crew)}

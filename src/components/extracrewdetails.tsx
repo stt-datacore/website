@@ -7,6 +7,8 @@ import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo,
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
+import { TinyStore } from './hovering/hoverstat';
+import { BuffStatTable } from '../utils/voyageutils';
 
 
 type ExtraCrewDetailsProps = {
@@ -49,6 +51,10 @@ const filterTraits = (polestar, trait) => {
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
 	
+	private ownedCrew?: PlayerCrew[] = undefined;
+	private buffs?: BuffStatTable;
+	private masterCrew?: PlayerCrew[] = undefined;
+
 	state: ExtraCrewDetailsState = {
 		variants: [] as Variant[],
 		constellation: undefined,
@@ -57,6 +63,12 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		pagination_page: 1
 	};
 
+	constructor(props: ExtraCrewDetailsProps) {
+		super(props);
+
+		
+	}
+
 	readonly setHoverCrew = (item: PlayerCrew | CrewMember | null | undefined) => {
 		this.setState({ ... this.state, hoverItem: item ?? undefined });
 	}
@@ -64,9 +76,23 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	get hoverCrew(): CrewMember | PlayerCrew | null | undefined {
 		return this.state.hoverItem;
 	}
-
-	componentDidMount() {
 	
+	componentDidMount() {
+
+		if (this.props.ownedCrew) {
+			this.ownedCrew = this.props.ownedCrew;
+		}
+		else {
+			let stash = TinyStore.getStore('staticStash', false);
+			if (stash.containsKey('owned')) {
+				this.ownedCrew = stash.getValue('owned');
+				//stash.removeValue('owned');				
+			}			
+			if (stash.containsKey('buffs')) {
+				this.buffs = stash.getValue('buffs');				
+			}			
+		}
+
 		// Get variant names from traits_hidden
 		const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 		const ignore = [
@@ -130,6 +156,13 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 				variantTraits.forEach(function (trait) {
 					let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
+					if (!self.masterCrew) {
+						self.masterCrew = [];
+					}
+
+					self.masterCrew = [ ... self.masterCrew, ... found ];
+
+					found = found.map(cp => JSON.parse(JSON.stringify(cp)) as PlayerCrew);
 					// Ignore variant group if crew is the only member of the group
 					if (found.length > 1) {
 						found.sort(function (a, b) {
@@ -139,10 +172,10 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						});
 
 						for (let fitem of found) {
-							if (self.props.ownedCrew) {
-								let oc = self.props.ownedCrew.find(item => item.symbol === fitem.symbol);
+							if (self.ownedCrew) {
+								let oc = self.ownedCrew.find(item => item.symbol === fitem.symbol);
 								if (oc && "immortal" in oc) {
-									fitem.skill_data = {...oc.skill_data };
+									fitem.base_skills = JSON.parse(JSON.stringify(oc.base_skills));
 									fitem.ship_battle = {...oc.ship_battle};
 									fitem.action = {...oc.action};
 									fitem.immortal = oc.immortal;
@@ -155,9 +188,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 								}
 							}	
 							else {
-								fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
+								fitem.immortal = CompletionState.DisplayAsImmortalStatic;
 							}
-					}
+						}
 						// short_name may not always be the best name to use, depending on the first variant
 						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
 						
@@ -417,7 +450,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		if (this.state.variants.length == 0) {
 			return <span />;
 		}
-
+		let me = this;
 		return (
 			this.state.variants.map((group, idx) => (
 				<>
@@ -428,9 +461,10 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
 								<CrewTarget 
 									targetGroup='variants'
-									setDisplayItem={this.setHoverCrew}
+									setDisplayItem={me.setHoverCrew}
 									inputItem={variant}
-									allCrew={this.props.ownedCrew ?? group.trait_variants}
+									buffConfig={me.buffs}
+									allCrew={me.masterCrew ?? group.trait_variants}
 									>
 								<ItemDisplay
 									src={`${process.env.GATSBY_ASSETS_URL}${variant.imageUrlPortrait}`}
@@ -444,7 +478,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						))}
 					</Grid>
 				</Segment>								
-				<CrewHoverStat targetGroup='variants' crew={this.hoverCrew ?? undefined} disableBuffs={true} />
+				<CrewHoverStat targetGroup='variants' crew={me.hoverCrew ?? undefined} />
 				</>
 			))
 		);

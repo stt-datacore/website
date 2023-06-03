@@ -16,7 +16,7 @@ import { BestCombos, CompletionState, GameEvent, EventCombos, EventPair, EventSk
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { applySkillBuff } from '../utils/crewutils';
+import { applySkillBuff, navToCrewPage } from '../utils/crewutils';
 
 type EventPlannerProps = {
 	playerData: PlayerData;
@@ -438,7 +438,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.crew, buffConfig)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

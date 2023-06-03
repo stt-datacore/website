@@ -6,7 +6,7 @@ import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
@@ -1086,7 +1086,7 @@ const CrewTable = (props: CrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
 					</div>

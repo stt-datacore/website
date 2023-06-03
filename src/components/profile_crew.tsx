@@ -13,7 +13,7 @@ import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../component
 import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { applySkillBuff, getShipBonus, getShipChargePhases, gradeToColor, isImmortal } from '../utils/crewutils';
+import { applySkillBuff, getShipBonus, getShipChargePhases, gradeToColor, isImmortal, navToCrewPage } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
@@ -44,6 +44,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		window.history.replaceState(null, '');
 
 	const allCrew = [...props.allCrew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
+
 	if (props.isTools) {
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
@@ -62,7 +63,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 			});
 		}
 	}
-	console.log(allCrew);
+
 	return (<ProfileCrewTable playerData={props.playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
@@ -343,7 +344,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
+								<a onClick={(e) => navToCrewPage(crew, myCrew, buffConfig)}>
+									{crew.name}
+								</a>
+							</span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

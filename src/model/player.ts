@@ -320,6 +320,12 @@ export interface Player {
   export enum CompletionState {
     
     /**
+     * Display as immortal, no way to reference.
+     * (Same as -2/DisplayAsImmortal but with different wording)
+     */
+    DisplayAsImmortalStatic=-5,
+    
+    /**
      * Display as immortal, owned crew.
      */
     DisplayAsImmortalOwned=-4,

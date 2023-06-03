@@ -16,6 +16,7 @@ import { NodeMatch, Player, PlayerCrew, PlayerData } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { calculateBuffConfig } from '../../utils/voyageutils';
+import { navToCrewPage } from '../../utils/crewutils';
 
 type ComboCrewTableProps = {
 	comboId: string;
@@ -174,7 +175,7 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

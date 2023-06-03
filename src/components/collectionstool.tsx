@@ -12,6 +12,7 @@ import { Collection, Filter } from '../model/game-elements';
 import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import { navToCrewPage } from '../utils/crewutils';
 
 type CollectionsToolProps = {
 	playerData: PlayerData;
@@ -485,7 +486,7 @@ const CrewTable = (props: CrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

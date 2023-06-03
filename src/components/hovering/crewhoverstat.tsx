@@ -346,6 +346,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
         const printImmoText = (immo: number) => {
             if (immo === -1) return "Crew Is Immortalized";
+            else if (immo === -5) return "Crew Is Shown Immortalized (No Player Data)";
             else if (immo === -3) return "Crew Is Shown Immortalized (Unowned)";
             else if (immo === -4) return "Crew Is Shown Immortalized (Owned)";
             else if (immo === -2) return "Crew Is Shown Immortalized";
@@ -379,7 +380,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                                 style={frozenStyle} 
                                 />)
                             ||
-                            ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalUnowned && 
+                            ("immortal" in crew && (crew.immortal === CompletionState.DisplayAsImmortalUnowned || crew.immortal === CompletionState.DisplayAsImmortalStatic) && 
                             <i className="lock icon" 
                                 title={printImmoText(crew.immortal)} 
                                 style={frozenStyle} 

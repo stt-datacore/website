@@ -9,7 +9,7 @@ import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
@@ -141,7 +141,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											</CrewTarget>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
-											<a href={"/crew/" + crew.symbol}>
+											<a onClick={(e) => navToCrewPage(crew, this.props.playerData.player.character.crew, buffConfig)}>
 												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 											</a>											
 										</div>

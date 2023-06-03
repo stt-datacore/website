@@ -67,7 +67,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
 			});
 			let bcrew = crew as PlayerCrew;
-			bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
+			bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
 		});
 
 		// Check for custom initial table options from URL or <Link state>

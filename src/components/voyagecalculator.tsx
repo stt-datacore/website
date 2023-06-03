@@ -11,7 +11,7 @@ import { VoyageStats } from '../components/voyagecalculator/voyagestats';
 
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompletionState } from '../model/player';
+import { CompletionState, PlayerCrew, Voyage } from '../model/player';
 
 const AllDataContext = React.createContext();
 
@@ -23,7 +23,7 @@ type VoyageCalculatorProps = {
 const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const { playerData, allCrew } = props;
 
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState(undefined);
 
 	if (!allShips) {
@@ -32,7 +32,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	}
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
-	const activeCrewIds = activeCrew.map(ac => {
+	const activeCrewIds = activeCrew?.map(ac => {
 		return {
 			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
