@@ -11,13 +11,13 @@ import { TinyStore } from './hovering/hoverstat';
 import { BuffStatTable } from '../utils/voyageutils';
 
 
-type ExtraCrewDetailsProps = {
+interface ExtraCrewDetailsProps {
 	crew_archetype_id: number,
 	max_rarity: number,
 	base_skills: BaseSkills,
 	traits: string[],
 	traits_hidden: string[],
-	unique_polestar_combos: string[],
+	unique_polestar_combos?: string[][],
 	ownedCrew?: PlayerCrew[]
 };
 

@@ -472,7 +472,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
         const { targetGroup, children } = this.props;
 
         return (    
-            <div className={targetGroup} onMouseOver={(e) => this.containerEnter(e)} onMouseOut={(e) => this.containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} onTouchEnd={(e) => this.containerEnter(e)} onMouseOver={(e) => this.containerEnter(e)} onMouseOut={(e) => this.containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
                 {children}
             </div>)         
     }
@@ -565,6 +565,43 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     
     protected currentTarget?: HTMLElement = undefined;
 
+    private findCommonAncestor(el1: HTMLElement, el2: HTMLElement): HTMLElement | undefined {
+
+        let t1: HTMLElement | null = el1;
+        let a1: HTMLElement[] = [];
+
+        while(t1) {
+            if (t1.parentElement) {
+                a1.push(t1.parentElement);                
+            }
+            t1 = t1.parentElement;
+        }
+
+        let t2: HTMLElement | null = el2;
+        let a2: HTMLElement[] = [];
+
+        while(t2) {
+            if (t2.parentElement) {
+                a2.push(t2.parentElement);                
+            }
+            t2 = t2.parentElement;
+        }
+
+        if (a2.includes(el1)) return el1;
+        else if (a1.includes(el2)) return el2;
+        
+        for (let et1 of a1) {
+            for (let et2 of a2) {
+                if (et1 === et2) {
+                    return et1;
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+
     /**
      * Activate the hover window
      * @param target the hover target that initiated the activation
@@ -610,46 +647,18 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                     x = window.scrollX + window.innerWidth - 8 - hoverstat.clientWidth;
                 }
 
+                if (x + hoverstat.clientWidth > window.innerWidth - 8) {
+                    x = 0;
+                    hoverstat.style.width = window.innerWidth - 8 + 'px';
+                }
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "1009";
 
+                window.addEventListener("touchend", this.touchTargetLeave);
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
-    }
-
-    private findCommonAncestor(el1: HTMLElement, el2: HTMLElement): HTMLElement | undefined {
-
-        let t1: HTMLElement | null = el1;
-        let a1: HTMLElement[] = [];
-
-        while(t1) {
-            if (t1.parentElement) {
-                a1.push(t1.parentElement);                
-            }
-            t1 = t1.parentElement;
-        }
-
-        let t2: HTMLElement | null = el2;
-        let a2: HTMLElement[] = [];
-
-        while(t2) {
-            if (t2.parentElement) {
-                a2.push(t2.parentElement);                
-            }
-            t2 = t2.parentElement;
-        }
-
-        for (let et1 of a1) {
-            for (let et2 of a2) {
-                if (et1 === et2) {
-                    return et1;
-                }
-            }
-        }
-
-        return undefined;
     }
 
     /**
@@ -671,6 +680,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.zIndex = "-100";        
                 hoverstat.style.display = "none";
                 this.currentTarget = undefined;
+                window.removeEventListener("touchend", this.touchTargetLeave);
                 window.removeEventListener("resize", this.resizer);
             }
         }, 0);
@@ -703,12 +713,29 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @param e 
      * @returns 
      */
-    protected targetLeave = (e: MouseEvent) => {        
+    protected targetLeave = (e: MouseEvent | TouchEvent) => {        
         let target = e.target as HTMLElement;
         if (!target) return;
 
         if (target.children.length !== 0) {
             return;
+        }
+        this.deactivate(target);
+    }
+
+    /**
+     * Target tap elsewhere
+     * @param e 
+     * @returns 
+     */
+    protected touchTargetLeave = (e: MouseEvent | TouchEvent) => {        
+        let target = e.target as HTMLElement;
+        if (!target) return;
+        
+        let hoverstat = document.getElementById(this.state.divId);   
+        if (hoverstat) {
+            let ancestor = this.findCommonAncestor(target, hoverstat);
+            if (ancestor === hoverstat) return;
         }
         this.deactivate(target);
     }

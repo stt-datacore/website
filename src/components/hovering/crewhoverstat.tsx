@@ -260,7 +260,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             return ((!crew || !this.showShipAbility) ? <div></div> :
                 <>
                     <div style={{marginBottom: "4px", fontSize: "0.75em"}}>
-                        <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                        <div style={{display: "flex", flexDirection: window.innerWidth < 512 ? "column" : "row", justifyContent: "space-between", alignItems: window.innerWidth < 512 ? "flex-start" : "center"}}>
                             <h4 style={{ marginBottom: '.25em', maxWidth: "75%" }}>{crew.action.name}</h4>
                             <div style={{ width: "auto", display:"flex", flexDirection: "column", alignItems: "center", alignContent: "center", backgroundColor: getActionColor(crew.action.bonus_type), padding: "2px 4px" }}>
                                 <div style={{display:"flex", height: "2em", flexDirection:"row", justifyContent: "center", alignItems: "center"}}>
@@ -288,7 +288,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                                     padding: "0px 2px", 
                                     fontFamily: "arial", 
                                     display: "flex",
-                                    flexDirection: "row",
+                                    flexDirection: window.innerWidth < 512 ? "column" : "row",
                                     justifyContent: "space-between",
                                     backgroundColor: getActionColor(crew.action.bonus_type) }}>
                                     <div style={{"marginTop": "-4px"}}>Bonus Ability</div>
@@ -425,7 +425,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                             display: "flex",
                             flexWrap: "wrap",
                             flexDirection:
-                                window.innerWidth <= 512 ? "column" : "row",
+                            window.innerWidth <= 512 ? "column" : "row",
                             justifyContent: "flex-start",
                             marginTop: "4px",
                             marginBottom: "2px",
