@@ -549,7 +549,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @param fromEl 
      * @returns top and left
      */
-    protected getOffset(fromEl: HTMLElement) {
+    protected getOffset(fromEl: HTMLElement, stopAt: HTMLElement | undefined = undefined) {
         var el: HTMLElement | null = fromEl;
 
         var _x = 0;
@@ -557,6 +557,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
             _x += el.offsetLeft - el.scrollLeft;
             _y += el.offsetTop - el.scrollTop;
+            if (el === stopAt) break;
             el = el.offsetParent as HTMLElement ?? null;
         }
 
@@ -575,13 +576,26 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
         if (hoverstat) {
             let rect = target.getBoundingClientRect();
-            let { top , left } = this.getOffset(target);
+            let ancestor = this.findCommonAncestor(target, hoverstat);
+            if (ancestor){
+                console.log("Common Ancestor: " + ancestor.tagName);
+            }
+            let { top , left } = this.getOffset(target, ancestor);
             let x = left + rect.width;
             let y = top;
 
-            x -= window.scrollX;
-            y -= window.scrollY;
-            hoverstat.style.position = "fixed";
+            if (!ancestor) {
+                x -= window.scrollX;
+                y -= window.scrollY;   
+            }
+
+            if (!ancestor) {
+                hoverstat.style.position = "fixed";
+            }
+            else {
+                hoverstat.style.position = "absolute";
+            }            
+
             hoverstat.style.display = "block";
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
@@ -596,7 +610,39 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
+    }
 
+    private findCommonAncestor(el1: HTMLElement, el2: HTMLElement): HTMLElement | undefined {
+
+        let t1: HTMLElement | null = el1;
+        let a1: HTMLElement[] = [];
+
+        while(t1) {
+            if (t1.parentElement) {
+                a1.push(t1.parentElement);                
+            }
+            t1 = t1.parentElement;
+        }
+
+        let t2: HTMLElement | null = el2;
+        let a2: HTMLElement[] = [];
+
+        while(t2) {
+            if (t2.parentElement) {
+                a2.push(t2.parentElement);                
+            }
+            t2 = t2.parentElement;
+        }
+
+        for (let et1 of a1) {
+            for (let et2 of a2) {
+                if (et1 === et2) {
+                    return et1;
+                }
+            }
+        }
+
+        return undefined;
     }
 
     /**
