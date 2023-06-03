@@ -7,7 +7,7 @@ import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo,
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
-import { TinyStore } from './hovering/hoverstat';
+import { TinyStore } from "../utils/tiny";
 import { BuffStatTable } from '../utils/voyageutils';
 
 

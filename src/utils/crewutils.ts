@@ -4,7 +4,7 @@ import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 import CONFIG from '../components/CONFIG';
 import { CompactCrew, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
-import { TinyStore } from '../components/hovering/hoverstat';
+import { TinyStore } from "./tiny";
 
 export function exportCrewFields(): ExportField[] {
 	return [
