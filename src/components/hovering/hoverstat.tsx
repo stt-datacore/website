@@ -605,6 +605,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 if (y < window.scrollY + 8) {
                     y = window.scrollY + 8;
                 }
+                
+                if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - 8) {
+                    x = window.scrollX + window.innerWidth - 8 - hoverstat.clientWidth;
+                }
 
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";

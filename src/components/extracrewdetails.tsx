@@ -4,6 +4,9 @@ import ItemDisplay from '../components/itemdisplay';
 import { Link } from 'gatsby';
 import { BaseSkills, CrewMember } from '../model/crew';
 import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo, Variant, categorizeKeystones } from '../model/game-elements';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { useStateWithStorage } from '../utils/storage';
 
 
 type ExtraCrewDetailsProps = {
@@ -12,7 +15,8 @@ type ExtraCrewDetailsProps = {
 	base_skills: BaseSkills,
 	traits: string[],
 	traits_hidden: string[],
-	unique_polestar_combos: string[]
+	unique_polestar_combos: string[],
+	ownedCrew?: PlayerCrew[]
 };
 
 type ExtraCrewDetailsState = {
@@ -21,6 +25,7 @@ type ExtraCrewDetailsState = {
 	optimalpolestars?: PolestarCombo[],
 	pagination_rows: number;
 	pagination_page: number;
+	hoverItem?: CrewMember | PlayerCrew;
 };
 
 const pagingOptions = [
@@ -43,6 +48,7 @@ const filterTraits = (polestar, trait) => {
 }
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
+	
 	state: ExtraCrewDetailsState = {
 		variants: [] as Variant[],
 		constellation: undefined,
@@ -51,7 +57,16 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		pagination_page: 1
 	};
 
+	readonly setHoverCrew = (item: PlayerCrew | CrewMember | null | undefined) => {
+		this.setState({ ... this.state, hoverItem: item ?? undefined });
+	}
+
+	get hoverCrew(): CrewMember | PlayerCrew | null | undefined {
+		return this.state.hoverItem;
+	}
+
 	componentDidMount() {
+	
 		// Get variant names from traits_hidden
 		const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 		const ignore = [
@@ -104,7 +119,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		fetch('/structured/crew.json')
 			.then(response => response.json())
-			.then((allcrew: CrewMember[]) => {
+			.then((allcrew: PlayerCrew[]) => {
 				// Use precalculated unique polestars combos if any, otherwise get best chances
 				let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
 					this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
@@ -122,8 +137,30 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 								return a.name.localeCompare(b.name);
 							return a.max_rarity - b.max_rarity;
 						});
+
+						for (let fitem of found) {
+							if (self.props.ownedCrew) {
+								let oc = self.props.ownedCrew.find(item => item.symbol === fitem.symbol);
+								if (oc && "immortal" in oc) {
+									fitem.skill_data = {...oc.skill_data };
+									fitem.ship_battle = {...oc.ship_battle};
+									fitem.action = {...oc.action};
+									fitem.immortal = oc.immortal;
+									fitem.max_rarity = oc.max_rarity;
+									fitem.rarity = oc.rarity;
+									fitem.level = oc.level;
+								}
+								else {
+									fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
+								}
+							}	
+							else {
+								fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
+							}
+					}
 						// short_name may not always be the best name to use, depending on the first variant
 						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
+						
 						variants.push({ 'name': trait === 'dax' ? 'Dax' : found[0].short_name, 'trait_variants': found });
 					}
 				});
@@ -383,22 +420,32 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		return (
 			this.state.variants.map((group, idx) => (
+				<>
 				<Segment key={idx}>
 					<Header as='h4'>Variants of {group.name}</Header>
 					<Grid centered padded>
 						{group.trait_variants.map(variant => (
 							<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
+								<CrewTarget 
+									targetGroup='variants'
+									setDisplayItem={this.setHoverCrew}
+									inputItem={variant}
+									allCrew={this.props.ownedCrew ?? group.trait_variants}
+									>
 								<ItemDisplay
 									src={`${process.env.GATSBY_ASSETS_URL}${variant.imageUrlPortrait}`}
 									size={128}
 									maxRarity={variant.max_rarity}
 									rarity={variant.max_rarity}
 								/>
+								</CrewTarget>
 								<div><Link to={`/crew/${variant.symbol}/`}>{variant.name}</Link></div>
 							</Grid.Column>
 						))}
 					</Grid>
-				</Segment>
+				</Segment>								
+				<CrewHoverStat targetGroup='variants' crew={this.hoverCrew ?? undefined} disableBuffs={true} />
+				</>
 			))
 		);
 	}

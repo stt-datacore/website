@@ -15,6 +15,15 @@ import ExtraCrewDetails from '../components/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
 import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
+import { useStateWithStorage } from '../utils/storage';
+import { PlayerData } from '../model/player';
+
+export interface CrewPageOptions {
+	key: string;
+	text: string;
+	value: string;
+	content: JSX.Element;
+}
 
 type StaticCrewPageProps = {
 	data: {
@@ -54,9 +63,9 @@ type StaticCrewPageState = {
 };
 
 class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {
+	
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			selectedEquipment: undefined,
 			modalVisible: false,
@@ -70,7 +79,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => this.setState({ items }));
-
 
 		// Disabled until we get big book folks on-board
 		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
@@ -317,7 +325,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	}
 
 	renderEquipment(crew) {
-		let options = [];
+		let options = [] as CrewPageOptions[];
 		crew.equipment_slots.forEach(es => {
 			let equipment = this.state.items.find(item => item.symbol === es.symbol);
 			if (!equipment) {
