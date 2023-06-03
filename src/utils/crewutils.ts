@@ -407,7 +407,6 @@ export function getShipBonus(crew: PlayerCrew | CrewMember): string {
 export function getShipChargePhases(crew: PlayerCrew | CrewMember): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;
-	console.log(crew.action);
 	if (!crew.action || !crew.action.bonus_type || !crew.action.charge_phases) return phases;
 	crew.action.charge_phases.forEach(cp => {
 		charge_time += cp.charge_time;

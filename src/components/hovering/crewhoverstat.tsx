@@ -1,6 +1,6 @@
 import React from "react";
 import { CrewMember, Skill } from "../../model/crew";
-import { Player, PlayerCrew } from "../../model/player";
+import { CompletionState, Player, PlayerCrew } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { StatLabelProps } from "../commoncrewdata";
 import { Label, Rating, Segment } from "semantic-ui-react";
@@ -24,6 +24,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
+    disableBuffs?: boolean;
 }
 
 export interface CrewHoverStatState extends HoverStatState {
@@ -31,7 +32,7 @@ export interface CrewHoverStatState extends HoverStatState {
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
     allCrew: CrewMember[] | PlayerCrew[]
-    buffConfig: BuffStatTable;
+    buffConfig?: BuffStatTable;
 }
 
 export interface CrewTargetState extends HoverStatTargetState {
@@ -101,7 +102,6 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
                 let cm: CrewMember | undefined = undefined;
-    
                 if (showImmortal === true && !item.immortal) {
                     cm = this.props.allCrew.find(c => c.symbol === dataIn.symbol);
                 }
@@ -182,6 +182,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             background: 'transparent',
             color: 'gray',
             cursor: "pointer"
+        }
+
+        const disableStyle: React.CSSProperties = {
+            background: 'transparent',
+            color: 'gray'
         }
 
         const activeStyle: React.CSSProperties = {
@@ -353,11 +358,22 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
+                            
+                            {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
+                            || 
+                            <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
+                            }
                             <i className="fighter jet icon" title="Toggle Ship Stats" style={this.showShipAbility ? activeStyle : dormantStyle} onClick={(e) => shipToggle(e)} />
 
                             {("immortal" in crew && crew.immortal >= 1 && 
                             <i className="snowflake icon" 
+                                title={printImmoText(crew.immortal)} 
+                                style={frozenStyle} 
+                                />)
+                            ||
+                            ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalUnowned && 
+                            <i className="lock icon" 
                                 title={printImmoText(crew.immortal)} 
                                 style={frozenStyle} 
                                 />)

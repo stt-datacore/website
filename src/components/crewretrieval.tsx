@@ -11,7 +11,7 @@ import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
 import { BaseSkills, CrewMember } from '../model/crew';
-import { CryoCollection, PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, CryoCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
@@ -253,7 +253,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				ret.immortal = mc.immortal;
 			}
 			else {
-				ret.immortal = -2;
+				ret.immortal = CompletionState.DisplayAsImmortalUnowned;
 			}
 		});
 

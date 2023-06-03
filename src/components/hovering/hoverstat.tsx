@@ -321,7 +321,7 @@ export class TinyStore {
      * @param defaultValue A default value if no value is present
      * @returns A value or the defaultValue or undefined
      */
-    public getValue<T>(key: string, defaultValue: T | undefined = undefined) {
+    public getValue<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {
         let tkey = this.composeKey(key);
         let item: string | null;
 
@@ -380,7 +380,7 @@ export interface HoverStatTargetProps<T> {
      * 
      * _When the hover over is exited, this function will be called with __null__._
      */
-    setDisplayItem: React.Dispatch<React.SetStateAction<T | null>>;
+    setDisplayItem: React.Dispatch<React.SetStateAction<T | null>> | ((value: T | null) => void);
 
     /**
      * The wrapped content
@@ -420,7 +420,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
     }
 
     protected get current(): string {
-        return this.tiny.getValue<string>('current', "") ?? false;
+        return this.tiny.getValue<string>('current', "") ?? "";
     }
 
     protected set current(value: string) {
@@ -577,9 +577,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         if (hoverstat) {
             let rect = target.getBoundingClientRect();
             let ancestor = this.findCommonAncestor(target, hoverstat);
-            if (ancestor){
-                console.log("Common Ancestor: " + ancestor.tagName);
-            }
+
             let { top , left } = this.getOffset(target, ancestor);
             let x = left + rect.width;
             let y = top;

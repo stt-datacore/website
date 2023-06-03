@@ -140,7 +140,10 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
-			prospect.immortal = CompletionState.NotComplete;
+			let mc = myCrew.find(item => item.symbol === p.symbol);
+			if (!mc) {
+				prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
+			}			
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score = { "core": 0, "min": 0, "max" : 0 };
 				if (prospect.base_skills[skill.name]) {

@@ -11,6 +11,10 @@ import { formatTierLabel } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
+import { CrewMember } from '../model/crew';
+import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
+import { CompletionState, PlayerCrew } from '../model/player';
+import { TinyStore } from '../components/hovering/hoverstat';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -24,14 +28,16 @@ interface Lockable {
 }
 
 type IndexPageState = {
-	botcrew: any[];
+	botcrew: CrewMember[] | PlayerCrew[];
 	tableConfig: any[];
 	customColumns: string[];
 	initOptions: any;
 	lockable: any[];
+	hoverCrew?: CrewMember | PlayerCrew;
 };
 
 class IndexPage extends Component<IndexPageProps, IndexPageState> {
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -41,6 +47,14 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			initOptions: false,
 			lockable: []
 		};
+
+	}
+	
+	componentWillUnmount(): void {
+	}
+
+	readonly setActiveCrew = (value: PlayerCrew | CrewMember | null | undefined): void => {
+		this.setState({ ... this.state, hoverCrew: value ?? undefined });		
 	}
 
 	async componentDidMount() {
@@ -50,8 +64,10 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
-				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
+				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
 			});
+			let bcrew = crew as PlayerCrew;
+			bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
 		});
 
 		// Check for custom initial table options from URL or <Link state>
@@ -104,7 +120,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable });
 	}
 
-	renderTableRow(crew: any, idx: number, highlighted: boolean): JSX.Element {
+	renderTableRow(crew: CrewMember, idx: number, highlighted: boolean): JSX.Element {
 		const { customColumns } = this.state;
 		const attributes = {
 			positive: highlighted
@@ -121,7 +137,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		)).reduce((prev, curr) => <>{prev} {curr}</>);
 
 		return (
-			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} onClick={() => navigate(`/crew/${crew.symbol}/`)} {...attributes}>
+			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -131,7 +147,13 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 							gridGap: '1px'
 						}}>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget 
+								targetGroup='indexPage' 
+								setDisplayItem={this.setActiveCrew} 
+								inputItem={crew} 
+								allCrew={this.state.botcrew}>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>							
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
@@ -149,7 +171,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>{crew.cab_ov}</b><br />
-					<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+					<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>#{crew.ranks.voyRank}</b><br />
@@ -173,7 +195,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					if (value) {
 						return (
 							<Table.Cell key={column} textAlign='center'>
-								<b>{value}</b>
+								<b>{crew[column]}</b>
 							</Table.Cell>
 						);
 					}
@@ -200,18 +222,20 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 				<Announcement />
 
 				<Header as='h2'>Crew stats</Header>
-
-				<SearchableTable
-					id="index"
-					data={botcrew}
-					config={tableConfig}
-					renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
-					filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
-					initOptions={initOptions}
-					showFilterOptions={true}
-					showPermalink={true}
-					lockable={lockable}
-				/>
+				<div>
+					<SearchableTable
+						id="index"
+						data={botcrew}
+						config={tableConfig}
+						renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
+						filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
+						initOptions={initOptions}
+						showFilterOptions={true}
+						showPermalink={true}
+						lockable={lockable}
+					/>
+					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} disableBuffs={true} />
+				</div>
 			</Layout>
 		);
 	}
