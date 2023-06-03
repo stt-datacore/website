@@ -170,7 +170,11 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 								return a.name.localeCompare(b.name);
 							return a.max_rarity - b.max_rarity;
 						});
-
+						if (self.ownedCrew) {
+							if (!(found.some(x => self.ownedCrew?.some(y => x.symbol === y.symbol)))) {
+								self.ownedCrew = undefined;
+							}
+						}
 						for (let fitem of found) {
 							if (self.ownedCrew) {
 								let oc = self.ownedCrew.find(item => item.symbol === fitem.symbol);

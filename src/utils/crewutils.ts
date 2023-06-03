@@ -511,14 +511,23 @@ export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
 	return variantTraits;
 }
 
-export function navToCrewPage(crew: PlayerCrew | CrewMember, allCrew: PlayerCrew[] | CrewMember[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined) {
+/**
+ * Navigate to the crew page, sending over information about owned variants and fusables.
+ * Any missing information is simply ignored.
+ * @param crew The crew member to navigate to
+ * @param ownedCrew Your owned crew
+ * @param buffs Your active buffs
+ * @param allCrew All crew
+ */
+export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: PlayerCrew[] | CrewMember[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: PlayerCrew[] | CrewMember[] | undefined = undefined) {
 	let stash = TinyStore.getStore('staticStash', false, true);
 	if (stash) {
-		if (allCrew) {
+		if (ownedCrew) {
 			let variantTraits = getVariantTraits(crew);			
 			if (variantTraits && variantTraits.length >= 1) {
-				let finalResult = [] as CrewMember[];
-				let filteredCrew = allCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
+				let filteredOwnedCrew = ownedCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
+				let finalResult = [ ...filteredOwnedCrew ];
+				let filteredAllCrew = allCrew?.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
 
 				// We're going to iterate, once, into the variants
 				// because some of them are fusion crew, and we want to capture those, too,
@@ -526,16 +535,45 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, allCrew: PlayerCrew
 				// like to give them as far to go as possible without losing state data.
 				// Since they can only navigate either back to crew tools or on to other variants from the
 				// crew page, this covers all bases.				
-				for (let post of filteredCrew) {
+
+				for (let post of filteredOwnedCrew) {
 					let traits2 = getVariantTraits(post);
-					let filtered2 = allCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+					let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+					let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
 					
-					for (let varItem of filtered2 ?? []) {
-						if (!finalResult.includes(varItem)) {
+					for (let varItem of ownedfiltered2 ?? []) {
+						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+							finalResult.push(varItem);
+						}
+					}
+
+					for (let varItem of allfiltered2 ?? []) {
+						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
 							finalResult.push(varItem);
 						}
 					}
 				}
+
+				if (filteredAllCrew) {
+					for (let post of filteredAllCrew) {
+						let traits2 = getVariantTraits(post);
+						let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+						let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+						
+						for (let varItem of ownedfiltered2 ?? []) {
+							if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+								finalResult.push(varItem);
+							}
+						}
+						for (let varItem of allfiltered2 ?? []) {
+							if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+								finalResult.push(varItem);
+							}
+						}
+					}
+				}
+
+				console.log(finalResult);
 				stash.setValue('owned', finalResult);
 			}
 		}

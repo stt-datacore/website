@@ -345,7 +345,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-								<a onClick={(e) => navToCrewPage(crew, myCrew, buffConfig)}>
+								<a onClick={(e) => navToCrewPage(crew, myCrew, buffConfig, allCrew)}>
 									{crew.name}
 								</a>
 							</span>

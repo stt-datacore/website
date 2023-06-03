@@ -20,6 +20,7 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
+import { EquipmentItem } from '../model/equipment';
 
 export interface CrewPageOptions {
 	key: string;
@@ -61,7 +62,7 @@ type StaticCrewPageState = {
 	selectedEquipment?: number;
 	modalVisible: boolean;
 	commentMarkdown: string;
-	items: any[];
+	items: EquipmentItem[];
 	comments: any[];
 };
 
@@ -181,7 +182,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 							
 							<div style={{ margin: '1em 0', textAlign: 'right' }}>
-								{crew.immortal !== CompletionState.DisplayAsImmortalStatic &&
+								{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 								(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
 								||
 								<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
@@ -324,7 +325,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		);
 	}
 
-	_handleMarkDownChange(value) {
+	_handleMarkDownChange(value: string) {
 		this.setState({ commentMarkdown: value });
 	}
 
@@ -423,6 +424,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				<Grid columns={4} centered padded>
 					{equipment.recipe.list.map(entry => {
 						let recipeEntry = this.state.items.find(item => item.symbol === entry.symbol);
+						if (!recipeEntry) return <></>
 						return (
 							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
 								<Popup
