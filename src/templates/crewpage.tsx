@@ -84,7 +84,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 	componentDidMount() {
 
-		let stash = TinyStore.getStore('staticStash', false);
+		let stash = TinyStore.getStore('staticStash', false, true);
 		if (stash.containsKey('owned')) {
 			this.ownedCrew = stash.getValue('owned');
 			//stash.removeValue('owned');				

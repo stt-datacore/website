@@ -2,6 +2,11 @@ import React from "react";
 import * as uuid from 'uuid';
 import { TinyStore } from "../../utils/tiny";
 
+export interface Coord {
+    x: number;
+    y: number;
+}
+
 /**
  * Default HoverStatProps
  */
@@ -11,6 +16,8 @@ export interface HoverStatProps {
      * The target group (required to bind)
      */
     targetGroup: string;
+    offset?: Coord;
+    windowEdgeMinPadding?: Coord;
 }
 
 /**
@@ -141,6 +148,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
 
     protected readonly tiny: TinyStore;
+    protected readonly targetOffset: Coord;
+    protected readonly windowEdgeMinPadding: Coord;
 
     protected get cancelled(): boolean {
         return this.tiny.getValue('cancelled', false) ?? false;
@@ -161,6 +170,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         super(props);
         this.tiny = TinyStore.getStore(props.targetGroup);
         this.tiny.subscribe(this.propertyChanged);
+        this.targetOffset = props.offset ?? { x: 12, y: 12 };
+        this.windowEdgeMinPadding = props.windowEdgeMinPadding ?? { x: 8, y: 8 };
 
         this.state = {
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
@@ -269,6 +280,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             let { top , left } = this.getOffset(target, ancestor);
             let x = left + rect.width;
             let y = top;
+            let off = this.targetOffset;
+            let pad = this.windowEdgeMinPadding;
 
             if (!ancestor) {
                 x -= window.scrollX;
@@ -287,21 +300,22 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
                 if (!hoverstat) return;   
-                y -= (hoverstat.clientHeight - 8);
-                x -= 8;
+                y -= (hoverstat.clientHeight - off.y);
+                x -= off.x;
                 
-                if (y < window.scrollY + 8) {
-                    y = window.scrollY + 8;
+                if (y < window.scrollY + pad.y) {
+                    y = window.scrollY + pad.y;
                 }
                 
-                if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - 8) {
-                    x = window.scrollX + window.innerWidth - 8 - hoverstat.clientWidth;
+                if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
+                    x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth;
                 }
 
-                if (x + hoverstat.clientWidth > window.innerWidth - 8) {
-                    x = 0;
-                    hoverstat.style.width = window.innerWidth - 8 + 'px';
+                if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
+                    x = pad.x;
+                    hoverstat.style.width = window.innerWidth - (pad.x * 2) + 'px';
                 }
+                
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "1009";

@@ -1,3 +1,5 @@
+import * as lz from 'lz-string';
+
 /**
  * A Tiny Store
  */
@@ -6,11 +8,10 @@ export class TinyStore {
     private static readonly notify: Map<string, TinyStore> = new Map<string, TinyStore>();
 
     private readonly targetGroup: string;
-    private readonly prefix = "___tinyhover_";
+    private readonly prefix = "___tinystore_";
 
     private mapCounter: number = 0;
     private readonly subscribers = new Map<string, (key: string) => void>();
-
 
     /**
      * Fire this to execute all listeners on a property changed
@@ -28,7 +29,6 @@ export class TinyStore {
      * @returns
      */
     protected composeKey(key: string): string {
-        //console.log("Tiny Store ComposeKey: " + `${this.prefix}_${this.targetGroup}_${key}`);
         return `${this.prefix}_${this.targetGroup}_${key}`;
     }
 
@@ -37,34 +37,45 @@ export class TinyStore {
      * @param targetGroup The target group that is associated
      * @param defaultSticky The default stickiness of new values
      */
-    private constructor(targetGroup: string, defaultSticky: boolean = false) {
-        this.targetGroup = targetGroup;
+    private constructor(targetGroup: string, defaultSticky: boolean, compression: boolean) {
+        if (!targetGroup || targetGroup === "") {
+            throw new Error("targetGroup is undefined and TinyStore cannot function. Crashing...");
+        }
+
         this.defaultSticky = defaultSticky ?? false;
+        this.isCompressed = compression ?? false;
+        this.targetGroup = targetGroup;
     }
 
     /**
-     * Returns true if this store defaults to creating sticky properties
+     * True if this store defaults to creating sticky properties
      */
     public readonly defaultSticky: boolean;
+
+    /**
+     * True if the store is compressed
+     */
+    public readonly isCompressed: boolean;
 
     /**
      * Get or create a tiny store for the specified targetGroup. You must use this
      * static method to get a store. There is no public constructor for this class.
      * @param targetGroup The name of the targetGroup
      * @param defaultSticky The default stickiness of new values. defaultSticky will only be set for new stores, and is immutable.
+     * @param compression True to create a compressed store
      * @returns A new or existing TinyStore
      */
-    static getStore(targetGroup: string, defaultSticky: boolean = false): TinyStore {
+    static getStore(targetGroup: string, defaultSticky: boolean = false, compression: boolean = false): TinyStore {
         if (this.notify.has(targetGroup)) {
             let ts = this.notify.get(targetGroup);
             if (!ts) {
-                ts = new TinyStore(targetGroup, defaultSticky);
+                ts = new TinyStore(targetGroup, defaultSticky, compression);
                 this.notify.set(targetGroup, ts);
             }
             return ts;
         }
         else {
-            let ts = new TinyStore(targetGroup, defaultSticky);
+            let ts = new TinyStore(targetGroup, defaultSticky, compression);
             this.notify.set(targetGroup, ts);
             return ts;
         }
@@ -84,9 +95,10 @@ export class TinyStore {
      * @param targetGroup The new target group to create.
      * @param store The source store
      * @param defaultSticky The default stickiness of new values. defaultSticky will only be set for new stores, and is immutable.
+     * @param compression True to create a compressed store
      * @returns A new store or false if the targetGroup already exists, the store has the same targetGroup, or any other error condition.
      */
-    static createFrom(targetGroup: string, store: TinyStore, defaultSticky: boolean = false) {
+    static createFrom(targetGroup: string, store: TinyStore, defaultSticky: boolean = false, compression: boolean = false) {
         if (!store || !targetGroup)
             return false;
         if (store.targetGroup === targetGroup)
@@ -94,7 +106,7 @@ export class TinyStore {
         if (this.storeExists(targetGroup))
             return false;
 
-        let newStore = this.getStore(targetGroup, defaultSticky);
+        let newStore = this.getStore(targetGroup, defaultSticky, compression);
         if (newStore) {
             let pfxa = store.composeKey("");
             let pfxb = newStore.composeKey("");
@@ -102,10 +114,19 @@ export class TinyStore {
             let keys = store.getKeys();
             for (let key of keys) {
                 let value = window.localStorage.getItem(pfxa + key);
+
                 if (!value)
                     value = window.sessionStorage.getItem(pfxa + key);
 
                 if (value) {
+
+                    if (!store.isCompressed && compression) {
+                        value = lz.compressToBase64(value);
+                    }
+                    else if (store.isCompressed && !compression) {
+                        value = lz.decompressFromBase64(value);
+                    }
+
                     if (defaultSticky) {
                         window.localStorage.setItem(pfxb + key, value);
                     }
@@ -302,6 +323,8 @@ export class TinyStore {
     public clear() {
         this.innerDestroy();
     }
+    
+    //public readonly spoot = <T>(value: T) => {}
 
     /**
      * Set a value to the store
@@ -312,14 +335,27 @@ export class TinyStore {
     public setValue<T>(key: string, value: T, sticky: boolean | undefined = undefined): void {
         let tkey = this.composeKey(key);
         sticky ??= this.defaultSticky;
+
+        if (value === undefined || value === null){ 
+            this.removeValue(key);
+            return;
+        }
+
+        let json = JSON.stringify(value);
+        
+        if (this.isCompressed) {
+            json = lz.compressToBase64(json);
+        }
+
         if (sticky) {
-            window.localStorage.setItem(tkey, JSON.stringify(value));
+            window.localStorage.setItem(tkey, json);
             window.sessionStorage.removeItem(tkey);
         }
         else {
-            window.sessionStorage.setItem(tkey, JSON.stringify(value));
+            window.sessionStorage.setItem(tkey, json);
             window.localStorage.removeItem(tkey);
         }
+        
         this.onPropertyChanged(key);
     }
 
@@ -331,30 +367,25 @@ export class TinyStore {
      */
     public getValue<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {
         let tkey = this.composeKey(key);
-        let item: string | null;
-
+        let json: string | null;
+        
         if (this.defaultSticky) {
-            item = window.localStorage.getItem(tkey);
+            json = window.localStorage.getItem(tkey) ?? window.sessionStorage.getItem(tkey);
         }
         else {
-            item = window.sessionStorage.getItem(tkey);
+            json = window.sessionStorage.getItem(tkey) ?? window.localStorage.getItem(tkey);
         }
 
-        if (!item) {
-            if (!this.defaultSticky) {
-                item = window.localStorage.getItem(tkey);
+        if (json) {            
+            if (this.isCompressed) {
+                json = lz.decompressFromBase64(json);
             }
-            else {
-                item = window.sessionStorage.getItem(tkey);
-            }
-        }
-
-        if (item) {
-            return JSON.parse(item) as T;
+            return JSON.parse(json) as T;
         }
 
         if (defaultValue !== undefined)
             this.setValue(key, defaultValue as T);
+
         return defaultValue as T;
     }
 }

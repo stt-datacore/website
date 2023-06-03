@@ -248,7 +248,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         <a href={`/crew/${crew.symbol}`} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                                style={{ height: "15em", marginRight: "8px" }}
+                                style={{ height: this.showShipAbility ? "15em" : "9.5em", marginRight: "8px" }}
                             />
                         </a>
                     </div>

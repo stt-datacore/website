@@ -83,7 +83,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			this.ownedCrew = this.props.ownedCrew;
 		}
 		else {
-			let stash = TinyStore.getStore('staticStash', false);
+			let stash = TinyStore.getStore('staticStash', false, true);
 			if (stash.containsKey('owned')) {
 				this.ownedCrew = stash.getValue('owned');
 				//stash.removeValue('owned');				
