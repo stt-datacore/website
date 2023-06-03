@@ -17,7 +17,7 @@ import CONFIG from '../components/CONFIG';
 import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { TinyStore } from '../components/hovering/hoverstat';
+import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 

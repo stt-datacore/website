@@ -527,3 +527,14 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, allCrew: PlayerCrew
 	}
 	window.location.href = '/crew/' + crew.symbol;
 }
+
+export function printImmoText(immo: number) {
+	if (immo === -1) return "Crew Is Immortalized";
+	else if (immo === -5) return "Crew Is Shown Immortalized (No Player Data)";
+	else if (immo === -3) return "Crew Is Shown Immortalized (Unowned)";
+	else if (immo === -4) return "Crew Is Shown Immortalized (Owned)";
+	else if (immo === -2) return "Crew Is Shown Immortalized";
+	else if (immo >= 1) return "Crew Is Frozen (" + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
+	else return "Crew Is Not Immortalized";
+}
+

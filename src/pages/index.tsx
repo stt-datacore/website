@@ -14,7 +14,7 @@ import CABExplanation from '../components/cabexplanation';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { CompletionState, PlayerCrew } from '../model/player';
-import { TinyStore } from '../components/hovering/hoverstat';
+import { TinyStore } from '../utils/tiny';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
