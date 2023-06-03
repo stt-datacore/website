@@ -562,6 +562,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
         return { top: _y, left: _x };
     }        
+    
+    protected currentTarget: HTMLElement;
 
     /**
      * Activate the hover window
@@ -575,18 +577,24 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             let rect = target.getBoundingClientRect();
             let { top , left } = this.getOffset(target);
             let x = left + rect.width;
-            let y = top - 128;
+            let y = top;
 
             x -= window.scrollX;
             y -= window.scrollY;
-
+            hoverstat.style.position = "fixed";
             hoverstat.style.display = "block";
-            
-            hoverstat.style.left = x + "px";
-            hoverstat.style.top = y + "px";
-            hoverstat.style.zIndex = "100";
-            
-            window.addEventListener("resize", this.resizer);
+            window.setTimeout(() => {
+                let hoverstat = document.getElementById(divId);     
+                if (!hoverstat) return;   
+                y -= (hoverstat.clientHeight - 8);
+                x -= 8;
+                
+                hoverstat.style.left = x + "px";
+                hoverstat.style.top = y + "px";
+                hoverstat.style.zIndex = "100";
+                this.currentTarget = target;
+                window.addEventListener("resize", this.resizer);
+            }, 0)
         }
 
     }

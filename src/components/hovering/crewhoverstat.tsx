@@ -53,20 +53,28 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         }
     }
     
-    protected get showBuffs(): boolean {
+    protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
 
-    protected set showBuffs(value: boolean) {
+    protected set showPlayerBuffs(value: boolean) {
         this.tiny.setValue<boolean>('buff', value, true);
     }
 
-    protected get showImmo(): boolean {
+    protected get showImmortalized(): boolean {
         return this.tiny.getValue<boolean>('immo', true) ?? false;
     }
 
-    protected set showImmo(value: boolean) {
+    protected set showImmortalized(value: boolean) {
         this.tiny.setValue<boolean>('immo', value, true);
+    }
+
+    protected get showShipAbility(): boolean {
+        return this.tiny.getValue<boolean>('ship', true) ?? false;
+    }
+
+    protected set showShipAbility(value: boolean) {
+        this.tiny.setValue<boolean>('ship', value, true);
     }
 
     protected propertyChanged = (key: string) => {
@@ -85,8 +93,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
         const { buffConfig } = this.props;
 
-        const applyBuffs = this.showBuffs;
-        const showImmortal = this.showImmo;
+        const applyBuffs = this.showPlayerBuffs;
+        const showImmortal = this.showImmortalized;
 
         if (dataIn) {            
             let item: PlayerCrew = dataIn as PlayerCrew;
@@ -94,13 +102,13 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
                 let cm: CrewMember | undefined = undefined;
     
-                if (showImmortal === true) {
+                if (showImmortal === true && !item.immortal) {
                     cm = this.props.allCrew.find(c => c.symbol === dataIn.symbol);
                 }
     
                 if (cm && showImmortal === true) {
                     item = JSON.parse(JSON.stringify(cm)) as PlayerCrew;
-                    if (item.immortal > -2) item.immortal = -2;
+                    if (item.immortal === 0) item.immortal = -2;
                 }
                 else {
                     item = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;
@@ -136,20 +144,28 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         }
     }    
 
-    protected get showBuffs(): boolean {
+    protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
 
-    protected set showBuffs(value: boolean) {
+    protected set showPlayerBuffs(value: boolean) {
         this.tiny.setValue<boolean>('buff', value, true);
     }
 
-    protected get showImmo(): boolean {
+    protected get showImmortalized(): boolean {
         return this.tiny.getValue<boolean>('immo', true) ?? false;
     }
 
-    protected set showImmo(value: boolean) {
+    protected set showImmortalized(value: boolean) {
         this.tiny.setValue<boolean>('immo', value, true);
+    }
+    
+    protected get showShipAbility(): boolean {
+        return this.tiny.getValue<boolean>('ship', true) ?? false;
+    }
+
+    protected set showShipAbility(value: boolean) {
+        this.tiny.setValue<boolean>('ship', value, true);
     }
 
     protected renderContent = (): JSX.Element =>  {
@@ -180,6 +196,13 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             cursor: "default"
         }
 
+        const frozenStyle: React.CSSProperties = {
+            background: 'transparent',
+            color: 'white',            
+            cursor: "default",
+            marginRight: "0px"
+        }
+
         const checkedStyle: React.CSSProperties = {
             color: "lightgreen",
             marginRight: "0px"
@@ -190,10 +213,21 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal > -2) {
                 return;
             }
-            me.showImmo = !me.showImmo;
+            me.showImmortalized = !me.showImmortalized;
         }
         const buffToggle = (e) => {
-            me.showBuffs = !me.showBuffs;
+            me.showPlayerBuffs = !me.showPlayerBuffs;
+        }
+        const shipToggle = (e) => {
+            me.showShipAbility = !me.showShipAbility;
+            let ct = me.currentTarget;
+            window.setTimeout(() => {
+                me.deactivate(ct);
+                window.setTimeout(() => {
+                    me.activate(ct);
+                }, 0);
+            }, 0);
+            
         }
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
@@ -213,7 +247,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             return elems;
         }
         const ShipSkill = () => {
-            return (!crew ? <div></div> :
+            return ((!crew || !this.showShipAbility) ? <div></div> :
                 <>
                     <div style={{marginBottom: "4px", fontSize: "0.75em"}}>
                         <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -300,6 +334,15 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             )
         }
 
+        const printImmoText = (immo: number) => {
+            if (immo === -1) return "Crew Is Immortalized";
+            else if (immo === -3) return "Crew Is Shown Immortalized (Unowned)";
+            else if (immo === -4) return "Crew Is Shown Immortalized (Owned)";
+            else if (immo === -2) return "Crew Is Shown Immortalized";
+            else if (immo >= 1) return "Crew Is Frozen (" + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
+            else return "Crew Is Not Immortalized";
+        }
+
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
@@ -310,11 +353,20 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            <i className="arrow alternate circle up icon" title="Apply Buffs" style={this.showBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
+                            <i className="arrow alternate circle up icon" title="Toggle Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
+                            <i className="fighter jet icon" title="Toggle Ship Stats" style={this.showShipAbility ? activeStyle : dormantStyle} onClick={(e) => shipToggle(e)} />
+
+                            {("immortal" in crew && crew.immortal >= 1 && 
+                            <i className="snowflake icon" 
+                                title={printImmoText(crew.immortal)} 
+                                style={frozenStyle} 
+                                />)
+                            ||
                             <i className="star icon" 
-                                title={("immortal" in crew && crew.immortal > -2 && crew.immortal != 0) ? "Crew Is Immortalized" : "Show Immortalized"} 
-                                style={("immortal" in crew && crew.immortal != 0 && crew.immortal > -2) ? completeStyle : this.showImmo ? activeStyle : dormantStyle} 
+                                title={("immortal" in crew && crew.immortal) ? printImmoText(crew.immortal) : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
+                                style={("immortal" in crew && crew.immortal != 0 && crew.immortal > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle} 
                                 onClick={(e) => immoToggle(e)} />
+                            }
                         </div>
                     </div>
                 </div>
@@ -330,10 +382,18 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                     <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
                         <div style={{margin: "4px", display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment">
-                                {(("immortal" in crew && crew.immortal === 0) ) ? (<b>{crew.level}</b>) : (<i title={"immortal" in crew && crew.immortal <= -2 ? "Crew Is Shown Immortalized" : "Crew Is Immortalized"} className="check icon" style={checkedStyle} />)}
+                            <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
+                                {
+                                    "immortal" in crew && (
+                                        ((crew.immortal === 0)) ? 
+                                        (<b>{crew.level}</b>) : 
+                                        ((crew.immortal > 0)) ? 
+                                        (<i className="snowflake icon" style={frozenStyle} />) : 
+                                        (<i className="check icon" style={checkedStyle} />) 
+                                    ) || (<i className="check icon" style={checkedStyle} />)
+                                }
                             </h4>
-                            <Rating icon='star' rating={!this.showImmo && "rarity" in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+                            <Rating icon='star' rating={!this.showImmortalized && "rarity" in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
                         </div>
                     </div>
                     <div
