@@ -602,9 +602,13 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 y -= (hoverstat.clientHeight - 8);
                 x -= 8;
                 
+                if (y < window.scrollY + 8) {
+                    y = window.scrollY + 8;
+                }
+
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
-                hoverstat.style.zIndex = "100";
+                hoverstat.style.zIndex = "1009";
 
                 window.addEventListener("resize", this.resizer);
             }, 0)
