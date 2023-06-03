@@ -197,7 +197,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<CrewHoverStat targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
 			</div>);
 	}
 
@@ -238,8 +237,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							}
 						}
 					]}
-				/>					
-				
+				/>									
 				<Segment>
 					{!citeData &&
 						<>
@@ -248,13 +246,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}
 
 					{citeData &&
+						<>
 						<Tab						
 						 	panes={[
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData.crewToCite, false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData.crewToTrain, true) }
 						]} />
+						</>
 					}						
 				</Segment>
+				<CrewHoverStat targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
+
 			</>
 		);
 	}

@@ -39,7 +39,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		const crew = JSON.parse(JSON.stringify(allCrew.find(ac => ac.symbol == acs))) as PlayerCrew;
 		crew.highest_owned_rarity = 0;
 		crew.highest_owned_level = 0;
-		crew.immortal = CompletionState.NotComplete;
+		crew.immortal = CompletionState.DisplayAsImmortalUnowned;
 		crew.collectionIds = [];
 		crew.unmaxedIds = [];
 		crew.immortalRewards = [];
@@ -51,20 +51,16 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 			return b.rarity - a.rarity;
 		});
 		if (owned.length > 0) {
+			crew.action = { ... owned[0].action };
+			crew.ship_battle = { ... owned[0].ship_battle };
 			crew.immortal = owned[0].immortal;
-			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && owned[0].equipment?.length == 4)) {
+			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && (!owned[0].equipment || owned[0].equipment?.length == 4))) {
 				crew.immortal = CompletionState.Immortalized;
-			}
-			if (owned[0].immortal !== 0) {
-				crew.immortal = owned[0].immortal;
-			}
+			}			
 			crew.rarity = owned[0].rarity;
 			crew.level = owned[0].level;
 			crew.base_skills = {...owned[0].base_skills};
-			console.log(crew.immortal);
-			if (crew.immortal) {
-				console.log("We should be filtering " + crew.name);
-			}
+
 			crew.highest_owned_rarity = owned[0].rarity;
 			crew.highest_owned_level = owned[0].level;
 		}
@@ -432,7 +428,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
 
-		if (crew.immortal) {
+		if (crew.immortal === -1 || crew.immortal > 0) {
 			return false;
 		}
 		

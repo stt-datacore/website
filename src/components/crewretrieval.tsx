@@ -250,9 +250,13 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				ret.level = mc.level;
 				ret.base_skills = JSON.parse(JSON.stringify(mc.base_skills)) as BaseSkills;
 				ret.rarity = mc.rarity;		
+				ret.max_rarity = mc.max_rarity;
 				ret.immortal = mc.immortal;
 			}
 			else {
+				ret.rarity = ret.max_rarity;
+				ret.highest_owned_rarity = 0;
+				ret.highest_owned_level = 0;
 				ret.immortal = CompletionState.DisplayAsImmortalUnowned;
 			}
 		});

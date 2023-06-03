@@ -168,7 +168,7 @@ const EventPicker = (props: EventPickerProps) => {
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
-			prospect.immortal = CompletionState.NotComplete;
+			prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score: ComputedBuff = { core: 0, min: 0, max: 0 };
 				if (prospect.base_skills[skill.name]) {
@@ -319,7 +319,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
-						if (showPotential && !crew.immortal && !crew.prospect) {
+						if (showPotential && (crew.immortal === 0 || crew.immortal <= -2) && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
@@ -483,7 +483,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 					{crew.favorite && <Icon name='heart' />}
 					{crew.immortal > 0 && <Icon name='snowflake' />}
 					{crew.prospect && <Icon name='add user' />}
-					<span>{crew.immortal > 0 ? (`${crew.immortal} frozen`) : crew.immortal < 0 ? `Immortalized` : (`Level ${crew.level}`)}</span>
+					<span>{crew.immortal > 0 ? (`${crew.immortal} frozen`) : crew.immortal < 0 ? crew.immortal <= -2 ? `Unowned` : `Immortalized` : (`Level ${crew.level}`)}</span>
 				</div>
 			</div>
 		);
@@ -577,7 +577,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		if (best.score > 0) {
 			let bestCrew = crew.find(c => c.id === best.id);
 			let icon = (<></>);
-			if (bestCrew.immortal) icon = (<Icon name='snowflake' />);
+			if (bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
 			if (bestCrew.prospect) icon = (<Icon name='add user' />);
 			return (
 				<Table.Cell key={key} textAlign='center' style={{ cursor: 'zoom-in' }} onClick={() => handleClick(skillA, skillB)}>

@@ -44,14 +44,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     
     constructor(props: CrewTargetProps){
         super(props);        
-        this.tiny.subscribe(this.propertyChanged);        
-        if (props.inputItem) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${props.inputItem.imageUrlFullBody}`;
-            for (let i = 0; i < 1; i++) {
-                let img = new Image();
-                img.src = url;                    
-            }
-        }
+        this.tiny.subscribe(this.propertyChanged);                
     }
     
     protected get showPlayerBuffs(): boolean {
@@ -129,6 +122,18 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
          
         }        
         return dataIn;
+    }
+    
+    componentDidUpdate(): void {
+        if (this.props.inputItem) {
+            const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.imageUrlFullBody}`;
+            window.setTimeout(() => {
+                for (let i = 0; i < 1; i++) {
+                    let img = new Image();
+                    img.src = url;                    
+                }
+            });
+        }
     }
 
     componentWillUnmount(): void {
@@ -229,11 +234,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             window.setTimeout(() => {
                 me.deactivate(ct);
                 window.setTimeout(() => {
-                    me.activate(ct);
+                    if (ct) me.activate(ct);
                 }, 0);
-            }, 0);
-            
+            }, 0);            
         }
+        
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
             if (action === 2) return "/media/ship/accuracy-icon.png";
@@ -351,10 +356,12 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
-                        <img
-                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                            style={{ height: "15em", marginRight: "8px" }}
-                        />
+                        <a href={`/crew/${crew.symbol}`} title={"Go To Crew Page For '" + crew.name + "'"}>
+                            <img
+                                src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+                                style={{ height: "15em", marginRight: "8px" }}
+                            />
+                        </a>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>

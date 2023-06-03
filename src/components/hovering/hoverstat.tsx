@@ -499,7 +499,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         this.tiny.setValue('cancelled', value);
     }
 
-
     /**
      * Override this abstract method to render the content of the hover window 
      * 
@@ -564,7 +563,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         return { top: y, left: x };
     }        
     
-    protected currentTarget: HTMLElement;
+    protected currentTarget?: HTMLElement = undefined;
 
     /**
      * Activate the hover window
@@ -577,6 +576,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         if (hoverstat) {
             let rect = target.getBoundingClientRect();
             let ancestor = this.findCommonAncestor(target, hoverstat);
+            this.currentTarget = target;
 
             let { top , left } = this.getOffset(target, ancestor);
             let x = left + rect.width;
@@ -595,6 +595,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             }            
 
             hoverstat.style.display = "block";
+
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
                 if (!hoverstat) return;   
@@ -604,7 +605,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "100";
-                this.currentTarget = target;
+
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
@@ -648,9 +649,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @param target The current target
      */
     protected deactivate = (target: HTMLElement | undefined = undefined) => {
+        let metarget = this.currentTarget;
 
         window.setTimeout(() => {
-            if (this.cancelled) {
+            if (this.cancelled || this.currentTarget !== metarget) {
                 this.cancelled = false;
                 return;
             }
@@ -660,7 +662,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             if (hoverstat) {
                 hoverstat.style.zIndex = "-100";        
                 hoverstat.style.display = "none";
-
+                this.currentTarget = undefined;
                 window.removeEventListener("resize", this.resizer);
             }
         }, 0);
