@@ -111,6 +111,18 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		newShips.push(schematic.ship);
 	});
 
+	newShips.sort((a, b) => {
+		if (a.owned && !b.owned) return -1;
+		else if (!a.owned && b.owned) return 1;
+		let r = b.level - a.level;
+
+		if (r) return r;
+
+		r = b.rarity - a.rarity;
+		if (r) return r;
+		return a.name?.localeCompare(b.name ?? "") ?? 0;
+	})
+
 	return newShips;
 }
 

@@ -7,6 +7,7 @@ import { AvatarIcon } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 import { Schematics, Ship } from '../model/ship';
 import { mergeShips } from '../utils/shiputils';
+import CONFIG from './CONFIG';
 
 type ShipPickerProps = {
     playerData?: PlayerData;
@@ -82,7 +83,8 @@ const ShipPicker = (props: ShipPickerProps) => {
 						key: c.symbol,
 						value: c.symbol,
 						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
-						text: c.name
+						text: c.name,
+                        title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack.toLocaleString()} / Shields ${c.shields.toLocaleString()} / Hull ${c.hull.toLocaleString()}`
 					} as DropDownItem
 				));
 				resolve(poolList);

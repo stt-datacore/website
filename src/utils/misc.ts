@@ -6,6 +6,7 @@ export interface DropDownItem {
 	value: string;
 	image: AvatarIcon;
 	text: string;
+	title?: string;
 }
 
 export function getCoolStats(crew: any, simple: boolean, showMore: boolean = true): string {
