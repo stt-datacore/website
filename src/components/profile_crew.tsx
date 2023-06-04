@@ -231,9 +231,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
+	const [shipRarityFilter, setShipRarityFilter] = useStateWithStorage(pageId+'/shipRarityFilter', [] as number[]);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
+	const [selectedShip, setSelectedShip] = React.useState<Ship | undefined>();
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
@@ -456,6 +458,32 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</Button>
 					</Button.Group>
             )}
+
+			
+			{
+
+			tableView === 'shipA' && 
+				<div style={{
+					margin: "1em 0",
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "flex-start"					
+				}}>
+					<div style={{marginRight: "16px", width: "25em"}}>
+						<ShipPicker 							
+							rarityFilter={shipRarityFilter}
+							selectedShip={selectedShip}
+							setSelectedShip={setSelectedShip}
+							playerData={props.playerData} />
+					</div>
+					<div style={{marginRight: "16px", width: "25em"}}>
+						<CrewRarityFilter
+								rarityFilter={shipRarityFilter}
+								setRarityFilter={setShipRarityFilter}
+							/>					
+					</div>
+				</div>
+			}
 
             <div style={{ margin: "1em 0" }}>
                 <Form>
