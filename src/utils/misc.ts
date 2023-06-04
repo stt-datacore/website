@@ -1,4 +1,12 @@
 import CONFIG from '../components/CONFIG';
+import { AvatarIcon } from '../model/game-elements';
+
+export interface DropDownItem {
+	key: string;
+	value: string;
+	image: AvatarIcon;
+	text: string;
+}
 
 export function getCoolStats(crew: any, simple: boolean, showMore: boolean = true): string {
 	let stats = [] as string[];

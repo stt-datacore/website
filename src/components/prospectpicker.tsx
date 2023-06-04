@@ -4,13 +4,7 @@ import { Link } from 'gatsby';
 import { CrewMember } from '../model/crew';
 import { CompactCrew, PlayerCrew } from '../model/player';
 import { AvatarIcon, LockedProspect } from '../model/game-elements';
-
-interface PoolItem {
-	key: string;
-	value: string;
-	image: AvatarIcon;
-	text: string;
-}
+import { DropDownItem } from '../utils/misc';
 
 type ProspectPickerProps = {
 	pool: PlayerCrew[] | CrewMember[];
@@ -30,7 +24,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 	const [selection, setSelection] = React.useState('');
 	const [options, setOptions] = React.useState({
 		state: OptionsState.Uninitialized,
-		list: [] as PoolItem[]
+		list: [] as DropDownItem[]
 	});
 
 	if (pool.length == 0) return (<></>);
@@ -74,14 +68,14 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 		});
 		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
 		setTimeout(() => {
-			const populatePromise = new Promise<PoolItem[]>((resolve, reject) => {
+			const populatePromise = new Promise<DropDownItem[]>((resolve, reject) => {
 				const poolList = pool.map((c) => (
 					{
 						key: c.symbol,
 						value: c.symbol,
 						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
 						text: c.name
-					} as PoolItem
+					} as DropDownItem
 				));
 				resolve(poolList);
 			});

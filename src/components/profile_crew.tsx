@@ -23,6 +23,8 @@ import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
 import { StatLabel } from './citeoptimizer';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import ShipPicker from './shippicker';
+import { Ship } from '../model/ship';
 type ProfileCrewProps = {
 	playerData: PlayerData;
 	isTools?: boolean;
@@ -223,6 +225,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
+	const [selectedShip, setSelectedShip] = React.useState<Ship | undefined>();
+
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
 	React.useEffect(() => {
@@ -446,7 +450,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</Button>
 					</Button.Group>
 					{tableView === 'ship' && 
-						<div>
+						<div style={{marginLeft: "16px", width: "36em"}}>
+							<ShipPicker 							
+								selectedShip={selectedShip}
+								setSelectedShip={setSelectedShip}
+								playerData={props.playerData} />
 						</div>
 					}
 				</div>
