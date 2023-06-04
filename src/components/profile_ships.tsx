@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
 
-import { mergeShips } from '../utils/shiputils';
+import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
+import { PlayerData } from '../model/player';
 
 type ProfileShipsProps = {
-	playerData: any;
+	playerData: PlayerData;
 };
 
 type ProfileShipsState = {
-	column: any;
+	column: string | null;
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: any[];
+	data: Ship[];
 	pagination_rows: number;
 	pagination_page: number;
 };
@@ -85,62 +87,67 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
+		const clickShip = (data: Ship) => {
+			let shipCrew = findPotentialCrew(data, this.props.playerData.player.character.crew);
+			console.log(shipCrew);
+		}
+
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
 							width={3}
-							sorted={column === 'name' ? direction : null}
+							sorted={column === 'name' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('name')}
 						>
 							Ship
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'antimatter' ? direction : null}
+							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('antimatter')}
 						>
 							Antimatter
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'accuracy' ? direction : null}
+							sorted={column === 'accuracy' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('accuracy')}
 						>
 							Accuracy
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'attack' ? direction : null}
+							sorted={column === 'attack' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('attack')}
 						>
 							Attack
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'evasion' ? direction : null}
+							sorted={column === 'evasion' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('evasion')}
 						>
 							Evasion
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'hull' ? direction : null}
+							sorted={column === 'hull' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('hull')}
 						>
 							Hull
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'shields' ? direction : null}
+							sorted={column === 'shields' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('shields')}
 						>
 							Shields
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'max_level' ? direction : null}
+							sorted={column === 'max_level' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('max_level')}
 						>
 							Level
@@ -160,12 +167,14 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} />
+										<a onClick={(e) => clickShip(ship)} style={{cursor: "pointer"}}>
+											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+										</a>
 									</div>
 									<div style={{ gridArea: 'stats' }}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 									</div>
-									<div style={{ gridArea: 'description' }}>{ship.traits_named.join(', ')}</div>
+									<div style={{ gridArea: 'description' }}>{ship.traits_named?.join(', ')}</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{ship.antimatter}</Table.Cell>

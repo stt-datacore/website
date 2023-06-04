@@ -1,5 +1,4 @@
-import { Action, CrewMember } from "./crew";
-import { PlayerCrew } from "./player";
+import { CrewMember } from "./crew";
 
 export type Variant = {
   name: string;
@@ -171,39 +170,3 @@ export interface SymbolName {
   name: string;
 }
 
-export interface Root2 {
-  id: number
-  icon: Icon
-  cost: number
-  ship: Ship
-  rarity: number
-}
-
-export interface Icon {
-  file: string
-}
-
-export interface Ship {
-  archetype_id: number
-  symbol: string
-  name: string
-  rarity: number
-  icon: Icon
-  flavor: string
-  model: string
-  max_level: number
-  actions: Action[]
-  shields: number
-  hull: number
-  attack: number
-  evasion: number
-  accuracy: number
-  crit_chance: number
-  crit_bonus: number
-  attacks_per_second: number
-  shield_regen: number
-  traits: string[]
-  traits_hidden: any[]
-  antimatter: number
-  traits_named: string[]
-}

@@ -1,6 +1,6 @@
 import { PlayerCrew, Reward } from './player';
 import { Icon } from './game-elements';
-import { Action as ShipAction } from './crew';
+import { Action as ShipAction } from "./action";
 
 export interface BossBattlesRoot {
     env: BossConfig

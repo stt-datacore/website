@@ -474,6 +474,24 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		}
 	}, [inputPlayerData]);
 
+	const frameLoaded = () => {
+		let el = document.getElementById("_frame1") as HTMLIFrameElement;
+		if (el) {
+			
+			let text = el.contentWindow?.document.textContent;
+			if (text) {
+				try {
+					let json = JSON.parse(text);
+					if (json && "forte_root" in json) {
+						setInputPlayerData(json);
+					}
+				}
+				catch {
+
+				}
+			}
+		}
+	}
 	return (
 		<Layout title='Player tools'>
 			<Header as='h2'>Player tools</Header>
@@ -509,7 +527,6 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					ref={e => inputUploadFile = e}
 				/>
 			</Form>
-
 			<Button
 				onClick={() => parseInput()}
 				style={{ marginTop: '1em' }}
@@ -523,8 +540,8 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					<Message.Header>Error</Message.Header>
 					<p>{errorMessage}</p>
 				</Message>
-			)}
-
+			)}			
+			
 			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
 				<a href={PLAYERLINK} target='_blank'>
 					your player data

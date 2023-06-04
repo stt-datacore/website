@@ -156,22 +156,22 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         })
     );
 
-    p.player.character.ships = p.player.character.ships.map((ship) => ({
-        id: ship.id,
-        level: ship.level,
-        symbol: ship.symbol,
-        antimatter: ship.antimatter,
-        shields: ship.shields,
-        hull: ship.hull,
-        attack: ship.attack,
-        evasion: ship.evasion,
-        accuracy: ship.accuracy,
-        crit_chance: ship.crit_chance,
-        crit_bonus: ship.crit_bonus,
-        attacks_per_second: ship.attacks_per_second,
-        shield_regen: ship.shield_regen,
-        rarity: ship.rarity,
-    }));
+    // p.player.character.ships = p.player.character.ships.map((ship) => ({
+    //     id: ship.id,
+    //     level: ship.level,
+    //     symbol: ship.symbol,
+    //     antimatter: ship.antimatter,
+    //     shields: ship.shields,
+    //     hull: ship.hull,
+    //     attack: ship.attack,
+    //     evasion: ship.evasion,
+    //     accuracy: ship.accuracy,
+    //     crit_chance: ship.crit_chance,
+    //     crit_bonus: ship.crit_bonus,
+    //     attacks_per_second: ship.attacks_per_second,
+    //     shield_regen: ship.shield_regen,
+    //     rarity: ship.rarity,
+    // }));
 
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)

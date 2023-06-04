@@ -1,4 +1,5 @@
-import { Action, BaseSkills } from "./crew"
+import { BaseSkills } from "./crew"
+import { Action } from "./action"
 import { Icon, Ship } from "./game-elements"
 
 export interface CaptainsBridgeRoot {

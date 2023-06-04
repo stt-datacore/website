@@ -1,8 +1,10 @@
 
 
+import { Ship } from "./ship";
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { Action, BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, ShipBattle, Skill } from "./crew"
+import { BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, Skill } from "./crew"
+import { Action, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
@@ -398,7 +400,7 @@ export interface Player {
     base_skills?: BaseSkills;
     skills?: BaseSkills;
     favorite?: boolean;
-    ship_battle?: ShipBattle;
+    ship_battle?: ShipBonus;
     active_status?: number;
   }
 
@@ -455,7 +457,7 @@ export interface Player {
     traits_hidden: string[]
     skills: BaseSkills
     base_skills: BaseSkills
-    ship_battle: ShipBattle
+    ship_battle: ShipBonus
     action: Action
     default_avatar: boolean
     cross_fuse_targets: CrossFuseTarget;
@@ -544,41 +546,7 @@ export interface Player {
     currency: number
     amount: number
   }
-  
-  export interface Ship {
-    archetype_id?: number
-    symbol: string
-    name?: string
-    rarity: number
-    icon?: Icon
-    flavor?: string
-    model?: string
-    max_level?: number
-    actions?: Action[]
-    shields: number
-    hull: number
-    attack: number
-    evasion: number
-    accuracy: number
-    crit_chance: number
-    crit_bonus: number
-    attacks_per_second: number
-    shield_regen: number
-    traits?: string[]
-    traits_hidden?: any[]
-    antimatter: number
-    id: number
-    level: number
-    schematic_gain_cost_next_level?: number
-    schematic_id?: number
-    schematic_icon?: Icon
-    battle_stations?: BattleStation[]
-  }
-  
-  export interface BattleStation {
-    skill: string
-  }
-  
+
   export interface Faction {
     id: number
     name: string

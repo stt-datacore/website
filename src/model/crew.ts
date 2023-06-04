@@ -1,3 +1,4 @@
+import { ShipBonus, Action } from "./ship";
 import { Icon } from "./game-elements"
 
 export interface CrossFuseTarget {
@@ -23,7 +24,7 @@ export interface CrewMember {
   traits: string[]
   traits_hidden: string[]
   base_skills: BaseSkills
-  ship_battle: ShipBattle
+  ship_battle: ShipBonus
   action: Action
   cross_fuse_targets: CrossFuseTarget | [];
   skill_data: SkillData[]
@@ -89,57 +90,10 @@ export interface SkillsSummary {
 	maxPct: number;
 };
 
-
 export interface ComputedBuff {
   core: number
   min: number
   max: number
-}
-
-export interface ShipBattle {
-  accuracy?: number
-  evasion?: number
-  crit_chance?: number
-  crit_bonus?: number
-}
-
-export interface Action {
-  bonus_amount: number
-  name: string
-  symbol: string
-  cooldown: number
-  initial_cooldown: number
-  duration: number
-  bonus_type: number
-  crew: number
-  crew_archetype_id: number
-  icon: Icon
-  special: boolean
-  penalty?: Penalty
-  limit?: number
-  ability?: Ability
-  charge_phases?: ChargePhase[]
-
-  ability_text?: string;
-  ability_trigger?: string;
-  charge_text?: string;
-}
-
-export interface Penalty {
-  type: number
-  amount: number
-}
-
-export interface Ability extends Penalty {
-  condition: number
-}
-
-export interface ChargePhase {
-  charge_time: number
-  ability_amount?: number
-  cooldown?: number
-  bonus_amount?: number
-  duration?: number
 }
 
 export interface SkillData {
@@ -150,7 +104,7 @@ export interface SkillData {
 export interface IntermediateSkillData extends SkillData {
   level: number
   action: Action
-  ship_battle: ShipBattle
+  ship_battle: ShipBonus
 }
 
 export interface Nickname {
