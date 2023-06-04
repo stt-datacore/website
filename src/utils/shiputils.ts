@@ -1,4 +1,4 @@
-import { BaseSkills, CrewMember, Skill } from "../model/crew";
+import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 import { Action } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
@@ -114,10 +114,19 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 	return newShips;
 }
 
-export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew[]) {
+/**
+ * Get eligible crew for a ship
+ * @param ship The ship
+ * @param allCrew The crew roster to check against
+ * @param onlyTriggers Optional. True to only return crew that are triggered by ship grants
+ * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
+ * @returns An array of all crew.
+ */
+export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew[], onlyTriggers: boolean = false, seat?: BaseSkillFields) {
 	// first, get only the crew with the specified traits.
-	console.log(ship);	
-	
+
+	if (seat && !ship.battle_stations?.some(bs => bs.skill === seat)) return [];
+
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
 		if ("rarity" in crew) {
 			if (crew.rarity > ship.rarity) return false;
@@ -126,44 +135,61 @@ export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew
 			if (crew.max_rarity > ship.rarity) return false;
 		}
 
-		return ship.battle_stations?.some(bs => bs.skill in crew.base_skills)
+		if (seat) {
+			return (seat in crew.base_skills && crew.base_skills[seat] !== undefined);			
+		}
+		else {
+			return ship.battle_stations?.some(bs => bs.skill in crew.base_skills && crew.base_skills[bs.skill] !== undefined)
+		}		
 	});
 	
-	// now get ship grants
-	let grants = ship.actions?.filter(action => action.status !== undefined);	
-	if (grants) console.log(grants);
-	// now match triggers with grants.
-	if (bscrew && grants && grants.length) {
-		bscrew = bscrew.filter(crew => grants?.some(grant => grant.status === crew.action.ability?.condition));
+	if (onlyTriggers) {
+		// now get ship grants
+		let grants = ship.actions?.filter(action => action.status !== undefined);	
+		if (grants) console.log(grants);
+		// now match triggers with grants.
+		if (bscrew && grants && grants.length) {
+			bscrew = bscrew.filter(crew => grants?.some(grant => grant.status === crew.action.ability?.condition));
+		}
 	}
 
 	// now sort by bonuses
 	bscrew?.sort((a, b) => {
 
-		if (a.action.ability && !b.action.ability) return -1;
-		else if (!a.action.ability && b.action.ability) return 1;
+		if (a.action.ability && !b.action.ability) return 1;
+		else if (!a.action.ability && b.action.ability) return -1;
 
-		if (a.action.ability && b.action.ability) {
+		if (a.action?.bonus_amount && b.action?.bonus_amount) {
+			let r = a.action.bonus_amount - b.action.bonus_amount;
+			if (r) return r;			
+		}
+
+		let rr = a.action.initial_cooldown - b.action.initial_cooldown;
+		if (rr) return -rr;
+
+		rr = a.action.duration - b.action.duration;
+		if (rr) return -rr;
+
+		rr = a.action.cooldown - b.action.cooldown;
+		if (rr) return -rr;
+
+		if (a.action.ability && b.action.ability) {			
 			let r = a.action.ability.type - b.action.ability.type;
 			if (!r) {
 				r = a.action.ability.amount - b.action.ability.amount;
 				if (!r) {
-					r = a.action.ability.condition - b.action.ability.condition;
+					r = b.action.ability.condition - a.action.ability.condition;
 				}
 			}
-			if (r) return -r;
-		}
-		
-		if (a.action?.bonus_amount && b.action?.bonus_amount) {
-			let r = a.action.bonus_amount - b.action.bonus_amount;
-			if (r) return -r;
-		}
 
-		if (a.action?.bonus_type && !b.action?.bonus_type) return -1;
-		else if (b.action?.bonus_type && !a.action?.bonus_type) return 1;
+			if (r) return -r;
+		}
+	
+		if (a.action?.bonus_type && !b.action?.bonus_type) return 1;
+		else if (b.action?.bonus_type && !a.action?.bonus_type) return -1;
 		else if (b.action?.bonus_type && a.action?.bonus_type) {
 			let r = a.action?.bonus_type - b.action?.bonus_type;
-			if (r) return -r;
+			if (r) return r;
 		}
 		
 		if (a.ship_battle && b.ship_battle) {
@@ -187,7 +213,7 @@ export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew
 					}
 				}
 			}
-			return -r;
+			return r;
 		}
 		let skilln_a: number[] = [];
 		let skilln_b: number[] = [];
@@ -204,22 +230,22 @@ export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew
 		skilln_b.sort((a, b) => b - a);
 
 		let rsk = skilln_a[0] - skilln_b[0];
-		if (rsk) return -rsk;
+		if (rsk) return rsk;
 
 		if (skilln_a.length > 1 && skilln_b.length > 1) {
 			rsk = skilln_a[1] - skilln_b[1];
-			if (rsk) return -rsk;
+			if (rsk) return rsk;
 		}
 		
 		if (skilln_a.length > 2 && skilln_b.length > 2) {
 			rsk = skilln_a[2] - skilln_b[2];
-			if (rsk) return -rsk;
+			if (rsk) return rsk;
 		}
 
 		return 0;
 	})
 	
-	return bscrew;
+	return bscrew.reverse();
 }
 
 

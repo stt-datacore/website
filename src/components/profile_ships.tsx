@@ -5,6 +5,7 @@ import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
 import { PlayerData } from '../model/player';
+import CONFIG from './CONFIG';
 
 type ProfileShipsProps = {
 	playerData: PlayerData;
@@ -43,7 +44,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	componentDidMount() {
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
-			.then(ship_schematics => {
+			.then((ship_schematics: Schematics[]) => {
 				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
 				this.setState({ data });
 			});
@@ -84,13 +85,12 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
+		const clickShip = (ship: Ship) => {
+		
+		}
+	
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-
-		const clickShip = (data: Ship) => {
-			let shipCrew = findPotentialCrew(data, this.props.playerData.player.character.crew);
-			console.log(shipCrew);
-		}
 
 		return (
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
@@ -146,7 +146,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 							Shields
 						</Table.HeaderCell>
 						<Table.HeaderCell
-							width={1}
+							width={1}							
 							sorted={column === 'max_level' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('max_level')}
 						>

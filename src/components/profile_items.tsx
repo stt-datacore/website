@@ -87,28 +87,28 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					<Table.Row>
 						<Table.HeaderCell
 							width={3}
-							sorted={column === 'name' ? direction : null}
+							sorted={column === 'name' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('name')}
 						>
 							Item
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'quantity' ? direction : null}
+							sorted={column === 'quantity' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('quantity')}
 						>
 							Quantity
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'type' ? direction : null}
+							sorted={column === 'type' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('type')}
 						>
 							Item type
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'rarity' ? direction : null}
+							sorted={column === 'rarity' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('rarity')}
 						>
 							Rarity

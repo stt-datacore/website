@@ -81,7 +81,12 @@ export default class CONFIG {
 		0: 'None',
 		1: 'Position',
 		2: 'Cloak',
-		4: 'Boarding'
+		4: 'Boarding',
+	};
+
+	static readonly SHIP_BATTLE_GRANTS: { [index: number]: string } = {
+		... this.CREW_SHIP_BATTLE_TRIGGER,
+		16: 'Shields Disruptor'
 	};
 
 	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE: { [index: number]: string } = {

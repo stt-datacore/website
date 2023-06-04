@@ -67,7 +67,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	return (<ProfileCrewTable playerData={props.playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
-type ProfileCrewTools = {
+type ProfileCrewToolsProps = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
 	buffConfig: BuffStatTable;
@@ -77,7 +77,7 @@ type ProfileCrewTools = {
 	playerData: PlayerData;
 };
 
-const ProfileCrewTools = (props: ProfileCrewTools) => {
+const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const { allCrew, buffConfig, initOptions } = props;
 	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', [] as LockedProspect[]);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[]>('tools/activeCrew', [] as PlayerCrew[]);
@@ -215,6 +215,7 @@ type ProfileCrewTableProps = {
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const pageId = props.pageId ?? 'crew';
+
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
 	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
@@ -254,7 +255,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
 	];
-
+	
 	if (traitFilter.length > 1) {
 		tableConfig.push(
 			{ width: 1, column: 'traits_matched.length', title: 'Matches', reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
@@ -422,23 +423,33 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	return (
         <React.Fragment>
             {pageId === "crewTool" && (
-                <Button.Group>
-                    <Button
-                        onClick={() => setTableView("base")}
-                        positive={tableView === "base" ? true : false}
-                        size="large"
-                    >
-                        Base Skills
-                    </Button>
-                    <Button.Or />
-                    <Button
-                        onClick={() => setTableView("ship")}
-                        positive={tableView === "ship" ? true : false}
-                        size="large"
-                    >
-                        Ship Abilities
-                    </Button>
-                </Button.Group>
+				<div style={{
+					display: "flex",
+					flexDirection: "row",					
+					justifyItems: "flex-start"
+				}}>
+					<Button.Group>
+						<Button
+							onClick={() => setTableView("base")}
+							positive={tableView === "base" ? true : false}
+							size="large"
+						>
+							Base Skills
+						</Button>
+						<Button.Or />
+						<Button
+							onClick={() => setTableView("ship")}
+							positive={tableView === "ship" ? true : false}
+							size="large"
+						>
+							Ship Abilities
+						</Button>
+					</Button.Group>
+					{tableView === 'ship' && 
+						<div>
+						</div>
+					}
+				</div>
             )}
 
             <div style={{ margin: "1em 0" }}>

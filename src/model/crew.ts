@@ -60,6 +60,15 @@ export interface EquipmentSlot {
   symbol: string
 }
 
+export enum BaseSkillFields {
+  SecuritySkill = 'security_skill',
+  CommandSkill = 'command_skill',
+  DiplomacySkill = 'diplomacy_skill',
+  MedicineSkill = 'medicine_skill',
+  ScienceSkill = 'science_skill',
+  EngineeringSkill = 'engineering_skill',
+}
+
 export interface BaseSkills {
   security_skill?: Skill
   command_skill?: Skill
@@ -67,6 +76,19 @@ export interface BaseSkills {
   medicine_skill?: Skill
   science_skill?: Skill
   engineering_skill?: Skill
+}
+
+export function getSkillsRanked(skills: BaseSkills) {
+  let mskills = Object.keys(skills).filter(skill => skills[skill]).map(skill => skills[skill] as Skill);
+  mskills.sort((a,b) => {
+    let r = b.core - a.core;
+    if (r) return r;
+    r = b.range_max - a.range_max;
+    if (r) return r;
+    r = b.range_min - a.range_min;
+    return r;
+  });
+  return mskills;
 }
 
 export interface Skill {
