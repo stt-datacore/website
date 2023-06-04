@@ -46,7 +46,7 @@ export interface CrewMember {
   bigbook_tier: number
   events: number
   in_portal: boolean
-  date_added: string
+  date_added: Date
   obtained: string
   markdownContent: string
   unique_polestar_combos?: string[][]

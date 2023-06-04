@@ -291,7 +291,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.player.character.crew.forEach(crew => {
 		if (crew.level === 100 && crew.equipment.length === 4) {
 			numImmortals.add(crew.archetype_id);
-		}
+		}		
 	});
 	
 	playerData.calc = {
@@ -312,6 +312,10 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 		crew.have = false;
 		//crew.equipment = [0, 1, 2, 3];
 		crew.favorite = false;
+		
+		if (typeof crew.date_added === 'string') {
+			crew.date_added = new Date(crew.date_added);
+		}
 
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;
