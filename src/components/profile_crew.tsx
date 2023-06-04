@@ -25,6 +25,7 @@ import { StatLabel } from './citeoptimizer';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import ShipPicker from './shippicker';
 import { Ship } from '../model/ship';
+
 type ProfileCrewProps = {
 	playerData: PlayerData;
 	isTools?: boolean;
@@ -84,7 +85,15 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', [] as LockedProspect[]);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[]>('tools/activeCrew', [] as PlayerCrew[]);
 
-	const myCrew = JSON.parse(JSON.stringify(props.myCrew)) as PlayerCrew[];
+	const myCrew = JSON.parse(
+		JSON.stringify(props.myCrew), 
+		(key, value) => {
+			if (key === 'date_added' && typeof value === 'string') {
+				return new Date(value);
+			}
+			return value;
+		}
+	);
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew?.map(ac => {
@@ -225,7 +234,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
-	const [selectedShip, setSelectedShip] = React.useState<Ship | undefined>();
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
@@ -280,6 +288,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				reverse: true
 			});
 		});
+		tableConfig.push(
+			{ width: 1, column: 'date_added', title: 'Date Added' },
+		);
 	}
 
 	if (tableView === 'ship') {
@@ -427,11 +438,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	return (
         <React.Fragment>
             {pageId === "crewTool" && (
-				<div style={{
-					display: "flex",
-					flexDirection: "row",					
-					justifyItems: "flex-start"
-				}}>
 					<Button.Group>
 						<Button
 							onClick={() => setTableView("base")}
@@ -449,15 +455,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							Ship Abilities
 						</Button>
 					</Button.Group>
-					{tableView === 'ship' && 
-						<div style={{marginLeft: "16px", width: "35.55em"}}>
-							<ShipPicker 							
-								selectedShip={selectedShip}
-								setSelectedShip={setSelectedShip}
-								playerData={props.playerData} />
-						</div>
-					}
-				</div>
             )}
 
             <div style={{ margin: "1em 0" }}>
