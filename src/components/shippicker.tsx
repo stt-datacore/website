@@ -64,7 +64,7 @@ const ShipPicker = (props: ShipPickerProps) => {
 				options={options.list}                
 				value={selection}
 				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
-				onChange={(e, { value }) => setSelection(value as string)}
+				onChange={(e, { value }) => setSelection(value as string | undefined)}
 			/>
 		</React.Fragment>
 	);
@@ -101,7 +101,10 @@ const ShipPicker = (props: ShipPickerProps) => {
 		let valid = availableShips?.find((c) => c.symbol == selection);
 		if (valid) {
 			setSelectedShip(valid);
-		};		
+		}
+        else {
+            setSelectedShip(undefined);
+        }		
 	}
 };
 

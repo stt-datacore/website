@@ -450,7 +450,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</Button>
 					</Button.Group>
 					{tableView === 'ship' && 
-						<div style={{marginLeft: "16px", width: "36em"}}>
+						<div style={{marginLeft: "16px", width: "35.55em"}}>
 							<ShipPicker 							
 								selectedShip={selectedShip}
 								setSelectedShip={setSelectedShip}
