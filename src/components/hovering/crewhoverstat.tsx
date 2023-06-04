@@ -305,7 +305,14 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                                     ) || (<i className="check icon" style={checkedStyle} />)
                                 }
                             </h4>
-                            <Rating icon='star' rating={!this.showImmortalized && "rarity" in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+                            <Rating
+                                onClick={(e) => immoToggle(e)}
+                                title={("immortal" in crew && crew.immortal) ? printImmoText(crew.immortal) : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
+                                icon='star' 
+                                rating={!this.showImmortalized && "rarity" in crew ? crew.rarity : crew.max_rarity} 
+                                maxRating={crew.max_rarity} 
+                                size='large' 
+                                disabled />
                         </div>
                     </div>
                     <div
