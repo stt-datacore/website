@@ -10,6 +10,7 @@ import { mergeShips } from '../utils/shiputils';
 import CONFIG from './CONFIG';
 
 type ShipPickerProps = {
+	rarityFilter?: number[];
     playerData?: PlayerData;
 	pool?: Ship[];
     selectedShip?: Ship;
@@ -17,7 +18,7 @@ type ShipPickerProps = {
 };
 
 const ShipPicker = (props: ShipPickerProps) => {
-	const { selectedShip, setSelectedShip } = props;
+	const { selectedShip, setSelectedShip, rarityFilter } = props;
 
 	enum OptionsState {
 		Uninitialized,
@@ -40,6 +41,9 @@ const ShipPicker = (props: ShipPickerProps) => {
             .then(response => response.json())
             .then((ship_schematics: Schematics[]) => {
                 let data = mergeShips(ship_schematics, pd.player.character.ships);
+				// if (rarityFilter) {
+				// 	data = data.filter((ship => rarityFilter.includes(ship.rarity)));
+				// }
                 setAvailableShips(data);
             });
     }
