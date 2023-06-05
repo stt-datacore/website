@@ -32,7 +32,7 @@ const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 		list: [] as DropDownItem[]
 	});
 
-	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Skills';
+	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Stations';
 
     React.useEffect(() => {
         populateOptions();
