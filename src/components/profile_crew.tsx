@@ -504,7 +504,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			
 			{
 
-			tableView === 'ship' && 
+			tableView === 'ship_disabled' && 
 				<div style={{
 					margin: "1em 0",
 					display: "flex",
