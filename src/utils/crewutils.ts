@@ -598,3 +598,13 @@ export function printImmoText(immo: number) {
 	else return "Crew Is Not Immortalized";
 }
 
+export function getSkills(crew: PlayerCrew | CrewMember | CompactCrew): string[] {
+	let sk: string[] = [];
+	if (crew.base_skills?.command_skill !== undefined && crew.base_skills.command_skill.core > 0) sk.push("command_skill");
+	if (crew.base_skills?.science_skill !== undefined && crew.base_skills.science_skill.core > 0) sk.push("science_skill");
+	if (crew.base_skills?.security_skill !== undefined && crew.base_skills.security_skill.core > 0) sk.push("security_skill");
+	if (crew.base_skills?.engineering_skill !== undefined && crew.base_skills.engineering_skill.core > 0) sk.push("engineering_skill");
+	if (crew.base_skills?.diplomacy_skill !== undefined && crew.base_skills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
+	if (crew.base_skills?.medicine_skill !== undefined && crew.base_skills.medicine_skill.core > 0) sk.push("medicine_skill");	
+	return sk;
+}

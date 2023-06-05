@@ -69,6 +69,59 @@ export function exportShipFields(): ExportField[] {
 	];
 }
 
+export interface ShipPickerFilter {
+	rarity?: number[];
+	action?: number[];
+	penalty?: number[];
+	bonus?: number[];
+	grant?: number[];
+	trait?: string[];
+}
+
+export function filterBy(ships: Ship[], filter?: ShipPickerFilter, clone?: boolean): Ship[] {
+	let shipOut = ships;
+	
+	if (!filter) {
+		if (clone) {
+			return JSON.parse(JSON.stringify(shipOut)) as Ship[];
+		}
+		else {
+			return shipOut;
+		}
+	}
+
+	if (filter.rarity && filter.rarity.length) {
+		shipOut = shipOut.filter((ship) => filter.rarity?.includes(ship.rarity));
+	}
+
+	if (filter.action && filter.action.length) {
+		shipOut = shipOut.filter((ship) => ship.actions?.some((action) => filter.action?.includes(action.bonus_type)));
+	}
+
+	if (filter.bonus && filter.bonus.length) {
+		shipOut = shipOut.filter((ship) => ship.actions?.some((action) => filter.bonus?.includes(action.bonus_amount)));
+	}
+
+	if (filter.grant && filter.grant.length) {
+		shipOut = shipOut.filter((ship) => ship.actions?.some((action) => action.status && filter.grant?.includes(action.status)));
+	}
+
+	if (filter.penalty && filter.penalty.length) {
+		shipOut = shipOut.filter((ship) => ship.actions?.some((action) => action?.penalty && filter.action?.includes(action.penalty.type)));
+	}
+
+	if (filter.trait && filter.trait.length) {
+		shipOut = shipOut.filter((ship) => ship.traits?.some(trait => filter.trait?.includes(trait)));
+	}
+
+	if (clone) {
+		return JSON.parse(JSON.stringify(shipOut)) as Ship[];
+	}
+	else {
+		return shipOut;
+	}
+}
+
 export function exportShips(ships: Ship[]): string {
 	return simplejson2csv(ships, exportShipFields());
 }
@@ -134,21 +187,19 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
  * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
  * @returns An array of all crew.
  */
-export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew[], onlyTriggers: boolean = false, seat?: BaseSkillFields) {
+export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
 	// first, get only the crew with the specified traits.
-
-	if (seat && !ship.battle_stations?.some(bs => bs.skill === seat)) return [];
+	console.log("Find Potential Crew For " + ship.name);
+	if (seats && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
 
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
+		if (crew.max_rarity > ship.rarity) return false;
 		if ("rarity" in crew) {
 			if (crew.rarity > ship.rarity) return false;
 		}
-		else {
-			if (crew.max_rarity > ship.rarity) return false;
-		}
 
-		if (seat) {
-			return (seat in crew.base_skills && crew.base_skills[seat] !== undefined);			
+		if (seats) {
+			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));			
 		}
 		else {
 			return ship.battle_stations?.some(bs => bs.skill in crew.base_skills && crew.base_skills[bs.skill] !== undefined)
@@ -260,4 +311,15 @@ export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew
 	return bscrew.reverse();
 }
 
+export interface TierRank {
+	type?: number;
+	ability?: number;
+	value: number;
+	tier: number;
+}
 
+export function calculateBattleTiers(allCrew: CrewMember[] | PlayerCrew[]) {
+
+
+
+}

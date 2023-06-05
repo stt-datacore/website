@@ -10,10 +10,10 @@ import ProspectPicker from '../components/prospectpicker';
 
 import RosterSummary from '../components/crewtables/rostersummary';
 import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
-import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
+import { CrewRarityFilter as RarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { applySkillBuff, getShipBonus, getShipChargePhases, gradeToColor, isImmortal, navToCrewPage } from '../utils/crewutils';
+import { applySkillBuff, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, navToCrewPage } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
@@ -25,6 +25,8 @@ import { StatLabel } from './citeoptimizer';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import ShipPicker from './shippicker';
 import { Ship } from '../model/ship';
+import { ShipPickerFilter, findPotentialCrew } from '../utils/shiputils';
+import ShipSeatPicker from './shipseatpicker';
 
 type ProfileCrewProps = {
 	playerData: PlayerData;
@@ -232,21 +234,53 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
 	const [shipRarityFilter, setShipRarityFilter] = useStateWithStorage(pageId+'/shipRarityFilter', [] as number[]);
+	const [shipFilter, setShipFilter] = useStateWithStorage<ShipPickerFilter | undefined>(pageId+'/shipFilter', undefined);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
+	const [selectedShip, setSelectedShip] = useStateWithStorage<Ship | undefined>(pageId+'/selectedShip', undefined);
+	const [selectedSeats, setSelectedSeats] = useStateWithStorage(pageId+'/selectedSeats', [] as string[]);
+	const [availableSeats, setAvailableSeats] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
+
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
-	const [selectedShip, setSelectedShip] = React.useState<Ship | undefined>();
+	const [shipCrew, setShipCrew] = React.useState<PlayerCrew[] | CrewMember[] | undefined | null>([]);
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
 	React.useEffect(() => {
-		if (usableFilter === 'frozen') setRosterFilter('');
-	}, [usableFilter]);
+		if (usableFilter === 'frozen') setRosterFilter('');		
+	}, [usableFilter, shipCrew, tableView]);
 
 	React.useEffect(() => {
 		if (minTraitMatches > traitFilter.length)
 			setMinTraitMatches(traitFilter.length === 0 ? 1 : traitFilter.length);
 	}, [traitFilter]);
+	// Ship stuff
+
+	React.useEffect(() => {
+		if (!shipRarityFilter) {
+			if (!shipFilter) return;
+			setShipFilter({ ... shipFilter, rarity: undefined });
+		}
+		else {
+			if (!shipFilter) {
+				setShipFilter({ rarity: shipRarityFilter });
+			}
+			else {
+				setShipFilter({ ... shipFilter, rarity: shipRarityFilter });
+			}
+		}
+	}, [shipRarityFilter]);
+
+	React.useEffect(() => {
+		if (selectedShip) {
+			setShipCrew(findPotentialCrew(selectedShip, myCrew, false, selectedSeats));
+			setAvailableSeats(Object.keys(CONFIG.SKILLS).filter(key => selectedShip.battle_stations?.some(bs => bs?.skill === key) ?? true));
+		}
+		else {
+			setShipCrew([]);
+			setAvailableSeats(Object.keys(CONFIG.SKILLS));
+		}	
+	}, [selectedShip, selectedSeats])
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -335,6 +369,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1 && crew.immortal <= 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
+		
+		// Ship filter
+
+		if (tableView === 'ship' && ((shipCrew && shipCrew.length) || (selectedSeats.length))) {
+			if (shipCrew && shipCrew.length && !shipCrew.some(cm => cm.symbol === crew.symbol)) return false;
+			if (selectedSeats && selectedSeats.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
+		}
+
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 	
@@ -462,26 +504,35 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			
 			{
 
-			tableView === 'shipA' && 
+			tableView === 'ship' && 
 				<div style={{
 					margin: "1em 0",
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "flex-start"					
 				}}>
-					<div style={{marginRight: "16px", width: "25em"}}>
-						<ShipPicker 							
-							rarityFilter={shipRarityFilter}
-							selectedShip={selectedShip}
-							setSelectedShip={setSelectedShip}
-							playerData={props.playerData} />
-					</div>
-					<div style={{marginRight: "16px", width: "25em"}}>
-						<CrewRarityFilter
+					<div style={{marginRight: "16px"}}>
+						<RarityFilter
+								altTitle='Filter ship rarity'
 								rarityFilter={shipRarityFilter}
 								setRarityFilter={setShipRarityFilter}
 							/>					
 					</div>
+					<div style={{marginRight: "16px", width: "25em"}}>
+						<ShipPicker 							
+							filter={shipFilter}
+							selectedShip={selectedShip}
+							setSelectedShip={setSelectedShip}
+							playerData={props.playerData} />
+					</div>
+					<div style={{marginRight: "16px", minWidth: "15em"}}>
+						<ShipSeatPicker
+								setSelectedSeats={setSelectedSeats}
+								selectedSeats={selectedSeats}
+								availableSeats={availableSeats}
+							/>					
+					</div>
+
 				</div>
 			}
 
@@ -514,7 +565,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                                 }
                             />
                         )}
-                        <CrewRarityFilter
+                        <RarityFilter
                             rarityFilter={rarityFilter}
                             setRarityFilter={setRarityFilter}
                         />

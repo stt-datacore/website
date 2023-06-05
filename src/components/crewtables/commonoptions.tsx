@@ -14,6 +14,7 @@ export interface TraitOptions {
 type CrewRarityFilterProps = {
 	rarityFilter: number[];
 	setRarityFilter: (rarityFilter: number[]) => void;
+	altTitle?: string;
 };
 
 export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
@@ -28,7 +29,7 @@ export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder='Filter by rarity'
+				placeholder={props.altTitle ?? 'Filter by rarity'} 
 				clearable
 				multiple
 				selection

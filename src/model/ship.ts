@@ -39,7 +39,9 @@ export interface Ship {
   battle_stations?: BattleStation[];
   traits_named?: string[];
   owned?: boolean;
+  tier?: number;
 }
+
 
 export interface BattleStation {
   skill: string;

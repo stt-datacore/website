@@ -6,11 +6,12 @@ import { CompactCrew, PlayerCrew, PlayerData } from '../model/player';
 import { AvatarIcon } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 import { Schematics, Ship } from '../model/ship';
-import { mergeShips } from '../utils/shiputils';
+import { ShipPickerFilter, filterBy, mergeShips } from '../utils/shiputils';
 import CONFIG from './CONFIG';
 
+
 type ShipPickerProps = {
-	rarityFilter?: number[];
+	filter?: ShipPickerFilter;
     playerData?: PlayerData;
 	pool?: Ship[];
     selectedShip?: Ship;
@@ -18,7 +19,7 @@ type ShipPickerProps = {
 };
 
 const ShipPicker = (props: ShipPickerProps) => {
-	const { selectedShip, setSelectedShip, rarityFilter } = props;
+	const { selectedShip, setSelectedShip, filter } = props;
 
 	enum OptionsState {
 		Uninitialized,
@@ -27,10 +28,11 @@ const ShipPicker = (props: ShipPickerProps) => {
 	};
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
+    const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
 	const [selection, setSelection] = React.useState(selectedShip?.symbol);
 	const [options, setOptions] = React.useState({
 		state: OptionsState.Uninitialized,
-		list: [] as DropDownItem[] | undefined
+		list: [] as DropDownItem[] 
 	});
 
 	if (!availableShips || availableShips.length === 0) {
@@ -41,9 +43,6 @@ const ShipPicker = (props: ShipPickerProps) => {
             .then(response => response.json())
             .then((ship_schematics: Schematics[]) => {
                 let data = mergeShips(ship_schematics, pd.player.character.ships);
-				// if (rarityFilter) {
-				// 	data = data.filter((ship => rarityFilter.includes(ship.rarity)));
-				// }
                 setAvailableShips(data);
             });
     }
@@ -56,8 +55,17 @@ const ShipPicker = (props: ShipPickerProps) => {
 
     React.useEffect(() => {
         populateOptions();
-    }, [availableShips]);
+    }, [filteredShips]);
 
+    React.useEffect(() => {
+        if (availableShips && filter) {			
+			setFilteredShips(filterBy(availableShips, filter));			
+		}
+		else {
+			setFilteredShips(availableShips);
+		}
+    }, [availableShips, filter]);
+	
 	return (
 		<React.Fragment>
 			<Dropdown 
@@ -67,7 +75,7 @@ const ShipPicker = (props: ShipPickerProps) => {
                 fluid
 				placeholder={placeholder}
 				options={options.list}                
-				value={selection}
+				value={selection}				
 				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
 				onChange={(e, { value }) => setSelection(value as string | undefined)}
 			/>
@@ -82,7 +90,7 @@ const ShipPicker = (props: ShipPickerProps) => {
 		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
 		setTimeout(() => {            
 			const populatePromise = new Promise<DropDownItem[] | undefined>((resolve, reject) => {
-				const poolList = availableShips?.map((c) => (
+				const poolList = filteredShips?.map((c) => (
 					{
 						key: c.symbol,
 						value: c.symbol,
@@ -96,15 +104,18 @@ const ShipPicker = (props: ShipPickerProps) => {
 			populatePromise.then((poolList) => {
 				setOptions({
 					state: OptionsState.Initialized,
-					list: poolList
+					list: poolList ?? []
 				});
 			});
 		}, 0);
 	}
 
 	function setShip(): void {
-		if (selection == '') return;
-		let valid = availableShips?.find((c) => c.symbol == selection);
+		if (selection == '')  {
+			setSelectedShip(undefined);
+			return;
+		}
+		let valid = filteredShips?.find((c) => c.symbol == selection);
 		if (valid) {
 			setSelectedShip(valid);
 		}
