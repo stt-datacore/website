@@ -82,43 +82,21 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
 
         if (dataIn) {            
             let item: Ship = dataIn as Ship;
+            let cm: Ship | undefined = undefined;
 
-            if (showImmortal === true || (applyBuffs === true && buffConfig)) {
-                let cm: Ship | undefined = undefined;
-                if (showImmortal === true && item?.level !== item?.max_level) {
-                    cm = this.props.allShips.find(c => c.symbol === dataIn.symbol);
-                }
-    
-                if (cm && showImmortal === true) {
-                    item = JSON.parse(JSON.stringify(cm)) as Ship;                    
+            if (item.owned) {
+                item = JSON.parse(JSON.stringify(dataIn)) as Ship;
+                if (item.level === item.max_level) {
+                    item.immortal = CompletionState.Immortalized;
                 }
                 else {
-                    item = JSON.parse(JSON.stringify(dataIn)) as Ship;
+                    item.immortal = CompletionState.NotComplete;
                 }
-
-                if (item.owned && (item.level === item.max_level)) {
-                    item.immortal = CompletionState.Immortalized;
-                }            
-                else if (showImmortal) {
-                    if (item.owned) {    
-                        item.immortal = CompletionState.DisplayAsImmortalOwned;
-                    }
-                    else {
-                        item.immortal = CompletionState.DisplayAsImmortalUnowned;
-                    }                    
-                }
-
-                // if (buffConfig && applyBuffs === true) {
-                //     for (let key of Object.keys(item.base_skills)) {
-                //         let sb = applySkillBuff(buffConfig, key, item.base_skills[key]);
-                //         item.base_skills[key] = {
-                //             core: sb.core,
-                //             range_max: sb.max,
-                //             range_min: sb.min
-                //         } as Skill;
-                //     }
-                // }
             }
+            else {
+                item.immortal = CompletionState.DisplayAsImmortalUnowned;
+            }
+
             return item;
          
         }        
@@ -283,7 +261,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
                             
-                            {(!this.props.disableBuffs) &&
+                            {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
                             || 
                             <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
@@ -299,7 +277,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
                                 title={("immortal" in ship && ship.immortal) ? printImmoText(ship.immortal, "Ship", "Max Level") : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
                                 style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle} 
                                 onClick={(e) => immoToggle(e)} />
-                            }
+                            } */}
                         </div>
                     </div>
                 </div>

@@ -17,6 +17,7 @@ type ProfileShipsState = {
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
 	data: Ship[];
+	originals: Ship[];
 	pagination_rows: number;
 	pagination_page: number;
 	activeShip?: Ship | null;
@@ -39,7 +40,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: []
+			data: [],
+			originals: []
 		};
 	}
 
@@ -47,8 +49,9 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
 			.then((ship_schematics: Schematics[]) => {
+				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
 				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
-				this.setState({ data });
+				this.setState({ data, originals: scsave });
 			});
 	}
 
@@ -169,7 +172,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<ShipTarget targetGroup='ships' allShips={this.state.data} setDisplayItem={setActiveShip} inputItem={ship} >
+										<ShipTarget targetGroup='ships' allShips={this.state.originals} setDisplayItem={setActiveShip} inputItem={ship} >
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 										</ShipTarget>
 									</div>

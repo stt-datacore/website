@@ -426,10 +426,7 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	if (!item) return "";
 	let actionIn = getActionFromItem(item, index);
 	if (!actionIn) return "";
-
-	const action = actionIn;
-	console.log(item);
-
+	const action = actionIn;	
 	if (!action || !action.ability) return "";
 	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
 	if (action.ability.type === 0)
@@ -451,8 +448,8 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 
 	const action = actionIn;
 
-	if (!action || !action.bonus_type || !action.charge_phases) return phases;
-
+	if (!action || !action.charge_phases) return phases;
+	console.log(action);
 	action.charge_phases.forEach(cp => {
 		charge_time += cp.charge_time;
 		let phaseDescription = `After ${charge_time}s`;

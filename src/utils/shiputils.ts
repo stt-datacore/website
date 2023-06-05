@@ -1,6 +1,6 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew } from "../model/player";
-import { Action } from "../model/ship";
+import { ShipAction } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 
@@ -148,7 +148,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.shields = owned.shields;
 			schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
 			if (owned.actions) {
-				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as Action[];
+				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
 			}
 			schematic.ship.owned = true;
 		} else {

@@ -97,7 +97,7 @@ export default class CONFIG {
 		1: 'Critical Rating increased',
 		2: 'Ship is untargetable for a time',
 		4: 'Deals gradual damage to enemy hull',
-		16: 'Shields Disruptor'
+		16: 'Enemy shields become inoperable for a time'
 	};
 
 	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE: { [index: number]: string } = {
@@ -112,7 +112,7 @@ export default class CONFIG {
 		8: 'Increases boarding damage by %VAL%%',
 		10: 'Speeds up cooldown timers by %VAL% seconds',
 		11: 'Decrease incoming hull damage by %VAL%%',
-		12: '%VAL%% of incoming damage also taken by the attacker'
+		12: '%VAL%% of incoming damage also taken by the attacker',
 	};
 
 	static readonly STATS_CONFIG: { [index: number]: any } = {
