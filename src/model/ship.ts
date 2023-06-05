@@ -1,4 +1,5 @@
 import { Icon } from "./game-elements";
+import { CompletionState } from "./player";
 
 
 export interface Schematics {
@@ -9,7 +10,14 @@ export interface Schematics {
   rarity: number;
 }
 
-export interface Ship {
+export interface ShipBonus {
+  accuracy?: number;
+  evasion?: number;
+  crit_chance?: number;
+  crit_bonus?: number;
+}
+
+export interface Ship extends ShipBonus {
   archetype_id?: number;
   symbol: string;
   name?: string;
@@ -18,7 +26,7 @@ export interface Ship {
   flavor?: string;
   model?: string;
   max_level?: number;
-  actions?: Action[];
+  actions?: ShipAction[];
   shields: number;
   hull: number;
   attack: number;
@@ -41,6 +49,7 @@ export interface Ship {
   owned?: boolean;
   tier?: number;
   index?: { left: number, right: number };
+  immortal?: CompletionState | number;
 }
 
 
@@ -49,14 +58,8 @@ export interface BattleStation {
 }
 
 
-export interface ShipBonus {
-  accuracy?: number;
-  evasion?: number;
-  crit_chance?: number;
-  crit_bonus?: number;
-}
 
-export interface Action {
+export interface ShipAction {
   bonus_amount: number;
   name: string;
   symbol: string;

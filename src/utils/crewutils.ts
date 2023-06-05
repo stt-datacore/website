@@ -5,6 +5,7 @@ import CONFIG from '../components/CONFIG';
 import { CompactCrew, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from "./tiny";
+import { Ship, ShipAction } from '../model/ship';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -397,40 +398,79 @@ export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 	return `${crew.bigbook_tier}`;
 }
 
-export function getShipBonus(crew: PlayerCrew | CrewMember): string {
-	if (!crew.action || !crew.action.ability) return "";
-	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type];
-	if (crew.action.ability.type === 0)
-		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} boost to`);
-	const bonusVal = crew.action.ability.type === 0
-		? crew.action.bonus_amount+crew.action.ability.amount
-		: crew.action.ability.amount;
-	bonusText = bonusText.replace('%VAL%', `${bonusVal}`);
+export function getActionFromItem(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number) {
+	let actionIn: ShipAction;
+
+	if (!item) return undefined;
+	
+	if ("bonus_type" in item) {
+		actionIn = item;
+	}
+	else if ("actions" in item) {
+		if (!item.actions?.length) return undefined;
+		index ??= 0;
+		actionIn = item.actions[index];
+	}
+	else if ("action" in item) {
+		if (!item.action) return undefined;
+		actionIn = item.action;
+	}
+	else {
+		return undefined;
+	}
+
+	return actionIn;
+}
+
+export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string {
+	if (!item) return "";
+	let actionIn = getActionFromItem(item, index);
+	if (!actionIn) return "";
+
+	const action = actionIn;
+	console.log(item);
+
+	if (!action || !action.ability) return "";
+	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
+	if (action.ability.type === 0)
+		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]} boost to`);
+	const bonusVal = action.ability.type === 0
+		? action.bonus_amount+action.ability.amount
+		: action.ability.amount;
+	bonusText = bonusText?.replace('%VAL%', `${bonusVal}`);
 	return bonusText;
 }
 
-export function getShipChargePhases(crew: PlayerCrew | CrewMember): string[] {
+export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;
-	if (!crew.action || !crew.action.bonus_type || !crew.action.charge_phases) return phases;
-	crew.action.charge_phases.forEach(cp => {
+
+	if (!item) return phases;
+	let actionIn = getActionFromItem(item, index);
+	if (!actionIn) return phases;
+
+	const action = actionIn;
+
+	if (!action || !action.bonus_type || !action.charge_phases) return phases;
+
+	action.charge_phases.forEach(cp => {
 		charge_time += cp.charge_time;
 		let phaseDescription = `After ${charge_time}s`;
 
-		if (cp.ability_amount && crew?.action?.ability) {
-			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+		if (cp.ability_amount && action?.ability) {
+			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
 		}
 
 		if (cp.bonus_amount) {
-			phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}`;
+			phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
 		}
 
 		if (cp.duration) {
-			phaseDescription += `, +${cp.duration-crew.action.duration}s duration`;
+			phaseDescription += `, +${cp.duration-action.duration}s duration`;
 		}
 
 		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown-crew.action.cooldown}s cooldown`;
+			phaseDescription += `, +${cp.cooldown-action.cooldown}s cooldown`;
 		}
 
 		phases.push(phaseDescription);
@@ -588,14 +628,17 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: PlayerCr
 	window.location.href = '/crew/' + crew.symbol;
 }
 
-export function printImmoText(immo: number) {
-	if (immo === -1) return "Crew Is Immortalized";
-	else if (immo === -5) return "Crew Is Shown Immortalized (No Player Data)";
-	else if (immo === -3) return "Crew Is Shown Immortalized (Unowned)";
-	else if (immo === -4) return "Crew Is Shown Immortalized (Owned)";
-	else if (immo === -2) return "Crew Is Shown Immortalized";
-	else if (immo >= 1) return "Crew Is Frozen (" + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
-	else return "Crew Is Not Immortalized";
+export function printImmoText(immo: number, item?: string, immoText?: string) {
+	item ??= "Crew";
+	immoText ??= "Immortalized";
+
+	if (immo === -1) return `${item} Is ${immoText}`;
+	else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
+	else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
+	else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
+	else if (immo === -2) return `${item} Is Shown ${immoText}`;
+	else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
+	else return `${item} Is Not ${immoText}`;
 }
 
 export function getSkills(crew: PlayerCrew | CrewMember | CompactCrew): string[] {

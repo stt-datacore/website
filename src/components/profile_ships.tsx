@@ -6,6 +6,7 @@ import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasor
 import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
 import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
+import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 
 type ProfileShipsProps = {
 	playerData: PlayerData;
@@ -18,6 +19,7 @@ type ProfileShipsState = {
 	data: Ship[];
 	pagination_rows: number;
 	pagination_page: number;
+	activeShip?: Ship | null;
 };
 
 const pagingOptions = [
@@ -85,14 +87,14 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
-		const clickShip = (ship: Ship) => {
-		
+		const setActiveShip = (ship: Ship | null | undefined) => {
+			this.setState({...this.state, activeShip: ship});
 		}
 	
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
-		return (
+		return (<>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -167,9 +169,9 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<a onClick={(e) => clickShip(ship)} style={{cursor: "pointer"}}>
+										<ShipTarget targetGroup='ships' allShips={this.state.data} setDisplayItem={setActiveShip} inputItem={ship} >
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
-										</a>
+										</ShipTarget>
 									</div>
 									<div style={{ gridArea: 'stats' }}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
@@ -210,7 +212,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-		);
+			<ShipHoverStat targetGroup='ships' ship={this.state.activeShip} />
+			</>);
 	}
 }
 

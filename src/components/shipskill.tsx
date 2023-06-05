@@ -3,9 +3,12 @@ import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 import CONFIG from "./CONFIG";
 import { getShipBonus, getShipChargePhases } from "../utils/crewutils";
+import { ShipAction, Ship, ShipBonus } from "../model/ship";
 
 export interface ShipSkillProps {
-    crew: PlayerCrew | CrewMember | null | undefined;
+    actions: ShipAction[];    
+    ship_battle: ShipBonus | Ship;
+    withBorder?: boolean;
 }
 
 export class ShipSkill extends React.Component<ShipSkillProps> {
@@ -14,16 +17,18 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
     }
 
     render() {
-        const { crew } = this.props;
-        if (!crew) return <span></span>;
+        const { actions, ship_battle } = this.props;
+
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
             if (action === 2) return "/media/ship/accuracy-icon.png";
             if (action === 1) return "/media/ship/evasion-icon.png";
         };
+
         const getActionColor = (action: number) => {
             return CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[action];
         };
+
         const drawBullets = (actions: number): JSX.Element[] => {
             let elems: JSX.Element[] = [];
             for (let i = 0; i < actions; i++) {
@@ -36,204 +41,223 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
             }
             return elems;
         };
+
         return (
-            <div style={{ marginBottom: "4px", fontSize: "0.75em" }}>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection:
-                            window.innerWidth < 512 ? "column" : "row",
-                        justifyContent: "space-between",
-                        alignItems:
-                            window.innerWidth < 512 ? "flex-start" : "center",
-                    }}
-                >
-                    <h4 style={{ marginBottom: ".25em", maxWidth: "75%" }}>
-                        {crew.action.name}
-                    </h4>
-                    <div
-                        style={{
-                            width: "auto",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            alignContent: "center",
-                            backgroundColor: getActionColor(
-                                crew.action.bonus_type
-                            ),
-                            padding: "2px 4px",
-                        }}
-                    >
+            <div style={{ marginBottom: "8px", fontSize: "0.75em" }}>
+                {actions.length && actions.map((action) => 
+                    <div style={{marginTop: "4px", border: this.props.withBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withBorder ? "2px" : "0px"}}>
                         <div
-                            style={{
-                                display: "flex",
-                                height: "2em",
-                                flexDirection: "row",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <span
-                                style={{
-                                    margin: 0,
-                                    padding: 0,
-                                    marginRight: "2px",
-                                    fontSize: "1.5em",
-                                    fontWeight: "bold",
-                                }}
-                            >
-                                + {crew.action.bonus_amount}
-                            </span>
-                            <img
-                                src={getActionIcon(crew.action.bonus_type)}
-                                style={{
-                                    margin: "auto",
-                                    padding: 0,
-                                    marginLeft: "2px",
-                                    height: "12px",
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <ul
-                    style={{
-                        marginTop: "0",
-                        listStyle: "none",
-                        paddingLeft: "0",
-                        color: getActionColor(crew.action.bonus_type),
-                    }}
-                >
-                    <li>
-                        Boosts{" "}
-                        {
-                            CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                crew.action.bonus_type
-                            ]
-                        }{" "}
-                        by {crew.action.bonus_amount}
-                    </li>
-
-                    {crew.action.penalty && (
-                        <li>
-                            Decrease{" "}
-                            {
-                                CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                    crew.action.penalty.type
-                                ]
-                            }{" "}
-                            by {crew.action.penalty.amount}
-                        </li>
-                    )}
-                    <li style={{ color: "white" }}>
-                        <b>Initialize</b>: {crew.action.initial_cooldown}s,{" "}
-                        <b>Cooldown</b>: {crew.action.cooldown}s,{" "}
-                        <b>Duration</b>: {crew.action.duration}s
-                    </li>
-                    {crew.action.limit && (
-                        <li style={{ color: "white" }}>
-                            <b>Uses Per Battle</b>: {crew.action.limit}{" "}
-                            {drawBullets(crew.action.limit)}
-                        </li>
-                    )}
-                </ul>
-
-                {crew.action.ability && (
-                    <div
-                        style={{
-                            border:
-                                "2px solid " +
-                                getActionColor(crew.action.bonus_type),
-                            borderBottomRightRadius: "6px",
-                            padding: "0",
-                        }}
-                    >
-                        <div
-                            style={{
-                                padding: "0px 2px",
-                                fontFamily: "arial",
+                            style={{                                
                                 display: "flex",
                                 flexDirection:
                                     window.innerWidth < 512 ? "column" : "row",
                                 justifyContent: "space-between",
-                                backgroundColor: getActionColor(
-                                    crew.action.bonus_type
-                                ),
+                                alignItems:
+                                    window.innerWidth < 512 ? "flex-start" : "center",
                             }}
                         >
-                            <div style={{ marginTop: "-4px" }}>
-                                Bonus Ability
+                            <h4 style={{ marginBottom: ".25em", maxWidth: "75%" }}>
+                                {action.name}
+                            </h4>
+                            <div
+                                style={{
+                                    width: "auto",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    alignContent: "center",
+                                    backgroundColor: getActionColor(
+                                        action.bonus_type
+                                    ),
+                                    padding: "2px 4px",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        height: "2em",
+                                        flexDirection: "row",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            margin: 0,
+                                            padding: 0,
+                                            marginRight: "2px",
+                                            fontSize: "1.5em",
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        + {action.bonus_amount}
+                                    </span>
+                                    <img
+                                        src={getActionIcon(action.bonus_type)}
+                                        style={{
+                                            margin: "auto",
+                                            padding: 0,
+                                            marginLeft: "2px",
+                                            height: "12px",
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            {crew.action.ability.condition > 0 && (
-                                <li style={{ marginTop: "-4px" }}>
-                                    <b>Trigger</b>:{" "}
+                        </div>
+                        <ul
+                            style={{
+                                marginTop: "0",
+                                listStyle: "none",
+                                paddingLeft: "0",
+                                color: getActionColor(action.bonus_type),
+                            }}
+                        >
+                            <li>
+                                Boosts{" "}
+                                {
+                                    CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
+                                        action.bonus_type
+                                    ]
+                                }{" "}
+                                by {action.bonus_amount}
+                            </li>
+                            {"status" in action && (action.status ?? 0 > 0) && (
+                                <li>
+                                    Grants<b>{" "}
                                     {
-                                        CONFIG.CREW_SHIP_BATTLE_TRIGGER[
-                                            crew.action.ability.condition
+                                        CONFIG.SHIP_BATTLE_GRANTS[
+                                            action.status ?? 0
+                                        ]
+                                    }{" "}</b>status:<br />
+                                    {
+                                        CONFIG.SHIP_BATTLE_GRANT_DESC[
+                                            action.status ?? 0
                                         ]
                                     }
                                 </li>
                             )}
-                        </div>
+                            {action.penalty && (
+                                <li>
+                                    Decrease{" "}
+                                    {
+                                        CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
+                                            action.penalty.type
+                                        ]
+                                    }{" "}
+                                    by {action.penalty.amount}
+                                </li>
+                            )}
+                            <li style={{ color: "white" }}>
+                                <b>Initialize</b>: {action.initial_cooldown}s,{" "}
+                                <b>Cooldown</b>: {action.cooldown}s,{" "}
+                                <b>Duration</b>: {action.duration}s
+                            </li>
+                            {action.limit && (
+                                <li style={{ color: "white" }}>
+                                    <b>Uses Per Battle</b>: {action.limit}{" "}
+                                    {drawBullets(action.limit)}
+                                </li>
+                            )}
+                        </ul>
 
-                        <div
-                            style={{
-                                marginTop: "0",
-                                listStyle: "none",
-                                paddingLeft: "6px",
-                                paddingBottom: "2px",
-                            }}
-                        >
-                            <div>{getShipBonus(crew)}</div>
-                        </div>
-                    </div>
-                )}
+                        {action.ability && action.ability.type && (
+                            <div
+                                style={{
+                                    border:
+                                        "2px solid " +
+                                        getActionColor(action.bonus_type),
+                                    borderBottomRightRadius: "6px",
+                                    padding: "0",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: "0px 2px",
+                                        fontFamily: "arial",
+                                        display: "flex",
+                                        flexDirection:
+                                            window.innerWidth < 512 ? "column" : "row",
+                                        justifyContent: "space-between",
+                                        backgroundColor: getActionColor(
+                                            action.bonus_type
+                                        ),
+                                    }}
+                                >
+                                    <div style={{ marginTop: "-4px" }}>
+                                        Bonus Ability
+                                    </div>
+                                    {action.ability.condition > 0 && (
+                                        <li style={{ marginTop: "-4px" }}>
+                                            <b>Trigger</b>:{" "}
+                                            {
+                                                CONFIG.CREW_SHIP_BATTLE_TRIGGER[
+                                                    action.ability.condition
+                                                ]
+                                            }
+                                        </li>
+                                    )}
+                                </div>
 
-                {crew.action.charge_phases && crew.action.charge_phases.length && (
-                    <div>
-                        <div style={{ marginBottom: ".25em" }}>
-                            Charge Phases
-                        </div>
-                        <ol
-                            style={{
-                                marginTop: "0",
-                                listStylePosition: "inside",
-                                paddingLeft: "0",
-                            }}
-                        >
-                            {getShipChargePhases(crew).map((phase, idx) => (
-                                <li key={idx}>{phase}</li>
-                            ))}
-                        </ol>
-                    </div>
-                )}
+                                <div
+                                    style={{
+                                        marginTop: "0",
+                                        listStyle: "none",
+                                        paddingLeft: "6px",
+                                        paddingBottom: "2px",
+                                    }}
+                                >
+                                    <div>{getShipBonus(action)}</div>
+                                </div>
+                            </div>
+                        )}
 
+                        {action.charge_phases && action.charge_phases.length && (
+                            <div>
+                                <div style={{ marginBottom: ".25em" }}>
+                                    Charge Phases
+                                </div>
+                                <ol
+                                    style={{
+                                        marginTop: "0",
+                                        listStylePosition: "inside",
+                                        paddingLeft: "0",
+                                    }}
+                                >
+                                    {getShipChargePhases(action).map((phase, idx) => (
+                                        <li key={idx}>{phase}</li>
+                                    ))}
+                                </ol>
+                            </div>
+                        )}
+                    </div>)
+                    }
+                    
                 <div>
                     <div style={{ marginBottom: ".25em" }}>Equipment Bonus</div>
                     <p>
-                        {crew.ship_battle.accuracy && (
+                        {ship_battle.accuracy && (
                             <span>
-                                <b>Accuracy:</b> +{crew.ship_battle.accuracy}
+                                <b>Accuracy:</b> +{ship_battle.accuracy}
                                 {` `}
                             </span>
                         )}
-                        {crew.ship_battle.crit_bonus && (
+                        {ship_battle.crit_bonus && (
                             <span>
                                 <b>Crit Bonus:</b> +
-                                {crew.ship_battle.crit_bonus}
+                                {ship_battle.crit_bonus}
                                 {` `}
                             </span>
                         )}
-                        {crew.ship_battle.crit_chance && (
+                        {ship_battle.crit_chance && (
                             <span>
                                 <b>Crit Rating:</b> +
-                                {crew.ship_battle.crit_chance}
+                                {ship_battle.crit_chance}
                                 {` `}
                             </span>
                         )}
-                        {crew.ship_battle.evasion && (
+                        {ship_battle.evasion && (
                             <span>
-                                <b>Evasion:</b> +{crew.ship_battle.evasion}
+                                <b>Evasion:</b> +{ship_battle.evasion}
                                 {` `}
                             </span>
                         )}

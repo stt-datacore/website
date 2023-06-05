@@ -1,4 +1,4 @@
-import { ShipBonus, Action } from "./ship";
+import { ShipBonus, ShipAction as ShipAction } from "./ship";
 import { Icon } from "./game-elements"
 
 export interface CrossFuseTarget {
@@ -25,7 +25,7 @@ export interface CrewMember {
   traits_hidden: string[]
   base_skills: BaseSkills
   ship_battle: ShipBonus
-  action: Action
+  action: ShipAction;
   cross_fuse_targets: CrossFuseTarget | [];
   skill_data: SkillData[]
   intermediate_skill_data: IntermediateSkillData[]
@@ -125,7 +125,7 @@ export interface SkillData {
 
 export interface IntermediateSkillData extends SkillData {
   level: number
-  action: Action
+  action: ShipAction
   ship_battle: ShipBonus
 }
 

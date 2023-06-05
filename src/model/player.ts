@@ -4,7 +4,7 @@ import { Ship } from "./ship";
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, Skill } from "./crew"
-import { Action, ShipBonus } from "./ship";
+import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
@@ -458,7 +458,7 @@ export interface Player {
     skills: BaseSkills
     base_skills: BaseSkills
     ship_battle: ShipBonus
-    action: Action
+    action: ShipAction
     default_avatar: boolean
     cross_fuse_targets: CrossFuseTarget;
     cap_achiever: CapAchiever
@@ -678,7 +678,7 @@ export interface Player {
     full_body: Icon
     skills: BaseSkills
     traits: string[]
-    action: Action
+    action: ShipAction
     quantity: number
   }
     
@@ -809,7 +809,7 @@ export interface Player {
     full_body?: Icon
     skills?: BaseSkills
     traits?: string[]
-    action?: Action
+    action?: ShipAction
     item_type?: number
     bonuses?: Bonuses
   }
@@ -849,7 +849,7 @@ export interface Player {
     full_body?: Icon
     skills?: Skill
     traits?: string[]
-    action?: Action
+    action?: ShipAction
     quantity: number
   }
   
@@ -976,7 +976,7 @@ export interface Player {
     full_body?: Icon
     skills?: BaseSkills
     traits?: string[]
-    action?: Action
+    action?: ShipAction
   }
   
   export interface VoyageCrewSlot {
@@ -1043,7 +1043,7 @@ export interface BuffBase {
     full_body?: Icon
     skills?: BaseSkills
     traits?: string[]
-    action?: Action
+    action?: ShipAction
     ship?: Ship
     item_type?: number
     bonuses?: Bonuses

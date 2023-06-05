@@ -85,7 +85,18 @@ export default class CONFIG {
 	};
 
 	static readonly SHIP_BATTLE_GRANTS: { [index: number]: string } = {
-		... this.CREW_SHIP_BATTLE_TRIGGER,
+		0: 'None',
+		1: 'Position',
+		2: 'Cloaked',
+		4: 'Boarding',
+		16: 'Shields Disruptor'
+	};
+
+	static readonly SHIP_BATTLE_GRANT_DESC: { [index: number]: string } = {
+		0: 'None',
+		1: 'Critical Rating increased',
+		2: 'Ship is untargetable for a time',
+		4: 'Deals gradual damage to enemy hull',
 		16: 'Shields Disruptor'
 	};
 
@@ -98,7 +109,10 @@ export default class CONFIG {
 		5: '+%VAL% to Crit Bonus',
 		6: '+%VAL% to Shield Regeneration',
 		7: '+%VAL%% to Attack Speed',
-		8: 'Increases boarding damage by %VAL%%'
+		8: 'Increases boarding damage by %VAL%%',
+		10: 'Speeds up cooldown timers by %VAL% seconds',
+		11: 'Decrease incoming hull damage by %VAL%%',
+		12: '%VAL%% of incoming damage also taken by the attacker'
 	};
 
 	static readonly STATS_CONFIG: { [index: number]: any } = {
