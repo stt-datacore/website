@@ -106,6 +106,8 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 
 	tableConfig.push({ width: 1, title: 'Trial' });
 
+	const buffConfig = calculateBuffConfig(props.playerData.player);
+	
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'portal', value: 'portal', text: 'Only show crew in portal' },
@@ -146,7 +148,7 @@ const ComboCrewTable = (props: ComboCrewTableProps) => {
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType as string)}
 				showFilterOptions={true}
 			/>
-			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='comboCrewTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='comboCrewTarget' />
 			<div style={{ marginTop: '1em' }}>
 				<p><i>Optimal Crew</i> are the crew you should try first for efficient use of valor; they exclude crew whose matching traits are a subset of another possible crew for that node.</p>
 				<p><i>Coverage</i> identifies the number of unsolved nodes that a given crew might be the solution for.</p>

@@ -28,6 +28,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
     disableBuffs?: boolean;
+    openCrew?: (crew: CrewMember | PlayerCrew) => void;
 }
 
 export interface CrewHoverStatState extends HoverStatState {
@@ -177,7 +178,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
 
     protected renderContent = (): JSX.Element =>  {
-        const { crew } = this.props;
+        const { crew, openCrew } = this.props;
         const compact = true;    
 
         if (!crew) {
@@ -242,10 +243,22 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             }, 0);            
         }
         
+        const navClick = (e) => {
+            if (!crew) return;
+
+            if (openCrew) {
+                openCrew(crew)
+            }
+            else {
+                window.location.href = "/crew/" + crew.symbol;
+            }
+        }
+
+        
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
-                        <a href={`/crew/${crew.symbol}`} title={"Go To Crew Page For '" + crew.name + "'"}>
+                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                                 style={{ height: this.showShipAbility ? "15em" : "9.5em", marginRight: "8px" }}

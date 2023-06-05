@@ -411,7 +411,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
-			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);

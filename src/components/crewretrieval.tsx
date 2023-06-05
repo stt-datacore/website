@@ -1050,7 +1050,7 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
 		{ width: 1, title: 'Useable Combos' }
 	];
-
+	const buffConfig = calculateBuffConfig(props.playerData.player);
 	return (
 		<>
 		<SearchableTable
@@ -1061,7 +1061,7 @@ const CrewTable = (props: CrewTableProps) => {
 			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
-		<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
+		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
 		
 		</>
 	);

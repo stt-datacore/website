@@ -454,6 +454,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		if (this.state.variants.length == 0) {
 			return <span />;
 		}
+		
 		let me = this;
 		return (
 			this.state.variants.map((group, idx) => (

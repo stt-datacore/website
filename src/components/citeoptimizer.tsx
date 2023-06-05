@@ -205,6 +205,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 	
 	render() {
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+
 		let { citeData } = this.state;
 		let compact = true;
 		return (
@@ -255,7 +257,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</>
 					}						
 				</Segment>
-				<CrewHoverStat targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
+				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.props.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
 
 			</>
 		);

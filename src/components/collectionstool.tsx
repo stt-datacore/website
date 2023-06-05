@@ -362,7 +362,7 @@ const CrewTable = (props: CrewTableProps) => {
 		{ key: '4*', value: 4, text: '4* Super Rare' },
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
-
+	const buffConfig = calculateBuffConfig(props.playerData.player);
 	return (
 		<React.Fragment>
 			<Header as='h4'>Collection Crew</Header>
@@ -423,7 +423,7 @@ const CrewTable = (props: CrewTableProps) => {
 				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 			/>
-			<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='collectionsTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='collectionsTarget' />
 		</React.Fragment>
 	);
 
