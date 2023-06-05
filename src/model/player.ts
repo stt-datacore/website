@@ -888,7 +888,19 @@ export interface Player {
     state: string
   }
   
-  export interface VoyageDescription {
+  export interface VoyageBase {
+    id: number
+    name: string
+    description: string
+    icon: string
+    skills: VoyageSkills
+    ship_trait: string
+    crew_slots: CrewSlot[]
+    state?: string
+  }
+
+
+  export interface VoyageDescription extends VoyageBase {
     id: number
     symbol: string
     name: string
@@ -912,7 +924,12 @@ export interface Player {
     trait: string
   }
     
-  export interface Voyage {
+  export interface VoyageInfo {
+    voyage_descriptions: VoyageDescription[];
+    voyage: Voyage[];
+  }
+
+  export interface Voyage extends VoyageBase {
     id: number
     name: string
     description: string

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Button, Checkbox, Header, Modal, Grid } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
+import { CrewMember } from '../model/crew';
 
 type VoyageHOFProps = {
 };
@@ -17,7 +18,7 @@ type VoyageHOFState = {
     lastSevenDays: VoyageStatEntry[];
     lastThirtyDays: VoyageStatEntry[];
   };
-  allCrew: any;
+  allCrew: CrewMember[];
   errorMessage?: string;
 };
 

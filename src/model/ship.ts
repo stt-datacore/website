@@ -40,6 +40,7 @@ export interface Ship {
   traits_named?: string[];
   owned?: boolean;
   tier?: number;
+  index?: { left: number, right: number };
 }
 
 

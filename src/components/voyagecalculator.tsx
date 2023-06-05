@@ -11,20 +11,27 @@ import { VoyageStats } from '../components/voyagecalculator/voyagestats';
 
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompletionState, PlayerCrew, Voyage } from '../model/player';
+import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
+import { Schematics, Ship } from '../model/ship';
 
-const AllDataContext = React.createContext();
-
-type VoyageCalculatorProps = {
-	playerData: any;
-	allCrew: any;
+interface VoyageCalculatorProps {
+	playerData: PlayerData;
+	allCrew: PlayerCrew[];
 };
+
+interface AllData extends VoyageCalculatorProps {
+	allShips: Ship[];
+	useInVoyage?: boolean;
+}
+
+const AllDataContext = React.createContext<AllData>({} as AllData);
+
 
 const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const { playerData, allCrew } = props;
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
-	const [allShips, setAllShips] = React.useState(undefined);
+	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 
 	if (!allShips) {
 		fetchAllShips();
@@ -59,7 +66,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		crew.active_status = 0;
 		if (crew.immortal === CompletionState.Immortalized) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
-			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crew.active_status = active.active_status;
 				active.id = '';	// Clear this id so that dupes are counted properly
@@ -73,7 +80,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 	const allData = {
 		allCrew, allShips, playerData
-	};
+	} as AllData;
 
 	return (
 		<AllDataContext.Provider value={allData}>
@@ -82,14 +89,14 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	);
 
 	async function fetchAllShips() {
-		const [shipsResponse] = await Promise.all([
+		const [shipsResponse ] = await Promise.all([
 			fetch('/structured/ship_schematics.json')
 		]);
-		const allships = await shipsResponse.json();
+		const allships = await shipsResponse.json() as Schematics[];
 		const ships = mergeShips(allships, playerData.player.character.ships);
 
 		const ownedCount = playerData.player.character.ships.length;
-		playerData.player.character.ships.sort((a, b) => a.archetype_id - b.archetype_id).forEach((ship, idx) => {
+		playerData.player.character.ships.sort((a, b) => (a?.archetype_id ?? 0) - (b?.archetype_id ?? 0)).forEach((ship, idx) => {
 			// allShips is missing the default ship for some reason (1* Constellation Class), so manually add it here from playerData
 			if (ship.symbol === 'constellation_ship') {
 				const constellation = {
@@ -101,7 +108,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 					icon: { file: '/ship_previews_fed_constellationclass' },
 					traits: ['federation','explorer'],
 					owned: true
-				};
+				} as Ship;
 				ships.push(constellation);
 			}
 			const myShip = ships.find(s => s.symbol === ship.symbol);
@@ -119,14 +126,14 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 };
 
 type VoyageMainProps = {
-	myCrew: any[];
+	myCrew: PlayerCrew[];
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
 	const { myCrew } = props;
 
-	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
-	const [voyageConfig, setVoyageConfig] = React.useState(undefined);
+	const [voyageData, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
+	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase | undefined>(undefined);
 	const [showInput, setShowInput] = React.useState(true);
 
 	if (!voyageConfig) {
@@ -143,7 +150,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 		}
 		else {
 			// voyageData not found in cache, config will be blank voyage
-			setVoyageConfig({ skills: {} });
+			setVoyageConfig({ skills: {} as VoyageSkills} as VoyageBase);
 		}
 		return (<></>);
 	}
@@ -162,6 +169,7 @@ const VoyageActiveCard = (props: any) => {
 	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips.find(s => s.id === voyageConfig.ship_id);
+	if (!ship) return <></>
 	const msgTypes = {
 		started: 'has been running for',
 		failed: 'failed at',
@@ -173,7 +181,7 @@ const VoyageActiveCard = (props: any) => {
 	return (
 		<Card fluid>
 			<Card.Content>
-				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
+				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 				<Card.Header>{voyageConfig.ship_name}{ship.name !== voyageConfig.ship_name ? ` (${ship.name})` : ''}</Card.Header>
 				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', rowGap: '1em' }}>
 					<div>
@@ -204,8 +212,8 @@ const VoyageActiveCard = (props: any) => {
 };
 
 type VoyageActiveProps = {
-	voyageConfig: any;
-	myCrew: any[];
+	voyageConfig: VoyageBase;
+	myCrew: PlayerCrew[];
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
@@ -215,7 +223,7 @@ const VoyageActive = (props: VoyageActiveProps) => {
 	return (
 		<React.Fragment>
 			<VoyageStats
-				voyageData={voyageConfig}
+				voyageData={voyageConfig as Voyage}
 				ships={allShips}
 				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
 				playerItems={playerData.player.character.items}
@@ -228,13 +236,13 @@ const VoyageActive = (props: VoyageActiveProps) => {
 };
 
 type VoyageInputProps = {
-	voyageConfig: any;
-	myCrew: any[];
+	voyageConfig: VoyageBase;
+	myCrew: PlayerCrew[];
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
 	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
-	const [voyageConfig, setVoyageConfig] = React.useState(JSON.parse(JSON.stringify(props.voyageConfig)));
+	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase>(JSON.parse(JSON.stringify(props.voyageConfig)));
 	const allData = {
 		allCrew, allShips, playerData
 	};

@@ -19,7 +19,7 @@ const AllDataContext = React.createContext();
 type RecommenderProps = {
 	voyageConfig: any;
 	myCrew: any[];
-	useInVoyage: () => void;
+	useInVoyage?: () => void;
 	allData: any;
 };
 

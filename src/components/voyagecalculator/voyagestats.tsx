@@ -10,23 +10,25 @@ import ItemDisplay from '../itemdisplay';
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
+import { PlayerCrew, Voyage } from '../../model/player';
+import { Ship } from '../../model/ship';
 
 type VoyageStatsProps = {
-	voyageData: any;
+	voyageData: Voyage;
 	numSims?: number;
-	ships: [];
-	showPanels: [];
-	estimate?: any;
-	roster?: any[];
+	ships: Ship[];
+	showPanels: string[];
+	estimate?: number;
+	roster?: PlayerCrew[];
 	playerItems?: any[];
-	dbid: string;
+	dbid: string | number;
 };
 
 type VoyageStatsState = {
 	estimate: any;
-	activePanels: [];
+	activePanels: string[];
 	currentAm: number;
-	currentDuration: number;
+	currentDuration?: number;
 	voyageBugDetected: boolean;
 };
 
