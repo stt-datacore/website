@@ -3,7 +3,7 @@ name: Boreth Pike
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 29
 in_portal: true
 date: 15/10/2020

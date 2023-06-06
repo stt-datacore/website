@@ -3,8 +3,8 @@ name: Mestral
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
-events: 29
+bigbook_tier: 3
+events: 30
 in_portal: true
 date: 29/03/2022
 obtained: Pack

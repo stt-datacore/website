@@ -3,7 +3,7 @@ name: Scapegoat O'Brien
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 21
 in_portal:
 date: 24/08/2021

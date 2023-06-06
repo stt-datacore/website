@@ -3,8 +3,8 @@ name: Nanoprobe Phlox
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 33
+bigbook_tier: 6
+events: 34
 in_portal:
 date: 04/08/2020
 obtained: Honor Hall

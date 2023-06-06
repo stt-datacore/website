@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 1
-events: 19
+events: 20
 in_portal: true
 date: 17/05/2022
 obtained: Pack
