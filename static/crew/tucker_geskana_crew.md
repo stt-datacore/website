@@ -3,8 +3,8 @@ name: Geskana Tucker
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
-events: 24
+bigbook_tier: 4
+events: 25
 in_portal: true
 date: 05/01/2021
 obtained: Pack
