@@ -43,7 +43,8 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
 			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
-				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects} />
+				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
+				dbid={props.playerData.player.dbid} />
 		);
 	}
 
@@ -67,6 +68,7 @@ type ProfileCrewTools = {
 	initOptions: any;
 	initHighlight: string;
 	initProspects: string[];
+	dbid: string;
 };
 
 const ProfileCrewTools = (props: ProfileCrewTools) => {
@@ -170,7 +172,7 @@ const ProfileCrewTools = (props: ProfileCrewTools) => {
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
-			<UtilityWizard myCrew={myCrew} handleWizard={(wizardData: any) => setWizard({...wizardData})} />
+			<UtilityWizard myCrew={myCrew} handleWizard={(wizardData: any) => setWizard({...wizardData})} dbid={props.dbid} />
 		</React.Fragment>
 	);
 

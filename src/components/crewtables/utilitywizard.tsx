@@ -3,11 +3,17 @@ import { Modal, Button, Icon, Form, Checkbox, Table, Segment, Header, Rating, St
 
 import CONFIG from '../../components/CONFIG';
 
-const defaultThresholds = {
-	core: { d: 10 },
-	shuttle: { d: 10 },
-	gauntlet: { d: 10 },
-	voyage: { d: 10 }
+import { useStateWithStorage } from '../../utils/storage';
+
+const defaultPrefs = {
+	thresholds: {
+		core: 10,
+		shuttle: 10,
+		gauntlet: 10,
+		voyage: 10
+	},
+	prefer_versatile: true,
+	show_breakdowns: false
 };
 
 const WizardContext = React.createContext();
@@ -15,12 +21,14 @@ const WizardContext = React.createContext();
 type UtilityWizardProps = {
 	myCrew: any;
 	handleWizard: (wizardOutput: any) => void;
+	dbid: string;
 };
 
 const UtilityWizard = (props: UtilityWizardProps) => {
 	const contextData = {
 		myCrew: props.myCrew,
-		handler: props.handleWizard
+		handler: props.handleWizard,
+		dbid: props.dbid
 	};
 	return (
 		<WizardContext.Provider value={contextData}>
@@ -34,9 +42,7 @@ const UtilityWizardModal = () => {
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
 	const [enabled, setEnabled] = React.useState(false);
-	const [utilityThresholds, setUtilityThresholds] = React.useState(defaultThresholds);
-	const [preferVersatile, setPreferVersatile] = React.useState(true);
-	const [showBreakdowns, setShowBreakdowns] = React.useState(false);
+	const [userPrefs, setUserPrefs] = useStateWithStorage(wizardInput.dbid+'/utility', defaultPrefs, { rememberForever: true });
 
 	React.useEffect(() => {
 		if (enabled) scoreUtility();
@@ -48,12 +54,12 @@ const UtilityWizardModal = () => {
 			const columns = [
 				{ width: 1, column: 'utility.thresholds.length', title: <Icon name='cogs' color='green' />, reverse: true, tiebreakers: ['max_rarity'] }
 			];
-			if (showBreakdowns) {
-				if (utilityThresholds.core.d + utilityThresholds.shuttle.d > 0)
+			if (userPrefs.show_breakdowns ?? defaultPrefs.show_breakdowns) {
+				if (getThreshold('core') + getThreshold('shuttle') > 0)
 					columns.push({ width: 1, column: 'utility.counts.shuttle', title: 'S', reverse: true, tiebreakers: ['max_rarity'] });
-				if (utilityThresholds.gauntlet.d > 0)
+				if (getThreshold('gauntlet') > 0)
 					columns.push({ width: 1, column: 'utility.counts.gauntlet', title: 'G', reverse: true, tiebreakers: ['max_rarity'] });
-				if (utilityThresholds.voyage.d > 0)
+				if (getThreshold('voyage') > 0)
 					columns.push({ width: 1, column: 'utility.counts.voyage', title: 'V', reverse: true, tiebreakers: ['max_rarity'] });
 			}
 			wizardInput.handler(
@@ -68,7 +74,7 @@ const UtilityWizardModal = () => {
 		else {
 			wizardInput.handler(undefined);
 		}
-	}, [enabled, utilityThresholds, preferVersatile, showBreakdowns]);
+	}, [enabled, userPrefs]);
 
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
@@ -95,7 +101,7 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={utilityThresholds.core.d === t ? 'blue' : undefined}
+											<Button key={t} content={t} color={getThreshold('core') === t ? 'blue' : undefined}
 												onClick={() => setThreshold('core', t)}
 											/>
 										)}
@@ -107,7 +113,7 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={utilityThresholds.shuttle.d === t ? 'blue' : undefined}
+											<Button key={t} content={t} color={getThreshold('shuttle') === t ? 'blue' : undefined}
 												onClick={() => setThreshold('shuttle', t)}
 											/>
 										)}
@@ -119,7 +125,7 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={utilityThresholds.voyage.d === t ? 'blue' : undefined}
+											<Button key={t} content={t} color={getThreshold('voyage') === t ? 'blue' : undefined}
 												onClick={() => setThreshold('voyage', t)}
 											/>
 										)}
@@ -131,7 +137,7 @@ const UtilityWizardModal = () => {
 								<Table.Cell>
 									<Button.Group size='tiny'>
 										{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
-											<Button key={t} content={t} color={utilityThresholds.gauntlet.d === t ? 'blue' : undefined}
+											<Button key={t} content={t} color={getThreshold('gauntlet') === t ? 'blue' : undefined}
 												onClick={() => setThreshold('gauntlet', t)}
 											/>
 										)}
@@ -144,14 +150,14 @@ const UtilityWizardModal = () => {
 						<Form.Field
 							control={Checkbox}
 							label={<label>Only consider 3-skill crew for voyages and gauntlet</label>}
-							checked={preferVersatile}
-							onChange={(e, { checked }) => setPreferVersatile(checked) }
+							checked={userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile}
+							onChange={(e, { checked }) => setUserPrefs({...userPrefs, prefer_versatile: checked})}
 						/>
 						<Form.Field
 							control={Checkbox}
 							label={<label>Show breakdowns in crew table</label>}
-							checked={showBreakdowns}
-							onChange={(e, { checked }) => setShowBreakdowns(checked) }
+							checked={userPrefs.show_breakdowns ?? defaultPrefs.show_breakdowns}
+							onChange={(e, { checked }) => setUserPrefs({...userPrefs, show_breakdowns: checked})}
 						/>
 					</div>
 				</Form>
@@ -170,10 +176,14 @@ const UtilityWizardModal = () => {
 		)
 	}
 
+	function getThreshold(area: string): number {
+		return userPrefs.thresholds[area] ?? defaultPrefs.thresholds[area];
+	}
+
 	function setThreshold(area: string, value: number): void {
-		const thresholds = utilityThresholds;
-		thresholds[area].d = value;
-		setUtilityThresholds({...thresholds});
+		const thresholds = userPrefs.thresholds ?? defaultPrefs.thresholds;
+		thresholds[area] = value;
+		setUserPrefs({...userPrefs, thresholds});
 	}
 
 	function scoreUtility(): void {
@@ -190,7 +200,7 @@ const UtilityWizardModal = () => {
 		};
 		const rankGauntlet = (skills: string[]) => {
 			const gauntletScore = (crew) => {
-				if (preferVersatile && Object.keys(crew.base_skills).length < 3) return 0;
+				if ((userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile) && Object.keys(crew.base_skills).length < 3) return 0;
 				const scores = skills.map(skill => crewScore(crew, skill));
 				return scores.reduce((prev, curr) => prev + curr.max, 0)/scores.length;
 			};
@@ -200,7 +210,7 @@ const UtilityWizardModal = () => {
 		};
 		const rankVoyage = (skills: string[]) => {
 			const voyageScore = (crew) => {
-				if (preferVersatile && Object.keys(crew.base_skills).length < 3) return 0;
+				if ((userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile) && Object.keys(crew.base_skills).length < 3) return 0;
 				const scores = skills.map(skill => crewScore(crew, skill));
 				return scores.reduce((prev, curr) => prev + curr.core+(curr.min+curr.max)/2, 0);
 			};
@@ -229,12 +239,6 @@ const UtilityWizardModal = () => {
 				ranks[`S_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankShuttle([firstSkill, secondSkill]);
 				ranks[`G_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankGauntlet([firstSkill, secondSkill]);
 				ranks[`V_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}`] = rankVoyage([firstSkill, secondSkill]);
-				/*
-				for (let third = second+1; third < CONFIG.SKILLS_SHORT.length; third++) {
-					let thirdSkill = CONFIG.SKILLS_SHORT[second].name;
-					ranks[`V_${CONFIG.SKILLS_SHORT[first].short}_${CONFIG.SKILLS_SHORT[second].short}_${CONFIG.SKILLS_SHORT[third].short}`] = rankVoyage([firstSkill, secondSkill, thirdSkill]);
-				}
-				*/
 			}
 		}
 
@@ -246,10 +250,10 @@ const UtilityWizardModal = () => {
 				myRanks[key] = myRank;
 				let threshold = 0;
 				switch (key.substr(0, 2)) {
-					case 'B_': threshold = utilityThresholds.core.d; break;
-					case 'S_': threshold = utilityThresholds.shuttle.d; break;
-					case 'G_': threshold = utilityThresholds.gauntlet.d; break;
-					case 'V_': threshold = utilityThresholds.voyage.d; break;
+					case 'B_': threshold = getThreshold('core'); break;
+					case 'S_': threshold = getThreshold('shuttle'); break;
+					case 'G_': threshold = getThreshold('gauntlet'); break;
+					case 'V_': threshold = getThreshold('voyage'); break;
 				}
 				if (myRank > 0 && myRank <= threshold) thresholds.push(key);
 			});
@@ -269,21 +273,21 @@ const UtilityWizardModal = () => {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center' onClick={(e) => e.stopPropagation()}>
-					<RanksModal crew={crew} utilityThresholds={utilityThresholds} />
+					<RanksModal crew={crew} utilityThresholds={userPrefs.thresholds} />
 				</Table.Cell>
-				{showBreakdowns &&
+				{(userPrefs.show_breakdowns ?? defaultPrefs.show_breakdowns) &&
 					<React.Fragment>
-						{utilityThresholds.core.d + utilityThresholds.shuttle.d > 0 &&
+						{getThreshold('core') + getThreshold('shuttle') > 0 &&
 							<Table.Cell textAlign='center'>
 								{renderUtilities(crew, ['B', 'S'])}
 							</Table.Cell>
 						}
-						{utilityThresholds.voyage.d > 0 &&
+						{getThreshold('voyage') > 0 &&
 							<Table.Cell textAlign='center'>
 								{renderUtilities(crew, ['V'])}
 							</Table.Cell>
 						}
-						{utilityThresholds.gauntlet.d > 0 &&
+						{getThreshold('gauntlet') > 0 &&
 							<Table.Cell textAlign='center'>
 								{renderUtilities(crew, ['G'])}
 							</Table.Cell>
@@ -363,6 +367,10 @@ const RanksModal = (props: RanksModalProps) => {
 		</Modal>
 	);
 
+	function getThreshold(area: string): number {
+		return utilityThresholds[area] ?? defaultPrefs.thresholds[area];
+	}
+
 	// Adaptation of renderOtherRanks from commoncrewdata.tsx
 	function renderRanks(): JSX.Element {
 		const v = [];
@@ -376,7 +384,7 @@ const RanksModal = (props: RanksModalProps) => {
 			const utility = crew.utility.ranks[rank];
 			if (rank.startsWith('V_')) {
 				v.push(
-					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.voyage.d ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('voyage') ? 'green' : undefined}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
@@ -384,7 +392,7 @@ const RanksModal = (props: RanksModalProps) => {
 			} else if (rank.startsWith('G_')) {
 				if (rank.includes('_', 2)) {
 					g.push(
-						<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.gauntlet.d ? 'green' : undefined}>
+						<Statistic key={rank} color={utility > 0 && utility <= getThreshold('gauntlet') ? 'green' : undefined}>
 							<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 						</Statistic>
@@ -392,7 +400,7 @@ const RanksModal = (props: RanksModalProps) => {
 				}
 				else if (utility > 0) {
 					g1.push(
-						<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.gauntlet.d ? 'green' : undefined}>
+						<Statistic key={rank} color={utility > 0 && utility <= getThreshold('gauntlet') ? 'green' : undefined}>
 							<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
 							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 						</Statistic>
@@ -400,14 +408,14 @@ const RanksModal = (props: RanksModalProps) => {
 				}
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
-					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.core.d ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('core') ? 'green' : undefined}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('S_')) {
 				s.push(
-					<Statistic key={rank} color={utility > 0 && utility <= utilityThresholds.shuttle.d ? 'green' : undefined}>
+					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('shuttle') ? 'green' : undefined}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
