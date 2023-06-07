@@ -50,6 +50,7 @@ export interface Ship extends ShipBonus {
   tier?: number;
   index?: { left: number, right: number };
   immortal?: CompletionState | number;
+  score?: number;
 }
 
 
