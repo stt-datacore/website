@@ -499,8 +499,23 @@ export interface Player {
 
     ssId?: string;
     score?: number;
+
+    utility?: PlayerUtility
   }
 
+  export interface PlayerUtilityRanks {
+    [key: string]: number[];
+  }
+
+  export interface PlayerUtility {
+    ranks: PlayerUtilityRanks;
+    thresholds: string[];
+    counts: {
+      shuttle: number;
+      gauntlet: number;
+      voyage: number;
+    }
+  }
 
   export interface NodeMatch { 
     index: number, 
