@@ -3,8 +3,8 @@ name: Dexa
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
-events: 11
+bigbook_tier: 4
+events: 10
 in_portal: true
 date: 25/03/2021
 obtained: Event
@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-"Come on Mylean" isn't the worst tagline for a crew in Dexa who will have your voyages running past midnight. She's a true Hoss for all your voyage bonanzas who has a legitimate argument for being not only "the best" voyager in game, but the best MED voyager to ever be released relative to their peers.
+"Come on Mylean" isn't the worst tagline for a crew in Dexa who will have your voyages running past midnight. Her debut profile was phenomenal there, although a lack of anti-matter traits (especially Civilian) starts to hurt as her relative power there falls over time.
 
-At a time when MED is sparse among voyage heavy hitters and ENG isn't far behind, Dexa offers both skills as a benefit of having one of the rarest skill sets in the game and a completely unique skill order. But she's not just a niche voyage combo tool. Dexa's top five overall power on debut is the high water mark for any MED primary crew since the advent of voyages in 2017. With the top voyage names awash in common skill sets, Dexa's value over replacement options is astronomical and nicely covers up her sole blemish of lackluster anti-matter traits.
+That same underwhelming trait lineup relegates a 1500+ MED base to extremely spotty shuttle work and event bonuses should only be considered a pleasant surprise. The main sidecar to Dexa's voyage value is a #2 MED/ENG gauntlet pair which bridges the gulf between Caretaker and everybody else. She hits on twenty-one different 25% gauntlets wherein she's a viable early-to-midgame option for players.
 
-That same underwhelming trait lineup relegates a 1500+ MED base to extremely spotty shuttle work, but really it was always destined to shine as a component in constructing the top voyage MED behind only 1-skill Bones. The main sidecar to Dexa's voyage value is a #2 MED/ENG gauntlet pair which bridges the gulf between Caretaker and everybody else. She hits on sixteen different 25% gauntlets wherein she's a viable early-to-midgame option for players, thanks to her debut in an event rather than the 6-packs that generally paywall mouth-watering statistical crew like this.
+The age of Fleet Boss Battles has given Dexa a third point of interest, hull repair for long engagements against the Doomsday Machine. While not a top tier option in that area, that attribute still adds to her retrieval profile if you’re looking to solve several common new player issues with one crew.

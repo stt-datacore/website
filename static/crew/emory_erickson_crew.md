@@ -3,8 +3,8 @@ name: Emory Erickson
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 19
+bigbook_tier: 7
+events: 20
 in_portal: true
 date: 17/09/2020
 obtained: Event

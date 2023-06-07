@@ -3,8 +3,8 @@ name: Fencing Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 28
+bigbook_tier: 4
+events: 29
 in_portal: true
 date: 30/11/2021
 obtained: Pack

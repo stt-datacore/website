@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 4
-events: 7
+events: 3
 in_portal:
 date: 28/09/2022
 obtained: Mega

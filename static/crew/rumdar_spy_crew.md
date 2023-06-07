@@ -3,7 +3,7 @@ name: Spy Rumdar
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 6
 in_portal:
 date: 27/09/2022

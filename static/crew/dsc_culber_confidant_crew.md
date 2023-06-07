@@ -3,8 +3,8 @@ name: Confidant Culber
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 33
+bigbook_tier: 7
+events: 34
 in_portal: true
 date: 15/02/2022
 obtained: Pack
