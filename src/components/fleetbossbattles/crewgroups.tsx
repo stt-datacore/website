@@ -11,7 +11,7 @@ const FinderContext = React.createContext();
 
 type CrewGroupsProps = {
 	solver: any;
-	resolver: any;
+	optimizer: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	exportPrefs: any;
@@ -46,7 +46,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 	)).reduce((prev, curr) => [prev, curr], []);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const nodeGroups = finderData.resolver.filtered.groups[`node-${node.index}`];
+	const nodeGroups = finderData.optimizer.filtered.groups[`node-${node.index}`];
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -126,7 +126,7 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} solver={finderData.solver} resolver={finderData.resolver} solveNode={finderData.solveNode} />
+							<MarkGroup node={node} traits={row.traits} solver={finderData.solver} optimizer={finderData.optimizer} solveNode={finderData.solveNode} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
@@ -234,7 +234,7 @@ const GroupCrew = (props: GroupCrewProps) => {
 				<Grid doubling columns={3} textAlign='center'>
 					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
 						<MarkCrew key={crew.symbol} crew={crew} trigger='card'
-							solver={finderData.solver} resolver={finderData.resolver}
+							solver={finderData.solver} optimizer={finderData.optimizer}
 							solveNode={finderData.solveNode} markAsTried={finderData.markAsTried}
 						/>
 					)}

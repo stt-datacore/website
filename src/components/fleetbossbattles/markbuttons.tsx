@@ -11,7 +11,7 @@ type MarkGroupProps = {
 	node: any;
 	traits: string[];
 	solver: any;
-	resolver: any;
+	optimizer: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
@@ -25,7 +25,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		if (!modalIsOpen) setFirstTrait('');
 	}, [modalIsOpen]);
 
-	const nodeRarities = props.resolver.rarities[`node-${node.index}`];
+	const nodeRarities = props.optimizer.rarities[`node-${node.index}`];
 	const comboRarity = nodeRarities.combos;
 	const traitRarity = nodeRarities.traits;
 
@@ -119,7 +119,7 @@ type MarkCrewProps = {
 	crew: any;
 	trigger: string;
 	solver: any;
-	resolver: any;
+	optimizer: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
@@ -134,7 +134,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 			{trigger === 'card' && renderCard()}
 			{trigger === 'trial' && renderTrialButtons()}
 			{showPicker &&
-				<SolvePicker crew={crew} solver={props.solver} resolver={props.resolver}
+				<SolvePicker crew={crew} solver={props.solver} optimizer={props.optimizer}
 					solveNode={props.solveNode} markAsTried={props.markAsTried} setModalIsOpen={setShowPicker}
 				/>
 			}
@@ -210,7 +210,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 type SolvePickerProps = {
 	crew: any;
 	solver: any;
-	resolver: any;
+	optimizer: any;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	setModalIsOpen: (modalIsOpen: boolean) => void;
@@ -247,7 +247,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 		const nodes = nodeMatches.map(node => {
 			const open = props.solver.nodes.find(n => n.index === node.index);
 
-			const comboRarities = props.resolver.rarities[`node-${node.index}`].combos;
+			const comboRarities = props.optimizer.rarities[`node-${node.index}`].combos;
 			const solveOptions = node.combos.map((combo, idx) => {
 				const rarity = comboRarities.find(rarity => rarity.combo.every(trait => combo.includes(trait)));
 				return {

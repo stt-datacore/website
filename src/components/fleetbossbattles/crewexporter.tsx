@@ -169,13 +169,13 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 
 type CrewFullExporterProps = {
 	solver: any;
-	resolver: any;
+	optimizer: any;
 	exportPrefs: any;
 	setExportPrefs: (prefs: any) => void;
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const { solver, resolver, exportPrefs } = props;
+	const { solver, optimizer, exportPrefs } = props;
 
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
@@ -188,7 +188,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		solver.nodes.forEach(node => {
 			let nodeList = '';
 			if (node.open) {
-				nodeList = exportNodeGroups(node, resolver.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
+				nodeList = exportNodeGroups(node, optimizer.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
 			}
 			else {
 				if (prefValue(exportPrefs, 'solve') === 'always' || (prefValue(exportPrefs, 'solve') === 'spot' && node.spotSolve)) {
