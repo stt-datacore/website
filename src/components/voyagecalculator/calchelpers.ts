@@ -116,6 +116,8 @@ export abstract class Helper {
 			throw('Voyage calculator cannot start without required parameters!');
 	}
 
+	abstract start(): void;
+
 	abort(): void {
 		if (this.calcWorker) this.calcWorker.terminate();
 		this.perf.end = performance.now();
