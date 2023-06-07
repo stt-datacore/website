@@ -10,9 +10,11 @@ import ItemDisplay from '../itemdisplay';
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
-import { PlayerCrew, PlayerEquipmentItem, Voyage } from '../../model/player';
+import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { Estimate, VoyageStatsConfig } from '../../model/worker';
+import { CrewMember } from '../../model/crew';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
@@ -23,6 +25,9 @@ type VoyageStatsProps = {
 	roster?: PlayerCrew[];
 	playerItems?: PlayerEquipmentItem[];
 	dbid: string | number;
+	allCrew?: CrewMember[];
+	playerData?: PlayerData;
+	setHoverItem?: (item: PlayerCrew | CrewMember | null | undefined) => void;
 };
 
 type VoyageStatsState = {
@@ -31,6 +36,7 @@ type VoyageStatsState = {
 	currentAm: number;
 	currentDuration?: number;
 	voyageBugDetected: boolean;
+	hoverCrew?: CrewMember | PlayerCrew | undefined;
 };
 
 interface RefillBin {
@@ -295,7 +301,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewards(rewards): JSX.Element {
-		const { playerItems,roster } = this.props;
+		const { playerItems, roster, setHoverItem } = this.props;
 
 		rewards = rewards.sort((a, b) => {
 			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
@@ -310,8 +316,10 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				return -1;
 			return a.type - b.type;
 		});
+		
 		const hideRarity = entry => entry.type == 3;
 		const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
+		const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : undefined;			
 		const assetURL = file => {
 			let url = file === 'energy_icon'
 				? 'atlas/energy_icon.png'
@@ -345,8 +353,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			item => '',
 			itemsOwned	/* ship schematics */
 		];
+		
+		var me = this;
 
 		return (
+			<>
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
 					{rewards.map((entry, idx) => (
@@ -360,6 +371,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										rarity={rarity(entry)}
 										maxRarity={entry.rarity}
 										hideRarity={hideRarity(entry)}
+										setHoverItem={setHoverItem}
+										targetGroup='voyageRewards'
+										crewSymbol={getCrewSymbol(entry)}
+										allCrew={this.props.allCrew}
+										playerData={this.props.playerData}
 									/>
 								}
 								content={entry.name}
@@ -369,6 +385,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					))}
 				</Grid>
 			</div>
+			</>
 		);
 	}
 

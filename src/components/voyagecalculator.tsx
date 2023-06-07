@@ -14,15 +14,17 @@ import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
 import { AllData, CalculatorProps } from '../model/worker';
+import { CrewMember } from '../model/crew';
+import { CrewHoverStat } from './hovering/crewhoverstat';
 
-const AllDataContext = React.createContext<AllData>({} as AllData);
+export const AllDataContext = React.createContext<AllData>({} as AllData);
 
 const VoyageCalculator = (props: CalculatorProps) => {
 	const { playerData, allCrew } = props;
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
-
+	
 	if (!allShips) {
 		fetchAllShips();
 		return (<><Icon loading name='spinner' /> Loading...</>);
@@ -158,7 +160,7 @@ const VoyageActiveCard = (props: any) => {
 	const { allShips } = React.useContext(AllDataContext);
 	const { voyageConfig, showInput, setShowInput } = props;
 
-	const ship = allShips.find(s => s.id === voyageConfig.ship_id);
+	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
 	if (!ship) return <></>
 	const msgTypes = {
 		started: 'has been running for',
@@ -207,8 +209,11 @@ type VoyageActiveProps = {
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { allShips, playerData } = React.useContext(AllDataContext);
+	const { allShips, playerData, allCrew } = React.useContext(AllDataContext);
 	const { voyageConfig, myCrew } = props;
+	const [hoverItem, setHoverItem] = React.useState<PlayerCrew | CrewMember | undefined | null>();
+
+	if (!allShips) return <></>;
 
 	return (
 		<React.Fragment>
@@ -219,8 +224,13 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				playerItems={playerData.player.character.items}
 				roster={myCrew}
 				dbid={playerData.player.dbid}
+				allCrew={allCrew}
+				playerData={playerData}
+				setHoverItem={setHoverItem}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
+			<CrewHoverStat targetGroup='voyageRewards' crew={hoverItem ?? undefined} />
+			
 		</React.Fragment>
 	)
 };
@@ -232,7 +242,7 @@ type VoyageInputProps = {
 
 const VoyageInput = (props: VoyageInputProps) => {
 	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
-	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase>(JSON.parse(JSON.stringify(props.voyageConfig)));
+	const [voyageConfig, setVoyageConfig] = React.useState<Voyage>(JSON.parse(JSON.stringify(props.voyageConfig)));
 	const allData = {
 		allCrew, allShips, playerData
 	};

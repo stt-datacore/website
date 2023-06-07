@@ -1,6 +1,11 @@
 import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
+import { AllData } from '../model/worker';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { CrewTarget } from './hovering/crewhoverstat';
+import { CrewMember } from '../model/crew';
+import { AllDataContext } from './voyagecalculator';
 
 type ItemDisplayProps = {
 	maxRarity: number;
@@ -9,10 +14,17 @@ type ItemDisplayProps = {
 	size: number;
 	style?: any;
 	src: string;
+	crewSymbol?: string;
+	targetGroup?: string;
+	setHoverItem?: (item: PlayerCrew | CrewMember | null | undefined) => void;
+	playerData?: PlayerData;
+	allCrew?: CrewMember[];
 };
 
 class ItemDisplay extends PureComponent<ItemDisplayProps> {
 	render() {
+		const { playerData, allCrew, targetGroup, crewSymbol, setHoverItem: setDisplayItem } = this.props;
+
 		let borderWidth = Math.ceil(this.props.size / 34);
 		let starSize = Math.floor(this.props.size / 6);
 		let bottomStar = Math.floor(this.props.size / 23);
@@ -38,34 +50,83 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		divStyle.width = this.props.size + 'px';
 		divStyle.height = this.props.size + 'px';
 
-		return (
-			<div style={divStyle}>
-				<img
-					src={this.props.src}
-					style={{
-						borderStyle: 'solid',
-						borderRadius: borderRadius + 'px',
-						borderWidth: borderWidth + 'px',
-						borderColor: borderColor,
-						width: this.props.size - 2 * borderWidth + 'px',
-						height: this.props.size - 2 * borderWidth + 'px'
-					}}
-				/>
-				{!this.props.hideRarity && (
-					<div
-						style={{
-							position: 'absolute',
-							width: this.props.size + 'px',
-							bottom: bottomStar + 'px',
-							left: '50%',
-							transform: 'translate(-50%, 0)',
-							textAlign: 'center'
-						}}>
-						{rarity}
+		let crew: PlayerCrew | undefined = undefined;
+
+		if (playerData && allCrew && crewSymbol && targetGroup) {
+			crew = playerData.player.character.crew.find(crew => crew.symbol === crewSymbol);
+			if (!crew) {
+				crew = allCrew.find(crew => crew.symbol === crewSymbol) as PlayerCrew | undefined;
+			}
+		}
+		
+		if (crew && crewSymbol && allCrew && targetGroup && setDisplayItem) {
+			return (
+						
+					<div style={divStyle}>
+						<CrewTarget 
+							inputItem={crew} 
+							allCrew={allCrew} 
+							targetGroup={targetGroup} 
+							setDisplayItem={setDisplayItem}>
+							<img
+								src={this.props.src}
+								style={{
+									borderStyle: 'solid',
+									borderRadius: borderRadius + 'px',
+									borderWidth: borderWidth + 'px',
+									borderColor: borderColor,
+									width: this.props.size - 2 * borderWidth + 'px',
+									height: this.props.size - 2 * borderWidth + 'px'
+								}}
+							/>
+						</CrewTarget>
+						{!this.props.hideRarity && (
+							<div
+								style={{
+									position: 'absolute',
+									width: this.props.size + 'px',
+									bottom: bottomStar + 'px',
+									left: '50%',
+									transform: 'translate(-50%, 0)',
+									textAlign: 'center'
+								}}>
+								{rarity}
+							</div>
+						)}
 					</div>
-				)}
-			</div>
-		);
+			);
+	
+		}
+		else {
+			return (
+				<div style={divStyle}>
+					<img
+						src={this.props.src}
+						style={{
+							borderStyle: 'solid',
+							borderRadius: borderRadius + 'px',
+							borderWidth: borderWidth + 'px',
+							borderColor: borderColor,
+							width: this.props.size - 2 * borderWidth + 'px',
+							height: this.props.size - 2 * borderWidth + 'px'
+						}}
+					/>
+					{!this.props.hideRarity && (
+						<div
+							style={{
+								position: 'absolute',
+								width: this.props.size + 'px',
+								bottom: bottomStar + 'px',
+								left: '50%',
+								transform: 'translate(-50%, 0)',
+								textAlign: 'center'
+							}}>
+							{rarity}
+						</div>
+					)}
+				</div>
+			);
+		}
 	}
 }
 
