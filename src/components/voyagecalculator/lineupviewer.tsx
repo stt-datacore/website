@@ -91,9 +91,10 @@ const LineupViewer = (props: LineupViewerProps) => {
 	};
 
 	if (ship) {
+		if (!ship.index) ship.index = 0;
 		shipData.direction = ship.index.right < ship.index.left ? 'right' : 'left';
 		shipData.index = ship.index[shipData.direction] ?? 0;
-		shipData.shipBonus = ship.traits.includes(voyageData.ship_trait) ? 150 : 0;
+		shipData.shipBonus = ship.traits?.includes(voyageData.ship_trait) ? 150 : 0;
 		shipData.crewBonus = voyageData.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
@@ -291,7 +292,7 @@ const GridView = (props: ViewProps) => {
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageData.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>

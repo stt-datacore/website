@@ -663,7 +663,9 @@ export interface Player {
     last_threshold_points?: number
     next_threshold_points?: number
     next_threshold_rewards?: any[]
+    bonus?: string[];
   }
+ 
   
   export interface FeaturedCrew extends CrewMember {
     type: number

@@ -13,6 +13,16 @@ Calculator Worker(): results =>
 import CONFIG from '../CONFIG';
 
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
+import { CompactCrew, PlayerCrew } from '../../model/player';
+import { CalcResult, Aggregates, Entry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill } from '../../model/worker';
+
+interface ExportCrew {
+	id: number;
+	name: string;
+	traitBitMask: number;
+	max_rarity: number;
+	skillData: number[];
+}
 
 export const CALCULATORS = {
 	helpers: [
@@ -73,51 +83,39 @@ export enum CalculatorState {
 	Done
 }
 
-interface ICalcResult {
-	estimate: any;
-	entries: {
-		slotId: number;
-		choice: any;
-		hasTrait: boolean;
-	}[];
-	aggregates: {
-		command_skill: ICrewSkill;
-		science_skill: ICrewSkill;
-		security_skill: ICrewSkill;
-		engineering_skill: ICrewSkill;
-		diplomacy_skill: ICrewSkill;
-		medicine_skill: ICrewSkill;
-	};
-	startAM: number;
-	explanation?: string;
-}
-
-interface ICrewSkill {
-	core: number;
-	range_min: number;
-	range_max: number;
-	voyage?: number;	// core + range_min + (range_max-range_min)/2
-}
+// interface CalcResult {
+// 	estimate: any;
+// 	entries: {
+// 		slotId: number;
+// 		choice: any;
+// 		hasTrait: boolean;
+// 	}[];
+// 	aggregates: Aggregates;
+// 	startAM: number;
+// 	explanation?: string;
+// }
 
 type HelperProps = {
 	voyageConfig: any;
 	bestShip: any;
 	consideredCrew: any[];
 	calcOptions: any;
-	resultsCallback: (requestId: string, reqResults: ICalcResult[], calcState: number) => void
+	resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void
 };
 
-class Helper {
+export abstract class Helper {
 	readonly id: string;
 	readonly voyageConfig: any;
 	readonly bestShip: any;
-	readonly consideredCrew: any[];
+	readonly consideredCrew: PlayerCrew[];
 	readonly calcOptions: any = {};
-	readonly resultsCallback: (requestId: string, reqResults: ICalcResult[], calcState: number) => void;
+	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
 	readonly calculator: string;
 	readonly calcName: string;
+
 	calcWorker: any;
 	calcState: number = CalculatorState.NotStarted;
+
 	perf: { start: number, end: number } = { start: 0, end: 0 };
 
 	constructor(props: HelperProps) {
@@ -138,7 +136,12 @@ class Helper {
 };
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
-class IAmPicardHelper extends Helper {
+export class IAmPicardHelper extends Helper {
+	readonly id: string;
+	readonly calculator: string;
+	readonly calcName: string;
+	readonly calcOptions: any;
+
 	constructor(props: HelperProps) {
 		super(props);
 		this.id = 'request-'+Date.now();
@@ -194,8 +197,8 @@ class IAmPicardHelper extends Helper {
 	_exportVoyageData(options: any): any {
 		let dataToExport = {
 			// These values get filled in the following code
-			crew: [],
-			binaryConfig: undefined
+			crew: [] as ExportCrew[],
+			binaryConfig: [] as number[]
 		};
 
 		let binaryConfigBuffer = new ArrayBuffer(34);
@@ -219,7 +222,7 @@ class IAmPicardHelper extends Helper {
 		console.assert(SLOT_COUNT === 12, 'Ooops, voyages have more than 12 slots !? The algorithm needs changes.');
 
 		// Find unique traits used in the voyage slots
-		let setTraits = new Set();
+		let setTraits = new Set<string>();
 		voyage_description.crew_slots.forEach(slot => {
 			setTraits.add(slot.trait);
 		});
@@ -228,7 +231,7 @@ class IAmPicardHelper extends Helper {
 		let skills = Object.keys(CONFIG.SKILLS);
 
 		// Replace traits and skills with their id
-		let slotTraitIds = [];
+		let slotTraitIds = [] as number[];
 		for (let i = 0; i < voyage_description.crew_slots.length; i++) {
 			let slot = voyage_description.crew_slots[i];
 
@@ -240,7 +243,7 @@ class IAmPicardHelper extends Helper {
 		binaryConfig.setUint8(19, skills.indexOf(voyage_description.skills.secondary_skill));
 
 		options.roster.forEach(crew => {
-			let traitIds = [];
+			let traitIds = [] as number[];
 			crew.traits.forEach(trait => {
 				if (arrTraits.indexOf(trait) >= 0) {
 					traitIds.push(arrTraits.indexOf(trait));
@@ -279,7 +282,6 @@ class IAmPicardHelper extends Helper {
 				max_rarity: crew.max_rarity,
 				skillData: Array.from(skillData)
 			};
-
 			dataToExport.crew.push(newCrew);
 		});
 
@@ -291,25 +293,28 @@ class IAmPicardHelper extends Helper {
 	}
 
 	_finaliseIAPEstimate(result: DataView, inProgress: boolean = false): void {
-		let entries = [];
-		let aggregates = Object.fromEntries(Object.keys(CONFIG.SKILLS).map(s =>
-			[s, ({skill: s, core: 0, range_min: 0, range_max: 0})]));
 
+		let entries = [] as VoyageSlotEntry[];		
+		let aggregates = {} as Aggregates;
+
+		Object.keys(CONFIG.SKILLS).forEach(s =>
+			aggregates[s] = {skill: s, core: 0, range_min: 0, range_max: 0} as AggregateSkill
+		);
+		
 		let config = {
 			numSims: inProgress ? 200 : 5000,
 			startAm: this.bestShip.score
-		};
+		} as VoyageStatsConfig;
 
 		for (let i = 0; i < 12; i++) {
 			let crew = this.consideredCrew.find(c => c.id === result.getUint32(4 + i * 4, true));
+			if (!crew) continue;
 
 			let entry = {
 				slotId: i,
 				choice: crew,
-				hasTrait: crew
-					.traits
-					.includes(this.voyageConfig.crew_slots[i].trait)
-			};
+				hasTrait: crew?.traits.includes(this.voyageConfig.crew_slots[i].trait)
+			} as VoyageSlotEntry;
 
 			for (let skill in CONFIG.SKILLS) {
 				aggregates[skill].core += crew[skill].core;
@@ -326,9 +331,9 @@ class IAmPicardHelper extends Helper {
 		config.ps = aggregates[primary_skill];
 		config.ss = aggregates[secondary_skill];
 
-		config.others =
-			Object.values(aggregates)
-				.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
+		// config.others =
+		// 	Object.values(aggregates)
+		// 		.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
 
 		const VoyageEstConfig = {
 			config,
@@ -340,10 +345,10 @@ class IAmPicardHelper extends Helper {
 			if (!message.data.inProgress) {
 				let finalResult = {
 					estimate: message.data.result,
-					entries,
-					aggregates,
+					entries: entries,
+					aggregates: aggregates,
 					startAM: config.startAm
-				};
+				} as CalcResult;
 				if (!inProgress) {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;
@@ -356,7 +361,12 @@ class IAmPicardHelper extends Helper {
 	}
 };
 
-class USSJohnJayHelper extends Helper {
+export class USSJohnJayHelper extends Helper {
+	readonly id: string;
+	readonly calculator: string;
+	readonly calcName: string;
+	readonly calcOptions: any;
+
 	constructor(props: HelperProps) {
 		super(props);
 		this.id = 'request-'+Date.now();
@@ -392,7 +402,9 @@ class USSJohnJayHelper extends Helper {
 		this.calcWorker = worker;
 	}
 
-	_messageToResults(bests: any[]): ICalcResult[] {
+	_messageToResults(bests: any[]): CalcResult[] {
+		console.log("Bests uss john jay inspect")
+		console.log(bests);
 		return bests.map((best, bestId) => {
 			return {
 				entries: best.crew.map((crew, entryId) => ({
@@ -408,7 +420,7 @@ class USSJohnJayHelper extends Helper {
 	}
 };
 
-const formatTime: string = (time: number) => {
+const formatTime = (time: number): string => {
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
 	return hours+"h " +minutes+"m";

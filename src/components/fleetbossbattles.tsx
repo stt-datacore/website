@@ -8,8 +8,10 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { FuseOptions } from '../model/game-elements';
 import { BossBattlesRoot, Combo } from '../model/boss';
+import { Ship } from '../model/ship';
+import { AllData, CalculatorProps } from '../model/worker';
 
-const DIFFICULTY_NAME = {
+export const DIFFICULTY_NAME = {
 	1: 'Easy',
 	2: 'Normal',
 	3: 'Hard',
@@ -18,18 +20,10 @@ const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
-interface FleetBossBattlesProps {
-	playerData: PlayerData;
-	allCrew: PlayerCrew[];
-};
 
-interface AllData extends FleetBossBattlesProps {
-	bossData: BossBattlesRoot;
-}
+export const AllDataContext = React.createContext<AllData | null>(null);
 
-const AllDataContext = React.createContext<AllData | null>(null);
-
-const FleetBossBattles = (props: FleetBossBattlesProps) => {
+export const FleetBossBattles = (props: CalculatorProps) => {
 	const { playerData } = props;
 
 	const [fleetbossData, ] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);

@@ -153,7 +153,7 @@ const EventPicker = (props: EventPickerProps) => {
 		}
 	});
 
-	const allBonusCrew = allCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
+	const allBonusCrew = allCrew.filter((c) => (eventData.bonus?.indexOf(c.symbol) ?? -1) >= 0);
 	allBonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 
 	const myCrew = JSON.parse(JSON.stringify(crew));

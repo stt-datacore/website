@@ -2,15 +2,7 @@ import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
 import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
 
-export class EventData implements GameEvent {
-	constructor(data: GameEvent | undefined = undefined) {
-		if (data) {
-			for (let key of Object.keys(data)) {
-				this[key] = data[key];
-			}
-		}
-	}
-
+export interface EventData extends GameEvent {
 	id: number;
 	rules: string;
 	rewards_teaser: string;
@@ -34,19 +26,19 @@ export class EventData implements GameEvent {
 	last_threshold_points?: number | undefined;
 	next_threshold_points?: number | undefined;
 	next_threshold_rewards?: any[] | undefined;
-	symbol: string = '';
-    name: string = '';
-	image: string = '';
-	description: string = '';
-	bonus_text: string = '';
-	content_types: string[] = [];	/* shuttles, gather, etc. */
-    bonus: string[] = [];	/* ALL bonus crew by symbol */
-	featured: string[] = [];	/* ONLY featured crew by symbol */
+	symbol: string;
+    name: string;
+	image: string;
+	description: string;
+	bonus_text: string;
+	content_types: string[];	/* shuttles, gather, etc. */
+    bonus: string[];	/* ALL bonus crew by symbol */
+	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
 };
 
 export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): EventData | undefined {
-	const result = new EventData();
+	const result = {} as EventData;
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
 	result.description = activeEvent.description;
@@ -102,7 +94,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
-	if (result.bonus.length === 0 && allCrew.length > 0) {
+	if (result.bonus && result.bonus.length === 0 && allCrew.length > 0) {
 		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
 		result.bonus = bonus;
 		result.featured = featured;
@@ -127,7 +119,7 @@ export async function guessCurrentEvent(): Promise<EventData> {
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = new EventData(getEventData(json) as GameEvent);
+				const activeEvent = getEventData(json) as EventData;
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);

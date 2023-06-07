@@ -1,4 +1,6 @@
+
 import React from 'react';
+
 import { Icon, Form, Button, Dropdown, Message, Checkbox, Select, Header, Image, Tab, Card, Popup } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
@@ -14,39 +16,45 @@ import { useStateWithStorage } from '../../utils/storage';
 
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
-const AllDataContext = React.createContext();
+import { GameEvent, PlayerCrew, Voyage, VoyageBase } from '../../model/player';
+import * as CalcHelpers from './calchelpers';
+import { Skill } from '../../model/crew';
+import { AllData, CalcConfig, CalcResult, Calculation, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
+import { InitialOptions } from '../../model/game-elements';
 
-type RecommenderProps = {
-	voyageConfig: any;
-	myCrew: any[];
+export const AllDataContext = React.createContext<AllData>({} as AllData);
+
+export type RecommenderProps = {
+	voyageConfig: VoyageBase;
+	myCrew: PlayerCrew[];
 	useInVoyage?: () => void;
-	allData: any;
+	allData: AllData;
 };
 
-const Recommender = (props: RecommenderProps) => {
+export const Recommender = (props: RecommenderProps) => {
 	const { voyageConfig, myCrew, useInVoyage, allData } = props;
 
 	const allShips = allData.allShips;
 	const playerData = allData.playerData;
 
-	const [bestShip, setBestShip] = React.useState(undefined);
-	const [consideredCrew, setConsideredCrew] = React.useState([]);
+	const [bestShip, setBestShip] = React.useState<VoyageConsideration | undefined>(undefined);
+	const [consideredCrew, setConsideredCrew] = React.useState<PlayerCrew[]>([]);
 	const [calculator, setCalculator] = useStateWithStorage(playerData.player.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = useStateWithStorage(playerData.player.dbid+'/voyage/calcOptions', {}, { rememberForever: true });
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
-	const [requests, setRequests] = React.useState([]);
-	const [results, setResults] = React.useState([]);
+	const [requests, setRequests] = React.useState<CalcHelpers.Helper[]>([]);
+	const [results, setResults] = React.useState<Calculation[]>([]);
 
 	React.useEffect(() => {
-		const consideredShips = [];
-		allShips.filter(ship => ship.owned).forEach(ship => {
-			const traited = ship.traits.includes(voyageConfig.ship_trait);
+		const consideredShips = [] as VoyageConsideration[];
+		allShips?.filter(ship => ship.owned).forEach(ship => {
+			const traited = ship.traits?.includes(voyageConfig.ship_trait);
 			let entry = {
 				ship: ship,
 				score: ship.antimatter + (traited ? 150 : 0),
 				traited: traited,
-				bestIndex: Math.min(ship.index.left, ship.index.right)
-			};
+				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0)
+			} as VoyageConsideration;
 			consideredShips.push(entry);
 		});
 		consideredShips.sort((a, b) => {
@@ -69,7 +77,7 @@ const Recommender = (props: RecommenderProps) => {
 	}, []);
 
 	// Scroll here when calculator started, finished
-	const topAnchor = React.useRef(null);
+	const topAnchor = React.useRef<HTMLDivElement>(null);
 
 	const calculators = CALCULATORS.helpers.map(helper => {
 		return { key: helper.id, value: helper.id, text: helper.name };
@@ -132,15 +140,15 @@ const Recommender = (props: RecommenderProps) => {
 	);
 
 	function renderBestShip(): JSX.Element {
-		if (!bestShip) return (<></>);
+		if (!bestShip || !bestShip.ship.index) return (<></>);
 
-		const direction = bestShip.ship.index.right < bestShip.ship.index.left ? 'right' : 'left';
+		const direction = (bestShip.ship.index?.right ?? 0) < (bestShip.ship.index?.left ?? 0) ? 'right' : 'left';
 		const index = bestShip.ship.index[direction] ?? 0;
 
 		return (
 			<Card fluid>
 				<Card.Content>
-					<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${bestShip.ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
+					<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${bestShip.ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 					<Card.Header>{bestShip.ship.name}</Card.Header>
 					<p>best ship{bestShip.traited && (<span style={{ marginLeft: '1em' }}>{` +`}{allTraits.ship_trait_names[voyageConfig.ship_trait]}</span>)}</p>
 					<p style={{ marginTop: '.5em' }}>Tap <Icon name={`arrow ${direction}`} />{index} time{index !== 1 ? 's' : ''} on your voyage ship selection screen to select {bestShip.ship.name}.</p>
@@ -169,7 +177,7 @@ const Recommender = (props: RecommenderProps) => {
 		};
 		results.forEach(result => {
 			if (result.calcState === CalculatorState.Done) {
-				const values = flattenEstimate(result.result.estimate);
+				const values = flattenEstimate(result.result?.estimate);
 				Object.keys(bestValues).forEach((valueKey) => {
 					if (valueKey === 'dilemma') {
 						if (values.dilemma.hour > bestValues.dilemma.hour
@@ -186,7 +194,7 @@ const Recommender = (props: RecommenderProps) => {
 		results.forEach(result => {
 			let compared = '';
 			if (result.calcState === CalculatorState.Done) {
-				const recommended = getRecommendedList(result.result.estimate, bestValues);
+				const recommended = getRecommendedList(result.result?.estimate, bestValues);
 				if (results.length === 1)
 					compared = 'Recommended for all criteria';
 				else {
@@ -203,7 +211,8 @@ const Recommender = (props: RecommenderProps) => {
 		const panes = results.map((result, resultIndex) => ({
 			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
 			render: () => (
-				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultCompared={result.compared}
+				result.result &&
+				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultCompared={result.compared ?? ""}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
 					estimateResult={estimateResult} dismissResult={dismissResult}
@@ -224,7 +233,7 @@ const Recommender = (props: RecommenderProps) => {
 		if (!topAnchor.current) return;
 		topAnchor.current.scrollIntoView({
 			behavior: 'smooth'
-		}, 500);
+		});
 	}
 
 	function startCalculation(): void {
@@ -256,12 +265,16 @@ const Recommender = (props: RecommenderProps) => {
 			if (idx === 0) {
 				setResults(prevResults => {
 					const result = prevResults.find(r => r.id === requestId);
-					if (calcState === CalculatorState.Done) {
-						result.name = formatTime(reqResult.estimate.refills[0].result);
-						result.calcState = CalculatorState.Done;
-						sendTelemetry(requestId, reqResult);
+					if (result) {
+						if (calcState === CalculatorState.Done) {
+							console.log("Result");
+							console.log(result);
+							result.name = formatTime(reqResult.estimate.refills[0].result);
+							result.calcState = CalculatorState.Done;
+							sendTelemetry(requestId, reqResult);
+						}
+						result.result = {...reqResult, confidence: 0};
 					}
-					result.result = {...reqResult, confidence: 0};
 					return [...prevResults];
 				});
 			}
@@ -285,7 +298,7 @@ const Recommender = (props: RecommenderProps) => {
 			request.abort();
 			setResults(prevResults => {
 				const result = prevResults.find(prev => prev.id === requestId);
-				if (result.result) {
+				if (result && result.result) {
 					result.name = formatTime(result.result.estimate.refills[0].result);
 					result.calcState = CalculatorState.Done;
 					result.result.confidence = 0;
@@ -314,7 +327,7 @@ const Recommender = (props: RecommenderProps) => {
 	}
 
 	function getRecommendedList(estimate: any, bestValues: any): string[] {
-		const recommended = [];
+		const recommended = [] as string[];
 		const values = flattenEstimate(estimate);
 		Object.keys(bestValues).forEach((method) => {
 			if (bestValues[method] === values[method] ||
@@ -324,7 +337,7 @@ const Recommender = (props: RecommenderProps) => {
 		return recommended;
 	};
 
-	function getRecommendedValue(method: number, bestValues: any): string {
+	function getRecommendedValue(method: string, bestValues: any): string {
 		let sortName = '', sortValue = '';
 		switch (method) {
 			case 'estimate':
@@ -352,7 +365,7 @@ const Recommender = (props: RecommenderProps) => {
 		return sortName+sortValue;
 	}
 
-	function estimateResult(resultIndex: number, voyageConfig: any, numSims: number): void {
+	function estimateResult(resultIndex: number, voyageConfig: Voyage, numSims: number): void {
 		const config = {
 			startAm: voyageConfig.max_hp,
 			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
@@ -371,8 +384,10 @@ const Recommender = (props: RecommenderProps) => {
 				setResults(prevResults => {
 					const result = prevResults[resultIndex];
 					result.name = formatTime(estimate.refills[0].result);
-					result.result.estimate = estimate;
-					result.result.confidence = 2;
+					if (result.result) {
+						result.result.estimate = estimate;
+						result.result.confidence = 2;	
+					}
 					return [...prevResults];
 				});
 			}
@@ -381,7 +396,7 @@ const Recommender = (props: RecommenderProps) => {
 		setResults(prevResults => {
 			const result = prevResults[resultIndex];
 			result.name = 'Calculating...';
-			result.result.confidence = 1;
+			if (result.result) result.result.confidence = 1;
 			return [...prevResults];
 		});
 	}
@@ -420,8 +435,8 @@ const Recommender = (props: RecommenderProps) => {
 };
 
 type InputCrewOptionsProps = {
-	myCrew: any[];
-	updateConsideredCrew: () => void;
+	myCrew: PlayerCrew[];
+	updateConsideredCrew: (crew: PlayerCrew[]) => void;
 };
 
 const InputCrewOptions = (props: InputCrewOptionsProps) => {
@@ -429,7 +444,7 @@ const InputCrewOptions = (props: InputCrewOptionsProps) => {
 
 	const [considerActive, setConsiderActive] = React.useState(false);
 	const [considerFrozen, setConsiderFrozen] = React.useState(false);
-	const [excludedCrew, setExcludedCrew] = React.useState([]);
+	const [excludedCrew, setExcludedCrew] = React.useState([] as number[]);
 
 	React.useEffect(() => {
 		const consideredCrew = myCrew.filter(crewman => {
@@ -473,7 +488,7 @@ const InputCrewOptions = (props: InputCrewOptionsProps) => {
 };
 
 type InputCrewExcluderProps = {
-	myCrew: any[];
+	myCrew: PlayerCrew[];
 	excludedCrew: undefined | number[];
 	updateExclusions: (crewIds: number[]) => void;
 	showFrozen: boolean;
@@ -483,9 +498,9 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	const { allCrew } = React.useContext(AllDataContext);
 	const { updateExclusions } = props;
 
-	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [activeEvent, setActiveEvent] = React.useState(undefined);
-	const [options, setOptions] = React.useState(undefined);
+	const [eventData, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
+	const [activeEvent, setActiveEvent] = React.useState<GameEvent | undefined>(undefined);
+	const [options, setOptions] = React.useState<GameWorkerOptions | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (props.excludedCrew)
@@ -503,7 +518,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	React.useEffect(() => {
 		if (activeEvent && activeEvent.seconds_to_end > 0 && activeEvent.seconds_to_start < 86400) {
 			if (activeEvent.content_types.includes('shuttles') || activeEvent.content_types.includes('gather')) {
-				const crewIds = props.myCrew.filter(c => activeEvent.bonus.includes(c.symbol)).map(c => c.id);
+				const crewIds = props.myCrew.filter(c => activeEvent.bonus?.includes(c.symbol)).map(c => c.id);
 				updateExclusions([...crewIds]);
 			}
 		}
@@ -522,7 +537,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	const label = (
 		<React.Fragment>
 			<label>Crew to exclude from voyage</label>
-			{activeEvent && activeEvent.bonus.length > 0 &&
+			{activeEvent && (activeEvent.bonus?.length ?? 0) > 0 &&
 				(<div style={{ margin: '-.5em 0 .5em' }}>Preselected crew give bonuses for the event <b>{activeEvent.name}</b></div>)
 			}
 		</React.Fragment>
@@ -551,7 +566,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 		// Get event data from recently uploaded playerData
 		if (eventData && eventData.length > 0) {
 			const currentEvent = getEventData(eventData.sort((a, b) => (a.seconds_to_start - b.seconds_to_start))[0], allCrew);
-			setActiveEvent({...currentEvent});
+			if (currentEvent) setActiveEvent({...currentEvent});
 		}
 		// Otherwise guess event from autosynced events
 		/* 	Uncomment when voyagecalc can run without playerData
@@ -564,11 +579,11 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	}
 
 	function populatePlaceholders(): void {
-		const options = { initialized: false, list: [] };
-		if (props.excludedCrew.length > 0) {
+		const options = { initialized: false, list: [] } as GameWorkerOptions;
+		if (props.excludedCrew?.length ?? 0 > 0) {
 			let crewList = [...props.myCrew];
 			if (!props.showFrozen) crewList = crewList.filter(c => c.immortal <= 0);
-			options.list = crewList.filter(c => props.excludedCrew.includes(c.id)).map(c => {
+			options.list = crewList.filter(c => props.excludedCrew?.includes(c.id)).map(c => {
 				return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
 			});
 		}
@@ -581,16 +596,18 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 	function populateOptions(): void {
 		let crewList = [...props.myCrew];
 		if (!props.showFrozen) crewList = crewList.filter(c => c.immortal === 0);
-		options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-			return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
-		});
-		options.initialized = true;
-		setOptions({...options});
+		if (options) {
+			options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
+				return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+			});
+			options.initialized = true;
+			setOptions({...options});	
+		}
 	}
 };
 
 type VoyageResultPaneProps = {
-	result: any;
+	result: CalcResult;
 	resultIndex: number;
 	requests: any[];
 	requestId: string;
@@ -598,7 +615,8 @@ type VoyageResultPaneProps = {
 	abortCalculation: (requestId: string) => void;
 	estimateResult: (resultIndex: number, voyageConfig: any, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
-	roster: any[];
+	roster: PlayerCrew[];
+	resultCompared: string;	
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
@@ -671,7 +689,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 									content={<>Get more confident estimate</>}
 									trigger={
 										<Button icon onClick={() => { if (result.confidence !== 1) estimateResult(resultIndex, data, 30000); }}>
-											<Icon name={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
+											<Icon title={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>
@@ -706,7 +724,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	);
 };
 
-const formatTime: string = (time: number) => {
+const formatTime = (time: number): string => {
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
 	return hours+"h " +minutes+"m";

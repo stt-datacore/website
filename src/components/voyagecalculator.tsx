@@ -13,21 +13,11 @@ import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
-
-interface VoyageCalculatorProps {
-	playerData: PlayerData;
-	allCrew: PlayerCrew[];
-};
-
-interface AllData extends VoyageCalculatorProps {
-	allShips: Ship[];
-	useInVoyage?: boolean;
-}
+import { AllData, CalculatorProps } from '../model/worker';
 
 const AllDataContext = React.createContext<AllData>({} as AllData);
 
-
-const VoyageCalculator = (props: VoyageCalculatorProps) => {
+const VoyageCalculator = (props: CalculatorProps) => {
 	const { playerData, allCrew } = props;
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);

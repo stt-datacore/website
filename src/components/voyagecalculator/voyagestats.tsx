@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message, Dimmer, Loader } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import CONFIG from '../CONFIG';
@@ -10,29 +10,43 @@ import ItemDisplay from '../itemdisplay';
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
-import { PlayerCrew, Voyage } from '../../model/player';
+import { PlayerCrew, PlayerEquipmentItem, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
+import { Estimate, VoyageStatsConfig } from '../../model/worker';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
 	numSims?: number;
 	ships: Ship[];
 	showPanels: string[];
-	estimate?: number;
+	estimate?: Estimate;
 	roster?: PlayerCrew[];
-	playerItems?: any[];
+	playerItems?: PlayerEquipmentItem[];
 	dbid: string | number;
 };
 
 type VoyageStatsState = {
-	estimate: any;
+	estimate?: Estimate;
 	activePanels: string[];
 	currentAm: number;
 	currentDuration?: number;
 	voyageBugDetected: boolean;
 };
 
+interface RefillBin {
+	result: number;
+	count: number;
+}
+interface Bins {
+	[key: number]: RefillBin;
+}
+
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+	
+	worker: Worker;
+	ship?: Ship;
+	config: VoyageStatsConfig;
+	
 	static defaultProps = {
 		roster: [],
 	};
@@ -50,8 +64,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		if (!voyageData)
 			return;
-
-		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
+		console.log("VoyageStat Ships");
+		console.log(ships);
+		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const duration = voyageData.voyage_duration ?? 0;
@@ -64,7 +79,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				currentAm: voyageData.hp ?? voyageData.max_hp,
 				elapsedSeconds: correctedDuration,
 				variance: 0
-			};
+			} as VoyageStatsConfig;
 
 			for (let agg of Object.values(voyageData.skill_aggregates)) {
 				let skillOdds = 0.1;
@@ -73,8 +88,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					this.config.ps = agg;
 				else if (agg.skill == voyageData.skills.secondary_skill)
 					this.config.ss = agg;
-				else
+				else {
+					if (!this.config.others) this.config.others = [];
 					this.config.others.push(agg);
+				}
+
 
 				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 			}
@@ -97,16 +115,16 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		return hours+"h " +minutes+"m";
 	}
 
-	_renderChart(needsRevive: boolean) {
+	_renderChart(needsRevive?: boolean) {
 		const estimate = this.props.estimate ?? this.state.estimate;
 
 		const names = needsRevive ? ['First refill', 'Second refill']
 															: [ 'No refills', 'One refill', 'Two refills'];
 
-		const rawData = needsRevive ? estimate.refills : estimate.refills.slice(0, 2);
+		const rawData = needsRevive ? estimate?.refills : estimate?.refills.slice(0, 2);
 		// Convert bins to percentages
-		const data = estimate.refills.map((refill, index) => {
-			var bins = {};
+		const data = estimate?.refills.map((refill, index) => {
+			var bins = {} as Bins;
 			const binSize = 1/30;
 
 			for (var result of refill.all.sort()) {
@@ -124,8 +142,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			var refillBins = Object.values(bins);
 
 			const total = refillBins
-													.map(value => value.count)
-													.reduce((acc, value) => acc + value, 0);
+				.map(value => value.count)
+				.reduce((acc, value) => acc + value, 0);
 			var aggregate = total;
 			const cumValues = value => {
 				aggregate -= value.count;
@@ -134,14 +152,15 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			const ongoing = value => { return {x: value.result, y: value.count/total}};
 
 			const percentages = refillBins
-																.sort((bin1, bin2) => bin1.result - bin2.result)
-																.map(cumValues);
+				.sort((bin1, bin2) => bin1.result - bin2.result)
+				.map(cumValues);
 
 			return {
 				id: names[index],
 				data: percentages
 			};
 		});
+		if (!data) return <></>;
 
 		return (
 			<div style={{height : 200}}>
@@ -154,16 +173,14 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					axisLeft={{legend : 'Chance (%)', legendOffset: -36, legendPosition: 'middle'}}
 					margin={{ top: 50, right: 130, bottom: 50, left: 100 }}
 					enablePoints= {true}
-					pointSize={0}
-					useMesh={true}
-					crosshairType='none'
+					pointSize={0}					
+					crosshairType={undefined}
 					tooltip={input => {
 						let data = input.point.data;
-						return `${input.point.serieId}: ${data.y.toFixed(2)}% chance of reaching ${this._formatTime(data.x)}`;
+						return <>{input.point.serieId}: {(data.y as number).toFixed(2)}% chance of reaching ${this._formatTime(data.x as number)}`</>;
 					}}
 					legends={[
 						{
-							dataFrom: 'keys',
 							anchor: 'bottom-right',
 							direction: 'column',
 							justify: false,
@@ -190,7 +207,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderCrew() {
 		const { voyageData, roster, dbid } = this.props;
-		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={dbid} />;
+		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={`${dbid}`} />;
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -228,7 +245,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					For a 20 hour voyage you need {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.
+					For a 20 hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.
 				</div>
 			);
 		} else {
@@ -241,14 +258,14 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{renderEst("1 Refill", refill++)}
 						{renderEst("2 Refills", refill++)}
 					</tbody></Table>
-					<p>The 20 hour voyage needs {estimate['20hrrefills']} refills at a cost of {estimate['20hrdil']} dilithium.</p>
+					<p>The 20 hour voyage needs {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
 		}
 	}
 
-	_renderRewardsTitle(rewards) {
+	_renderRewardsTitle(rewards): JSX.Element {
 		const { voyageData } = this.props;
 		const crewGained = rewards.filter(r => r.type === 1);
 		const bestRarity = crewGained.length == 0 ? 0 : crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
@@ -277,7 +294,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		)
 	}
 
-	_renderRewards(rewards) {
+	_renderRewards(rewards): JSX.Element {
 		const { playerItems,roster } = this.props;
 
 		rewards = rewards.sort((a, b) => {
@@ -306,19 +323,19 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		};
 
 		const itemsOwned = item => {
-			const pItem = playerItems.find(i => i.symbol == item.symbol);
-			return `(Have ${pItem ? pItem.quantity > 1000 ? `${Math.floor(pItem.quantity/1000)}k+` : pItem.quantity : 0})`;
+			const pItem = playerItems?.find(i => i.symbol == item.symbol);
+			return `(Have ${pItem ? pItem?.quantity ?? 0 > 1000 ? `${Math.floor(pItem.quantity ?? 0/1000)}k+` : pItem.quantity : 0})`;
 		};
 		const ownedFuncs = [
 			item => '',
 			item => {
-				const owned = roster.filter(c => c.symbol == item.symbol);
-
-				for (const c of owned)
+				const owned = roster?.filter(c => c.symbol == item.symbol);
+				
+				for (const c of owned ?? [])
 					if (c.rarity < c.max_rarity)
 						return '(Fusable)';
 
-				return  owned.length > 0 ? '(Duplicate)' : '(Unowned)';
+				return  owned?.length ?? 0 > 0 ? '(Duplicate)' : '(Unowned)';
 			},
 			itemsOwned,
 			item => '',
@@ -388,23 +405,27 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
 		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
-
+		
 		// Adds/Removes panels from the active list
-		const flipItem = (items, item) => items.includes(item)
+		const flipItem = (items: string[], item: string) => items.includes(item)
 			? items.filter(i => i != item)
 			: items.concat(item);
-		const handleClick = (e, {index}) =>
+
+		const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, {index}: { index: string | number | undefined; }) =>
 			this.setState({
-				activePanels: flipItem(activePanels, index)
+				activePanels: flipItem(activePanels, index as string)
 			});
-		const accordionPanel = (title, content, key, ctitle = false) => {
+
+		const accordionPanel = (title: string, content: JSX.Element, key: string, ctitle?: string | JSX.Element) => {
+
 			const collapsedTitle = ctitle ? ctitle : title;
 			const isActive = activePanels.includes(key);
+
 			return (
 				<Accordion.Panel
 					active={isActive}
 					index={key}
-					onTitleClick={handleClick}
+					onTitleClick={(e, {index}) => handleClick(e, {index})}
 					title={isActive ? {icon: 'caret down', content: collapsedTitle} : {icon: 'caret right', content: collapsedTitle}}
 					content={{content: <Segment>{content}</Segment>}}/>
 			);
