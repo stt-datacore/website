@@ -17,7 +17,7 @@ type CrewRarityFilterProps = {
 	altTitle?: string;
 };
 
-export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
+export const RarityFilter = (props: CrewRarityFilterProps) => {
 	const rarityFilterOptions = [
 		{ key: '1*', value: 1, text: '1* Common' },
 		{ key: '2*', value: 2, text: '2* Uncommon' },

@@ -25,7 +25,7 @@ import { InitialOptions } from '../../model/game-elements';
 export const AllDataContext = React.createContext<AllData>({} as AllData);
 
 export type RecommenderProps = {
-	voyageConfig: VoyageBase;
+	voyageConfig: Voyage;
 	myCrew: PlayerCrew[];
 	useInVoyage?: () => void;
 	allData: AllData;
@@ -237,10 +237,14 @@ export const Recommender = (props: RecommenderProps) => {
 	}
 
 	function startCalculation(): void {
+
+		if (!voyageConfig || !bestShip || !consideredCrew || !calcOptions) return;
+
 		const helperConfig = {
-			voyageConfig, bestShip, consideredCrew, calcOptions,
+			voyageConfig, bestShip, consideredCrew, calcOptions: (calcOptions as GameWorkerOptions),
 			resultsCallback: handleResults
 		};
+
 		CALCULATORS.helpers.forEach(helper => {
 			if (helper.id === calculator || calculator === 'all') {
 				const request = helper.helper(helperConfig);

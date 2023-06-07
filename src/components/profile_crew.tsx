@@ -9,7 +9,7 @@ import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
 
 import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
-import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
+import { RarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
 import RosterSummary from '../components/crewtables/rostersummary';
 import UtilityWizard from '../components/crewtables/utilitywizard';
 
@@ -54,9 +54,9 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if (props.isTools) {
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
-			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+			<ProfileCrewTools playerData={props.playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
 				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
-				dbid={props.playerData.player.dbid} />
+				dbid={`${props.playerData.player.dbid}`} />
 		);
 	}
 
@@ -77,6 +77,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 type ProfileCrewToolsProps = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
+	playerData: PlayerData;
 	buffConfig: BuffStatTable;
 	initOptions?: InitialOptions;
 	initHighlight: string;
@@ -86,8 +87,8 @@ type ProfileCrewToolsProps = {
 
 const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const { allCrew, buffConfig, initOptions } = props;
-	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('crewTool/prospects', []);
+	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [wizard, setWizard] = React.useState(undefined);
 
 	const myCrew = JSON.parse(
@@ -148,7 +149,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 		}
 	}, [props.initProspects]);
 
-	prospects.forEach((p) => {
+	prospects?.forEach((p) => {
 		let crew = allCrew.find((c) => c.symbol == p.symbol);
 		if (crew) {
 			let prospect = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
@@ -202,7 +203,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
+			<ProfileCrewTable allCrew={allCrew} playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
@@ -229,6 +230,7 @@ type ProfileCrewTableProps = {
 	initOptions: any;
 	lockable?: any[];
 	wizard?: any;
+	playerData: PlayerData;
 };
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {

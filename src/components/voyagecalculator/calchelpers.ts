@@ -10,12 +10,32 @@ Calculator Worker(): results =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
+import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { CompactCrew, Player, PlayerCrew, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { CalcResult, GameWorkerOptions, VoyageStatsConfig } from '../../model/worker';
+import { CalcResult, GameWorkerOptions, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { IAmPicardHelper } from './IAmPicardHelper';
 import { USSJohnJayHelper } from './USSJohnJayHelper';
+import { Helper, HelperProps } from './Helper';
+
+export enum CalculatorState {
+	NotStarted,
+	InProgress,
+	Done
+}
+
+export interface CalculatorHelper {
+	id: string;
+	name: string;
+	helper: <T extends Helper>(props: HelperProps) => T;
+}
+
+const formatTime = (time: number): string => {
+	let hours = Math.floor(time);
+	let minutes = Math.floor((time-hours)*60);
+	return hours+"h " +minutes+"m";
+};
 
 export const CALCULATORS = {
 	helpers: [
@@ -68,65 +88,4 @@ export const CALCULATORS = {
 			default: 'estimate'
 		}
 	]
-};
-
-export enum CalculatorState {
-	NotStarted,
-	InProgress,
-	Done
-}
-
-export interface CalculatorHelper {
-	id: string;
-	name: string;
-	helper: <T extends Helper>(props: HelperProps) => T;
-}
-
-export type HelperProps = {
-	voyageConfig: Voyage;
-	bestShip: Ship;
-	consideredCrew: PlayerCrew[];
-	calcOptions: GameWorkerOptions;
-	resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void
-};
-
-export abstract class Helper {
-	abstract readonly id: string;
-	abstract readonly calculator: string;
-	abstract readonly calcName: string;
-	abstract readonly calcOptions: GameWorkerOptions;
-
-	readonly voyageConfig: Voyage;
-	readonly bestShip: Ship;
-	readonly consideredCrew: PlayerCrew[];
-	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
-
-	calcWorker: any;
-	calcState: number = CalculatorState.NotStarted;
-
-	perf: { start: number, end: number } = { start: 0, end: 0 };
-
-	constructor(props: HelperProps) {
-		this.voyageConfig = JSON.parse(JSON.stringify(props.voyageConfig));
-		this.bestShip = JSON.parse(JSON.stringify(props.bestShip));
-		this.consideredCrew = JSON.parse(JSON.stringify(props.consideredCrew));
-		this.resultsCallback = props.resultsCallback;
-
-		if (!this.voyageConfig || !this.bestShip || !this.consideredCrew)
-			throw('Voyage calculator cannot start without required parameters!');
-	}
-
-	abstract start(): void;
-
-	abort(): void {
-		if (this.calcWorker) this.calcWorker.terminate();
-		this.perf.end = performance.now();
-		this.calcState = CalculatorState.Done;
-	}
-};
-
-const formatTime = (time: number): string => {
-	let hours = Math.floor(time);
-	let minutes = Math.floor((time-hours)*60);
-	return hours+"h " +minutes+"m";
 };

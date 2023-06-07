@@ -1,7 +1,8 @@
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { PlayerCrew } from '../../model/player';
 import { CalcResult, JohnJayBest } from '../../model/worker';
-import { Helper, HelperProps, CalculatorState } from './calchelpers';
+import { CalculatorState } from './calchelpers';
+import { HelperProps, Helper } from "./Helper";
 
 export class USSJohnJayHelper extends Helper {
 	readonly id: string;
