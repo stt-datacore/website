@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Header, Button, Dropdown, Label } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Header, Button, Dropdown } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
@@ -8,9 +8,10 @@ import CONFIG from '../components/CONFIG';
 import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
 
-import RosterSummary from '../components/crewtables/rostersummary';
 import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
-import { CrewRarityFilter as RarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
+import { CrewRarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
+import RosterSummary from '../components/crewtables/rostersummary';
+import UtilityWizard from '../components/crewtables/utilitywizard';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { applySkillBuff, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, navToCrewPage } from '../utils/crewutils';
@@ -53,8 +54,9 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if (props.isTools) {
 		const buffConfig = calculateBuffConfig(props.playerData.player);
 		return (
-			<ProfileCrewTools playerData={props.playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
-				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects} />
+			<ProfileCrewTools myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
+				dbid={props.playerData.player.dbid} />
 		);
 	}
 
@@ -79,13 +81,14 @@ type ProfileCrewToolsProps = {
 	initOptions?: InitialOptions;
 	initHighlight: string;
 	initProspects: string[];
-	playerData: PlayerData;
+	dbid: string;
 };
 
 const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const { allCrew, buffConfig, initOptions } = props;
-	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', [] as LockedProspect[]);
-	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[]>('tools/activeCrew', [] as PlayerCrew[]);
+	const [prospects, setProspects] = useStateWithStorage('crewTool/prospects', []);
+	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
+	const [wizard, setWizard] = React.useState(undefined);
 
 	const myCrew = JSON.parse(
 		JSON.stringify(props.myCrew), 
@@ -199,9 +202,11 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} allCrew={allCrew} />
+			<ProfileCrewTable pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
-			<RosterSummary myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig} />
+			<Header as='h3'>Advanced Analysis</Header>
+			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
+			<UtilityWizard myCrew={myCrew} handleWizard={(wizardData: any) => setWizard({...wizardData})} dbid={props.dbid} />
 		</React.Fragment>
 	);
 
@@ -223,7 +228,7 @@ type ProfileCrewTableProps = {
 	allCrew: CrewMember[];
 	initOptions: any;
 	lockable?: any[];
-	playerData: PlayerData;
+	wizard?: any;
 };
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
@@ -324,9 +329,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				reverse: true
 			});
 		});
-		tableConfig.push(
-			{ width: 1, column: 'date_added', title: 'Date Added' },
-		);
+		if (props.wizard?.view === tableView) {
+			props.wizard.columns.forEach(column => tableConfig.push(column));
+		}
 	}
 
 	if (tableView === 'ship') {
@@ -419,6 +424,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				{traitFilter.length > 1 && <CrewTraitMatchesCell crew={crew} />}
 				{tableView === 'base' && <CrewBaseCells crew={crew} />}
 				{tableView === 'ship' && <CrewShipCells crew={crew} />}
+				{props.wizard?.view === tableView && props.wizard.renderCells(crew)}
 			</Table.Row>
 		);
 	}
