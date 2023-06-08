@@ -1,6 +1,8 @@
 .DS_Store
 .env
 .yarn-integrity
+.config/
+.vscode/
 yarn-debug.log
 yarn-error.log
 

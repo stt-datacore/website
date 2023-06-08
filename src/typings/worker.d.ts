@@ -4,11 +4,11 @@ declare module "worker-loader!*" {
   /**
    * Unified Worker for various voyage calculations
    */
-  class WebpackWorker extends Worker {
+  class UnifiedWorker extends Worker {
     constructor();
   }
 
   // Uncomment this if you set the `esModule` option to `false`
   // export = WebpackWorker;
-  export = WebpackWorker;
+  export default UnifiedWorker;
 }

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "ES2022",
         "module": "commonjs",
         "moduleResolution": "node",
         "sourceMap": true,
@@ -8,17 +8,14 @@
         "experimentalDecorators": true,
         "lib": [ "webworker", "es6", "dom" ],
         "noImplicitAny": false,
-        "suppressImplicitAnyIndexErrors": true,
         "declaration": false,
         "skipLibCheck": true,
         "types": [
-            "node",
-            "custom"
+            "node"
         ],
         "typeRoots": [
             "node_modules/@types",
-            "./src/typings"
+            "./src/typings/worker.d.ts"
         ]
-    },
-    "files": []
+    }
 }

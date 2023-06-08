@@ -1,3 +1,4 @@
+import '../../typings/worker';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { PlayerCrew } from '../../model/player';
 import { CalcResult, JohnJayBest } from '../../model/worker';

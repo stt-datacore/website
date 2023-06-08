@@ -1,3 +1,4 @@
+import '../../typings/worker';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { PlayerCrew, Voyage } from '../../model/player';
 import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
