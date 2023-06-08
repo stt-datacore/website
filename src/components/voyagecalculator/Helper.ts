@@ -1,3 +1,4 @@
+import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { PlayerCrew, Voyage } from '../../model/player';
 import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { CalculatorState } from './calchelpers';
@@ -22,7 +23,7 @@ export abstract class Helper {
 	readonly consideredCrew: PlayerCrew[];
 	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
 
-	calcWorker: any;
+	calcWorker: UnifiedWorker;
 	calcState: number = CalculatorState.NotStarted;
 
 	perf: { start: number; end: number; } = { start: 0, end: 0 };

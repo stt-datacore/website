@@ -1,5 +1,9 @@
 declare module "worker-loader!*" {
   // You need to change `Worker`, if you specified a different value for the `workerType` option
+  
+  /**
+   * Unified Worker for various voyage calculations
+   */
   class WebpackWorker extends Worker {
     constructor();
   }
