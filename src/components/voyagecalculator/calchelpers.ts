@@ -10,10 +10,6 @@ Calculator Worker(): results =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
-
-import { CompactCrew, Player, PlayerCrew, Voyage } from '../../model/player';
-import { Ship } from '../../model/ship';
-import { CalcResult, GameWorkerOptions, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { IAmPicardHelper } from './IAmPicardHelper';
 import { USSJohnJayHelper } from './USSJohnJayHelper';
 import { Helper, HelperProps } from './Helper';
@@ -30,7 +26,7 @@ export interface CalculatorHelper {
 	helper: <T extends Helper>(props: HelperProps) => T;
 }
 
-const formatTime = (time: number): string => {
+export const formatTime = (time: number): string => {
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
 	return hours+"h " +minutes+"m";
