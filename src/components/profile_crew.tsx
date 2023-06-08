@@ -331,6 +331,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				reverse: true
 			});
 		});
+		tableConfig.push(
+			{ width: 1, column: 'date_added', title: 'Date Added' },
+		);
 		if (props.wizard?.view === tableView) {
 			props.wizard.columns.forEach(column => tableConfig.push(column));
 		}

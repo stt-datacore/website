@@ -9,9 +9,10 @@ import ItemDisplay from '../itemdisplay';
 import { useStateWithStorage } from '../../utils/storage';
 import { Ship } from '../../model/ship';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
+import { Skill } from '../../model/crew';
 
 const POPUP_DELAY = 500;
-const voyScore = v => v.core + (v.range_min + v.range_max)/2;
+const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
 	voyageData: Voyage;
@@ -106,9 +107,9 @@ const LineupViewer = (props: LineupViewerProps) => {
 };
 
 type ViewPickerProps = {
-	voyageData: any;
-	ship: any;
-	shipData: any;
+	voyageData: Voyage;
+	ship: Ship;
+	shipData: {direction: string, index: number, shipBonus: number, crewBonus: number };
 	assignments: any[];
 	dbid: string;
 };
