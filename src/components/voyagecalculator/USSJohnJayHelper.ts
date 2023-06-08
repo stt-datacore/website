@@ -17,7 +17,7 @@ export class USSJohnJayHelper extends Helper {
 		this.calculator = 'ussjohnjay';
 		this.calcName = 'Multi-vector Assault';
 		this.calcOptions = {
-			strategy: props.calcOptions.strategy ?? 'estimate'
+			strategy: props.calcOptions?.strategy ?? 'estimate'
 		};
 	}
 

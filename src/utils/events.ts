@@ -53,12 +53,15 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
 	const activePhase = Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content;
+	
 	if (!activePhase) return result;
-
+	if (!result.featured) result.featured = [];
+	if (!result.bonus) result.bonus = [];
+	
 	if (activePhase.content_type == 'shuttles') {
 		activePhase.shuttles.forEach((shuttle: any) => {
 			for (let symbol in shuttle.crew_bonuses) {
-				if (result.bonus.indexOf(symbol) < 0) {
+				if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 					result.bonus.push(symbol);
 					if (shuttle.crew_bonuses[symbol] == 3) result.featured.push(symbol);
 				}
@@ -67,7 +70,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	}
 	else if (activePhase.content_type == 'gather') {
 		for (let symbol in activePhase.crew_bonuses) {
-			if (result.bonus.indexOf(symbol) < 0) {
+			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 				result.bonus.push(symbol);
 				if (activePhase.crew_bonuses[symbol] == 10) result.featured.push(symbol);
 			}
@@ -76,7 +79,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	else if (activePhase.content_type == 'skirmish' && activePhase.bonus_crew) {
 		for (let i = 0; i < activePhase.bonus_crew.length; i++) {
 			let symbol = activePhase.bonus_crew[i];
-			if (result.bonus.indexOf(symbol) < 0) {
+			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 				result.bonus.push(symbol);
 				result.featured.push(symbol);
 			}
@@ -85,9 +88,10 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 		if (allCrew.length > 0) {
 			activePhase.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
-				perfectTraits.forEach(crew => {
-					if (!result.bonus.includes(crew.symbol))
+				perfectTraits?.forEach(crew => {
+					if (!result.bonus?.includes(crew.symbol)) {
 						result.bonus.push(crew.symbol);
+					}						
 				});
 			});
 		}

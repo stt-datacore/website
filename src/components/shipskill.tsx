@@ -235,12 +235,6 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                 <div>
                     <div style={{ marginBottom: ".25em" }}>Equipment Bonus</div>
                     <p>
-                        {ship_battle.accuracy && (
-                            <span>
-                                <b>Accuracy:</b> +{ship_battle.accuracy}
-                                {` `}
-                            </span>
-                        )}
                         {ship_battle.crit_bonus && (
                             <span>
                                 <b>Crit Bonus:</b> +
@@ -252,12 +246,6 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                             <span>
                                 <b>Crit Rating:</b> +
                                 {ship_battle.crit_chance}
-                                {` `}
-                            </span>
-                        )}
-                        {ship_battle.evasion && (
-                            <span>
-                                <b>Evasion:</b> +{ship_battle.evasion}
                                 {` `}
                             </span>
                         )}
