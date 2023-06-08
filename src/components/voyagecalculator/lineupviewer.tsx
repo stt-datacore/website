@@ -7,29 +7,32 @@ import allTraits from '../../../static/structured/translation_en.json';
 import ItemDisplay from '../itemdisplay';
 
 import { useStateWithStorage } from '../../utils/storage';
+import { Ship } from '../../model/ship';
+import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 
 const POPUP_DELAY = 500;
 const voyScore = v => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
-	voyageData: any;
-	ship: any;
-	roster: any;
+	voyageData: Voyage;
+	ship: Ship;
+	roster: PlayerCrew[];
 	dbid: string;
 };
 
 const LineupViewer = (props: LineupViewerProps) => {
 	const { voyageData, ship, roster, dbid } = props;
 
-	const getBestRank = (crew, seatSkill) => {
+	const getBestRank = (crew: PlayerCrew, seatSkill: string) => {
 		const best = {
 			skill: 'None',
 			rank: 1000
 		};
 		Object.keys(crew.skills).forEach(crewSkill => {
-			const rank = skillRankings.find(sr => sr.skill === crewSkill)
-				.roster.filter(c => Object.keys(c.skills).includes(seatSkill) && !usedCrew.includes(c.id))
-				.map(c => c.id).indexOf(crew.id) + 1;
+			let skr = skillRankings.find(sr => sr.skill === crewSkill);
+			const rank = skr?.roster.filter(c => Object.keys(c.skills)
+				.includes(seatSkill) && !usedCrew.includes(c.id))
+				.map(c => c.id).indexOf(crew.id) ?? 0 + 1;
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
 			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
@@ -70,13 +73,14 @@ const LineupViewer = (props: LineupViewerProps) => {
 				return vs2 - vs1;
 			})
 	}));
-	const usedCrew = [];
+	
+	const usedCrew = [] as number[];
 	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
-		const { crew, name, trait, skill } = Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry);
+		const { crew, name, trait, skill } = (Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
 		const bestRank = getBestRank(crew, skill);
 		if (!crew.imageUrlPortrait)
 			crew.imageUrlPortrait =
-				`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+				`${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		usedCrew.push(crew.id);
 		return {
 			crew, name, trait, skill, bestRank
@@ -91,7 +95,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 	};
 
 	if (ship) {
-		if (!ship.index) ship.index = 0;
+		if (!ship.index) ship.index = { left: 0, right: 0 };
 		shipData.direction = ship.index.right < ship.index.left ? 'right' : 'left';
 		shipData.index = ship.index[shipData.direction] ?? 0;
 		shipData.shipBonus = ship.traits?.includes(voyageData.ship_trait) ? 150 : 0;
@@ -138,7 +142,7 @@ const ViewPicker = (props: ViewPickerProps) => {
 type ViewProps = {
 	layout: string;
 	voyageData: any;
-	ship: any;
+	ship: Ship;
 	shipData: any;
 	assignments: any[];
 };
@@ -176,14 +180,14 @@ const TableView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon title={`arrow ${shipData.direction}`} />{shipData.index}
 										</span>
 									} />
 								</span>
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageData.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
@@ -285,7 +289,7 @@ const GridView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon title={`arrow ${shipData.direction}`} />{shipData.index}
 										</span>
 									} />
 								</span>
@@ -508,7 +512,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			<React.Fragment>
 				{Object.keys(crew.skills).map(skill =>
 					<Label key={skill}>
-						{CONFIG.SKILLS_SHORT.find(c => c.name === skill).short}{` `}
+						{CONFIG.SKILLS_SHORT.find(c => c.name === skill)?.short}{` `}
 						{Math.floor(voyScore(crew.skills[skill]))}
 					</Label>
 				)}
