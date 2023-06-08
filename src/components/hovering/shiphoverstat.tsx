@@ -251,7 +251,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         return ship ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
-                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + ship.name + "'"}>
+                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Ship Page For '" + ship.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
                                 style={{ height: this.showShipAbility ? "15em" : "9.5em", marginRight: "8px" }}
@@ -297,7 +297,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ? 
-                                        (<b>{ship.level}</b>) : 
+                                        (<b>{ship.level}/{ship.max_level}</b>) : 
                                         (((ship.immortal ?? 0) > 0)) ? 
                                         (<i className="snowflake icon" style={frozenStyle} />) : 
                                         (<i className="check icon" style={checkedStyle} />) 
