@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { CompletionState, Player, PlayerCrew } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";

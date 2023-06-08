@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Table, Icon, Rating, Form, Header, Button, Dropdown } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
