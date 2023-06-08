@@ -10,7 +10,6 @@ Calculator Worker(): results =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { CompactCrew, Player, PlayerCrew, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';

@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "lib": [ "webworker", "es6", "dom" ],
+        "noImplicitAny": false,
+        "suppressImplicitAnyIndexErrors": true,
+        "declaration": false,
+        "skipLibCheck": true,
+        "types": [
+            "node",
+            "custom"
+        ],
+        "typeRoots": [
+            "node_modules/@types",
+            "./src/typings"
+        ]
+    },
+    "files": []
+}
