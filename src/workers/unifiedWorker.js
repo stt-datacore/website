@@ -37,6 +37,12 @@ const voyageEstimate = (config, progress) => {
   });
 };
 
+/**
+ * 
+ * @param {import('../model/player.js').PlayerData} playerData 
+ * @param {import('../model/crew.js').CrewMember[]} allCrew 
+ * @returns 
+ */
 const citeOptimizer = (playerData, allCrew) => {
   return new Promise((resolve, reject) => {
     Optimizer.assessCrewRoster(playerData, allCrew);

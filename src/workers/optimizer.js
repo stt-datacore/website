@@ -119,6 +119,11 @@ const Optimizer = {
       });
     });
   },
+  /**
+   * 
+   * @param {import('../model/player.js').PlayerData} saveData
+   * @param {import('../model/crew.js').CrewMember[]} dataCoreCrew
+   */
   assessCrewRoster(saveData, dataCoreCrew) {
     //Gathers all ids to check against for the full roster extraction
     saveData = saveData;
