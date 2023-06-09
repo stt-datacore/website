@@ -306,6 +306,8 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
+	
+	console.log(createShipStatSets(allcrew));
 
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
@@ -745,67 +747,57 @@ function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | un
 const shipStatSortConfig: ObjectNumberSortConfig = {
     props: [
         {
-            prop: "ability/condition",
+            props: "duration&cooldown",
+            direction: 'descending',
+            null_direction: 'descending',
+        },
+        {
+            props: "ability/condition",
             direction: 'ascending',
             null_direction: 'descending',
         },
         {
-            prop: "ability/amount",
+            props: "ability/amount",
             direction: 'descending',
             null_direction: 'descending',
         },
         {
-            prop: "bonus_amount",
+            props: "bonus_amount",
             direction: 'descending',
             null_direction: 'descending',
         },
         {
-            prop: "initial_cooldown",
-            direction: 'ascending',
-            null_direction: 'descending',
-        },
-        {
-            prop: "duration",
-            direction: 'descending',
-            null_direction: 'descending',
-        },
-        {
-            prop: "limit",
+            props: "limit",
             direction: 'descending',
             null_direction: 'ascending',
         },
         {
-            prop: "ability/type",
+            props: "ability/type",
             direction: 'ascending',
             null_direction: 'descending',
         },
         {
-            prop: "bonus_type",
+            props: "bonus_type",
             direction: 'ascending',
             null_direction: 'descending',
         },
         {
-            prop: "status",
+            props: "status",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },        
+        {
+            props: "penalty/type",
             direction: 'ascending',
             null_direction: 'descending',
         },
         {
-            prop: "cooldown",
+            props: "penalty/amount",
             direction: 'ascending',
             null_direction: 'descending',
         },
         {
-            prop: "penalty/type",
-            direction: 'ascending',
-            null_direction: 'descending',
-        },
-        {
-            prop: "penalty/amount",
-            direction: 'ascending',
-            null_direction: 'descending',
-        },
-        {
-            prop: "charge_phases",
+            props: "charge_phases",
 			customComp: compChargeArray
         },
     ]

@@ -11,9 +11,14 @@ export interface ObjectNumberSortConfig {
  */
 export interface NumberSortConfigItem {
     /**
-     * Property path to a numeric field (use '/' to reference nested objects)
+     * Property paths to one or more a numeric field (use '/' to reference nested objects) separated by &
      */
-    prop: string;
+    props: string;
+
+    /**
+     * The operation to perform on a compound property.
+     */
+    compoundOperator?: string;
 
     /**
      * The sort direction for this item
@@ -111,6 +116,12 @@ export class StatsSorter {
             }
         }
 
+        if (result)  {
+            for (let stat in result) {
+                this.sortStats(result[stat], true);
+            }
+        }
+        
         return result;
 
     }
@@ -148,7 +159,7 @@ export class StatsSorter {
                 r = prop.customComp(a, b);
             }
             else {
-                r = this.numbersComp(a, b, prop.prop, prop.direction, prop.null_direction);
+                r = this.numbersComp(a, b, prop.props, prop.direction, prop.null_direction);
             }
             if (r) return r;
         }
@@ -157,27 +168,47 @@ export class StatsSorter {
     }
     
     /**
-     * Get the value at the specified property path on the specified object
+     * Get the value at the specified (non-compound) property path on the specified object
      * @param target 
      * @param prop 
      * @returns 
      */
-    public getValue<T extends Object>(target: T, prop: string): number | undefined {
-        let x = prop.indexOf('/');
+    public getValue<T extends Object>(target: T, prop: string | number): number | undefined {
+        if (typeof prop === 'string') {
+            let x = prop.indexOf('/');
+            if (x !== -1) {
+                let path = prop.slice(x + 1);
+                prop = prop.slice(0, x);
+                
+                let idx = Number.parseInt(prop);
 
-        if (x !== -1) {
-            let path = prop.slice(x + 1);
-            prop = prop.slice(0, x);
+                if (!Number.isNaN(idx)) {
+                    if (idx in target) {
+                        return this.getValue(target[idx], path);
+                    }
+                    else {
+                        return undefined;
+                    }
+                }
 
-            if (prop in target) {
-                return this.getValue(target[prop], path);
+                if (prop in target) {
+                    return this.getValue(target[prop], path);
+                }
+                else {
+                    return undefined;
+                }
             }
             else {
-                return undefined;
+                if (prop in target){
+                    return target[prop];
+                }
+                else {
+                    return undefined;
+                }
             }
         }
         else {
-            if (prop in target){
+            if (prop in target) {
                 return target[prop];
             }
             else {
@@ -187,66 +218,58 @@ export class StatsSorter {
     }
 
     /**
+     * Get a compound value.
+     * @param target The object to operate on
+     * @param props The property paths separated by &
+     * @param operation The operation to perform ('+' is default)
+     * @returns Numeric expression or undefined.
+     */
+    public getCompoundValue<T extends Object>(target: T, props: string | number, operation?: string): number | undefined {
+        if (typeof props === 'number') return this.getValue(target, props);
+
+        operation ??= '+';
+        let ps = props.split("&");
+        let result: number | undefined = undefined;
+
+        for (let key of ps) {
+            let val = this.getValue(target, key);
+
+            if (val !== undefined) {
+                if (result === undefined) result = val;
+                else {
+                    result = eval(`${result} ${operation} ${val}`) as number;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * The inner logic engine for the sorter
      * @param a 
      * @param b 
-     * @param prop 
+     * @param props 
      * @param direction 
      * @param null_direction 
      * @returns 
      */
-    private numbersComp<T extends Object | Object[]>(a: T, b: T, prop: string | number, direction?: 'ascending' | 'descending' | undefined, null_direction?: 'ascending' | 'descending' | undefined) {
-        if (typeof prop === 'string') {
-            let x = prop.indexOf('/');
-
-            if (x !== -1) {
-                let path = prop.slice(x + 1);
-                prop = prop.slice(0, x);
-
-                let idx = Number.parseInt(prop);
-                if (!Number.isNaN(idx)) {
-                    if (idx in a && idx in b) {
-                        return this.numbersComp(a[idx], b[idx], path, direction, null_direction);
-                    }
-                    else if (idx in a) {
-                        return null_direction === 'descending' ? -1 : 1;
-                    }
-                    else if (idx in b) {
-                        return null_direction === 'descending' ? 1 : -1;
-                    }
-                    else {
-                        return 0;
-                    }
-                }
-                else {
-                    if (prop in a && prop in b) {
-                        return this.numbersComp(a[prop], b[prop], path, direction, null_direction);
-                    }
-                    else if (prop in a) {
-                        return null_direction === 'descending' ? -1 : 1;
-                    }
-                    else if (prop in b) {
-                        return null_direction === 'descending' ? 1 : -1;
-                    }
-                    else {
-                        return 0;
-                    }
-                }
-            }
-        }
-
-        if (prop in a && prop in b && (typeof a[prop] === 'number' && typeof b[prop] === 'number')) {
+    private numbersComp<T extends Object | Object[]>(a: T, b: T, props: string | number, direction?: 'ascending' | 'descending' | undefined, null_direction?: 'ascending' | 'descending' | undefined) {
+        let val1 = this.getCompoundValue(a, props);
+        let val2 = this.getCompoundValue(b, props);
+        
+        if (val1 !== undefined && val2 !== undefined) {
             if (direction === 'descending') {
-                return b[prop] - a[prop];
+                return val2 - val1;
             }
             else {
-                return a[prop] - b[prop];
+                return val1 - val2;
             }
         }
-        else if (prop in a && typeof a === 'number') {
+        else if (val1 !== undefined) {
             return null_direction === 'descending' ? -1 : 1;
         }
-        else if (prop in b && typeof b === 'number') {
+        else if (val2 !== undefined) {
             return null_direction === 'descending' ? 1 : -1;
         }
         else {
