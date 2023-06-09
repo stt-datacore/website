@@ -814,9 +814,7 @@ export function createShipStatSets(allCrew: CrewMember[] | PlayerCrew[], config?
 	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
 	
 	let actions = allCrew.map(crew => crew.action) as ShipAction[];
-	sc.sortStats(actions, true);
-	console.log(actions);
-
+	
 	let types = sc.groupBy(actions, "ability/type", "no_ability");
 	// Create the tiers...
 	
@@ -828,6 +826,7 @@ export function createShipStatSets(allCrew: CrewMember[] | PlayerCrew[], config?
 		}		
 	}
 	tiers["no_ability"] = sc.groupBy(types["no_ability"], "bonus_amount");
+	console.log(tiers);
 	return tiers;
 }
 
