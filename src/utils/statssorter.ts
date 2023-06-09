@@ -159,7 +159,7 @@ export class StatsSorter {
                 r = prop.customComp(a, b);
             }
             else {
-                r = this.numbersComp(a, b, prop.props, prop.direction, prop.null_direction);
+                r = this.numbersComp(a, b, prop.props, prop.direction, prop.null_direction, prop.compoundOperator);
             }
             if (r) return r;
         }
@@ -254,9 +254,9 @@ export class StatsSorter {
      * @param null_direction 
      * @returns 
      */
-    private numbersComp<T extends Object | Object[]>(a: T, b: T, props: string | number, direction?: 'ascending' | 'descending' | undefined, null_direction?: 'ascending' | 'descending' | undefined) {
-        let val1 = this.getCompoundValue(a, props);
-        let val2 = this.getCompoundValue(b, props);
+    private numbersComp<T extends Object | Object[]>(a: T, b: T, props: string | number, direction?: 'ascending' | 'descending' | undefined, null_direction?: 'ascending' | 'descending' | undefined, operation?: string) {
+        let val1 = this.getCompoundValue(a, props, operation);
+        let val2 = this.getCompoundValue(b, props, operation);
         
         if (val1 !== undefined && val2 !== undefined) {
             if (direction === 'descending') {
