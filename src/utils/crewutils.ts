@@ -747,11 +747,6 @@ function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | un
 const shipStatSortConfig: ObjectNumberSortConfig = {
     props: [
         {
-            props: "duration&cooldown",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
             props: "ability/condition",
             direction: 'ascending',
             nullDirection: 'descending',
@@ -763,6 +758,11 @@ const shipStatSortConfig: ObjectNumberSortConfig = {
         },
         {
             props: "bonus_amount",
+            direction: 'descending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "duration&cooldown",
             direction: 'descending',
             nullDirection: 'descending',
         },
