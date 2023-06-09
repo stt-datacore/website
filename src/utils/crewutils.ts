@@ -3,9 +3,10 @@ import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 import { CompactCrew, CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { ComputedBuff, CrewMember, Skill } from '../model/crew';
+import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from "./tiny";
-import { Ship, ShipAction } from '../model/ship';
+import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
+import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -305,6 +306,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
+
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
 		let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
@@ -449,7 +451,6 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	const action = actionIn;
 
 	if (!action || !action.charge_phases) return phases;
-	console.log(action);
 	action.charge_phases.forEach(cp => {
 		charge_time += cp.charge_time;
 		let phaseDescription = `After ${charge_time}s`;
@@ -625,7 +626,7 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: PlayerCr
 	window.location.href = '/crew/' + crew.symbol;
 }
 
-export function printImmoText(immo: number, item?: string, immoText?: string) {
+export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string) {
 	item ??= "Crew";
 	immoText ??= "Immortalized";
 
@@ -638,13 +639,211 @@ export function printImmoText(immo: number, item?: string, immoText?: string) {
 	else return `${item} Is Not ${immoText}`;
 }
 
-export function getSkills(crew: PlayerCrew | CrewMember | CompactCrew): string[] {
+export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkills): string[] {
 	let sk: string[] = [];
-	if (crew.base_skills?.command_skill !== undefined && crew.base_skills.command_skill.core > 0) sk.push("command_skill");
-	if (crew.base_skills?.science_skill !== undefined && crew.base_skills.science_skill.core > 0) sk.push("science_skill");
-	if (crew.base_skills?.security_skill !== undefined && crew.base_skills.security_skill.core > 0) sk.push("security_skill");
-	if (crew.base_skills?.engineering_skill !== undefined && crew.base_skills.engineering_skill.core > 0) sk.push("engineering_skill");
-	if (crew.base_skills?.diplomacy_skill !== undefined && crew.base_skills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
-	if (crew.base_skills?.medicine_skill !== undefined && crew.base_skills.medicine_skill.core > 0) sk.push("medicine_skill");	
+
+	let bskills: BaseSkills | undefined = undefined;
+
+	if ("symbol" in item) {
+		bskills = item.base_skills;
+	}
+	else {
+		bskills = item;
+	}
+
+	if (bskills?.command_skill !== undefined && bskills.command_skill.core > 0) sk.push("command_skill");
+	if (bskills?.science_skill !== undefined && bskills.science_skill.core > 0) sk.push("science_skill");
+	if (bskills?.security_skill !== undefined && bskills.security_skill.core > 0) sk.push("security_skill");
+	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
+	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
+	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");	
 	return sk;
 }
+
+
+
+export interface AbilityRanking {
+	ability: Ability;
+	rank: number;
+	crew_symbols: string[];
+	init: number;
+	duration?: number;
+	cooldown?: number;
+	charge_phases?: ChargePhase[];
+}
+
+export interface BonusRanking {
+	bonus: number;
+	type: number;
+	crew_symbols: string[];
+	rank: number;
+	init: number;
+	duration?: number;
+	cooldown?: number;
+}
+
+export interface CrewShipRankings {
+	abilities: AbilityRanking[];
+	bonuses: BonusRanking[];
+}
+
+export interface ActionRanking {
+    action: ShipAction;
+    rank?: number;
+    crew_symbols?: string[];
+}
+
+function compCharge(a: ChargePhase, b: ChargePhase) {
+	let r: number = 0;
+	
+	if (a.ability_amount && b.ability_amount) {
+		r = b.ability_amount - a.ability_amount;
+		if (r) return r;
+	}
+	
+	if (a.bonus_amount && b.bonus_amount) {
+		r = b.bonus_amount - a.bonus_amount;
+		if (r) return r;
+	}
+	
+	if (a.charge_time != b.charge_time) {
+		return a.charge_time - b.charge_time;
+	}
+
+	if (a.duration && b.duration){
+		r = b.duration - a.duration;
+		if (r) return r;
+	}
+
+	if (a.cooldown && b.cooldown) {
+		r = a.cooldown - b.cooldown;			
+	}
+
+	return r;
+}
+
+function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | undefined) {
+
+	if (!cp1 && !cp2) return 0;
+	else if (cp1 && !cp2) return 1;
+	else if (!cp1 && cp2) return -1;
+	else if (cp1 && cp2) {
+		if (cp1.length > cp2.length) return 1;
+		else if (cp1.length < cp2.length) return -1;
+		else {
+			let c = cp1.length;
+			for (let i = 0; i < c; i++) {
+				let x = compCharge(cp1[i], cp2[i]);
+				if (x) return x;
+			}
+		}
+	}
+
+	return 0;
+}
+
+const shipStatSortConfig: ObjectNumberSortConfig = {
+    props: [
+        {
+            prop: "ability/condition",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "ability/amount",
+            direction: 'descending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "bonus_amount",
+            direction: 'descending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "initial_cooldown",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "duration",
+            direction: 'descending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "limit",
+            direction: 'descending',
+            null_direction: 'ascending',
+        },
+        {
+            prop: "ability/type",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "bonus_type",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "status",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "cooldown",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "penalty/type",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "penalty/amount",
+            direction: 'ascending',
+            null_direction: 'descending',
+        },
+        {
+            prop: "charge_phases",
+			customComp: compChargeArray
+        },
+    ]
+}
+
+/**
+ * Sort the crew according to the preferences map and return the crew broken down into tiers such
+ * that each action is mapped to an ability amount, which is in turn mapped to the ability.
+ * @param allCrew All crew you wish to sort.
+ * @param config The optional configuration file to use. Default settings are used, otherwise.
+ * @returns 
+ */
+export function createShipStatSets(allCrew: CrewMember[] | PlayerCrew[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: ShipAction[] }} {
+	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
+	
+	let actions = allCrew.map(crew => crew.action) as ShipAction[];
+	sc.sortStats(actions, true);
+	console.log(actions);
+
+	let types = sc.groupBy(actions, "ability/type", "no_ability");
+	// Create the tiers...
+	
+	let tiers = {} as { [key: string]: { [key: string]: ShipAction[] }};
+	for (let key in Object.keys(types)) {
+		if (!(key in types) || types[key] === undefined) continue;
+		else {
+			tiers[key] = sc.groupBy(types[key], "ability/amount");
+		}		
+	}
+	tiers["no_ability"] = sc.groupBy(types["no_ability"], "bonus_amount");
+	return tiers;
+}
+
+
+
+
+
+
+
+
+

@@ -79,7 +79,14 @@ export interface BaseSkills {
 }
 
 export function getSkillsRanked(skills: BaseSkills) {
-  let mskills = Object.keys(skills).filter(skill => skills[skill]).map(skill => skills[skill] as Skill);
+  let sn = [] as string[];
+  let mskills = Object.keys(skills)
+      .filter(skill => skills[skill] !== undefined && skills[skill].core > 0)
+      .map(skill => {
+        skills[skill].skill = skill;
+        return skills[skill] as Skill;
+      });
+
   mskills.sort((a,b) => {
     let r = b.core - a.core;
     if (r) return r;
@@ -95,6 +102,7 @@ export interface Skill {
   core: number
   range_min: number
   range_max: number
+  skill?: string;
 }
 
 export interface SkillsSummary {
@@ -200,3 +208,4 @@ export interface CrewConstellation {
   type: string
   crew_archetype_id: number
 }
+
