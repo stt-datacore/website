@@ -744,7 +744,7 @@ function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | un
 	return 0;
 }
 
-const shipStatSortConfig: ObjectNumberSortConfig = {
+export const shipStatSortConfig: ObjectNumberSortConfig = {
     props: [
         {
             props: "ability/condition",

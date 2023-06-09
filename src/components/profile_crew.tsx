@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Table, Icon, Rating, Form, Header, Button, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Header, Button, Dropdown, Checkbox } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
@@ -250,12 +250,19 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 	const [shipCrew, setShipCrew] = React.useState<(CrewMember | PlayerCrew)[] | undefined | null>([]);
+	const [triggerOnly, setTriggerOnly] = React.useState(false);
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');		
-	}, [usableFilter, shipCrew, tableView]);
+	}, [usableFilter, tableView]);
+
+	React.useEffect(() => {
+		if (tableView === 'ship') {
+			setRosterFilter(rosterFilter);
+		}
+	}, [shipCrew, tableView]);
 
 	React.useEffect(() => {
 		if (minTraitMatches > traitFilter.length)
@@ -280,14 +287,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	React.useEffect(() => {
 		if (selectedShip) {
-			setShipCrew(findPotentialCrew(selectedShip, myCrew, false, selectedSeats));
+			setShipCrew(findPotentialCrew(selectedShip, myCrew, triggerOnly, selectedSeats));
 			setAvailableSeats(Object.keys(CONFIG.SKILLS).filter(key => selectedShip.battle_stations?.some(bs => bs?.skill === key) ?? true));
 		}
 		else {
 			setShipCrew([]);
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
 		}	
-	}, [selectedShip, selectedSeats])
+	}, [selectedShip, selectedSeats, triggerOnly])
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -349,7 +356,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
 			{ width: 1, column: 'action.limit', title: 'Uses' },
 			{ width: 1, column: 'action.ability_text', title: 'Bonus Ability', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-			{ width: 1, column: 'action.ability_trigger', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+			{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
 			{ width: 1, column: 'action.charge_text', title: 'Charge Phases' },
 			{ width: 1, column: 'ship_battle.accuracy', title: 'Accuracy', reverse: true },
 			{ width: 1, column: 'ship_battle.crit_bonus', title: 'Crit Bonus', reverse: true },
@@ -381,8 +388,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		
 		// Ship filter
-
-		if (tableView === 'ship' && ((shipCrew && shipCrew.length) || (selectedSeats.length))) {
+		if (tableView === 'ship' && ((shipCrew && shipCrew.length) || (selectedSeats.length))) {			
 			if (shipCrew && shipCrew.length && !shipCrew.some(cm => cm.symbol === crew.symbol)) return false;
 			if (selectedSeats && selectedSeats.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
@@ -515,35 +521,46 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			
 			{
 
-			tableView === 'ship_disabled' && 
+			tableView === 'ship' && 
 				<div style={{
-					margin: "1em 0",
 					display: "flex",
-					flexDirection: "row",
-					justifyContent: "flex-start"					
+					flexDirection: "column",
+					justifyContent: "flex-start"
 				}}>
-					<div style={{marginRight: "16px"}}>
-						<RarityFilter
-								altTitle='Filter ship rarity'
-								rarityFilter={shipRarityFilter}
-								setRarityFilter={setShipRarityFilter}
-							/>					
-					</div>
-					<div style={{marginRight: "16px", width: "25em"}}>
-						<ShipPicker 							
-							filter={shipFilter}
-							selectedShip={selectedShip}
-							setSelectedShip={setSelectedShip}
-							playerData={props.playerData} />
-					</div>
-					<div style={{marginRight: "16px", minWidth: "15em"}}>
-						<ShipSeatPicker
-								setSelectedSeats={setSelectedSeats}
-								selectedSeats={selectedSeats}
-								availableSeats={availableSeats}
-							/>					
-					</div>
+					<div style={{
+						margin: "1em 0",
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "flex-start"					
+					}}>
+						<div style={{marginRight: "16px"}}>
+							<RarityFilter
+									altTitle='Filter ship rarity'
+									rarityFilter={shipRarityFilter}
+									setRarityFilter={setShipRarityFilter}
+								/>					
+						</div>
+						<div style={{marginRight: "16px", width: "25em"}}>
+							<ShipPicker 							
+								filter={shipFilter}
+								selectedShip={selectedShip}
+								setSelectedShip={setSelectedShip}
+								playerData={props.playerData} />
+						</div>
+						<div style={{marginRight: "16px", minWidth: "15em"}}>
+							<ShipSeatPicker
+									setSelectedSeats={setSelectedSeats}
+									selectedSeats={selectedSeats}
+									availableSeats={availableSeats}
+								/>					
+						</div>
 
+					</div>
+					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+
+						<Checkbox disabled={!selectedShip?.actions?.some(ab => ab.status)} checked={triggerOnly} onClick={(e) => setTriggerOnly(!triggerOnly)} />
+						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger</div>
+					</div>
 				</div>
 			}
 

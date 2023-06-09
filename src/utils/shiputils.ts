@@ -3,6 +3,8 @@ import { PlayerCrew } from "../model/player";
 import { ShipAction } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
+import { StatsSorter } from "./statssorter";
+import { shipStatSortConfig  } from "../utils/crewutils";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -190,7 +192,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
-	if (seats && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
+	if (seats && seats.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
 
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
 		if (crew.max_rarity > ship.rarity) return false;
@@ -198,7 +200,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 			if (crew.rarity > ship.rarity) return false;
 		}
 
-		if (seats) {
+		if (seats && seats.length) {
 			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));			
 		}
 		else {
@@ -206,109 +208,28 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 		}		
 	});
 	
-	if (onlyTriggers) {
-		// now get ship grants
-		let grants = ship.actions?.filter(action => action.status !== undefined);	
-		if (grants) console.log(grants);
-		// now match triggers with grants.
-		if (bscrew && grants && grants.length) {
-			bscrew = bscrew.filter(crew => grants?.some(grant => grant.status === crew.action.ability?.condition));
-		}
+	// now get ship grants
+	let grants = ship.actions?.filter(action => action.status !== undefined);	
+	if (grants) console.log(grants);
+	if (!grants) grants = [];
+	// now match triggers with grants.
+	if (bscrew) {
+		bscrew = bscrew.filter(crew => {
+			if ((grants?.length ?? 0) == 0) {
+				return (crew.action.ability?.condition ?? 0) === 0;
+			}
+			else if (!onlyTriggers && (crew.action.ability?.condition ?? 0) === 0) {
+				return true;
+			}
+			else {
+				return grants?.some(grant => grant.status === crew.action.ability?.condition);
+			}
+		});
 	}
 
-	// now sort by bonuses
-	bscrew?.sort((a, b) => {
-
-		if (a.action.ability && !b.action.ability) return 1;
-		else if (!a.action.ability && b.action.ability) return -1;
-
-		if (a.action?.bonus_amount && b.action?.bonus_amount) {
-			let r = a.action.bonus_amount - b.action.bonus_amount;
-			if (r) return r;			
-		}
-
-		let rr = a.action.initial_cooldown - b.action.initial_cooldown;
-		if (rr) return -rr;
-
-		rr = a.action.duration - b.action.duration;
-		if (rr) return -rr;
-
-		rr = a.action.cooldown - b.action.cooldown;
-		if (rr) return -rr;
-
-		if (a.action.ability && b.action.ability) {			
-			let r = a.action.ability.type - b.action.ability.type;
-			if (!r) {
-				r = a.action.ability.amount - b.action.ability.amount;
-				if (!r) {
-					r = b.action.ability.condition - a.action.ability.condition;
-				}
-			}
-
-			if (r) return -r;
-		}
-	
-		if (a.action?.bonus_type && !b.action?.bonus_type) return 1;
-		else if (b.action?.bonus_type && !a.action?.bonus_type) return -1;
-		else if (b.action?.bonus_type && a.action?.bonus_type) {
-			let r = a.action?.bonus_type - b.action?.bonus_type;
-			if (r) return r;
-		}
-		
-		if (a.ship_battle && b.ship_battle) {
-			let a_acc = a.ship_battle?.accuracy ?? 0;
-			let a_critb = a.ship_battle?.crit_bonus ?? 0;
-			let a_critc = a.ship_battle?.crit_chance ?? 0;
-			let a_evade = a.ship_battle?.evasion ?? 0;
-
-			let b_acc = b.ship_battle?.accuracy ?? 0;
-			let b_critb = b.ship_battle?.crit_bonus ?? 0;
-			let b_critc = b.ship_battle?.crit_chance ?? 0;
-			let b_evade = b.ship_battle?.evasion ?? 0;
-
-			let r = a_acc - b_acc;
-			if (!r) {
-				r = a_critb - b_critb;
-				if (!r) {
-					r = a_critc - b_critc;
-					if (!r) {
-						r = a_evade - b_evade;
-					}
-				}
-			}
-			return r;
-		}
-		let skilln_a: number[] = [];
-		let skilln_b: number[] = [];
-
-		for (let key in Object.keys(a.base_skills)) {
-			if (a.base_skills[key]) skilln_a.push(a.base_skills[key].core);
-		}
-
-		for (let key in Object.keys(b.base_skills)) {
-			if (b.base_skills[key]) skilln_b.push(b.base_skills[key].core);
-		}
-
-		skilln_a.sort((a, b) => b - a);
-		skilln_b.sort((a, b) => b - a);
-
-		let rsk = skilln_a[0] - skilln_b[0];
-		if (rsk) return rsk;
-
-		if (skilln_a.length > 1 && skilln_b.length > 1) {
-			rsk = skilln_a[1] - skilln_b[1];
-			if (rsk) return rsk;
-		}
-		
-		if (skilln_a.length > 2 && skilln_b.length > 2) {
-			rsk = skilln_a[2] - skilln_b[2];
-			if (rsk) return rsk;
-		}
-
-		return 0;
-	})
-	
-	return bscrew.reverse();
+	var sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
+	sorter.sortStats(bscrew, true);
+	return bscrew;
 }
 
 export interface TierRank {

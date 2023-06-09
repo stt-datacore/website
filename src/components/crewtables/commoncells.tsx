@@ -113,7 +113,7 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.ability && <>{crew.action.ability_text}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.ability && <>{crew.action.ability_trigger}</>}
+				{crew.action.ability && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</> || <>None</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{crew.action.charge_phases && <>{crew.action.charge_text}</>}
