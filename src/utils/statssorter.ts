@@ -29,7 +29,7 @@ export interface NumberSortConfigItem {
      * Null sort direction
      * (Ascending: null comes before not-null)
      */
-    null_direction?: 'ascending' | 'descending' | undefined;
+    nullDirection?: 'ascending' | 'descending' | undefined;
 
     /**
      * The order of precedence for this value to be evaulated.
@@ -159,7 +159,7 @@ export class StatsSorter {
                 r = prop.customComp(a, b);
             }
             else {
-                r = this.numbersComp(a, b, prop.props, prop.direction, prop.null_direction, prop.compoundOperator);
+                r = this.numbersComp(a, b, prop.props, prop.direction, prop.nullDirection, prop.compoundOperator);
             }
             if (r) return r;
         }

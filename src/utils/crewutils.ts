@@ -749,52 +749,52 @@ const shipStatSortConfig: ObjectNumberSortConfig = {
         {
             props: "duration&cooldown",
             direction: 'descending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "ability/condition",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "ability/amount",
             direction: 'descending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "bonus_amount",
             direction: 'descending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "limit",
             direction: 'descending',
-            null_direction: 'ascending',
+            nullDirection: 'ascending',
         },
         {
             props: "ability/type",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "bonus_type",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "status",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },        
         {
             props: "penalty/type",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "penalty/amount",
             direction: 'ascending',
-            null_direction: 'descending',
+            nullDirection: 'descending',
         },
         {
             props: "charge_phases",
