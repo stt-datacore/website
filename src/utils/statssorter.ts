@@ -56,7 +56,7 @@ export interface StatsSorterConfig {
 }
 
 /**
- * Sorts numeric fields of objects and nested objects using a configuration map
+ * Sorts an array of objects based on the numeric fields of the objects and their nested objects using a configuration map
  */
 export class StatsSorter {
     public readonly objectConfig: ObjectNumberSortConfig;
