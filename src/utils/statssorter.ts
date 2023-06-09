@@ -28,6 +28,9 @@ export interface NumberSortConfigItem {
 
     /**
      * The order of precedence for this value to be evaulated.
+     * If no precedence is specified, the order of definition is used.
+     * If a precedence already exists, the new one will be pushed up
+     * to the next available position.
      */
     precedence?: number;
     
