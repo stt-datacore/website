@@ -307,7 +307,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 };
 
 type CrewTableProps = {
-	allCrew: CrewMember[] | PlayerCrew[];
+	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: any[];
 	collectionCrew: PlayerCrew[];
 	collectionsFilter: number[];

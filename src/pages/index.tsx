@@ -28,7 +28,7 @@ interface Lockable {
 }
 
 type IndexPageState = {
-	botcrew: CrewMember[] | PlayerCrew[];
+	botcrew: (CrewMember | PlayerCrew)[];
 	tableConfig: any[];
 	customColumns: string[];
 	initOptions: any;

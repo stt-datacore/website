@@ -7,7 +7,7 @@ import { AvatarIcon, LockedProspect } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 
 type ProspectPickerProps = {
-	pool: PlayerCrew[] | CrewMember[];
+	pool: (CrewMember | PlayerCrew)[];
 	prospects: LockedProspect[];
 	setProspects: (prospects: LockedProspect[]) => void;
 };

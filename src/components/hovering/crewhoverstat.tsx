@@ -35,7 +35,7 @@ export interface CrewHoverStatState extends HoverStatState {
 }
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
-    allCrew: CrewMember[] | PlayerCrew[]
+    allCrew: (CrewMember | PlayerCrew)[]
     buffConfig?: BuffStatTable;
 }
 

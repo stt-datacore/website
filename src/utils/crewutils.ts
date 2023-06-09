@@ -211,7 +211,7 @@ export function exportCrewFields(): ExportField[] {
 	];
 }
 
-export function exportCrew(crew: PlayerCrew[] | CrewMember[], delimeter = ','): string {
+export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): string {
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
@@ -563,7 +563,7 @@ export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
  * @param buffs Your active buffs
  * @param allCrew All crew
  */
-export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: PlayerCrew[] | CrewMember[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: PlayerCrew[] | CrewMember[] | undefined = undefined) {
+export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
 	let stash = TinyStore.getStore('staticStash', false, true);
 	if (stash) {
 		if (ownedCrew) {
@@ -762,13 +762,23 @@ const shipStatSortConfig: ObjectNumberSortConfig = {
             nullDirection: 'descending',
         },
         {
-            props: "duration&cooldown",
+            props: "initial_cooldown",
+            direction: 'ascending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "duration",
             direction: 'descending',
             nullDirection: 'descending',
         },
         {
             props: "limit",
             direction: 'descending',
+            nullDirection: 'ascending',
+        },
+        {
+            props: "penalty/amount",
+            direction: 'ascending',
             nullDirection: 'ascending',
         },
         {
@@ -792,11 +802,6 @@ const shipStatSortConfig: ObjectNumberSortConfig = {
             nullDirection: 'descending',
         },
         {
-            props: "penalty/amount",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
             props: "charge_phases",
 			customComp: compChargeArray
         },
@@ -810,7 +815,7 @@ const shipStatSortConfig: ObjectNumberSortConfig = {
  * @param config The optional configuration file to use. Default settings are used, otherwise.
  * @returns 
  */
-export function createShipStatSets(allCrew: CrewMember[] | PlayerCrew[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: ShipAction[] }} {
+export function createShipStatSets(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: ShipAction[] }} {
 	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
 	
 	let actions = allCrew.map(crew => crew.action) as ShipAction[];

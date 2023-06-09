@@ -213,7 +213,7 @@ const EventPicker = (props: EventPickerProps) => {
 };
 
 type EventCrewTableProps = {
-	allCrew: CrewMember[] | PlayerCrew[];
+	allCrew: (CrewMember | PlayerCrew)[];
 	crew: PlayerCrew[];
 	eventData: any;
 	phaseIndex: number;

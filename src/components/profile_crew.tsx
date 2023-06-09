@@ -249,7 +249,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [availableSeats, setAvailableSeats] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
 
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
-	const [shipCrew, setShipCrew] = React.useState<PlayerCrew[] | CrewMember[] | undefined | null>([]);
+	const [shipCrew, setShipCrew] = React.useState<(CrewMember | PlayerCrew)[] | undefined | null>([]);
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 

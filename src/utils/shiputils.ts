@@ -187,7 +187,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
  * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
  * @returns An array of all crew.
  */
-export function findPotentialCrew(ship: Ship, allCrew: CrewMember[] | PlayerCrew[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
+export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
 	if (seats && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
@@ -318,7 +318,7 @@ export interface TierRank {
 	tier: number;
 }
 
-export function calculateBattleTiers(allCrew: CrewMember[] | PlayerCrew[]) {
+export function calculateBattleTiers(allCrew: (CrewMember | PlayerCrew)[]) {
 
 
 

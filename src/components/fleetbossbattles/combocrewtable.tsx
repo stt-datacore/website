@@ -23,7 +23,7 @@ type ComboCrewTableProps = {
 	openNodes: OpenNode[];
 	traitPool: string[];
 	allMatchingCrew: PlayerCrew[];
-	allCrew: PlayerCrew[] | CrewMember[];
+	allCrew: (CrewMember | PlayerCrew)[];
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	playerData: PlayerData;
