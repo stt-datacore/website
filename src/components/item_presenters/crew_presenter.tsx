@@ -9,7 +9,7 @@ import { ShipSkill } from "../shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
 import { StatLabel } from "../hovering/crewhoverstat";
-
+import { Image } from "semantic-ui-react";
 export interface CrewPresenterProps extends PresenterProps {
     crew: CrewMember | PlayerCrew;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
@@ -135,12 +135,28 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
         
         return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
+                    <div style={{ 
+                        zIndex: -1, 
+                        position: "absolute", 
+                        left: "0", 
+                        top: "0", 
+                        width: "100%", 
+                        height: "100%", 
+                        opacity: 0.025,
+                        display: "flex", 
+                        flexDirection: "column", 
+                        justifyContent: "center", 
+                        padding: "2.5em",
+                        alignItems: "center"}}>
+                    
+                    {compact && crew.series && <Image src={`/media/series/${crew.series}.png`}  />}
+                    </div>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
+                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        
                         <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                                style={{ height: this.showShipAbility ? "15em" : "9.5em", marginRight: "8px" }}
+                                style={{ height: compact ? (this.showShipAbility ? "15em" : "9.5em") : "25em", marginRight: "8px" }}
                             />
                         </a>
                     </div>
