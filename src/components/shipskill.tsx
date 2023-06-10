@@ -161,7 +161,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                             )}
                         </ul>
 
-                        {action.ability && action.ability.type && (
+                        {action.ability && action.ability.type !== undefined && (
                             <div
                                 style={{
                                     border:

@@ -67,10 +67,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		return (<>
             <div style={{
-                display: "flex",
-                fontSize: "14pt",
+                display: "flex",				
+				width: "100%",
+                fontSize: "12pt",
                 flexDirection: "column",
-                justifyContent: "center"
+                justifyContent: "center",
+				alignItems: "center"
             }}>
 
                 <ShipPresenter hover={false} ship={ship} storeName='shipProfile' />
