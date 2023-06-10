@@ -12,7 +12,7 @@ import { ShipPresenter } from './item_presenters/ship_presenter';
 
 type ShipProfileProps = {
 	playerData: PlayerData;
-    ship: string;
+    ship?: string;
     allCrew: (PlayerCrew | CrewMember)[];
 };
 
@@ -46,12 +46,19 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
 				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
 				this.setState({ data, originals: scsave });
-			});
+            });
 	}
 
 	render() {
-    	let { data } = this.state;
-        let { ship: ship_key } = this.props;
+    	const { data } = this.state;
+        let ship_key: string | undefined = this.props.ship;
+
+        if (!ship_key) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('ship')) {
+                ship_key = urlParams.get('ship') ?? undefined;
+            }
+        }
         if (!ship_key || !data) {
             return <></>            
         }
