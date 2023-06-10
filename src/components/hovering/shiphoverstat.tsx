@@ -11,6 +11,7 @@ import CONFIG from "../CONFIG";
 import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill, ShipSkillProps } from "../shipskill";
 import { Ship } from "../../model/ship";
+import { ShipPresenter } from "../item_presenters/ship_presenter";
 
 export interface ShipHoverStatProps extends HoverStatProps {
     ship: Ship | undefined | null;
@@ -218,8 +219,9 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             }, 0);            
         }
         
-        const navClick = (e) => {
+        const navClick = () => {
             if (!ship) return;
+            window.location.href = '/ship?ship=' + ship.symbol;
         }
         
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
@@ -248,110 +250,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
 
         const stats = [stats1, stats2];
 
-        return ship ? (<div style={{ display: "flex", flexDirection: "row" }}>
-                <div style={{ display: "flex", flexDirection: "column"}}>                    
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
-                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Ship Page For '" + ship.name + "'"}>
-                            <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-                                style={{ height: this.showShipAbility ? "15em" : "9.5em", marginRight: "8px" }}
-                            />
-                        </a>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            
-                            {/* {(!this.props.disableBuffs) &&
-                            <i className="arrow alternate circle up icon" title="Toggle Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                            || 
-                            <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
-                            }
-
-                            {("immortal" in ship && (ship.immortal === CompletionState.DisplayAsImmortalUnowned || ship.immortal === CompletionState.DisplayAsImmortalStatic) && 
-                            <i className="lock icon" 
-                                title={printImmoText(ship.immortal, "Ship", "Max Level")} 
-                                style={frozenStyle} 
-                                />)
-                            ||
-                            <i className="star icon" 
-                                title={("immortal" in ship && ship.immortal) ? printImmoText(ship.immortal, "Ship", "Max Level") : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
-                                style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle} 
-                                onClick={(e) => immoToggle(e)} />
-                            } */}
-                        </div>
-                    </div>
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        minHeight: "8em",
-                        justifyContent: "space-between",
-                        width: window.innerWidth <= 768 ? "15m" : "32em",
-                    }}
-                >
-                    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{ship.name}</h3>
-                        <div style={{margin: "4px", display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
-                                {
-                                    "immortal" in ship && (
-                                        ((ship.immortal === 0)) ? 
-                                        (<b>{ship.level}/{ship.max_level}</b>) : 
-                                        (((ship.immortal ?? 0) > 0)) ? 
-                                        (<i className="snowflake icon" style={frozenStyle} />) : 
-                                        (<i className="check icon" style={checkedStyle} />) 
-                                    ) || (<i className="check icon" style={checkedStyle} />)
-                                }
-                            </h4>
-                            <Rating
-                                onClick={(e) => immoToggle(e)}
-                                icon='star' 
-                                rating={ship.rarity} 
-                                maxRating={ship.rarity} 
-                                size='large' 
-                                disabled />
-                        </div>
-                    </div>
-                    {stats.map((statline, index) => 
-                        <div
-                            style={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                flexDirection:
-                                window.innerWidth <= 512 ? "column" : "row",
-                                justifyContent: "space-between",
-                                marginTop: "4px",
-                                marginBottom: "2px",
-                            }}
-                        >
-                            {statline.map((stat, index) =>                             
-                                <div style={{ width: "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
-                                    <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <div>{stat.name}</div>
-                                        <div>{stat.value.toLocaleString()}</div>
-                                    </div>                            
-                                </div>                        
-                            )}
-                        </div>
-                        )}
-                    <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            marginBottom: "4px",
-                        }}
-                    >
-                        {ship.traits_named?.join(", ")}
-                    </div>
-                    <div>
-                        {ship.actions && <ShipSkill withBorder={true} actions={ship.actions} ship_battle={ship} />}
-                    </div>
-                </div>
-            </div>) : <></>
+        return ship ? (<ShipPresenter openShip={(ship) => navClick()} hover={true} storeName={this.props.targetGroup} ship={ship} />) : <></>
         
     }
     

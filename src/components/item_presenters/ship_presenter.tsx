@@ -6,11 +6,15 @@ import { ShipSkill } from "../shipskill";
 import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
 
-export interface ShipPresenterProps {
-    ship: Ship;
+export interface PresenterProps {
     hover: boolean;
-    disableBuffs?: boolean;
     storeName: string;
+    disableBuffs?: boolean;
+}
+
+export interface ShipPresenterProps extends PresenterProps {
+    ship: Ship;
+    openShip?: (ship: Ship) => void;
 }
 
 export interface ShipPresenterState {
@@ -61,30 +65,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         if (!ship) {
             return <></>
         } 
-
-        const dormantStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'gray',
-            cursor: "pointer"
-        }
-
-        const disableStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'gray'
-        }
-
-        const activeStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: '#FFE623',
-            cursor: "pointer"
-        }
-
-        const completeStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'lightgreen',            
-            cursor: "default"
-        }
-
+       
         const frozenStyle: React.CSSProperties = {
             background: 'transparent',
             color: 'white',            
@@ -107,6 +88,9 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         
         const navClick = (e) => {
             if (!ship) return;
+            if (this.props.openShip) {
+                this.props.openShip(ship);
+            }
         }
         
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
