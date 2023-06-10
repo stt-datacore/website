@@ -1,15 +1,14 @@
 import React from 'react';
 import { Dropdown, Form } from 'semantic-ui-react';
 
-type ComboChecklistProps = {
-	comboId: string;
+type CrewChecklistProps = {
 	crewList: string[];
 	attemptedCrew: string[];
 	updateAttempts: (crewSymbols: string[]) => void;
 };
 
-const ComboChecklist = (props: ComboChecklistProps) => {
-	const { comboId, updateAttempts } = props;
+const CrewChecklist = (props: CrewChecklistProps) => {
+	const { updateAttempts } = props;
 
 	const [options, setOptions] = React.useState(undefined);
 
@@ -25,7 +24,7 @@ const ComboChecklist = (props: ComboChecklistProps) => {
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			Keep track of crew that have been tried for this combo chain.
+			Keep track of crew who have been tried for this combo chain.
 			<Form.Field
 				placeholder='Search for crew'
 				control={Dropdown}
@@ -66,4 +65,4 @@ const ComboChecklist = (props: ComboChecklistProps) => {
 	}
 };
 
-export default ComboChecklist;
+export default CrewChecklist;
