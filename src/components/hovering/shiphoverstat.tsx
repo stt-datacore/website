@@ -221,7 +221,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         
         const navClick = () => {
             if (!ship) return;
-            window.location.href = '/ship?ship=' + ship.symbol;
+            window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
         }
         
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
