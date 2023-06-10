@@ -294,6 +294,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}, [shipRarityFilter]);
 	
 	React.useEffect(() => {
+		if (selectedRankings.length) {
+			let newselranks = selectedRankings?.filter(ab => rankings?.some(av => av.key === ab));
+			if (newselranks.length != selectedRankings.length) {
+				setSelectedRankings(newselranks);
+			}
+		}		
+	}, [rankings])
+
+	React.useEffect(() => {
 		let statmap = createShipStatMap(allCrew);
 		let rankings = mapToRankings(statmap);
 		if (selectedAbilities && selectedAbilities.length) {
