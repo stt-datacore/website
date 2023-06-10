@@ -299,11 +299,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (selectedAbilities && selectedAbilities.length) {
 			rankings = rankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
 		}
+		rankings = rankings.filter(r => myCrew.some(c => r.crew_symbols.includes(c.symbol)));
 		if (shipCrew && shipCrew.length) {
 			rankings = rankings.filter(r => shipCrew.some(c => r.crew_symbols.includes(c.symbol)));
-		}
-		else {
-			rankings = rankings.filter(r => myCrew.some(c => r.crew_symbols.includes(c.symbol)));
 		}
 		setRankings(rankings);	
 	}, [selectedAbilities, shipCrew]);
@@ -326,11 +324,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		}	
 
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
-
-		if (selectedRankings && selectedRankings.length) {
-			sc = (sc ?? myCrew).filter(c => selectedRankings.some(sr => !rankings || rankings.find(rk => rk.key === sr)?.crew_symbols.includes(c.symbol)));
-		}
-
 		setShipCrew(sc);
 	}, [selectedShip, selectedSeats, triggerOnly, selectedAbilities, selectedRankings])
 
@@ -426,8 +419,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		
 		// Ship filter
-		if (tableView === 'ship' && ((shipCrew) || (selectedSeats.length))) {			
+		if (tableView === 'ship' && ((shipCrew) || (selectedSeats.length) || selectedRankings.length)) {			
 			if (shipCrew && !shipCrew.some(cm => cm.symbol === crew.symbol)) return false;
+			
+			if (selectedRankings && selectedRankings.length && rankings && rankings.length) {
+				if (!selectedRankings.some(sr => rankings.find(rk => rk.key === sr)?.crew_symbols.includes(crew.symbol))) return false;
+			}
+
 			if (selectedSeats && selectedSeats.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
 
