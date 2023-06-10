@@ -63,12 +63,12 @@ export interface ShuttleAdventure {
 	state: number
 	expires_in: number
 	faction_id: number
-	slots: Slot[]
+	slots: ShuttleSlot[]
 	rewards: ShuttleReward[]
 	is_rental: boolean
   }
   
-  export interface Slot {
+  export interface ShuttleSlot {
 	level: any
 	required_trait: any
 	skills: string[]

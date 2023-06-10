@@ -294,12 +294,16 @@ export interface Player {
     min_ship_rarity: number
     max_ship_rarity: number
     max_crew_rarity: number
-    setup: Setup
+    setup: PvpRefSetup
   }
   
   export interface Setup {
-    ship_id: number
-    slots: number[]
+    ship_id: number;
+    slots: number[];
+  }
+
+  export interface PvpRefSetup extends Setup {
+    slot_info?: { [key: string]: PlayerCrew };
   }
   
   export interface PvpTimer {

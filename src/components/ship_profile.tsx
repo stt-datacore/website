@@ -60,7 +60,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
             }
         }
         if (!ship_key || !data) {
-            return <></>            
+            window.location.href = '/playertools?tool=ships';
         }
         const ship = data.find(d => d.symbol === ship_key);
         if (!ship) return <></>

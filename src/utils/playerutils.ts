@@ -202,6 +202,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 	return p;
 }
 
+
+
 export class BonusCrew {
     eventName: string = "";
     eventCrew: { [index: string]: any } = {};
