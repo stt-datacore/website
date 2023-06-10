@@ -115,6 +115,21 @@ export default class CONFIG {
 		12: '%VAL%% of incoming damage also taken by the attacker',
 	};
 
+	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT: { [index: number]: string } = {
+		0: 'Increases Bonus Boost',
+		1: 'Immediate Damage',
+		2: 'Immediately Repairs Hull',
+		3: 'Immediately Repairs Shields',
+		4: '+Crit Rating',
+		5: '+Crit Bonus',
+		6: '+Shield Regeneration',
+		7: '+Attack Speed',
+		8: 'Increases Boarding Damage',
+		// 10: 'Speeds Up Cooldown Timers',
+		// 11: 'Decrease Incoming Hull Damage',
+		// 12: 'Reflection Damage',
+	};
+
 	static readonly STATS_CONFIG: { [index: number]: any } = {
 		2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
 		3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },

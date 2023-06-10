@@ -51,7 +51,7 @@ const ShipPicker = (props: ShipPickerProps) => {
 
     React.useEffect(() => {
         setShip();
-    }, [selection]);
+    }, [selection, filteredShips]);
 
     React.useEffect(() => {
         populateOptions();

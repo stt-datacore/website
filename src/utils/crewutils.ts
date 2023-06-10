@@ -305,9 +305,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
-	let unOwnedCrew = [] as PlayerCrew[];
-	
-	console.log(createShipStatSets(allcrew));
+	let unOwnedCrew = [] as PlayerCrew[];	
 
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
@@ -747,65 +745,160 @@ function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | un
 export const shipStatSortConfig: ObjectNumberSortConfig = {
     props: [
         {
-            props: "ability/condition",
+            props: "action/ability/condition",
             direction: 'ascending',
             nullDirection: 'descending',
         },
         {
-            props: "ability/amount",
+            props: "action/ability/amount",
             direction: 'descending',
             nullDirection: 'descending',
         },
         {
-            props: "bonus_amount",
+            props: "action/bonus_amount",
             direction: 'descending',
             nullDirection: 'descending',
         },
         {
-            props: "initial_cooldown",
+            props: "action/initial_cooldown",
             direction: 'ascending',
             nullDirection: 'descending',
         },
         {
-            props: "duration",
+            props: "action/duration",
             direction: 'descending',
             nullDirection: 'descending',
         },
         {
-            props: "limit",
+            props: "action/limit",
             direction: 'descending',
             nullDirection: 'ascending',
         },
         {
-            props: "penalty/amount",
+            props: "action/penalty/amount",
             direction: 'ascending',
             nullDirection: 'ascending',
         },
         {
-            props: "ability/type",
+            props: "ship_battle/crit_bonus",
+            direction: 'descending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "ship_battle/crit_chance",
+            direction: 'descending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "ship_battle/accuracy",
+            direction: 'descending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "ship_battle/evasion",
+            direction: 'descending',
+            nullDirection: 'descending',
+        },
+        {
+            props: "action/ability/type",
             direction: 'ascending',
             nullDirection: 'descending',
         },
         {
-            props: "bonus_type",
+            props: "action/bonus_type",
             direction: 'ascending',
             nullDirection: 'descending',
         },
         {
-            props: "status",
+            props: "action/status",
             direction: 'ascending',
             nullDirection: 'descending',
         },        
         {
-            props: "penalty/type",
+            props: "action/penalty/type",
             direction: 'ascending',
             nullDirection: 'descending',
         },
         {
-            props: "charge_phases",
+            props: "action/charge_phases",
 			customComp: compChargeArray
         },
     ]
+}
+
+export interface ShipSkillRanking {
+	type: number;
+	rank: number;
+	value: number;
+	crew_symbols: string[];
+	key: string;
+}
+
+/**
+ * Map the master ability rankings map to a rankings array
+ * @param map The ability map
+ * @param abilities Optional specific abilities to return
+ * @returns An array sorted by rank ascending.
+ */
+export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }}, abilities?: number[] | number): ShipSkillRanking[] {
+	let result = [] as ShipSkillRanking[];
+	let ableSet = [] as number[];
+
+	if (typeof abilities === 'number') {
+		ableSet.push(abilities);
+	}
+	else if (abilities !== undefined) {
+		ableSet = [...abilities];
+	}
+	else {
+		ableSet = Object.keys(map).map(key => Number.parseInt(key));
+	}
+
+	for (var ability of ableSet) {
+		let currmap = map[ability];
+		if (currmap) {
+			for (var stat in currmap) {
+				let value = Number.parseInt(stat);
+				let actions = currmap[stat];
+				if (actions) {
+					result.push({
+						rank: 0,
+						type: ability,
+						value: value,
+						crew_symbols: actions.map(action => action.symbol),
+						key: `${ability}_${value}`
+					});
+				}
+			}
+		}
+	}
+
+	result.sort((a, b) => {
+		let r = b.value - a.value;
+		if (!r) r = a.type - b.type;
+		return r;
+	});
+	
+	let ranks = {} as { [key: string]: number };
+
+	for (let res of result) {
+		if (`${res.type}` in ranks) {
+			ranks[`${res.type}`]++;
+		}
+		else {
+			ranks[`${res.type}`] = 1;
+		}
+		res.rank = ranks[res.type];
+	}
+
+	result.sort((a, b) => {
+		let r = a.rank - b.rank;
+		if (!r) r = b.value - a.value;
+		if (!r) r = a.type - b.type;
+		return r;
+	});
+	
+	return result;
 }
 
 /**
@@ -815,23 +908,22 @@ export const shipStatSortConfig: ObjectNumberSortConfig = {
  * @param config The optional configuration file to use. Default settings are used, otherwise.
  * @returns 
  */
-export function createShipStatSets(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: ShipAction[] }} {
+export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }} {
 	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
+	let actions = allCrew;
 	
-	let actions = allCrew.map(crew => crew.action) as ShipAction[];
-	
-	let types = sc.groupBy(actions, "ability/type", "no_ability");
+	let types = sc.groupBy(actions, "action/ability/type", "no_ability");
 	// Create the tiers...
 	
-	let tiers = {} as { [key: string]: { [key: string]: ShipAction[] }};
+	let tiers = {} as { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }};
 	for (let key in Object.keys(types)) {
 		if (!(key in types) || types[key] === undefined) continue;
 		else {
-			tiers[key] = sc.groupBy(types[key], "ability/amount");
+			tiers[key] = sc.groupBy(types[key], "action/ability/amount");
 		}		
 	}
-	tiers["no_ability"] = sc.groupBy(types["no_ability"], "bonus_amount");
-	console.log(tiers);
+	
+	tiers["no_ability"] = sc.groupBy(types["no_ability"], "action/bonus_amount");
 	return tiers;
 }
 

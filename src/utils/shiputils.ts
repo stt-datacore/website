@@ -5,6 +5,7 @@ import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
+import CONFIG from "../components/CONFIG";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -214,22 +215,36 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 	if (!grants) grants = [];
 	// now match triggers with grants.
 	if (bscrew) {
+		let bsave = bscrew;
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
 				return (crew.action.ability?.condition ?? 0) === 0;
 			}
-			else if (!onlyTriggers && (crew.action.ability?.condition ?? 0) === 0) {
-				return true;
-			}
-			else {
+			else if (onlyTriggers) {
 				return grants?.some(grant => grant.status === crew.action.ability?.condition);
 			}
+			else {
+				return ((crew.action.ability?.condition ?? 0) === 0) || grants?.some(grant => grant.status === crew.action.ability?.condition);
+			}
+
 		});
+		//if (bscrew.length === 0) bscrew = bsave;
 	}
 
 	var sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
 	sorter.sortStats(bscrew, true);
 	return bscrew;
+}
+
+export function printTriggers(ship: Ship): string {
+	let s = "";
+	for (let a of ship.actions ?? []) {
+		if (a.status) {
+			if (s != "") s += ", ";
+			s += CONFIG.SHIP_BATTLE_GRANTS[a.status];
+		}
+	}
+	return s;
 }
 
 export interface TierRank {
