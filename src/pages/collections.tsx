@@ -39,7 +39,8 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 		}
 
 		return (
-			<Layout title='Collections'>
+			<Layout title='Collections'>				
+				<div></div>
 				<Item.Group>
 					{collections.map(collection => (
 						<Item key={collection.name} id={encodeURIComponent(collection.name)}>
@@ -55,10 +56,10 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 									{collection.crew
 										.map(crew => (
 											<Link key={crew} to={`/crew/${crew}/`}>
-												{allcrew.find(c => c.symbol === crew).name}
+												{allcrew?.find(c => c.symbol === crew)?.name}
 											</Link>
 										))
-										.reduce((prev, curr) => [prev, ', ', curr])}
+										.reduce((prev, curr) => <>{prev} {curr}</>)}
 								</Item.Description>
 							</Item.Content>
 						</Item>

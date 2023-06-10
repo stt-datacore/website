@@ -7,6 +7,7 @@ import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
 import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
+import { useStateWithStorage } from '../utils/storage';
 
 type ProfileShipsProps = {
 	playerData: PlayerData;
@@ -94,6 +95,10 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			this.setState({...this.state, activeShip: ship});
 		}
 	
+		const navToShip = (ship: Ship) => {
+			window.location.href = '/playertools?tool=ship&ship='+ship.symbol;
+		}
+
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
@@ -171,7 +176,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 										gridGap: '1px'
 									}}
 								>
-									<div style={{ gridArea: 'icon' }}>
+									<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 										<ShipTarget targetGroup='ships' allShips={this.state.originals} setDisplayItem={setActiveShip} inputItem={ship} >
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 										</ShipTarget>

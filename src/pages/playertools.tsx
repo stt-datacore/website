@@ -25,10 +25,13 @@ import { useStateWithStorage } from '../utils/storage';
 import { CompactCrew, GameEvent, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription, VoyageInfo } from '../model/player';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
+import ShipProfile from '../components/ship_profile';
+import { Ship } from '../model/ship';
+import { EventData } from '../utils/events';
 
 export interface PlayerTool {
 	title: string;
-	render: (props: {playerData: PlayerData, allCrew: PlayerCrew[], location?: any}) => JSX.Element;	
+	render: (props: {playerData: PlayerData, allCrew: PlayerCrew[], crew?: PlayerCrew, ship?: string, location?: any}) => JSX.Element;	
 }
 
 export interface PlayerTools {
@@ -71,6 +74,10 @@ export const playerTools: PlayerTools = {
 	'ships': {
 		title: 'Ships',
 		render: ({playerData}) => <ProfileShips playerData={playerData} />
+	},
+	'ship': {
+		title: 'Ship Page',
+		render: ({playerData, allCrew, ship}) => ship && <ShipProfile ship={ship} allCrew={allCrew} playerData={playerData} /> || <></>
 	},
 	'factions': {
 		title: 'Factions',
@@ -115,6 +122,7 @@ const PlayerToolsPage = (props: any) =>  {
 
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 	const [showForm, setShowForm] = React.useState(false);
+	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm && activeCrew && dataSource && allCrew && fleetbossData) {
@@ -123,9 +131,9 @@ const PlayerToolsPage = (props: any) =>  {
 					strippedPlayerData={strippedPlayerData}
 					voyageData={voyageData}
 					eventData={eventData}
-					
 					activeCrew={activeCrew}
 					dataSource={dataSource}
+					ship={selectedShip}
 					allCrew={allCrew}
 					allItems={allItems}
 					requestShowForm={setShowForm}
@@ -163,7 +171,7 @@ const PlayerToolsPage = (props: any) =>  {
 	async function fetchAllItemsAndCrew() {
 		const [itemsResponse, crewResponse] = await Promise.all([
 			fetch('/structured/items.json'),
-			fetch('/structured/crew.json')
+			fetch('/structured/crew.json'),
 		]);
 		const [allitems, allcrew] = await Promise.all([
 			itemsResponse.json(),
@@ -248,13 +256,14 @@ const PlayerToolsPage = (props: any) =>  {
 
 type PlayerToolsPanesProps = {
 	playerData: PlayerData;
-	strippedPlayerData: any;
-	voyageData: any;
-	eventData: any;
+	strippedPlayerData?: PlayerData;
+	voyageData?: VoyageInfo;
+	eventData?: GameEvent[];
 	activeCrew: CompactCrew[];
 	dataSource: string;
 	allCrew: PlayerCrew[];
-	allItems?: any;
+	ship?: string;
+	allItems?: PlayerEquipmentItem[];
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
 	location: any;
@@ -274,6 +283,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	const [varsReady, setVarsReady] = React.useState(false);
 	const [activeTool, setActiveTool] = React.useState('voyage');
+	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
@@ -287,6 +297,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('tool') && tools[urlParams.get('tool') as string])
 			setActiveTool(urlParams.get('tool') as string);
+
+		if (urlParams.has('ship')) {
+			setSelectedShip(urlParams.get('ship') ?? undefined);
+		}
+		else {
+			setSelectedShip(undefined);
+		}
 	}, [window.location.search]);
 
 	const StaleMessage = () => {
