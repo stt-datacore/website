@@ -14,7 +14,7 @@ const StorageDefaultOptions: StorageOptions = {
 	rememberForever: false,
 	useDefault: false,
 	useAndStoreDefault: false,
-	onInitialize: undefined
+	onInitialize: undefined,
 };
 
 /**

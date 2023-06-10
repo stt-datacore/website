@@ -9,6 +9,7 @@ export interface ShipSkillProps {
     actions: ShipAction[];    
     ship_battle: ShipBonus | Ship;
     withBorder?: boolean;
+    fontSize?: string;
 }
 
 export class ShipSkill extends React.Component<ShipSkillProps> {
@@ -43,7 +44,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
         };
 
         return (
-            <div style={{ marginBottom: "8px", fontSize: "0.75em" }}>
+            <div style={{ marginBottom: "8px", fontSize: this.props.fontSize ?? "1em" }}>
                 {actions.length && actions.map((action) => 
                     <div style={{marginTop: "4px", border: this.props.withBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withBorder ? "2px" : "0px"}}>
                         <div
@@ -56,7 +57,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                     window.innerWidth < 512 ? "flex-start" : "center",
                             }}
                         >
-                            <h4 style={{ marginBottom: ".25em", maxWidth: "75%" }}>
+                            <h4 style={{ marginBottom: ".25em", maxWidth: "75%", fontSize: "1.25em" }}>
                                 {action.name}
                             </h4>
                             <div
@@ -86,7 +87,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                             margin: 0,
                                             padding: 0,
                                             marginRight: "2px",
-                                            fontSize: "1.5em",
+                                            fontSize: "1.25em",
                                             fontWeight: "bold",
                                         }}
                                     >
@@ -98,7 +99,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                             margin: "auto",
                                             padding: 0,
                                             marginLeft: "2px",
-                                            height: "12px",
+                                            height: "1em",
                                         }}
                                     />
                                 </div>
@@ -172,7 +173,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                             >
                                 <div
                                     style={{
-                                        padding: "0px 2px",
+                                        padding: "0.1em 0.2em",
                                         fontFamily: "arial",
                                         display: "flex",
                                         flexDirection:
@@ -233,7 +234,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                     }
                     
                 <div>
-                    <div style={{ marginBottom: ".25em" }}>Equipment Bonus</div>
+                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>Equipment Bonus</div>
                     <p>
                         {ship_battle.crit_bonus && (
                             <span>

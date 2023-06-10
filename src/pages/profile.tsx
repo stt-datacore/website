@@ -20,6 +20,7 @@ import { demandsPerSlot, IDemand } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerData } from '../model/player';
+import { EquipmentCommon } from '../model/equipment';
 
 type ProfilePageProps = {};
 
@@ -70,11 +71,12 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	componentDidUpdate() {
 		const { dbid, playerData, errorMessage } = this.state;
 		if (dbid && !playerData && !errorMessage) {
-			let lastModified = undefined;
+			let lastModified: Date | undefined = undefined;
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
 				.then(response => {
-					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
+					let lmstr = response.headers.get('Last-Modified');
+					if (lmstr) lastModified = new Date(Date.parse(lmstr));
 
 					return response.json();
 				})
@@ -99,7 +101,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => <ProfileCrew playerData={this.state.playerData} />
+				render: () => this.state.playerData && <ProfileCrew location={location} playerData={this.state.playerData} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
@@ -107,7 +109,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			},
 			{
 				menuItem: 'Ships',
-				render: () => <ProfileShips playerData={this.state.playerData} />
+				render: () => this.state.playerData && <ProfileShips playerData={this.state.playerData} /> || <></>
 			},
 			{
 				menuItem: 'Items',
@@ -124,7 +126,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		];
 
 		return (
-			<Layout title={playerData.player.character.display_name}>
+			playerData &&
+			(<Layout title={playerData.player.character.display_name}>
 				<Item.Group>
 					<Item>
 						<Item.Image
@@ -140,7 +143,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							<Item.Meta>
 								<Label>VIP {playerData.player.vip_level}</Label>
 								<Label>Level {playerData.player.character.level}</Label>
-								<Label>{playerData.calc.numImmortals} crew</Label>
+								<Label>{playerData.calc?.numImmortals} crew</Label>
 								<Label>{playerData.player.character.shuttle_bays} shuttles</Label>
 							</Item.Meta>
 							<Item.Description>
@@ -160,7 +163,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 				<Menu compact>
 					<Menu.Item>
-						{playerData.calc.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
+						{playerData.calc?.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
 					</Menu.Item>
 					<Dropdown item text='Download'>
 						<Dropdown.Menu>
@@ -173,7 +176,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 				</Menu>
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 			</Layout>
-		);
+		)) || <></>;
 	}
 
 	async _exportExcel() {
@@ -188,8 +191,8 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		response = await fetch('/structured/crew.json');
 		let allcrew = await response.json();
 
-		let itemdata = mergeItems(playerData.player.character.items, items);
-		let shipdata = mergeShips(ship_schematics, playerData.player.character.ships);
+		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
+		let shipdata = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : undefined;
 
 		let crewFields = exportCrewFields();
 		let shipFields = exportShipFields();
@@ -213,7 +216,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let crew of playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew)) {
+		for (let crew of playerData?.player.character.crew.concat(playerData.player.character?.unOwnedCrew ?? []) ?? []) {
 			let row = {};
 			for (let field of crewFields) {
 				row[field.label] = field.value(crew);
@@ -233,7 +236,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let item of itemdata) {
+		for (let item of itemdata ?? []) {
 			let row = {};
 			for (let field of itemFields) {
 				row[field.label] = field.value(item);
@@ -253,7 +256,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let item of shipdata) {
+		for (let item of shipdata ?? []) {
 			let row = {};
 			for (let field of shipFields) {
 				row[field.label] = field.value(item);
@@ -268,9 +271,9 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			views: [{ state: 'frozen', ySplit: 1 }]
 		});
 
-		let allRows = [];
+		let allRows = [] as { startLevel: number, craftCost: number, crew: string }[];
 		let allDemandItems = new Set<string>();
-		for (let crew of playerData.player.character.crew) {
+		for (let crew of playerData?.player.character.crew ?? []) {
 			let acrew = allcrew.find(c => c.symbol === crew.symbol);
 
 			let startLevel = crew.level - (crew.level % 10);
@@ -345,7 +348,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	_exportCrew() {
 		const { playerData } = this.state;
 
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
+		let text = playerData ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
@@ -355,7 +358,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
 			.then(ship_schematics => {
-				let data = mergeShips(ship_schematics, playerData.player.character.ships);
+				let data = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : [];
 				let text = exportShips(data);
 				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'ships.csv');
 			});
@@ -367,7 +370,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = mergeItems(playerData.player.character.items, items);
+				let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [];
 				let text = exportItems(data);
 				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 			});

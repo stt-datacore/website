@@ -388,7 +388,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        {this.showShipAbility && <ShipSkill actions={crew.action ? [ crew.action] : []} ship_battle={crew.ship_battle} />}
+                        {this.showShipAbility && <ShipSkill fontSize="0.80em" actions={crew.action ? [ crew.action] : []} ship_battle={crew.ship_battle} />}
                     </div>
                     <div>
                         <div

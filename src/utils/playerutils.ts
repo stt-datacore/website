@@ -37,7 +37,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.video_ad_chroniton_boost_reward;
     delete p.player.character.pvp_tickets;
     delete p.player.character.event_tickets;
-    delete p.player.character.pvp_divisions;
+    //delete p.player.character.pvp_divisions;
     delete p.player.character.pvp_timer;
     delete p.player.character.fleet_activities;
     delete p.player.character.honor_reward_by_rarity;

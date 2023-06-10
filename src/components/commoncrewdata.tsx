@@ -11,6 +11,7 @@ import { formatTierLabel } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
+import { ShipSkill } from './shipskill';
 
 export type StatLabelProps = {
 	title: string;
@@ -151,6 +152,16 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				{crew.flavor && !compact && <p>{crew.flavor}</p>}
+
+				{!compact && 
+				
+				<div style={{fontSize: "10pt", marginTop: "1em"}}>
+					<h4 style={{ marginBottom: '.25em' }}>Ship Ability</h4>
+					<hr></hr>
+					<ShipSkill ship_battle={crew.ship_battle} actions={[crew.action]} />
+				</div>
+
+				}
 
 				{compact && (
 					<div style={{ textAlign: 'center' }}>

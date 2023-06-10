@@ -21,6 +21,7 @@ import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
+import { ShipSkill } from '../components/shipskill';
 
 export interface CrewPageOptions {
 	key: string;
@@ -180,7 +181,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 						<Grid.Column width={12}>
 							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 
-							
 							<div style={{ margin: '1em 0', textAlign: 'right' }}>
 								{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 								(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
@@ -204,8 +204,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							) : (
 									<div className='ui medium centered text active inline loader'>Loading items...</div>
 								)}
-
-							<Segment>
+								
+							{/* <Segment>
 								<h4 style={{ marginBottom: '.25em' }}>Ship Ability ({crew.action.name})</h4>
 								<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
 									<li>Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}</li>
@@ -266,7 +266,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 										)}
 									</p>
 								</div>
-							</Segment>
+							</Segment> */}
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
