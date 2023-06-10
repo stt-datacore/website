@@ -338,13 +338,6 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Unique</label>
-								<Input style={{ width: '5em' }}
-									value={prefs.flag_unique ?? exportDefaults.flag_unique}
-									onChange={(e, { value }) => updatePrefs({...prefs, flag_unique: value})}
-								/>
-							</Form.Field>
-							<Form.Field>
 								<label>Alpha exception</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_alpha ?? exportDefaults.flag_alpha}
