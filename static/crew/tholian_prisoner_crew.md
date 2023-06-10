@@ -3,8 +3,8 @@ name: Tholian Prisoner
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 27
+bigbook_tier: 6
+events: 28
 in_portal: true
 date: 18/04/2019
 obtained: Event
