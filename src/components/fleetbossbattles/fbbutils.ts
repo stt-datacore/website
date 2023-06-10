@@ -1,6 +1,10 @@
-export function getAllCombos(traits: string[], count: number): any[] {
+import { BossCrew } from "../../model/boss";
+import { CrewMember } from "../../model/crew";
+import { PlayerCrew } from "../../model/player";
+
+export function getAllCombos(traits: string[], count: number): string[][] {
 	if (count === 1) return traits.map(trait => [trait]);
-	const combos = [];
+	const combos = [] as string[][];
 	for (let i = 0; i < traits.length; i++) {
 		for (let j = i+1; j < traits.length; j++) {
 			combos.push([traits[i], traits[j]]);
@@ -20,13 +24,14 @@ export function getComboIndexOf(combos: any[], combo: string[]): number {
 	return combosIndex;
 }
 
-export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): void {
+export function removeCrewNodeCombo(crew: BossCrew, nodeIndex: number, combo: string[]): void {
+	crew.node_matches ??= {};
 	const crewMatches = crew.node_matches[`node-${nodeIndex}`];
 	const combosIndex = getComboIndexOf(crewMatches.combos, combo);
 	if (combosIndex === -1) return;
 	crewMatches.combos.splice(combosIndex, 1);
 	if (crewMatches.combos.length > 0) {
-		const validTraits = [];
+		const validTraits = [] as string[];
 		crewMatches.combos.forEach(crewCombo => {
 			crewCombo.forEach(trait => {
 				if (!validTraits.includes(trait)) validTraits.push(trait);
@@ -35,10 +40,13 @@ export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): v
 		crewMatches.traits = validTraits;
 	}
 	else {
-		const crewNodesIndex = crew.nodes.indexOf(nodeIndex);
-		crew.nodes.splice(crewNodesIndex, 1);
-		delete crew.node_matches[`node-${nodeIndex}`];
-		crew.nodes_rarity--;
+		const crewNodesIndex = crew.nodes?.indexOf(nodeIndex) ?? -1;
+		if (crewNodesIndex >= 0) {
+			crew.nodes?.splice(crewNodesIndex, 1);
+			delete crew.node_matches[`node-${nodeIndex}`];
+			crew.nodes_rarity ??= 0;
+			crew.nodes_rarity--;
+		}
 	}
 }
 

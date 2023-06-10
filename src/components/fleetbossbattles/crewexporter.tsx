@@ -2,6 +2,7 @@ import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Input, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { ExportPreferences, FilterPreferences, FilteredGroup, SolverNode, SolverTrait, ViableCombo } from '../../model/boss';
 
 const FLAG_ALPHA = '\u03B1';
 const FLAG_UNIQUE = '\u00B5';
@@ -20,7 +21,7 @@ export const exportDefaults = {
 	flag_alpha: FLAG_ALPHA,
 	flag_unique: FLAG_UNIQUE,
 	flag_nonoptimal: FLAG_NONOPTIMAL
-};
+} as ExportPreferences;
 
 const exportCompact = {
 	header: 'hide',
@@ -37,7 +38,7 @@ const exportCompact = {
 	flag_nonoptimal: ''
 };
 
-const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPrefs: any) => {
+const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: FilterPreferences) => {
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -48,7 +49,8 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 		const comps = [compareTraits, compareNotesAsc, compareCrew, compareScore];
 		let test = 0;
 		while (comps.length > 0 && test === 0) {
-			test = comps.shift()(a, b);
+			let shtest = comps.shift();
+			if (shtest) shtest(a, b);
 		}
 		return test;
 	};
@@ -82,6 +84,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 		.forEach((row, idx) => {
 			if (nodeList !== '') nodeList += '\n';
 			let groupList = '';
+			node.index ??= 0;
 			if (prefValue(exportPrefs, 'bullet') === 'full') groupList += `${node.index+1}.`;
 			if (prefValue(exportPrefs, 'bullet') === 'full' || prefValue(exportPrefs, 'bullet') === 'number')
 				groupList += `${idx+1}`;
@@ -105,6 +108,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 
 	if (output !== '') output += '\n\n';
 
+	node.index ??= 0;
 	let nodeHeader = `Node ${node.index+1}`;
 	if (prefValue(exportPrefs, 'node_traits') === 'show')
 		nodeHeader += ` (${nodeTraits(node)})`;

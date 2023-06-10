@@ -2,6 +2,7 @@ import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { SolveOption, Solver, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
 type ChainTraitsProps = {
 	solver: any;
@@ -94,20 +95,35 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 		);
 	}
 
-	function onTraitChange(nodeIndex: number, traitIndex: number, newTrait: string): void {
-		const solve = solver.nodes[nodeIndex].solve;
+	function onTraitChange(nodeIndex?: string | number, traitIndex?: number, newTrait?: string): void {
+		let nidx = -1;
+
+		if (nodeIndex) {
+			if (typeof nodeIndex === 'string') {
+				nidx = Number.parseInt(nodeIndex);
+			}			
+			else {
+				nidx = nodeIndex;
+			}
+		}		
+		if (nidx === -1) return;
+
+		traitIndex ??= 0;
+
+		const solve = solver.nodes[nidx].solve;
 		solve[traitIndex] = newTrait !== '' ? newTrait : '?';
-		props.solveNode(nodeIndex, solve);
+
+		props.solveNode(nidx, solve);
 	}
 };
 
 type TraitPickerProps = {
 	nodeIndex: number;
 	traitIndex: number;
-	traitPool: any[];
+	traitPool: SolverTrait[];
 	readonly: boolean;
 	trait: string;
-	setTrait: (newTrait: string) => void;
+	setTrait: (nodeIndex?: string | number, traitIndex?: number, newTrait?: string) => void;
 };
 
 const TraitPicker = (props: TraitPickerProps) => {
@@ -117,13 +133,13 @@ const TraitPicker = (props: TraitPickerProps) => {
 		setActiveTrait(props.trait);
 	}, [props.trait]);
 
-	const traitOptions = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
+	const traitOptions: TraitOption[] = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
 		.map(t => {
 			return {
 				key: t.id,
 				value: t.trait,
 				text: t.name
-			};
+			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
@@ -135,7 +151,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 				selection
 				options={traitOptions}
 				value={activeTrait}
-				onChange={(e, { value }) => onTraitChange(value)}
+				onChange={(e, { value }) => onTraitChange(value as string)}
 				closeOnChange
 			/>
 		</Form.Field>
@@ -173,15 +189,15 @@ const TraitsPossible = (props: TraitsPossibleProps) => {
 };
 
 type TraitsChecklistProps = {
-	solver: any;
-	spotter: any;
+	solver: Solver;
+	spotter: Spotter;
 	updateSpotter: (spotter: any) => void;
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
 	const { solver, spotter, updateSpotter } = props;
 
-	const traits = [];
+	const traits = [] as string[];
 	solver.traits.forEach(t => {
 		if (!traits.includes(t.trait)) traits.push(t.trait);
 	});
@@ -190,7 +206,7 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 				key: trait,
 				value: trait,
 				text: allTraits.trait_names[trait]
-			};
+			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (

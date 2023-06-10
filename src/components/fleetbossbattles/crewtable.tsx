@@ -10,6 +10,7 @@ import { SearchableTable, ITableConfigRow } from '../../components/searchabletab
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, ViableCombo } from '../../model/boss';
 
 type CrewTableProps = {
 	solver: any;
@@ -60,8 +61,8 @@ const CrewTable = (props: CrewTableProps) => {
 			id={`fbb/${solver.id}/crewtable_`}
 			data={optimizer.crew}
 			config={tableConfig}
-			renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
-			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+			renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? -1)}
+			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType ?? "")}
 			showFilterOptions={true}
 		/>
 	);
@@ -131,9 +132,9 @@ const CrewTable = (props: CrewTableProps) => {
 		return crew.alpha_rule.compliant > 0;
 	}
 
-	function isCrewOptimal(crew: any, optimalCombos: any[]): boolean {
+	function isCrewOptimal(crew: BossCrew, optimalCombos: ViableCombo[]): boolean {
 		let isOptimal = false;
-		Object.values(crew.node_matches).forEach(node => {
+		Object.values(crew.node_matches ?? []).forEach(node => {
 			if (optimalCombos.find(optimal =>
 					optimal.nodes.includes(node.index) &&
 					node.traits.length === optimal.traits.length &&

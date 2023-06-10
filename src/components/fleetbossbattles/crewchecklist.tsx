@@ -2,10 +2,11 @@ import React from 'react';
 import { Dropdown, Form } from 'semantic-ui-react';
 import { PlayerCrew } from '../../model/player';
 import { RetrievalOptions } from '../../model/game-elements';
+import { BossCrew } from '../../model/boss';
 
 type CrewChecklistProps = {
-	crewList: string[];
-	attemptedCrew: string[];
+	crewList: BossCrew[];
+	attemptedCrew?: string[];
 	updateAttempts: (crewSymbols: string[]) => void;
 };
 
@@ -45,9 +46,9 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 
 	function populatePlaceholders(): void {
 		const options: RetrievalOptions = { initialized: false, list: [] };
-		if (props.attemptedCrew.length > 0) {
+		if (props.attemptedCrew?.length ?? 0 > 0) {
 			let crewList = [...props.crewList];
-			options.list = crewList.filter(c => props.attemptedCrew.includes(c.symbol)).map(c => {
+			options.list = crewList.filter(c => props.attemptedCrew?.includes(c.symbol)).map(c => {
 				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
 			});
 		}

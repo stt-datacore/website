@@ -1,20 +1,21 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Message, Table, Label, Icon, Grid } from 'semantic-ui-react';
+import { Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { ExportPreferences, FilterPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
 
-const FinderContext = React.createContext();
+const FinderContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
 
 type CrewGroupsProps = {
-	solver: any;
-	optimizer: any;
+	solver: Solver;
+	optimizer: Optimizer;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
-	exportPrefs: any;
+	exportPrefs: ExportPreferences;
 };
 
 const CrewGroups = (props: CrewGroupsProps) => {
@@ -115,7 +116,8 @@ const GroupTable = (props: GroupTableProps) => {
 						<Table.HeaderCell key={idx}
 							sorted={column === cell.column ? direction : null}
 							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
-							width={cell.width} textAlign={cell.center ? 'center' : 'left'}
+							
+							width={cell.width as SemanticWIDTHS} textAlign={cell.center ? 'center' : 'left'}
 						>
 							{cell.title}
 						</Table.HeaderCell>
@@ -177,23 +179,25 @@ const GroupTable = (props: GroupTableProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
-		const sortBy = (comps) => {
+	function firstSort(data: FilteredGroup[], column: string, reverse: boolean = false): void {
+		const sortBy = (comps: ((a: FilteredGroup, b: FilteredGroup) => number)[]) => {
 			data.sort((a, b) => {
 				const tests = comps.slice();
 				let test = 0;
 				while (tests.length > 0 && test === 0) {
-					test = tests.shift()(a, b);
+					let shtest = tests.shift();
+					if (shtest) shtest(a, b);
 				}
 				return test;
 			});
 		};
-		const noteScore = (row) => Object.values(row.notes).filter(note => !!note).length;
-		const compareTraits = (a, b) => b.traits.length - a.traits.length;
-		const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
-		const compareScore = (a, b) => b.score - a.score;
-		const compareNotes = (a, b) => noteScore(b) - noteScore(a);
-		const compareNotesAsc = (a, b) => noteScore(a) - noteScore(b);
+
+		const noteScore = (row: FilteredGroup) => Object.values(row.notes).filter(note => !!note).length;
+		const compareTraits = (a: FilteredGroup, b: FilteredGroup) => b.traits.length - a.traits.length;
+		const compareCrew = (a: FilteredGroup, b: FilteredGroup) => b.crewList.length - a.crewList.length;
+		const compareScore = (a: FilteredGroup, b: FilteredGroup) => b.score - a.score;
+		const compareNotes = (a: FilteredGroup, b: FilteredGroup) => noteScore(b) - noteScore(a);
+		const compareNotesAsc = (a: FilteredGroup, b: FilteredGroup) => noteScore(a) - noteScore(b);
 
 		if (column === 'crew') {
 			sortBy([compareCrew, compareNotesAsc, compareTraits, compareScore]);

@@ -6,7 +6,7 @@ import ChainSolver from '../components/fleetbossbattles/chainsolver';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
-import { FuseOptions } from '../model/game-elements';
+import { NumericOptions } from '../model/game-elements';
 import { BossBattlesRoot, Combo } from '../model/boss';
 import { Ship } from '../model/ship';
 import { AllData, CalculatorProps } from '../model/worker';
@@ -54,27 +54,28 @@ export const FleetBossBattles = (props: CalculatorProps) => {
 const ChainPicker = () => {
 	const allData = React.useContext(AllDataContext);
 
-	const [activeBoss, setActiveBoss] = useStateWithStorage('fbb/active', undefined);
-	const [chain, setChain] = React.useState(undefined);
+	const [activeBoss, setActiveBoss] = useStateWithStorage<number | undefined>('fbb/active', undefined);
+	const [chain, setChain] = React.useState<Combo | undefined>(undefined);
 
 	const describeChain = (boss) => {
-		const bossName = allData.bossData.groups.find(group => group.symbol === boss.group).name;
+		const bossName = allData?.bossData?.groups?.find(group => group.symbol === boss.group)?.name;
 		return `${bossName}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1}`;
 	};
 
 	React.useEffect(() => {
 		if (activeBoss && allData) {
-			const boss = allData.bossData.statuses.find(b => b.id === activeBoss);
+			const boss = allData.bossData?.statuses.find(b => b.id === activeBoss);
 			if (!boss) return;
-			const chainIndex = boss.combo.previous_node_counts.length;
+			const chainIndex = boss.combo?.previous_node_counts.length;
 			const chain = {
+				... boss.combo,
 				id: `${boss.id}-${chainIndex}`,
 				source: 'playerdata',
 				difficultyId: boss.difficulty_id,
-				traits: boss.combo.traits,
-				nodes: boss.combo.nodes,
+				traits: boss.combo?.traits,
+				nodes: boss.combo?.nodes,
 				description: describeChain(boss)
-			};
+			} as Combo;
 			setChain({...chain});
 		}
 	}, [activeBoss]);
@@ -82,16 +83,16 @@ const ChainPicker = () => {
 	if (!allData?.bossData)
 		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;
 
-	const chainOptions = [];
+	const chainOptions = [] as NumericOptions[];
 	allData.bossData.statuses.forEach(boss => {
 		if (boss.ends_in) {
-			const unlockedNodes = boss.combo.nodes.filter(node => node.unlocked_character);
-			if (boss.combo.nodes.length - unlockedNodes.length > 0) {
+			const unlockedNodes = boss.combo?.nodes.filter(node => node.unlocked_character);
+			if ((boss.combo?.nodes?.length ?? 0) - (unlockedNodes?.length ?? 0) > 0) {
 				chainOptions.push(
 					{
-						key: boss.id,
-						value: boss.id,
-						text: `${describeChain(boss)} (${unlockedNodes.length}/${boss.combo.nodes.length})`
+						key: boss.id ?? 0,
+						value: boss.id ?? 0,
+						text: `${describeChain(boss)} (${unlockedNodes?.length ?? 0}/${boss.combo?.nodes.length ?? 0})`
 					}
 				);
 			}
@@ -114,11 +115,11 @@ const ChainPicker = () => {
 					placeholder='Select a difficulty'
 					options={chainOptions}
 					value={activeBoss}
-					onChange={(e, { value }) => setActiveBoss(value)}
+					onChange={(e, { value }) => setActiveBoss(value as number)}
 				/>
 			}
 			{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
-			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.allCrew} dbid={allData.playerData.player.dbid} />}
+			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.allCrew} dbid={`${allData.playerData.player.dbid}`} />}
 		</React.Fragment>
 	);
 };

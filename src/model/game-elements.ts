@@ -140,7 +140,7 @@ export interface FuseGroup {
   [key: string]: number[][];
 }
 
-export interface FuseOptions {
+export interface NumericOptions {
   key: number;
   value: number;
   text: string;
