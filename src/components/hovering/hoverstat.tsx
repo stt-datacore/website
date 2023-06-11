@@ -299,6 +299,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
+                console.log("Activate " + divId);
+
                 if (!hoverstat) return;   
                 y -= (hoverstat.clientHeight - off.y);
                 x -= off.x;
@@ -320,7 +322,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "1009";
 
-                window.addEventListener("touchend", this.touchTargetLeave);
+                //window.addEventListener("touchend", this.touchTargetLeave);
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
@@ -338,14 +340,14 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 this.cancelled = false;
                 return;
             }
-
             const { divId } = this.state;
+            console.log("Deactivate " + divId);
             let hoverstat = document.getElementById(divId);
             if (hoverstat) {
                 hoverstat.style.zIndex = "-100";        
                 hoverstat.style.display = "none";
                 this.currentTarget = undefined;
-                window.removeEventListener("touchend", this.touchTargetLeave);
+                //window.removeEventListener("touchend", this.touchTargetLeave);
                 window.removeEventListener("resize", this.resizer);
             }
         }, 0);
@@ -358,6 +360,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected targetEnter = (e: MouseEvent) => {
         const { divId } = this.state;
+
+        console.log("Target Enter");
 
         let hoverstat = document.getElementById(divId);        
         this.cancelled = true;
@@ -379,6 +383,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @returns 
      */
     protected targetLeave = (e: MouseEvent | TouchEvent) => {        
+        console.log("Target Leave");
         let target = e.target as HTMLElement;
         if (!target) return;
 
@@ -396,7 +401,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected touchTargetLeave = (e: MouseEvent | TouchEvent) => {        
         let target = e.target as HTMLElement;
         if (!target) return;
-        
+        console.log("Touch Target Leave");
         let hoverstat = document.getElementById(this.state.divId);   
         if (hoverstat) {
             let ancestor = this.findCommonAncestor(target, hoverstat);

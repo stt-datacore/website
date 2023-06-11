@@ -60,7 +60,7 @@ type StaticCrewPageProps = {
 };
 
 type StaticCrewPageState = {
-	selectedEquipment?: number;
+	selectedEquipment?: string;
 	modalVisible: boolean;
 	commentMarkdown: string;
 	items: EquipmentItem[];
@@ -165,7 +165,61 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					crew={crew}
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
-				<Grid columns={2}>
+					<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+						<Header>
+							{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
+						</Header>
+
+						<div style={{
+								display: "flex",
+								flexDirection: window.innerWidth < 725 ? "column" : "row",
+								alignItems: window.innerWidth < 725 ? "center" : "flex-start"							
+							}}>
+							<div style={{
+								display: "flex",								
+								flexDirection: "column",
+								alignItems: "center",
+								width: window.innerWidth < 725 ? "100%" : "5.5em"
+							}}>
+							{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
+								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
+
+							</div>
+							<div style={{
+								display: "flex",
+								flexGrow: window.innerWidth < 725 ? undefined : 1,
+								flexDirection: "column",
+							}}>
+								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
+
+								<div style={{ margin: '1em 0', textAlign: 'right' }}>
+									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
+									(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
+									||
+									<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
+									}
+								</div>
+
+								{this.state.items.length > 0 ? (
+									<React.Fragment>
+										{this.renderEquipment(crew)}
+										{this.renderEquipmentDetails(crew)}
+										<Button
+											onClick={() => this.setState({ modalVisible: true })}
+											style={{ marginTop: '1em' }}
+											content='Full equipment tree'
+											icon='right arrow'
+											labelPosition='right'
+										/>
+									</React.Fragment>
+								) : (
+										<div className='ui medium centered text active inline loader'>Loading items...</div>
+								)}
+
+							</div>
+						</div>
+					</div>				
+				{/* <Grid columns={2}>
 					<Grid.Row stretched>
 						<Grid.Column width={16}>
 							<Header>
@@ -205,7 +259,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 									<div className='ui medium centered text active inline loader'>Loading items...</div>
 								)}
 								
-							{/* <Segment>
+							<Segment>
 								<h4 style={{ marginBottom: '.25em' }}>Ship Ability ({crew.action.name})</h4>
 								<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
 									<li>Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}</li>
@@ -266,10 +320,10 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 										)}
 									</p>
 								</div>
-							</Segment> */}
+							</Segment>
 						</Grid.Column>
 					</Grid.Row>
-				</Grid>
+				</Grid> */}
 				<Divider horizontal hidden />
 				{hasBigBookEntry && (
 					<React.Fragment>
@@ -356,7 +410,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		navigate(linkUrl, { state: linkState });
 	}
 
-	renderEquipment(crew) {
+	renderEquipment(crew: PlayerCrew) {
 		let options = [] as CrewPageOptions[];
 		crew.equipment_slots.forEach(es => {
 			let equipment = this.state.items.find(item => item.symbol === es.symbol);
@@ -392,18 +446,18 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				fluid
 				options={options}
 				placeholder='Choose an equipment to see its details'
-				onChange={(ev, { value }) => this.setState({ selectedEquipment: value as number })}
+				onChange={(ev, { value }) => this.setState({ selectedEquipment: value as string })}
 			/>
 		);
 	}
 
-	renderEquipmentDetails(crew) {
+	renderEquipmentDetails(crew: PlayerCrew) {
 		if (!this.state.selectedEquipment) {
 			return <span />;
 		}
 
 		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
-		let equipment = this.state.items.find(item => item.symbol === es.symbol);
+		let equipment = this.state.items.find(item => item.symbol === es?.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
 			return <span />;

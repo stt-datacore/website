@@ -575,7 +575,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					<div style={{
 						margin: "1em 0",
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: window.innerWidth < 725 ? "column" : "row",
 						justifyContent: "flex-start"					
 					}}>
 						<div style={{marginRight: "16px"}}>
@@ -585,7 +585,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 									setRarityFilter={setShipRarityFilter}
 								/>					
 						</div>
-						<div style={{marginRight: "16px", width: "25em"}}>
+						<div style={{marginRight: "16px", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipPicker 							
 								filter={shipFilter}
 								selectedShip={selectedShip}
@@ -605,17 +605,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						margin: "1em 0",
 						marginTop: 0,
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: window.innerWidth < 725 ? "column" : "row",
 						justifyContent: "flex-start"					
 					}}>
-						<div style={{marginRight: "16px", width: "25em"}}>
+						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipAbilityPicker
 									selectedAbilities={selectedAbilities}
 									setSelectedAbilities={setSelectedAbilities}
 									availableAbilities={availableAbilities}
 								/>					
 						</div>
-						<div style={{marginRight: "16px", width: "25em"}}>
+						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipAbilityRankPicker
 									selectedRankings={selectedRankings}
 									setSelectedRankings={setSelectedRankings}

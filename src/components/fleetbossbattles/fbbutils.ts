@@ -13,7 +13,7 @@ export function getAllCombos(traits: string[], count: number): string[][] {
 	return combos;
 }
 
-export function getComboIndexOf(combos: any[], combo: string[]): number {
+export function getComboIndexOf(combos: string[][], combo: string[]): number {
 	let combosIndex = -1;
 	for (let i = 0; i < combos.length; i++) {
 		if (combos[i].every(trait => combo.includes(trait))) {

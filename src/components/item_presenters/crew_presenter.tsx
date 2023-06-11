@@ -199,10 +199,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         width: window.innerWidth <= 768 ? "15m" : "32em",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{display: "flex", flexDirection: window.innerWidth < 725 ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
-                        <div style={{margin: "4px", display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
+                        <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                 {
                                     "immortal" in crew && (
                                         ((crew.immortal === 0)) ? 
