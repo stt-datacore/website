@@ -329,8 +329,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "1009";
-
-                //window.addEventListener("touchend", this.touchTargetLeave);
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
@@ -354,8 +352,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             if (hoverstat) {
                 hoverstat.style.zIndex = "-100";        
                 hoverstat.style.display = "none";
-                this.currentTarget = undefined;
-                //window.removeEventListener("touchend", this.touchTargetLeave);
+                this.currentTarget = undefined;                
                 window.removeEventListener("resize", this.resizer);
             }
         }, 0);
@@ -417,6 +414,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         }
         this.deactivate(target);
     }
+    private touching?: boolean;
 
     /**
      * Target touchEnd
@@ -431,16 +429,27 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             return;
         }
 
+        if (!this.touching) return;
+        this.touching = false;
+    
         if (this.state.touchToggled) {					
             this.deactivate(target);
             this.state = { ...this.state, touchToggled: false };
         }
         else {
-            if (target) this.activate(target);
+            if (target || this.currentTarget) {
+                this.activate(target ?? this.currentTarget);
+            }
             this.state = { ...this.state, touchToggled: true };
         }		
     }
-
+    protected touchStart = (e: TouchEvent) => {
+        this.touching = true;
+    };
+    protected touchMove = (e: TouchEvent) => {
+        this.touching = false;
+        //this.tiny.setValue('touching', false);
+    };
     componentDidMount(): void {
         this.doWireup();
         this.observer.observe(document, { subtree: true, childList: true });
@@ -458,6 +467,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 el.addEventListener("mouseover", this.targetEnter);
                 el.addEventListener("mouseout", this.targetLeave);
                 el.addEventListener("touchend", this.touchEnd);
+                el.addEventListener("touchstart", this.touchStart);
+                el.addEventListener("touchmove", this.touchMove);
             }
         }
     }
@@ -471,6 +482,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 el.removeEventListener("mouseover", this.targetEnter);
                 el.removeEventListener("mouseout", this.targetLeave);
                 el.removeEventListener("touchend", this.touchEnd);
+                el.removeEventListener("touchstart", this.touchStart);
+                el.removeEventListener("touchmove", this.touchMove);
             }
         }
         this._elems = undefined;

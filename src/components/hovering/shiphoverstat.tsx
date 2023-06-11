@@ -168,7 +168,11 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             //window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
         }
 
-        return ship ? (<ShipPresenter openShip={(ship) => navClick()} hover={true} storeName={this.props.targetGroup} ship={ship} />) : <></>
+        const onClose = () => {
+            this.deactivate();
+        }
+
+        return ship ? (<ShipPresenter close={() => onClose()} openShip={(ship) => navClick()} hover={true} storeName={this.props.targetGroup} ship={ship} />) : <></>
         
     }
     

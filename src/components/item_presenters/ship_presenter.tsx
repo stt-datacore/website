@@ -10,6 +10,7 @@ export interface PresenterProps {
     hover: boolean;
     storeName: string;
     disableBuffs?: boolean;
+    close?: () => void;
 }
 
 export interface ShipPresenterProps extends PresenterProps {
@@ -125,6 +126,11 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         //width: window.innerWidth < 1024 ? "calc(100vw - 16px)" : undefined
                         
                         }}>
+                            <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
+                        {window.innerWidth < 1024 && <>
+                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
+                        </>}    
+                    </div> 
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>

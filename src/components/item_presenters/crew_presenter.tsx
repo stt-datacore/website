@@ -10,6 +10,7 @@ import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
 import { StatLabel } from "../hovering/crewhoverstat";
 import { Image } from "semantic-ui-react";
+
 export interface CrewPresenterProps extends PresenterProps {
     crew: CrewMember | PlayerCrew;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
@@ -151,7 +152,12 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     
                     {compact && crew.series && <Image src={`/media/series/${crew.series}.png`}  />}
                     </div>
-                <div style={{ display: "flex", flexDirection: "column"}}>                    
+                <div style={{ display: "flex", flexDirection: "column"}}>            
+                    <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
+                        {window.innerWidth < 1024 && <>
+                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
+                        </>}    
+                    </div>        
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        
                         <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img

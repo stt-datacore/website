@@ -210,7 +210,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             }
         }
 
-        return crew ? (<CrewPresenter openCrew={(crew) => navClick()} crew={crew} storeName={this.props.targetGroup} hover={true} onShipToggle={() => shipToggle()} />) : <></>
+        const closeClick = () => {
+            this.deactivate();
+        }
+
+        return crew ? (<CrewPresenter close={() => closeClick()} openCrew={(crew) => navClick()} crew={crew} storeName={this.props.targetGroup} hover={true} onShipToggle={() => shipToggle()} />) : <></>
         
     }
     
