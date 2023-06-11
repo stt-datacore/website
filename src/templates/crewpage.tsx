@@ -69,7 +69,7 @@ type StaticCrewPageState = {
 };
 
 class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {		
-	constructor(props) {
+	constructor(props: StaticCrewPageProps | Readonly<StaticCrewPageProps>) {
 		super(props);
 		this.state = {
 			selectedEquipment: undefined,
