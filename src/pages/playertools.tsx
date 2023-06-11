@@ -75,10 +75,10 @@ export const playerTools: PlayerTools = {
 		title: 'Ships',
 		render: ({playerData}) => <ProfileShips playerData={playerData} />
 	},
-	'ship': {
-		title: 'Ship Page',
-		render: ({playerData, allCrew, ship}) => <ShipProfile ship={ship} allCrew={allCrew} playerData={playerData} />
-	},
+	// 'ship': {
+	// 	title: 'Ship Page',
+	// 	render: ({playerData, allCrew, ship}) => <ShipProfile ship={ship} allCrew={allCrew} playerData={playerData} />
+	// },
 	'factions': {
 		title: 'Factions',
 		render: ({playerData}) => <FactionInfo

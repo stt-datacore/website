@@ -6,12 +6,12 @@ import themes from '../components/nivo_themes';
 
 import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
-
+import { CrewMember } from '../model/crew';
 type StatsPageProps = {};
 
 type StatsPageState = {
 	items?: any;
-	crewlist?: any;
+	crewlist?: CrewMember[];
 	misc_stats?: any;
 	factionOnly: boolean;
 	includeHidden: boolean;

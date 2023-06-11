@@ -96,7 +96,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		}
 	
 		const navToShip = (ship: Ship) => {
-			window.location.href = '/playertools?tool=ship&ship='+ship.symbol;
+			// window.location.href = '/playertools?tool=ship&ship='+ship.symbol;
 		}
 
 		// Pagination

@@ -162,93 +162,11 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             this.cancelled = false;
             this.deactivate();
         } 
-
-        const dormantStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'gray',
-            cursor: "pointer"
-        }
-
-        const disableStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'gray'
-        }
-
-        const activeStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: '#FFE623',
-            cursor: "pointer"
-        }
-
-        const completeStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'lightgreen',            
-            cursor: "default"
-        }
-
-        const frozenStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'white',            
-            cursor: "default",
-            marginRight: "0px"
-        }
-
-        const checkedStyle: React.CSSProperties = {
-            color: "lightgreen",
-            marginRight: "0px"
-        }
-
-        var me = this;
-        const immoToggle = (e) => {
-            if (ship && "immortal" in ship && ship.immortal !== undefined && ship.immortal != 0 && ship.immortal > -2) {
-                return;
-            }
-            me.showImmortalized = !me.showImmortalized;
-        }
-        const buffToggle = (e) => {
-            me.showPlayerBuffs = !me.showPlayerBuffs;
-        }
-        const shipToggle = (e) => {
-            me.showShipAbility = !me.showShipAbility;
-            let ct = me.currentTarget;
-            window.setTimeout(() => {
-                me.deactivate(ct);
-                window.setTimeout(() => {
-                    if (ct) me.activate(ct);
-                }, 0);
-            }, 0);            
-        }
         
         const navClick = () => {
             if (!ship) return;
-            window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
+            //window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
         }
-        
-        let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
-        let icons = [ "attack-color.png", "accuracy-color.png", "evasion-color.png", "shield-color.png", "hull-color.png", "antimatter-icon.png"]
-        let names = [ "Attack", "Accuracy", "Evasion", "Shields", "Hull", "Antimatter"]
-        
-        let stats1: { name: string, value: number, icon: string }[]=[];
-        let stats2: { name: string, value: number, icon: string }[]=[];
-
-        if (ship) {
-            for (let i = 0; i < 6; i++) {
-                let stat = {
-                    name: names[i],
-                    value: ship[keys[i]] as number,
-                    icon: icons[i]
-                }
-                if (i <= 2) {
-                    stats1.push(stat);
-                }
-                else {
-                    stats2.push(stat);
-                }
-                
-            }            
-        }
-
-        const stats = [stats1, stats2];
 
         return ship ? (<ShipPresenter openShip={(ship) => navClick()} hover={true} storeName={this.props.targetGroup} ship={ship} />) : <></>
         

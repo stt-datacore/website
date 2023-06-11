@@ -122,7 +122,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         return ship ? (<div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
-                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Ship Page For '" + ship.name + "'"}>
+                        <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
                                 style={{ height: compact ? "15em" : "25em", marginRight: "8px" }}
