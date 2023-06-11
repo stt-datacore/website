@@ -6,6 +6,7 @@ import { ShipAction, Ship, ShipBonus } from "../model/ship";
 export interface ShipSkillProps {
     actions: ShipAction[];    
     ship_battle: ShipBonus | Ship;
+    isShip: boolean;
     withBorder?: boolean;
     fontSize?: string;
 }
@@ -16,8 +17,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
     }
 
     render() {
-        const { actions, ship_battle } = this.props;
-
+        const { actions, ship_battle, isShip } = this.props;
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
             if (action === 2) return "/media/ship/accuracy-icon.png";
@@ -248,6 +248,20 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                 {` `}
                             </span>
                         )}
+                        {!isShip && ship_battle.accuracy &&
+                            <span>
+                            <b>Accuracy:</b> +
+                            {ship_battle.accuracy}
+                            {` `}
+                            </span>
+                        }
+                        {!isShip && ship_battle.evasion &&
+                            <span>
+                            <b>Evasion:</b> +
+                            {ship_battle.evasion}
+                            {` `}
+                            </span>
+                        }
                     </p>
                 </div>
             </div>

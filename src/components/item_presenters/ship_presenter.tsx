@@ -231,7 +231,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         {ship.traits_named?.join(", ")}
                     </div>
                     <div>
-                        {ship.actions && <ShipSkill fontSize="0.8em" withBorder={true} actions={ship.actions} ship_battle={ship} />}
+                        {ship.actions && <ShipSkill isShip={true} fontSize="0.8em" withBorder={true} actions={ship.actions} ship_battle={ship} />}
                     </div>
                 </div>
             </div>) : <></>
