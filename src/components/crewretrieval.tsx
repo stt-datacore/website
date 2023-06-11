@@ -9,11 +9,12 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
-import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, FuseOptions, KeystoneBase, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
+import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, KeystoneBase, NumericOptions, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
 import { BaseSkills, CrewMember } from '../model/crew';
 import { CompletionState, CryoCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import { Energy } from '../model/boss';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -141,14 +142,14 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 };
 
 type RetrievalEnergyProps = {
-	energy: any;
+	energy: Energy;
 };
 
 const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 	const { energy } = props;
 
 	const qTarget = 900;
-	const qPerFullDay = (24*60*60)/energy.regeneration.seconds; // 48
+	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? 1); // 48
 	const qPerBoost = 50;
 
 	let energyMessage = "You can guarantee a legendary crew retrieval now!";
@@ -170,7 +171,7 @@ const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
-		return ((target-quantity)*energy.regeneration.seconds)+energy.regenerated_at;
+		return ((target-quantity)*(energy.regeneration.seconds ?? 0))+energy.regenerated_at;
 	}
 
 	function formatTime(seconds: number): string {
@@ -302,7 +303,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 };
 
 type PolestarFilterModalProps = {
-	ownedPolestars: any[];
+	ownedPolestars: Polestar[];
 	disabledPolestars: number[];
 	updateDisableds: (disabledPolestars: number[]) => void;
 };
@@ -369,7 +370,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 		</Modal>
 	);
 
-	function filterCheckbox(p: any): JSX.Element {
+	function filterCheckbox(p: Polestar): JSX.Element {
 		return (
 			<Grid.Column key={p.id}>
 				<Checkbox
@@ -626,7 +627,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function filterText(polestar: any, filters: Filter[]): boolean {
+	function filterText(polestar: Polestar, filters: Filter[]): boolean {
 		if (filters.length == 0) return true;
 
 		const matchesFilter = (input: string, searchString: string) =>
@@ -652,7 +653,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		return meetsAnyCondition;
 	}
 
-	function renderPolestarRow(polestar: any, idx: number): JSX.Element {
+	function renderPolestarRow(polestar: Polestar, idx: number): JSX.Element {
 		return (
 			<Table.Row key={polestar.symbol}
 				style={{ cursor: activePolestar != polestar.symbol ? 'zoom-in' : 'zoom-out' }}
@@ -675,11 +676,11 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						</div>
 					</div>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.crate_count/crewCrates*100).toFixed(1)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.scan_odds*100).toFixed(2)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.owned_best_odds*100).toFixed(1)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>
+				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>				
+					<Table.Cell textAlign='center'>{(polestar.crate_count ?? 0/crewCrates*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{(polestar.scan_odds ?? 0*100).toFixed(2)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{(polestar.owned_best_odds ?? 0*100).toFixed(1)}%</Table.Cell>
+				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>					
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
 				</Table.Cell>
@@ -780,7 +781,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	function renderConstellationMessage(data: Polestar[]): JSX.Element {
 		if (activeConstellation == '') return (<></>);
 
-		const constellation = allKeystones.find(k => k.symbol === activeConstellation);
+		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as Constellation | undefined;
 
 		const unownedPolestars = data.filter(p => p.quantity === 0);
 
@@ -789,7 +790,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 
 		return (
 			<Message>
-				{renderPolestarsFromConstellation(constellation, unownedPolestars)}
+				{constellation && renderPolestarsFromConstellation(constellation, unownedPolestars)}
 			</Message>
 		);
 	}
@@ -822,7 +823,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function renderPolestarsFromConstellation(constellation: any, polestars: any[]): JSX.Element {
+	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): JSX.Element {
 		const clarify = activeCrew != '' ? 'a needed' : 'an unowned';
 
 		return (
@@ -870,7 +871,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function renderNewRetrievals(polestar: any): JSX.Element {
+	function renderNewRetrievals(polestar: Polestar): JSX.Element {
 		const ownedPlus = JSON.parse(JSON.stringify(ownedPolestars));
 		ownedPlus.push({...polestar, quantity: 1});
 		const newRetrievables = getRetrievable(control, ownedPlus).filter(c => c.in_portal);
@@ -893,7 +894,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 								src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 								size={64}
 								maxRarity={crew.max_rarity}
-								rarity={crew.highest_owned_rarity}
+								rarity={crew.highest_owned_rarity ?? 0}
 							/>
 							<div>{crew.name}</div>
 						</Grid.Column>
@@ -903,11 +904,11 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function getRetrievable(crewpool: CrewMember[], polestars: Polestar[]): any[] {
+	function getRetrievable(crewpool: (CrewMember | PlayerCrew)[], polestars: Polestar[]): PlayerCrew[] {
 		return crewpool.filter(crew =>
 			crew.unique_polestar_combos?.some(upc =>
 				upc.every(trait => polestars.some(op => filterTraits(op, trait)))
-			));
+			))?.map(crew => crew as PlayerCrew) ?? [];
 	}
 
 	function setAsActive(activeType: string, activeValue: string): void {
@@ -1185,13 +1186,13 @@ const CrewTable = (props: CrewTableProps) => {
 		return fuseGroups;
 	}
 
-	function showCollectionsForCrew(crew: any): JSX.Element {
+	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
 		if (activeCollections !== crew.symbol || crew.collections.length == 0)
 			return (<b>{crew.collections.length}</b>);
 
 		const formattedCollections = crew.collections.map((c, idx) => (
 			<span key={idx}>{c}{idx < crew.collections.length-1 ? ',' : ''}</span>
-		)).reduce((prev, curr) => [prev, ' ', curr]);
+		)).reduce((prev, curr) => <>{prev} {curr}</>);
 
 		return (
 			<div>
@@ -1223,7 +1224,7 @@ const ComboGrid = (props: ComboGridProps) => {
 	const groups = fuseGroups['x'+fuseIndex];
 	if (!groups[groupIndex]) groupIndex = 0;
 
-	const fuseOptions = [] as FuseOptions[];
+	const fuseOptions = [] as NumericOptions[];
 	[1, 2, 3, 4, 5].forEach(fuse => {
 		const fuseId = 'x' + fuse;
 		if (fuseGroups[fuseId] && fuseGroups[fuseId].length > 0) {
@@ -1231,7 +1232,7 @@ const ComboGrid = (props: ComboGridProps) => {
 		}
 	});
 
-	let groupOptions = []as FuseOptions[];
+	let groupOptions = [] as NumericOptions[];
 	if (fuseIndex > 1) {
 		combos = groups[groupIndex].map((comboId) => combos[comboId]);
 		groupOptions = groups.map((group, groupId) => {

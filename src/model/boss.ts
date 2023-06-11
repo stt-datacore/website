@@ -5,7 +5,7 @@ import { ShipAction } from "./ship";
 export interface BossBattlesRoot {
     env: BossConfig
     statuses: FleetBoss[]
-    fleet_boss_battles_energy: FleetBossBattlesEnergy
+    fleet_boss_battles_energy: Energy
     groups: BossGroup[]
   }
   
@@ -132,7 +132,7 @@ export interface BossBattlesRoot {
     icon: Icon
   }
   
-  export interface FleetBossBattlesEnergy {
+  export interface Energy {
     id: number
     quantity: number
     regeneration: Regeneration
@@ -140,9 +140,10 @@ export interface BossBattlesRoot {
   }
   
   export interface Regeneration {
-    increment: number
-    interval_seconds: number
-    regeneration_cap: number
+    increment?: number
+    interval_seconds?: number
+    regeneration_cap?: number
+    seconds?: number;
   }
   
   export interface BossGroup {
