@@ -428,7 +428,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		
 		// Ship filter
-		if (tableView === 'ship' && ((shipCrew) || (selectedSeats.length) || selectedRankings.length)) {			
+		if (tableView === 'ship' && ((shipCrew) || (selectedSeats.length) || selectedRankings.length || availableSeats?.length)) {			
 			if (shipCrew && !shipCrew.some(cm => cm.symbol === crew.symbol)) return false;
 			
 			if (selectedRankings && selectedRankings.length && rankings && rankings.length) {
@@ -436,6 +436,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			}
 
 			if (selectedSeats && selectedSeats.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
+			else if (availableSeats && availableSeats.length && !availableSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
 
 		return crewMatchesSearchFilter(crew, filters, filterType);
