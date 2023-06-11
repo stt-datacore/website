@@ -189,6 +189,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         const containerOver = (e) => {
             this.cancelled = true;
         }
+        console.log("Render HoverStat")
         return (
             <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => { this.cancelled = false; this.deactivate();}} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
                 {this.renderContent()}
@@ -202,7 +203,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @param e Event
      */
     protected resizer = (e: any) => {
-        this.state = { ... this.state };
+        this.forceUpdate();
+        // this.state = { ... this.state };
+        // if (this.currentTarget) {
+        //     this.activate(this.currentTarget);
+        // }
     }	
 
     /**
@@ -295,11 +300,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.position = "absolute";
             }            
 
-            hoverstat.style.display = "block";
-
+            hoverstat.style.display = "flex";
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
-                console.log("Activate " + divId);
+                // console.log("Activate " + divId);
 
                 if (!hoverstat) return;   
                 y -= (hoverstat.clientHeight - off.y);
@@ -312,6 +316,10 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
                     x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth;
                 }
+
+                if (y + hoverstat.clientHeight + (pad.y * 2) > window.scrollY + window.innerHeight) {
+                    y = (window.scrollY + window.innerHeight) - (hoverstat.clientHeight + (pad.y * 2));
+                }                
 
                 if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
                     x = pad.x;
@@ -341,7 +349,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 return;
             }
             const { divId } = this.state;
-            console.log("Deactivate " + divId);
+            // console.log("Deactivate " + divId);
             let hoverstat = document.getElementById(divId);
             if (hoverstat) {
                 hoverstat.style.zIndex = "-100";        
@@ -361,7 +369,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected targetEnter = (e: MouseEvent) => {
         const { divId } = this.state;
 
-        console.log("Target Enter");
+        // console.log("Target Enter");
 
         let hoverstat = document.getElementById(divId);        
         this.cancelled = true;
@@ -383,7 +391,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      * @returns 
      */
     protected targetLeave = (e: MouseEvent | TouchEvent) => {        
-        console.log("Target Leave");
+        // console.log("Target Leave");
         let target = e.target as HTMLElement;
         if (!target) return;
 
@@ -401,7 +409,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected touchTargetLeave = (e: MouseEvent | TouchEvent) => {        
         let target = e.target as HTMLElement;
         if (!target) return;
-        console.log("Touch Target Leave");
+        // console.log("Touch Target Leave");
         let hoverstat = document.getElementById(this.state.divId);   
         if (hoverstat) {
             let ancestor = this.findCommonAncestor(target, hoverstat);

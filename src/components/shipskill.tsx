@@ -51,10 +51,10 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                             style={{                                
                                 display: "flex",
                                 flexDirection:
-                                    window.innerWidth < 512 ? "column" : "row",
+                                    window.innerWidth < 1024 ? "column" : "row",
                                 justifyContent: "space-between",
                                 alignItems:
-                                    window.innerWidth < 512 ? "flex-start" : "center",
+                                    window.innerWidth < 1024 ? "flex-start" : "center",
                             }}
                         >
                             <h4 style={{ marginBottom: ".25em", maxWidth: "75%", fontSize: "1.25em" }}>
@@ -177,7 +177,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         fontFamily: "arial",
                                         display: "flex",
                                         flexDirection:
-                                            window.innerWidth < 725 ? "column" : "row",
+                                            window.innerWidth < 1024 ? "column" : "row",
                                         justifyContent: "space-between",
                                         backgroundColor: getActionColor(
                                             action.bonus_type

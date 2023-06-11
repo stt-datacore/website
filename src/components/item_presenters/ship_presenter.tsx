@@ -119,13 +119,18 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
 
         const stats = [stats1, stats2];
 
-        return ship ? (<div style={{ display: "flex", flexDirection: "row" }}>
+        return ship ? (<div style={{ 
+                        display: "flex", 
+                        flexDirection: window.innerWidth < 1024 ? "column" : "row",
+                        //width: window.innerWidth < 1024 ? "calc(100vw - 16px)" : undefined
+                        
+                        }}>
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>
+                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-                                style={{ height: compact ? "15em" : "25em", marginRight: "8px" }}
+                                style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
                             />
                         </a>
                     </div>
@@ -158,13 +163,13 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",
-                        width: window.innerWidth <= 768 ? "15m" : "32em",
+                        width: window.innerWidth < 1024 ? "15m" : "32em",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{display: "flex", flexDirection: window.innerWidth < 1024 ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{ship.name}</h3>
-                        <div style={{margin: "4px", display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
+                        <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ? 
@@ -189,15 +194,16 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             style={{
                                 display: "flex",
                                 flexWrap: "wrap",
-                                flexDirection:
-                                window.innerWidth <= 512 ? "column" : "row",
+                                flexDirection: "row",
+                                //window.innerWidth < 512 ? "column" : "row",
                                 justifyContent: "space-between",
                                 marginTop: "4px",
                                 marginBottom: "2px",
                             }}
                         >
                             {statline.map((stat, index) =>                             
-                                <div style={{ width: "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                <div style={{ 
+                                        width: window.innerWidth < 1024 ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
                                         <div>{stat.name}</div>

@@ -173,7 +173,12 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						)}
 					</div>
 				)}
-
+				<div style={{
+					display: "flex", 
+					flexDirection: "row", 
+					justifyContent:"space-evenly", 
+					alignItems: "center",
+					flexWrap: "wrap"}}>
 				{!compact && (
 					<>
 					<Statistic.Group size="tiny">
@@ -214,7 +219,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</Statistic.Group>
 					</>
 				)}
-
+				</div>
 				{crewDemands && (
 					<p>
 						<b>{crewDemands.factionOnlyTotal}</b>
