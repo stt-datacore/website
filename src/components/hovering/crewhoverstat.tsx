@@ -1,16 +1,11 @@
 import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
-import { CompletionState, Player, PlayerCrew } from "../../model/player";
+import { PlayerCrew } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { StatLabelProps } from "../commoncrewdata";
-import { Label, Rating, Segment } from "semantic-ui-react";
-import CrewStat from "../crewstat";
-import { applySkillBuff, formatTierLabel, getShipBonus, getShipChargePhases, gradeToColor } from "../../utils/crewutils";
+import { Label } from "semantic-ui-react";
+import { applySkillBuff } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-import * as uuid from 'uuid';
-import CONFIG from "../CONFIG";
-import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill, ShipSkillProps } from "../shipskill";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 
 export class StatLabel extends React.Component<StatLabelProps> {

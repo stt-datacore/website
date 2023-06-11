@@ -1,6 +1,4 @@
 import React from "react";
-import { CrewMember } from "../model/crew";
-import { PlayerCrew } from "../model/player";
 import CONFIG from "./CONFIG";
 import { getShipBonus, getShipChargePhases } from "../utils/crewutils";
 import { ShipAction, Ship, ShipBonus } from "../model/ship";

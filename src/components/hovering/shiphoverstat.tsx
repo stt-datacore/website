@@ -1,15 +1,7 @@
 import React from "react";
-import { CompletionState, Player, PlayerCrew } from "../../model/player";
+import { CompletionState } from "../../model/player";
 import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { StatLabelProps } from "../commoncrewdata";
-import { Label, Rating, Segment } from "semantic-ui-react";
-import CrewStat from "../crewstat";
-import { applySkillBuff, formatTierLabel, getShipBonus, getShipChargePhases, gradeToColor } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-import * as uuid from 'uuid';
-import CONFIG from "../CONFIG";
-import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill, ShipSkillProps } from "../shipskill";
 import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 
