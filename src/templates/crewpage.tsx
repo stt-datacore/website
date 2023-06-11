@@ -151,7 +151,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		const imageDoubleClick = () =>{
 			if (window.innerWidth < 725) return;
-			this.stash.setValue('crew_static_big', !this.state.itemBig);
+			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
 			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
 		}
 	
