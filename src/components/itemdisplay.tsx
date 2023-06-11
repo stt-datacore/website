@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
 import { AllData } from '../model/worker';
-import { PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
 import { AllDataContext } from './voyagecalculator';
@@ -56,6 +56,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			crew = playerData.player.character.crew.find(crew => crew.symbol === crewSymbol);
 			if (!crew) {
 				crew = allCrew.find(crew => crew.symbol === crewSymbol) as PlayerCrew | undefined;
+				if (crew) crew.immortal = CompletionState.DisplayAsImmortalUnowned;
 			}
 		}
 		
