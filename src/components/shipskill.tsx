@@ -232,7 +232,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                     }
                     
                 <div>
-                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>Equipment Bonus</div>
+                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && "Equipment Bonus"}</div>
                     <p>
                         {ship_battle.crit_bonus && (
                             <span>
