@@ -483,6 +483,8 @@ export interface Player {
      * If this number is less than zero, this character is immortalized.
      * 
      * If this number is zero, this character is not immortalized.
+     * 
+     * If the value is less than -2, the character is unowned.
      */
     immortal: CompletionState | number;
     collectionIds?: number[];

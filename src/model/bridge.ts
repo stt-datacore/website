@@ -1,6 +1,6 @@
 import { BaseSkills } from "./crew"
-import { Action } from "./action"
-import { Icon, Ship } from "./game-elements"
+import { Icon } from "./game-elements"
+import { Ship, ShipAction } from "./ship"
 
 export interface CaptainsBridgeRoot {
     id: number
@@ -56,7 +56,7 @@ export interface CaptainsBridgeRoot {
     full_body?: Icon
     skills?: BaseSkills
     traits?: string[]
-    action?: Action
+    action?: ShipAction
   }
  
   export interface ShipReward extends Ship {
