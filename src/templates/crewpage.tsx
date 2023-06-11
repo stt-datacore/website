@@ -65,10 +65,10 @@ type StaticCrewPageState = {
 	commentMarkdown: string;
 	items: EquipmentItem[];
 	comments: any[];
+	itemBig: boolean;
 };
 
-class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {
-	
+class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {		
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -76,23 +76,23 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			modalVisible: false,
 			commentMarkdown: '', // TODO: load
 			comments: [],
-			items: []
+			items: [],
+			itemBig: this.stash.getValue('crew_static_big', false) ?? false
 		};
 	}
 	
 	owned: PlayerCrew[] | undefined = undefined;
 	ownedCrew: PlayerCrew[] | undefined = undefined;
 	buffs: BuffStatTable | undefined = undefined;
+	readonly stash = TinyStore.getStore('staticStash', false, true);
 
 	componentDidMount() {
-
-		let stash = TinyStore.getStore('staticStash', false, true);
-		if (stash.containsKey('owned')) {
-			this.ownedCrew = stash.getValue('owned');
+		if (this.stash.containsKey('owned')) {
+			this.ownedCrew = this.stash.getValue('owned');
 			//stash.removeValue('owned');				
 		}			
-		if (stash.containsKey('buffs')) {
-			this.buffs = stash.getValue('buffs');				
+		if (this.stash.containsKey('buffs')) {
+			this.buffs = this.stash.getValue('buffs');				
 		}			
 		
 		fetch('/structured/items.json')
@@ -148,6 +148,13 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		if (markdownRemark && markdownRemark.frontmatter) {
 			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
 		}
+
+		const imageDoubleClick = () =>{
+			if (window.innerWidth < 725) return;
+			this.stash.setValue('crew_static_big', !this.state.itemBig);
+			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
+		}
+	
 		return (
 			<Layout narrowLayout={true}>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
@@ -173,10 +180,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							</div>
 						</h2>
 
-						<div style={{
-								display: "flex",
-								flexDirection: window.innerWidth < 725 ? "column" : "row",
-								alignItems: window.innerWidth < 725 ? "center" : "flex-start"							
+						<div 
+							id='static_avatar'
+							style={{
+								display: "flex",								
+								flexDirection: window.innerWidth < 725 || this.state.itemBig ? "column" : "row",
+								alignItems: window.innerWidth < 725 || this.state.itemBig ? "center" : "flex-start"														
 							}}>
 							<div style={{
 								display: "flex",								
@@ -187,8 +196,17 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
 								</div>
-								<div style={{ flexGrow: 1, display: "flex", "flexDirection": "row", justifyContent: "center" }}>
-									<img style={{ width: window.innerWidth < 725 ? "75%" : "100%" }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} alt={crew.name} />
+								<div style={{ flexGrow: 1, display: "flex", "flexDirection": "row", justifyContent: "center" }}
+									onDoubleClick={(e) => imageDoubleClick()}
+									title={"Double-Click to Re-arrange View"}
+									>
+									<img style={{ 
+											width: window.innerWidth < 725 ? "75%" : "100%", 
+											marginRight: window.innerWidth >= 725 ? "0.5em" : undefined
+										}} 
+										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} 
+										alt={crew.name} 
+									/>
 								</div>
 							</div>
 							<div style={{
