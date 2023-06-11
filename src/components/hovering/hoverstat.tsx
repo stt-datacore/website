@@ -5,6 +5,7 @@ import { TinyStore } from "../../utils/tiny";
 export interface Coord {
     x: number;
     y: number;
+    centerX?: boolean;
 }
 
 /**
@@ -283,11 +284,15 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             this.currentTarget = target;
 
             let { top , left } = this.getOffset(target, ancestor);
+            let { left: tx, top: ty } = this.getOffset(target, ancestor);
+
             let x = left + rect.width;
             let y = top;
-            let off = this.targetOffset;
-            let pad = this.windowEdgeMinPadding;
-
+            let off = { ... this.targetOffset };             
+            let pad = { ... this.windowEdgeMinPadding };
+            if (target.clientWidth >= 64) {
+                off.x += ((target.clientWidth / 2));
+            }
             if (!ancestor) {
                 x -= window.scrollX;
                 y -= window.scrollY;   
@@ -301,14 +306,31 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             }            
 
             hoverstat.style.display = "flex";
+            hoverstat.style.opacity = "0";
+
             window.setTimeout(() => {
                 let hoverstat = document.getElementById(divId);     
                 // console.log("Activate " + divId);
 
                 if (!hoverstat) return;   
+
                 y -= (hoverstat.clientHeight - off.y);
                 x -= off.x;
+
+                // if (off.centerX) {
+                //     x = (tx + (target.clientWidth / 2)) - (hoverstat.clientWidth / 2);
+                // }
+                // else {
+                //     if (tx >= window.innerWidth / 2) {
+                //         x -= (hoverstat.clientWidth + rect.width);
+                //         x += off.x;
+                //     }
+                //     else {
+                //         x -= off.x;
+                //     }
+                // }
                 
+
                 if (y < window.scrollY + pad.y) {
                     y = window.scrollY + pad.y;
                 }
@@ -324,11 +346,14 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
                     x = pad.x;
                     hoverstat.style.width = window.innerWidth - (pad.x * 2) + 'px';
-                }
+                }                
                 
                 hoverstat.style.left = x + "px";
                 hoverstat.style.top = y + "px";
                 hoverstat.style.zIndex = "1009";
+                
+                hoverstat.style.opacity = "1";
+                hoverstat.style.transition = "opacity 0.25s";
                 window.addEventListener("resize", this.resizer);
             }, 0)
         }
@@ -348,12 +373,15 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             }
             const { divId } = this.state;
             // console.log("Deactivate " + divId);
-            let hoverstat = document.getElementById(divId);
+            const hoverstat = document.getElementById(divId);
             if (hoverstat) {
                 hoverstat.style.zIndex = "-100";        
-                hoverstat.style.display = "none";
+                hoverstat.style.opacity = "0";
+                hoverstat.style.transition = "opacity 0.25s";
+                
                 this.currentTarget = undefined;                
                 window.removeEventListener("resize", this.resizer);
+                window.setTimeout(() => hoverstat.style.display = "none", 0.25);
             }
         }, 0);
     }
@@ -375,9 +403,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             let target = e.target as HTMLElement;
             if (!target) return;
 
-            if (target.children.length !== 0) {
+            if (target.children.length !== 0 || !(target instanceof HTMLImageElement)) {                
                 return;
             }
+            if (target.src.includes("star_reward")) return;
+            console.log(target.tagName);
             this.activate(target);
         }
     }

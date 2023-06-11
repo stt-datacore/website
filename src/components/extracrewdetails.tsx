@@ -464,7 +464,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 					<Grid centered padded>
 						{group.trait_variants.map(variant => (
 							<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
-								<CrewTarget 
+								<CrewTarget 									
 									targetGroup='variants'
 									setDisplayItem={me.setHoverCrew}
 									inputItem={variant}
@@ -483,7 +483,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						))}
 					</Grid>
 				</Segment>								
-				<CrewHoverStat targetGroup='variants' crew={me.hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='variants' offset={{ x: 12, y: 12, centerX: true }} crew={me.hoverCrew ?? undefined} />
 				</>
 			))
 		);
