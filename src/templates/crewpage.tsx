@@ -166,9 +166,12 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
 					<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-						<Header>
-							{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
-						</Header>
+						<h2 style={{display: "flex", flexDirection: window.innerWidth < 725 ? "column" : "row", alignItems:"center"}}>
+							<div>{crew.name}</div>
+							<div style={{display:"block", marginRight: "0.5em", marginLeft: "0.5em"}}>
+								<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
+							</div>
+						</h2>
 
 						<div style={{
 								display: "flex",
@@ -179,11 +182,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								display: "flex",								
 								flexDirection: "column",
 								alignItems: "center",
-								width: window.innerWidth < 725 ? "100%" : "5.5em"
+								width: window.innerWidth < 725 ? "100%" : "20em"
 							}}>
-							{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
-								<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
-
+								<div>
+									{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
+								</div>
+								<div style={{ flexGrow: 1, display: "flex", "flexDirection": "row", justifyContent: "center" }}>
+									<img style={{ width: window.innerWidth < 725 ? "75%" : "100%" }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} alt={crew.name} />
+								</div>
 							</div>
 							<div style={{
 								display: "flex",
@@ -191,7 +197,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								flexDirection: "column",
 							}}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
-
 								<div style={{ margin: '1em 0', textAlign: 'right' }}>
 									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 									(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
