@@ -213,6 +213,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderCrew() {
 		const { voyageData, roster, dbid } = this.props;
+		if (!this.ship || !roster) return <></>;
 		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={`${dbid}`} />;
 	}
 
