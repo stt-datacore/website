@@ -185,6 +185,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						flexDirection: "row", 
 						justifyContent:"space-evenly", 
 						alignItems: "center",
+						margin: "0.25em",
 						flexWrap: "wrap"}}>
 						<Statistic.Group size="tiny">
 							{markdownRemark.frontmatter.events !== null && (
@@ -213,6 +214,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 						<div style={{
 							display: "flex", 
+							margin: "0.25em",
 							flexDirection: "row", 
 							justifyContent:"space-evenly", 
 							alignItems: "center",
