@@ -65,6 +65,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		return (
 			<React.Fragment>
 				{compact ? (
+					<div style={{display:"flex",  width: "100%",flexDirection: "row", justifyContent: "space-evenly"}}>
 					<Segment>
 						<Grid columns={2}>
 							<Grid.Column width={4}>
@@ -96,7 +97,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							</Grid.Column>
 						</Grid>
 					</Segment>
+					</div>
 				) : (
+					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly"}}>
 						<Segment>
 							<CrewStat skill_name="security_skill" data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
 							<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
@@ -109,6 +112,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								scale={compact ? 0.75 : 1}
 							/>
 						</Segment>
+						</div>
 					)}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
