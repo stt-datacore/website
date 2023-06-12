@@ -173,7 +173,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 		});
 
 		const ignoredCombos = [] as SolverNode[];
-		const ignoreCombo = (nodeIndex, combo) => {
+		const ignoreCombo = (nodeIndex: number, combo: string[]) => {
 			if (!ignoredCombos.find(ignored => ignored.index === nodeIndex && ignored.combo?.every(trait => combo.includes(trait))))
 				ignoredCombos.push({ index: nodeIndex, combo });
 		};
@@ -191,7 +191,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 						const nodePool = traitPool.filter(trait => !node.traitsKnown?.includes(trait));
 						const traitsMatched = nodePool.filter(trait => crew?.traits.includes(trait));
 						const combos = getAllCombos(traitsMatched, node.hiddenLeft ?? -1);
-						combos.forEach(combo => ignoreCombo(node.index, combo));
+						combos.forEach(combo => { if (node.index !== undefined) ignoreCombo(node.index, combo) });
 					}
 				});
 			});
@@ -199,7 +199,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 		// Ignore ALL unique combos
 		allComboCounts.filter(count => (count.portals ?? -1) <= 1).forEach(count => {
-			ignoreCombo(count.index, count.combo);
+			if (count.index !== undefined && count.combo !== undefined) ignoreCombo(count.index, count.combo);
 		});
 
 		// Validate matching combos and traits, factoring ignored combos
