@@ -177,53 +177,63 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						)}
 					</div>
 				)}
-				<div style={{
-					display: "flex", 
-					flexDirection: "row", 
-					justifyContent:"space-evenly", 
-					alignItems: "center",
-					flexWrap: "wrap"}}>
 				{!compact && (
 					<>
-					<Statistic.Group size="tiny">
-						{markdownRemark.frontmatter.events !== null && (
+					
+					<div style={{
+						display: "flex", 
+						flexDirection: "row", 
+						justifyContent:"space-evenly", 
+						alignItems: "center",
+						flexWrap: "wrap"}}>
+						<Statistic.Group size="tiny">
+							{markdownRemark.frontmatter.events !== null && (
+								<Statistic>
+									<Statistic.Label>Events</Statistic.Label>
+									<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+								</Statistic>
+							)}
 							<Statistic>
-								<Statistic.Label>Events</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+								<Statistic.Label>Big Book Tier</Statistic.Label>
+								<Statistic.Value>{formatTierLabel(crew)}</Statistic.Value>
 							</Statistic>
-						)}
-						<Statistic>
-							<Statistic.Label>Big Book Tier</Statistic.Label>
-							<Statistic.Value>{formatTierLabel(crew)}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
-							<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
-						</Statistic>
-						{!compact && markdownRemark.frontmatter.in_portal !== null && (
-							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
-								<Statistic.Label>Portal</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
+							<Statistic>
+								<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
+								<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
 							</Statistic>
-						)}
-						</Statistic.Group>
-						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
-						<Statistic>
-							<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
-							<Statistic.Value>{crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>Voyage Rank</Statistic.Label>
-							<Statistic.Value>{rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>Gauntlet Rank</Statistic.Label>
-							<Statistic.Value>{rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}</Statistic.Value>
-						</Statistic>
-					</Statistic.Group>
+							{!compact && markdownRemark.frontmatter.in_portal !== null && (
+								<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
+									<Statistic.Label>Portal</Statistic.Label>
+									<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
+								</Statistic>
+							)}
+							</Statistic.Group>						
+						</div>
+						
+
+						<div style={{
+							display: "flex", 
+							flexDirection: "row", 
+							justifyContent:"space-evenly", 
+							alignItems: "center",
+							flexWrap: "wrap"}}>
+							<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
+								<Statistic>
+									<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
+									<Statistic.Value>{crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}</Statistic.Value>
+								</Statistic>
+								<Statistic>
+									<Statistic.Label>Voyage Rank</Statistic.Label>
+									<Statistic.Value>{rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}</Statistic.Value>
+								</Statistic>
+								<Statistic>
+									<Statistic.Label>Gauntlet Rank</Statistic.Label>
+									<Statistic.Value>{rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}</Statistic.Value>
+								</Statistic>
+							</Statistic.Group>
+					</div>
 					</>
 				)}
-				</div>
 				{crewDemands && (
 					<p>
 						<b>{crewDemands.factionOnlyTotal}</b>
