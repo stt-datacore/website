@@ -52,19 +52,21 @@ const EventPlanner = (props: EventPlannerProps) => {
 		const crewman = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 		crewman.id = fakeId++;
 
+		// Re-attach active_status property
 		crewman.active_status = 0;
-		if (crew.immortal === 0) {
-			// Re-attach active_status property
+		if (crew.immortal <= 0) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crewman.active_status = active.active_status;
 				active.id = '';	// Clear this id so that dupes are counted properly
 			}
+		}
 
-			// Add immortalized skill numbers to skill_data
-			//	allCrew stores immortalized numbers as base_skills,
-			//	but playerData base_skills of unleveled crew are unbuffed skills at current level
+		// Add immortalized skill numbers to skill_data
+		//	allCrew stores immortalized numbers as base_skills,
+		//	but playerData base_skills of unleveled crew are unbuffed skills at current level
+		if (crew.immortal === CompletionState.NotComplete) {
 			const ff = allCrew.find((c) => c.symbol == crew.symbol);
 			if (ff)
 				crewman.skill_data.push({
