@@ -56,7 +56,7 @@ const VoyageCalculator = (props: CalculatorProps) => {
 
 		// Voyage roster generation looks for active_status property
 		crew.active_status = 0;
-		if (crew.immortal === CompletionState.Immortalized) {
+		if (crew.immortal <= 0) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
