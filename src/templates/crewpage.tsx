@@ -86,7 +86,13 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	buffs: BuffStatTable | undefined = undefined;
 	readonly stash = TinyStore.getStore('staticStash', false, true);
 
+	componentWillUnmount(): void {
+		window.removeEventListener('keydown', (e) => this.windowKey(e))
+		
+	}
+
 	componentDidMount() {
+		window.addEventListener('keydown', (e) => this.windowKey(e))
 		if (this.stash.containsKey('owned')) {
 			this.ownedCrew = this.stash.getValue('owned');
 			//stash.removeValue('owned');				
@@ -121,6 +127,15 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		return isLoggedIn ? window.localStorage.getItem('username') : '';
 	}
+	
+	windowKey = (e: KeyboardEvent) => {
+			
+		if (e.key === "Escape") {
+			if (this.state.itemBig) {
+				this.setState({ ...this.state, itemBig: !this.state.itemBig });	
+			}
+		}
+	}
 
 	render() {
 		const { location } = this.props;
@@ -149,12 +164,13 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
 		}
 
+		
 		const imageDoubleClick = () =>{
 			if (window.innerWidth < 725) return;
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
 			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
 		}
-	
+
 		return (
 			<Layout narrowLayout={true}>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
