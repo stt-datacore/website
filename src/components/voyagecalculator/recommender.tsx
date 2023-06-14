@@ -599,7 +599,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 
 	function populateOptions(): void {
 		let crewList = [...props.myCrew];
-		if (!props.showFrozen) crewList = crewList.filter(c => c.immortal === 0);
+		if (!props.showFrozen) crewList = crewList.filter(c => c.immortal <= 0);
 		if (options) {
 			options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
 				return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
