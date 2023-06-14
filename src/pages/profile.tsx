@@ -28,6 +28,7 @@ type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
 	playerData?: PlayerData;
+	allCrew?: CrewMember[];
 	mobile: boolean;
 };
 
@@ -86,7 +87,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 						.then((allcrew: CrewMember[]) => {
 							// Do some computation on the data to avoid doing it on every render
 							prepareProfileData("profile->componentDidUpdate", allcrew, playerData, lastModified);
-							this.setState({ playerData });
+							this.setState({ playerData, allCrew: allcrew });
 						});
 				})
 				.catch(err => {
@@ -101,7 +102,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => this.state.playerData && <ProfileCrew location={location} playerData={this.state.playerData} /> || <></>
+				render: () => this.state.playerData && <ProfileCrew allCrew={this.state.allCrew} location={location} playerData={this.state.playerData} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
