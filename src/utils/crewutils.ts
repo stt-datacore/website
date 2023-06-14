@@ -922,7 +922,8 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 			tiers[key] = sc.groupBy(types[key], "action/ability/amount");
 		}
 	}
-
-	tiers["no_ability"] = sc.groupBy(types["no_ability"], "action/bonus_amount");
-	return tiers;
+	if ("no_ability" in types && types["no_ability"] !== undefined) {
+		tiers["no_ability"] = sc.groupBy(types["no_ability"], "action/bonus_amount");
+	}
+	return tiers ?? {};
 }

@@ -135,10 +135,10 @@ export class StatsSorter {
     public sortStats<T extends Object>(stats: T[], inPlace?: boolean): T[] {
         let tstats: T[];
         if (inPlace) {
-            tstats = stats;
+            tstats = stats ?? [];
         }
         else {
-            tstats = [ ... stats ];
+            tstats = [ ... stats ?? [] ];
         }
 
         tstats.sort((a,b) => this.compareObjects(a, b));

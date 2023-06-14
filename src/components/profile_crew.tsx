@@ -365,7 +365,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	if (tableView === 'base') {
-		tableConfig.push(
+		tableConfig?.push(
 			{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 			{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
 			{ width: 1, column: 'ranks.voyRank', title: 'Voyage' }
