@@ -36,7 +36,7 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Immortal',
-			value: (row: PlayerCrew) => row.immortal
+			value: (row: PlayerCrew) => Math.max(row.immortal, 0)
 		},
 		{
 			label: 'Equipment',
@@ -64,75 +64,75 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Command core',
-			value: (row: PlayerCrew) => row.base_skills?.command_skill?.core
+			value: (row: PlayerCrew) => row.command_skill.core
 		},
 		{
 			label: 'Command min',
-			value: (row: PlayerCrew) => row.base_skills?.command_skill?.range_min
+			value: (row: PlayerCrew) => row.command_skill.min
 		},
 		{
 			label: 'Command max',
-			value: (row: PlayerCrew) => row.base_skills?.command_skill?.range_max
+			value: (row: PlayerCrew) => row.command_skill.max
 		},
 		{
 			label: 'Diplomacy core',
-			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.core
+			value: (row: PlayerCrew) => row.diplomacy_skill.core
 		},
 		{
 			label: 'Diplomacy min',
-			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.range_min
+			value: (row: PlayerCrew) => row.diplomacy_skill.min
 		},
 		{
 			label: 'Diplomacy max',
-			value: (row: PlayerCrew) => row.base_skills?.diplomacy_skill?.range_max
+			value: (row: PlayerCrew) => row.diplomacy_skill.max
 		},
 		{
 			label: 'Engineering core',
-			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.core
+			value: (row: PlayerCrew) => row.engineering_skill.core
 		},
 		{
 			label: 'Engineering min',
-			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.range_min
+			value: (row: PlayerCrew) => row.engineering_skill.min
 		},
 		{
 			label: 'Engineering max',
-			value: (row: PlayerCrew) => row.base_skills?.engineering_skill?.range_max
+			value: (row: PlayerCrew) => row.engineering_skill.max
 		},
 		{
 			label: 'Medicine core',
-			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.core
+			value: (row: PlayerCrew) => row.medicine_skill.core
 		},
 		{
 			label: 'Medicine min',
-			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.range_min
+			value: (row: PlayerCrew) => row.medicine_skill.min
 		},
 		{
 			label: 'Medicine max',
-			value: (row: PlayerCrew) => row.base_skills?.medicine_skill?.range_max
+			value: (row: PlayerCrew) => row.medicine_skill.max
 		},
 		{
 			label: 'Science core',
-			value: (row: PlayerCrew) => row.base_skills?.science_skill?.core
+			value: (row: PlayerCrew) => row.science_skill.core
 		},
 		{
 			label: 'Science min',
-			value: (row: PlayerCrew) => row.base_skills?.science_skill?.range_min
+			value: (row: PlayerCrew) => row.science_skill.min
 		},
 		{
 			label: 'Science max',
-			value: (row: PlayerCrew) => row.base_skills?.science_skill?.range_max
+			value: (row: PlayerCrew) => row.science_skill.max
 		},
 		{
 			label: 'Security core',
-			value: (row: PlayerCrew) => row.base_skills?.security_skill?.core
+			value: (row: PlayerCrew) => row.security_skill.core
 		},
 		{
 			label: 'Security min',
-			value: (row: PlayerCrew) => row.base_skills?.security_skill?.range_min
+			value: (row: PlayerCrew) => row.security_skill.min
 		},
 		{
 			label: 'Security max',
-			value: (row: PlayerCrew) => row.base_skills?.security_skill?.range_max
+			value: (row: PlayerCrew) => row.security_skill.max
 		},
 		{
 			label: 'Traits',
@@ -276,8 +276,8 @@ export function download(filename, text) {
 
 /**
  * Returns true if the crew member is immortalized
- * @param crew 
- * @returns 
+ * @param crew
+ * @returns
  */
 export function isImmortal(crew: PlayerCrew): boolean {
 	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
@@ -293,9 +293,9 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.player.character.crew.forEach(crew => {
 		if (crew.level === 100 && crew.equipment.length === 4) {
 			numImmortals.add(crew.archetype_id);
-		}		
+		}
 	});
-	
+
 	playerData.calc = {
 		numImmortals: numImmortals?.size ?? 0,
 		lastModified
@@ -305,7 +305,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
-	let unOwnedCrew = [] as PlayerCrew[];	
+	let unOwnedCrew = [] as PlayerCrew[];
 
 	for (let oricrew of allcrew) {
 		// Create a copy of crew instead of directly modifying the source (allcrew)
@@ -313,9 +313,9 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 		crew.rarity = crew.max_rarity;
 		crew.level = 100;
 		crew.have = false;
-		//crew.equipment = [0, 1, 2, 3];
+		crew.equipment = [0, 1, 2, 3];
 		crew.favorite = false;
-		
+
 		if (typeof crew.date_added === 'string') {
 			crew.date_added = new Date(crew.date_added);
 		}
@@ -331,7 +331,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			applyCrewBuffs(crew, buffConfig);
 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
 		}
-		
+
 		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
 		inroster.forEach(owned => {
 			crew.rarity = owned.rarity;
@@ -404,7 +404,7 @@ export function getActionFromItem(item?: PlayerCrew | CrewMember | ShipAction | 
 	let actionIn: ShipAction;
 
 	if (!item) return undefined;
-	
+
 	if ("bonus_type" in item) {
 		actionIn = item;
 	}
@@ -428,7 +428,7 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	if (!item) return "";
 	let actionIn = getActionFromItem(item, index);
 	if (!actionIn) return "";
-	const action = actionIn;	
+	const action = actionIn;
 	if (!action || !action.ability) return "";
 	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
 	if (action.ability.type === 0)
@@ -508,7 +508,7 @@ export function gradeToColor(grade: string): string | null {
 		case "F+":
 			return "tomato";
 
-					
+
 	}
 	return null;
 }
@@ -521,7 +521,7 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 		}
 		else {
 			return 0;
-		}		
+		}
 	};
 
 	return {
@@ -565,7 +565,7 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMem
 	let stash = TinyStore.getStore('staticStash', false, true);
 	if (stash) {
 		if (ownedCrew) {
-			let variantTraits = getVariantTraits(crew);			
+			let variantTraits = getVariantTraits(crew);
 			if (variantTraits && variantTraits.length >= 1) {
 				let filteredOwnedCrew = ownedCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
 				let finalResult = [ ...filteredOwnedCrew ];
@@ -576,13 +576,13 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMem
 				// because if they keep navigating to variants in the crew page, we'd
 				// like to give them as far to go as possible without losing state data.
 				// Since they can only navigate either back to crew tools or on to other variants from the
-				// crew page, this covers all bases.				
+				// crew page, this covers all bases.
 
 				for (let post of filteredOwnedCrew) {
 					let traits2 = getVariantTraits(post);
 					let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
 					let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-					
+
 					for (let varItem of ownedfiltered2 ?? []) {
 						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
 							finalResult.push(varItem);
@@ -601,7 +601,7 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMem
 						let traits2 = getVariantTraits(post);
 						let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
 						let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-						
+
 						for (let varItem of ownedfiltered2 ?? []) {
 							if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
 								finalResult.push(varItem);
@@ -656,7 +656,7 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 	if (bskills?.security_skill !== undefined && bskills.security_skill.core > 0) sk.push("security_skill");
 	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
 	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
-	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");	
+	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");
 	return sk;
 }
 
@@ -695,17 +695,17 @@ export interface ActionRanking {
 
 function compCharge(a: ChargePhase, b: ChargePhase) {
 	let r: number = 0;
-	
+
 	if (a.ability_amount && b.ability_amount) {
 		r = b.ability_amount - a.ability_amount;
 		if (r) return r;
 	}
-	
+
 	if (a.bonus_amount && b.bonus_amount) {
 		r = b.bonus_amount - a.bonus_amount;
 		if (r) return r;
 	}
-	
+
 	if (a.charge_time != b.charge_time) {
 		return a.charge_time - b.charge_time;
 	}
@@ -716,7 +716,7 @@ function compCharge(a: ChargePhase, b: ChargePhase) {
 	}
 
 	if (a.cooldown && b.cooldown) {
-		r = a.cooldown - b.cooldown;			
+		r = a.cooldown - b.cooldown;
 	}
 
 	return r;
@@ -813,7 +813,7 @@ export const shipStatSortConfig: ObjectNumberSortConfig = {
             props: "action/status",
             direction: 'ascending',
             nullDirection: 'descending',
-        },        
+        },
         {
             props: "action/penalty/type",
             direction: 'ascending',
@@ -878,7 +878,7 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 		if (!r) r = a.type - b.type;
 		return r;
 	});
-	
+
 	let ranks = {} as { [key: string]: number };
 
 	for (let res of result) {
@@ -897,7 +897,7 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 		if (!r) r = a.type - b.type;
 		return r;
 	});
-	
+
 	return result;
 }
 
@@ -906,32 +906,23 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
  * that each action is mapped to an ability amount, which is in turn mapped to the ability.
  * @param allCrew All crew you wish to sort.
  * @param config The optional configuration file to use. Default settings are used, otherwise.
- * @returns 
+ * @returns
  */
 export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }} {
 	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
 	let actions = allCrew;
-	
+
 	let types = sc.groupBy(actions, "action/ability/type", "no_ability");
 	// Create the tiers...
-	
+
 	let tiers = {} as { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }};
 	for (let key in Object.keys(types)) {
 		if (!(key in types) || types[key] === undefined) continue;
 		else {
 			tiers[key] = sc.groupBy(types[key], "action/ability/amount");
-		}		
+		}
 	}
-	
+
 	tiers["no_ability"] = sc.groupBy(types["no_ability"], "action/bonus_amount");
 	return tiers;
 }
-
-
-
-
-
-
-
-
-
