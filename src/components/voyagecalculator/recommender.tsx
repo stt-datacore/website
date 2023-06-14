@@ -21,6 +21,7 @@ import * as CalcHelpers from './calchelpers';
 import { Skill } from '../../model/crew';
 import { AllData, CalcConfig, CalcResult, Calculation, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { InitialOptions } from '../../model/game-elements';
+import { Helper } from './Helper';
 
 export const AllDataContext = React.createContext<AllData>({} as AllData);
 
@@ -42,7 +43,7 @@ export const Recommender = (props: RecommenderProps) => {
 	const [calculator, setCalculator] = useStateWithStorage(playerData.player.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = useStateWithStorage(playerData.player.dbid+'/voyage/calcOptions', {}, { rememberForever: true });
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
-	const [requests, setRequests] = React.useState<CalcHelpers.Helper[]>([]);
+	const [requests, setRequests] = React.useState<Helper[]>([]);
 	const [results, setResults] = React.useState<Calculation[]>([]);
 
 	React.useEffect(() => {
