@@ -265,7 +265,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => <>{prev} {curr}</>)}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					{', '}
 					{crew.traits_hidden
 						.map(trait => (
@@ -273,7 +273,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => <>{prev} {curr}</>)}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 				</p>
 
 				{crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
@@ -292,7 +292,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 									{col}
 								</Link>
 							))
-							.reduce((prev, curr) => <>{prev} {curr}</>)}
+							.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					</p>
 				)}
 
@@ -307,7 +307,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							.map((nick, idx) => (
 							<span key={idx}>{nick.cleverThing}{nick.creator ? <> (coined by <i>{nick.creator}</i>)</> : ''}</span>
 						))
-						.reduce((prev, curr) => <>{prev} {curr}</>)}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					</p>
 				)}
 			</React.Fragment>
