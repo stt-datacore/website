@@ -26,10 +26,10 @@ const ownedFilterOptions = [
 
 const ownedFilters = {
     'Show all crew': _ => _ => true,
-    'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol),
-    'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
-    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol),
-	'Show all crew not FF': data => crew => !data.some((c) => crew.symbol === c.symbol && c.rarity === c.max_rarity),
+    'Only show unowned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => !data.some((c) => crew.symbol === c.symbol),
+    'Only show owned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
+    'Show all owned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => data.some(c => crew.symbol === c.symbol),
+	'Show all crew not FF': (data: PlayerCrew[]) => (crew: PlayerCrew) => !data.some((c) => crew.symbol === c.symbol && c.rarity === c.max_rarity),
 };
 
 const rarityOptions: RarityOptions[] = [
