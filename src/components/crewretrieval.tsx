@@ -197,8 +197,8 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 	const [disabledPolestars, setDisabledPolestars] = useStateWithStorage<number[]>('crewretrieval/disabledPolestars', []);
 	const [addedPolestars, setAddedPolestars] = useStateWithStorage<string[]>('crewretrieval/addedPolestars', []);
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('crewretrieval/ownedFilter', ownedFilterOptions[0].value);
-	const [minRarity, setMinRarity] = useStateWithStorage('crewretrieval/minRarity', null);
-	const [collection, setCollection] = useStateWithStorage('crewretrieval/collection', null);
+	const [minRarity, setMinRarity] = useStateWithStorage<number | null>('crewretrieval/minRarity', null);
+	const [collection, setCollection] = useStateWithStorage<string | null>('crewretrieval/collection', null);
 
 	const [polestars, setPolestars] = React.useState<Polestar[] | null>(null);
 	const [data, setData] = React.useState<PlayerCrew[] | null>(null);
