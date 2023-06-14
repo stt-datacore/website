@@ -64,75 +64,75 @@ export function exportCrewFields(): ExportField[] {
 		},
 		{
 			label: 'Command core',
-			value: (row: PlayerCrew) => row.command_skill.core
+			value: (row: PlayerCrew) => row.command_skill?.core ?? 0
 		},
 		{
 			label: 'Command min',
-			value: (row: PlayerCrew) => row.command_skill.min
+			value: (row: PlayerCrew) => row.command_skill?.min ?? 0
 		},
 		{
 			label: 'Command max',
-			value: (row: PlayerCrew) => row.command_skill.max
+			value: (row: PlayerCrew) => row.command_skill?.max ?? 0
 		},
 		{
 			label: 'Diplomacy core',
-			value: (row: PlayerCrew) => row.diplomacy_skill.core
+			value: (row: PlayerCrew) => row.diplomacy_skill?.core ?? 0
 		},
 		{
 			label: 'Diplomacy min',
-			value: (row: PlayerCrew) => row.diplomacy_skill.min
+			value: (row: PlayerCrew) => row.diplomacy_skill?.min ?? 0
 		},
 		{
 			label: 'Diplomacy max',
-			value: (row: PlayerCrew) => row.diplomacy_skill.max
+			value: (row: PlayerCrew) => row.diplomacy_skill?.max ?? 0
 		},
 		{
 			label: 'Engineering core',
-			value: (row: PlayerCrew) => row.engineering_skill.core
+			value: (row: PlayerCrew) => row.engineering_skill?.core ?? 0
 		},
 		{
 			label: 'Engineering min',
-			value: (row: PlayerCrew) => row.engineering_skill.min
+			value: (row: PlayerCrew) => row.engineering_skill?.min ?? 0
 		},
 		{
 			label: 'Engineering max',
-			value: (row: PlayerCrew) => row.engineering_skill.max
+			value: (row: PlayerCrew) => row.engineering_skill?.max ?? 0
 		},
 		{
 			label: 'Medicine core',
-			value: (row: PlayerCrew) => row.medicine_skill.core
+			value: (row: PlayerCrew) => row.medicine_skill?.core ?? 0
 		},
 		{
 			label: 'Medicine min',
-			value: (row: PlayerCrew) => row.medicine_skill.min
+			value: (row: PlayerCrew) => row.medicine_skill?.min ?? 0
 		},
 		{
 			label: 'Medicine max',
-			value: (row: PlayerCrew) => row.medicine_skill.max
+			value: (row: PlayerCrew) => row.medicine_skill?.max ?? 0
 		},
 		{
 			label: 'Science core',
-			value: (row: PlayerCrew) => row.science_skill.core
+			value: (row: PlayerCrew) => row.science_skill?.core ?? 0
 		},
 		{
 			label: 'Science min',
-			value: (row: PlayerCrew) => row.science_skill.min
+			value: (row: PlayerCrew) => row.science_skill?.min ?? 0
 		},
 		{
 			label: 'Science max',
-			value: (row: PlayerCrew) => row.science_skill.max
+			value: (row: PlayerCrew) => row.science_skill?.max ?? 0
 		},
 		{
 			label: 'Security core',
-			value: (row: PlayerCrew) => row.security_skill.core
+			value: (row: PlayerCrew) => row.security_skill?.core ?? 0
 		},
 		{
 			label: 'Security min',
-			value: (row: PlayerCrew) => row.security_skill.min
+			value: (row: PlayerCrew) => row.security_skill?.min ?? 0
 		},
 		{
 			label: 'Security max',
-			value: (row: PlayerCrew) => row.security_skill.max
+			value: (row: PlayerCrew) => row.security_skill?.max ?? 0
 		},
 		{
 			label: 'Traits',
@@ -345,14 +345,14 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			// Use skills directly from player data when possible
 			if (owned.skills) {
 				for (let skill in CONFIG.SKILLS) {
-					crew[skill] = { core: 0, min: 0, max: 0 };
+					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
 				}
 				for (let skill in owned.skills) {
 					crew[skill] = {
 						core: owned.skills[skill].core,
 						min: owned.skills[skill].range_min,
 						max: owned.skills[skill].range_max
-					};
+					} as ComputedBuff;
 				}
 			}
 			// Otherwise apply buffs to base_skills

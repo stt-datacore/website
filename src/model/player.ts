@@ -3,7 +3,7 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, CrewMember, CrossFuseTarget, EquipmentSlot, Skill } from "./crew"
+import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
@@ -507,7 +507,15 @@ export interface Player {
     score?: number;
 
     utility?: PlayerUtility
-  }
+
+    // used for exports
+    command_skill?: ComputedBuff;
+    diplomacy_skill?: ComputedBuff;
+    security_skill?: ComputedBuff;
+    science_skill?: ComputedBuff;
+    medicine_skill?: ComputedBuff;
+    engineering_skill?: ComputedBuff;
+  } 
 
   export interface PlayerUtilityRanks {
     [key: string]: number[];
