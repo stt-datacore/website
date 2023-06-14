@@ -19,7 +19,7 @@ import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { PlayerData } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
 
 type ProfilePageProps = {};
@@ -102,7 +102,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => this.state.playerData && <ProfileCrew allCrew={this.state.allCrew} location={location} playerData={this.state.playerData} /> || <></>
+				render: () => this.state.playerData && <ProfileCrew allCrew={this.state.allCrew as PlayerCrew[]} location={location} playerData={this.state.playerData} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
