@@ -1148,7 +1148,7 @@ const CrewTable = (props: CrewTableProps) => {
 		const consumed = {};
 		group.forEach((comboId) => {
 			combos[comboId].forEach((polestar) => {
-				if (!polestar) return;
+				if (polestar === undefined) return;
 				if (consumed[polestar.symbol])
 					consumed[polestar.symbol]++;
 				else
@@ -1159,8 +1159,8 @@ const CrewTable = (props: CrewTableProps) => {
 			if (comboId >= start) {
 				let consumable = 0;
 				combo.forEach((polestar) => {
-					if (!polestar) return;
-					if (!consumed[polestar.symbol] || polestar.quantity-consumed[polestar.symbol] >= 1)
+					if (polestar === undefined) return;
+					if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
 						consumable++;
 				});
 				if (consumable == combo.length) {
@@ -1220,9 +1220,9 @@ const ComboGrid = (props: ComboGridProps) => {
 	}, [fuseIndex]);
 
 	// Reset indices if out of bounds after changing filters
-	if (!fuseGroups['x'+fuseIndex]) fuseIndex = 1;
+	if (fuseGroups['x'+fuseIndex] === undefined) fuseIndex = 1;
 	const groups = fuseGroups['x'+fuseIndex];
-	if (!groups[groupIndex]) groupIndex = 0;
+	if (groups[groupIndex] === undefined) groupIndex = 0;
 
 	const fuseOptions = [] as NumericOptions[];
 	[1, 2, 3, 4, 5].forEach(fuse => {
