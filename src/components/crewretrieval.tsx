@@ -490,7 +490,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	function renderContent(): JSX.Element {
 		if (!modalIsOpen) return (<></>);
 
-		if (!allKeystones) {
+		if (!allKeystones || !allKeystones.length) {
 			calculateKeystoneOdds();
 			calculateControl();
 			return (<></>);
@@ -572,7 +572,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			if (crew) {
 				data = data.filter(k => (k.filter?.type == 'trait' && k.filter.trait && crew.traits.includes(k.filter.trait))
 				|| (k.filter?.type == 'rarity' && k.filter.rarity == crew.max_rarity)
-				|| (k.filter?.type == 'skill' && k.filter.skill && k.filter.skill in crew.base_skills));
+				|| (k.filter?.type == 'skill' && k.filter.skill && crew.base_skills[k.filter.skill] !== undefined));
 			}
 			else {
 				data = [];
