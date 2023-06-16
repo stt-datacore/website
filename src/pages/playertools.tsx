@@ -53,7 +53,7 @@ export const playerTools: PlayerTools = {
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
-		render: ({playerData}) => <ProfileCrewMobile playerData={playerData} isMobile={false} />
+		render: ({playerData, allCrew}) => <ProfileCrewMobile allCrew={allCrew} playerData={playerData} isMobile={false} />
 	},
 	'crew-retrieval': {
 		title: 'Crew Retrieval',
