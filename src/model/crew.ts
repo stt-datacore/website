@@ -58,6 +58,7 @@ export interface CrewMember {
 export interface EquipmentSlot {
   level: number
   symbol: string
+  imageUrl?: string;
 }
 
 export enum BaseSkillFields {

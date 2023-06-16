@@ -6,6 +6,9 @@ import DropdownOpts from './dropdownopts';
 
 import { bonusCrewForCurrentEvent } from './../utils/playerutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember } from '../model/crew';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 
 enum SkillSort {
 	Base = '.core',
@@ -21,7 +24,8 @@ type HandleSortOptions = {
 };
 
 type ProfileCrewMobileProps = {
-	playerData: any;
+	playerData: PlayerData;
+	allCrew: CrewMember[];
 	isMobile: boolean;
 };
 
@@ -30,18 +34,21 @@ type ProfileCrewMobileState = {
 	defaultColumn: 'bigbook_tier',
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: any[];
+	data: PlayerCrew[];
 	activeItem: string;
 	includeFrozen: boolean;
 	excludeFF: boolean;
 	onlyEvent: boolean;
 	sortKind: SkillSort;
 	itemsReady: boolean;
+	buffs: BuffStatTable;
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
+
+		const buffConfig = calculateBuffConfig(props.playerData.player);
 
 		this.state = {
 			column: 'bigbook_tier',
@@ -54,7 +61,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			excludeFF: false,
 			onlyEvent: false,
 			sortKind: SkillSort.Base,
-			itemsReady: false
+			itemsReady: false,
+			buffs: buffConfig
 		};
 	}
 
@@ -189,7 +197,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	render() {
-		const { includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
+		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
+		const { allCrew, playerData } = this.props;
 		let { data, itemsReady } = this.state;
 
 		const { isMobile } = this.props;
@@ -308,7 +317,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}}
 					>
 						{data.map((crew, idx) => (
-							<VaultCrew key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
+							<VaultCrew allCrew={allCrew} playerData={playerData} buffs={buffs} key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
 						))}
 					</div>
 				</Segment>
