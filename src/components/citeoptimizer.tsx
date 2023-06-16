@@ -31,7 +31,7 @@ type CiteOptimizerState = {
 	citePage: number;
 	trainingPage: number;
 	paginationRows: number;
-	citeData: any;
+	citeData: { crewToCite: PlayerCrew[], crewToTrain: PlayerCrew[] } | undefined;
 	currentCrew: CrewMember | null | undefined;
 	touchCrew: CrewMember | null | undefined;
 	touchToggled: boolean;
@@ -75,7 +75,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 	cc = false;
 	
-	renderTable(data: PlayerCrew[], training = true) {
+	renderTable(data?: PlayerCrew[], training = true) {
+		if (!data) return <></>;
 		const createStateAccessors = (name) => [
 			this.state[name],
 			(value: any) => this.setState((prevState) => { prevState[name] = value; return prevState; })
@@ -111,6 +112,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</React.Fragment>
 						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
+						<Table.HeaderCell>In Portal</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -168,6 +170,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
+								<Table.Cell>
+									{crew.in_portal ? "Yes" : "No"}
+								</Table.Cell>
 							</Table.Row>
 						);
 					})}
@@ -205,10 +210,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 	
 	render() {
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
 
-		let { citeData } = this.state;
+		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		const { citeData } = this.state;
+
 		let compact = true;
+
 		return (
 			<>
 				<Accordion
@@ -251,8 +258,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<>
 						<Tab						
 						 	panes={[
-							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData.crewToCite, false) },
-							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData.crewToTrain, true) }
+							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, false) },
+							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, true) }
 						]} />
 						</>
 					}						
