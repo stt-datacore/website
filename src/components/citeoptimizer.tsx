@@ -112,7 +112,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</React.Fragment>
 						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
-						<Table.HeaderCell>In Portal</Table.HeaderCell>
+						{/* <Table.HeaderCell>In Portal</Table.HeaderCell> */}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -170,9 +170,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
-								<Table.Cell>
+								{/* <Table.Cell>
 									{crew.in_portal ? "Yes" : "No"}
-								</Table.Cell>
+								</Table.Cell> */}
 							</Table.Row>
 						);
 					})}
