@@ -303,7 +303,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         >
                             <StatLabel
                                 title="CAB Rating"
-                                value={crew.cab_ov as string}
+                                value={crew.cab_ov ?? 'None'}
                             />
                             <StatLabel
                                 title="CAB Grade"
@@ -316,13 +316,13 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                             ) ?? undefined,
                                         }}
                                     >
-                                        {crew.cab_ov_grade}
+                                        {crew.cab_ov_grade ?? 'None'}
                                     </div>
                                 }
                             />
                             <StatLabel
                                 title="CAB Rank"
-                                value={"" + crew.cab_ov_rank}
+                                value={crew.cab_ov_rank ?? 'None'}
                             />
                         </div>
                     </div>
