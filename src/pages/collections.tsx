@@ -59,7 +59,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 												{allcrew?.find(c => c.symbol === crew)?.name}
 											</Link>
 										))
-										.reduce((prev, curr) => <>{prev} {curr}</>)}
+										.reduce((prev, curr) => <>{prev}, {curr}</>)}
 								</Item.Description>
 							</Item.Content>
 						</Item>
