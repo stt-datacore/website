@@ -4,6 +4,7 @@ import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTa
 import { BuffStatTable } from "../../utils/voyageutils";
 import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
+import CONFIG from "../CONFIG";
 
 export interface ShipHoverStatProps extends HoverStatProps {
     ship: Ship | undefined | null;
@@ -121,6 +122,22 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         }
     }    
 
+    protected checkBorder = () => {
+        const { ship } = this.props;
+        const { boxStyle } = this.state;
+
+        if (ship) {
+            let mr = ship.rarity;
+            let clr = CONFIG.RARITIES[mr].color;
+            if (boxStyle.borderColor !== clr) {
+                this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
@@ -146,6 +163,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
     }
 
     protected renderContent = (): JSX.Element =>  {
+        if (this.checkBorder()) return <></>;
         const { ship: ship } = this.props;
         const compact = true;    
 

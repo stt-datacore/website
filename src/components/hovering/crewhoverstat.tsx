@@ -7,6 +7,7 @@ import { Label } from "semantic-ui-react";
 import { applySkillBuff } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
+import CONFIG from "../CONFIG";
 
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
@@ -143,11 +144,27 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
 export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatState> {
     constructor(props: CrewHoverStatProps) {
-        super(props);        
+        super(props);                
         this.state = {
             ... this.state
-        }
+        };
     }    
+
+    protected checkBorder = () => {
+        const { crew } = this.props;
+        const { boxStyle } = this.state;
+
+        if (crew) {
+            let mr = crew.max_rarity;
+            let clr = CONFIG.RARITIES[mr].color;
+            if (boxStyle.borderColor !== clr) {
+                this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
@@ -174,6 +191,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
 
     protected renderContent = (): JSX.Element =>  {
+        if (this.checkBorder()) return <></>;
         const { crew, openCrew } = this.props;
         const compact = true;    
 
@@ -207,8 +225,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
         const closeClick = () => {
             this.deactivate();
-        }
-
+        }   
+        
         return crew ? (<CrewPresenter close={() => closeClick()} openCrew={(crew) => navClick()} crew={crew} storeName={this.props.targetGroup} hover={true} onShipToggle={() => shipToggle()} />) : <></>
         
     }

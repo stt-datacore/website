@@ -19,6 +19,7 @@ export interface HoverStatProps {
     targetGroup: string;
     offset?: Coord;
     windowEdgeMinPadding?: Coord;
+    boxStyle?: React.CSSProperties;
 }
 
 /**
@@ -58,6 +59,7 @@ export interface HoverStatTargetProps<T> {
 export interface HoverStatState {
     divId: string;
     touchToggled: boolean;
+    boxStyle: React.CSSProperties;
 }
 
 export interface HoverStatTargetState {
@@ -145,6 +147,8 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
  * HoverStat abstract hover window class
  */
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
+
+    private _unmounted: boolean = false;
     protected _elems: HTMLElement[] | undefined = undefined;
     protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
 
@@ -176,7 +180,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
         this.state = {
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
-            touchToggled: false
+            touchToggled: false,
+            boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
     }
 
@@ -184,9 +189,9 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         if (key === 'cancelled') return;
         this.forceUpdate();
     }
-    private _unmounted: boolean = false;
+
     render() {
-        const { divId } = this.state;
+        const { divId, boxStyle } = this.state;
         const renderContent = this.renderContent;
         const me = this;
 
@@ -203,7 +208,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
         // console.log("Render HoverStat")
         return (
-            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
+            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={boxStyle}>                
                 {renderContent()}
             </div>
 		);
