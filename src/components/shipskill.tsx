@@ -33,6 +33,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
             for (let i = 0; i < actions; i++) {
                 elems.push(
                     <img
+                        key={i}
                         src="/media/ship/usage-bullet.png"
                         style={{ paddingLeft: "5px", height: "12px" }}
                     />
@@ -43,8 +44,8 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
 
         return (
             <div style={{ marginBottom: "8px", fontSize: this.props.fontSize ?? "1em" }}>
-                {actions.length && actions.map((action) => 
-                    <div style={{marginTop: "4px", border: this.props.withBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withBorder ? "2px" : "0px"}}>
+                {actions.length && actions.map((action, index) => 
+                    <div key={index} style={{marginTop: "4px", border: this.props.withBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withBorder ? "2px" : "0px"}}>
                         <div
                             style={{                                
                                 display: "flex",

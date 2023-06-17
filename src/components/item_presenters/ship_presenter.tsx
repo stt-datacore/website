@@ -197,6 +197,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     </div>
                     {stats.map((statline, index) => 
                         <div
+                            key={index}
                             style={{
                                 display: "flex",
                                 flexWrap: "wrap",
@@ -208,7 +209,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             }}
                         >
                             {statline.map((stat, index) =>                             
-                                <div style={{ 
+                                <div key={index} style={{ 
                                         width: window.innerWidth < 1024 ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
