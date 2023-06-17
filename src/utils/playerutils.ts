@@ -43,8 +43,7 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.scan_speedups_today;
 	delete p.player.character.replay_energy_rate;
 	delete p.player.character.seconds_from_replay_energy_basis;
-	delete p.player.character.seconds_from_last_boost_claim;
-	delete p.player.character.crew_borrows;
+	delete p.player.character.seconds_from_last_boost_claim; 
 	delete p.player.character.crew_shares;
 	delete p.player.character.crew_limit_increase_per_purchase;
 	delete p.player.character.next_crew_limit_increase_cost;

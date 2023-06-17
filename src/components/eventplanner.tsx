@@ -23,7 +23,7 @@ const EventPlanner = (props: EventPlannerProps) => {
 
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', []);
-
+	const [ignoreSharedCrew, setIgnoreSharedCrew ] = useStateWithStorage('tools/ignoreSharedCrew', false)
 	const [activeEvents, setActiveEvents] = React.useState(undefined);
 	if (!activeEvents) {
 		identifyActiveEvents();
@@ -68,7 +68,17 @@ const EventPlanner = (props: EventPlannerProps) => {
 		}
 
 		myCrew.push(crewman);
-	});
+	}); 
+
+	const sharedCrew = playerData.player.character.crew_borrows;
+	if (!ignoreSharedCrew && sharedCrew) {
+		for (const skill in CONFIG.SKILLS) 
+			sharedCrew[0][skill] = sharedCrew[0].skills[skill] ?? {core: 0, range_min: 0, range_max: 0};
+		sharedCrew.prospect = true;
+		sharedCrew.id = myCrew.length + 1;
+		sharedCrew.base_skills =
+		myCrew.push(sharedCrew[0]);
+	}
 
 	const buffConfig = calculateBuffConfig(playerData.player);
 
