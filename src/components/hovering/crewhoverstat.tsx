@@ -13,7 +13,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 		const { title, value } = this.props;
 
 		return (
-			<Label size="small" style={{ marginBottom: '0.5em', width: "12em" }}>
+			<Label size="small" style={{ marginBottom: '0.5em', width: "12.5em" }}>
 				{title}
 				<Label.Detail>{value}</Label.Detail>
 			</Label>
