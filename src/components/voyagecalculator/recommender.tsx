@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { Icon, Form, Button, Dropdown, Message, Checkbox, Select, Header, Image, Tab, Card, Popup } from 'semantic-ui-react';
+import { Icon, Form, Button, Dropdown, Message, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import CONFIG from '../CONFIG';
@@ -611,7 +611,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 };
 
 type VoyageResultPaneProps = {
-	result: CalcResult;
+	result: CalcResult | undefined;
 	resultIndex: number;
 	requests: any[];
 	requestId: string;
@@ -693,7 +693,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 									content={<>Get more confident estimate</>}
 									trigger={
 										<Button icon onClick={() => { if (result.confidence !== 1) estimateResult(resultIndex, data, 30000); }}>
-											<Icon name={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
+											<Icon name={`hourglass ${confidence[result.confidence]}` as SemanticICONS} color={result.confidence === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>

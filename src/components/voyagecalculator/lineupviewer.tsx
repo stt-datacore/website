@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button, Table, Popup, Icon, Card, Label } from 'semantic-ui-react';
+import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
 import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
@@ -31,9 +31,19 @@ const LineupViewer = (props: LineupViewerProps) => {
 		};
 		Object.keys(crew.skills).forEach(crewSkill => {
 			let skr = skillRankings.find(sr => sr.skill === crewSkill);
-			const rank = skr?.roster.filter(c => Object.keys(c.skills)
+
+			// null check not necessary from code perspective but VS Code
+			// is still linting:
+
+			// const rank = skr?.roster.filter(c => Object.keys(c.skills)
+			// 	.includes(seatSkill) && !usedCrew.includes(c.id))
+			// 	.map(c => c.id).indexOf(crew.id) + 1;
+
+			// proposed fix:
+			const rank = (skr?.roster?.filter(c => Object.keys(c.skills)
 				.includes(seatSkill) && !usedCrew.includes(c.id))
-				.map(c => c.id).indexOf(crew.id) + 1;
+				?.map(c => c.id)?.indexOf(crew.id) ?? 0) + 1;
+
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
 			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
@@ -181,7 +191,7 @@ const TableView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}` as SemanticICONS} />{shipData.index}
 										</span>
 									} />
 								</span>
@@ -290,7 +300,7 @@ const GridView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}` as SemanticICONS} />{shipData.index}
 										</span>
 									} />
 								</span>
