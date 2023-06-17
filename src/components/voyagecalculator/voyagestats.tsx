@@ -57,7 +57,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		roster: [],
 	};
 
-	constructor(props) {
+	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
 		super(props);
 		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
 
