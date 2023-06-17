@@ -184,16 +184,27 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         if (key === 'cancelled') return;
         this.forceUpdate();
     }
-
+    private _unmounted: boolean = false;
     render() {
         const { divId } = this.state;
+        const renderContent = this.renderContent;
+        const me = this;
+
         const containerOver = (e) => {
+            if (me._unmounted) return;
             this.cancelled = true;
         }
+
+        const containerOut = (e) => {
+            if (me._unmounted) return;
+            this.cancelled = false; 
+            this.deactivate();
+        }
+
         // console.log("Render HoverStat")
         return (
-            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => { this.cancelled = false; this.deactivate();}} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
-                {this.renderContent()}
+            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
+                {renderContent()}
             </div>
 		);
 	}
@@ -504,6 +515,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     }
  
     componentWillUnmount(): void {
+        this._unmounted = true;
         this.observer.disconnect();
         if (!this._elems) return;
         for (let pl of this._elems) {
