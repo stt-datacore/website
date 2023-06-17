@@ -205,9 +205,10 @@ export class IAmPicardHelper extends Helper {
 		config.ps = aggregates[primary_skill];
 		config.ss = aggregates[secondary_skill];
 
-		// config.others =
-		// 	Object.values(aggregates)
-		// 		.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
+		config.others =
+			Object.values(aggregates)
+				.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
+
 		const VoyageEstConfig = {
 			config,
 			worker: 'voyageEstimate'

@@ -33,7 +33,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 			let skr = skillRankings.find(sr => sr.skill === crewSkill);
 			const rank = skr?.roster.filter(c => Object.keys(c.skills)
 				.includes(seatSkill) && !usedCrew.includes(c.id))
-				.map(c => c.id).indexOf(crew.id) ?? 0 + 1;
+				.map(c => c.id).indexOf(crew.id) + 1;
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
 			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
@@ -74,7 +74,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 				return vs2 - vs1;
 			})
 	}));
-	
+
 	const usedCrew = [] as number[];
 	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
 		const { crew, name, trait, skill } = (Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
@@ -181,7 +181,7 @@ const TableView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon title={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
 										</span>
 									} />
 								</span>
@@ -290,7 +290,7 @@ const GridView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon title={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
 										</span>
 									} />
 								</span>

@@ -48,11 +48,11 @@ interface Bins {
 }
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
-	
+
 	worker: Worker;
 	ship?: Ship;
 	config: VoyageStatsConfig;
-	
+
 	static defaultProps = {
 		roster: [],
 	};
@@ -72,7 +72,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return;
 		console.log("VoyageStat Ships");
 		console.log(ships);
-		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const duration = voyageData.voyage_duration ?? 0;
@@ -179,11 +179,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					axisLeft={{legend : 'Chance (%)', legendOffset: -36, legendPosition: 'middle'}}
 					margin={{ top: 50, right: 130, bottom: 50, left: 100 }}
 					enablePoints= {true}
-					pointSize={0}					
+					pointSize={0}
 					crosshairType={undefined}
 					tooltip={input => {
 						let data = input.point.data;
-						return <>{input.point.serieId}: {(data.y as number).toFixed(2)}% chance of reaching ${this._formatTime(data.x as number)}`</>;
+						return <>{input.point.serieId}: {(data.y as number).toFixed(2)}% chance of reaching {this._formatTime(data.x as number)}</>;
 					}}
 					legends={[
 						{
@@ -317,10 +317,10 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				return -1;
 			return a.type - b.type;
 		});
-		
+
 		const hideRarity = entry => entry.type == 3;
 		const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
-		const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : undefined;			
+		const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : undefined;
 		const assetURL = file => {
 			let url = file === 'energy_icon'
 				? 'atlas/energy_icon.png'
@@ -339,7 +339,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			item => '',
 			item => {
 				const owned = roster?.filter(c => c.symbol == item.symbol);
-				
+
 				for (const c of owned ?? [])
 					if (c.rarity < c.max_rarity)
 						return '(Fusable)';
@@ -354,7 +354,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			item => '',
 			itemsOwned	/* ship schematics */
 		];
-		
+
 		var me = this;
 
 		return (
@@ -423,7 +423,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
 		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
-		
+
 		// Adds/Removes panels from the active list
 		const flipItem = (items: string[], item: string) => items.includes(item)
 			? items.filter(i => i != item)
