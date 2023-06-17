@@ -42,7 +42,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 			// proposed fix:
 			const rank = (skr?.roster?.filter(c => Object.keys(c.skills)
 				.includes(seatSkill) && !usedCrew.includes(c.id))
-				?.map(c => c.id)?.indexOf(crew.id) ?? 0) + 1;
+				?.map(c => c.id)?.indexOf(crew.id) ?? -1) + 1;
 
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
