@@ -135,7 +135,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             }
         }
         
-        return crew ? (<div style={{ display: "flex", flexDirection: "row" }}>
+        return crew ? (<div style={{ fontSize: "10pt", display: "flex", flexDirection: "row" }}>
                     <div style={{ 
                         zIndex: -1, 
                         position: "absolute", 
@@ -162,7 +162,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                                style={{ height: compact ? (this.showShipAbility ? "15em" : "9.5em") : "25em", marginRight: "8px" }}
+                                style={{ height: compact ? (this.showShipAbility ? "18em" : "9.5em") : "25em", marginRight: "8px" }}
                             />
                         </a>
                     </div>
