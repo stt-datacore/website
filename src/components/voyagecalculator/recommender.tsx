@@ -162,7 +162,7 @@ export const Recommender = (props: RecommenderProps) => {
 		if (results.length === 0)
 			return (<></>);
 
-		// In-game voyage crew picker ignores immortalized crew and crew active on shuttles
+		// In-game voyage crew picker ignores frozen crew and crew active on shuttles
 		const availableRoster = myCrew.filter(c => c.immortal <= 0 && c.active_status !== 2);
 
 		// Compare best values among ALL results
@@ -212,7 +212,6 @@ export const Recommender = (props: RecommenderProps) => {
 		const panes = results.map((result, resultIndex) => ({
 			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
 			render: () => (
-				result.result &&
 				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultCompared={result.compared ?? ""}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
@@ -391,7 +390,7 @@ export const Recommender = (props: RecommenderProps) => {
 					result.name = formatTime(estimate.refills[0].result);
 					if (result.result) {
 						result.result.estimate = estimate;
-						result.result.confidence = 2;	
+						result.result.confidence = 2;
 					}
 					return [...prevResults];
 				});
@@ -606,7 +605,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 				return { key: c.id, value: c.id, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
 			});
 			options.initialized = true;
-			setOptions({...options});	
+			setOptions({...options});
 		}
 	}
 };
@@ -621,7 +620,7 @@ type VoyageResultPaneProps = {
 	estimateResult: (resultIndex: number, voyageConfig: any, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
 	roster: PlayerCrew[];
-	resultCompared: string;	
+	resultCompared: string;
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
@@ -694,7 +693,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 									content={<>Get more confident estimate</>}
 									trigger={
 										<Button icon onClick={() => { if (result.confidence !== 1) estimateResult(resultIndex, data, 30000); }}>
-											<Icon title={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
+											<Icon name={`hourglass ${confidence[result.confidence]}`} color={result.confidence === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>
