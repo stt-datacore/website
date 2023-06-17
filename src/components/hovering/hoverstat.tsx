@@ -190,7 +190,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         const containerOver = (e) => {
             this.cancelled = true;
         }
-        console.log("Render HoverStat")
+        // console.log("Render HoverStat")
         return (
             <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => { this.cancelled = false; this.deactivate();}} className="ui segment" style={{position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px"}}>
                 {this.renderContent()}
@@ -407,7 +407,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 return;
             }
             if (target.src.includes("star_reward")) return;
-            console.log(target.tagName);
+            //console.log(target.tagName);
             this.activate(target);
         }
     }
