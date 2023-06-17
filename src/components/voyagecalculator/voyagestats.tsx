@@ -12,14 +12,14 @@ import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
 import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { Estimate, VoyageStatsConfig } from '../../model/worker';
+import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
 	numSims?: number;
-	ships: Ship[];
+	ships: Ship[] | VoyageConsideration[];
 	showPanels: string[];
 	estimate?: Estimate;
 	roster?: PlayerCrew[];
@@ -72,7 +72,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return;
 		console.log("VoyageStat Ships");
 		console.log(ships);
-		this.ship = ships.length == 1 ? ships[0].ship : ships.find(s => s.id == voyageData.ship_id);
+
+		this.ship = ships.length == 1 ? (ships[0] as VoyageConsideration).ship : (ships as Ship[]).find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const duration = voyageData.voyage_duration ?? 0;

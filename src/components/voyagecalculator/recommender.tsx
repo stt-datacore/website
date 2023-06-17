@@ -271,8 +271,6 @@ export const Recommender = (props: RecommenderProps) => {
 					const result = prevResults.find(r => r.id === requestId);
 					if (result) {
 						if (calcState === CalculatorState.Done) {
-							console.log("Result");
-							console.log(result);
 							result.name = formatTime(reqResult.estimate.refills[0].result);
 							result.calcState = CalculatorState.Done;
 							sendTelemetry(requestId, reqResult);
@@ -613,7 +611,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 type VoyageResultPaneProps = {
 	result: CalcResult | undefined;
 	resultIndex: number;
-	requests: any[];
+	requests: Helper[];
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
@@ -628,6 +626,8 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	const { result, resultIndex, resultCompared, requests, requestId, calcState, abortCalculation, estimateResult, dismissResult, roster } = props;
 
 	const request = requests.find(r => r.id === requestId);
+	console.log("Voyage Request")
+	console.log(request);
 	if (!request) return (<></>);
 
 	if (!result) {
@@ -648,7 +648,7 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	if (result.entries) {
 		result.entries.forEach((entry, idx) => {
 			let acrew = request.consideredCrew.find(c => c.id === entry.choice.id);
-			data.crew_slots[entry.slotId].crew = acrew;
+			data.crew_slots[entry.slotId].crew = acrew ?? {} as PlayerCrew;
 		});
 	}
 	data.skill_aggregates = result.aggregates;
