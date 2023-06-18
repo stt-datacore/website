@@ -22,7 +22,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ShipSkill } from '../components/shipskill';
-import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+const DEFAULT_MOBILE_WIDTH = 768;
 
 export interface CrewPageOptions {
 	key: string;
@@ -88,12 +88,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	readonly stash = TinyStore.getStore('staticStash', false, true);
 
 	componentWillUnmount(): void {
-		window.removeEventListener('keydown', (e) => this.windowKey(e))
+		window.removeEventListener('keydown', (e) => this._windowKey(e))
+		window.removeEventListener('resize', (e) => this._windowSize(e))
 		
 	}
 
 	componentDidMount() {
-		window.addEventListener('keydown', (e) => this.windowKey(e))
+		window.addEventListener('keydown', (e) => this._windowKey(e))
+		window.addEventListener('resize', (e) => this._windowSize(e))
 		if (this.stash.containsKey('owned')) {
 			this.ownedCrew = this.stash.getValue('owned');
 			//stash.removeValue('owned');				
@@ -129,13 +131,17 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		return isLoggedIn ? window.localStorage.getItem('username') : '';
 	}
 	
-	windowKey = (e: KeyboardEvent) => {
+	_windowKey = (e: KeyboardEvent) => {
 			
 		if (e.key === "Escape") {
 			if (this.state.itemBig) {
 				this.setState({ ...this.state, itemBig: !this.state.itemBig });	
 			}
 		}
+	}
+
+	_windowSize = (e: Event) => {
+		this.setState({ ... this.state });
 	}
 
 	render() {
