@@ -12,6 +12,7 @@ import CABExplanation from './cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
 import { ShipSkill } from './shipskill';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 export type StatLabelProps = {
 	title: string;
@@ -65,7 +66,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		return (
 			<React.Fragment>
 				{compact ? (
-					<div style={{display:"flex",  width: "100%",flexDirection: "row", justifyContent: "space-evenly"}}>
+					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center"}}>
 					<Segment>
 						<Grid columns={2}>
 							<Grid.Column width={4}>
@@ -77,13 +78,19 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 									data={crew.base_skills.security_skill}
 									scale={compact ? 0.75 : 1}
 								/>
-								<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat 
+									skill_name="command_skill" 
+									data={crew.base_skills.command_skill} 
+									scale={compact ? 0.75 : 1} />
 								<CrewStat
 									skill_name="diplomacy_skill"
 									data={crew.base_skills.diplomacy_skill}
 									scale={compact ? 0.75 : 1}
 								/>
-								<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat 
+									skill_name="science_skill" 
+									data={crew.base_skills.science_skill} 
+									scale={compact ? 0.75 : 1} />
 								<CrewStat
 									skill_name="medicine_skill"
 									data={crew.base_skills.medicine_skill}
@@ -99,20 +106,41 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</Segment>
 					</div>
 				) : (
-					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly"}}>
 						<Segment>
-							<CrewStat skill_name="security_skill" data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="diplomacy_skill" data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="medicine_skill" data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
+						<div style={{
+								display:"flex", 
+								width: "100%", 
+								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+								justifyContent: "space-between",
+								flexWrap: "wrap",								
+								}}>
+							<CrewStat 
+								skill_name="security_skill" 
+								data={crew.base_skills.security_skill} 
+								scale={compact ? 0.75 : 1} />
+							<CrewStat 
+								skill_name="command_skill" 
+								data={crew.base_skills.command_skill} 
+								scale={compact ? 0.75 : 1} />
+							<CrewStat 
+								skill_name="diplomacy_skill" 
+								data={crew.base_skills.diplomacy_skill} 
+								scale={compact ? 0.75 : 1} />
+							<CrewStat 
+								skill_name="science_skill" 
+								data={crew.base_skills.science_skill} 
+								scale={compact ? 0.75 : 1} />
+							<CrewStat 
+								skill_name="medicine_skill" 
+								data={crew.base_skills.medicine_skill} 
+								scale={compact ? 0.75 : 1} />
 							<CrewStat
 								skill_name="engineering_skill"
 								data={crew.base_skills.engineering_skill}
 								scale={compact ? 0.75 : 1}
 							/>
-						</Segment>
 						</div>
+						</Segment>
 					)}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
@@ -128,6 +156,14 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 										<Segment.Group raised>
 											{crew.skill_data.map((sk: any, idx: number) => (
 												<Segment key={idx}>
+													<div style={{
+														display:"flex", 
+														width: "100%", 
+														flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+														justifyContent: "space-between",
+														flexWrap: "wrap",								
+														}}>
+													<div style={{display:"block"}}>
 													<Rating
 														defaultRating={sk.rarity}
 														maxRating={crew.max_rarity}
@@ -135,6 +171,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 														size="small"
 														disabled
 													/>
+													</div>
 													<CrewStat skill_name="security_skill" data={sk.base_skills.security_skill} scale={0.75} />
 													<CrewStat skill_name="command_skill" data={sk.base_skills.command_skill} scale={0.75} />
 													<CrewStat skill_name="diplomacy_skill" data={sk.base_skills.diplomacy_skill} scale={0.75} />
@@ -145,6 +182,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 														data={sk.base_skills.engineering_skill}
 														scale={0.75}
 													/>
+													</div>
 												</Segment>
 											))}
 										</Segment.Group>
@@ -180,37 +218,38 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				{!compact && (
 					<>
 					
-					<div style={{
-						display: "flex", 
-						flexDirection: "row", 
-						justifyContent:"space-evenly", 
-						alignItems: "center",
-						margin: "0.25em",
-						flexWrap: "wrap"}}>
-						<Statistic.Group size="tiny">
-							{markdownRemark.frontmatter.events !== null && (
+						<div style={{
+							display: "flex", 
+							flexDirection: "row", 
+							justifyContent:"space-evenly", 
+							alignItems: "center",
+							margin: "0.25em",
+							flexWrap: "wrap"}}>
+							<Statistic.Group size="tiny">
+								{markdownRemark.frontmatter.events !== null && (
+									<Statistic>
+										<Statistic.Label>Events</Statistic.Label>
+										<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+									</Statistic>
+								)}
 								<Statistic>
-									<Statistic.Label>Events</Statistic.Label>
-									<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
+									<Statistic.Label>Big Book Tier</Statistic.Label>
+									<Statistic.Value>{formatTierLabel(crew)}</Statistic.Value>
 								</Statistic>
-							)}
-							<Statistic>
-								<Statistic.Label>Big Book Tier</Statistic.Label>
-								<Statistic.Value>{formatTierLabel(crew)}</Statistic.Value>
-							</Statistic>
-							<Statistic>
-								<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
-								<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
-							</Statistic>
-							{!compact && markdownRemark.frontmatter.in_portal !== null && (
-								<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
-									<Statistic.Label>Portal</Statistic.Label>
-									<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
+								<Statistic>
+									<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
+									<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
 								</Statistic>
-							)}
+								{!compact && markdownRemark.frontmatter.in_portal !== null && (<>
+									<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
+										<Statistic.Label>Portal</Statistic.Label>
+										<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
+									</Statistic>
+									</>)}
 							</Statistic.Group>						
 						</div>
 						
+						<br></br>
 
 						<div style={{
 							display: "flex", 

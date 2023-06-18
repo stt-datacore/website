@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
-import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { StatLabelProps } from "../commoncrewdata";
 import { Label } from "semantic-ui-react";
 import { applySkillBuff } from "../../utils/crewutils";
@@ -14,7 +14,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 		const { title, value } = this.props;
 
 		return (
-			<Label size="small" style={{ marginBottom: '0.5em', width: "12.5em" }}>
+			<Label size="small" style={{ marginBottom: '0.5em', marginLeft: 0, width: "12.5em" }}>
 				{title}
 				<Label.Detail>{value}</Label.Detail>
 			</Label>
@@ -146,7 +146,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     constructor(props: CrewHoverStatProps) {
         super(props);                
         this.state = {
-            ... this.state
+            ... this.state,
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         };
     }    
 
@@ -192,7 +193,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected renderContent = (): JSX.Element =>  {
         if (this.checkBorder()) return <></>;
-        const { crew, openCrew } = this.props;
+        const { targetGroup, crew, openCrew } = this.props;
+        const { mobileWidth } = this.state;
         const compact = true;    
 
         if (!crew) {
@@ -227,7 +229,15 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             this.deactivate();
         }   
         
-        return crew ? (<CrewPresenter close={() => closeClick()} openCrew={(crew) => navClick()} crew={crew} storeName={this.props.targetGroup} hover={true} onShipToggle={() => shipToggle()} />) : <></>
+        return crew ? (<CrewPresenter 
+                        close={() => closeClick()} 
+                        openCrew={(crew) => navClick()} 
+                        crew={crew} 
+                        storeName={targetGroup} 
+                        hover={true} 
+                        mobileWidth={mobileWidth}
+                        onShipToggle={() => shipToggle()} 
+                        />) : <></>
         
     }
     

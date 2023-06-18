@@ -5,11 +5,13 @@ import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "../shipskill";
 import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface PresenterProps {
     hover: boolean;
     storeName: string;
     disableBuffs?: boolean;
+    mobileWidth?: number;
     close?: () => void;
 }
 
@@ -19,7 +21,7 @@ export interface ShipPresenterProps extends PresenterProps {
 }
 
 export interface ShipPresenterState {
-
+    mobileWidth: number;
 }
 
 export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterState> {
@@ -29,7 +31,8 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     constructor(props: ShipPresenterProps) {
         super(props);        
         this.state = {
-            ... this.state
+            ... this.state,
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
         this.tiny = TinyStore.getStore(props.storeName)
@@ -61,6 +64,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
 
     render(): JSX.Element {
         const { ship: ship } = this.props;
+        const { mobileWidth } = this.state;
         const compact = this.props.hover;    
 
         if (!ship) {
@@ -123,12 +127,12 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         return ship ? (<div style={{ 
                         fontSize: "10pt", 
                         display: "flex", 
-                        flexDirection: window.innerWidth < 1024 ? "column" : "row",
-                        //width: window.innerWidth < 1024 ? "calc(100vw - 16px)" : undefined
+                        flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                        //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
                         
                         }}>
                             <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {window.innerWidth < 1024 && <>
+                        {window.innerWidth < mobileWidth && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div> 
@@ -170,10 +174,10 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",
-                        width: window.innerWidth < 1024 ? "15m" : "32em",
+                        width: window.innerWidth < mobileWidth ? "15m" : "32em",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: window.innerWidth < 1024 ? "column" : "row", justifyContent: "space-between"}}>
+                    <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{ship.name}</h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
@@ -203,7 +207,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 display: "flex",
                                 flexWrap: "wrap",
                                 flexDirection: "row",
-                                //window.innerWidth < 512 ? "column" : "row",
+                                //window.innerWidth < mobileWidth ? "column" : "row",
                                 justifyContent: "space-between",
                                 marginTop: "4px",
                                 marginBottom: "2px",
@@ -211,7 +215,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         >
                             {statline.map((stat, index) =>                             
                                 <div key={index} style={{ 
-                                        width: window.innerWidth < 1024 ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                        width: window.innerWidth < mobileWidth ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
                                         <div>{stat.name}</div>

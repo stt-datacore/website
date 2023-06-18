@@ -1,6 +1,6 @@
 import React from "react";
 import { CompletionState } from "../../model/player";
-import { HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
@@ -70,7 +70,6 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     // }
     protected prepareDisplayItem(dataIn: Ship | undefined): Ship | undefined {
         const { buffConfig } = this.props;
-
         const applyBuffs = this.showPlayerBuffs;
         const showImmortal = this.showImmortalized;
 
@@ -118,7 +117,8 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
     constructor(props: ShipHoverStatProps) {
         super(props);        
         this.state = {
-            ... this.state
+            ... this.state,
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
     }    
 
@@ -164,7 +164,9 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
 
     protected renderContent = (): JSX.Element =>  {
         if (this.checkBorder()) return <></>;
-        const { ship: ship } = this.props;
+        const { ship: ship, targetGroup } = this.props;
+        const { mobileWidth } = this.state;
+
         const compact = true;    
 
         if (!ship) {
@@ -182,7 +184,13 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             this.deactivate();
         }
 
-        return ship ? (<ShipPresenter close={() => onClose()} openShip={(ship) => navClick()} hover={true} storeName={this.props.targetGroup} ship={ship} />) : <></>
+        return ship ? (<ShipPresenter 
+                        mobileWidth={mobileWidth}
+                        close={() => onClose()} 
+                        openShip={(ship) => navClick()} 
+                        hover={true} 
+                        storeName={targetGroup} 
+                        ship={ship} />) : <></>
         
     }
     

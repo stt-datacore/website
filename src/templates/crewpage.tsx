@@ -22,6 +22,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ShipSkill } from '../components/shipskill';
+import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
 export interface CrewPageOptions {
 	key: string;
@@ -166,7 +167,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 
 		
 		const imageDoubleClick = () =>{
-			if (window.innerWidth < 725) return;
+			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
 			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
 		}
@@ -189,7 +190,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
 					<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-						<h2 style={{display: "flex", flexDirection: window.innerWidth < 725 ? "column" : "row", alignItems:"center"}}>
+						<h2 style={{display: "flex", flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", alignItems:"center"}}>
 							<div>{crew.name}</div>
 							<div style={{display:"block", marginRight: "0.5em", marginLeft: "0.5em"}}>
 								<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
@@ -200,14 +201,14 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							id='static_avatar'
 							style={{
 								display: "flex",								
-								flexDirection: window.innerWidth < 725 || this.state.itemBig ? "column" : "row",
-								alignItems: window.innerWidth < 725 || this.state.itemBig ? "center" : "flex-start"														
+								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
+								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
 							}}>
 							<div style={{
 								display: "flex",								
 								flexDirection: "column",
 								alignItems: "center",
-								width: window.innerWidth < 725 ? "100%" : "20em"
+								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "20em"
 							}}>
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
@@ -217,8 +218,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 									title={"Double-Click to Re-arrange View"}
 									>
 									<img style={{ 
-											width: window.innerWidth < 725 ? "75%" : "100%", 
-											marginRight: window.innerWidth >= 725 ? "0.5em" : undefined
+											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%", 
+											marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 										}} 
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} 
 										alt={crew.name} 
@@ -227,7 +228,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 							</div>
 							<div style={{
 								display: "flex",
-								flexGrow: window.innerWidth < 725 ? undefined : 1,
+								flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
 								flexDirection: "column",
 							}}>
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />

@@ -10,6 +10,9 @@ import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
 import { StatLabel } from "../hovering/crewhoverstat";
 import { Image } from "semantic-ui-react";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+
+
 
 export interface CrewPresenterProps extends PresenterProps {
     crew: CrewMember | PlayerCrew;
@@ -20,6 +23,7 @@ export interface CrewPresenterProps extends PresenterProps {
 }
 
 export interface CrewPresenterState {
+    mobileWidth: number;
 }
 
 export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPresenterState> {
@@ -27,7 +31,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     constructor(props: CrewPresenterProps) {
         super(props);        
         this.state = {
-            ... this.state
+            ... this.state,
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
         this.tiny = TinyStore.getStore(props.storeName);
@@ -59,6 +64,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
 
     render(): JSX.Element {
         const { crew, openCrew } = this.props;
+        const { mobileWidth } = this.state;
         const compact = this.props.hover;    
 
         if (!crew) {
@@ -135,7 +141,11 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             }
         }
         
-        return crew ? (<div style={{ fontSize: "10pt", display: "flex", flexDirection: "row" }}>
+        return crew ? (<div style={{ 
+                            fontSize: "10pt", 
+                            display: "flex", 
+                            flexDirection: "row" // window.innerWidth < mobileWidth ? "column" : "row" 
+                            }}>
                     <div style={{ 
                         zIndex: -1, 
                         position: "absolute", 
@@ -154,7 +164,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     </div>
                 <div style={{ display: "flex", flexDirection: "column"}}>            
                     <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {window.innerWidth < 1024 && <>
+                        {window.innerWidth < mobileWidth && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div>        
@@ -202,10 +212,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",
-                        width: window.innerWidth <= 768 ? "15m" : "32em",
+                        width: window.innerWidth < mobileWidth ? "15m" : "32em",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: window.innerWidth < 725 ? "column" : "row", justifyContent: "space-between"}}>
+                    <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
@@ -234,7 +244,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             display: "flex",
                             flexWrap: "wrap",
                             flexDirection:
-                            window.innerWidth <= 512 ? "column" : "row",
+                            window.innerWidth < mobileWidth ? "column" : "row",
                             justifyContent: "flex-start",
                             marginTop: "4px",
                             marginBottom: "2px",
@@ -297,8 +307,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 textAlign: "center",
                                 display: "flex",
                                 flexWrap: "wrap",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
+                                flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                                justifyContent: window.innerWidth < mobileWidth ? "left" : "space-between",
                             }}
                         >
                             <StatLabel
@@ -332,8 +342,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 textAlign: "center",
                                 display: "flex",
                                 flexWrap: "wrap",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
+                                flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                                justifyContent: window.innerWidth < mobileWidth ? "left" : "space-between",
                             }}
                         >
                             <StatLabel

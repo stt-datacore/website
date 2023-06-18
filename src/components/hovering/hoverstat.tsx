@@ -2,6 +2,8 @@ import React from "react";
 import * as uuid from 'uuid';
 import { TinyStore } from "../../utils/tiny";
 
+export const DEFAULT_MOBILE_WIDTH = 512;
+
 export interface Coord {
     x: number;
     y: number;
@@ -20,6 +22,7 @@ export interface HoverStatProps {
     offset?: Coord;
     windowEdgeMinPadding?: Coord;
     boxStyle?: React.CSSProperties;
+    mobileWidth?: number;
 }
 
 /**
@@ -60,6 +63,7 @@ export interface HoverStatState {
     divId: string;
     touchToggled: boolean;
     boxStyle: React.CSSProperties;
+    mobileWidth: number;
 }
 
 export interface HoverStatTargetState {
@@ -181,6 +185,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         this.state = {
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
             touchToggled: false,
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
             boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
     }
