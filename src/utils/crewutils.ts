@@ -528,7 +528,6 @@ export function gradeToColor(grade: string | number): string | null {
 		case "F":
 		case "F-":
 		case "F+":
-		default:
 			return "tomato";
 
 
