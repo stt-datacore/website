@@ -239,7 +239,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 export function printTriggers(ship: Ship): string {
 	let s = "";
 	for (let a of ship.actions ?? []) {
-		if (a.status) {
+		if (a.status && a.status !== 16) {
 			if (s != "") s += ", ";
 			s += CONFIG.SHIP_BATTLE_GRANTS[a.status];
 		}

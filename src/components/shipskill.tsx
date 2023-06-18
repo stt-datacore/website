@@ -187,14 +187,14 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         Bonus Ability
                                     </div>
                                     {action.ability.condition > 0 && (
-                                        <li style={{ marginTop: "-4px" }}>
+                                        <div>
                                             <b>Trigger</b>:{" "}
                                             {
                                                 CONFIG.CREW_SHIP_BATTLE_TRIGGER[
                                                     action.ability.condition
                                                 ]
                                             }
-                                        </li>
+                                        </div>
                                     )}
                                 </div>
 

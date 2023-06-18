@@ -626,8 +626,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					</div>
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
 
-						<Checkbox disabled={!selectedShip?.actions?.some(ab => ab.status)} checked={triggerOnly} onChange={(e) => setTriggerOnly(!triggerOnly)} />
-						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status) && "(" + printTriggers(selectedShip) + ")"}</div>
+						<Checkbox disabled={!selectedShip?.actions?.some(ab => ab.status && ab.status != 16)} checked={triggerOnly} onChange={(e) => setTriggerOnly(!triggerOnly)} />
+						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 					</div>
 				</div>
 			}
