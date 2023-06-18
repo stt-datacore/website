@@ -176,8 +176,8 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         padding: "0.1em 0.2em",
                                         fontFamily: "arial",
                                         display: "flex",
-                                        flexDirection:
-                                            window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
+                                        flexDirection: "row",
+                                            // window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
                                         justifyContent: "space-between",
                                         backgroundColor: getActionColor(
                                             action.bonus_type
