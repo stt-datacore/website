@@ -69,6 +69,10 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		
 	}
 
+	readonly getNameFromTrait = (trait: string, found: PlayerCrew[]) => {
+		return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : found[0].short_name;
+	}
+
 	readonly setHoverCrew = (item: PlayerCrew | CrewMember | null | undefined) => {
 		this.setState({ ... this.state, hoverItem: item ?? undefined });
 	}
@@ -198,7 +202,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						// short_name may not always be the best name to use, depending on the first variant
 						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
 						
-						variants.push({ 'name': trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : found[0].short_name, 'trait_variants': found });
+						variants.push({ 'name': self.getNameFromTrait(trait, found), 'trait_variants': found });
 					}
 				});
 
