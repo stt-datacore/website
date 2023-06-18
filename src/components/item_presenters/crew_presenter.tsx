@@ -356,7 +356,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             />
                             <StatLabel
                                 title="Big Book Tier"
-                                value={formatTierLabel(crew)}
+                                value={<div
+                                    style={{
+                                        fontWeight: "bold",
+                                        color: gradeToColor(
+                                            crew.bigbook_tier
+                                        ) ?? undefined,
+                                    }}
+                                >
+                                    {formatTierLabel(crew)}
+                                </div>}
                             />
                         </div>
                     </div>

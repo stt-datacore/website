@@ -488,42 +488,55 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	return phases;
 }
 
-export function gradeToColor(grade: string): string | null {
+export function gradeToColor(grade: string | number): string | null {
 	switch(grade) {
 		case "A":
 		case "A-":
 		case "A+":
+		case 1:
+		case 2:
 			return "lightgreen";
 
 		case "B":
 		case "B-":
 		case "B+":
+		case 3:
+		case 4:
 			return "aquamarine";
 
 		case "C":
 		case "C-":
 		case "C+":
+		case 5:
+		case 6:
 			return "yellow";
 
 		case "D":
 		case "D-":
 		case "D+":
+		case 7:
+		case 8:
 			return "orange";
 
 		case "E":
 		case "E-":
 		case "E+":
+		case 9:
+		case 10:
 			return "tomato";
 
 		case "F":
 		case "F-":
 		case "F+":
+		default:
 			return "tomato";
 
 
 	}
 	return null;
 }
+
+
 
 export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedBuff {
 	const getMultiplier = (skill: string, stat: string) => {
