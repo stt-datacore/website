@@ -138,7 +138,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                 </li>
                             )}
                             {action.penalty && (
-                                <li>
+                                <div style={{color: getActionColor(0)}}>
                                     Decrease{" "}
                                     {
                                         CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
@@ -146,7 +146,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         ]
                                     }{" "}
                                     by {action.penalty.amount}
-                                </li>
+                                </div>
                             )}
                             <li style={{ color: "white" }}>
                                 <b>Initialize</b>: {action.initial_cooldown}s,{" "}
