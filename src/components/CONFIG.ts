@@ -84,6 +84,13 @@ export default class CONFIG {
 		4: 'Boarding',
 	};
 
+	static readonly SHIP_BATTLE_TRIGGER_ICON: { [index: number]: string } = {
+		0: '',
+		1: 'trigger-position.png',
+		2: 'trigger-cloak.png',
+		4: 'trigger-boarding.png',
+	};
+
 	static readonly SHIP_BATTLE_GRANTS: { [index: number]: string } = {
 		0: 'None',
 		1: 'Position',
@@ -129,6 +136,23 @@ export default class CONFIG {
 		// 11: 'Decrease Incoming Hull Damage',
 		// 12: 'Reflection Damage',
 	};
+
+
+	static readonly SHIP_BATTLE_ABILITY_ICON: { [index: number]: string } = {
+		0: '',
+		1: 'immediate-damage.png',
+		2: 'repair-hull.png',
+		3: 'repair-shields.png',
+		4: 'crit-rating.png',
+		5: 'crit-bonus.png',
+		6: 'repair-shields.png',
+		7: 'attack-speed.png',
+		8: 'boarding-damage.png',
+		10: 'cooldown-timers.png',
+		11: 'reduce-incoming.png',
+		12: 'reflection-damage.png',
+	};
+
 
 	static readonly STATS_CONFIG: { [index: number]: any } = {
 		2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
