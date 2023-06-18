@@ -218,7 +218,11 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         flexDirection: "row",
                                         justifyContent: "flex-start",
                                         alignItems: "center"
-                                    }}>{getShipBonusIcon(action) && (<img style={{margin: "0.5em 1em 0.5em 0.5em", height: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  {getShipBonus(action)}</div>
+                                    }}>{getShipBonusIcon(action) && (<img style={{margin: "0.25em 0.5em 0.25em 0.25em", height: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  
+                                    <div style={{ lineHeight: "1.2em"}}> 
+                                        {getShipBonus(action)}
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
