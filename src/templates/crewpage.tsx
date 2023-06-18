@@ -239,17 +239,29 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'medium' : 'small'} />}
 								</div>
-								<div style={{ flexGrow: 1, display: "flex", "flexDirection": "row", justifyContent: "center" }}
+								<div style={{ 
+										flexGrow: 1, 
+										display: "flex", 
+										flexDirection: window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig ? "column" : "row", 
+										justifyContent: "center" 
+									}}
 									onDoubleClick={(e) => imageDoubleClick()}
-									title={"Double-Click to Re-arrange View"}
+									title={crew.name}
 									>
 									<img style={{ 
+											cursor:
+												window.innerWidth < DEFAULT_MOBILE_WIDTH ? 
+												"default" :
+												this.state.itemBig ?
+												"zoom-out" :
+												"zoom-in",
 											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%", 
 											marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 										}} 
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} 
 										alt={crew.name} 
 									/>
+									{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{textAlign:"center",fontSize:"0.8em", color: "gray"}}>{"(double-click to enlarge)"}</i>)}
 								</div>
 							</div>
 							<div style={{
