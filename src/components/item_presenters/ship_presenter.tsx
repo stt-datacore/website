@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { CompletionState } from "../../model/player";
 import { Rating } from "semantic-ui-react";
 import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill } from "../shipskill";
+import { ShipSkill } from "./shipskill";
 import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";

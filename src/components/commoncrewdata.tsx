@@ -11,7 +11,7 @@ import { formatTierLabel } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
-import { ShipSkill } from './shipskill';
+import { ShipSkill } from './item_presenters/shipskill';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 export type StatLabelProps = {

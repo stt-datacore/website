@@ -1,8 +1,8 @@
 import React from "react";
-import CONFIG from "./CONFIG";
-import { getShipBonus, getShipBonusIcon, getShipChargePhases } from "../utils/crewutils";
-import { ShipAction, Ship, ShipBonus } from "../model/ship";
-import { DEFAULT_MOBILE_WIDTH } from "./hovering/hoverstat";
+import CONFIG from "../CONFIG";
+import { getShipBonus, getShipBonusIcon, getShipChargePhases } from "../../utils/crewutils";
+import { ShipAction, Ship, ShipBonus } from "../../model/ship";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface ShipSkillProps {
     actions: ShipAction[];    

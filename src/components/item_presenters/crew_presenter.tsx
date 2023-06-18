@@ -5,7 +5,7 @@ import { Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import { formatTierLabel, gradeToColor } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill } from "../shipskill";
+import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
 import { StatLabel } from "../hovering/crewhoverstat";
