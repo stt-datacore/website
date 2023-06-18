@@ -448,7 +448,8 @@ export function getShipBonusIcon(item?: PlayerCrew | CrewMember | ShipAction | S
 	if (!action || !action.ability) return undefined;
 	if (action.ability.type !== 0)
 		return CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type];
-	return undefined;
+	else 
+		return CONFIG.CREW_SHIP_BATTLE_BONUS_ICON[action.bonus_type];
 }
 
 export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string[] {

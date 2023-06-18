@@ -71,6 +71,14 @@ export default class CONFIG {
 		3: 'Shield Regeneration'
 	};
 
+	static readonly CREW_SHIP_BATTLE_BONUS_ICON: { [index: number]: string } = {
+		0: 'immediate-damage.png',
+		1: 'evasion-boost.png',
+		2: 'accuracy-boost.png',
+		// These are only for penalty
+		3: 'repair-shields.png'
+	};
+
 	static readonly CREW_SHIP_BATTLE_BONUS_COLORS: { [index: number]: string } = {
 		0: "#d04444",
 		1: "#7eb1e8",
