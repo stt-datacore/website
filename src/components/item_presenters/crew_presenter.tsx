@@ -218,6 +218,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
+                            {crew.in_portal &&  window.innerWidth >= mobileWidth &&
+                                (<div><img style={{
+                                    maxHeight: "1.25em",
+                                    margin: "0.5em"
+                                    }} 
+                                    title={"Available in the Premium Portal"}
+                                    src={"/media/portal.png"} 
+                                    /></div>
+                                )
+                            }
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                 {
                                     "immortal" in crew && (
@@ -237,6 +247,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 maxRating={crew.max_rarity} 
                                 size='large' 
                                 disabled />
+                            {crew.in_portal &&  window.innerWidth < mobileWidth &&
+                                (<div><img style={{
+                                    maxHeight: "1.25em",
+                                    margin: "0.5em",
+                                    }} 
+                                    title={"Available in the Premium Portal"}
+                                    src={"/media/portal.png"} 
+                                    /></div>
+                                )
+                            }
                         </div>
                     </div>
                     <div
