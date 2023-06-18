@@ -111,34 +111,45 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								display:"flex", 
 								width: "100%", 
 								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
-								justifyContent: "space-between",
-								flexWrap: "wrap",								
+								justifyContent: "space-evenly",
 								}}>
+							{crew.base_skills.security_skill && 
 							<CrewStat 
 								skill_name="security_skill" 
 								data={crew.base_skills.security_skill} 
 								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.command_skill && 
 							<CrewStat 
 								skill_name="command_skill" 
 								data={crew.base_skills.command_skill} 
 								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.diplomacy_skill && 
 							<CrewStat 
 								skill_name="diplomacy_skill" 
 								data={crew.base_skills.diplomacy_skill} 
 								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.science_skill && 
 							<CrewStat 
 								skill_name="science_skill" 
 								data={crew.base_skills.science_skill} 
 								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.medicine_skill && 
 							<CrewStat 
 								skill_name="medicine_skill" 
 								data={crew.base_skills.medicine_skill} 
 								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.engineering_skill && 
 							<CrewStat
 								skill_name="engineering_skill"
 								data={crew.base_skills.engineering_skill}
 								scale={compact ? 0.75 : 1}
 							/>
+							}
 						</div>
 						</Segment>
 					)}
