@@ -440,6 +440,17 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	return bonusText;
 }
 
+export function getShipBonusIcon(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string | undefined {
+	if (!item) return undefined;
+	let actionIn = getActionFromItem(item, index);
+	if (!actionIn) return undefined;
+	const action = actionIn;
+	if (!action || !action.ability) return undefined;
+	if (action.ability.type !== 0)
+		return CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type];
+	return undefined;
+}
+
 export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;

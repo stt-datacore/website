@@ -1,7 +1,8 @@
 import React from "react";
 import CONFIG from "./CONFIG";
-import { getShipBonus, getShipChargePhases } from "../utils/crewutils";
+import { getShipBonus, getShipBonusIcon, getShipChargePhases } from "../utils/crewutils";
 import { ShipAction, Ship, ShipBonus } from "../model/ship";
+import { DEFAULT_MOBILE_WIDTH } from "./hovering/hoverstat";
 
 export interface ShipSkillProps {
     actions: ShipAction[];    
@@ -176,19 +177,25 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         fontFamily: "arial",
                                         display: "flex",
                                         flexDirection:
-                                            window.innerWidth < 1024 ? "column" : "row",
+                                            window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
                                         justifyContent: "space-between",
                                         backgroundColor: getActionColor(
                                             action.bonus_type
                                         ),
                                     }}
                                 >
-                                    <div style={{ marginTop: "-4px" }}>
+                                    <div style={{ marginTop: "0px" }}>
                                         Bonus Ability
                                     </div>
                                     {action.ability.condition > 0 && (
-                                        <div>
+                                        <div style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "flex-end",
+                                            alignItems: "center"
+                                        }}>
                                             <b>Trigger</b>:{" "}
+                                            <img style={{margin: "0.25em", height: "1em"}}  src={"/media/ship/" + CONFIG.SHIP_BATTLE_TRIGGER_ICON[action.ability.condition]} />
                                             {
                                                 CONFIG.CREW_SHIP_BATTLE_TRIGGER[
                                                     action.ability.condition
@@ -206,7 +213,12 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         paddingBottom: "2px",
                                     }}
                                 >
-                                    <div>{getShipBonus(action)}</div>
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        alignItems: "center"
+                                    }}>{getShipBonusIcon(action) && (<img style={{margin: "0.5em 1em 0.5em 0.5em", height: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  {getShipBonus(action)}</div>
                                 </div>
                             </div>
                         )}
