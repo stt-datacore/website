@@ -357,7 +357,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 }
                 
                 if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
-                    x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth;
+                    x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth - 16;
                 }
 
                 if (y + hoverstat.clientHeight + (pad.y * 2) > window.scrollY + window.innerHeight) {
