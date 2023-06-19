@@ -489,6 +489,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         }
         else {
             if (target || this.currentTarget) {
+                e.preventDefault();
                 this.activate(target ?? this.currentTarget);
             }
             this.state = { ...this.state, touchToggled: true };
