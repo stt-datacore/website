@@ -153,6 +153,8 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
 
     private _unmounted: boolean = false;
+    protected readonly hoverDelay: number;
+
     protected _elems: HTMLElement[] | undefined = undefined;
     protected readonly observer = new MutationObserver((e) => { this.doWireup(); });
 
@@ -188,6 +190,13 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
             boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
+
+        if (navigator.userAgent.includes("Firefox")) {
+            this.hoverDelay = 0;
+        }
+        else {
+            this.hoverDelay = 250;
+        }
     }
 
     protected propertyChanged = (key: string): void => {
@@ -376,7 +385,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.opacity = "1";
                 hoverstat.style.transition = "opacity 0.25s";
                 window.addEventListener("resize", this.resizer);
-            }, 0)
+                hoverstat.focus();
+            }, this.hoverDelay)
         }
     }
 
