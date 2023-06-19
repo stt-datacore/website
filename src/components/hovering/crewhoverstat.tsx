@@ -207,11 +207,16 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         const { mobileWidth } = this.state;
         const compact = true;    
 
-        if (!crew) {
-            // console.log("Deactivating empty popover");
-            this.cancelled = false;
-            this.deactivate();
-        } 
+        // if (!crew) {
+        //     // console.log("Deactivating empty popover");
+        //     try {
+        //         this.cancelled = false;
+        //         this.deactivate();
+        //     }
+        //     catch {
+
+        //     }
+        // } 
 
         var me = this;
         const shipToggle = () => {

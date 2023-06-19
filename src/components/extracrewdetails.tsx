@@ -320,10 +320,12 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	}
 
 	render() {
+		let me = this;
 		return <div>
 			{this.renderConstellation()}
 			{this.renderOptimalPolestars()}
 			{this.renderVariants()}
+			<CrewHoverStat targetGroup='variants' offset={{ x: 12, y: 12, centerX: true }} crew={me.hoverCrew ?? undefined} />
 		</div>;
 	}
 
@@ -462,7 +464,6 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let me = this;
 		return (
 			this.state.variants.map((group, idx) => (
-				<>
 				<Segment key={idx}>
 					<Header as='h4'>Variants of {group.name}</Header>
 					<Grid centered padded>
@@ -487,8 +488,6 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						))}
 					</Grid>
 				</Segment>								
-				<CrewHoverStat targetGroup='variants' offset={{ x: 12, y: 12, centerX: true }} crew={me.hoverCrew ?? undefined} />
-				</>
 			))
 		);
 	}
