@@ -66,19 +66,18 @@ export class TinyStore {
      * @returns A new or existing TinyStore
      */
     static getStore(targetGroup: string, defaultSticky: boolean = false, compression: boolean = false): TinyStore {
+        let ts: TinyStore | undefined = undefined;
+
         if (this.notify.has(targetGroup)) {
-            let ts = this.notify.get(targetGroup);
-            if (!ts) {
-                ts = new TinyStore(targetGroup, defaultSticky, compression);
-                this.notify.set(targetGroup, ts);
-            }
-            return ts;
+            ts = this.notify.get(targetGroup);
         }
-        else {
-            let ts = new TinyStore(targetGroup, defaultSticky, compression);
+
+        if (!ts) {
+            ts = new TinyStore(targetGroup, defaultSticky, compression);
             this.notify.set(targetGroup, ts);
-            return ts;
         }
+
+        return ts;
     }
 
     /**
