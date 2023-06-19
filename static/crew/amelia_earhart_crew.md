@@ -3,7 +3,7 @@ name: Amelia Earhart
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 25
 in_portal: true
 date: 07/08/2018
