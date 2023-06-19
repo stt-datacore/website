@@ -8,6 +8,7 @@ import { applySkillBuff } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
+import { navigate } from "gatsby";
 
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
@@ -236,7 +237,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                 openCrew(crew)
             }
             else {
-                window.location.href = "/crew/" + crew.symbol;
+                navigate("/crew/" + crew.symbol);                
             }
         }
 
