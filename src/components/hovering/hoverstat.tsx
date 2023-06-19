@@ -153,6 +153,8 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
 
     private _unmounted: boolean = false;
+    private _nodismiss: boolean = false;
+
     protected readonly hoverDelay: number;
 
     protected _elems: HTMLElement[] | undefined = undefined;
@@ -217,6 +219,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         const containerOut = (e) => {
             if (me._unmounted) return;
             this.cancelled = false; 
+            this._nodismiss = false;
             this.deactivate();
         }
 
@@ -307,7 +310,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected activate = (target: HTMLElement): void => {
         const { divId } = this.state;
         let hoverstat = document.getElementById(divId);        
-
+        this._nodismiss = false;
+        
         if (hoverstat) {
             let rect = target.getBoundingClientRect();
             let ancestor = this.findCommonAncestor(target, hoverstat);
@@ -384,8 +388,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 
                 hoverstat.style.opacity = "1";
                 hoverstat.style.transition = "opacity 0.25s";
-                window.addEventListener("resize", this.resizer);
-                hoverstat.focus();
+                window.addEventListener("resize", this.resizer);       
             }, this.hoverDelay)
         }
     }
@@ -396,6 +399,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected deactivate = (target: HTMLElement | undefined = undefined) => {
         let metarget = this.currentTarget;
+        this._nodismiss = false;
 
         window.setTimeout(() => {
             if (this.cancelled || this.currentTarget !== metarget) {
@@ -451,7 +455,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     protected targetLeave = (e: MouseEvent | TouchEvent) => {        
         // console.log("Target Leave");
         let target = e.target as HTMLElement;
-        if (!target) return;
+        if (!target || this._nodismiss) return;
 
         if (target.children.length !== 0) {
             return;
@@ -512,6 +516,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         this.touching = false;
         //this.tiny.setValue('touching', false);
     };
+    protected onClick = (e: MouseEvent) => {
+        //if (this.touching) return;
+        this._nodismiss = true;
+    }
+
     componentDidMount(): void {
         this.doWireup();
         this.observer.observe(document, { subtree: true, childList: true });
@@ -531,6 +540,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 el.addEventListener("touchend", this.touchEnd);
                 el.addEventListener("touchstart", this.touchStart);
                 el.addEventListener("touchmove", this.touchMove);
+                el.addEventListener("mouseup", this.onClick);
             }
         }
     }
@@ -547,6 +557,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 el.removeEventListener("touchend", this.touchEnd);
                 el.removeEventListener("touchstart", this.touchStart);
                 el.removeEventListener("touchmove", this.touchMove);
+                el.removeEventListener("mouseup", this.onClick);
             }
         }
         this._elems = undefined;
