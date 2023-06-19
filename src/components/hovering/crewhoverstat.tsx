@@ -255,5 +255,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         />) : <></>
         
     }
-    
+
+    protected get canActivate(): boolean {
+        return !!this.props.crew;
+    }
 }

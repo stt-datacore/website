@@ -302,13 +302,16 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         return undefined;
     }
 
+    protected abstract get canActivate(): boolean;
 
     /**
      * Activate the hover window
      * @param target the hover target that initiated the activation
      */
     protected activate = (target: HTMLElement): void => {
-        const { divId } = this.state;
+        if (!this.canActivate) return;
+        
+        const { divId } = this.state;        
         let hoverstat = document.getElementById(divId);        
         this._nodismiss = false;
         

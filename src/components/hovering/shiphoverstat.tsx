@@ -203,5 +203,9 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
                         ship={ship} />) : <></>
         
     }
+
+    protected get canActivate(): boolean {
+        return !!this.props.ship;
+    }
     
 }
