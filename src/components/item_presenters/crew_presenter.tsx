@@ -142,7 +142,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
         
         return crew ? (<div style={{ 
-                            fontSize: "10pt", 
+                            fontSize: window.innerWidth < mobileWidth ? "10pt" : "12pt", 
                             display: "flex", 
                             flexDirection: "row" // window.innerWidth < mobileWidth ? "column" : "row" 
                             }}>
@@ -172,7 +172,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                                style={{ height: compact ? (this.showShipAbility ? "18em" : "9.5em") : "25em", marginRight: "8px" }}
+                                style={{ height: compact ? (this.showShipAbility ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "9.5em") : "25em", marginRight: "8px" }}
                             />
                         </a>
                     </div>
@@ -319,7 +319,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        {this.showShipAbility && <ShipSkill isShip={false} fontSize="0.80em" actions={crew.action ? [ crew.action] : []} shipInfo={crew.ship_battle} />}
+                        {this.showShipAbility && <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [ crew.action] : []} shipInfo={crew.ship_battle} />}
                     </div>
                     <div>
                         <div

@@ -14,7 +14,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 		const { title, value } = this.props;
 
 		return (
-			<Label size="small" style={{ marginBottom: '0.5em', marginLeft: 0, width: "12.5em" }}>
+			<Label size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"} style={{ marginBottom: '0.5em', marginLeft: 0, width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "14em" }}>
 				{title}
 				<Label.Detail>{value}</Label.Detail>
 			</Label>
