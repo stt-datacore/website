@@ -6,9 +6,9 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface ShipSkillProps {
     actions: ShipAction[];    
-    ship_battle: ShipBonus | Ship;
+    shipInfo: ShipBonus | Ship;
     isShip: boolean;
-    withBorder?: boolean;
+    withActionBorder?: boolean;
     fontSize?: string;
 }
 
@@ -18,7 +18,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
     }
 
     render() {
-        const { actions, ship_battle, isShip } = this.props;
+        const { actions, shipInfo: ship_battle, isShip } = this.props;
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
             if (action === 2) return "/media/ship/accuracy-icon.png";
@@ -46,7 +46,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
         return (
             <div style={{ marginBottom: "8px", fontSize: this.props.fontSize ?? "1em" }}>
                 {actions.length && actions.map((action, index) => 
-                    <div key={index} style={{marginTop: "4px", border: this.props.withBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withBorder ? "2px" : "0px"}}>
+                    <div key={index} style={{marginTop: "4px", border: this.props.withActionBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withActionBorder ? "2px" : "0px"}}>
                         <div
                             style={{                                
                                 display: "flex",
