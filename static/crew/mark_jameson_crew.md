@@ -3,7 +3,7 @@ name: Admiral Mark Jameson
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 5
 in_portal: true
 date: 07/12/2021

@@ -3,8 +3,8 @@ name: Twilight Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
-events: 31
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 23/02/2022
 obtained: Event
