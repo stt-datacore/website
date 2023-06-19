@@ -7,6 +7,7 @@ import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from "./tiny";
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
+import { navigate } from 'gatsby';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -586,7 +587,8 @@ export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
  * @param allCrew All crew
  */
 export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
-	let stash = TinyStore.getStore('staticStash', false, true);
+	let stash = TinyStore.getStore('staticStash', false, true);	
+	
 	if (stash) {
 		if (ownedCrew) {
 			let variantTraits = getVariantTraits(crew);
@@ -647,7 +649,8 @@ export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMem
 			stash.setValue('buffs', buffs);
 		}
 	}
-	window.location.href = '/crew/' + crew.symbol;
+
+	navigate('/crew/' + crew.symbol);
 }
 
 export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string) {
