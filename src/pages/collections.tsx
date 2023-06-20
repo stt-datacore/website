@@ -47,9 +47,9 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 							<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
 
 							<Item.Content>
-								<Item.Header>{collection.name}</Item.Header>
+								<Item.Header>{collection.name}<hr></hr></Item.Header>
 								<Item.Meta>
-									<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+									<span style={{color: "white"}} dangerouslySetInnerHTML={{ __html: collection.description }} />
 								</Item.Meta>
 								<Item.Description>
 									<b>Crew: </b>
