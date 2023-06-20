@@ -2,26 +2,12 @@ import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { StatLabelProps } from "../commoncrewdata";
-import { Label } from "semantic-ui-react";
 import { applySkillBuff } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 
-export class StatLabel extends React.Component<StatLabelProps> {
-	render() {
-		const { title, value } = this.props;
-
-		return (
-			<Label size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"} style={{ marginBottom: '0.5em', marginLeft: 0, width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "14em" }}>
-				{title}
-				<Label.Detail>{value}</Label.Detail>
-			</Label>
-		);
-	}
-}
 
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;

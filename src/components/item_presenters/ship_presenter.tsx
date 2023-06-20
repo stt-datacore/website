@@ -125,7 +125,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         const stats = [stats1, stats2];
 
         return ship ? (<div style={{ 
-                        fontSize: "10pt", 
+                        fontSize: "11pt", 
                         display: "flex", 
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
@@ -237,7 +237,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         {ship.traits_named?.join(", ")}
                     </div>
                     <div>
-                        {ship.actions && <ShipSkill isShip={true} fontSize="1em" withActionBorder={true} actions={ship.actions} shipInfo={ship} />}
+                        {ship.actions && <ShipSkill isShip={true} fontSize="0.8em" withActionBorder={true} actions={ship.actions} shipInfo={ship} />}
                     </div>
                 </div>
             </div>) : <></>

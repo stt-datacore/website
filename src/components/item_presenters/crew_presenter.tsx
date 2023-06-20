@@ -8,9 +8,25 @@ import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
-import { StatLabel } from "../hovering/crewhoverstat";
+import { StatLabelProps } from "../commoncrewdata";
+import { Label } from "semantic-ui-react";
+
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+
+
+export class StatLabel extends React.Component<StatLabelProps> {
+	render() {
+		const { title, value } = this.props;
+
+		return (
+			<Label size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"} style={{ marginBottom: '0.5em', marginLeft: 0, width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em" }}>
+				{title}
+				<Label.Detail>{value}</Label.Detail>
+			</Label>
+		);
+	}
+}
 
 
 
@@ -142,7 +158,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
         
         return crew ? (<div style={{ 
-                            fontSize: window.innerWidth < mobileWidth ? "10pt" : "12pt", 
+                            fontSize: window.innerWidth < mobileWidth ? "10pt" : "11pt", 
                             display: "flex", 
                             flexDirection: "row" // window.innerWidth < mobileWidth ? "column" : "row" 
                             }}>
