@@ -174,19 +174,19 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
 
     protected renderContent = (): JSX.Element =>  {
         if (this.checkBorder()) return <></>;
-        const { ship: ship, targetGroup } = this.props;
+        const { ship: displayItem, targetGroup } = this.props;
         const { mobileWidth } = this.state;
 
         const compact = true;    
 
-        if (!ship) {
+        if (!displayItem) {
             // console.log("Deactivating empty popover");
             this.cancelled = false;
             this.deactivate();
         } 
         
         const navClick = () => {
-            if (!ship) return;
+            if (!displayItem) return;
             //window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
         }
 
@@ -194,18 +194,18 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             this.deactivate();
         }
 
-        return ship ? (<ShipPresenter 
+        return displayItem ? (<ShipPresenter 
                         mobileWidth={mobileWidth}
                         close={() => onClose()} 
                         openShip={(ship) => navClick()} 
                         hover={true} 
                         storeName={targetGroup} 
-                        ship={ship} />) : <></>
+                        ship={displayItem} />) : <></>
         
     }
 
     protected get canActivate(): boolean {
-        return !!this.props.ship;
+        return true; // return !!this.props.ship;
     }
     
 }

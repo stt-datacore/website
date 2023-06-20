@@ -204,7 +204,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected renderContent = (): JSX.Element =>  {
         if (this.checkBorder()) return <></>;
-        const { targetGroup, crew, openCrew } = this.props;
+        const { targetGroup, crew: displayItem, openCrew } = this.props;
         const { mobileWidth } = this.state;
         const compact = true;    
 
@@ -231,13 +231,13 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         }
         
         const navClick = () => {
-            if (!crew) return;
+            if (!displayItem) return;
 
             if (openCrew) {
-                openCrew(crew)
+                openCrew(displayItem)
             }
             else {
-                navigate("/crew/" + crew.symbol);                
+                navigate("/crew/" + displayItem.symbol);                
             }
         }
 
@@ -245,10 +245,10 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             this.deactivate();
         }   
         
-        return crew ? (<CrewPresenter 
+        return displayItem ? (<CrewPresenter 
                         close={() => closeClick()} 
                         openCrew={(crew) => navClick()} 
-                        crew={crew} 
+                        crew={displayItem} 
                         storeName={targetGroup} 
                         hover={true} 
                         mobileWidth={mobileWidth}
@@ -258,6 +258,6 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
 
     protected get canActivate(): boolean {
-        return !!this.props.crew;
+        return true; // return !!this.props.crew;
     }
 }
