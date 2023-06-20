@@ -146,7 +146,8 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', [] as number[]);
 
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
-
+	console.log("Collections")
+	console.log(playerCollections);
 	return (
 		<React.Fragment>
 			<ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />

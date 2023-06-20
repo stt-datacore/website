@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Rating, Dropdown, Button, StrictCheckboxProps } from 'semantic-ui-react';
+import React, { useEffect } from 'react';
+import { Table, Rating, Dropdown, Button, StrictCheckboxProps, Menu, MenuItem, Image, MenuItemProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { CrewMember } from '../model/crew';
 import { CompactCrew, PlayerCrew, PlayerData } from '../model/player';
@@ -26,66 +26,54 @@ const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 		Initialized,
 	};
 
-	const [selection, setSelection] = React.useState(selectedSeats);
-	const [options, setOptions] = React.useState({
-		state: OptionsState.Uninitialized,
-		list: [] as DropDownItem[]
-	});
+	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
+		if (!data.name) return;
+		let newSeats = [...selectedSeats ?? []];
+		if (newSeats.includes(data.name)) {
+			if (newSeats.length === 1) newSeats = [];
+			else newSeats = newSeats.splice(newSeats.indexOf(data.name));		
+		}
+		else {
+			newSeats.push(data.name);
+		}
+		setSelectedSeats(newSeats);
+	};
 
-	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Stations';
+	useEffect (() => {
+		let newSeats = [...selectedSeats ?? []];
+		
+		for (let sel of selectedSeats) {
+			if (!availableSeats.includes(sel)) {
+				if (newSeats.length === 1) newSeats = [];
+				else newSeats = newSeats.splice(newSeats.indexOf(sel));
+			}
+		}
 
-    React.useEffect(() => {
-        populateOptions();
-    }, [availableSeats]);
-
-    React.useEffect(() => {
-        setSelectedSeats(selection);
-    }, [selection]);
+		if (newSeats.length !== selectedSeats.length) {
+			setSelectedSeats(newSeats);
+		}
+	}, [availableSeats])
 
 	return (
 		<React.Fragment>
-			<Dropdown 
-                search 
-                selection 
-                clearable                
-                fluid
-                multiple
-				placeholder={placeholder}
-				options={options.list}                
-				value={selection}				
-				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
-				onChange={(e, { value }) => setSelection(value as string[])}
-			/>
+			<Menu fluid>
+				{availableSeats.map((c, key) => (
+					<Menu.Item
+						as="a"
+						name={c}
+						key={key}
+						index={key}
+						onClick={handleClick}						
+						active={selectedSeats.includes(c)}
+                        title={CONFIG.SKILLS[c]}
+					>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
+					</Menu.Item>)
+				)}
+			</Menu>
 		</React.Fragment>
 	);
 
-	function populateOptions(): void {
-		setOptions({
-			state: OptionsState.Initializing,
-			list: []
-		});
-		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
-		setTimeout(() => {            
-			const populatePromise = new Promise<DropDownItem[]>((resolve, reject) => {
-				const poolList = availableSeats?.map((c) => (
-					{
-						key: c,
-						value: c,
-						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png` },
-						text: CONFIG.SKILLS[c],
-                        title: CONFIG.SKILLS[c]
-					} as DropDownItem
-				)) ?? [];
-				resolve(poolList);
-			});
-			populatePromise.then((poolList) => {
-				setOptions({
-					state: OptionsState.Initialized,
-					list: poolList
-				});
-			});
-		}, 0);
-	}
 };
 
 export default ShipSeatPicker;

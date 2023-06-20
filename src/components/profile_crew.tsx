@@ -593,7 +593,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								setSelectedShip={setSelectedShip}
 								playerData={props.playerData} />
 						</div>
-						<div style={{marginRight: "16px", minWidth: "15em"}}>
+						<div style={{marginRight: "16px"}}>
 							<ShipSeatPicker
 									setSelectedSeats={setSelectedSeats}
 									selectedSeats={selectedSeats}
