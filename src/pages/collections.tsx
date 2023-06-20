@@ -37,9 +37,6 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 				</Layout>
 			);
 		}
-		
-		const dark = window.localStorage.getItem('theme');
-		const subHeadingColor = dark === 'dark' ? '#FFFFFF' : '#000000';
 
 		return (
 			<Layout title='Collections'>				
@@ -52,7 +49,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 							<Item.Content>
 								<Item.Header>{collection.name}<hr></hr></Item.Header>
 								<Item.Meta>
-									<span style={{color: subHeadingColor }} dangerouslySetInnerHTML={{ __html: collection.description }} />
+									<span dangerouslySetInnerHTML={{ __html: collection.description }} />
 								</Item.Meta>
 								<Item.Description>
 									<b>Crew: </b>
