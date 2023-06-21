@@ -458,7 +458,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				<li>
 					Open this page in your browser:{' '}
 					<a href={PLAYERLINK} target='_blank'>
-						https://stt.disruptorbeam.com/player
+						{PLAYERLINK}
 						</a>
 				</li>
 				<li>
