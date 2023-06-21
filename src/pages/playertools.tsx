@@ -470,7 +470,7 @@ type PlayerToolsFormProps = {
 };
 
 const PlayerToolsForm = (props: PlayerToolsFormProps) => {
-	const PLAYERLINK = 'https://stt.disruptorbeam.com/player?client_api=17';
+	const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=17&only_read_state=true';
 
 	const { setValidInput } = props;
 
@@ -518,7 +518,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				<li>
 					Open this page in your browser:{' '}
 					<a href={PLAYERLINK} target='_blank'>
-						https://stt.disruptorbeam.com/player
+						{PLAYERLINK}
 						</a>
 				</li>
 				<li>
