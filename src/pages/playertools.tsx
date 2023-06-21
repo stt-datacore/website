@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
@@ -26,8 +26,10 @@ import { CompactCrew, GameEvent, PlayerEquipmentItem, PlayerCrew, PlayerData, Vo
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import ShipProfile from '../components/ship_profile';
-import { Ship } from '../model/ship';
+import { Schematics, Ship } from '../model/ship';
 import { EventData } from '../utils/events';
+import { AllData, AllDataContext } from '../model/worker';
+import { mergeShips } from '../utils/shiputils';
 
 export interface PlayerTool {
 	title: string;
@@ -119,13 +121,15 @@ const PlayerToolsPage = (props: any) =>  {
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
 	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
-
+	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
+	const [schematics, setSchematics] = React.useState<Schematics[] | undefined>(undefined);
+	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 	const [showForm, setShowForm] = React.useState(false);
 	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && activeCrew && dataSource && allCrew && fleetbossData) {
+	if (playerData && !showForm && activeCrew && dataSource && allCrew && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
 					strippedPlayerData={strippedPlayerData}
@@ -136,6 +140,10 @@ const PlayerToolsPage = (props: any) =>  {
 					ship={selectedShip}
 					allCrew={allCrew}
 					allItems={allItems}
+					allShips={allShips}
+					playerShips={playerShips}					
+					updateAllShips={setAllShips}
+					updateBossData={setFleetbossData}
 					requestShowForm={setShowForm}
 					requestClearData={clearPlayerData}
 					location={props.location}
@@ -145,14 +153,16 @@ const PlayerToolsPage = (props: any) =>  {
 	// Preparing profile data, show spinner
 	if ((inputPlayerData || strippedPlayerData) && !showForm) {
 		if (inputPlayerData) {
-			if (allCrew && allItems)
+			if (allCrew && allItems && allShips && schematics)
 				prepareProfileDataFromInput();
-			else if (!allItems)
+			else if (!allItems || !allShips || !schematics)
 				fetchAllItemsAndCrew();
 		}
 		else {
-			if (allCrew)
+			if (allCrew && allItems && allShips && schematics)
 				prepareProfileDataFromSession();
+			else if (!allItems || !allShips || !schematics)
+				fetchAllItemsAndCrew();
 			else
 				fetchAllCrew();
 		}
@@ -169,16 +179,24 @@ const PlayerToolsPage = (props: any) =>  {
 	}
 
 	async function fetchAllItemsAndCrew() {
-		const [itemsResponse, crewResponse] = await Promise.all([
+		const [itemsResponse, crewResponse, shipResponse] = await Promise.all([
 			fetch('/structured/items.json'),
 			fetch('/structured/crew.json'),
-		]);
-		const [allitems, allcrew] = await Promise.all([
+			fetch('/structured/ship_schematics.json')
+		]);		
+		const [allitems, allcrew, allships] = await Promise.all([
 			itemsResponse.json(),
-			crewResponse.json()
+			crewResponse.json(),
+			shipResponse.json().then((ship_schematics: Schematics[]) => {
+				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
+				return  { originals: scsave, schematics: ship_schematics };
+			})
 		]);
+
 		setAllItems(allitems);
 		setAllCrew(allcrew);
+		setAllShips(allships.originals);		
+		setSchematics(allships.schematics);
 	}
 
 	// Only crew data is needed if loading profile from session
@@ -188,7 +206,7 @@ const PlayerToolsPage = (props: any) =>  {
 		const allcrew = await crewResponse.json();
 		setAllCrew(allcrew);
 	}
-
+	
 	function prepareProfileDataFromInput() {
 		// Reset session before storing new variables
 		sessionStorage.clear();
@@ -237,6 +255,13 @@ const PlayerToolsPage = (props: any) =>  {
 		let preparedProfileData = {...strippedData};
 		prepareProfileData("prepareProfileDataFromInput", allCrew ?? [], preparedProfileData, dtImported);
 		setPlayerData(preparedProfileData);
+
+		if (preparedProfileData && schematics) {
+			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
+			console.log("Set Player Ships")
+			setPlayerShips(data);
+		}
+
 		setDataSource('input');
 	}
 
@@ -244,6 +269,13 @@ const PlayerToolsPage = (props: any) =>  {
 		let preparedProfileData = {...strippedPlayerData} as PlayerData;
 		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData?.calc?.lastImported as string)));
 		setPlayerData(preparedProfileData);
+
+		if (preparedProfileData && schematics) {
+			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
+			console.log("Set Player Ships")
+			setPlayerShips(data);
+		}
+	
 		setDataSource('session');
 	}
 
@@ -262,16 +294,20 @@ type PlayerToolsPanesProps = {
 	activeCrew: CompactCrew[];
 	dataSource: string;
 	allCrew: PlayerCrew[];
+	allShips?: Ship[];
+	playerShips?: Ship[];
 	ship?: string;
 	allItems?: PlayerEquipmentItem[];
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
+	updateBossData?: (data: BossBattlesRoot) => void;
+    updateAllShips?: (data: Ship[]) => void;
 	location: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
-			allCrew, allItems, requestShowForm, requestClearData } = props;
+			allCrew, allItems, requestShowForm, requestClearData, allShips, playerShips, updateBossData, updateAllShips } = props;
 
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
@@ -423,7 +459,16 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			<React.Fragment>
 				<ShareMessage />
 				<Header as='h3'>{tools[activeTool].title}</Header>
-				{tools[activeTool].render(props)}
+				<AllDataContext.Provider value={{
+					allCrew: allCrew,
+					allShips: allShips,
+					playerData: playerData,
+					playerShips: playerShips,
+					updateAllShips: updateAllShips,
+					updateBossData: updateBossData
+				}}>
+					{tools[activeTool].render(props)}
+				</AllDataContext.Provider>
 			</React.Fragment>
 		</Layout>
 	);

@@ -8,6 +8,7 @@ import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
+import { AllData, AllDataContext } from '../model/worker';
 
 type ProfileShipsProps = {
 	playerData: PlayerData;
@@ -31,7 +32,11 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
+
+	static contextType = AllDataContext;
+
 	constructor(props: ProfileShipsProps) {
 		super(props);
 
@@ -47,13 +52,20 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	componentDidMount() {
-		fetch('/structured/ship_schematics.json')
-			.then(response => response.json())
-			.then((ship_schematics: Schematics[]) => {
-				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
-				this.setState({ data, originals: scsave });
-			});
+		// const dataContext = this.context as AllData | null;
+		// if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return;
+
+		// const { allShips, playerShips } = dataContext;
+
+		// this.setState({ data: playerShips, originals: allShips });
+
+		// fetch('/structured/ship_schematics.json')
+		// 	.then(response => response.json())
+		// 	.then((ship_schematics: Schematics[]) => {
+		// 		let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
+		// 		let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
+		// 		this.setState({ data, originals: scsave });
+		// 	});
 	}
 
 	_onChangePage(activePage) {
@@ -87,8 +99,12 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 	render() {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
-		let { data } = this.state;
+		
+		const dataContext = this.context as AllData | null;
+		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
 
+		let data = [ ... dataContext.playerShips ];
+		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		const setActiveShip = (ship: Ship | null | undefined) => {
@@ -224,5 +240,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			</>);
 	}
 }
+
+
 
 export default ProfileShips;

@@ -1,3 +1,4 @@
+import React from "react";
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, Skill } from "./crew";
 import { PlayerCrew, PlayerData, VoyageDescription } from "./player";
@@ -36,8 +37,11 @@ export interface CalculatorProps {
 
 export interface AllData extends CalculatorProps {
     allShips?: Ship[];
+    playerShips?: Ship[];    
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
+    updateBossData?: (data: BossBattlesRoot) => void;
+    updateAllShips?: (data: Ship[]) => void;
 }
 
 export interface VoyageConsideration {
@@ -137,3 +141,7 @@ export interface ExportCrew {
     max_rarity: number;
     skillData: number[];
 }
+
+export const AllDataContext = React.createContext<AllData | null>(null);
+
+

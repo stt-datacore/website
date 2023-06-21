@@ -21,7 +21,7 @@ import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
-import { ShipSkill } from '../components/shipskill';
+import { ShipSkill } from '../components/item_presenters/shipskill';
 const DEFAULT_MOBILE_WIDTH = 768;
 
 export interface CrewPageOptions {
