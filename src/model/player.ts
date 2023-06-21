@@ -8,6 +8,7 @@ import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
+import { Archetype17, ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
 export interface AtlasIcon extends Icon {
     atlas_info: string
@@ -18,7 +19,10 @@ export interface PlayerData {
     fleet_boss_battles_root: BossBattlesRoot;
     captains_bridge_root: CaptainsBridgeRoot;
     calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
+    archetype_cache?: ArchetypeRoot20;
+    item_archetype_cache?: ArchetypeRoot17;
     [key: string]: any;
+    version: 17 | 20
 }
 
 export interface Player {

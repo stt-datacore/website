@@ -1,4 +1,4 @@
-import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData } from "../model/player";
+import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
 
 // Remove any unnecessary fields from the player data
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
@@ -86,7 +86,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             accepted: mission.accepted,
             state: mission.state,
             total_stars: mission.total_stars,
-        }));
+        } as AcceptedMission));
 
     p.player.character.dispute_histories =
         p.player.character.dispute_histories.map((mission) => ({

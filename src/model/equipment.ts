@@ -1,3 +1,4 @@
+import { Icon } from "./game-elements"
 import { PlayerEquipmentItem } from "./player"
 
 export interface EquipmentCommon extends PlayerEquipmentItem {
