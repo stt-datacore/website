@@ -23,7 +23,7 @@ import { AllData, CalcConfig, CalcResult, Calculation, GameWorkerOptions, Voyage
 import { InitialOptions } from '../../model/game-elements';
 import { Helper } from './Helper';
 
-export const AllDataContext = React.createContext<AllData>({} as AllData);
+export const RecommenderContext = React.createContext<AllData>({} as AllData);
 
 export type RecommenderProps = {
 	voyageConfig: Voyage;
@@ -86,7 +86,7 @@ export const Recommender = (props: RecommenderProps) => {
 	calculators.push({ key: 'all', value: 'all', text: 'All calculators (slower)' });
 
 	return (
-		<AllDataContext.Provider value={allData}>
+		<RecommenderContext.Provider value={allData}>
 			<div ref={topAnchor} />
 			{renderBestShip()}
 			{renderResults()}
@@ -137,7 +137,7 @@ export const Recommender = (props: RecommenderProps) => {
 					</Form>
 				</Message.Content>
 			</Message>
-		</AllDataContext.Provider>
+		</RecommenderContext.Provider>
 	);
 
 	function renderBestShip(): JSX.Element {
@@ -497,7 +497,7 @@ type InputCrewExcluderProps = {
 }
 
 const InputCrewExcluder = (props: InputCrewExcluderProps) => {
-	const { allCrew } = React.useContext(AllDataContext);
+	const { allCrew } = React.useContext(RecommenderContext);
 	const { updateExclusions } = props;
 
 	const [eventData, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
@@ -622,7 +622,7 @@ type VoyageResultPaneProps = {
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
-	const { playerData } = React.useContext(AllDataContext);
+	const { playerData } = React.useContext(RecommenderContext);
 	const { result, resultIndex, resultCompared, requests, requestId, calcState, abortCalculation, estimateResult, dismissResult, roster } = props;
 
 	const request = requests.find(r => r.id === requestId);

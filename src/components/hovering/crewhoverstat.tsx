@@ -8,7 +8,6 @@ import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 
-
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
     disableBuffs?: boolean;
@@ -29,7 +28,6 @@ export interface CrewTargetState extends HoverStatTargetState {
 }
 
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps, CrewTargetState> {
-    
     constructor(props: CrewTargetProps){
         super(props);        
         this.tiny.subscribe(this.propertyChanged);                
