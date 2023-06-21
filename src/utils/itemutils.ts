@@ -1,7 +1,8 @@
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { PlayerEquipmentItem } from '../model/player';
 import { simplejson2csv, ExportField } from './misc';
 
-export function mergeItems(player_items: EquipmentCommon[], items: EquipmentItem[]) {
+export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol);
@@ -20,12 +21,12 @@ export function mergeItems(player_items: EquipmentCommon[], items: EquipmentItem
 		} else {
 			data.push({
 				...item,
-				name: item.name,
-				type: item.type,
+				name: item.name ?? "",
+				type: item.type ?? 0,
 				rarity: item.rarity,
-				flavor: item.flavor,
+				flavor: item.flavor ?? "",
 				bonuses: undefined,
-				imageUrl: item.imageUrl,
+				imageUrl: item.imageUrl ?? "",
 				symbol: item.symbol,
 				quantity: item.quantity
 			});

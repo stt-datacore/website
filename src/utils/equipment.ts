@@ -17,6 +17,11 @@ export interface ICrewDemands {
 	craftCost: number;
 }
 
+export interface DemandCounts {
+	name: string;
+	count: number;
+}
+
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[]): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
 	if (!equipment) return 0;

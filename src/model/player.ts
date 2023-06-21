@@ -210,7 +210,7 @@ export interface Player {
     active?: boolean
   }
   
-  export interface AcceptedMission {
+  export interface AcceptedMission extends DisputeHistory {
     id: number
     symbol: string
     description?: string
@@ -225,6 +225,7 @@ export interface Player {
     accepted: boolean
     state: number
     main_story?: boolean
+    cadet?: any;
   }
   
   export interface CrewAvatar {

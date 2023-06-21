@@ -6,10 +6,10 @@ import { mergeItems } from '../utils/itemutils';
 import { mergeShips } from '../utils/shiputils';
 import { PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
+import { AllData, AllDataContext } from '../model/worker';
 
 
 type UnneededItemsProps = {
-	playerData: PlayerData;
 };
 
 type UnneededItemsState = {
@@ -19,6 +19,8 @@ type UnneededItemsState = {
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
+	static contextType = AllDataContext;
+
 	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
 
@@ -30,7 +32,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	async componentDidMount() {
-		const { playerData } = this.props;
+		const { playerData } = this.context as AllData;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
@@ -132,7 +134,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData } = this.props;
+		const { playerData } = this.context as AllData;
 
 		let itemCount = playerData.player.character.items.length;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;

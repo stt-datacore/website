@@ -90,19 +90,19 @@ export const playerTools: PlayerTools = {
 	},
 	'items': {
 		title: 'Items',
-		render: ({playerData}) => <ProfileItems playerData={playerData} />
+		render: () => <ProfileItems />
 	},
 	'unneeded': {
 		title: 'Unneeded Items',
-		render: ({playerData}) => <UnneededItems playerData={playerData} />
+		render: () => <UnneededItems />
 	},
 	'other': {
 		title: 'Other',
-		render: ({playerData}) => <ProfileOther playerData={playerData} />
+		render: () => <ProfileOther />
 	},
 	'charts': {
 		title: 'Charts & Stats',
-		render: ({playerData}) => <ProfileCharts playerData={playerData} />
+		render: () => <ProfileCharts />
 	}
 };
 

@@ -6,9 +6,9 @@ import { mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
+import { AllData, AllDataContext } from '../model/worker';
 
 type ProfileItemsProps = {
-	playerData: any;
 };
 
 type ProfileItemsState = {
@@ -28,6 +28,8 @@ const pagingOptions = [
 ];
 
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
+	static contextType = AllDataContext;
+	
 	constructor(props: ProfileItemsProps) {
 		super(props);
 
@@ -45,7 +47,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = mergeItems(this.props.playerData.player.character.items, items);
+				let data = mergeItems((this.context as AllData).playerData.player.character.items, items);
 				this.setState({ data });
 			});
 	}
