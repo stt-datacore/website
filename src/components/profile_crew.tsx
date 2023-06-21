@@ -30,16 +30,16 @@ import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shi
 import ShipSeatPicker from './shipseatpicker';
 import ShipAbilityPicker from './shipabilitypicker';
 import ShipAbilityRankPicker from './shipabilityrankpicker';
+import { AllDataContext } from '../model/worker';
 
 type ProfileCrewProps = {
-	playerData: PlayerData;
 	isTools?: boolean;
-	allCrew?: PlayerCrew[];
 	location: any;
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const myCrew = [...props.playerData.player.character.crew];
+	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const myCrew = [...playerData.player.character.crew];
 	
 	// Check for custom initial table options from URL or <Link state>
 	//	Custom options are only available in player tool right now
@@ -51,14 +51,14 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if ("state" in window.location && (initOptions || initHighlight || initProspects))
 		window.history.replaceState(null, '');
 
-	const allCrew = [...props.allCrew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
+	const allCrew = [...crew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 
 	if (props.isTools) {
-		const buffConfig = calculateBuffConfig(props.playerData.player);
+		const buffConfig = calculateBuffConfig(playerData.player);
 		return (
-			<ProfileCrewTools playerData={props.playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+			<ProfileCrewTools playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
 				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
-				dbid={`${props.playerData.player.dbid}`} />
+				dbid={`${playerData.player.dbid}`} />
 		);
 	}
 
@@ -73,7 +73,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 	}
 
-	return (<ProfileCrewTable playerData={props.playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
+	return (<ProfileCrewTable playerData={playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
 type ProfileCrewToolsProps = {
@@ -246,7 +246,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [shipFilter, setShipFilter] = useStateWithStorage<ShipPickerFilter | undefined>(pageId+'/shipFilter', undefined);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
-
 
 	const [selectedShip, setSelectedShip] = useStateWithStorage<Ship | undefined>(pageId+'/selectedShip', undefined);
 	const [selectedSeats, setSelectedSeats] = useStateWithStorage(pageId+'/selectedSeats', [] as string[]);

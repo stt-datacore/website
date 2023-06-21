@@ -13,15 +13,11 @@ import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, P
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { navToCrewPage } from '../utils/crewutils';
+import { AllDataContext } from '../model/worker';
 
-type CollectionsToolProps = {
-	playerData: PlayerData;
-	allCrew: PlayerCrew[];
-};
+const CollectionsTool = () => {
 
-const CollectionsTool = (props: CollectionsToolProps) => {
-	const { playerData } = props;
-
+	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
 	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
 	if (!allCollections) {
@@ -33,7 +29,7 @@ const CollectionsTool = (props: CollectionsToolProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as PlayerCrew[];
+	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
 
 	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {

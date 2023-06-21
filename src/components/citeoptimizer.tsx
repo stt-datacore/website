@@ -14,6 +14,7 @@ import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { AllData, AllDataContext } from '../model/worker';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -23,8 +24,6 @@ const pagingOptions = [
 ];
 
 type CiteOptimizerProps = {
-	playerData: PlayerData;
-	allCrew: CrewMember[];
 };
 
 type CiteOptimizerState = {
@@ -49,7 +48,9 @@ export class StatLabel extends React.Component<StatLabelProps> {
 	}
 }
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
-	constructor(props: CiteOptimizerProps | Readonly<CiteOptimizerProps>) {
+	static contextType = AllDataContext;
+
+	constructor(props: CiteOptimizerProps) {
 		super(props);
 		
 		this.state = {
@@ -65,7 +66,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	componentDidMount() {
 		const worker = new UnifiedWorker();
-		const { playerData, allCrew } = this.props;
+		const { playerData, allCrew } = this.context as AllData;
+
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
 		worker.postMessage({
 			worker: 'citeOptimizer',
@@ -88,7 +90,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		const buffConfig = calculateBuffConfig((this.context as AllData).playerData.player);
 		
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -117,7 +119,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Header>
 				<Table.Body>
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
-						const crew = this.props.playerData.player.character.crew.find(c => c.name == row.name);
+						const crew = (this.context as AllData).playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
 							<Table.Row key={idx}
@@ -134,7 +136,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<CrewTarget buffConfig={buffConfig} allCrew={this.props.allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
+											<CrewTarget buffConfig={buffConfig} allCrew={(this.context as AllData).allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
 												<img 
 													onClick={(e) => imageClick(e, crew)}
 													width={48} 
@@ -143,7 +145,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											</CrewTarget>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
-											<a onClick={(e) => navToCrewPage(crew, this.props.playerData.player.character.crew, buffConfig)}>
+											<a onClick={(e) => navToCrewPage(crew, (this.context as AllData).playerData.player.character.crew, buffConfig)}>
 												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
 											</a>											
 										</div>
@@ -211,7 +213,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	
 	render() {
 
-		const buffConfig = calculateBuffConfig(this.props.playerData.player);
+		const buffConfig = calculateBuffConfig((this.context as AllData).playerData.player);
 		const { citeData } = this.state;
 
 		let compact = true;
@@ -264,7 +266,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</>
 					}						
 				</Segment>
-				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.props.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
+				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, (this.context as AllData).playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
 
 			</>
 		);

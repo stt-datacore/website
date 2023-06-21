@@ -11,7 +11,6 @@ import { useStateWithStorage } from '../utils/storage';
 import { AllData, AllDataContext } from '../model/worker';
 
 type ProfileShipsProps = {
-	playerData: PlayerData;
 };
 
 type ProfileShipsState = {

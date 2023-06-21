@@ -15,6 +15,7 @@ import { CompletionState, CryoCollection, PlayerCrew, PlayerData } from '../mode
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
+import { AllDataContext } from '../model/worker';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -56,13 +57,9 @@ const filterTraits = (polestar: Polestar, trait: string) => {
 	}
 }
 
-type CrewRetrievalProps = {
-	playerData: PlayerData;
-	allCrew: PlayerCrew[];
-};
+const CrewRetrieval = () => {
 
-const CrewRetrieval = (props: CrewRetrievalProps) => {
-	const { playerData } = props;
+	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
 	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
 
 	if (!playerData?.forte_root) {
@@ -90,7 +87,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 
 	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
 
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as PlayerCrew[];
+	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {

@@ -5,7 +5,7 @@ import { AllData } from '../model/worker';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
-import { AllDataContext } from './voyagecalculator';
+import { VoyageContext } from './voyagecalculator';
 
 type ItemDisplayProps = {
 	maxRarity: number;

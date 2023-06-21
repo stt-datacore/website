@@ -9,6 +9,7 @@ import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasor
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { AllData, AllDataContext } from '../model/worker';
 
 enum SkillSort {
 	Base = '.core',
@@ -24,8 +25,6 @@ type HandleSortOptions = {
 };
 
 type ProfileCrewMobileProps = {
-	playerData: PlayerData;
-	allCrew: CrewMember[];
 	isMobile: boolean;
 };
 
@@ -45,10 +44,13 @@ type ProfileCrewMobileState = {
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
+	
+	static contextType = AllDataContext;
+
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-
-		const buffConfig = calculateBuffConfig(props.playerData.player);
+		const { playerData } = this.context as AllData;
+		const buffConfig = calculateBuffConfig(playerData.player);
 
 		this.state = {
 			column: 'bigbook_tier',
@@ -56,7 +58,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			direction: 'descending',
 			searchFilter: '',
 			activeItem: '',
-			data: this.props.playerData.player.character.crew,
+			data: playerData.player.character.crew,
 			includeFrozen: false,
 			excludeFF: false,
 			onlyEvent: false,
@@ -68,10 +70,12 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	componentDidMount() {
 		let self = this;
+		const { playerData } = this.context as AllData;
+
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				this.props.playerData.player.character.crew.forEach(crew => {
+				playerData.player.character.crew.forEach(crew => {
 					crew.equipment_slots.forEach(es => {
 						let itemEntry = items.find(i => i.symbol === es.symbol);
 						if (itemEntry) {
@@ -198,7 +202,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData } = this.props;
+		const { allCrew, playerData } = this.context as AllData;
+
 		let { data, itemsReady } = this.state;
 
 		const { isMobile } = this.props;
@@ -230,7 +235,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		}
 
 		let settings = ['Include Frozen', 'Exclude FF'];
-		let eventCrew = bonusCrewForCurrentEvent(this.props.playerData.player.character);
+		let eventCrew = bonusCrewForCurrentEvent(playerData.player.character);
 		if (eventCrew) {
 			console.log(eventCrew);
 			settings.push(`Only event bonus (${eventCrew.eventName})`);

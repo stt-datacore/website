@@ -43,39 +43,39 @@ export interface PlayerTools {
 export const playerTools: PlayerTools = {
 	'voyage': {
 		title: 'Voyage Calculator',
-		render: ({playerData, allCrew}) => <VoyageCalculator playerData={playerData} allCrew={allCrew} />
+		render: () => <VoyageCalculator />
 	},
 	'event-planner': {
 		title: 'Event Planner',
-		render: ({playerData, allCrew}) => <EventPlanner playerData={playerData} allCrew={allCrew} />
+		render: () => <EventPlanner />
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({playerData, allCrew, location}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} location={location} />
+		render: ({location}) => <ProfileCrew isTools={true} location={location} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
-		render: ({playerData, allCrew}) => <ProfileCrewMobile allCrew={allCrew} playerData={playerData} isMobile={false} />
+		render: () => <ProfileCrewMobile isMobile={false} />
 	},
 	'crew-retrieval': {
 		title: 'Crew Retrieval',
-		render: ({playerData, allCrew}) => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
+		render: () => <CrewRetrieval />
 	},
 	'cite-optimizer': {
 		title: 'Citation Optimizer',
-		render: ({playerData, allCrew}) => <CiteOptimizer playerData={playerData} allCrew={allCrew} />
+		render: () => <CiteOptimizer />
 	},
 	'collections': {
 		title: 'Collections',
-		render: ({playerData, allCrew}) => <CollectionsTool playerData={playerData} allCrew={allCrew} />
+		render: () => <CollectionsTool />
 	},
 	'fleetbossbattles': {
 		title: 'Fleet Boss Battles',
-		render: ({playerData, allCrew}) => <FleetBossBattles playerData={playerData} allCrew={allCrew} />
+		render: () => <FleetBossBattles />
 	},
 	'ships': {
 		title: 'Ships',
-		render: ({playerData}) => <ProfileShips playerData={playerData} />
+		render: () => <ProfileShips />
 	},
 	// 'ship': {
 	// 	title: 'Ship Page',
@@ -129,7 +129,7 @@ const PlayerToolsPage = (props: any) =>  {
 	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && activeCrew && dataSource && allCrew && fleetbossData && playerShips) {
+	if (playerData && allItems && allShips && !showForm && activeCrew && dataSource && allCrew && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
 					strippedPlayerData={strippedPlayerData}
@@ -141,9 +141,8 @@ const PlayerToolsPage = (props: any) =>  {
 					allCrew={allCrew}
 					allItems={allItems}
 					allShips={allShips}
+					fleetBossData={fleetbossData}
 					playerShips={playerShips}					
-					updateAllShips={setAllShips}
-					updateBossData={setFleetbossData}
 					requestShowForm={setShowForm}
 					requestClearData={clearPlayerData}
 					location={props.location}
@@ -272,7 +271,6 @@ const PlayerToolsPage = (props: any) =>  {
 
 		if (preparedProfileData && schematics) {
 			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
-			console.log("Set Player Ships")
 			setPlayerShips(data);
 		}
 	
@@ -294,20 +292,19 @@ type PlayerToolsPanesProps = {
 	activeCrew: CompactCrew[];
 	dataSource: string;
 	allCrew: PlayerCrew[];
-	allShips?: Ship[];
-	playerShips?: Ship[];
+	allShips: Ship[];
+	playerShips: Ship[];
 	ship?: string;
-	allItems?: PlayerEquipmentItem[];
+	allItems: PlayerEquipmentItem[];
+	fleetBossData: BossBattlesRoot;
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
-	updateBossData?: (data: BossBattlesRoot) => void;
-    updateAllShips?: (data: Ship[]) => void;
 	location: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
-			allCrew, allItems, requestShowForm, requestClearData, allShips, playerShips, updateBossData, updateAllShips } = props;
+			allCrew, allItems, requestShowForm, requestClearData, allShips, playerShips, fleetBossData } = props;
 
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
@@ -464,8 +461,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					allShips: allShips,
 					playerData: playerData,
 					playerShips: playerShips,
-					updateAllShips: updateAllShips,
-					updateBossData: updateBossData
+					bossData: fleetBossData
 				}}>
 					{tools[activeTool].render(props)}
 				</AllDataContext.Provider>

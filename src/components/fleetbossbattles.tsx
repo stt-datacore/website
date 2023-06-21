@@ -9,7 +9,7 @@ import { CrewMember } from '../model/crew';
 import { NumericOptions } from '../model/game-elements';
 import { BossBattlesRoot, Combo } from '../model/boss';
 import { Ship } from '../model/ship';
-import { AllData, CalculatorProps } from '../model/worker';
+import { AllData, AllDataContext, CalculatorProps } from '../model/worker';
 
 export const DIFFICULTY_NAME = {
 	1: 'Easy',
@@ -20,15 +20,11 @@ export const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
+export const BossDataContext = React.createContext<AllData | null>(null);
 
-export const AllDataContext = React.createContext<AllData | null>(null);
-
-export const FleetBossBattles = (props: CalculatorProps) => {
-	const { playerData } = props;
-
-	const [fleetbossData, ] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
-
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew)) as PlayerCrew[];
+export const FleetBossBattles = () => {
+	const { bossData: fleetbossData, playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
@@ -44,15 +40,15 @@ export const FleetBossBattles = (props: CalculatorProps) => {
 	};
 
 	return (
-		<AllDataContext.Provider value={allData}>
+		<BossDataContext.Provider value={allData}>
 			<p>Use this tool to help activate combo chain bonuses in a fleet boss battle.</p>
 			<ChainPicker />
-		</AllDataContext.Provider>
+		</BossDataContext.Provider>
 	);
 };
 
 const ChainPicker = () => {
-	const allData = React.useContext(AllDataContext);
+	const allData = React.useContext(BossDataContext);
 
 	const [activeBoss, setActiveBoss] = useStateWithStorage<number | undefined>('fbb/active', undefined);
 	const [chain, setChain] = React.useState<Combo | undefined>(undefined);

@@ -13,14 +13,14 @@ import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
-import { AllData, CalculatorProps } from '../model/worker';
+import { AllData, AllDataContext, CalculatorProps } from '../model/worker';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 
-export const AllDataContext = React.createContext<AllData>({} as AllData);
+export const VoyageContext = React.createContext<AllData>({} as AllData);
 
-const VoyageCalculator = (props: CalculatorProps) => {
-	const { playerData, allCrew } = props;
+const VoyageCalculator = () => {
+	const { playerData, allCrew } = React.useContext(AllDataContext);
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
@@ -38,7 +38,7 @@ const VoyageCalculator = (props: CalculatorProps) => {
 		};
 	});
 
-	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew));
+	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
 	myCrew.forEach((crew, crewId) => {
 		crew.id = crewId+1;
 
@@ -75,9 +75,9 @@ const VoyageCalculator = (props: CalculatorProps) => {
 	} as AllData;
 
 	return (
-		<AllDataContext.Provider value={allData}>
+		<VoyageContext.Provider value={allData}>
 			<VoyageMain myCrew={myCrew} />
-		</AllDataContext.Provider>
+		</VoyageContext.Provider>
 	);
 
 	async function fetchAllShips() {
@@ -157,7 +157,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 };
 
 const VoyageActiveCard = (props: any) => {
-	const { allShips } = React.useContext(AllDataContext);
+	const { allShips } = React.useContext(VoyageContext);
 	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
@@ -209,7 +209,7 @@ type VoyageActiveProps = {
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { allShips, playerData, allCrew } = React.useContext(AllDataContext);
+	const { allShips, playerData, allCrew } = React.useContext(VoyageContext);
 	const { voyageConfig, myCrew } = props;
 	const [hoverItem, setHoverItem] = React.useState<PlayerCrew | CrewMember | undefined | null>();
 
@@ -241,7 +241,7 @@ type VoyageInputProps = {
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
+	const { allCrew, allShips, playerData } = React.useContext(VoyageContext);
 	const [voyageConfig, setVoyageConfig] = React.useState<Voyage>(JSON.parse(JSON.stringify(props.voyageConfig)));
 	const allData = {
 		allCrew, allShips, playerData

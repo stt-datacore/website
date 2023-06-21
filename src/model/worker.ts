@@ -40,8 +40,6 @@ export interface AllData extends CalculatorProps {
     playerShips?: Ship[];    
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
-    updateBossData?: (data: BossBattlesRoot) => void;
-    updateAllShips?: (data: Ship[]) => void;
 }
 
 export interface VoyageConsideration {
@@ -142,6 +140,6 @@ export interface ExportCrew {
     skillData: number[];
 }
 
-export const AllDataContext = React.createContext<AllData | null>(null);
+export const AllDataContext = React.createContext<AllData>({} as AllData);
 
 
