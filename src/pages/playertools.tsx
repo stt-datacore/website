@@ -181,6 +181,29 @@ const PlayerToolsPage = (props: any) =>  {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 			}
 		});
+		if ("item_archetype_cache" in inputPlayerData){
+			inputPlayerData.version = 17;
+		}
+		else if ("archetype_cache" in inputPlayerData) {
+			inputPlayerData.version = 20;
+			inputPlayerData.item_archetype_cache = {
+				archetypes: inputPlayerData.archetype_cache.archetypes.map((a) => {
+					return {
+						id: a.id,
+						symbol: a.symbol,
+						type: a.item_type,
+						name: a.name,
+						icon: a.icon,
+						flavor: a.flavor,
+						rarity: a.rarity,
+						recipe: a.recipe,
+						item_sources: a.item_sources,
+						bonuses: a.bonuses,
+						short_name: a.short_name
+					};
+				})
+			}
+		}
 		let voyageData = {
 			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions],
 			voyage: [...inputPlayerData.player.character.voyage],
