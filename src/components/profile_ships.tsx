@@ -235,7 +235,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<ShipHoverStat targetGroup='ships' ship={this.state.activeShip} />
+			<ShipHoverStat targetGroup='ships' displayItem={this.state.activeShip} />
 			</>);
 	}
 }

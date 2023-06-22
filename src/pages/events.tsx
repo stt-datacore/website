@@ -4,6 +4,7 @@ import { Container, Header, Message, Segment, Label, Grid, Modal } from 'semanti
 import Layout from '../components/layout';
 import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
+import { EventLeaderboard } from '../model/events';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -16,21 +17,21 @@ type EventInstance = {
 
 function EventsPage() {
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
-	const [leaderboardData, setLeaderboardData] = React.useState(null);
-	const [loadingError, setLoadingError] = React.useState(null);
-	const [modalEventInstance, setModalEventInstance] = React.useState(null);
+	const [leaderboardData, setLeaderboardData] = React.useState<{ [key: string]: EventLeaderboard } | null>(null);
+	const [loadingError, setLoadingError] = React.useState<any>(null);
+	const [modalEventInstance, setModalEventInstance] = React.useState<EventInstance | null>(null);
 
 	// load the events and leaderboard data once on component mount
 	React.useEffect(() => {
 		async function loadData() {
 			try {
-				const fetchEventResp = await fetch('/structured/event_instances.json')
-				const eventDataList = await fetchEventResp.json();
+				const fetchEventResp = await fetch('/structured/event_instances.json');
+				const eventDataList = (await fetchEventResp.json()) as EventInstance[];
 				setEventsData(eventDataList.reverse());
 
 				const fetchLeaderboardResp = await fetch('/structured/event_leaderboards.json');
-				const leaderboardDataList = await fetchLeaderboardResp.json();
-				const keyedLeaderboard = {};
+				const leaderboardDataList = await fetchLeaderboardResp.json() as EventLeaderboard[];
+				const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
 				leaderboardDataList.forEach(entry => keyedLeaderboard[entry.instance_id] = entry);
 				setLeaderboardData(keyedLeaderboard);
 			}
@@ -44,6 +45,7 @@ function EventsPage() {
 
 	return (
 		<Layout>
+			<></>
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
 				{loadingError && (
@@ -86,12 +88,12 @@ function EventsPage() {
 								instanceId={modalEventInstance.instance_id}
 								image={modalEventInstance.image}
 								hasDetails={modalEventInstance.event_details}
-								leaderboard={leaderboardData[modalEventInstance.instance_id].leaderboard}
+								leaderboard={leaderboardData ? leaderboardData[modalEventInstance.instance_id].leaderboard : []}
 							/>
 						</Modal.Content>
 					</Modal>
 				)}
-			</Container>
+			</Container>			
 		</Layout>
 	);
 }

@@ -78,10 +78,10 @@ export const playerTools: PlayerTools = {
 		title: 'Ships',
 		render: () => <ProfileShips />
 	},
-	// 'ship': {
-	// 	title: 'Ship Page',
-	// 	render: ({playerData, allCrew, ship}) => <ShipProfile ship={ship} allCrew={allCrew} playerData={playerData} />
-	// },
+	'ship': {
+		title: 'Ship Details',
+		render: ({ship}) => <ShipProfile ship={ship} />
+	},
 	'factions': {
 		title: 'Factions',
 		render: ({playerData}) => <FactionInfo
@@ -449,6 +449,15 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		  />
 		);
 	 };
+	 
+	 let tt: string | undefined = undefined;
+
+	 if (tools[activeTool].title === 'Ship Page' && selectedShip) {
+		let s = playerShips?.find((sp) => sp.symbol === selectedShip);
+		if (s) {
+			tt = s.name;
+		}
+	 }
 
 	return (
 		<Layout title='Player tools'>
@@ -480,7 +489,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 			<React.Fragment>
 				<ShareMessage />
-				<Header as='h3'>{tools[activeTool].title}</Header>
+				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
 				<AllDataContext.Provider value={{
 					allCrew: allCrew,
 					allShips: allShips,

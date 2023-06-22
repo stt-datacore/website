@@ -5,9 +5,10 @@ import { BuffStatTable } from "../../utils/voyageutils";
 import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 import CONFIG from "../CONFIG";
+import { navigate } from "gatsby";
 
 export interface ShipHoverStatProps extends HoverStatProps {
-    ship: Ship | undefined | null;
+    displayItem: Ship | undefined | null;
     disableBuffs?: boolean;
 }
 
@@ -133,7 +134,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
     }    
 
     protected checkBorder = () => {
-        const { ship } = this.props;
+        const { displayItem: ship } = this.props;
         const { boxStyle } = this.state;
 
         if (ship) {
@@ -174,7 +175,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
 
     protected renderContent = (): JSX.Element =>  {
         if (this.checkBorder()) return <></>;
-        const { ship: displayItem, targetGroup } = this.props;
+        const { displayItem: displayItem, targetGroup } = this.props;
         const { mobileWidth } = this.state;
 
         const compact = true;    
@@ -187,6 +188,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         
         const navClick = () => {
             if (!displayItem) return;
+            navigate('/playertools?tool=ship&ship=' + displayItem.symbol);            
             //window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
         }
 

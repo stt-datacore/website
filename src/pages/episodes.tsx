@@ -34,6 +34,7 @@ class EpisodesPage extends PureComponent {
 				`}
 				render={data => (
 					<Layout title='Episodes'>
+						<></>
 						<Item.Group>
 							{data.allEpisodesJson.edges.map(({ node }, index) => (
 								<Item key={index}>

@@ -11,7 +11,7 @@ import { EventData } from '../utils/events';
 type EventInfoModalProps = {
 	instanceId: number,
 	image: string,
-	hasDetails: boolean,
+	hasDetails?: boolean,
 	leaderboard: Array<object>,
 }
 

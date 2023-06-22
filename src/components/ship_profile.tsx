@@ -9,11 +9,11 @@ import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { CrewMember } from '../model/crew';
 import { ShipPresenter } from './item_presenters/ship_presenter';
+import { AllDataContext } from '../model/worker';
+import { navigate } from 'gatsby';
 
 type ShipProfileProps = {
-	playerData: PlayerData;
     ship?: string;
-    allCrew: (PlayerCrew | CrewMember)[];
 };
 
 type ShipProfileState = {
@@ -30,6 +30,9 @@ const pagingOptions = [
 ];
 
 class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
+	static contextType = AllDataContext;
+	context!: React.ContextType<typeof AllDataContext>;
+
 	constructor(props: ShipProfileProps) {
 		super(props);
 
@@ -40,13 +43,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 
 	componentDidMount() {
-		fetch('/structured/ship_schematics.json')
-			.then(response => response.json())
-			.then((ship_schematics: Schematics[]) => {
-				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
-				this.setState({ data, originals: scsave });
-            });
+		this.setState({ data: this.context.playerShips ?? [], originals: this.context.allShips ?? []});
 	}
 
 	render() {
@@ -60,7 +57,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
             }
         }
         if (!ship_key || !data) {
-            window.location.href = '/playertools?tool=ships';
+            navigate('/playertools?tool=ships');
         }
         const ship = data.find(d => d.symbol === ship_key);
         if (!ship) return <></>
@@ -76,6 +73,31 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
             }}>
 
                 <ShipPresenter hover={false} ship={ship} storeName='shipProfile' />
+
+				<h3>Battle Stations</h3>
+				<div style={{
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					padding: 0
+				}}>
+					{ship.battle_stations?.map((bs, idx) => (
+						<div key={idx} 
+							className="ui segment button" 
+							style={{
+								margin: "2em",
+								display: "flex",
+								flexDirection: "row",
+								width: "128px", 
+								height: "128px", 
+								padding: "1em", 
+								justifyContent: "center", 
+								alignItems: "center"}}>
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px"}} />
+						</div>
+					))}
+				</div>
             </div>
 			</>);
 	}

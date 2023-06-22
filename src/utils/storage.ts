@@ -1,5 +1,8 @@
 import React from 'react';
 import * as localForage from 'localforage';
+import * as lz from 'lz-string';
+
+const COMPRESSION_SUFFIX = "___Lz";
 
 const windowGlobal = typeof window !== 'undefined' && window;
 
@@ -8,6 +11,7 @@ interface StorageOptions {
 	useDefault?: boolean;	// Set to true to use default value as initial value instead of any stored value
 	useAndStoreDefault?: boolean;	// Set to true to use default and store it immediately to avoid render loops
 	onInitialize?: (itemKey: string, itemValue: any) => void;	// Callback after value is initialized
+	compress?: boolean;
 };
 
 const StorageDefaultOptions: StorageOptions = {
@@ -15,6 +19,7 @@ const StorageDefaultOptions: StorageOptions = {
 	useDefault: false,
 	useAndStoreDefault: false,
 	onInitialize: undefined,
+	compress: true
 };
 
 /**
@@ -32,7 +37,7 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 	const [value, setValue] = React.useState<T>(() => {
 		// Use default value if requested
 		if (options?.useAndStoreDefault) {
-			storeItem(itemKey, itemDefault, options?.rememberForever ?? false);
+			storeItem(itemKey, itemDefault, options?.rememberForever ?? false, options?.compress);
 			return itemDefault;
 		}
 		if (options?.useDefault) return itemDefault;
@@ -72,7 +77,7 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 			removeStoredItem(itemKey);
 		}
 		else {
-			storeItem(itemKey, value, options?.rememberForever ?? false);
+			storeItem(itemKey, value, options?.rememberForever ?? false, options?.compress);
 		}
 	}, [value]);
 
@@ -80,40 +85,62 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 };
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
-const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean) => {
+const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean, compress?: boolean) => {
 	if (windowGlobal && windowGlobal.sessionStorage)
 		windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
 	if (useLocalStorage) {
-		localForage.setItem(itemKey, JSON.stringify(itemValue));
+		if (compress) {
+			localForage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
+		}
+		else {
+			localForage.setItem(itemKey, JSON.stringify(itemValue));
+		}
 	}
 	// Remove locally stored item if local storage no longer needed, but item currently saved there
 	else {
 		localForage.removeItem(itemKey);
+		localForage.removeItem(itemKey + COMPRESSION_SUFFIX);
 	}
 };
 export const getStoredItem = (itemKey: string, itemDefault: any) => {
-	let sessionValue = windowGlobal && windowGlobal.sessionStorage && windowGlobal.sessionStorage.getItem(itemKey);
+	if (!(windowGlobal && windowGlobal.sessionStorage)) return itemDefault;
+
+	let sessionValue = windowGlobal.sessionStorage.getItem(itemKey);
+
 	if (!sessionValue) {
-		return itemDefault;
+		sessionValue = windowGlobal.sessionStorage.getItem(itemKey + COMPRESSION_SUFFIX);
+		if (sessionValue) {
+			sessionValue = lz.decompressFromBase64(sessionValue);
+		}
 	}
-	else {
+
+	if (sessionValue) {
 		return JSON.parse(sessionValue);
 	}
+
+	return itemDefault;
 };
+
 const getStoredItemPromise = (itemKey: string, itemDefault: any) => {
-	return new Promise((resolve, reject) => {
-		localForage.getItem(itemKey).then((localValue) => {
-			if (!localValue) {
-				resolve(itemDefault);
+	return new Promise(async (resolve, reject) => {
+		let localValue = await localForage.getItem<string>(itemKey);
+
+		if (!localValue) {
+			localValue = await localForage.getItem<string>(itemKey + COMPRESSION_SUFFIX);
+			if (localValue) {
+				localValue = lz.decompressFromBase64(localValue);
 			}
 			else {
-				resolve(JSON.parse(localValue as string));
-			}
-		});
+				resolve(itemDefault);
+			}			
+		}
+
+		resolve(JSON.parse(localValue as string));
 	});
 };
 const removeStoredItem = (itemKey: string) => {
 	if (windowGlobal && windowGlobal.sessionStorage)
 		windowGlobal.sessionStorage.removeItem(itemKey);
 	localForage.removeItem(itemKey);
+	localForage.removeItem(itemKey + COMPRESSION_SUFFIX);
 };

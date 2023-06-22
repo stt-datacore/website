@@ -125,7 +125,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         const stats = [stats1, stats2];
 
         return ship ? (<div style={{ 
-                        fontSize: "11pt", 
+                        fontSize: "12pt", 
                         display: "flex", 
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined

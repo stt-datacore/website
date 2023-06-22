@@ -6,12 +6,13 @@ import themes from '../components/nivo_themes';
 import ErrorBoundary from '../components/errorboundary';
 
 import Layout from '../components/layout';
+import { CrewBonuses } from '../model/player';
 
 type EventInfoPageProps = {};
 
 type EventInfoPageState = {
 	event_data?: any;
-	event_instace?: string;
+	event_instance?: string;
 	errorMessage?: string;
 	event_log?: any[];
 };
@@ -21,7 +22,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		super(props);
 
 		this.state = {
-			event_instace: undefined,
+			event_instance: undefined,
 			event_data: undefined,
 			event_log: undefined
 		};
@@ -30,8 +31,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 	componentDidMount() {
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('instance_id')) {
-			let event_instace = urlParams.get('instance_id');
-			this.setState({ event_instace });
+			let event_instance = urlParams.get('instance_id');			
+			this.setState({ event_instance: event_instance ?? undefined });
 
 			fetch('/structured/event_instances.json')
 				.then(response => response.json())
@@ -42,7 +43,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							fetch('/structured/event_fleaderboards.json')
 								.then(response => response.json())
 								.then(event_fleaderboards => {
-									let ev_inst = event_instances.find(ev => ev.instance_id === Number.parseInt(event_instace));
+									let ev_inst = event_instances.find(ev => ev.instance_id === Number.parseInt(event_instance ?? "0"));
 									let ev_lead = ev_inst ? event_leaderboards.find(ev => ev.instance_id === ev_inst.instance_id) : undefined;
 									let ev_flead = ev_inst ? event_fleaderboards.find(ev => ev.fixed_instance_id === ev_inst.fixed_instance_id) : undefined;
 
@@ -104,6 +105,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		return (
 			<ErrorBoundary>
+				<>
 				<h3>Score evolution</h3>
 				<div style={{ height: '380px' }}>
 					<ResponsiveLine
@@ -126,7 +128,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							legendOffset: 5,
 						}}
 						axisLeft={{
-							orient: 'left',
+							//orient: 'left',
 							tickSize: 5,
 							tickPadding: 5,
 							tickRotation: 0,
@@ -161,6 +163,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 						enableSlices="x"
 					/>
 				</div>
+				</>
 			</ErrorBoundary>);
 	}
 
@@ -188,7 +191,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 				<Label>{event.bonus_text}</Label>
 
 				{event.content.map((cnt, idx) => {
-					let crew_bonuses = undefined;
+					let crew_bonuses: CrewBonuses = {};
 					if (cnt.shuttles) {
 						crew_bonuses = cnt.shuttles[0].crew_bonuses;
 					} else if (cnt.crew_bonuses) {
@@ -294,7 +297,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 	}
 
 	render() {
-		const { event_instace, errorMessage, event_data } = this.state;
+		const { event_instance: event_instace, errorMessage, event_data } = this.state;
 
 		if (event_instace === undefined || event_data === undefined || errorMessage !== undefined) {
 			return (
