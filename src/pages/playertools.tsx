@@ -28,6 +28,7 @@ import { ShuttleAdventure } from '../model/shuttle';
 import ShipProfile from '../components/ship_profile';
 import { Ship } from '../model/ship';
 import { EventData } from '../utils/events';
+import { Archetype17, Archetype20 } from '../model/archetype';
 
 export interface PlayerTool {
 	title: string;
@@ -494,7 +495,7 @@ type PlayerToolsFormProps = {
 };
 
 const PlayerToolsForm = (props: PlayerToolsFormProps) => {
-	const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=17&only_read_state=true';
+	const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
 	const { setValidInput } = props;
 
