@@ -48,7 +48,7 @@ const IndexPage = (props: IndexPageProps) => {
 
 type CrewStatsProps = {
 	location: any;
-	allCrew: any[];
+	allCrew: (CrewMember | PlayerCrew)[];
 };
 
 type CrewStatsState = {
@@ -57,12 +57,13 @@ type CrewStatsState = {
 	initOptions: any;
 	lockable: any[];
 	hoverCrew?: CrewMember | PlayerCrew;
+	botcrew: (CrewMember | PlayerCrew)[];
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	static contextType = DataContext;
 
-	constructor(props) {
+	constructor(props: CrewStatsProps | Readonly<CrewStatsProps>) {
 		super(props);
 		this.state = {
 			botcrew: [],
@@ -82,7 +83,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	async componentDidMount() {
-		const botcrew = JSON.parse(JSON.stringify(this.props.allCrew));
+		const botcrew = JSON.parse(JSON.stringify(this.props.allCrew)) as (CrewMember | PlayerCrew)[];
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
