@@ -3,8 +3,14 @@ import { CrewMember } from '../model/crew';
 import { Ship, Schematics } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
 
+export enum ValidDemands {
+	Crew = 'crew',
+	Schematics = 'ship_schematics',
+	Items = 'items'
+}
+
 export interface DefaultCore {
-	ready: (demands: string[]) => boolean;
+	ready: (demands: ValidDemands[]) => boolean;
 	reset: () => boolean,
 	crew: CrewMember[],
 	ships: Schematics[],
@@ -39,14 +45,14 @@ export const DataProvider = (props: { children: JSX.Element }) => {
 		</DataContext.Provider>
 	);
 
-	function ready(demands: string[]): boolean {
+	function ready(demands: ValidDemands[]): boolean {
 		// Not ready if any valid demands are already queued
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
 		const unsatisfied = [] as string[];
 		demands.forEach(demand => {
-			const valid = ['crew', 'ship_schematics', 'items'];
+			const valid = Object.values(ValidDemands);
 			if (valid.includes(demand)) {
 				if (data[demand].length === 0) {
 					unsatisfied.push(demand);
