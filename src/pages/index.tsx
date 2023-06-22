@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Header, Table, Rating, Icon, Dropdown, Popup } from 'semantic-ui-react';
+import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
+import { DataContext } from '../context/datacontext';
 import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
@@ -23,12 +24,34 @@ type IndexPageProps = {
 };
 
 interface Lockable {
-	symbol: string;
+	symbol: string; 
 	name: string;
 }
 
-type IndexPageState = {
-	botcrew: (CrewMember | PlayerCrew)[];
+const IndexPage = (props: IndexPageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['crew']);
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<Announcement />
+					<CrewStats location={props.location} allCrew={coreData.crew} />
+				</React.Fragment>
+			}
+		</Layout>
+	);
+};
+
+type CrewStatsProps = {
+	location: any;
+	allCrew: any[];
+};
+
+type CrewStatsState = {
 	tableConfig: any[];
 	customColumns: string[];
 	initOptions: any;
@@ -36,7 +59,8 @@ type IndexPageState = {
 	hoverCrew?: CrewMember | PlayerCrew;
 };
 
-class IndexPage extends Component<IndexPageProps, IndexPageState> {
+class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
+	static contextType = DataContext;
 
 	constructor(props) {
 		super(props);
@@ -46,7 +70,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 			customColumns: [],
 			initOptions: false,
 			lockable: []
-		};
+		} as CrewStatsState;
 
 	}
 	
@@ -58,9 +82,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 	}
 
 	async componentDidMount() {
-		let response = await fetch('/structured/crew.json');
-		const botcrew = await response.json();
-
+		const botcrew = JSON.parse(JSON.stringify(this.props.allCrew));
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
@@ -218,9 +240,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 		}
 
 		return (
-			<Layout>
-				<Announcement />
-
+			<React.Fragment>
 				<Header as='h2'>Crew stats</Header>
 				<div>
 					<SearchableTable
@@ -236,7 +256,7 @@ class IndexPage extends Component<IndexPageProps, IndexPageState> {
 					/>
 					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} disableBuffs={true} />
 				</div>
-			</Layout>
+			</React.Fragment>
 		);
 	}
 }
