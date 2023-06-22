@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { DataContext } from '../context/datacontext';
+import { DataContext, ValidDemands } from '../context/datacontext';
 import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
@@ -30,7 +30,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew']);
+	const isReady = coreData.ready([ValidDemands.Crew]);
 	return (
 		<Layout>
 			{!isReady &&
