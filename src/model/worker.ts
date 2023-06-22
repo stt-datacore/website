@@ -3,6 +3,7 @@ import { BossBattlesRoot } from "./boss";
 import { BaseSkills, Skill } from "./crew";
 import { PlayerCrew, PlayerData, VoyageDescription } from "./player";
 import { Ship } from "./ship";
+import { BuffStatTable } from "../utils/voyageutils";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -40,6 +41,7 @@ export interface AllData extends CalculatorProps {
     playerShips?: Ship[];    
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
+    buffConfig?: BuffStatTable;
 }
 
 export interface VoyageConsideration {

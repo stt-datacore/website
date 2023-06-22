@@ -1,22 +1,25 @@
 import React from 'react';
+import { CrewMember } from '../model/crew';
+import { Ship, Schematics } from '../model/ship';
+import { EquipmentItem } from '../model/equipment';
 
-const defaultCore = {
-	ready: () => false,
-	reset: () => false,
-	crew: [],
-	ships: [],
-	items: []
+export interface DefaultCore {
+	ready: (demands: string[]) => boolean;
+	reset: () => boolean,
+	crew: CrewMember[],
+	ships: Schematics[],
+	items: EquipmentItem[]
 };
 
 const defaultData = {
-	crew: [],
-	ship_schematics: [],
-	items: []
+	crew: [] as CrewMember[],
+	ship_schematics: [] as Schematics[],
+	items: [] as EquipmentItem[]
 };
 
-export const DataContext = React.createContext(defaultCore);
+export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
 
-export const DataProvider = (props: any) => {
+export const DataProvider = (props: { children: JSX.Element }) => {
 	const { children } = props;
 
 	const [readying, setReadying] = React.useState<string[]>([]);
@@ -28,7 +31,7 @@ export const DataProvider = (props: any) => {
 		crew: data.crew,
 		ships: data.ship_schematics,
 		items: data.items
-	};
+	} as DefaultCore;
 
 	return (
 		<DataContext.Provider value={providerValue}>
