@@ -196,6 +196,30 @@ const PlayerToolsPage = (props: any) =>  {
 		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
 		//	so store a copy for player tools (i.e. voyage calculator, event planner)
 		if (!inputPlayerData) return false;
+		if (inputPlayerData.item_archetype_cache){
+			inputPlayerData.version = 17;
+		}
+		else if (inputPlayerData.archetype_cache) {
+			inputPlayerData.version = 20;
+			inputPlayerData.item_archetype_cache = {
+				archetypes: inputPlayerData.archetype_cache.archetypes.map((a: Archetype20) => {
+					return {
+						id: a.id,
+						symbol: a.symbol,
+						type: a.item_type,
+						name: a.name,
+						icon: a.icon,
+						flavor: a.flavor,
+						rarity: a.rarity,
+						recipe: a.recipe,
+						item_sources: a.item_sources,
+						bonuses: a.bonuses,
+						short_name: a.short_name
+					} as Archetype17;
+				})
+			}
+		}
+
 		let activeCrew = [] as CompactCrew[];
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
