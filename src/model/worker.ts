@@ -4,6 +4,7 @@ import { BaseSkills, Skill } from "./crew";
 import { PlayerCrew, PlayerData, VoyageDescription } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
+import { EquipmentItem } from "./equipment";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -142,6 +143,11 @@ export interface ExportCrew {
     skillData: number[];
 }
 
-export const AllDataContext = React.createContext<AllData>({} as AllData);
-
-
+export interface MergedContext {
+    playerData: PlayerData;
+    allCrew?: PlayerCrew[];
+    allShips?: Ship[];
+    playerShips?: Ship[];
+    buffConfig?: BuffStatTable;
+    items?: EquipmentItem[];    
+}

@@ -30,7 +30,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready([ValidDemands.Crew]);
+	const isReady = coreData.ready(['crew']);
 	return (
 		<Layout>
 			{!isReady &&
