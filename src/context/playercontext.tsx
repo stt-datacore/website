@@ -5,7 +5,7 @@ import { DataProviderProperties } from './datacontext';
 
 export interface PlayerContextData {
 	playerData?: PlayerData;
-	setPlayerData: (playerData: PlayerData) => void; 
+	setPlayerData: (playerData: PlayerData | undefined) => void; 
 }
 
 const defaultPlayer = {
