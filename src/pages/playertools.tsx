@@ -135,8 +135,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
 	// The context above	
 	const dataContext = props.coreData;
-	const strippedPlayerData = props.playerData.playerData;
-	const setStrippedPlayerData = props.playerData.setPlayerData;
+	const { playerData: strippedPlayerData, setPlayerData: setStrippedPlayerData } = props.playerData;
 
 	// All things playerData
 	
@@ -146,10 +145,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 
 	// These are all the static assets loaded from DataContext
-	const allCrew = dataContext.crew;
-	const allItems = dataContext.items;
-	const allShips = dataContext.ships;
-	const schematics = dataContext.ship_schematics;
+	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics } = dataContext;
 
 	// These are all sessionStorage or localStorage values
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
