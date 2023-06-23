@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
-import { AllData } from '../model/worker';
+import { MergedData } from '../context/mergedcontext';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
