@@ -33,7 +33,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	async componentDidMount() {
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
@@ -135,7 +135,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 
 		let itemCount = playerData.player.character.items.length;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;

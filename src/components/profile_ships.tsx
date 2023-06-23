@@ -52,7 +52,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	componentDidMount() {
-		// const dataContext = this.context as AllData | null;
+		// const dataContext = this.context as AllData;
 		// if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return;
 
 		// const { allShips, playerShips } = dataContext;
@@ -100,7 +100,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	render() {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		
-		const dataContext = this.context as MergedData | null;
+		const dataContext = this.context;
 		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
 
 		let data = [ ... dataContext.playerShips ];

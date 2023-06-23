@@ -48,7 +48,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = mergeItems((this.context as MergedData).playerData.player.character.items, items);
+				let data = mergeItems(this.context.playerData.player.character.items, items);
 				this.setState({ data });
 			});
 	}

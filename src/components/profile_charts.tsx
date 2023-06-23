@@ -84,7 +84,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
 
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 		const { allcrew, includeTertiary, items } = this.state;
 
 		let r4owned = [0, 0, 0, 0];

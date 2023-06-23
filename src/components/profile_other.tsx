@@ -24,7 +24,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 
 	componentDidMount() {
 
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 
 		fetch('/structured/missions.json')
 			.then(response => response.json())
@@ -55,7 +55,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	}
 
 	render() {
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 		const { missions } = this.state;
 
 		return (

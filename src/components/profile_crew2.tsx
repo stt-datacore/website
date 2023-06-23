@@ -50,7 +50,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 		const buffConfig = calculateBuffConfig(playerData.player);
 
 		this.state = {
@@ -71,7 +71,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	componentDidMount() {
 		let self = this;
-		const { playerData } = this.context as MergedData;
+		const { playerData } = this.context;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -203,7 +203,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData } = this.context as MergedData;
+		const { allCrew, playerData } = this.context;
 
 		let { data, itemsReady } = this.state;
 
