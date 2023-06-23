@@ -12,10 +12,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const { children } = props;
 	const [strippedPlayerData, ] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 
-
-	
-
-
 	return (
 		<PlayerContext.Provider value={strippedPlayerData}>
 			{children}

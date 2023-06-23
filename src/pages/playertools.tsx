@@ -31,7 +31,8 @@ import { EventData } from '../utils/events';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import { mergeShips } from '../utils/shiputils';
 import { Archetype17, Archetype20 } from '../model/archetype';
-import { DataContext } from '../context/datacontext';
+import { DataContext, DefaultCore } from '../context/datacontext';
+import { PlayerContext } from '../context/playercontext';
 
 export interface PlayerTool {
 	title: string;
@@ -105,23 +106,50 @@ export const playerTools: PlayerTools = {
 	}
 };
 
+
 const PlayerToolsPage = (props: any) => {
+	const coreData = React.useContext(DataContext);
+	const playerData = React.useContext(PlayerContext);
+	const isReady = coreData.ready(['ship_schematics', 'crew', 'items']);
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<PlayerToolsComponent location={props.location} coreData={coreData} playerData={playerData} />
+				</React.Fragment>
+			}
+		</Layout>
+	);
+};
+
+export interface PlayerToolsProps {
+	location: any;
+	coreData: DefaultCore;	
+	playerData?: PlayerData;
+}
+
+const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
-	// The context above
-	const dataContext = React.useContext(DataContext);
+	// The context above	
+	const dataContext = props.coreData;
+	const strippedPlayerData = props.playerData;
 
 	// All things playerData
+	const [, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
+	
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
 	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);	
-	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
-	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
+	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 
 	// These are all the static assets loaded from DataContext
-	const [allCrew, setAllCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
-	const [allItems, setAllItems] = React.useState<PlayerEquipmentItem[] | undefined>(undefined);
-	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
-	const [schematics, setSchematics] = React.useState<Schematics[] | undefined>(undefined);
+	const allCrew = dataContext.crew;
+	const allItems = dataContext.items;
+	const allShips = dataContext.ships;
+	const schematics = dataContext.ship_schematics;
 
 	// These are all sessionStorage or localStorage values
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
@@ -132,8 +160,10 @@ const PlayerToolsPage = (props: any) => {
 
 	const [showForm, setShowForm] = React.useState(false);
 
+	
+
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && allShips && dataSource && allCrew && fleetbossData && playerShips) {
+	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
 					strippedPlayerData={strippedPlayerData}
@@ -151,18 +181,10 @@ const PlayerToolsPage = (props: any) => {
 	// Preparing profile data, show spinner
 	if ((inputPlayerData || strippedPlayerData) && !showForm) {
 		if (inputPlayerData) {
-			if (allCrew && allItems && allShips && schematics)
-				prepareProfileDataFromInput();
-			else if (!allItems || !allShips || !schematics)
-				fetchAllItemsAndCrew();
+			prepareProfileDataFromInput();
 		}
 		else {
-			if (allCrew && allItems && allShips && schematics)
-				prepareProfileDataFromSession();
-			else if (!allItems || !allShips || !schematics)
-				fetchAllItemsAndCrew();
-			else
-				fetchAllCrew();
+			prepareProfileDataFromSession();
 		}
 		return (<PlayerToolsLoading />);
 	}
@@ -176,36 +198,6 @@ const PlayerToolsPage = (props: any) => {
 		setShowForm(false);
 	}
 
-	
-	async function fetchAllItemsAndCrew() {
-		const [itemsResponse, crewResponse, shipResponse] = await Promise.all([
-			fetch('/structured/items.json'),
-			fetch('/structured/crew.json'),
-			fetch('/structured/ship_schematics.json')
-		]);		
-		const [allitems, allcrew, allships] = await Promise.all([
-			itemsResponse.json(),
-			crewResponse.json(),
-			shipResponse.json().then((ship_schematics: Schematics[]) => {
-				let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-				return  { originals: scsave, schematics: ship_schematics };
-			})
-		]);
-
-		setAllItems(allitems);
-		setAllCrew(allcrew);
-		setAllShips(allships.originals);		
-		setSchematics(allships.schematics);
-	}
-
-	// Only crew data is needed if loading profile from session
-	//	Does this really save any time, or should we just use fetchAllItemsAndCrew every time playertools is loaded?
-	async function fetchAllCrew() {
-		const crewResponse = await fetch('/structured/crew.json');
-		const allcrew = await crewResponse.json();
-		setAllCrew(allcrew);
-	}
-	
 	function prepareProfileDataFromInput() {
 		// Reset session before storing new variables
 		sessionStorage.clear();
