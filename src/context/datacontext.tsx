@@ -59,85 +59,87 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 		// Fetch only if valid demand is not already satisfied
 		const valid = ['crew', 'ship_schematics', 'items'];
-		const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
+		const unsatisfied = [] as string[];
 
-		if (unsatisfied.length) {
-			setReadying(unsatisfied);
-			let fetches: Promise<Response>[] = [];
+		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
 
-			for (let demand of unsatisfied) {
-				fetches.push(fetch(`/structured/${demand}.json`))
-			}			
+		// if (unsatisfied.length) {
+		// 	setReadying(unsatisfied);
+		// 	let fetches: Promise<Response>[] = [];
 
-			Promise.all(fetches)
-				.then(responses => {
-					let jsons: Promise<any>[] = [];
-					for (let response of responses){
-						jsons.push(response.json());
-					}
-					Promise.all(jsons).then((results) => {
-						const newData = {...data};
-						let i = 0;
-						for (let demand of unsatisfied) {
-							if (demand === 'ship_schematics') {
-								let ship_schematics = results[i] as Schematics[];
-								let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-								newData.ships = scsave;
-							}
+		// 	for (let demand of unsatisfied) {
+		// 		fetches.push(fetch(`/structured/${demand}.json`))
+		// 	}			
 
-							newData[demand] = results[i++];
-						}
+		// 	Promise.all(fetches)
+		// 		.then(responses => {
+		// 			let jsons: Promise<any>[] = [];
+		// 			for (let response of responses){
+		// 				jsons.push(response.json());
+		// 			}
+		// 			Promise.all(jsons).then((results) => {
+		// 				const newData = {...data};
+		// 				let i = 0;
+		// 				for (let demand of unsatisfied) {
+		// 					if (demand === 'ship_schematics') {
+		// 						let ship_schematics = results[i] as Schematics[];
+		// 						let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
+		// 						newData.ships = scsave;
+		// 					}
 
-						setData(newData);
-						setReadying([]);
-					});
-				});
-		}
+		// 					newData[demand] = results[i++];
+		// 				}
 
-		// demands?.forEach(demand => {
-		// 	if (valid.includes(demand)) {
-		// 		if (data[demand].length === 0) {
-		// 			unsatisfied.push(demand);
-		// 			setReadying(prev => {
-		// 				if (!prev.includes(demand)) prev.push(demand);
-		// 				return prev;
+		// 				setData(newData);
+		// 				setReadying([]);
 		// 			});
+		// 		});
+		// }
+
+		demands?.forEach(demand => {
+			if (valid.includes(demand)) {
+				if (data[demand].length === 0) {
+					unsatisfied.push(demand);
+					setReadying(prev => {
+						if (!prev.includes(demand)) prev.push(demand);
+						return prev;
+					});
 			
-		// 			fetch(`/structured/${demand}.json`)
-		// 				.then(response => response.json())
-		// 				.then(result => {
-		// 					setData(prev => {
-		// 						const newData = {...prev};
-		// 						if (demand === 'ship_schematics') {
-		// 							let ship_schematics = result as Schematics[];
-		// 							let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-		// 							newData.ships = scsave;
-		// 							newData.ship_schematics = ship_schematics;
-		// 						}
-		// 						else {
-		// 							newData[demand] = result;
-		// 						}
-		// 						return newData;
-		// 					});
-		// 				})
-		// 				.catch(error => {
-		// 					console.log(error);
-		// 				})
-		// 				.finally(() => {
-		// 					setReadying(prev => {
-		// 						const readying = prev.slice();
-		// 						const index = readying.indexOf(demand);
-		// 						if (index >= 0) readying.splice(index, 1);
-		// 						return readying;
-		// 					});
-		// 				});
-		// 		}
-		// 	}
-		// 	else {
-		// 		console.log(`Invalid data demand: ${demand}`);
-		// 	}
-		// });
-		// // Ready only if all valid demands are satisfied
+					fetch(`/structured/${demand}.json`)
+						.then(response => response.json())
+						.then(result => {
+							setData(prev => {
+								const newData = {...prev};
+								if (demand === 'ship_schematics') {
+									let ship_schematics = result as Schematics[];
+									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
+									newData.ships = scsave;
+									newData.ship_schematics = ship_schematics;
+								}
+								else {
+									newData[demand] = result;
+								}
+								return newData;
+							});
+						})
+						.catch(error => {
+							console.log(error);
+						})
+						.finally(() => {
+							setReadying(prev => {
+								const readying = prev.slice();
+								const index = readying.indexOf(demand);
+								if (index >= 0) readying.splice(index, 1);
+								return readying;
+							});
+						});
+				}
+			}
+			else {
+				console.log(`Invalid data demand: ${demand}`);
+			}
+		});
+		// Ready only if all valid demands are satisfied
 		return unsatisfied.length === 0;
 	}
 
