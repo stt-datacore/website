@@ -49,7 +49,8 @@ export class StatLabel extends React.Component<StatLabelProps> {
 }
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
 	static contextType = MergedContext;
-
+	context!: React.ContextType<typeof MergedContext>;
+	
 	constructor(props: CiteOptimizerProps) {
 		super(props);
 		

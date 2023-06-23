@@ -35,6 +35,7 @@ const pagingOptions = [
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ProfileShipsProps) {
 		super(props);

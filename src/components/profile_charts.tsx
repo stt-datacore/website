@@ -43,6 +43,7 @@ type ProfileChartsState = {
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ProfileChartsProps) {
 		super(props);

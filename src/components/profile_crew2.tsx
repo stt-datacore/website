@@ -46,6 +46,7 @@ type ProfileCrewMobileState = {
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
 	
 	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);

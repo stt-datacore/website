@@ -20,6 +20,7 @@ type UnneededItemsState = {
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);

@@ -12,6 +12,7 @@ type ProfileOtherState = {
 
 class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ProfileOtherProps) {
 		super(props);

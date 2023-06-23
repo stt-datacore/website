@@ -29,7 +29,8 @@ const pagingOptions = [
 
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	static contextType = MergedContext;
-	
+	context!: React.ContextType<typeof MergedContext>;
+
 	constructor(props: ProfileItemsProps) {
 		super(props);
 
