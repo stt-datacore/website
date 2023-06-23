@@ -17,11 +17,11 @@ import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { applySkillBuff, navToCrewPage } from '../utils/crewutils';
-import { AllDataContext } from '../model/worker';
+import { MergedContext } from '../context/mergedcontext';
 
 
 const EventPlanner = () => {
-	const { playerData, allCrew } = React.useContext(AllDataContext);
+	const { playerData, allCrew } = React.useContext(MergedContext);
 
 	const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);

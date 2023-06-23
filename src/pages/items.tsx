@@ -7,12 +7,16 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 
 import CONFIG from '../components/CONFIG';
 import { Filter } from '../model/game-elements';
+import { Archetype17 } from '../model/archetype';
+import { EquipmentItem } from '../model/equipment';
+import { PlayerCrew } from '../model/player';
+import { CrewMember } from '../model/crew';
 
 type ItemsPageProps = {};
 
 type ItemsPageState = {
-	items?: any;
-	crew?: any;
+	items?: EquipmentItem[];
+	crew?: (PlayerCrew | CrewMember)[];
 };
 
 const tableConfig: ITableConfigRow[] = [
@@ -40,7 +44,7 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 
 				fetch('/structured/items.json')
 					.then(response => response.json())
-					.then(items => {
+					.then((items: EquipmentItem[]) => {
 						items = items.filter(item => item.imageUrl);
 
 						// Fill in something useful for flavor where it's missing

@@ -15,7 +15,7 @@ import themes from './nivo_themes';
 import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
 import { DemandCounts, demandsPerSlot, IDemand } from '../utils/equipment';
 import { PlayerCrew, PlayerEquipmentItem } from '../model/player'
-import { AllData, AllDataContext } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 
 type ProfileChartsProps = {
@@ -42,7 +42,7 @@ type ProfileChartsState = {
 };
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
-	static contextType = AllDataContext;
+	static contextType = MergedContext;
 
 	constructor(props: ProfileChartsProps) {
 		super(props);
@@ -83,7 +83,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
 
-		const { playerData } = this.context as AllData;
+		const { playerData } = this.context as MergedData;
 		const { allcrew, includeTertiary, items } = this.state;
 
 		let r4owned = [0, 0, 0, 0];

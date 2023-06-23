@@ -9,7 +9,7 @@ import { CrewMember } from '../model/crew';
 import { NumericOptions } from '../model/game-elements';
 import { BossBattlesRoot, Combo } from '../model/boss';
 import { Ship } from '../model/ship';
-import { AllData, AllDataContext, CalculatorProps } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 
 export const DIFFICULTY_NAME = {
 	1: 'Easy',
@@ -20,10 +20,10 @@ export const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
-export const BossDataContext = React.createContext<AllData | null>(null);
+export const BossDataContext = React.createContext<MergedData | null>(null);
 
 export const FleetBossBattles = () => {
-	const { bossData: fleetbossData, playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const { bossData: fleetbossData, playerData, allCrew: crew } = React.useContext(MergedContext);
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
@@ -33,7 +33,7 @@ export const FleetBossBattles = () => {
 		ac.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
 	});
 
-	const allData: AllData = {
+	const allData: MergedData = {
 		playerData,
 		allCrew,
 		bossData: fleetbossData ?? {} as BossBattlesRoot

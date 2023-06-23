@@ -9,7 +9,7 @@ import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasor
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
-import { AllData, AllDataContext } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 
 enum SkillSort {
 	Base = '.core',
@@ -45,11 +45,11 @@ type ProfileCrewMobileState = {
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
 	
-	static contextType = AllDataContext;
+	static contextType = MergedContext;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-		const { playerData } = this.context as AllData;
+		const { playerData } = this.context as MergedData;
 		const buffConfig = calculateBuffConfig(playerData.player);
 
 		this.state = {
@@ -70,7 +70,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	componentDidMount() {
 		let self = this;
-		const { playerData } = this.context as AllData;
+		const { playerData } = this.context as MergedData;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -202,7 +202,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData } = this.context as AllData;
+		const { allCrew, playerData } = this.context as MergedData;
 
 		let { data, itemsReady } = this.state;
 

@@ -13,14 +13,14 @@ import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
-import { AllData, AllDataContext, CalculatorProps } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 
-export const VoyageContext = React.createContext<AllData>({} as AllData);
+export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
 const VoyageCalculator = () => {
-	const { playerData, allCrew } = React.useContext(AllDataContext);
+	const { playerData, allCrew } = React.useContext(MergedContext);
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
@@ -72,7 +72,7 @@ const VoyageCalculator = () => {
 
 	const allData = {
 		allCrew, allShips, playerData
-	} as AllData;
+	} as MergedData;
 
 	return (
 		<VoyageContext.Provider value={allData}>

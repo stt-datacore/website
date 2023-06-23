@@ -30,7 +30,7 @@ import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shi
 import ShipSeatPicker from './shipseatpicker';
 import ShipAbilityPicker from './shipabilitypicker';
 import ShipAbilityRankPicker from './shipabilityrankpicker';
-import { AllDataContext } from '../model/worker';
+import { MergedContext } from '../context/mergedcontext';
 
 type ProfileCrewProps = {
 	isTools?: boolean;
@@ -38,7 +38,7 @@ type ProfileCrewProps = {
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const { playerData, allCrew: crew } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
 	
 	// Check for custom initial table options from URL or <Link state>

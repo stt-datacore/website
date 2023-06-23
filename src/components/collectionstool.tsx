@@ -13,11 +13,11 @@ import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, P
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { navToCrewPage } from '../utils/crewutils';
-import { AllDataContext } from '../model/worker';
+import { MergedContext } from '../context/mergedcontext';
 
 const CollectionsTool = () => {
 
-	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const { playerData, allCrew: crew } = React.useContext(MergedContext);
 	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
 	if (!allCollections) {

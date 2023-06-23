@@ -9,7 +9,7 @@ import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { CrewMember } from '../model/crew';
 import { ShipPresenter } from './item_presenters/ship_presenter';
-import { AllDataContext } from '../model/worker';
+import { MergedContext } from '../context/mergedcontext';
 import { navigate } from 'gatsby';
 
 type ShipProfileProps = {
@@ -30,8 +30,8 @@ const pagingOptions = [
 ];
 
 class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
-	static contextType = AllDataContext;
-	context!: React.ContextType<typeof AllDataContext>;
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ShipProfileProps) {
 		super(props);

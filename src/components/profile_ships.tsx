@@ -8,7 +8,7 @@ import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
-import { AllData, AllDataContext } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 
 type ProfileShipsProps = {
 };
@@ -34,7 +34,7 @@ const pagingOptions = [
 
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
-	static contextType = AllDataContext;
+	static contextType = MergedContext;
 
 	constructor(props: ProfileShipsProps) {
 		super(props);
@@ -99,7 +99,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	render() {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		
-		const dataContext = this.context as AllData | null;
+		const dataContext = this.context as MergedData | null;
 		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
 
 		let data = [ ... dataContext.playerShips ];

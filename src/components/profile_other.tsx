@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
-import { AllData, AllDataContext } from '../model/worker';
+import { MergedData, MergedContext } from '../context/mergedcontext';
 import { AcceptedMission, Mission } from '../model/player';
 
 type ProfileOtherProps = {
@@ -11,7 +11,7 @@ type ProfileOtherState = {
 };
 
 class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
-	static contextType = AllDataContext;
+	static contextType = MergedContext;
 
 	constructor(props: ProfileOtherProps) {
 		super(props);
@@ -23,7 +23,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 
 	componentDidMount() {
 
-		const { playerData } = this.context as AllData;
+		const { playerData } = this.context as MergedData;
 
 		fetch('/structured/missions.json')
 			.then(response => response.json())
@@ -54,7 +54,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	}
 
 	render() {
-		const { playerData } = this.context as AllData;
+		const { playerData } = this.context as MergedData;
 		const { missions } = this.state;
 
 		return (

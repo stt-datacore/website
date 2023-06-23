@@ -15,7 +15,7 @@ import { CompletionState, CryoCollection, PlayerCrew, PlayerData } from '../mode
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
-import { AllDataContext } from '../model/worker';
+import { MergedContext } from '../context/mergedcontext';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -59,7 +59,7 @@ const filterTraits = (polestar: Polestar, trait: string) => {
 
 const CrewRetrieval = () => {
 
-	const { playerData, allCrew: crew } = React.useContext(AllDataContext);
+	const { playerData, allCrew: crew } = React.useContext(MergedContext);
 	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
 
 	if (!playerData?.forte_root) {
