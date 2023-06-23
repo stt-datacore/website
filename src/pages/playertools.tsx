@@ -153,14 +153,12 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
 	// These are all sessionStorage or localStorage values
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
-	const [voyageData, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
-	const [eventData, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
-	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
+	const [, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
+	const [, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
+	const [, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
+	const [, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
 
 	const [showForm, setShowForm] = React.useState(false);
-
-	
 
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
