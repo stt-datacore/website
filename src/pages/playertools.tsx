@@ -32,7 +32,7 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import { mergeShips } from '../utils/shiputils';
 import { Archetype17, Archetype20 } from '../model/archetype';
 import { DataContext, DefaultCore } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
+import { PlayerContext, PlayerContextData } from '../context/playercontext';
 
 export interface PlayerTool {
 	title: string;
@@ -128,17 +128,17 @@ const PlayerToolsPage = (props: any) => {
 export interface PlayerToolsProps {
 	location: any;
 	coreData: DefaultCore;	
-	playerData?: PlayerData;
+	playerData: PlayerContextData;
 }
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
 	// The context above	
 	const dataContext = props.coreData;
-	const strippedPlayerData = props.playerData;
+	const strippedPlayerData = props.playerData.playerData;
+	const setStrippedPlayerData = props.playerData.setPlayerData;
 
 	// All things playerData
-	const [, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 	
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
 	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);	
