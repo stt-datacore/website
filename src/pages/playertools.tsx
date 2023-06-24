@@ -33,7 +33,7 @@ import { mergeShips } from '../utils/shiputils';
 import { Archetype17, Archetype20 } from '../model/archetype';
 import { DataContext, DefaultCore } from '../context/datacontext';
 import { PlayerContext, PlayerContextData } from '../context/playercontext';
-import { calculateBuffConfig } from '../utils/voyageutils';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 
 export interface PlayerTool {
 	title: string;
@@ -136,7 +136,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
 	// The context above	
 	const dataContext = props.coreData;
-	const { playerData: strippedPlayerData, setPlayerData: setStrippedPlayerData } = props.playerData;
+	const { playerData: strippedPlayerData, setPlayerData: setStrippedPlayerData, buffConfig } = props.playerData;
 
 	// All things playerData
 	
@@ -158,9 +158,10 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const [showForm, setShowForm] = React.useState(false);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
+	if (playerData && !showForm && dataSource && fleetbossData && playerShips && buffConfig) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
+					buffConfig={buffConfig}
 					strippedPlayerData={strippedPlayerData}
 					dataSource={dataSource}
 					allCrew={allCrew}
@@ -302,6 +303,7 @@ type PlayerToolsPanesProps = {
 	allShips: Ship[];
 	playerShips: Ship[];
 	fleetBossData: BossBattlesRoot;
+	buffConfig: BuffStatTable;
 
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
@@ -311,6 +313,7 @@ type PlayerToolsPanesProps = {
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const { playerData, 
+			buffConfig,
 			strippedPlayerData, 
 			dataSource,
 			allCrew, 
@@ -448,8 +451,6 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			tt = s.name;
 		}
 	 }
-    
-	const buffConfig = calculateBuffConfig(playerData.player);
 	
 	return (
 		<Layout title='Player tools'>

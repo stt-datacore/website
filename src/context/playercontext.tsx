@@ -2,10 +2,12 @@ import React from 'react';
 import { PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataProviderProperties } from './datacontext';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 
 export interface PlayerContextData {
 	playerData?: PlayerData;
 	setPlayerData: (playerData: PlayerData | undefined) => void; 
+	buffConfig?: BuffStatTable;
 }
 
 const defaultPlayer = {
@@ -17,9 +19,12 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const { children } = props;
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 
+	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+
 	const context = {
 		playerData: strippedPlayerData,
-		setPlayerData: setStrippedPlayerData
+		setPlayerData: setStrippedPlayerData,
+		buffConfig: buffConfig
 	} as PlayerContextData;
 
 	return (
