@@ -158,7 +158,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const [showForm, setShowForm] = React.useState(false);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && dataSource && fleetbossData && playerShips && buffConfig) {
+	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 					playerData={playerData}
 					buffConfig={buffConfig}
@@ -303,7 +303,7 @@ type PlayerToolsPanesProps = {
 	allShips: Ship[];
 	playerShips: Ship[];
 	fleetBossData: BossBattlesRoot;
-	buffConfig: BuffStatTable;
+	buffConfig?: BuffStatTable;
 
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;

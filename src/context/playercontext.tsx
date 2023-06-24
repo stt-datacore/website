@@ -19,12 +19,12 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const { children } = props;
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 
-	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+	//const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 
 	const context = {
 		playerData: strippedPlayerData,
 		setPlayerData: setStrippedPlayerData,
-		buffConfig: buffConfig
+		buffConfig: undefined
 	} as PlayerContextData;
 
 	return (
