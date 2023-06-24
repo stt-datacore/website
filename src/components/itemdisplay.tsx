@@ -66,7 +66,6 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 					<div style={divStyle}>
 						<CrewTarget 
 							inputItem={crew} 
-							allCrew={allCrew} 
 							targetGroup={targetGroup} 
 							setDisplayItem={setDisplayItem}>
 							<img

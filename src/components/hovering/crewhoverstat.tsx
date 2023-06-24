@@ -2,11 +2,12 @@ import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applySkillBuff } from "../../utils/crewutils";
+import { applySkillBuff, navToCrewPage } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
+import { MergedContext } from "../../context/mergedcontext";
 
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
@@ -18,8 +19,6 @@ export interface CrewHoverStatState extends HoverStatState {
 }
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
-    allCrew: (CrewMember | PlayerCrew)[]
-    buffConfig?: BuffStatTable;
 }
 
 export interface CrewTargetState extends HoverStatTargetState {
@@ -28,6 +27,9 @@ export interface CrewTargetState extends HoverStatTargetState {
 }
 
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps, CrewTargetState> {
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
+
     constructor(props: CrewTargetProps){
         super(props);        
         this.tiny.subscribe(this.propertyChanged);                
@@ -71,7 +73,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
-        const { buffConfig } = this.props;
+        const { buffConfig } = this.context;
 
         const applyBuffs = this.showPlayerBuffs;
         const showImmortal = this.showImmortalized;
@@ -82,7 +84,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
                 let cm: CrewMember | undefined = undefined;
                 if (showImmortal === true && !item.immortal) {
-                    cm = this.props.allCrew.find(c => c.symbol === dataIn.symbol);
+                    cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);
                 }
     
                 if (cm && showImmortal === true) {
@@ -128,6 +130,9 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 }
 
 export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatState> {
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
+
     constructor(props: CrewHoverStatProps) {
         super(props);                
         this.state = {
@@ -221,7 +226,14 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                 openCrew(displayItem)
             }
             else {
-                navigate("/crew/" + displayItem.symbol);                
+                const { buffConfig, allCrew, playerData } = this.context;
+                if (playerData && "player" in playerData) {
+                    navToCrewPage(displayItem, playerData.player.character.crew, buffConfig, allCrew);
+                }
+                else {
+                    navigate("/crew/" + displayItem.symbol);
+                }
+                
             }
         }
 

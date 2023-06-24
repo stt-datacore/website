@@ -14,8 +14,10 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
-import { CompletionState, PlayerCrew } from '../model/player';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
+import { PlayerContext } from '../context/playercontext';
+import { MergedContext } from '../context/mergedcontext';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -31,6 +33,8 @@ interface Lockable {
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const isReady = coreData.ready(['crew']);
+	const { playerData, buffConfig } = React.useContext(PlayerContext);
+
 	return (
 		<Layout>
 			{!isReady &&
@@ -39,7 +43,13 @@ const IndexPage = (props: IndexPageProps) => {
 			{isReady &&
 				<React.Fragment>
 					<Announcement />
-					<CrewStats location={props.location} allCrew={coreData.crew} />
+					<MergedContext.Provider value={{
+						allCrew: coreData.crew,
+						playerData: playerData ?? {} as PlayerData,
+						buffConfig: buffConfig
+					}}>
+						<CrewStats location={props.location} />
+					</MergedContext.Provider>
 				</React.Fragment>
 			}
 		</Layout>
@@ -48,7 +58,6 @@ const IndexPage = (props: IndexPageProps) => {
 
 type CrewStatsProps = {
 	location: any;
-	allCrew: (CrewMember | PlayerCrew)[];
 };
 
 type CrewStatsState = {
@@ -61,7 +70,8 @@ type CrewStatsState = {
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
-	static contextType = DataContext;
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: CrewStatsProps | Readonly<CrewStatsProps>) {
 		super(props);
@@ -83,14 +93,28 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	async componentDidMount() {
-		const botcrew = JSON.parse(JSON.stringify(this.props.allCrew)) as (CrewMember | PlayerCrew)[];
+		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
+		const playerCrew = this.context.playerData?.player?.character?.crew;
+
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
 			});
 			let bcrew = crew as PlayerCrew;
-			bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
+			let f: PlayerCrew | undefined = undefined;
+			if (playerCrew) {
+				f = playerCrew.find((item) => item.symbol === bcrew.symbol);
+				if (f) {
+					bcrew.immortal = f.immortal;
+				}
+				else {
+					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
+				}
+			}
+			else {
+				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
+			}
 		});
 
 		// Check for custom initial table options from URL or <Link state>
@@ -173,8 +197,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							<CrewTarget 
 								targetGroup='indexPage' 
 								setDisplayItem={this.setActiveCrew} 
-								inputItem={crew} 
-								allCrew={this.state.botcrew}>
+								inputItem={crew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>							
 						</div>
@@ -255,7 +278,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 						showPermalink={true}
 						lockable={lockable}
 					/>
-					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} disableBuffs={true} />
+					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
 				</div>
 			</React.Fragment>
 		);

@@ -137,7 +137,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'icon' }}
 											
 										>
-											<CrewTarget buffConfig={buffConfig} allCrew={this.context.allCrew} targetGroup='citationTarget' inputItem={crew} setDisplayItem={setCurrentCrew}>
+											<CrewTarget targetGroup='citationTarget' 
+												inputItem={crew} 
+												setDisplayItem={setCurrentCrew}>
 												<img 
 													onClick={(e) => imageClick(e, crew)}
 													width={48} 

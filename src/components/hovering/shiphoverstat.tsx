@@ -6,6 +6,7 @@ import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
+import { MergedContext } from "../../context/mergedcontext";
 
 export interface ShipHoverStatProps extends HoverStatProps {
     displayItem: Ship | undefined | null;
@@ -16,8 +17,6 @@ export interface ShipHoverStatState extends HoverStatState {
 }
 
 export interface ShipTargetProps extends HoverStatTargetProps<Ship | undefined> {
-    allShips: Ship[]
-    buffConfig?: BuffStatTable;
 }
 
 export interface ShipTargetState extends HoverStatTargetState {
@@ -26,7 +25,9 @@ export interface ShipTargetState extends HoverStatTargetState {
 }
 
 export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProps, ShipTargetState> {
-    
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
+
     constructor(props: ShipTargetProps){
         super(props);        
         this.tiny.subscribe(this.propertyChanged);                
@@ -70,7 +71,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: Ship | undefined): Ship | undefined {
-        const { buffConfig } = this.props;
+        const { buffConfig } = this.context;
         const applyBuffs = this.showPlayerBuffs;
         const showImmortal = this.showImmortalized;
 
@@ -115,6 +116,9 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
 }
 
 export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatState> {
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
+
     constructor(props: ShipHoverStatProps) {
         super(props);        
         this.state = {

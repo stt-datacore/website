@@ -193,7 +193,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
-										<ShipTarget targetGroup='ships' allShips={this.state.originals} setDisplayItem={setActiveShip} inputItem={ship} >
+										<ShipTarget targetGroup='ships' setDisplayItem={setActiveShip} inputItem={ship} >
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 										</ShipTarget>
 									</div>

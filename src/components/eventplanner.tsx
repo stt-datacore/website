@@ -432,7 +432,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget buffConfig={buffConfig} allCrew={allCrew} targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

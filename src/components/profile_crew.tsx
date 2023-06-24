@@ -460,7 +460,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget buffConfig={buffConfig} allCrew={allCrew} inputItem={crew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget inputItem={crew} setDisplayItem={setCrew} targetGroup='targetClass'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

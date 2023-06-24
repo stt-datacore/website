@@ -473,8 +473,6 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 									targetGroup='variants'
 									setDisplayItem={me.setHoverCrew}
 									inputItem={variant}
-									buffConfig={me.buffs}
-									allCrew={me.masterCrew ?? group.trait_variants}
 									>
 								<ItemDisplay
 									src={`${process.env.GATSBY_ASSETS_URL}${variant.imageUrlPortrait}`}
