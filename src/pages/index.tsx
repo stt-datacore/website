@@ -118,6 +118,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				f = playerCrew.find((item) => item.symbol === bcrew.symbol);
 				if (f) {
 					bcrew.immortal = f.immortal;
+					bcrew.base_skills = JSON.parse(JSON.stringify(f.base_skills));
+					bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
+					bcrew.action.bonus_amount = f.action.bonus_amount;
+					bcrew.bonus = f.bonus;					
+					bcrew.rarity = f.rarity;					
 				}
 				else {
 					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
@@ -125,7 +130,9 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			}
 			else {
 				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
+				bcrew.max_rarity = bcrew.rarity;
 			}
+
 		});
 
 		// Check for custom initial table options from URL or <Link state>
@@ -184,7 +191,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable });
 	}
 
-	renderTableRow(crew: CrewMember, idx: number, highlighted: boolean): JSX.Element {
+	renderTableRow(crew: CrewMember | PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
 		const { customColumns } = this.state;
 		const attributes = {
 			positive: highlighted
@@ -227,7 +234,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+					<Rating icon='star' rating={"rarity" in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				<Table.Cell textAlign="center">
 					<b>{formatTierLabel(crew)}</b>
