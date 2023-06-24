@@ -1144,6 +1144,9 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
 		const fuseGroups: FuseGroups = {};
+
+		const fn: FuseNameVal[] = [];
+
 		const consumed = {};
 		group.forEach((comboId) => {
 			combos[comboId].forEach((polestar) => {
@@ -1165,23 +1168,30 @@ const CrewTable = (props: CrewTableProps) => {
 				if (consumable == combo.length) {
 					const parentGroup = [...group, comboId];
 					const parentId = 'x'+parentGroup.length;
-					if (fuseGroups[parentId])
-						fuseGroups[parentId].push(parentGroup);
-					else
-						fuseGroups[parentId] = [parentGroup];
-					// Only collect combo groups up to 5 fuses
+					
+					let i = fuseSearch(parentId, fn, false, true);
+
+					if (i >= fn.length || fn[i].name != parentId) {
+						fuseInsert(fn, i, parentId, [parentGroup]);
+					}
+				
 					if (parentGroup.length < 5) {
 						let childGroups = groupByFuses(combos, comboId, parentGroup);
 						for (let childId in childGroups) {
-							if (fuseGroups[childId])
-								fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
-							else
-								fuseGroups[childId] = childGroups[childId];
+							
+							i = fuseSearch(childId, fn, false, true);
+							
+							if (i >= fn.length || fn[i].name != childId) {
+								fuseInsert(fn, i, childId, childGroups[childId]);
+							}							
 						}
 					}
 				}
 			}
 		});
+		for (let fg of fn) {
+			fuseGroups[fg.name] = fg.value;
+		}
 		return fuseGroups;
 	}
 
@@ -1206,6 +1216,76 @@ type ComboGridProps = {
 	combos: (Polestar | undefined)[][];
 	fuseGroups: FuseGroups;
 };
+
+
+interface FuseNameVal {
+	name: string;
+	value: number[][]
+}
+
+function fuseInsert(source: FuseNameVal[], index: number, name: string, value: number[][]) {
+	if (index >= source.length) {
+		source.push({ name, value });
+		return;
+	}
+	source.push({} as FuseNameVal);
+	source.copyWithin(index + 1, index);
+	source[index] = { name, value };
+}
+
+function fuseSearch(
+	value: string,
+	source: FuseNameVal[],
+	first: boolean = false,
+	insertIndex: boolean = false): number
+	{
+		if (source == null || source.length == 0)
+		{
+			return insertIndex ? 0 : -1;
+		}
+
+		let lo = 0, hi = source.length - 1;
+
+		while (true)
+		{
+			if (lo > hi) break;
+
+			let p = Math.floor((hi + lo) / 2);
+			let c = value.localeCompare(source[p].name);
+			
+			if (c == 0)
+			{
+				if (first && p > 0)
+				{
+					p--;
+
+					do
+					{
+						c = value.localeCompare(source[p].name);
+
+						if (c != 0)
+						{
+							break;
+						}
+					} while (--p >= 0);
+
+					++p;
+				}
+
+				return p;
+			}
+			else if (c < 0)
+			{
+				hi = p - 1;
+			}
+			else
+			{
+				lo = p + 1;
+			}
+		}
+
+		return insertIndex ? lo : -1;
+}
 
 const ComboGrid = (props: ComboGridProps) => {
 	const { crew, fuseGroups } = props;
