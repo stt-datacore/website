@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message } from 'semantic-ui-react';
+import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message, FormGroup } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -1125,9 +1125,10 @@ const CrewTable = (props: CrewTableProps) => {
 		);
 	}
 
+	const [fuses, setFuses] = React.useState<FuseGroups | undefined>(undefined);
+
 	function showCombosForCrew(crew: CrewMember): JSX.Element {
 		if (activeCrew !== crew.symbol) return (<></>);
-
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
 				(trait) => polestars.some(op => filterTraits(op, trait))
@@ -1137,18 +1138,21 @@ const CrewTable = (props: CrewTableProps) => {
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups = groupByFuses(combos, 0, []);
+		let fgPrime = groupByFuses(combos, 0, []);
+		let fuseGroups = {};
+		
+		for (let fg of fgPrime) {
+			fuseGroups[fg.name] = fg.value;
+		}
 
-		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
+		return fuses && (<ComboGrid crew={crew} combos={combos} fuseGroups={fuses} />) || (<>Calculating ...</>);
 	}
 
-	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
-		const fuseGroups: FuseGroups = {};
-
+	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseNameVal[] {
 		const fn: FuseNameVal[] = [];
 
 		const consumed = {};
-		group.forEach((comboId) => {
+		for (let comboId of group) {
 			combos[comboId].forEach((polestar) => {
 				if (polestar === undefined) return;
 				if (consumed[polestar.symbol])
@@ -1156,43 +1160,48 @@ const CrewTable = (props: CrewTableProps) => {
 				else
 					consumed[polestar.symbol] = 1;
 			});
-		});
-		combos.forEach((combo, comboId) => {
-			if (comboId >= start) {
-				let consumable = 0;
-				combo.forEach((polestar) => {
-					if (polestar === undefined) return;
-					if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
-						consumable++;
-				});
-				if (consumable == combo.length) {
-					const parentGroup = [...group, comboId];
-					const parentId = 'x'+parentGroup.length;
-					
-					let i = fuseSearch(parentId, fn, false, true);
-
-					if (i >= fn.length || fn[i].name != parentId) {
-						fuseInsert(fn, i, parentId, [parentGroup]);
-					}
+		}
+		let c = combos.length;
+		
+		for (let comboId = start; comboId < c; comboId++) {
+			let combo = combos[comboId];			
+			let consumable = 0;
+			for (let polestar of combo) {
+				if (polestar === undefined) continue;
+				if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
+					consumable++;
+			}
+			if (consumable == combo.length) {
+				const parentGroup = [...group, comboId];
+				const parentId = 'x'+parentGroup.length;
 				
-					if (parentGroup.length < 5) {
-						let childGroups = groupByFuses(combos, comboId, parentGroup);
-						for (let childId in childGroups) {
-							
-							i = fuseSearch(childId, fn, false, true);
-							
-							if (i >= fn.length || fn[i].name != childId) {
-								fuseInsert(fn, i, childId, childGroups[childId]);
-							}							
+				let i = fuseSearch(parentId, fn, false, true);
+
+				if (i >= fn.length || fn[i].name != parentId) {
+					fuseInsert(fn, i, { name: parentId, value: [parentGroup] });
+				}
+				else {
+					fn[i].value.push(parentGroup);
+				}
+			
+				if (parentGroup.length < 5) {
+					let childGroups = groupByFuses(combos, comboId, parentGroup);
+					for (let child of childGroups) {
+						
+						i = fuseSearch(child.name, fn, false, true);
+						
+						if (i >= fn.length || fn[i].name != child.name) {
+							fuseInsert(fn, i, child);
+						}							
+						else {
+							fn[i].value.concat(child.value);
 						}
 					}
 				}
 			}
-		});
-		for (let fg of fn) {
-			fuseGroups[fg.name] = fg.value;
 		}
-		return fuseGroups;
+
+		return fn;
 	}
 
 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
@@ -1217,25 +1226,35 @@ type ComboGridProps = {
 	fuseGroups: FuseGroups;
 };
 
-
-interface FuseNameVal {
+interface Namable {
 	name: string;
+}
+
+interface FuseNameVal extends Namable {
 	value: number[][]
 }
 
-function fuseInsert(source: FuseNameVal[], index: number, name: string, value: number[][]) {
-	if (index >= source.length) {
-		source.push({ name, value });
-		return;
-	}
-	source.push({} as FuseNameVal);
-	source.copyWithin(index + 1, index);
-	source[index] = { name, value };
+interface ConsumeNameVal extends Namable {
+	value: number;
 }
 
-function fuseSearch(
+function fuseInsert<T extends Namable>(source: T[], index: number, item: T) {
+	if (index >= source.length) {
+		source.push(item);
+		return;
+	}
+	else if (index === 0) {
+		source.unshift(item);
+		return;
+	}
+	source.push({} as T);
+	source.copyWithin(index + 1, index);
+	source[index] = item;
+}
+
+function fuseSearch<T extends Namable>(
 	value: string,
-	source: FuseNameVal[],
+	source: T[],
 	first: boolean = false,
 	insertIndex: boolean = false): number
 	{
