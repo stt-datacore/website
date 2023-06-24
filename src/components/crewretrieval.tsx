@@ -16,6 +16,7 @@ import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
 import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -1048,7 +1049,7 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
 		{ width: 1, title: 'Useable Combos' }
 	];
-	const buffConfig = calculateBuffConfig(props.playerData.player);
+
 	return (
 		<>
 		<SearchableTable
@@ -1059,14 +1060,15 @@ const CrewTable = (props: CrewTableProps) => {
 			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
-		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
+		<CrewHoverStat crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
 		
 		</>
 	);
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
-		const buffConfig = calculateBuffConfig(playerData.player);
 
+		const { buffConfig } = React.useContext(PlayerContext);
+	
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
