@@ -33,6 +33,7 @@ import { mergeShips } from '../utils/shiputils';
 import { Archetype17, Archetype20 } from '../model/archetype';
 import { DataContext, DefaultCore } from '../context/datacontext';
 import { PlayerContext, PlayerContextData } from '../context/playercontext';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
 export interface PlayerTool {
 	title: string;
@@ -447,7 +448,9 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			tt = s.name;
 		}
 	 }
-
+    
+	const buffConfig = calculateBuffConfig(playerData.player);
+	
 	return (
 		<Layout title='Player tools'>
 			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
@@ -484,7 +487,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					allShips: allShips,
 					playerData: playerData,
 					playerShips: playerShips,
-					bossData: fleetBossData
+					bossData: fleetBossData,
+					buffConfig: buffConfig
 				}}>
 					{tools[activeTool].render(props)}
 				</MergedContext.Provider>
