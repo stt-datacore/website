@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 
@@ -54,6 +54,13 @@ type SearchableTableProps = {
 	showPermalink?: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
+	toolCaption?: string;
+	checkableValue?: boolean;
+	checkableEnabled?: boolean;
+	setCheckableValue?: (value?: boolean) => void;
+	dropDownChoices?: string[];
+	dropDownValue?: string;
+	setDropDownValue?: (value?: string) => void;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -254,8 +261,19 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
+	const { toolCaption: caption, checkableEnabled, checkableValue, setCheckableValue } = props;
+
+
+
 	return (
 		<div>
+			<div style={{ 
+				display: "flex", 
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "flex-start" 
+				}}>
+
 			<Input
 				style={{ width: isMobile ? '100%' : '50%' }}
 				iconPosition="left"
@@ -284,7 +302,55 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>
 
+			{caption && setCheckableValue !== undefined && (
+				<div style={{
+					margin: "0.5em",
+					display:"flex", 
+					flexDirection: "row",
+					alignItems: "center",
+					justifyContent: "flex-start",
+					alignSelf: "flex-end"
+				}}>
+					<Checkbox 						
+						onChange={(e, d) => setCheckableValue(d.checked)} 
+						checked={checkableValue} 
+						disabled={!checkableEnabled} />
+					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
+				</div>
+			)}
+
+			{caption && props.dropDownChoices?.length && (
+				<div style={{
+					margin: "0.5em",
+					display:"flex", 
+					flexDirection: "row",
+					alignItems: "center",
+					justifyContent: "flex-start",
+					alignSelf: "flex-end"
+				}}>
+
+					<span style={{ paddingLeft: '2em' }}>
+						<Dropdown inline
+									options={props.dropDownChoices.map((c) => {return {
+										content: c,
+										value: c
+									}})}
+									value={props.dropDownValue}
+									onChange={(event, {value}) => {
+										if (props.setDropDownValue) {
+											props.setDropDownValue(value as string);
+										}
+									}}
+						/>
+					</span>
+					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
+				</div>
+			)}
+
+
 			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+			
+			</div>
 
 			{filteredCount === 0 && (
 				<div style={{ margin: '2em 0' }}>

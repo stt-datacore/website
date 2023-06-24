@@ -66,26 +66,37 @@ type CrewStatsState = {
 	initOptions: any;
 	lockable: any[];
 	hoverCrew?: CrewMember | PlayerCrew;
-	botcrew: (CrewMember | PlayerCrew)[];
+	botcrew: (CrewMember | PlayerCrew)[],
+	mode: "all" | "unowned" | "owned";	
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
+	readonly tiny: TinyStore;
 
 	constructor(props: CrewStatsProps | Readonly<CrewStatsProps>) {
 		super(props);
+		this.tiny = TinyStore.getStore('index_page');
+
+		let mode = this.tiny.getValue<string>('mode', 'all');
+
 		this.state = {
 			botcrew: [],
 			tableConfig: [],
 			customColumns: [],
 			initOptions: false,
-			lockable: []
+			lockable: [],
+			mode
 		} as CrewStatsState;
-
 	}
 	
 	componentWillUnmount(): void {
+	}
+
+	setState<K extends keyof CrewStatsState>(state: CrewStatsState | ((prevState: Readonly<CrewStatsState>, props: Readonly<CrewStatsProps>) => CrewStatsState | Pick<CrewStatsState, K> | null) | Pick<CrewStatsState, K> | null, callback?: (() => void) | undefined): void {
+		super.setState(state);
+		if (state && 'mode' in state) this.tiny.setValue('mode', state.mode);
 	}
 
 	readonly setActiveCrew = (value: PlayerCrew | CrewMember | null | undefined): void => {
@@ -103,7 +114,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			});
 			let bcrew = crew as PlayerCrew;
 			let f: PlayerCrew | undefined = undefined;
-			if (playerCrew) {
+			if (playerCrew && playerCrew.length) {
 				f = playerCrew.find((item) => item.symbol === bcrew.symbol);
 				if (f) {
 					bcrew.immortal = f.immortal;
@@ -252,9 +263,24 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			</Table.Row>
 		);
 	}
-
+	
 	render() {
-		const { botcrew, tableConfig, initOptions, lockable } = this.state;
+		const { botcrew, tableConfig, initOptions, lockable, mode } = this.state;
+		const { playerData } = this.context;
+		const checkableValue = playerData?.player?.character?.crew?.length ? (mode === 'all' ? undefined : (mode === 'unowned' ? true : false)) : undefined;
+		const caption = playerData?.player?.character?.crew?.length ? 'Show only unowned crew' : undefined;
+
+		const me = this;
+
+		const setCheckableValue = (value?: boolean) => {
+			if (value === true) {
+				me.setState({ ... me.state, mode: 'unowned' })
+			}
+			else {
+				me.setState({ ... me.state, mode: 'all' })
+			}
+		}
+
 		if (!botcrew || botcrew.length === 0) {
 			return (
 				<Layout>
@@ -263,13 +289,34 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			);
 		}
 
+		let preFiltered = botcrew;
+
+		if (playerData && mode !== 'all') {
+			preFiltered = preFiltered.filter((c) => {
+				let item = c as PlayerCrew;
+
+				if (item && mode === 'owned') {
+					return !(item.immortal === CompletionState.DisplayAsImmortalUnowned);
+				}
+				else if (item && mode === 'unowned') {
+					return (item.immortal === CompletionState.DisplayAsImmortalUnowned);
+				}
+
+				return true;
+			});
+		}
+
 		return (
 			<React.Fragment>
 				<Header as='h2'>Crew stats</Header>
 				<div>
 					<SearchableTable
+						toolCaption={caption}
+						checkableValue={checkableValue}
+						setCheckableValue={setCheckableValue}
+						checkableEnabled={playerData !== undefined}
 						id="index"
-						data={botcrew}
+						data={preFiltered}
 						config={tableConfig}
 						renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
 						filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
