@@ -1125,9 +1125,9 @@ const CrewTable = (props: CrewTableProps) => {
 		);
 	}
 
-	const [fuses, setFuses] = React.useState<FuseGroups | undefined>(undefined);
 
 	function showCombosForCrew(crew: CrewMember): JSX.Element {
+
 		if (activeCrew !== crew.symbol) return (<></>);
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
@@ -1145,7 +1145,7 @@ const CrewTable = (props: CrewTableProps) => {
 			fuseGroups[fg.name] = fg.value;
 		}
 
-		return fuses && (<ComboGrid crew={crew} combos={combos} fuseGroups={fuses} />) || (<>Calculating ...</>);
+		return <ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />
 	}
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseNameVal[] {
