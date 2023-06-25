@@ -136,7 +136,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
 	// The context above	
 	const dataContext = props.coreData;
-	const { playerData: strippedPlayerData, setPlayerData: setStrippedPlayerData, buffConfig } = props.playerData;
+	const { strippedPlayerData, setStrippedPlayerData, buffConfig } = props.playerData;
 
 	// All things playerData
 	

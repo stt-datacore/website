@@ -5,8 +5,8 @@ import { DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 
 export interface PlayerContextData {
-	playerData?: PlayerData;
-	setPlayerData: (playerData: PlayerData | undefined) => void; 
+	strippedPlayerData?: PlayerData;
+	setStrippedPlayerData: (playerData: PlayerData | undefined) => void; 
 	buffConfig?: BuffStatTable;
 }
 
@@ -22,9 +22,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 
 	const context = {
-		playerData: strippedPlayerData,
-		setPlayerData: setStrippedPlayerData,
-		buffConfig: buffConfig
+		strippedPlayerData,
+		setStrippedPlayerData,
+		buffConfig
 	} as PlayerContextData;
 
 	return (
