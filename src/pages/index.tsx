@@ -163,13 +163,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				reverse: true
 			});
 		});
-		if (playerCrew) {
-			tableConfig.push({
-				width: 1,
-				column: `in_portal`,
-				title: "In Portal"
-			})
-		}
+		tableConfig.push({
+			width: 1,
+			column: `in_portal`,
+			title: "In Portal"
+		})
 		// Check for custom columns (currently only available from URL/state)
 		const customColumns = [] as string[];
 		if (initOptions && initOptions.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1)
@@ -278,12 +276,9 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 						return (<Table.Cell key={column} />);
 					}
 				})}
-
-				{this.context.playerData?.player?.character?.crew?.length && (
-					<Table.Cell key='in_portal' textAlign='center'>
-						<b>{crew.in_portal ? 'Yes' : 'No'}</b>
-					</Table.Cell>
-				)}
+				<Table.Cell key='in_portal' textAlign='center'>
+					<b>{crew.in_portal ? 'Yes' : 'No'}</b>
+				</Table.Cell>
 			</Table.Row>
 		);
 	}
