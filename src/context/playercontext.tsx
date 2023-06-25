@@ -1,13 +1,15 @@
 import React from 'react';
 import { PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
-import { DataProviderProperties } from './datacontext';
+import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { prepareProfileData } from '../utils/crewutils';
 
 export interface PlayerContextData {
 	strippedPlayerData?: PlayerData;
 	setStrippedPlayerData: (playerData: PlayerData | undefined) => void; 
 	buffConfig?: BuffStatTable;
+	preparedPlayerData?: PlayerData;
 }
 
 const defaultPlayer = {
@@ -16,15 +18,25 @@ const defaultPlayer = {
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
 
 export const PlayerProvider = (props: DataProviderProperties) => {
+	const dataContext = React.useContext(DataContext);
+
 	const { children } = props;
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
-
+	
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+	let prep: PlayerData | undefined = undefined;
+
+	// PlayerContext will never demand the data. It will only use it if it's there.
+	if (strippedPlayerData && dataContext && dataContext.crew?.length) {
+		prep = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
+		prepareProfileData('PROFILE_CONTEXT', dataContext.crew, prep, new Date());
+	}
 
 	const context = {
 		strippedPlayerData,
 		setStrippedPlayerData,
-		buffConfig
+		buffConfig,
+		preparedPlayerData: prep
 	} as PlayerContextData;
 
 	return (
