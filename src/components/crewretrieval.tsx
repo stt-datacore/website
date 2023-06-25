@@ -1145,7 +1145,9 @@ const CrewTable = (props: CrewTableProps) => {
 			fuseGroups[fg.name] = fg.value;
 		}
 
-		return <ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />
+		return  (
+			<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />
+		)
 	}
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseNameVal[] {
@@ -1362,7 +1364,10 @@ const ComboGrid = (props: ComboGridProps) => {
 					/>
 				)}
 			</div>
-			<div className='content'>
+			<div className='content' 
+				style={{
+					maxHeight: "30em",
+					overflow: "auto"}}>
 				<Grid columns='equal' onClick={() => cycleGroupOptions()}>
 					{combos.map((combo, cdx) =>
 						<Grid.Row key={'combo'+cdx}>
