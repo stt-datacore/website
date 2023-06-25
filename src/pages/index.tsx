@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -67,6 +67,7 @@ type CrewStatsState = {
 	lockable: any[];
 	hoverCrew?: CrewMember | PlayerCrew;
 	botcrew: (CrewMember | PlayerCrew)[],
+	playerCrew?: (CrewMember | PlayerCrew)[],
 	mode: "all" | "unowned" | "owned";	
 };
 
@@ -79,8 +80,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		super(props);
 		this.tiny = TinyStore.getStore('index_page');
 
-		let mode = this.tiny.getValue<string>('mode', 'all');
-
+		let mode = this.tiny.getValue<string>('mode', 'all');				
 		this.state = {
 			botcrew: [],
 			tableConfig: [],
@@ -105,7 +105,15 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
-		const playerCrew = this.context.playerData?.player?.character?.crew;
+		const playerCrew = this.context?.playerData?.player?.character?.crew?.map((item) => {
+			let bc = botcrew.find(x => x.symbol === item.symbol);
+			if (bc) {
+				return { ...bc, ...item };
+			}
+			else {
+				return item;
+			}
+		}) ?? undefined;
 
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
@@ -122,7 +130,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 					bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
 					bcrew.action.bonus_amount = f.action.bonus_amount;
 					bcrew.bonus = f.bonus;					
-					bcrew.rarity = f.rarity;					
+					bcrew.rarity = f.rarity;	
 				}
 				else {
 					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
@@ -188,7 +196,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			}
 		}
 
-		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable });
+		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable, playerCrew });
 	}
 
 	renderTableRow(crew: CrewMember | PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
@@ -226,7 +234,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							</CrewTarget>							
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, this.state.playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
 							{formattedCounts}
