@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, isImmortal, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel, isImmortal, navToCrewPage, prepareProfileData } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -105,45 +105,19 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
-		const playerCrew = this.context?.playerData?.player?.character?.crew?.map((item) => {
-			let bc = botcrew.find(x => x.symbol === item.symbol) as PlayerCrew;
-			if (bc) {
-				let oc = JSON.parse(JSON.stringify(bc)) as PlayerCrew;
-				
-				item.max_rarity = bc.max_rarity ?? bc.rarity;
+		
+		if (this.context.playerData?.player?.character?.crew?.length) {
+			prepareProfileData("INDEX", this.context.allCrew, this.context.playerData, new Date());
+		}
 
-				let immo = isImmortal(item);
-				if (immo) {
-					let c = this.context.playerData.player.character.stored_immortals.filter(x => x.id === item.id)?.length ?? 0;
-					if (c > 0) {
-						oc.immortal = c;
-					}
-					else {
-						oc.immortal = CompletionState.Immortalized;
-					}					
-				}
-				else {
-					oc.immortal = CompletionState.NotComplete;
-				}
-				oc.base_skills = JSON.parse(JSON.stringify(item.base_skills));
-				oc.ship_battle = JSON.parse(JSON.stringify(item.ship_battle));
-				oc.action.bonus_amount = item.action.bonus_amount;
-				oc.bonus = item.bonus;					
-				oc.rarity = item.rarity;	
-				oc.level = item.level;
-
-				return oc;
-			}
-			else {
-				return item;
-			}
-		}) ?? undefined;
+		const playerCrew = this.context.playerData?.player?.character?.crew;
 
 		botcrew.forEach(crew => {
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
 			});
+
 			let bcrew = crew as PlayerCrew;
 			let f: PlayerCrew | undefined = undefined;
 			if (playerCrew && playerCrew.length) {
@@ -163,9 +137,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			}
 			else {
 				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
-				//bcrew.max_rarity = bcrew.rarity;
 			}
-
 		});
 
 		// Check for custom initial table options from URL or <Link state>
@@ -225,7 +197,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	renderTableRow(crew: CrewMember | PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
-		const { customColumns } = this.state;
+		const { customColumns, playerCrew } = this.state;
 		const attributes = {
 			positive: highlighted
 		};
@@ -259,7 +231,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							</CrewTarget>							
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, this.state.playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
 							{formattedCounts}
