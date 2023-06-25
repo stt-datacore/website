@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel, isImmortal, navToCrewPage } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -106,9 +106,33 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
 		const playerCrew = this.context?.playerData?.player?.character?.crew?.map((item) => {
-			let bc = botcrew.find(x => x.symbol === item.symbol);
+			let bc = botcrew.find(x => x.symbol === item.symbol) as PlayerCrew;
 			if (bc) {
-				return { ...bc, ...item };
+				let oc = JSON.parse(JSON.stringify(bc)) as PlayerCrew;
+				
+				item.max_rarity = bc.max_rarity ?? bc.rarity;
+
+				let immo = isImmortal(item);
+				if (immo) {
+					let c = this.context.playerData.player.character.stored_immortals.filter(x => x.id === item.id)?.length ?? 0;
+					if (c > 0) {
+						oc.immortal = c;
+					}
+					else {
+						oc.immortal = CompletionState.Immortalized;
+					}					
+				}
+				else {
+					oc.immortal = CompletionState.NotComplete;
+				}
+				oc.base_skills = JSON.parse(JSON.stringify(item.base_skills));
+				oc.ship_battle = JSON.parse(JSON.stringify(item.ship_battle));
+				oc.action.bonus_amount = item.action.bonus_amount;
+				oc.bonus = item.bonus;					
+				oc.rarity = item.rarity;	
+				oc.level = item.level;
+
+				return oc;
 			}
 			else {
 				return item;
@@ -131,6 +155,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 					bcrew.action.bonus_amount = f.action.bonus_amount;
 					bcrew.bonus = f.bonus;					
 					bcrew.rarity = f.rarity;	
+					bcrew.level = f.level;
 				}
 				else {
 					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
@@ -138,7 +163,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			}
 			else {
 				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
-				bcrew.max_rarity = bcrew.rarity;
+				//bcrew.max_rarity = bcrew.rarity;
 			}
 
 		});
