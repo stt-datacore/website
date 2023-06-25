@@ -50,11 +50,9 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                         <div
                             style={{                                
                                 display: "flex",
-                                flexDirection:
-                                    window.innerWidth < 0 ? "column" : "row",
+                                flexDirection: "row",
                                 justifyContent: "space-between",
-                                alignItems:
-                                    window.innerWidth < 0 ? "flex-start" : "center",
+                                alignItems:  "center",
                             }}
                         >
                             <h4 style={{ marginBottom: ".25em", maxWidth: "75%", fontSize: "1.25em" }}>
