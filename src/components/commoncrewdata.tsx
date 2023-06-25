@@ -247,6 +247,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							justifyContent:"space-between", 
 							alignItems: "center",
 							margin: "0.25em",
+							marginRight: 0,
+							marginLeft: 0,
 							flexWrap: "wrap"}}>
 							{markdownRemark.frontmatter.events !== null && (
 								<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
@@ -275,6 +277,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						<div style={{
 							display: "flex", 
 							margin: "0.25em",
+							marginRight: 0,
+							marginLeft: 0,
 							flexDirection: "row", 
 							justifyContent:"space-between", 
 							alignItems: "center",

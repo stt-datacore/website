@@ -48,7 +48,7 @@ export function getCoolStats(crew: PlayerCrew | CrewMember, simple: boolean, sho
 		return stats.join(' | ');
 	} else {
 		if (stats.length === 0) {
-			return showMore ? 'More stats...': '';
+			return showMore ? 'Show detailed ranks and stats...': '';
 		} else {
 			return stats.join(', ') + (showMore ? ', more stats...' : '');
 		}
