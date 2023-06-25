@@ -22,7 +22,10 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ShipSkill } from '../components/item_presenters/shipskill';
+import { DataContext } from '../context/datacontext';
 const DEFAULT_MOBILE_WIDTH = 768;
+
+
 
 export interface CrewPageOptions {
 	key: string;
@@ -60,24 +63,47 @@ type StaticCrewPageProps = {
 	}
 };
 
-type StaticCrewPageState = {
+const StaticCrewPage = (props: StaticCrewPageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['items']);
+	
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<StaticCrewComponent props={props} />
+				</React.Fragment>
+			}
+		</Layout>
+	);
+};
+
+type StaticCrewComponentState = {
 	selectedEquipment?: string;
 	modalVisible: boolean;
 	commentMarkdown: string;
-	items: EquipmentItem[];
 	comments: any[];
 	itemBig: boolean;
 };
 
-class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState> {		
-	constructor(props: StaticCrewPageProps | Readonly<StaticCrewPageProps>) {
+interface StaticCrewComponentProps {
+	props: StaticCrewPageProps;
+}
+
+class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {		
+	static contextType = DataContext;
+	context!: React.ContextType<typeof DataContext>;
+	
+	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
 		this.state = {
 			selectedEquipment: undefined,
 			modalVisible: false,
 			commentMarkdown: '', // TODO: load
 			comments: [],
-			items: [],
 			itemBig: this.stash.getValue('crew_static_big', false) ?? false
 		};
 	}
@@ -90,7 +116,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	componentWillUnmount(): void {
 		window.removeEventListener('keydown', (e) => this._windowKey(e))
 		window.removeEventListener('resize', (e) => this._windowSize(e))
-		
 	}
 
 	componentDidMount() {
@@ -103,10 +128,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		if (this.stash.containsKey('buffs')) {
 			this.buffs = this.stash.getValue('buffs');				
 		}			
-		
-		fetch('/structured/items.json')
-			.then(response => response.json())
-			.then(items => this.setState({ items }));
 
 		// Disabled until we get big book folks on-board
 		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
@@ -124,7 +145,6 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				}
 			});*/
 	}
-
 	_getCurrentUsername() {
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
@@ -145,8 +165,8 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	}
 
 	render() {
-		const { location } = this.props;
-		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.data;
+		const { location } = this.props.props;
+		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.props.data;
 		if (crewJson.edges.length === 0) {
 			return <span>Crew not found!</span>;
 		}
@@ -191,7 +211,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 				</Helmet>
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
-					items={this.state.items}
+					items={this.context.items}
 					crew={crew}
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
@@ -278,7 +298,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 									}
 								</div>
 
-								{this.state.items.length > 0 ? (
+								{this.context.items.length > 0 ? (
 									<React.Fragment>
 										{this.renderEquipment(crew)}
 										{this.renderEquipmentDetails(crew)}
@@ -321,7 +341,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 								}
 							</div>
 							
-							{this.state.items.length > 0 ? (
+							{this.context.items.length > 0 ? (
 								<React.Fragment>
 									{this.renderEquipment(crew)}
 									{this.renderEquipmentDetails(crew)}
@@ -491,7 +511,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 	renderEquipment(crew: PlayerCrew) {
 		let options = [] as CrewPageOptions[];
 		crew.equipment_slots.forEach(es => {
-			let equipment = this.state.items.find(item => item.symbol === es.symbol);
+			let equipment = this.context.items.find(item => item.symbol === es.symbol);
 			if (!equipment) {
 				console.warn(`Could not find item ${es.symbol}`);
 				return;
@@ -535,7 +555,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 		}
 
 		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
-		let equipment = this.state.items.find(item => item.symbol === es?.symbol);
+		let equipment = this.context.items.find(item => item.symbol === es?.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
 			return <span />;
@@ -555,7 +575,7 @@ class StaticCrewPage extends Component<StaticCrewPageProps, StaticCrewPageState>
 			<div>
 				<Grid columns={4} centered padded>
 					{equipment.recipe.list.map(entry => {
-						let recipeEntry = this.state.items.find(item => item.symbol === entry.symbol);
+						let recipeEntry = this.context.items.find(item => item.symbol === entry.symbol);
 						if (!recipeEntry) return <></>
 						return (
 							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
