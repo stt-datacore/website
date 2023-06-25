@@ -552,6 +552,7 @@ export const query = graphql`
 	fragment RanksFragment on CrewJson {
 		cab_ov
 		cab_ov_rank
+		cab_ov_grade
 		ranks {
 			voyRank
 			gauntletRank
