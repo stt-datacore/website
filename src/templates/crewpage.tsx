@@ -68,14 +68,12 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const isReady = coreData.ready(['items']);
 	
 	return (
-		<Layout>
+		<Layout narrowLayout={true}>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
 			{isReady &&
-				<React.Fragment>
-					<StaticCrewComponent props={props} />
-				</React.Fragment>
+				<StaticCrewComponent props={props} />
 			}
 		</Layout>
 	);
@@ -199,7 +197,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		}
 
 		return (
-			<Layout narrowLayout={true}>
+			<>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
 					<title>{crew.name}</title>
 					<meta property='og:type' content='website' />
@@ -257,7 +255,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								</div>)								
 								} */}
 								<div>
-									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'medium' : 'small'} />}
+									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
 								</div>
 								<div style={{ 
 										flexGrow: 1, 
@@ -473,7 +471,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					traits={crew.traits} traits_hidden={crew.traits_hidden}
 					unique_polestar_combos={crew.unique_polestar_combos}
 				/>
-			</Layout>
+			</>
 		);
 	}
 
