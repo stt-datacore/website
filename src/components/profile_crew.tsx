@@ -252,7 +252,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
 	const [shipRarityFilter, setShipRarityFilter] = useStateWithStorage(pageId+'/shipRarityFilter', [] as number[]);
-	const [shipPickerFilter, setShipPickerFilter] = useStateWithStorage<ShipPickerFilter | undefined>(pageId+'/shipPickerFilter', undefined);
+	const [shipPickerFilter, setShipPickerFilter] = useStateWithStorage<ShipPickerFilter>(pageId+'/shipPickerFilter', {} as ShipPickerFilter);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 
@@ -289,17 +289,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	// Ship stuff
 
 	React.useEffect(() => {
-		if (!shipRarityFilter) {
-			if (!shipPickerFilter) return;
-			setShipPickerFilter({ ... shipPickerFilter, rarity: undefined });
+		let newFilter: ShipPickerFilter;
+		if (!shipRarityFilter || !shipRarityFilter.length) {
+			newFilter = { ... shipPickerFilter, rarity: undefined };
 		}
 		else {
-			if (!shipPickerFilter) {
-				setShipPickerFilter({ rarity: shipRarityFilter });
-			}
-			else {
-				setShipPickerFilter({ ... shipPickerFilter, rarity: shipRarityFilter });
-			}
+			newFilter = { ... shipPickerFilter, rarity: shipRarityFilter };
+		}
+		if (JSON.stringify(newFilter) !== JSON.stringify(shipPickerFilter)) {
+			setShipPickerFilter(newFilter);
 		}
 	}, [shipRarityFilter]);
 	
