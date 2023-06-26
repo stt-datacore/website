@@ -263,7 +263,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
 		//	so other components don't have to keep calculating the same data
 		// After this point, playerData should always be preparedProfileData, here and in all components
-		let preparedProfileData = {...strippedData};
+		let preparedProfileData = JSON.parse(JSON.stringify(strippedData));
 		prepareProfileData("prepareProfileDataFromInput", allCrew ?? [], preparedProfileData, dtImported);
 		setPlayerData(preparedProfileData);
 
@@ -276,7 +276,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	}
 
 	function prepareProfileDataFromSession() {
-		let preparedProfileData = {...strippedPlayerData} as PlayerData;
+		let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
 		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData?.calc?.lastImported as string)));
 		setPlayerData(preparedProfileData);
 
