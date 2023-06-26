@@ -20,7 +20,7 @@ type ShipPickerProps = {
 
 const ShipPicker = (props: ShipPickerProps) => {
 	const { selectedShip, setSelectedShip, filter } = props;
-
+	
 	enum OptionsState {
 		Uninitialized,
 		Initializing,

@@ -38,7 +38,7 @@ type ProfileCrewProps = {
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const { playerData, allCrew: crew } = React.useContext(MergedContext);
+	const { playerData, allCrew: crew, playerShips } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
 	
 	// Check for custom initial table options from URL or <Link state>
@@ -57,7 +57,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		const buffConfig = calculateBuffConfig(playerData.player);
 		return (
 			<ProfileCrewTools playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
-				initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
+				ships={playerShips} initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
 				dbid={`${playerData.player.dbid}`} />
 		);
 	}
@@ -79,6 +79,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 type ProfileCrewToolsProps = {
 	myCrew: PlayerCrew[];
 	allCrew: CrewMember[];
+	ships?: Ship[];
 	playerData: PlayerData;
 	buffConfig: BuffStatTable;
 	initOptions?: InitialOptions;
@@ -88,7 +89,7 @@ type ProfileCrewToolsProps = {
 };
 
 const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
-	const { allCrew, buffConfig, initOptions } = props;
+	const { allCrew, buffConfig, initOptions, ships } = props;
 	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('crewTool/prospects', []);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [wizard, setWizard] = React.useState(undefined);
@@ -205,7 +206,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable allCrew={allCrew} playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
+			<ProfileCrewTable ships={ships} allCrew={allCrew} playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
 			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
@@ -232,6 +233,7 @@ type ProfileCrewTableProps = {
 	initOptions: any;
 	lockable?: any[];
 	wizard?: any;
+	ships?: Ship[];
 	playerData: PlayerData;
 };
 
@@ -250,7 +252,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rosterFilter, setRosterFilter] = useStateWithStorage(pageId+'/rosterFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId+'/rarityFilter', [] as number[]);
 	const [shipRarityFilter, setShipRarityFilter] = useStateWithStorage(pageId+'/shipRarityFilter', [] as number[]);
-	const [shipPickerFilter, setShipPickerFilter] = useStateWithStorage<ShipPickerFilter | undefined>(pageId+'/shipFilter', undefined);
+	const [shipPickerFilter, setShipPickerFilter] = useStateWithStorage<ShipPickerFilter | undefined>(pageId+'/shipPickerFilter', undefined);
 	const [traitFilter, setTraitFilter] = useStateWithStorage(pageId+'/traitFilter', [] as string[]);
 	const [minTraitMatches, setMinTraitMatches] = useStateWithStorage(pageId+'/minTraitMatches', 1);
 
@@ -278,7 +280,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (tableView === 'ship') {
 			setRosterFilter(rosterFilter);
 		}
-	}, [shipCrew, tableView]);
+	}, [tableView]);
 
 	React.useEffect(() => {
 		if (minTraitMatches > traitFilter.length)
@@ -311,24 +313,28 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}, [rankings])
 
 	React.useEffect(() => {
-		if (shipCrew) {
+		if (shipCrew && shipCrew.length !== 0) {
 			let statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
-			let rankings = mapToRankings(statmap);
+			let newRankings = mapToRankings(statmap);
 			if (selectedAbilities && selectedAbilities.length) {
-				rankings = rankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
+				newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
 			}
-			rankings = rankings.filter(r => myCrew.some(c => r.crew_symbols.includes(c.symbol)));
-			setRankings(rankings);	
+			newRankings = newRankings.filter(r => shipCrew.some(sc => r.crew_symbols.includes(sc)));
+			if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
+				setRankings(newRankings);	
+			}
 		}
 		else {
 			let statmap = createShipStatMap(myCrew);
-			let rankings = mapToRankings(statmap);
+			let newRankings = mapToRankings(statmap);
 			if (selectedAbilities && selectedAbilities.length) {
-				rankings = rankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
+				newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
 			}
-			setRankings(rankings);	
+			if (JSON.stringify(newRankings) !== JSON.stringify(newRankings)) {
+				setRankings(newRankings);	
+			}
 		}
-	}, [selectedAbilities, shipCrew]);
+	}, [shipCrew, selectedAbilities]);
 
 	React.useEffect(() => {
 		let sc: (PlayerCrew | CrewMember)[] | undefined = undefined;
@@ -556,7 +562,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	// 	return result.join('; ');
 	// }
 	const compact = true;
-	
+
+	const isCheckDisabled = () => {
+		return !selectedShip?.actions?.some(ab => ab.status && ab.status != 16);
+	}
+
 	return (
         <React.Fragment>
             {pageId === "crewTool" && (
@@ -605,6 +615,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							<ShipPicker 							
 								filter={shipPickerFilter}
 								selectedShip={selectedShip}
+								pool={props.ships}
 								setSelectedShip={(item) => setShipFilters({ ... shipFilters, selectedShip: item })}
 								playerData={props.playerData} />
 						</div>
@@ -639,11 +650,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								/>					
 						</div>
 					</div>
+					{!isCheckDisabled() &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
-
-						<Checkbox disabled={!selectedShip?.actions?.some(ab => ab.status && ab.status != 16)} checked={triggerOnly} onChange={(e) => (item) => setShipFilters({ ... shipFilters, triggerOnly: item })} />
+						<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
 						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 					</div>
+					}	
 				</div>
 			}
 

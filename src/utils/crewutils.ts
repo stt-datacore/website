@@ -943,7 +943,7 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	// Create the tiers...
 
 	let tiers = {} as { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }};
-	for (let key in Object.keys(types)) {
+	for (let key of Object.keys(types)) {
 		if (!(key in types) || types[key] === undefined) continue;
 		else {
 			tiers[key] = sc.groupBy(types[key], "action/ability/amount");
