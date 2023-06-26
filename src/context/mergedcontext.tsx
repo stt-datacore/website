@@ -17,6 +17,7 @@ export interface MergedData {
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
+    items?: EquipmentItem[];
 }
 
 const defaultMerged = {

@@ -23,6 +23,8 @@ import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataContext } from '../context/datacontext';
+import { PlayerContext } from '../context/playercontext';
+import { MergedContext } from '../context/mergedcontext';
 const DEFAULT_MOBILE_WIDTH = 768;
 
 
@@ -65,7 +67,9 @@ type StaticCrewPageProps = {
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['items']);
+	const { preparedPlayerData, buffConfig } = React.useContext(PlayerContext);
+
+	const isReady = coreData.ready(['items', 'crew']);
 	
 	return (
 		<Layout narrowLayout={true}>
@@ -73,7 +77,14 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
 			{isReady &&
-				<StaticCrewComponent props={props} />
+				<MergedContext.Provider value={{ 
+					playerData: preparedPlayerData ?? {} as PlayerData, 
+					allCrew: coreData.crew,
+					items: coreData.items,
+					buffConfig: buffConfig
+					}}>
+					<StaticCrewComponent props={props} />
+				</MergedContext.Provider>
 			}
 		</Layout>
 	);
@@ -92,8 +103,8 @@ interface StaticCrewComponentProps {
 }
 
 class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {		
-	static contextType = DataContext;
-	context!: React.ContextType<typeof DataContext>;
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
 	
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
@@ -119,13 +130,21 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	componentDidMount() {
 		window.addEventListener('keydown', (e) => this._windowKey(e))
 		window.addEventListener('resize', (e) => this._windowSize(e))
-		if (this.stash.containsKey('owned')) {
-			this.ownedCrew = this.stash.getValue('owned');
-			//stash.removeValue('owned');				
-		}			
-		if (this.stash.containsKey('buffs')) {
-			this.buffs = this.stash.getValue('buffs');				
-		}			
+
+		if (this.context.playerData?.player?.character?.crew?.length) {
+			this.ownedCrew = this.context.playerData.player.character.crew;
+		}
+		if (this.context.buffConfig) {
+			this.buffs = this.context.buffConfig;
+		}
+		// if (this.stash.containsKey('owned')) {
+		// 	this.ownedCrew = this.stash.getValue('owned');
+		// 	//stash.removeValue('owned');				
+		// }			
+
+		// if (this.stash.containsKey('buffs')) {
+		// 	this.buffs = this.stash.getValue('buffs');				
+		// }			
 
 		// Disabled until we get big book folks on-board
 		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
@@ -209,7 +228,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				</Helmet>
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
-					items={this.context.items}
+					items={this.context.items ?? []}
 					crew={crew}
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
@@ -296,7 +315,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 									}
 								</div>
 
-								{this.context.items.length > 0 ? (
+								{(this.context.items?.length ?? 0) > 0 ? (
 									<React.Fragment>
 										{this.renderEquipment(crew)}
 										{this.renderEquipmentDetails(crew)}
@@ -509,7 +528,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	renderEquipment(crew: PlayerCrew) {
 		let options = [] as CrewPageOptions[];
 		crew.equipment_slots.forEach(es => {
-			let equipment = this.context.items.find(item => item.symbol === es.symbol);
+			let equipment = this.context.items?.find(item => item.symbol === es.symbol);
 			if (!equipment) {
 				console.warn(`Could not find item ${es.symbol}`);
 				return;
@@ -553,7 +572,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		}
 
 		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
-		let equipment = this.context.items.find(item => item.symbol === es?.symbol);
+		let equipment = this.context.items?.find(item => item.symbol === es?.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
 			return <span />;
@@ -573,7 +592,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			<div>
 				<Grid columns={4} centered padded>
 					{equipment.recipe.list.map(entry => {
-						let recipeEntry = this.context.items.find(item => item.symbol === entry.symbol);
+						let recipeEntry = this.context.items?.find(item => item.symbol === entry.symbol);
 						if (!recipeEntry) return <></>
 						return (
 							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
