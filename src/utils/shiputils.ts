@@ -131,6 +131,7 @@ export function exportShips(ships: Ship[]): string {
 
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
+	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
 	ship_schematics.forEach((schematic) => {
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
