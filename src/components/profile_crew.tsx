@@ -333,7 +333,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
 		setShipCrew(sc);
-	}, [selectedShip, selectedSeats, triggerOnly, selectedAbilities, selectedRankings])
+	}, [selectedShip, selectedSeats, triggerOnly, selectedAbilities])
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
