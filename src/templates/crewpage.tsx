@@ -14,7 +14,7 @@ import CommonCrewData from '../components/commoncrewdata';
 import ExtraCrewDetails from '../components/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
-import { getShipBonus, getShipChargePhases } from '../utils/crewutils';
+import { getShipBonus, getShipChargePhases, prepareProfileData } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
@@ -67,10 +67,17 @@ type StaticCrewPageProps = {
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const { preparedPlayerData, buffConfig } = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = React.useContext(PlayerContext);
 
 	const isReady = coreData.ready(['items', 'crew']);
-	
+
+	let pd = {} as PlayerData;
+
+	if (strippedPlayerData) {
+		pd = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
+		prepareProfileData('ITEM_PAGE', coreData.crew, pd, new Date());
+	}
+
 	return (
 		<Layout narrowLayout={true}>
 			{!isReady &&
@@ -78,7 +85,7 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 			}
 			{isReady &&
 				<MergedContext.Provider value={{ 
-					playerData: preparedPlayerData ?? {} as PlayerData, 
+					playerData: pd, 
 					allCrew: coreData.crew,
 					items: coreData.items,
 					buffConfig: buffConfig

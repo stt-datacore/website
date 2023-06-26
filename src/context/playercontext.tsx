@@ -11,8 +11,6 @@ export interface PlayerContextData {
 	strippedPlayerData?: PlayerData;
 	setStrippedPlayerData: (playerData: PlayerData | undefined) => void; 
 	buffConfig?: BuffStatTable;
-	preparedPlayerData?: PlayerData;
-	mergedShips?: Ship[];
 }
 
 const defaultPlayer = {
@@ -27,25 +25,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
 	
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
-	let prep: PlayerData | undefined = undefined;
-	let ships: Ship[] | undefined = undefined;
-
-	// PlayerContext will never demand the data. It will only use it if it's there.
-	if (strippedPlayerData && dataContext && dataContext.crew?.length) {
-		prep = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
-		prepareProfileData('PROFILE_CONTEXT', dataContext.crew, prep, new Date());
-
-		if (dataContext.ship_schematics) {
-			ships = mergeShips(dataContext.ship_schematics, prep.player.character.ships);				
-		}
-	}
 
 	const context = {
 		strippedPlayerData,
 		setStrippedPlayerData,
-		buffConfig,
-		preparedPlayerData: prep,
-		mergedShips: ships
+		buffConfig
 	} as PlayerContextData;
 
 	return (

@@ -33,7 +33,7 @@ interface Lockable {
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const isReady = coreData.ready(['crew']);
-	const { strippedPlayerData, preparedPlayerData, buffConfig } = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = React.useContext(PlayerContext);
 
 	return (
 		<Layout>
@@ -45,7 +45,7 @@ const IndexPage = (props: IndexPageProps) => {
 					<Announcement />
 					<MergedContext.Provider value={{
 						allCrew: coreData.crew,
-						playerData: preparedPlayerData ?? strippedPlayerData ?? {} as PlayerData,
+						playerData: strippedPlayerData ?? {} as PlayerData,
 						buffConfig: buffConfig
 					}}>
 						<CrewStats location={props.location} />
