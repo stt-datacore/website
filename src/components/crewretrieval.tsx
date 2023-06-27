@@ -1266,7 +1266,7 @@ const ComboGrid = (props: ComboGridProps) => {
 					/>
 				)}
 			</div>
-			<div className='content'>
+			<div className='content' style={{overflow: "auto", maxHeight: "30em"}}>
 				<Grid columns='equal' onClick={() => cycleGroupOptions()}>
 					{combos.map((combo, cdx) =>
 						<Grid.Row key={'combo'+cdx}>
