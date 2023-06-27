@@ -348,13 +348,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (selectedShip) {
 			sc = findPotentialCrew(selectedShip, myCrew, triggerOnly, selectedSeats);
 			if (selectedAbilities?.length) {
-				sc = sc.filter(c => selectedAbilities.some(able => c.action.ability?.type.toString() === able));
+				sc = sc?.filter(c => selectedAbilities.some(able => c.action.ability?.type.toString() === able));
 			}
 			setAvailableSeats(Object.keys(CONFIG.SKILLS).filter(key => selectedShip.battle_stations?.some(bs => bs?.skill === key) ?? true));
 		}
 		else {
 			if (selectedAbilities?.length) {
-				sc = myCrew.filter(c => selectedAbilities.some(able => c.action.ability?.type.toString() === able));
+				sc = myCrew?.filter(c => selectedAbilities.some(able => c.action.ability?.type.toString() === able));
 			}
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
 		}	
