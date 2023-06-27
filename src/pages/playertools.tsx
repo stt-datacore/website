@@ -115,7 +115,10 @@ const PlayerToolsPage = (props: any) => {
 	return (
 		<>
 			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
+				<Layout title='Player tools'>
+					<></>
+					<div className='ui medium centered text active inline loader'>Loading data...</div>
+				</Layout>
 			}
 			{isReady &&
 				<React.Fragment>
