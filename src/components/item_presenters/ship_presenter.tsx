@@ -149,7 +149,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
                             
                             {/* {(!this.props.disableBuffs) &&
-                            <i className="arrow alternate circle up icon" title="Toggle Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
+                            <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
                             || 
                             <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
                             }
