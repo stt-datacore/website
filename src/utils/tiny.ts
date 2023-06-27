@@ -12,6 +12,7 @@ export class TinyStore {
 
     private mapCounter: number = 0;
     private readonly subscribers = new Map<string, (key: string) => void>();
+    private readonly rapid = new Map<string, any>();
 
     /**
      * Fire this to execute all listeners on a property changed
@@ -386,5 +387,16 @@ export class TinyStore {
             this.setValue(key, defaultValue as T);
 
         return defaultValue as T;
+    }
+
+    public getRapid<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {
+        return this.rapid.get(key) ?? defaultValue;
+    }
+
+    public setRapid<T>(key: string, value: T) {
+        if (!this.rapid.has(key) || this.getRapid(key) !== value) {
+            this.setRapid(key, value);
+            this.onPropertyChanged(key);
+        }
     }
 }
