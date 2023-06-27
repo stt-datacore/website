@@ -24,17 +24,17 @@ window.setTimeout(() => {
 
 function toDataURL(url: string | URL, callback: (dataUrl: string) => void) {
     var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-      var reader = new FileReader();
-      reader.onloadend = function() {
-        callback(reader.result as string);
-      }
-      reader.readAsDataURL(xhr.response);
+    xhr.onload = () => {
+        var reader = new FileReader();
+        reader.onloadend = () => {
+            callback(reader.result as string);
+        }
+        reader.readAsDataURL(xhr.response);
     };
     xhr.open('GET', url);
     xhr.responseType = 'blob';
     xhr.send();
-  }
+}
 
 // interface ShipImageProps {
 //     key: string;
