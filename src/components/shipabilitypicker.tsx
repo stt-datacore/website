@@ -7,6 +7,7 @@ import { AvatarIcon } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 import { Schematics, Ship } from '../model/ship';
 import CONFIG from './CONFIG';
+import { getIconByKey, getShipBonusIcon } from './item_presenters/shipskill';
 
 type ShipAbilityPickerProps = {
     playerData?: PlayerData;
@@ -70,7 +71,19 @@ const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 					{
 						key: c,
 						value: c,
-						//image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png` },
+						content: (<>
+							<div style={{
+								display: "flex",
+								flexDirection: "row",
+								alignItems: "center",
+								
+							}}>
+								{getIconByKey(CONFIG.SHIP_BATTLE_ABILITY_ICON[c]) &&
+									<img style={{width: "1.25em", margin: "0.25em"}} src={getIconByKey(CONFIG.SHIP_BATTLE_ABILITY_ICON[c])} />
+								}
+								<span style={{margin: "0.25em"}}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c]}</span>
+							</div>
+							</>),
 						text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c],
                         title: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c]
 					} as DropDownItem

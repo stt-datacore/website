@@ -9,6 +9,7 @@ export interface DropDownItem {
 	image: AvatarIcon;
 	text: string;
 	title?: string;
+	content?: JSX.Element;
 }
 
 export function getCoolStats(crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true): string {

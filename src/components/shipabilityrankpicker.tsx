@@ -8,6 +8,7 @@ import { DropDownItem } from '../utils/misc';
 import { Schematics, Ship } from '../model/ship';
 import CONFIG from './CONFIG';
 import { ShipSkillRanking } from '../utils/crewutils';
+import { getIconByKey } from './item_presenters/shipskill';
 
 type ShipAbilityRankPickerProps = {
     playerData?: PlayerData;
@@ -58,12 +59,28 @@ const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 			/>
 		</React.Fragment>
 	);
-
+	
 	function populateOptions(): void {
 		setOptions({
 			state: OptionsState.Initializing,
 			list: []
 		});
+		const rankToRating = (rank: number): number => {
+			switch(rank) {
+				case 1:
+					return 5;
+				case 2:
+					return 4;
+				case 3:
+					return 3;
+				case 4:
+					return 2;
+				case 5:
+					return 1;
+				default:
+					return 0;
+			}
+		}
 		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
 		setTimeout(() => {            
 			const populatePromise = new Promise<DropDownItem[]>((resolve, reject) => {
@@ -71,9 +88,20 @@ const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 					{
 						key: c.key,
 						value: c.key,
+						content: (<>
+						<div style={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: 'center'
+						}}>
+							<img style={{width: "1.25em", margin: "0.25em"}} src={getIconByKey(CONFIG.SHIP_BATTLE_ABILITY_ICON[c.type])} />
+							<div style={{display:"block", margin: "0.25em"}}><Rating icon='star' disabled={true} maxRating={5} rating={rankToRating(c.rank)} /></div>
+							<span style={{margin: "0.25em"}}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())}</span>
+						</div>
+						</>),
 						//image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png` },
-						text: `(Rank #${c.rank}) ` + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString()),
-                        title:`(Rank #${c.rank}) ` +  CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())
+						text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString()),
+                        title: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())
 					} as DropDownItem
 				)) ?? [];
 				resolve(poolList);

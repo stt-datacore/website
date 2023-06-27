@@ -1,6 +1,6 @@
 import React from "react";
 import CONFIG from "../CONFIG";
-import { getActionFromItem, getShipBonus, getShipBonusIcon, getShipChargePhases } from "../../utils/crewutils";
+import { getActionFromItem, getShipBonus, getShipChargePhases } from "../../utils/crewutils";
 import { ShipAction, Ship, ShipBonus } from "../../model/ship";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
@@ -16,6 +16,7 @@ window.setTimeout(() => {
     imgs = imgs.concat(["attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png"]);
     
     for (let img of imgs) {
+        if (img === '') continue;
         toDataURL("/media/ship/" + img, (data) => {
             imageMap.set(img, data);
         })
@@ -34,6 +35,39 @@ function toDataURL(url: string | URL, callback: (dataUrl: string) => void) {
     xhr.open('GET', url);
     xhr.responseType = 'blob';
     xhr.send();
+}
+export const getActionIcon = (action: number) => {
+    // if (action === 0) return "/media/ship/attack-icon.png";
+    // if (action === 2) return "/media/ship/accuracy-icon.png";
+    // if (action === 1) return "/media/ship/evasion-icon.png";
+    
+    if (action === 0) return imageMap.get("attack-icon.png");
+    if (action === 2) return imageMap.get("accuracy-icon.png");
+    if (action === 1) return imageMap.get("evasion-icon.png");
+};
+
+export const getTriggerIcon = (trigger: number) => {
+    return imageMap.get(CONFIG.SHIP_BATTLE_TRIGGER_ICON[trigger])
+}
+
+export const getActionColor = (action: number) => {
+    return CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[action];
+};
+
+export const getShipBonusIcon = (item?: ShipAction | Ship, index?: number): string | undefined => {
+    if (!item) return undefined;
+    let actionIn = getActionFromItem(item, index);
+    if (!actionIn) return undefined;
+    const action = actionIn;
+    if (!action || !action.ability) return undefined;
+    if (action.ability.type !== 0)
+        return imageMap.get(CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type]);
+    else 
+        return imageMap.get(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON[action.bonus_type]);
+}
+
+export const getIconByKey = (key: string): string | undefined => {
+    return imageMap.get(key);
 }
 
 // interface ShipImageProps {
@@ -57,35 +91,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
     render() {
         const { actions, shipInfo: ship_battle, isShip } = this.props;
 
-        const getActionIcon = (action: number) => {
-            // if (action === 0) return "/media/ship/attack-icon.png";
-            // if (action === 2) return "/media/ship/accuracy-icon.png";
-            // if (action === 1) return "/media/ship/evasion-icon.png";
-            
-            if (action === 0) return imageMap.get("attack-icon.png");
-            if (action === 2) return imageMap.get("accuracy-icon.png");
-            if (action === 1) return imageMap.get("evasion-icon.png");
-        };
-
-        const getTriggerIcon = (trigger: number) => {
-            return imageMap.get(CONFIG.SHIP_BATTLE_TRIGGER_ICON[trigger])
-        }
-        const getActionColor = (action: number) => {
-            return CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[action];
-        };
-
-        const getShipBonusIcon = (item?: ShipAction | Ship, index?: number): string | undefined => {
-            if (!item) return undefined;
-            let actionIn = getActionFromItem(item, index);
-            if (!actionIn) return undefined;
-            const action = actionIn;
-            if (!action || !action.ability) return undefined;
-            if (action.ability.type !== 0)
-                return imageMap.get(CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type]);
-            else 
-                return imageMap.get(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON[action.bonus_type]);
-        }
-        
+      
 
         const drawBullets = (actions: number): JSX.Element[] => {
             let elems: JSX.Element[] = [];
