@@ -181,7 +181,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                 <div style={{ display: "flex", flexDirection: "column"}}>            
                     <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
                         {window.innerWidth < mobileWidth && <>
-                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
+                            <span className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div>        
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        

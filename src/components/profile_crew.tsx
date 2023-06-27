@@ -718,7 +718,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 initOptions={props.initOptions}
                 lockable={props.lockable}
             />
-            <CrewHoverStat openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig, allCrew)} crew={focusedCrew ?? undefined} targetGroup="targetClass" />
+            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
         </React.Fragment>
     );
 }
