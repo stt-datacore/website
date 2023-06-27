@@ -61,6 +61,7 @@ type SearchableTableProps = {
 	dropDownChoices?: string[];
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
+	overflowX?: 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto';
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -359,6 +360,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
+				<div style={{overflowX: props.overflowX ?? 'visible'}}>
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
@@ -390,6 +392,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						</Table.Row>
 					</Table.Footer>
 				</Table>
+				</div>
 			)}
 		</div>
 	);

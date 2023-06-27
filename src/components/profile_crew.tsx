@@ -358,6 +358,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		}
 		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
 			setAvailableUses(newuses);
+			if (selectedUses?.length) {
+				let usesel = selectedUses.filter(su => newuses.some(v => v == su));
+				if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
+					setShipFilters({ ... shipFilters, selectedUses: usesel });
+				}
+			}
 		}
 	}
 
@@ -384,6 +390,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
 		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
 			setAvailableUses(newuses);
+			if (selectedUses?.length) {
+				let usesel = selectedUses.filter(su => newuses.some(v => v == su));
+				if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
+					setShipFilters({ ... shipFilters, selectedUses: usesel });
+				}
+			}
 		}
 	}
 
@@ -741,7 +753,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                     </Form.Group>
                 </Form>
             </div>
-            <SearchableTable
+            <SearchableTable				
                 id={`${pageId}/table_`}
                 data={myCrew}
                 config={tableConfig}
@@ -756,6 +768,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 filterRow={(crew, filters, filterType) =>
                     showThisCrew(crew, filters, filterType as string)
                 }
+				overflowX='auto'
                 showFilterOptions={true}
                 initOptions={props.initOptions}
                 lockable={props.lockable}
