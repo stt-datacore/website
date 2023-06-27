@@ -137,13 +137,6 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	componentDidMount() {
 		window.addEventListener('keydown', (e) => this._windowKey(e))
 		window.addEventListener('resize', (e) => this._windowSize(e))
-
-		if (this.context.playerData?.player?.character?.crew?.length) {
-			this.ownedCrew = this.context.playerData.player.character.crew;
-		}
-		if (this.context.buffConfig) {
-			this.buffs = this.context.buffConfig;
-		}
 		// if (this.stash.containsKey('owned')) {
 		// 	this.ownedCrew = this.stash.getValue('owned');
 		// 	//stash.removeValue('owned');				
@@ -191,6 +184,15 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	render() {
 		const { location } = this.props.props;
 		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.props.data;
+
+
+		if (this.context.playerData?.player?.character?.crew?.length) {
+			this.ownedCrew = this.context.playerData.player.character.crew;
+		}
+		if (this.context.buffConfig) {
+			this.buffs = this.context.buffConfig;
+		}
+
 		if (crewJson.edges.length === 0) {
 			return <span>Crew not found!</span>;
 		}
@@ -201,7 +203,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 
 		const userName = this._getCurrentUsername();
 
-		let crew = crewJson.edges[0].node as PlayerCrew;
+		const crew = crewJson.edges[0].node as PlayerCrew;
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 
 		if (this.ownedCrew) {

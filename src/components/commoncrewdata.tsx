@@ -17,11 +17,60 @@ import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 export type StatLabelProps = {
 	title: string;
 	value: number | string | JSX.Element;
+	size?: 'small' | 'medium' | 'large' | 'jumbo'
 };
 
 class StatLabel extends Component<StatLabelProps> {
 	render() {
 		const { title, value } = this.props;
+
+		const size = this.props.size ?? 'medium';
+
+		const getPadding = () => {
+			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+				if (size === 'jumbo') {
+					return "0.5em";
+				}
+				return undefined;
+			}
+			else {
+				switch (size) {
+					case "small": 
+						return "0.27em";
+					case "medium":
+						return "0.65em";
+					case "large":
+						return "0.7em";
+					case "jumbo":
+						return "1em";
+					default:
+						return "0.65em";
+				}
+			}
+		}
+
+		const getFontSize = () => {
+			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+				if (size === 'jumbo') {
+					return "14pt";
+				}
+				return undefined;
+			}
+			else {
+				switch (size) {
+					case "small": 
+						return "10pt";
+					case "medium":
+						return "12pt";
+					case "large":
+						return "14pt";
+					case "jumbo":
+						return "16pt";
+					default:
+						return "12pt";
+				}
+			}
+		}
 
 		return (
 			<Label size="large" style={{ 
@@ -32,8 +81,8 @@ class StatLabel extends Component<StatLabelProps> {
 					width: 'calc(50% - 4px)', 
 					marginLeft: 0, 
 					marginRight: 0, 
-					fontSize: window.innerWidth < 1024 ? undefined : '12pt',
-					padding: window.innerWidth < 1024 ? undefined : '0.65em',					
+					fontSize: getFontSize(),
+					padding: getPadding(),					
 					marginTop: 0 }}>
 				{title}
 				<div>
@@ -250,15 +299,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							marginRight: 0,
 							marginLeft: 0,
 							flexWrap: "wrap"}}>
-							{markdownRemark.frontmatter.events !== null && (
-								<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
-							)}
-							<StatLabel title="Voyage Rank"
-								value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
-							<StatLabel title="Gauntlet Rank"
-								value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
 							<StatLabel
                                 title="Big Book Tier"
+								size='jumbo'
                                 value={<div
                                     style={{
                                         fontWeight: "bold",
@@ -270,31 +313,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
                                     {formatTierLabel(crew)}
                                 </div>}
                             />
-						</div>
-						
-						<br></br>
-
-						<div style={{
-							display: "flex", 
-							margin: "0.25em",
-							marginRight: 0,
-							marginLeft: 0,
-							flexDirection: "row", 
-							justifyContent:"space-between", 
-							alignItems: "center",
-							flexWrap: "wrap"}}>
-							<StatLabel title="Portal" 
-								value={<>
-									<div style={{color: crew.in_portal ? 'green': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-										{crew.in_portal ? 'Yes' : 'No'}									
-									</div>								
-								</>} />
-							<StatLabel 
-									title="CAB Rank"
-									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}
-									/>
 							<StatLabel
                                 title="CAB Grade"
+								size='jumbo'
                                 value={
                                     <div
                                         style={{
@@ -308,7 +329,38 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
                                     </div>
                                 }
                             />
+							<StatLabel title="Voyage Rank"
+								value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
+							<StatLabel title="Gauntlet Rank"
+								value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
+						</div>
+						
+						<br></br>
+
+						<div style={{
+							display: "flex", 
+							margin: "0.25em",
+							marginRight: 0,
+							marginLeft: 0,
+							flexDirection: "row", 
+							justifyContent:"space-between", 
+							alignItems: "center",
+							flexWrap: "wrap"}}>
+							
+							<StatLabel 
+									title="CAB Rank"
+									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}
+									/>
 							<StatLabel title="CAB Rating" value={crew.cab_ov ?? 'None'} />
+							<StatLabel title="Portal" 
+								value={<>
+									<div style={{color: crew.in_portal ? 'green': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+										{crew.in_portal ? 'Yes' : 'No'}									
+									</div>								
+								</>} />
+							{markdownRemark.frontmatter.events !== null && (
+								<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
+							)}
 						</div>
 					</>
 				)}

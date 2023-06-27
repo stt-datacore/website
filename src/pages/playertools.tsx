@@ -113,7 +113,7 @@ const PlayerToolsPage = (props: any) => {
 	const playerData = React.useContext(PlayerContext);
 	const isReady = coreData.ready(['ship_schematics', 'crew', 'items']);
 	return (
-		<Layout>
+		<>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
@@ -122,7 +122,7 @@ const PlayerToolsPage = (props: any) => {
 					<PlayerToolsComponent location={props.location} coreData={coreData} playerData={playerData} />
 				</React.Fragment>
 			}
-		</Layout>
+		</>
 	);
 };
 
