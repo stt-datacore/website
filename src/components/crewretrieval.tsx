@@ -1152,8 +1152,8 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseNameVal[] {
 		const fn: FuseNameVal[] = [];
-
 		const consumed = {};
+
 		for (let comboId of group) {
 			combos[comboId].forEach((polestar) => {
 				if (polestar === undefined) return;
@@ -1196,7 +1196,7 @@ const CrewTable = (props: CrewTableProps) => {
 							fuseInsert(fn, i, child);
 						}							
 						else {
-							fn[i].value.concat(child.value);
+							fn[i].value = fn[i].value.concat(child.value);
 						}
 					}
 				}
