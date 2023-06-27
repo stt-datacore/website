@@ -1,25 +1,40 @@
 import React from "react";
 import CONFIG from "../CONFIG";
-import { getShipBonus, getShipBonusIcon, getShipChargePhases } from "../../utils/crewutils";
+import { getActionFromItem, getShipBonus, getShipBonusIcon, getShipChargePhases } from "../../utils/crewutils";
 import { ShipAction, Ship, ShipBonus } from "../../model/ship";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
-// const imageMap = new Map<string, HTMLImageElement>();
+const imageMap = new Map<string, string>();
 
+// For Firefox, we would not need to do this
+// But Chrome makes us do this thing
 window.setTimeout(() => {
     let imgs = Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON);
-    imgs = [... imgs, ... Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON)];
-    imgs = [... imgs, ... Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON)];
-    imgs = [... imgs, "attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png" ];
+    imgs = imgs.concat(Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON));
+    imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_ABILITY_ICON));
+    imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON));
+    imgs = imgs.concat(["attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png"]);
     
     for (let img of imgs) {
-        let loader = new Image();
-        loader.src = "/media/ship/" + img;
-        loader.style.width = "inherit";
-        loader.style.height = "inherit";
-        // imageMap.set(img, loader);
+        toDataURL("/media/ship/" + img, (data) => {
+            imageMap.set(img, data);
+        })
     }
 });
+
+function toDataURL(url: string | URL, callback: (dataUrl: string) => void) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        callback(reader.result as string);
+      }
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+  }
 
 // interface ShipImageProps {
 //     key: string;
@@ -43,14 +58,34 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
         const { actions, shipInfo: ship_battle, isShip } = this.props;
 
         const getActionIcon = (action: number) => {
-            if (action === 0) return "/media/ship/attack-icon.png";
-            if (action === 2) return "/media/ship/accuracy-icon.png";
-            if (action === 1) return "/media/ship/evasion-icon.png";
+            // if (action === 0) return "/media/ship/attack-icon.png";
+            // if (action === 2) return "/media/ship/accuracy-icon.png";
+            // if (action === 1) return "/media/ship/evasion-icon.png";
+            
+            if (action === 0) return imageMap.get("attack-icon.png");
+            if (action === 2) return imageMap.get("accuracy-icon.png");
+            if (action === 1) return imageMap.get("evasion-icon.png");
         };
 
+        const getTriggerIcon = (trigger: number) => {
+            return imageMap.get(CONFIG.SHIP_BATTLE_TRIGGER_ICON[trigger])
+        }
         const getActionColor = (action: number) => {
             return CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[action];
         };
+
+        const getShipBonusIcon = (item?: ShipAction | Ship, index?: number): string | undefined => {
+            if (!item) return undefined;
+            let actionIn = getActionFromItem(item, index);
+            if (!actionIn) return undefined;
+            const action = actionIn;
+            if (!action || !action.ability) return undefined;
+            if (action.ability.type !== 0)
+                return imageMap.get(CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type]);
+            else 
+                return imageMap.get(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON[action.bonus_type]);
+        }
+        
 
         const drawBullets = (actions: number): JSX.Element[] => {
             let elems: JSX.Element[] = [];
@@ -216,7 +251,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                             alignItems: "center"
                                         }}>
                                             <b>Trigger</b>:{" "}
-                                            <img style={{margin: "0.25em", height: "1em"}}  src={"/media/ship/" + CONFIG.SHIP_BATTLE_TRIGGER_ICON[action.ability.condition]} />
+                                            <img style={{margin: "0.25em", height: "1em"}}  src={getTriggerIcon(action.ability.condition)} />
                                             {
                                                 CONFIG.CREW_SHIP_BATTLE_TRIGGER[
                                                     action.ability.condition
@@ -239,7 +274,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         flexDirection: "row",
                                         justifyContent: "flex-start",
                                         alignItems: "center"
-                                    }}>{(<img style={{margin: "0.25em 0.5em 0.25em 0.25em", maxWidth: "2em", maxHeight: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  
+                                    }}>{(<img style={{margin: "0.25em 0.5em 0.25em 0.25em", maxWidth: "2em", maxHeight: "1.5em"}} src={getShipBonusIcon(action)} />)}  
                                     <div style={{ lineHeight: "1.3em"}}> 
                                         {getShipBonus(action)}
                                     </div>
