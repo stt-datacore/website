@@ -31,6 +31,7 @@ import ShipSeatPicker from './shipseatpicker';
 import ShipAbilityPicker from './shipabilitypicker';
 import ShipAbilityRankPicker from './shipabilityrankpicker';
 import { MergedContext } from '../context/mergedcontext';
+import { AbilityUses } from './crewtables/shipoptions';
 
 type ProfileCrewProps = {
 	isTools?: boolean;
@@ -243,6 +244,7 @@ interface ShipFilterConfig {
 	selectedAbilities?: string[];
 	selectedRankings?: string[];
 	triggerOnly?: boolean;
+	selectedUses?: number[];
 }
 
 const ProfileCrewTable = (props: ProfileCrewTableProps) => {
@@ -259,10 +261,12 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const [shipFilters, setShipFilters] = useStateWithStorage<ShipFilterConfig>(pageId+"/shipFilterConfig", {});
 
-	const { selectedShip, selectedSeats, selectedAbilities, selectedRankings, triggerOnly } = shipFilters;
+	const { selectedShip, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 
-	const [availableSeats, setAvailableSeats] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
-	const [availableAbilities, setAvailableAbilities] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
+	
+	const [availableUses, setAvailableUses] = React.useState([] as number[]);
+	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
+	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
 
 	const [shipCrew, setShipCrew] = React.useState<string[]>([]);
 	const [rankings, setRankings] = React.useState<ShipSkillRanking[] | undefined>([]);
@@ -273,6 +277,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const myCrew = [...props.crew];
 	const allCrew = [...props.allCrew];
+
+	const makeUses = (crew: (PlayerCrew | CrewMember)[]) => {
+		let uses = crew.map((item) => item.action.limit ?? 0);
+		uses = uses.filter((item, index) => uses.indexOf(item) === index);		
+		
+		uses.sort((a, b) => a - b);
+
+		return uses;
+	}
 
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');		
@@ -312,26 +325,29 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		}		
 	}, [rankings])
 
-	React.useEffect(() => {
+	React.useEffect(() => {		
 		updateRankings();
 	}, [shipCrew, selectedAbilities]);
 	
 	React.useEffect(() => {
-		updateShip();
+		updateShipCrew();
 	}, [shipFilters])
 
 	const updateRankings = () => {
 		let statmap: ShipStatMap;
 		let newRankings: ShipSkillRanking[];
+		let newuses: number[];
 
 		if (shipCrew && shipCrew.length !== 0) {
 			statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
 			newRankings = mapToRankings(statmap);
 			newRankings = newRankings.filter(r => shipCrew.some(sc => r.crew_symbols.includes(sc)));
+			newuses = makeUses(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
 		}
 		else {
 			statmap = createShipStatMap(myCrew);
 			newRankings = mapToRankings(statmap);
+			newuses = makeUses(myCrew);
 		}
 
 		if (selectedAbilities && selectedAbilities.length) {
@@ -340,10 +356,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
 			setRankings(newRankings);	
 		}
+		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
+			setAvailableUses(newuses);
+		}
 	}
 
-	const updateShip = () => { 
+	const updateShipCrew = () => { 
 		let sc: (PlayerCrew | CrewMember)[] | undefined = undefined;
+		let newuses: number[];
 
 		if (selectedShip) {
 			sc = findPotentialCrew(selectedShip, myCrew, triggerOnly, selectedSeats);
@@ -358,9 +378,13 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			}
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
 		}	
-
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
+		newuses = makeUses(sc ?? myCrew);
+
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
+		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
+			setAvailableUses(newuses);
+		}
 	}
 
 	if (!rankings?.length) {
@@ -459,12 +483,16 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (tableView === 'ship' && ((shipCrew) || (selectedSeats?.length) || selectedRankings?.length || availableSeats?.length)) {			
 			if (shipCrew && !shipCrew.some(cm => cm === crew.symbol)) return false;
 			
-			if (selectedRankings && selectedRankings.length && rankings && rankings.length) {
+			if (selectedUses?.length) {
+				if (!selectedUses.some(su => su === crew.action.limit || (su === 0 && crew.action.limit === undefined))) return false;
+			}
+
+			if (selectedRankings?.length && rankings?.length) {
 				if (!selectedRankings.some(sr => rankings.find(rk => rk.key === sr)?.crew_symbols.includes(crew.symbol))) return false;
 			}
 
-			if (selectedSeats && selectedSeats.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
-			else if (availableSeats && availableSeats.length && !availableSeats.some(seat => getSkills(crew).includes(seat))) return false;
+			if (selectedSeats?.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
+			else if (availableSeats?.length && !availableSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
 
 		return crewMatchesSearchFilter(crew, filters, filterType);
@@ -656,13 +684,17 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 									availableRankings={rankings}
 								/>					
 						</div>
+						<div>
+							<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
+						</div>
 					</div>
-					{!isCheckDisabled() &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
-						<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
-						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
+						{!isCheckDisabled() &&
+						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+							<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
+							<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
+						</div>}	
 					</div>
-					}	
 				</div>
 			}
             <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
