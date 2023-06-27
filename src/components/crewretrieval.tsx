@@ -1196,7 +1196,7 @@ const CrewTable = (props: CrewTableProps) => {
 							fuseInsert(fn, i, child);
 						}							
 						else {
-							fn[i].value = fn[i].value.concat(child.value);
+							fn[i].value = child.value;
 						}
 					}
 				}
