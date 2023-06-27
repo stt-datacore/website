@@ -364,7 +364,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	if (!rankings?.length) updateRankings();
-	if (!shipCrew?.length && myCrew?.length && Object.keys(shipFilters)?.length) updateShip();
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
