@@ -14,7 +14,7 @@ import RosterSummary from '../components/crewtables/rostersummary';
 import UtilityWizard from '../components/crewtables/utilitywizard';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { ShipSkillRanking, applySkillBuff, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, mapToRankings, navToCrewPage } from '../utils/crewutils';
+import { ShipSkillRanking, ShipStatMap, applySkillBuff, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, mapToRankings, navToCrewPage } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, Player, PlayerCrew, PlayerData } from '../model/player';
@@ -241,6 +241,7 @@ interface ShipFilterConfig {
 	selectedShip?: Ship;
 	selectedSeats?: string[];
 	selectedAbilities?: string[];
+	selectedRankings?: string[];
 	triggerOnly?: boolean;
 }
 
@@ -258,20 +259,21 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const [shipFilters, setShipFilters] = useStateWithStorage<ShipFilterConfig>(pageId+"/shipFilterConfig", {});
 
-	const { selectedShip, selectedSeats, selectedAbilities, triggerOnly } = shipFilters;
+	const { selectedShip, selectedSeats, selectedAbilities, selectedRankings, triggerOnly } = shipFilters;
 
 	const [availableSeats, setAvailableSeats] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
 	const [availableAbilities, setAvailableAbilities] = useStateWithStorage(pageId+'/availableSeats', [] as string[]);
 
 	const [shipCrew, setShipCrew] = React.useState<string[]>([]);
 	const [rankings, setRankings] = React.useState<ShipSkillRanking[] | undefined>([]);
-
-	const [selectedRankings, setSelectedRankings] = React.useState<string[]>([]);
 	
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
-	
+
+	const myCrew = [...props.crew];
+	const allCrew = [...props.allCrew];
+
 	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');		
 	}, [usableFilter]);
@@ -302,39 +304,45 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}, [shipRarityFilter]);
 	
 	React.useEffect(() => {
-		if (selectedRankings.length) {
+		if (selectedRankings?.length) {
 			let newselranks = selectedRankings?.filter(ab => rankings?.some(av => av.key === ab));
 			if (newselranks.length != selectedRankings.length) {
-				setSelectedRankings(newselranks);
+				setShipFilters({ ... shipFilters, selectedRankings: newselranks });
 			}
 		}		
 	}, [rankings])
 
 	React.useEffect(() => {
+		updateRankings();
+	}, [shipCrew, selectedAbilities]);
+	
+	React.useEffect(() => {
+		updateShip();
+	}, [shipFilters])
+
+	const updateRankings = () => {
+		let statmap: ShipStatMap;
+		let newRankings: ShipSkillRanking[];
+
 		if (shipCrew && shipCrew.length !== 0) {
-			let statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
-			let newRankings = mapToRankings(statmap);
-			if (selectedAbilities && selectedAbilities.length) {
-				newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
-			}
+			statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
+			newRankings = mapToRankings(statmap);
 			newRankings = newRankings.filter(r => shipCrew.some(sc => r.crew_symbols.includes(sc)));
-			if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
-				setRankings(newRankings);	
-			}
 		}
 		else {
-			let statmap = createShipStatMap(myCrew);
-			let newRankings = mapToRankings(statmap);
-			if (selectedAbilities && selectedAbilities.length) {
-				newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
-			}
-			if (JSON.stringify(newRankings) !== JSON.stringify(newRankings)) {
-				setRankings(newRankings);	
-			}
+			statmap = createShipStatMap(myCrew);
+			newRankings = mapToRankings(statmap);
 		}
-	}, [shipCrew, selectedAbilities]);
 
-	React.useEffect(() => {
+		if (selectedAbilities && selectedAbilities.length) {
+			newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
+		}
+		if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
+			setRankings(newRankings);	
+		}
+	}
+
+	const updateShip = () => { 
 		let sc: (PlayerCrew | CrewMember)[] | undefined = undefined;
 
 		if (selectedShip) {
@@ -353,7 +361,10 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
-	}, [shipFilters])
+	}
+
+	if (!rankings?.length) updateRankings();
+	if (!shipCrew?.length && myCrew?.length && Object.keys(shipFilters)?.length) updateShip();
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -424,9 +435,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	const myCrew = [...props.crew];
-	const allCrew = [...props.allCrew];
-
 	if (traitFilter.length > 0) {
 		myCrew.forEach(crew => {
 			crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
@@ -447,7 +455,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
 		
 		// Ship filter
-		if (tableView === 'ship' && ((shipCrew) || (selectedSeats?.length) || selectedRankings.length || availableSeats?.length)) {			
+		if (tableView === 'ship' && ((shipCrew) || (selectedSeats?.length) || selectedRankings?.length || availableSeats?.length)) {			
 			if (shipCrew && !shipCrew.some(cm => cm === crew.symbol)) return false;
 			
 			if (selectedRankings && selectedRankings.length && rankings && rankings.length) {
@@ -642,8 +650,8 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>
 						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipAbilityRankPicker
-									selectedRankings={selectedRankings}
-									setSelectedRankings={setSelectedRankings}
+									selectedRankings={selectedRankings ?? []}
+									setSelectedRankings={(item) => setShipFilters({ ... shipFilters, selectedRankings: item })}
 									availableRankings={rankings}
 								/>					
 						</div>

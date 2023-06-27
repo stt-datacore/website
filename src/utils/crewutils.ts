@@ -916,6 +916,8 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 	return result;
 }
 
+export interface ShipStatMap { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }}
+
 /**
  * Sort the crew according to the preferences map and return the crew broken down into tiers such
  * that each action is mapped to an ability amount, which is in turn mapped to the ability.
@@ -923,7 +925,7 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
  * @param config The optional configuration file to use. Default settings are used, otherwise.
  * @returns
  */
-export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }} {
+export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?: ObjectNumberSortConfig): ShipStatMap {
 	let sc = new StatsSorter({ objectConfig: config ?? shipStatSortConfig });
 	let actions = allCrew;
 
