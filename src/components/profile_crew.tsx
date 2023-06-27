@@ -363,7 +363,9 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
 	}
 
-	if (!rankings?.length) updateRankings();
+	if (!rankings?.length) {
+		window.setTimeout(() => updateRankings());
+	}
 
 	const usableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
