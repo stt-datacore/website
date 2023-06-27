@@ -76,6 +76,7 @@ class StatLabel extends Component<StatLabelProps> {
 			<Label size="large" style={{ 
 					display: "flex",
 					justifyContent: "space-between",
+					alignItems: "center",
 					flexDirection: "row", 
 					marginBottom: '0.5em', 
 					width: 'calc(50% - 4px)', 
@@ -86,7 +87,7 @@ class StatLabel extends Component<StatLabelProps> {
 					marginTop: 0 }}>
 				{title}
 				<div>
-					<Label.Detail>{value}</Label.Detail>
+					<Label.Detail>{<div style={{fontSize: size === 'jumbo' && window.innerWidth >= DEFAULT_MOBILE_WIDTH ? '2em' : undefined}}> {value}</div>}</Label.Detail>
 				</div>
 			</Label>
 		);
