@@ -56,9 +56,11 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
                 ship_key = urlParams.get('ship') ?? undefined;
             }
         }
-        if (!ship_key || !data) {
-            navigate('/playertools?tool=ships');
-        }
+		if (window.location.href.includes("ship")) {
+			if (!ship_key || !data) {
+				navigate('/playertools?tool=ships');
+			}		
+		}
         const ship = data.find(d => d.symbol === ship_key);
         if (!ship) return <></>
 
