@@ -445,7 +445,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 return;
             }
             if (target.src.includes("star_reward")) return;
-            //console.log(target.tagName);
             this.activate(target);
         }
     }

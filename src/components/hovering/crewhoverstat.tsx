@@ -138,18 +138,18 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
-        };
+        };        
     }    
 
-    protected checkBorder = () => {
-        const { crew } = this.props;
+    protected checkBorder = (crew?: PlayerCrew | CrewMember, setState?: boolean) => {
+        crew ??= this.props.crew;
         const { boxStyle } = this.state;
 
         if (crew) {
             let mr = crew.max_rarity;
             let clr = CONFIG.RARITIES[mr].color;
             if (boxStyle.borderColor !== clr) {
-                this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }
@@ -181,8 +181,10 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    protected renderContent = (): JSX.Element =>  {
-        if (this.checkBorder()) return <></>;
+    protected renderContent = (): JSX.Element => {
+        if (this.checkBorder()) {
+            window.setTimeout(() => this.checkBorder(undefined, true));
+        }
         const { targetGroup, crew: displayItem, openCrew } = this.props;
         const { mobileWidth } = this.state;
         const compact = true;    
@@ -242,7 +244,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         />) : <></>
         
     }
-
+    
     protected get canActivate(): boolean {
         return true; // return !!this.props.crew;
     }

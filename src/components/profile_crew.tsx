@@ -424,7 +424,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	const myCrew = JSON.parse(JSON.stringify(props.crew)) as PlayerCrew[];
+	const myCrew = [...props.crew];
 	const allCrew = [...props.allCrew];
 
 	if (traitFilter.length > 0) {
@@ -656,6 +656,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					}	
 				</div>
 			}
+            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
 
             <div style={{ margin: "1em 0" }}>
                 <Form>
@@ -718,7 +719,6 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 initOptions={props.initOptions}
                 lockable={props.lockable}
             />
-            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
         </React.Fragment>
     );
 }

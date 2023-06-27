@@ -127,15 +127,15 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         }        
     }    
 
-    protected checkBorder = () => {
-        const { displayItem: ship } = this.props;
+    protected checkBorder = (ship?: Ship, setState?: boolean) => {
+        ship ??= this.props.displayItem ?? undefined;
         const { boxStyle } = this.state;
 
         if (ship) {
             let mr = ship.rarity;
             let clr = CONFIG.RARITIES[mr].color;
             if (boxStyle.borderColor !== clr) {
-                this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }
@@ -168,7 +168,10 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
     }
 
     protected renderContent = (): JSX.Element =>  {
-        if (this.checkBorder()) return <></>;
+        if (this.checkBorder()) {
+            window.setTimeout(() => this.checkBorder(undefined, true));
+        }
+        
         const { displayItem: displayItem, targetGroup } = this.props;
         const { mobileWidth } = this.state;
 
