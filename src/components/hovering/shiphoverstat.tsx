@@ -124,17 +124,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
-        }
-        window.setTimeout(() => {
-            let imgs = Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON);
-            imgs = [... imgs, ... Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON)];
-            imgs = [... imgs, ... Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON)];
-
-            for (let img of imgs) {
-                let loader = new Image();
-                loader.src = "/media/ship/" + img;
-            }
-        });
+        }        
     }    
 
     protected checkBorder = () => {

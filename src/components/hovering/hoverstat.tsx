@@ -197,7 +197,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             this.hoverDelay = 0;
         }
         else {
-            this.hoverDelay = 250;
+            this.hoverDelay = 0;
         }
     }
 

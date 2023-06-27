@@ -4,6 +4,28 @@ import { getShipBonus, getShipBonusIcon, getShipChargePhases } from "../../utils
 import { ShipAction, Ship, ShipBonus } from "../../model/ship";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
+// const imageMap = new Map<string, HTMLImageElement>();
+
+window.setTimeout(() => {
+    let imgs = Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON);
+    imgs = [... imgs, ... Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON)];
+    imgs = [... imgs, ... Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON)];
+    imgs = [... imgs, "attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png" ];
+    
+    for (let img of imgs) {
+        let loader = new Image();
+        loader.src = "/media/ship/" + img;
+        loader.style.width = "inherit";
+        loader.style.height = "inherit";
+        // imageMap.set(img, loader);
+    }
+});
+
+// interface ShipImageProps {
+//     key: string;
+//     style?: React.CSSProperties;
+// }
+
 export interface ShipSkillProps {
     actions: ShipAction[];    
     shipInfo: ShipBonus | Ship;
@@ -19,6 +41,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
 
     render() {
         const { actions, shipInfo: ship_battle, isShip } = this.props;
+
         const getActionIcon = (action: number) => {
             if (action === 0) return "/media/ship/attack-icon.png";
             if (action === 2) return "/media/ship/accuracy-icon.png";
@@ -216,7 +239,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
                                         flexDirection: "row",
                                         justifyContent: "flex-start",
                                         alignItems: "center"
-                                    }}>{getShipBonusIcon(action) && (<img style={{margin: "0.25em 0.5em 0.25em 0.25em", maxWidth: "2em", maxHeight: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  
+                                    }}>{(<img style={{margin: "0.25em 0.5em 0.25em 0.25em", maxWidth: "2em", maxHeight: "1.5em"}} src={"/media/ship/" + getShipBonusIcon(action)} />)}  
                                     <div style={{ lineHeight: "1.3em"}}> 
                                         {getShipBonus(action)}
                                     </div>
