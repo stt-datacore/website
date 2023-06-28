@@ -21,25 +21,85 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
+import Announcement from '../components/announcement';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
-type ProfilePageProps = {};
+type ProfilePageProps = {
+	setPlayerData?: (value?: PlayerData) => void;
+	setLastModified?: (value?: Date) => void;
+};
 
 type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
-	playerData?: PlayerData;
-	allCrew?: CrewMember[];
+	lastModified?: Date;
 	mobile: boolean;
 };
 
-class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
-	constructor(props: ProfilePageProps) {
+
+export const ProfilePage = (props: ProfilePageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['crew', 'ship_schematics', 'items']);
+
+	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
+	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+
+	let profData: PlayerData | undefined = undefined;
+
+	if (isReady && strippedPlayerData) {
+		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
+		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified);
+	}
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<Announcement />
+						<PlayerContext.Provider value={{
+							setStrippedPlayerData: setStrippedPlayerData,
+							strippedPlayerData: strippedPlayerData,
+							buffConfig: buffConfig
+						}}>
+						<MergedContext.Provider value={{
+							allCrew: coreData.crew,
+							playerData: profData ?? strippedPlayerData ?? {} as PlayerData,
+							buffConfig: buffConfig,							
+							allShips: coreData.ships,
+							items: coreData.items,
+							playerShips: profData?.player.character.ships,							
+						}}>
+						<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
+					</MergedContext.Provider>
+					</PlayerContext.Provider>
+				</React.Fragment>
+			}
+		</Layout>
+	);
+}
+
+interface ProfilePageComponentProps {
+	props: ProfilePageProps;
+}
+
+class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfilePageState> {
+	static contextType? = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
+	constructor(props: ProfilePageComponentProps) {
 		super(props);
 
 		this.state = {
 			dbid: undefined,
 			errorMessage: undefined,
-			playerData: undefined,
+			lastModified: undefined,
 			mobile: false
 		};
 	}
@@ -70,8 +130,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	componentDidUpdate() {
-		const { dbid, playerData, errorMessage } = this.state;
-		if (dbid && !playerData && !errorMessage) {
+		const { dbid, errorMessage } = this.state;
+		const { playerData } = this.context;
+
+		if (dbid && !playerData?.player && !errorMessage) {
 			let lastModified: Date | undefined = undefined;
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
@@ -82,13 +144,17 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					return response.json();
 				})
 				.then(playerData => {
-					fetch('/structured/crew.json')
-						.then(response => response.json())
-						.then((allcrew: CrewMember[]) => {
-							// Do some computation on the data to avoid doing it on every render
-							prepareProfileData("profile->componentDidUpdate", allcrew, playerData, lastModified);
-							this.setState({ playerData, allCrew: allcrew });
-						});
+					const me = this;
+
+					window.setTimeout(() => {
+						if (me.props.props.setPlayerData) {
+							me.props.props.setPlayerData(playerData);
+							me.setState({... this.state, lastModified : lastModified });
+							if (me.props.props.setLastModified) {
+								me.props.props.setLastModified(lastModified);
+							}
+						}
+					});
 				})
 				.catch(err => {
 					this.setState({ errorMessage: err });
@@ -97,37 +163,38 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	renderDesktop() {
-		const { playerData } = this.state;
-
+		
+		const { playerData } = this.context ?? { playerData: undefined };
+		
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => this.state.playerData && <ProfileCrew allCrew={this.state.allCrew as PlayerCrew[]} location={location} playerData={this.state.playerData} /> || <></>
+				render: () => playerData && <ProfileCrew location={location} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
-				render: () => <ProfileCrewMobile playerData={this.state.playerData} isMobile={false} />
+				render: () => <ProfileCrewMobile isMobile={false} />
 			},
 			{
 				menuItem: 'Ships',
-				render: () => this.state.playerData && <ProfileShips playerData={this.state.playerData} /> || <></>
+				render: () => playerData && <ProfileShips /> || <></>
 			},
 			{
 				menuItem: 'Items',
-				render: () => <ProfileItems playerData={this.state.playerData} />
+				render: () => <ProfileItems />
 			},
 			{
 				menuItem: 'Other',
-				render: () => <ProfileOther playerData={this.state.playerData} />
+				render: () => <ProfileOther />
 			},
 			{
 				menuItem: 'Charts & Stats',
-				render: () => <ProfileCharts playerData={this.state.playerData} />
+				render: () => <ProfileCharts />
 			}
 		];
 
 		return (
-			playerData &&
+			playerData.player &&
 			(<Layout title={playerData.player.character.display_name}>
 				<Item.Group>
 					<Item>
@@ -181,7 +248,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	async _exportExcel() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		let response = await fetch('/structured/items.json');
 		let items = await response.json();
@@ -347,14 +414,14 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	_exportCrew() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		let text = playerData ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	_exportShips() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
@@ -366,7 +433,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	_exportItems() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -378,11 +445,12 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	renderMobile() {
-		return <ProfileCrewMobile playerData={this.state.playerData} isMobile={true} />;
+		return <ProfileCrewMobile isMobile={true} />;
 	}
 
 	render() {
-		const { dbid, errorMessage, playerData, mobile } = this.state;
+		const { dbid, errorMessage, mobile } = this.state;
+		const { playerData } = this.context;
 
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (
