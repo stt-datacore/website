@@ -1,9 +1,11 @@
 import React from 'react';
-import { Form, Dropdown } from 'semantic-ui-react';
+import { Form, Dropdown, Icon } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { isImmortal } from '../../utils/crewutils';
+import { CompletionState, PlayerCrew } from '../../model/player';
 
 export interface TraitOptions {
 	key: string;
@@ -100,3 +102,39 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 		</React.Fragment>
 	);
 };
+
+
+export function descriptionLabel(crew: PlayerCrew, showOwned?: boolean): JSX.Element {
+	const immortal = isImmortal(crew);
+	const counts = [
+		{ name: 'event', count: crew.events },
+		{ name: 'collection', count: crew.collections.length }
+	];
+	const formattedCounts = counts.map((count, idx) => (
+		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
+			{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
+		</span>
+	)).reduce((prev, curr) => <>{prev}&nbsp;{curr}</>);
+	return (
+		<div>
+			<React.Fragment>
+				{showOwned && <img style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>}
+				{crew.favorite && <Icon name='heart' />}
+			</React.Fragment>
+			{immortal &&
+				<React.Fragment>
+					{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
+					{crew.immortal === CompletionState.Immortalized && <span>Immortalized, {formattedCounts}</span>}
+				</React.Fragment>
+			}
+			{!immortal &&
+				<React.Fragment>
+					{crew.prospect && <Icon name='add user' />}
+					{crew.active_status > 0 && <Icon name='space shuttle' />}
+					<span>Level {crew.level}, </span>
+					{formattedCounts}
+				</React.Fragment>
+			}
+		</div>
+	);
+}
