@@ -420,7 +420,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 this.currentTarget = undefined;                
                 window.removeEventListener("resize", this.resizer);
                 window.setTimeout(() => hoverstat.style.display = "none", 0.25);
-                this.setState({ ...this.state ?? {}, touchToggled: false });
             }
         }, 0);
     }
@@ -483,7 +482,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         this.deactivate(target);
     }
     
-    protected touching?: boolean;
+    private touching?: boolean;
 
     /**
      * Target touchEnd
