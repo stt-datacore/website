@@ -360,7 +360,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div style={{overflowX: props.overflowX ?? 'visible'}}>
+				<div style={{overflowX: props.overflowX ?? 'auto'}}>
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
