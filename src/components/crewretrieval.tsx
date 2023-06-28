@@ -1171,10 +1171,6 @@ const CrewTable = (props: CrewTableProps) => {
 		for (let f = 1; f <= 5; f++) {
 			seen = seen.map(s => false);
 			let option = 0;
-			// let count = Math.floor(seen.length / f) * f;
-			// if (count != seen.length) {
-			// 	seen = seen.slice(0, count);
-			// }
 
 			while (!seen.every(a => a === true)) {
 				let cc = 0;
