@@ -33,7 +33,7 @@ type ProfileCrewMobileState = {
 	defaultColumn: 'bigbook_tier',
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: PlayerCrew[];
+	data?: PlayerCrew[];
 	activeItem: string;
 	includeFrozen: boolean;
 	excludeFF: boolean;
@@ -44,14 +44,12 @@ type ProfileCrewMobileState = {
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
-	
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-		const { playerData } = this.context;
-		const buffConfig = calculateBuffConfig(playerData.player);
+		const { playerData, buffConfig } = this.context ?? { playerData: {}, buffConfig: {} };
 
 		this.state = {
 			column: 'bigbook_tier',
@@ -59,45 +57,46 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			direction: 'descending',
 			searchFilter: '',
 			activeItem: '',
-			data: playerData.player.character.crew,
 			includeFrozen: false,
 			excludeFF: false,
 			onlyEvent: false,
 			sortKind: SkillSort.Base,
 			itemsReady: false,
-			buffs: buffConfig
+			buffs: buffConfig ?? {}
 		};
 	}
+	
+	
+	private dataPrepared: boolean = false;
 
+	componentDidUpdate() {
+		const itemsReady = !!this.context?.items;
+		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+		if (itemsReady && playerReady && !this.state.itemsReady) {
+			this.initData();
+		}
+	}
 	componentDidMount() {
-		let self = this;
-		const { playerData } = this.context;
+		this.initData();
+	}
 
-		fetch('/structured/items.json')
-			.then(response => response.json())
-			.then(items => {
-				playerData.player.character.crew.forEach(crew => {
-					crew.equipment_slots.forEach(es => {
-						let itemEntry = items.find(i => i.symbol === es.symbol);
-						if (itemEntry) {
-							es.imageUrl = itemEntry.imageUrl;
-						}
-					});
+	private initData() {
+		const itemsReady = !!this.context?.items;
+		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+
+		if (!this.state.itemsReady && itemsReady && playerReady) {
+			const data = JSON.parse(JSON.stringify(this.context?.playerData?.player?.character?.crew)) as PlayerCrew[];
+			data.forEach((crew) => {
+				Object.keys(crew).forEach((p) => {
+					if(p.slice(-6) === '_skill') {
+						crew[p].proficiency = crew[p].max - crew[p].min;
+						crew[p].combined = crew[p].core === 0 ? 0 : crew[p].core + Math.trunc((crew[p].max + crew[p].min) / 2);
+					}
 				});
-				this.setState({ itemsReady: true });
 			});
-
-		const data = this.state.data;
-		data.forEach((crew) => {
-			Object.keys(crew).forEach((p) => {
-				if(p.substr(-6) === '_skill') {
-					crew[p].proficiency = crew[p].max - crew[p].min;
-					crew[p].combined = crew[p].core === 0 ? 0 : crew[p].core + Math.trunc((crew[p].max + crew[p].min) / 2);
-				}
-			});
-		});
-		this.setState({ data });
-		this._handleSortNew({})
+			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.buffConfig ?? {} });
+			this._handleSortNew({})
+		}
 	}
 
 	_handleSortNew(config: HandleSortOptions) {
@@ -149,9 +148,10 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			newColumn = column === config.column ? defaultColumn : config.column;
 			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
-
+		if (!data) return;
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
 		this.setState({
+			... this.state,
 			activeItem: newActiveItem || activeItem,
 			column: newColumn || column,
 			data: sorted.result,
@@ -161,7 +161,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	_onChangeFilter(value: string) {
-		this.setState({ searchFilter: value.toLowerCase() });
+		this.setState({ ... this.state, searchFilter: value.toLowerCase() });
 	}
 
 	_onChange(option: string) {
@@ -193,11 +193,11 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	_onSettingChange(setting: string, value: boolean) {
 		if (setting === 'Include Frozen') {
-			this.setState({ includeFrozen: value });
+			this.setState({ ... this.state, includeFrozen: value });
 		} else if (setting === 'Exclude FF') {
-			this.setState({ excludeFF: value });
+			this.setState({ ... this.state, excludeFF: value });
 		} else if (setting.startsWith('Only event')) {
-			this.setState({ onlyEvent: value });
+			this.setState({ ... this.state, onlyEvent: value });
 		}
 	}
 
@@ -205,20 +205,21 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
 		const { allCrew, playerData } = this.context;
 
-		let { data, itemsReady } = this.state;
-
+		const { data: playerCrew, itemsReady } = this.state;
 		const { isMobile } = this.props;
 
+		let data: PlayerCrew[] | undefined = undefined;
+
 		if (!includeFrozen) {
-			data = data.filter(crew => crew.immortal <= 0);
+			data = playerCrew?.filter(crew => crew.immortal <= 0);
 		}
 
 		if (excludeFF) {
-			data = data.filter(crew => crew.rarity < crew.max_rarity);
+			data = playerCrew?.filter(crew => crew.rarity < crew.max_rarity);
 		}
 
 		if (searchFilter) {
-			data = data.filter(
+			data = playerCrew?.filter(
 				crew =>
 					crew.name.toLowerCase().indexOf(searchFilter) !== -1 ||
 					crew.traits_named.some(t => t.toLowerCase().indexOf(searchFilter) !== -1) ||
@@ -236,13 +237,13 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		}
 
 		let settings = ['Include Frozen', 'Exclude FF'];
-		let eventCrew = bonusCrewForCurrentEvent(playerData.player.character);
+		let eventCrew = bonusCrewForCurrentEvent(playerData.player?.character ?? []);
 		if (eventCrew) {
 			console.log(eventCrew);
 			settings.push(`Only event bonus (${eventCrew.eventName})`);
 
 			if (onlyEvent) {
-				data = data.filter(crew => eventCrew?.eventCrew[crew.symbol]);
+				data = data?.filter(crew => eventCrew?.eventCrew[crew.symbol]);
 			}
 		}
 
@@ -322,7 +323,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 							gap: '1em'
 						}}
 					>
-						{data.map((crew, idx) => (
+						{data?.map((crew, idx) => (
 							<VaultCrew allCrew={allCrew} playerData={playerData} buffs={buffs} key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
 						))}
 					</div>

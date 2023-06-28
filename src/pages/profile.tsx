@@ -198,7 +198,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		return (
 			playerData.player &&
-			(<Layout title={playerData.player.character.display_name}>
+			(<>
 				<Item.Group>
 					<Item>
 						<Item.Image
@@ -246,7 +246,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 					</Dropdown>
 				</Menu>
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
-			</Layout>
+			</>
 		)) || <></>;
 	}
 
@@ -457,7 +457,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Player profile'>
+				<>
 					<Header as='h4'>Player profile</Header>
 					{errorMessage && (
 						<Message negative>
@@ -478,7 +478,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 							<Icon loading name='spinner' /> Loading...
 						</div>
 					)}
-				</Layout>
+				</>
 			);
 		}
 
