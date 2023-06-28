@@ -1140,53 +1140,116 @@ const CrewTable = (props: CrewTableProps) => {
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups = groupByFuses(combos, 0, []);
+		let fuseGroups = groupByFuses(combos);
 
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
-	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
-		const fuseGroups: FuseGroups = {};
-		const consumed = {};
-		group.forEach((comboId) => {
-			combos[comboId].forEach((polestar) => {
-				if (polestar === undefined) return;
-				if (consumed[polestar.symbol])
-					consumed[polestar.symbol]++;
-				else
-					consumed[polestar.symbol] = 1;
-			});
-		});
-		combos.forEach((combo, comboId) => {
-			if (comboId >= start) {
-				let consumable = 0;
-				combo.forEach((polestar) => {
-					if (polestar === undefined) return;
-					if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
-						consumable++;
-				});
-				if (consumable == combo.length) {
-					const parentGroup = [...group, comboId];
-					const parentId = 'x'+parentGroup.length;
-					if (fuseGroups[parentId])
-						fuseGroups[parentId].push(parentGroup);
-					else
-						fuseGroups[parentId] = [parentGroup];
-					// Only collect combo groups up to 5 fuses
-					if (parentGroup.length < 5) {
-						let childGroups = groupByFuses(combos, comboId, parentGroup);
-						for (let childId in childGroups) {
-							if (fuseGroups[childId])
-								fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
-							else
-								fuseGroups[childId] = childGroups[childId];
-						}
+	function groupByFuses(combos: (Polestar | undefined)[][]) {
+
+		let groupTotals: { groupId: number, total: number }[] = [];
+		let x = 0;
+		for (let combo of combos) {
+			let map = combo.map(cb => cb?.quantity ?? 0);
+			map.sort((a, b) => a - b);
+			let total = map[0];
+			groupTotals.push({ groupId: x++, total: total });
+		}
+
+		let duplications: number[] = []
+		let seen: boolean[] = [];
+
+		for (let total of groupTotals) {
+			for (let i = 0; i < total.total; i++) {
+				duplications.push(total.groupId);
+				seen.push(false);
+			}
+		}
+
+		let comboout: number[][][] = [[], [], [], [], [], []];
+
+		for (let f = 1; f <= 5; f++) {
+			seen = seen.map(s => false);
+			let option = 0;
+			let count = Math.floor(seen.length / f) * f;
+			if (count != seen.length) {
+				seen = seen.slice(0, count);
+			}
+
+			while (!seen.every(a => a === true)) {
+				let cc = 0;
+				comboout[f].push([]);	
+
+				for (let y = 0; y < duplications.length; y++) {					
+					if (cc >= f) break;
+					if (!seen[y]) {
+						comboout[f][option].push(duplications[y]);
+						seen[y] = true;
+						cc++;
 					}
+				}				
+				option++;			
+			}	
+		}
+
+		let result: FuseGroups = {};
+
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			result[key] = [] as number[][];
+
+			for (let res of comboout[f]) {
+				if (!result[key].some(r => r.every(t => res.some(u => u === t)))) {
+					result[key].push(res);
 				}
 			}
-		});
-		return fuseGroups;
+		}
+		
+		return result;
 	}
+
+	// function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
+	// 	const fuseGroups: FuseGroups = {};
+	// 	const consumed = {};
+	// 	group.forEach((comboId) => {
+	// 		combos[comboId].forEach((polestar) => {
+	// 			if (polestar === undefined) return;
+	// 			if (consumed[polestar.symbol])
+	// 				consumed[polestar.symbol]++;
+	// 			else
+	// 				consumed[polestar.symbol] = 1;
+	// 		});
+	// 	});
+	// 	combos.forEach((combo, comboId) => {
+	// 		if (comboId >= start) {
+	// 			let consumable = 0;
+	// 			combo.forEach((polestar) => {
+	// 				if (polestar === undefined) return;
+	// 				if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
+	// 					consumable++;
+	// 			});
+	// 			if (consumable == combo.length) {
+	// 				const parentGroup = [...group, comboId];
+	// 				const parentId = 'x'+parentGroup.length;
+	// 				if (fuseGroups[parentId])
+	// 					fuseGroups[parentId].push(parentGroup);
+	// 				else
+	// 					fuseGroups[parentId] = [parentGroup];
+	// 				// Only collect combo groups up to 5 fuses
+	// 				if (parentGroup.length < 5) {
+	// 					let childGroups = groupByFuses(combos, comboId, parentGroup);
+	// 					for (let childId in childGroups) {
+	// 						if (fuseGroups[childId])
+	// 							fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
+	// 						else
+	// 							fuseGroups[childId] = childGroups[childId];
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// 	return fuseGroups;
+	// }
 
 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
 		if (activeCollections !== crew.symbol || crew.collections.length == 0)

@@ -118,7 +118,7 @@ export function descriptionLabel(crew: PlayerCrew, showOwned?: boolean): JSX.Ele
 	return (
 		<div>
 			<React.Fragment>
-				{showOwned && <img style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>}
+				{showOwned && <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>}
 				{crew.favorite && <Icon name='heart' />}
 			</React.Fragment>
 			{immortal &&
