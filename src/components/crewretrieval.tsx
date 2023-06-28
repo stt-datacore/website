@@ -1200,7 +1200,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 			for (let res of comboout[f]) {
 				if (!result[key].some(r => r.every(t => res.some(u => u === t)))) {
-					result[key].push(res);
+					if (res.length === f) result[key].push(res);
 				}
 			}
 		}
