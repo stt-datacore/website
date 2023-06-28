@@ -1171,22 +1171,17 @@ const CrewTable = (props: CrewTableProps) => {
 		for (let f = 1; f <= 5; f++) {
 
 			let option = 0;
-
-			seen = seen.map(s => false);
+			
 			for (let n = 0; n < duplications.length; n++) {
 				comboout[f].push([duplications[n]]);	
-				seen[n] = true;
 
 				let cc = 1;
 
 				for (let y = 0; y < duplications.length; y++) {					
 					if (y === n) continue;
 					if (cc >= f) break;
-					if (!seen[y]) {
-						seen[y] = true;
-						comboout[f][option].push(duplications[y]);
-						cc++;
-					}
+					comboout[f][option].push(duplications[y]);
+					cc++;
 				}				
 
 				option++;			
