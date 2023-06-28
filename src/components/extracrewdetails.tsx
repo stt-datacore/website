@@ -9,6 +9,7 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from "../utils/tiny";
 import { BuffStatTable } from '../utils/voyageutils';
+import { MergedContext } from '../context/mergedcontext';
 
 
 interface ExtraCrewDetailsProps {
@@ -50,7 +51,9 @@ const filterTraits = (polestar, trait) => {
 }
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
-	
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
 	private ownedCrew?: PlayerCrew[] = undefined;
 	private buffs?: BuffStatTable;
 	private masterCrew?: PlayerCrew[] = undefined;
@@ -65,8 +68,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	constructor(props: ExtraCrewDetailsProps) {
 		super(props);
-
-		
+	
 	}
 
 	readonly getNameFromTrait = (trait: string, found: PlayerCrew[]) => {
@@ -82,19 +84,12 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	}
 	
 	componentDidMount() {
-
 		if (this.props.ownedCrew) {
 			this.ownedCrew = this.props.ownedCrew;
 		}
 		else {
-			let stash = TinyStore.getStore('staticStash', false, true);
-			if (stash.containsKey('owned')) {
-				this.ownedCrew = stash.getValue('owned');
-				//stash.removeValue('owned');				
-			}			
-			if (stash.containsKey('buffs')) {
-				this.buffs = stash.getValue('buffs');				
-			}			
+			this.ownedCrew = this.context.playerData?.player?.character?.crew;
+			this.buffs = this.context.buffConfig;
 		}
 
 		// Get variant names from traits_hidden
