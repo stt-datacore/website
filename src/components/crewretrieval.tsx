@@ -1140,138 +1140,157 @@ const CrewTable = (props: CrewTableProps) => {
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups = groupByFuses(combos);
+		let fuseGroups = groupByFuses(combos, 0, []);
 
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
-	function groupByFuses(combos: (Polestar | undefined)[][]) {
+	// WORK IN PROGRESS, DO NOT DELETE COMMENTED CODE!
+	// function groupByFuses(combos: (Polestar | undefined)[][]) {
 
-		let groupTotals: { groupId: number, total: number }[] = [];
-		let x = 0;
-		for (let combo of combos) {
-			let map = combo.map(cb => cb?.quantity ?? 0);
-			map.sort((a, b) => a - b);
-			let total = map[0];
-			groupTotals.push({ groupId: x++, total: total });
-		}
+	// 	let groupTotals: { groupId: number, total: number }[] = [];
+	// 	let x = 0;
+	// 	for (let combo of combos) {
+	// 		let map = combo.map(cb => cb?.quantity ?? 0);
+	// 		map.sort((a, b) => a - b);
+	// 		let total = map[0];
+	// 		groupTotals.push({ groupId: x++, total: total });
+	// 	}
 
-		let duplications: number[] = []
-		let seen: boolean[] = [];
+	// 	let duplications: number[] = []
+	// 	let seen: boolean[] = [];
 
-		for (let total of groupTotals) {
-			for (let i = 0; i < total.total; i++) {
-				duplications.push(total.groupId);
-			}
-		}
+	// 	for (let total of groupTotals) {
+	// 		for (let i = 0; i < total.total; i++) {
+	// 			duplications.push(total.groupId);
+	// 		}
+	// 	}
 
-		let comboout: number[][][] = [[], [], [], [], [], []];
+	// 	let comboout: number[][][] = [[], [], [], [], [], []];
 
-		for (let f = 1; f <= 5; f++) {
-			seen = duplications.map(d => false);
-			let option = 0;
+	// 	for (let f = 1; f <= 5; f++) {
+	// 		seen = duplications.map(d => false);
+	// 		let option = 0;
+			
+	// 		for (let n = 0; n < duplications.length; n++) {
+	// 			comboout[f].push([duplications[n]]);	
+	// 			let cc = 1;
+	// 			seen[n] = true;
 
-			for (let n = 0; n < duplications.length; n++) {
-				comboout[f].push([duplications[n]]);	
-				let cc = 1;
-				seen[n] = true;
+	// 			for (let y = 0; y < duplications.length; y++) {					
+	// 				if (seen[y]) continue;
+	// 				comboout[f][option].push(duplications[y]);
+	// 				seen[y] = true;
+	// 				cc++;
+	// 				if (cc >= f) break;
+	// 			}				
 
-				for (let y = 0; y < duplications.length; y++) {					
-					if (seen[y]) continue;
-					comboout[f][option].push(duplications[y]);
-					seen[y] = true;
-					cc++;
-					if (cc >= f) break;
-				}				
+	// 			option++;			
+	// 		}	
+	// 	}
 
-				option++;			
-			}	
-		}
+	// 	let result: FuseGroups = {};
 
-		let result: FuseGroups = {};
+	// 	for (let f = 1; f <= 5; f++) {
+	// 		let key = "x" + f;
+	// 		result[key] = [] as number[][];
 
-		for (let f = 1; f <= 5; f++) {
-			let key = "x" + f;
-			result[key] = [] as number[][];
+	// 		for (let res of comboout[f]) {
+	// 			if (res.length === f) { 
+	// 				result[key].push(res);
+	// 			}
+	// 		}
 
-			for (let res of comboout[f]) {
-				if (res.length === f) { 
-					result[key].push(res);
-				}
-			}
+	// 		for (let res of result[key]) {
+	// 			res.sort((a, b) => a - b);
+	// 		}
 
-			for (let res of result[key]) {
-				res.sort((a, b) => a - b);
-			}
+	// 		result[key].sort((a, b) => {
+	// 			let v = a.length - b.length;
+	// 			if (v === 0) v = a[0] - b[0];
+	// 			return v;
+	// 		})
+	// 	}
 
-			result[key].sort((a, b) => {
-				let v = a.length - b.length;
-				if (v === 0) v = a[0] - b[0];
-				return v;
-			})
-		}
+	// 	for (let f = 1; f <= 5; f++) {
+	// 		let key = "x" + f;
+	// 		let strres = result[key].map(m => JSON.stringify(m));
+	// 		strres = strres.filter((s, i) => strres.indexOf(s) === i);
 
-		for (let f = 1; f <= 5; f++) {
-			let key = "x" + f;
-			let strres = result[key].map(m => JSON.stringify(m));
-			strres = strres.filter((s, i) => strres.indexOf(s) === i);
-			result[key] = strres.map(s => JSON.parse(s) as number[]);
-		}
-		return result;
-	}
+	// 		let numres = strres.map(s => JSON.parse(s) as number[]);
+	// 		let c = numres.length;
 
-	function compArr(a: number[], b: number[]) {
-		if (a?.length != b?.length) return false;
+	// 		let niko = [] as string[];
 
-		for (let i = 0; i < a.length; i++) {
-			if (a[i] !== b[i]) return false;
-		}
+	// 		if (f > 1) {
+	// 			for (let x = 0; x < c; x++) {
+	// 				for (let y = 0; y < c; y++) {
+	// 					if (x === y) continue;
+	
+	// 					for (let d = 0; d < f; d++) {
 
-		return true;
-	}
-
-	// function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
-	// 	const fuseGroups: FuseGroups = {};
-	// 	const consumed = {};
-	// 	group.forEach((comboId) => {
-	// 		combos[comboId].forEach((polestar) => {
-	// 			if (polestar === undefined) return;
-	// 			if (consumed[polestar.symbol])
-	// 				consumed[polestar.symbol]++;
-	// 			else
-	// 				consumed[polestar.symbol] = 1;
-	// 		});
-	// 	});
-	// 	combos.forEach((combo, comboId) => {
-	// 		if (comboId >= start) {
-	// 			let consumable = 0;
-	// 			combo.forEach((polestar) => {
-	// 				if (polestar === undefined) return;
-	// 				if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
-	// 					consumable++;
-	// 			});
-	// 			if (consumable == combo.length) {
-	// 				const parentGroup = [...group, comboId];
-	// 				const parentId = 'x'+parentGroup.length;
-	// 				if (fuseGroups[parentId])
-	// 					fuseGroups[parentId].push(parentGroup);
-	// 				else
-	// 					fuseGroups[parentId] = [parentGroup];
-	// 				// Only collect combo groups up to 5 fuses
-	// 				if (parentGroup.length < 5) {
-	// 					let childGroups = groupByFuses(combos, comboId, parentGroup);
-	// 					for (let childId in childGroups) {
-	// 						if (fuseGroups[childId])
-	// 							fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
-	// 						else
-	// 							fuseGroups[childId] = childGroups[childId];
 	// 					}
+
+	// 					let j1 = numres[x].map(n1 => JSON.stringify(n1));
+	// 					j1 = j1.concat(numres[y].map(n1 => JSON.stringify(n1)));
+
+	// 					let j2 = j1.filter((j, i) => j1.indexOf(j) === i);
+	// 					j2.sort();
+
+
+
+
 	// 				}
 	// 			}
 	// 		}
-	// 	});
-	// 	return fuseGroups;
+
+	// 		result[key] = strres.map(s => JSON.parse(s) as number[]);
+	// 	}
+	// 	return result;
 	// }
+
+	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
+		const fuseGroups: FuseGroups = {};
+		const consumed = {};
+		group.forEach((comboId) => {
+			combos[comboId].forEach((polestar) => {
+				if (polestar === undefined) return;
+				if (consumed[polestar.symbol])
+					consumed[polestar.symbol]++;
+				else
+					consumed[polestar.symbol] = 1;
+			});
+		});
+		combos.forEach((combo, comboId) => {
+			if (comboId >= start) {
+				let consumable = 0;
+				combo.forEach((polestar) => {
+					if (polestar === undefined) return;
+					if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
+						consumable++;
+				});
+				if (consumable == combo.length) {
+					const parentGroup = [...group, comboId];
+					const parentId = 'x'+parentGroup.length;
+					if (fuseGroups[parentId])
+						fuseGroups[parentId].push(parentGroup);
+					else
+						fuseGroups[parentId] = [parentGroup];
+					// Only collect combo groups up to 5 fuses
+					if (parentGroup.length < 5) {
+						let childGroups = groupByFuses(combos, comboId, parentGroup);
+						for (let childId in childGroups) {
+							if (fuseGroups[childId])
+								fuseGroups[childId] = fuseGroups[childId].concat(childGroups[childId]);
+							else
+								fuseGroups[childId] = childGroups[childId];
+						}
+					}
+				}
+			}
+		});
+		return fuseGroups;
+	}
 
 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
 		if (activeCollections !== crew.symbol || crew.collections.length == 0)
