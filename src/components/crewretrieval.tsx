@@ -1162,31 +1162,30 @@ const CrewTable = (props: CrewTableProps) => {
 		for (let total of groupTotals) {
 			for (let i = 0; i < total.total; i++) {
 				duplications.push(total.groupId);
-				seen.push(false);
 			}
 		}
 
 		let comboout: number[][][] = [[], [], [], [], [], []];
 
 		for (let f = 1; f <= 5; f++) {
-
+			seen = duplications.map(d => false);
 			let option = 0;
-			
+
 			for (let n = 0; n < duplications.length; n++) {
 				comboout[f].push([duplications[n]]);	
-
 				let cc = 1;
+				seen[n] = true;
 
 				for (let y = 0; y < duplications.length; y++) {					
-					if (y === n) continue;
-					if (cc >= f) break;
+					if (seen[y]) continue;
 					comboout[f][option].push(duplications[y]);
+					seen[y] = true;
 					cc++;
+					if (cc >= f) break;
 				}				
 
 				option++;			
 			}	
-
 		}
 
 		let result: FuseGroups = {};
@@ -1196,21 +1195,39 @@ const CrewTable = (props: CrewTableProps) => {
 			result[key] = [] as number[][];
 
 			for (let res of comboout[f]) {
-				if (!result[key].some(r => r.every(t => res.some(u => u === t)))) {
-					if (res.length === f) result[key].push(res);
+				if (res.length === f) { 
+					result[key].push(res);
 				}
 			}
+
 			for (let res of result[key]) {
 				res.sort((a, b) => a - b);
 			}
+
 			result[key].sort((a, b) => {
 				let v = a.length - b.length;
 				if (v === 0) v = a[0] - b[0];
 				return v;
 			})
 		}
-		
+
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			let strres = result[key].map(m => JSON.stringify(m));
+			strres = strres.filter((s, i) => strres.indexOf(s) === i);
+			result[key] = strres.map(s => JSON.parse(s) as number[]);
+		}
 		return result;
+	}
+
+	function compArr(a: number[], b: number[]) {
+		if (a?.length != b?.length) return false;
+
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] !== b[i]) return false;
+		}
+
+		return true;
 	}
 
 	// function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
