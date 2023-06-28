@@ -205,6 +205,18 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 	const [polestars, setPolestars] = React.useState<Polestar[] | null>(null);
 	const [data, setData] = React.useState<PlayerCrew[] | null>(null);
 	const { playerData } = props;
+	const [algo, setAlgo] = React.useState<string>('quick');
+	const algos =
+	[{
+		key: "quick",
+		value:"quick",
+		text:"Simple Exhaustion (Quick)"
+	},
+	{
+		key: "slow",
+		value:"slow",
+		text:"Recursive Iteration (Very Slow)"
+	}];
 
 	// Update polestar list on filter, prospect change
 	React.useEffect(() => {
@@ -297,9 +309,15 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 						value={collection}
 						onChange={(e, { value }) => setCollection(value)}
 					/>
+					<Dropdown
+							style={{ marginLeft: '1em' }}
+							options={algos}							
+							value={algo}		
+							onChange={(e, v) => setAlgo(v.value as string)}					
+						/>
 				</Form.Group>
 			</Form>
-		 	{data && polestars && <CrewTable allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
+		 	{data && polestars && <CrewTable algo={algo} setAlgo={setAlgo} allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
 		</React.Fragment>
 	);
 };
@@ -1031,16 +1049,19 @@ type CrewTableProps = {
 	polestars: Polestar[];
 	playerData: PlayerData;
 	allCrew: CrewMember[]
+	algo: string;
+	setAlgo: (value: string) => void;
 };
 
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
-	const { allCrew } = props;
+	const { allCrew, algo, setAlgo } = props;
 	const [activeCrew, setActiveCrew] = React.useState<string | null>(null);
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
-
 	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | null | undefined>(null);
 	const { playerData } = props;
+	
+	const dataContext = React.useContext(MergedContext);
 
 	if (!data) return (<></>);
 
@@ -1069,9 +1090,11 @@ const CrewTable = (props: CrewTableProps) => {
 		</>
 	);
 
-	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
-		const buffConfig = calculateBuffConfig(playerData.player);
+	
 
+	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
+		const buffConfig = dataContext.buffConfig;
+		
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -1117,18 +1140,42 @@ const CrewTable = (props: CrewTableProps) => {
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'table-cell' : 'none' }}
 					colSpan={activeCrew === crew.symbol ? 4 : undefined}
 				>
-					{showCombosForCrew(crew)}
+					{showCombosForCrew(crew, algo)}
 				</Table.Cell>
-				<Table.Cell textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
-					onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}
-				>
-					{activeCrew === crew.symbol ? 'Hide' : 'View'}
+				<Table.Cell width='2' textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
+					
+				>	
+					<div style={{
+						display: "flex",
+						flexDirection:"column",
+						justifyItems: "center"
+					}}>
+						
+						<div style={{
+							cursor: "pointer"}}
+
+							onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}>
+							{activeCrew === crew.symbol ? 'Hide' : 'View'}
+						</div>
+					</div>
 				</Table.Cell>
 			</Table.Row>
 		);
 	}
 
-	function showCombosForCrew(crew: CrewMember): JSX.Element {
+	function getComboCount(crew: CrewMember): number {
+		let combos = crew.unique_polestar_combos?.filter(
+			(upc) => upc.every(
+				(trait) => polestars.some(op => filterTraits(op, trait))
+			)
+		).map((upc) => upc.map((trait) => polestars.find((op) => filterTraits(op, trait))));
+
+		// Exit here if activecrew has 0 combos after changing filters
+		if (!combos || !(combos?.length)) return 0;
+		return Math.pow(combos.length / 5, 5);
+	}
+
+	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
 		if (activeCrew !== crew.symbol) return (<></>);
 
 		let combos = crew.unique_polestar_combos?.filter(
@@ -1140,114 +1187,101 @@ const CrewTable = (props: CrewTableProps) => {
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups = groupByFuses(combos, 0, []);
+		let fuseGroups: FuseGroups;
+		let n = Math.pow(combos.length / 5, 5);
 
+		if (algo === 'slow') {
+			fuseGroups = groupByFuses(combos, 0, []);
+		}
+		else {
+			fuseGroups = groupByFusesShort(combos, 0, []);
+		}		
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
 	// WORK IN PROGRESS, DO NOT DELETE COMMENTED CODE!
-	// function groupByFuses(combos: (Polestar | undefined)[][]) {
+	function groupByFusesShort(combos: (Polestar | undefined)[][], unused: number, unused2: number[]) {
 
-	// 	let groupTotals: { groupId: number, total: number }[] = [];
-	// 	let x = 0;
-	// 	for (let combo of combos) {
-	// 		let map = combo.map(cb => cb?.quantity ?? 0);
-	// 		map.sort((a, b) => a - b);
-	// 		let total = map[0];
-	// 		groupTotals.push({ groupId: x++, total: total });
-	// 	}
+		let groupTotals: { groupId: number, total: number }[] = [];
+		let x = 0;
+		for (let combo of combos) {
+			let map = combo.map(cb => cb?.quantity ?? 0);
+			map.sort((a, b) => a - b);
+			let total = map[0];
+			groupTotals.push({ groupId: x++, total: total });
+		}
 
-	// 	let duplications: number[] = []
-	// 	let seen: boolean[] = [];
+		let duplications: number[] = []
+		let seen: boolean[] = [];
 
-	// 	for (let total of groupTotals) {
-	// 		for (let i = 0; i < total.total; i++) {
-	// 			duplications.push(total.groupId);
-	// 		}
-	// 	}
+		for (let total of groupTotals) {
+			for (let i = 0; i < total.total; i++) {
+				duplications.push(total.groupId);
+			}
+		}
 
-	// 	let comboout: number[][][] = [[], [], [], [], [], []];
+		let comboout: number[][][] = [[], [], [], [], [], []];
 
-	// 	for (let f = 1; f <= 5; f++) {
-	// 		seen = duplications.map(d => false);
-	// 		let option = 0;
+		for (let f = 1; f <= 5; f++) {
+			seen = duplications.map(d => false);
+			let option = 0;
 			
-	// 		for (let n = 0; n < duplications.length; n++) {
-	// 			comboout[f].push([duplications[n]]);	
-	// 			let cc = 1;
-	// 			seen[n] = true;
+			for (let n = 0; n < duplications.length; n++) {
+				comboout[f].push([duplications[n]]);	
+				let cc = 1;
+				seen[n] = true;
 
-	// 			for (let y = 0; y < duplications.length; y++) {					
-	// 				if (seen[y]) continue;
-	// 				comboout[f][option].push(duplications[y]);
-	// 				seen[y] = true;
-	// 				cc++;
-	// 				if (cc >= f) break;
-	// 			}				
+				for (let y = 0; y < duplications.length; y++) {					
+					if (seen[y]) continue;
+					comboout[f][option].push(duplications[y]);
+					seen[y] = true;
+					cc++;
+					if (cc >= f) break;
+				}				
 
-	// 			option++;			
-	// 		}	
-	// 	}
+				option++;			
+			}	
+		}
 
-	// 	let result: FuseGroups = {};
+		let result: FuseGroups = {};
 
-	// 	for (let f = 1; f <= 5; f++) {
-	// 		let key = "x" + f;
-	// 		result[key] = [] as number[][];
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			result[key] = [] as number[][];
 
-	// 		for (let res of comboout[f]) {
-	// 			if (res.length === f) { 
-	// 				result[key].push(res);
-	// 			}
-	// 		}
+			for (let res of comboout[f]) {
+				if (res.length === f) { 
+					result[key].push(res);
+				}
+			}
 
-	// 		for (let res of result[key]) {
-	// 			res.sort((a, b) => a - b);
-	// 		}
+			for (let res of result[key]) {
+				res.sort((a, b) => a - b);
+			}
 
-	// 		result[key].sort((a, b) => {
-	// 			let v = a.length - b.length;
-	// 			if (v === 0) v = a[0] - b[0];
-	// 			return v;
-	// 		})
-	// 	}
+			result[key].sort((a, b) => {
+				let v = a.length - b.length;
+				if (v === 0) {
+					let c = a.length;
+					for (let i = 0; i < c; i++) {
+						v = a[i] - b[i];
+						if (v) break;
+					}
+				}
+				return v;
+			})
+		}
 
-	// 	for (let f = 1; f <= 5; f++) {
-	// 		let key = "x" + f;
-	// 		let strres = result[key].map(m => JSON.stringify(m));
-	// 		strres = strres.filter((s, i) => strres.indexOf(s) === i);
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			let strres = result[key].map(m => JSON.stringify(m));
+			strres = strres.filter((s, i) => strres.indexOf(s) === i);
 
-	// 		let numres = strres.map(s => JSON.parse(s) as number[]);
-	// 		let c = numres.length;
-
-	// 		let niko = [] as string[];
-
-	// 		if (f > 1) {
-	// 			for (let x = 0; x < c; x++) {
-	// 				for (let y = 0; y < c; y++) {
-	// 					if (x === y) continue;
-	
-	// 					for (let d = 0; d < f; d++) {
-
-	// 					}
-
-	// 					let j1 = numres[x].map(n1 => JSON.stringify(n1));
-	// 					j1 = j1.concat(numres[y].map(n1 => JSON.stringify(n1)));
-
-	// 					let j2 = j1.filter((j, i) => j1.indexOf(j) === i);
-	// 					j2.sort();
-
-
-
-
-	// 				}
-	// 			}
-	// 		}
-
-	// 		result[key] = strres.map(s => JSON.parse(s) as number[]);
-	// 	}
-	// 	return result;
-	// }
+			let numres = strres.map(s => JSON.parse(s) as number[]);			
+			result[key] = numres;
+		}
+		return result;
+	}
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
 		const fuseGroups: FuseGroups = {};
