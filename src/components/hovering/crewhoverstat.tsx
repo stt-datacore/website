@@ -1,8 +1,8 @@
 import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
-import { PlayerCrew } from "../../model/player";
+import { PlayerCrew, PlayerData } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applySkillBuff, navToCrewPage } from "../../utils/crewutils";
+import { applySkillBuff, navToCrewPage, prepareProfileData } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";

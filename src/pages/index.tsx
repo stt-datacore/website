@@ -69,6 +69,7 @@ type CrewStatsState = {
 	hoverCrew?: CrewMember | PlayerCrew;
 	botcrew: (CrewMember | PlayerCrew)[],
 	playerCrew?: (CrewMember | PlayerCrew)[],
+	processedData?: PlayerData,
 	mode: "all" | "unowned" | "owned";	
 };
 
@@ -196,7 +197,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			}
 		}
 
-		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable, playerCrew });
+		this.setState({ botcrew, tableConfig, customColumns, initOptions, lockable, playerCrew, processedData: playerData });
 	}
 
 	renderTableRow(crew: CrewMember | PlayerCrew, idx: number, highlighted: boolean): JSX.Element {
@@ -351,7 +352,12 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 						showPermalink={true}
 						lockable={lockable}
 					/>
-					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
+					<MergedContext.Provider value={{
+						...this.context,
+						playerData: this.state.processedData ?? {} as PlayerData
+					}}>
+						<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
+					</MergedContext.Provider>
 				</div>
 			</React.Fragment>
 		);
