@@ -238,7 +238,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned) && 
+							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned && crew.immortal !== CompletionState.DisplayAsImmortalStatic) && 
 								descriptionLabel(crew, true) || formattedCounts}
 						</div>
 					</div>
