@@ -1196,7 +1196,6 @@ const CrewTable = (props: CrewTableProps) => {
 			result[key] = [] as number[][];
 
 			for (let res of comboout[f]) {
-				if (res.length === f) result[key].push(res);
 				if (!result[key].some(r => r.every(t => res.some(u => u === t)))) {
 					if (res.length === f) result[key].push(res);
 				}
