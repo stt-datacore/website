@@ -194,7 +194,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
-	if (seats && seats.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
+	if (seats?.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
 
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
 		if (crew.max_rarity > ship.rarity) return false;
@@ -202,7 +202,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 			if (crew.rarity > ship.rarity) return false;
 		}
 
-		if (seats && seats.length) {
+		if (seats?.length) {
 			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));			
 		}
 		else {
