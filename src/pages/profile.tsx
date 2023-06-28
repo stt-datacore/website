@@ -63,11 +63,11 @@ export const ProfilePage = (props: ProfilePageProps) => {
 			{isReady &&
 				<React.Fragment>
 					<Announcement />
-						<PlayerContext.Provider value={{
-							setStrippedPlayerData: setStrippedPlayerData,
-							strippedPlayerData: strippedPlayerData,
-							buffConfig: buffConfig
-						}}>
+					<PlayerContext.Provider value={{
+						setStrippedPlayerData: setStrippedPlayerData,
+						strippedPlayerData: strippedPlayerData,
+						buffConfig: buffConfig
+					}}>
 						<MergedContext.Provider value={{
 							allCrew: coreData.crew,
 							playerData: profData ?? strippedPlayerData ?? {} as PlayerData,
@@ -76,8 +76,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 							items: coreData.items,
 							playerShips: profData?.player.character.ships,							
 						}}>
-						<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
-					</MergedContext.Provider>
+							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
+						</MergedContext.Provider>
 					</PlayerContext.Provider>
 				</React.Fragment>
 			}
