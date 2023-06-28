@@ -288,6 +288,14 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	React.useEffect(() => {
+		if (selectedShip && !selectedShip?.actions?.some(l => l.status && l.status !== 16)) {
+			if (triggerOnly) {
+				setShipFilters({ ... shipFilters, triggerOnly: false });
+			}
+		}
+	}, [selectedShip]);
+
+	React.useEffect(() => {
 		if (usableFilter === 'frozen') setRosterFilter('');		
 	}, [usableFilter]);
 
@@ -324,6 +332,15 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			}
 		}		
 	}, [rankings])
+	
+	React.useEffect(() => {
+		if (selectedUses?.length) {
+			let usesel = selectedUses.filter(su => availableUses.some(v => v == su));
+			if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
+				setShipFilters({ ... shipFilters, selectedUses: usesel });
+			}
+		}
+	}, [availableUses])
 
 	React.useEffect(() => {		
 		updateRankings();
@@ -332,6 +349,19 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	React.useEffect(() => {
 		updateShipCrew();
 	}, [shipFilters])
+
+	React.useEffect(() => {
+		let newuses: number[];
+		if (shipCrew?.length) {
+			newuses = makeUses(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
+		}
+		else {
+			newuses = makeUses(myCrew);
+		}
+		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
+			setAvailableUses(newuses);
+		}
+	}, [shipCrew, selectedAbilities]);
 
 	const updateRankings = () => {
 		let statmap: ShipStatMap;
@@ -342,34 +372,21 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
 			newRankings = mapToRankings(statmap);
 			newRankings = newRankings.filter(r => shipCrew.some(sc => r.crew_symbols.includes(sc)));
-			newuses = makeUses(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));
 		}
 		else {
 			statmap = createShipStatMap(myCrew);
 			newRankings = mapToRankings(statmap);
-			newuses = makeUses(myCrew);
 		}
-
 		if (selectedAbilities && selectedAbilities.length) {
 			newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
 		}
 		if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
 			setRankings(newRankings);	
 		}
-		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
-			setAvailableUses(newuses);
-			if (selectedUses?.length) {
-				let usesel = selectedUses.filter(su => newuses.some(v => v == su));
-				if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
-					setShipFilters({ ... shipFilters, selectedUses: usesel });
-				}
-			}
-		}
 	}
 
 	const updateShipCrew = () => { 
 		let sc: (PlayerCrew | CrewMember)[] | undefined = undefined;
-		let newuses: number[];
 
 		if (selectedShip) {
 			sc = findPotentialCrew(selectedShip, myCrew, triggerOnly, selectedSeats);
@@ -385,18 +402,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
 		}	
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
-		newuses = makeUses(sc ?? myCrew);
-
-		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
-		if (JSON.stringify(newuses) !== JSON.stringify(availableUses)) {
-			setAvailableUses(newuses);
-			if (selectedUses?.length) {
-				let usesel = selectedUses.filter(su => newuses.some(v => v == su));
-				if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
-					setShipFilters({ ... shipFilters, selectedUses: usesel });
-				}
-			}
-		}
+		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);		
 	}
 
 	if (!rankings?.length) {
