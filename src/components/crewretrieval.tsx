@@ -679,9 +679,9 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>				
-					<Table.Cell textAlign='center'>{(polestar.crate_count ?? 0/crewCrates*100).toFixed(1)}%</Table.Cell>
-					<Table.Cell textAlign='center'>{(polestar.scan_odds ?? 0*100).toFixed(2)}%</Table.Cell>
-					<Table.Cell textAlign='center'>{(polestar.owned_best_odds ?? 0*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.crate_count ?? 0)/crewCrates*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.scan_odds ?? 0)*100).toFixed(2)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.owned_best_odds ?? 0)*100).toFixed(1)}%</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>					
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
