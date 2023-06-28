@@ -22,7 +22,8 @@ export interface PlayerData {
     archetype_cache?: ArchetypeRoot20;
     item_archetype_cache?: ArchetypeRoot17;
     [key: string]: any;
-    version?: 17 | 20
+    version?: 17 | 20;
+    stripped?: boolean;
 }
 
 export interface Player {

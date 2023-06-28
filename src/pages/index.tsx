@@ -18,6 +18,7 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
+import { descriptionLabel } from '../components/crewtables/commonoptions';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -106,13 +107,15 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
 				
-		if (this.context.playerData?.player?.character?.crew?.length && !this.context.playerData.version) {
+		if (this.context.playerData?.player?.character?.crew?.length && this.context.playerData.stripped) {
 			prepareProfileData("INDEX", this.context.allCrew, this.context.playerData, new Date());
 		}
 
 		const playerCrew = this.context.playerData?.player?.character?.crew;
 
-		botcrew.forEach(crew => {
+		let c = botcrew?.length ?? 0;
+		for (let i = 0; i < c; i++) {
+			let crew = botcrew[i];
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
@@ -120,16 +123,15 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 			let bcrew = crew as PlayerCrew;
 			let f: PlayerCrew | undefined = undefined;
-			if (playerCrew && playerCrew.length) {
+
+			if (playerCrew && playerCrew.length && bcrew.immortal === undefined) {
 				f = playerCrew.find((item) => item.symbol === bcrew.symbol);
 				if (f) {
-					bcrew.immortal = f.immortal;
+					let bcrew = botcrew[i] = { ...f, ...botcrew[i] };
 					bcrew.base_skills = JSON.parse(JSON.stringify(f.base_skills));
 					bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
 					bcrew.action.bonus_amount = f.action.bonus_amount;
 					bcrew.bonus = f.bonus;					
-					bcrew.rarity = f.rarity;	
-					bcrew.level = f.level;
 				}
 				else {
 					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
@@ -138,7 +140,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			else {
 				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
 			}
-		});
+		}
 
 		// Check for custom initial table options from URL or <Link state>
 		const initOptions = initSearchableOptions(this.props.location);
@@ -220,19 +222,21 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							gridTemplateAreas: `'icon stats' 'icon description'`,
 							gridGap: '1px'
 						}}>
-						<div style={{ gridArea: 'icon' }}>
+						<div style={{ gridArea: 'icon', display: 'flex' }}>
+		
 							<CrewTarget 
 								targetGroup='indexPage' 
 								setDisplayItem={this.setActiveCrew} 
 								inputItem={crew}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />								
 							</CrewTarget>							
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{formattedCounts}
+							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned) && 
+								descriptionLabel(crew, true) || formattedCounts}
 						</div>
 					</div>
 				</Table.Cell>

@@ -3,6 +3,8 @@ import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMissi
 // Remove any unnecessary fields from the player data
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
     delete p.item_archetype_cache;
+    delete p.archetype_cache;
+    delete p.version;
 
     delete p.player.entitlements;
     delete p.player.mailbox;
@@ -198,8 +200,9 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     p.player.character.stored_immortals =
         p.player.character.stored_immortals.filter((im) => im.quantity !== 1);
     p.player.character.c_stored_immortals = c_stored_immortals;
-	
-	return p;
+
+    p.stripped = true;
+    return p;
 }
 
 

@@ -386,7 +386,8 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 		// 	}
 		// }
 	}
-
+	
+	playerData.stripped = false;
 	playerData.player.character.crew = ownedCrew;
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
@@ -944,3 +945,5 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	}
 	return tiers ?? {};
 }
+
+
