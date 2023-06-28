@@ -53,6 +53,9 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	if (isReady && strippedPlayerData) {
 		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified);
+		
+		let data = mergeShips(coreData.ship_schematics, profData.player.character.ships);
+		profData.player.character.ships = data;
 	}
 
 	return (
