@@ -1169,23 +1169,31 @@ const CrewTable = (props: CrewTableProps) => {
 		let comboout: number[][][] = [[], [], [], [], [], []];
 
 		for (let f = 1; f <= 5; f++) {
-			seen = seen.map(s => false);
+
 			let option = 0;
+	
+			for (let n = 0; n < duplications.length; n++) {
+				seen = seen.map(s => false);
+				seen[n] = true;
+	
+				while (!seen.every(a => a === true)) {
+					comboout[f].push([duplications[n]]);	
+					let cc = 1;
+	
+					for (let y = 0; y < duplications.length; y++) {					
+						if (cc >= f) break;
+						if (!seen[y]) {
+							comboout[f][option].push(duplications[y]);
+							seen[y] = true;
+							cc++;
+						}
+					}				
 
-			while (!seen.every(a => a === true)) {
-				let cc = 0;
-				comboout[f].push([]);	
-
-				for (let y = 0; y < duplications.length; y++) {					
 					if (cc >= f) break;
-					if (!seen[y]) {
-						comboout[f][option].push(duplications[y]);
-						seen[y] = true;
-						cc++;
-					}
-				}				
+				}	
+
 				option++;			
-			}	
+			}
 		}
 
 		let result: FuseGroups = {};
@@ -1199,6 +1207,14 @@ const CrewTable = (props: CrewTableProps) => {
 					if (res.length === f) result[key].push(res);
 				}
 			}
+			for (let res of result[key]) {
+				res.sort((a, b) => a - b);
+			}
+			result[key].sort((a, b) => {
+				let v = a.length - b.length;
+				if (v === 0) v = a[0] - b[0];
+				return v;
+			})
 		}
 		
 		return result;
