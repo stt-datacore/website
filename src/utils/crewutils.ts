@@ -576,68 +576,68 @@ export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
  * @param allCrew All crew
  */
 export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
-	let stash = TinyStore.getStore('staticStash', false, true);	
+	// let stash = TinyStore.getStore('staticStash', false, true);	
 	
-	if (stash) {
-		if (ownedCrew) {
-			let variantTraits = getVariantTraits(crew);
-			if (variantTraits && variantTraits.length >= 1) {
-				let filteredOwnedCrew = ownedCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
-				let finalResult = [ ...filteredOwnedCrew ];
-				let filteredAllCrew = allCrew?.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
+	// if (stash) {
+	// 	if (ownedCrew) {
+	// 		let variantTraits = getVariantTraits(crew);
+	// 		if (variantTraits && variantTraits.length >= 1) {
+	// 			let filteredOwnedCrew = ownedCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
+	// 			let finalResult = [ ...filteredOwnedCrew ];
+	// 			let filteredAllCrew = allCrew?.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
 
-				// We're going to iterate, once, into the variants
-				// because some of them are fusion crew, and we want to capture those, too,
-				// because if they keep navigating to variants in the crew page, we'd
-				// like to give them as far to go as possible without losing state data.
-				// Since they can only navigate either back to crew tools or on to other variants from the
-				// crew page, this covers all bases.
+	// 			// We're going to iterate, once, into the variants
+	// 			// because some of them are fusion crew, and we want to capture those, too,
+	// 			// because if they keep navigating to variants in the crew page, we'd
+	// 			// like to give them as far to go as possible without losing state data.
+	// 			// Since they can only navigate either back to crew tools or on to other variants from the
+	// 			// crew page, this covers all bases.
 
-				for (let post of filteredOwnedCrew) {
-					let traits2 = getVariantTraits(post);
-					let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-					let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+	// 			for (let post of filteredOwnedCrew) {
+	// 				let traits2 = getVariantTraits(post);
+	// 				let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+	// 				let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
 
-					for (let varItem of ownedfiltered2 ?? []) {
-						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-							finalResult.push(varItem);
-						}
-					}
+	// 				for (let varItem of ownedfiltered2 ?? []) {
+	// 					if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+	// 						finalResult.push(varItem);
+	// 					}
+	// 				}
 
-					for (let varItem of allfiltered2 ?? []) {
-						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-							finalResult.push(varItem);
-						}
-					}
-				}
+	// 				for (let varItem of allfiltered2 ?? []) {
+	// 					if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+	// 						finalResult.push(varItem);
+	// 					}
+	// 				}
+	// 			}
 
-				if (filteredAllCrew) {
-					for (let post of filteredAllCrew) {
-						let traits2 = getVariantTraits(post);
-						let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-						let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+	// 			if (filteredAllCrew) {
+	// 				for (let post of filteredAllCrew) {
+	// 					let traits2 = getVariantTraits(post);
+	// 					let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
+	// 					let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
 
-						for (let varItem of ownedfiltered2 ?? []) {
-							if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-								finalResult.push(varItem);
-							}
-						}
-						for (let varItem of allfiltered2 ?? []) {
-							if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-								finalResult.push(varItem);
-							}
-						}
-					}
-				}
+	// 					for (let varItem of ownedfiltered2 ?? []) {
+	// 						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+	// 							finalResult.push(varItem);
+	// 						}
+	// 					}
+	// 					for (let varItem of allfiltered2 ?? []) {
+	// 						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
+	// 							finalResult.push(varItem);
+	// 						}
+	// 					}
+	// 				}
+	// 			}
 
-				console.log(finalResult);
-				stash.setValue('owned', finalResult);
-			}
-		}
-		if (buffs) {
-			stash.setValue('buffs', buffs);
-		}
-	}
+	// 			console.log(finalResult);
+	// 			stash.setValue('owned', finalResult);
+	// 		}
+	// 	}
+	// 	if (buffs) {
+	// 		stash.setValue('buffs', buffs);
+	// 	}
+	// }
 
 	navigate('/crew/' + crew.symbol);
 }
