@@ -9,7 +9,7 @@ import CABExplanation from '../components/cabexplanation';
 import ProspectPicker from '../components/prospectpicker';
 
 import { CrewBaseCells, CrewShipCells, CrewTraitMatchesCell } from '../components/crewtables/commoncells';
-import { RarityFilter, CrewTraitFilter } from '../components/crewtables/commonoptions';
+import { RarityFilter, CrewTraitFilter, descriptionLabel } from '../components/crewtables/commonoptions';
 import RosterSummary from '../components/crewtables/rostersummary';
 import UtilityWizard from '../components/crewtables/utilitywizard';
 
@@ -24,14 +24,10 @@ import CrewStat from './crewstat';
 import { formatTierLabel } from '../utils/crewutils';
 import { StatLabel } from './citeoptimizer';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import ShipPicker from './shippicker';
 import { Ship } from '../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shiputils';
-import ShipSeatPicker from './shipseatpicker';
-import ShipAbilityPicker from './shipabilitypicker';
-import ShipAbilityRankPicker from './shipabilityrankpicker';
 import { MergedContext } from '../context/mergedcontext';
-import { AbilityUses } from './crewtables/shipoptions';
+import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker } from './crewtables/shipoptions';
 
 type ProfileCrewProps = {
 	isTools?: boolean;
@@ -560,38 +556,7 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	function descriptionLabel(crew: any): JSX.Element {
-		const immortal = isImmortal(crew);
-		const counts = [
-			{ name: 'event', count: crew.events },
-			{ name: 'collection', count: crew.collections.length }
-		];
-		const formattedCounts = counts.map((count, idx) => (
-			<span key={idx} style={{ whiteSpace: 'nowrap' }}>
-				{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
-			</span>
-		)).reduce((prev, curr) => <>{prev} {curr}</>);
-		return (
-			<div>
-				{crew.favorite && <Icon name='heart' />}
-				{immortal &&
-					<React.Fragment>
-						{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
-						{crew.immortal === CompletionState.Immortalized && <span>Immortalized, {formattedCounts}</span>}
-					</React.Fragment>
-				}
-				{!immortal &&
-					<React.Fragment>
-						{crew.prospect && <Icon name='add user' />}
-						{crew.active_status > 0 && <Icon name='space shuttle' />}
-						<span>Level {crew.level}, </span>
-						{formattedCounts}
-					</React.Fragment>
-				}
-			</div>
-		);
-	}
-
+	
 	// Adapted from function of same name in crewutils.ts
 	// function formatChargePhases(crew): string {
 	// 	let totalTime = 0;
