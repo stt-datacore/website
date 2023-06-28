@@ -173,7 +173,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
         }
         
         const { displayItem: displayItem, targetGroup } = this.props;
-        const { mobileWidth } = this.state;
+        const { mobileWidth, touchToggled } = this.state;
 
         const compact = true;    
 
@@ -199,6 +199,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
                         openShip={(ship) => navClick()} 
                         hover={true} 
                         storeName={targetGroup} 
+                        touched={touchToggled}
                         ship={displayItem} />) : <></>
         
     }

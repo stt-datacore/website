@@ -79,10 +79,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     }
 
     render(): JSX.Element {
-        const { crew, openCrew } = this.props;
+        const { crew, openCrew, touched } = this.props;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
-
+        
         if (!crew) {
             return <></>
         } 
@@ -180,8 +180,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     </div>
                 <div style={{ display: "flex", flexDirection: "column"}}>            
                     <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {window.innerWidth < mobileWidth && <>
-                            <span className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
+                        {touched && <>
+                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div>        
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        

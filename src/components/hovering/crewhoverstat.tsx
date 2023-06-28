@@ -186,9 +186,9 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
         const { targetGroup, crew: displayItem, openCrew } = this.props;
-        const { mobileWidth } = this.state;
+        const { mobileWidth, touchToggled } = this.state;
         const compact = true;    
-
+        
         if (!displayItem) {
             // console.log("Deactivating empty popover");
             this.cancelled = false;
@@ -234,6 +234,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                         crew={displayItem} 
                         storeName={targetGroup} 
                         hover={true} 
+                        touched={touchToggled}
                         mobileWidth={mobileWidth}
                         onShipToggle={() => shipToggle()} 
                         />) : <></>

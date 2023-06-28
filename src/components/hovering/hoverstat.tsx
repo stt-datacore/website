@@ -420,6 +420,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 this.currentTarget = undefined;                
                 window.removeEventListener("resize", this.resizer);
                 window.setTimeout(() => hoverstat.style.display = "none", 0.25);
+                this.setState({ ...this.state ?? {}, touchToggled: false });
             }
         }, 0);
     }
@@ -481,7 +482,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         }
         this.deactivate(target);
     }
-    private touching?: boolean;
+    
+    protected touching?: boolean;
 
     /**
      * Target touchEnd
@@ -490,25 +492,25 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected touchEnd = (e: TouchEvent) => {
         let target = e.target as HTMLElement;
+        const me = this;
         if (!target) return;
 
         if (target.children.length !== 0) {
             return;
         }
 
-        if (!this.touching) return;
-        this.touching = false;
+        if (!me.touching) return;
+        me.touching = false;
     
-        if (this.state.touchToggled) {					
-            this.deactivate(target);
-            this.state = { ...this.state, touchToggled: false };
+        if (me.state.touchToggled) {					
+            me.deactivate(target);
         }
         else {
-            if (target || this.currentTarget) {
+            if (target || me.currentTarget) {
                 e.preventDefault();
-                this.activate(target ?? this.currentTarget);
+                me.setState({ ...me.state ?? {}, touchToggled: true });
+                me.activate(target ?? me.currentTarget);
             }
-            this.state = { ...this.state, touchToggled: true };
         }		
     }
     protected touchStart = (e: TouchEvent) => {

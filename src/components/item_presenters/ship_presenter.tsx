@@ -13,6 +13,7 @@ export interface PresenterProps {
     disableBuffs?: boolean;
     mobileWidth?: number;
     close?: () => void;
+    touched?: boolean;
 }
 
 export interface ShipPresenterProps extends PresenterProps {
@@ -63,7 +64,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     }
 
     render(): JSX.Element {
-        const { ship: ship } = this.props;
+        const { ship: ship, touched } = this.props;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
 
@@ -132,7 +133,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         
                         }}>
                             <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {window.innerWidth < mobileWidth && <>
+                        {touched && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div> 
