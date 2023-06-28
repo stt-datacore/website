@@ -1171,29 +1171,27 @@ const CrewTable = (props: CrewTableProps) => {
 		for (let f = 1; f <= 5; f++) {
 
 			let option = 0;
-	
-			for (let n = 0; n < duplications.length; n++) {
-				seen = seen.map(s => false);
-				seen[n] = true;
-	
-				while (!seen.every(a => a === true)) {
-					comboout[f].push([duplications[n]]);	
-					let cc = 1;
-	
-					for (let y = 0; y < duplications.length; y++) {					
-						if (cc >= f) break;
-						if (!seen[y]) {
-							comboout[f][option].push(duplications[y]);
-							seen[y] = true;
-							cc++;
-						}
-					}				
 
+			seen = seen.map(s => false);
+			for (let n = 0; n < duplications.length; n++) {
+				comboout[f].push([duplications[n]]);	
+				seen[n] = true;
+
+				let cc = 1;
+
+				for (let y = 0; y < duplications.length; y++) {					
+					if (y === n) continue;
 					if (cc >= f) break;
-				}	
+					if (!seen[y]) {
+						seen[y] = true;
+						comboout[f][option].push(duplications[y]);
+						cc++;
+					}
+				}				
 
 				option++;			
-			}
+			}	
+
 		}
 
 		let result: FuseGroups = {};
@@ -1203,9 +1201,7 @@ const CrewTable = (props: CrewTableProps) => {
 			result[key] = [] as number[][];
 
 			for (let res of comboout[f]) {
-				if (!result[key].some(r => r.every(t => res.some(u => u === t)))) {
-					if (res.length === f) result[key].push(res);
-				}
+				if (res.length === f) result[key].push(res);
 			}
 			for (let res of result[key]) {
 				res.sort((a, b) => a - b);
