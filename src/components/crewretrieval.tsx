@@ -18,8 +18,8 @@ import { Energy } from '../model/boss';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 
-const RECURSION_WARN = 50000;
-const RECURSION_FORBID = 100000;
+const RECURSION_WARN = 1000000;
+const RECURSION_FORBID = 10000000;
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -1067,9 +1067,17 @@ type CrewTableProps = {
 
 const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
 	const comboCount = props.comboCount;
+	let pt: number | undefined = undefined;
+	let st: string | undefined = undefined;
+
+	if (comboCount){
+		pt = Math.floor(comboCount);
+		st = pt.toLocaleString();
+	}
+	
 	const text = (<>
 	<p></p>
-		{comboCount !== undefined && <p>There are <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{Math.floor(comboCount).toLocaleString()}</span> possible polestar combinations to uniquely retrieve this crew.</p>}
+		{comboCount !== undefined && <p>There are <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{st}</span> possible polestar combinations to uniquely retrieve this crew.</p>}
 		<p>There are two different ways to compute possible polestar combinations:</p>
 		<ul>
 		<li style={{marginBottom: '8px'}}><b>Simple exhaustion</b> runs through the number of times you can retrieve each crew member until you are out of polestars.</li>
@@ -1124,7 +1132,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
 		const buffConfig = dataContext.buffConfig;
-		const [comboCount, ] = getComboCount(crew);
+		const [comboCount, ] = getCombos(crew);
 
 		return (
 			<Table.Row key={idx}>
@@ -1198,7 +1206,7 @@ const CrewTable = (props: CrewTableProps) => {
 		);
 	}
 
-	function getComboCount(crew: CrewMember, returnCombos?: boolean): [number, (Polestar | undefined)[][] | undefined] {
+	function getCombos(crew: CrewMember, returnCombos?: boolean): [number, (Polestar | undefined)[][] | undefined] {
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
 				(trait) => polestars.some(op => filterTraits(op, trait))
@@ -1207,15 +1215,33 @@ const CrewTable = (props: CrewTableProps) => {
 
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return [0, combos];
-		let result = Math.pow(combos.length / 5, 5) + Math.pow(combos.length / 4, 4) + Math.pow(combos.length / 3, 3) + Math.pow(combos.length / 2, 2);
+		/*
+			(n+r-1)!
+			(n-1)! r!
+		*/
+		let dn = combos.length;
+
+		let n = combos.length;
+		let r = n >= 5 ? 5 : n;
+
+		let result: number;
+
+		result = factorial(n + r - 1) / (factorial(n - 1) * factorial(r));
 
 		return [result, combos];
+	}
+	function factorial(number: number) {
+		let result = 1;
+		for (let i = 1; i <= number; i++) {
+			result *= i;
+		}
+		return result;
 	}
 
 	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
 		if (activeCrew !== crew.symbol) return (<></>);
 
-		let [comboCount, combos] = getComboCount(crew, true);
+		let [comboCount, combos] = getCombos(crew, true);
 
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
@@ -1231,11 +1257,37 @@ const CrewTable = (props: CrewTableProps) => {
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
+	interface ComboTrack { 
+		id: number, 
+		quantity: number, 
+		used: number 
+	}
+
+	function dingCT(lh: ComboTrack[], rh: ComboTrack[]) {
+		for (let lv of lh) {
+			for (let rv of rh) {
+				if (lv.id === rv.id) {
+					if (lv.used + 1 > lv.quantity) return false;
+					lv.used++;
+					break;
+				}
+			}
+		}
+
+		for (let rv of rh) {
+			if (!lh.some(v => v.id === rv.id)) {
+				lh.push(rv);
+			}
+		}
+
+		return true;
+	}
+
 	// WORK IN PROGRESS, DO NOT DELETE COMMENTED CODE!
 	function groupByFusesShort(combos: (Polestar | undefined)[][], unused: number, unused2: number[]) {
-
 		let groupTotals: { groupId: number, total: number }[] = [];
 		let x = 0;
+
 		for (let combo of combos) {
 			let map = combo.map(cb => cb?.quantity ?? 0);
 			map.sort((a, b) => a - b);
@@ -1253,20 +1305,27 @@ const CrewTable = (props: CrewTableProps) => {
 		}
 
 		let comboout: number[][][] = [[], [], [], [], [], []];
-
-		for (let f = 1; f <= 5; f++) {
+		
+		let fn = combos.length < 5 ? combos.length : 5;
+		for (let f = 1; f <= fn; f++) {
 			seen = duplications.map(d => false);
 			let option = 0;
 			
 			for (let n = 0; n < duplications.length; n++) {
 				comboout[f].push([duplications[n]]);	
+				let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
+
 				let cc = 1;
 				seen[n] = true;
 
 				for (let y = 0; y < duplications.length; y++) {					
 					if (seen[y]) continue;
+					let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
+					if (!dingCT(ps, xs)) continue;
+
 					comboout[f][option].push(duplications[y]);
 					seen[y] = true;
+
 					cc++;
 					if (cc >= f) break;
 				}				
@@ -1289,19 +1348,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 			for (let res of result[key]) {
 				res.sort((a, b) => a - b);
-			}
-
-			result[key].sort((a, b) => {
-				let v = a.length - b.length;
-				if (v === 0) {
-					let c = a.length;
-					for (let i = 0; i < c; i++) {
-						v = a[i] - b[i];
-						if (v) break;
-					}
-				}
-				return v;
-			})
+			}		
 		}
 
 		for (let f = 1; f <= 5; f++) {
@@ -1310,9 +1357,27 @@ const CrewTable = (props: CrewTableProps) => {
 			strres = strres.filter((s, i) => strres.indexOf(s) === i);
 
 			let numres = strres.map(s => JSON.parse(s) as number[]);			
+			numres.sort((a, b) => {
+				let r = countCombos(a, combos) - countCombos(b, combos);
+				if (r === 0) {
+					for (let i = 0; i < a.length; i++) {
+						r = a[i] - b[i];
+						if (r) return r;
+					}
+				}
+				return r;
+			})
 			result[key] = numres;
 		}
 		return result;
+	}
+
+	function countCombos(keys: number[], combos: (Polestar | undefined)[][]) {
+		let res = 0;
+		for (let key of keys) {
+			res += combos[key].length;
+		}
+		return res;
 	}
 
 	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
@@ -1436,7 +1501,7 @@ const ComboGrid = (props: ComboGridProps) => {
 					/>
 				)}
 			</div>
-			<div className='content' style={{overflow: "auto", maxHeight: "30em"}}>
+			<div className='content' style={{overflow: "auto", maxHeight: "40em"}}>
 				<Grid columns='equal' onClick={() => cycleGroupOptions()}>
 					{combos.map((combo, cdx) =>
 						<Grid.Row key={'combo'+cdx}>
