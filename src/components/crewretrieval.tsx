@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message } from 'semantic-ui-react';
+import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message, Popup } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -17,6 +17,9 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
+
+const RECURSION_WARN = 50000;
+const RECURSION_FORBID = 100000;
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -210,12 +213,12 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 	[{
 		key: "quick",
 		value:"quick",
-		text:"Simple Exhaustion (Quick)"
+		text:"Simple Exhaustion (Fast)"
 	},
 	{
 		key: "slow",
 		value:"slow",
-		text:"Recursive Iteration (Very Slow)"
+		text:"Deep Recursion (Slow)"
 	}];
 
 	// Update polestar list on filter, prospect change
@@ -309,12 +312,21 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 						value={collection}
 						onChange={(e, { value }) => setCollection(value)}
 					/>
-					<Dropdown
-							style={{ marginLeft: '1em' }}
-							options={algos}							
-							value={algo}		
-							onChange={(e, v) => setAlgo(v.value as string)}					
-						/>
+					<div style={{
+						display: "flex",
+						flexDirection: "column",						
+					}}>
+						<h4 style={{marginLeft: "1em" }}>
+							Calculation Method<AlgoExplain />
+						</h4>
+						<Dropdown
+								style={{ marginLeft: '1em' }}
+								options={algos}							
+								value={algo}		
+								onChange={(e, v) => setAlgo(v.value as string)}					
+							/>
+						
+					</div>
 				</Form.Group>
 			</Form>
 		 	{data && polestars && <CrewTable algo={algo} setAlgo={setAlgo} allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
@@ -697,9 +709,9 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>				
-					<Table.Cell textAlign='center'>{(polestar.crate_count ?? 0/crewCrates*100).toFixed(1)}%</Table.Cell>
-					<Table.Cell textAlign='center'>{(polestar.scan_odds ?? 0*100).toFixed(2)}%</Table.Cell>
-					<Table.Cell textAlign='center'>{(polestar.owned_best_odds ?? 0*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.crate_count ?? 0)/crewCrates*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.scan_odds ?? 0)*100).toFixed(2)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.owned_best_odds ?? 0)*100).toFixed(1)}%</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>					
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
@@ -1053,6 +1065,24 @@ type CrewTableProps = {
 	setAlgo: (value: string) => void;
 };
 
+const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
+	const comboCount = props.comboCount;
+	const text = (<>
+	<p></p>
+		{comboCount !== undefined && <p>There are <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{Math.floor(comboCount).toLocaleString()}</span> possible polestar combinations to uniquely retrieve this crew.</p>}
+		<p>There are two different ways to compute possible polestar combinations:</p>
+		<ul>
+		<li style={{marginBottom: '8px'}}><b>Simple exhaustion</b> runs through the number of times you can retrieve each crew member until you are out of polestars.</li>
+		<li><b>Deep recursion</b> calculates <i>every possible</i> polestar combination for a given crew and desired number of fuses.</li>
+		</ul>
+		{(comboCount !== undefined && comboCount >= RECURSION_FORBID) && (<p style={{fontWeight: 'bold', color: 'tomato'}}>The deep recursion method is <b>not available</b> for this crew member.</p>)}
+		{(comboCount !== undefined && comboCount < RECURSION_FORBID && comboCount >= RECURSION_WARN) && (<p style={{fontWeight: 'bold', color: 'orange'}}>Using the deep recursion method is <b>not advised</b> for this crew member.</p>)}
+
+	</>)
+	
+	return (<Popup wide size='large' trigger={<Icon name="help" />} header={'Combo Calculations'} content={text}/>)
+};
+  
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
 	const { allCrew, algo, setAlgo } = props;
@@ -1094,7 +1124,8 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
 		const buffConfig = dataContext.buffConfig;
-		
+		const [comboCount, ] = getComboCount(crew);
+
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -1152,18 +1183,22 @@ const CrewTable = (props: CrewTableProps) => {
 					}}>
 						
 						<div style={{
-							cursor: "pointer"}}
+							cursor: "pointer",
+							color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)
+							}}
 
 							onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}>
 							{activeCrew === crew.symbol ? 'Hide' : 'View'}
+							<AlgoExplain comboCount={comboCount} />
 						</div>
-					</div>
+
+						</div>
 				</Table.Cell>
 			</Table.Row>
 		);
 	}
 
-	function getComboCount(crew: CrewMember): number {
+	function getComboCount(crew: CrewMember, returnCombos?: boolean): [number, (Polestar | undefined)[][] | undefined] {
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
 				(trait) => polestars.some(op => filterTraits(op, trait))
@@ -1171,26 +1206,23 @@ const CrewTable = (props: CrewTableProps) => {
 		).map((upc) => upc.map((trait) => polestars.find((op) => filterTraits(op, trait))));
 
 		// Exit here if activecrew has 0 combos after changing filters
-		if (!combos || !(combos?.length)) return 0;
-		return Math.pow(combos.length / 5, 5);
+		if (!combos || !(combos?.length)) return [0, combos];
+		let result = Math.pow(combos.length / 5, 5) + Math.pow(combos.length / 4, 4) + Math.pow(combos.length / 3, 3) + Math.pow(combos.length / 2, 2);
+
+		return [result, combos];
 	}
 
 	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
 		if (activeCrew !== crew.symbol) return (<></>);
 
-		let combos = crew.unique_polestar_combos?.filter(
-			(upc) => upc.every(
-				(trait) => polestars.some(op => filterTraits(op, trait))
-			)
-		).map((upc) => upc.map((trait) => polestars.find((op) => filterTraits(op, trait))));
+		let [comboCount, combos] = getComboCount(crew, true);
 
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups: FuseGroups;
-		let n = Math.pow(combos.length / 5, 5);
+		let fuseGroups: FuseGroups;		
 
-		if (algo === 'slow') {
+		if (comboCount < RECURSION_FORBID && algo === 'slow') {
 			fuseGroups = groupByFuses(combos, 0, []);
 		}
 		else {
