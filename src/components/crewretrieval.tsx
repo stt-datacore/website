@@ -65,8 +65,8 @@ type CrewRetrievalProps = {
 };
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
-	const merged = React.useContext(MergedContext);
 	const pureData = React.useContext(DataContext);
+	const merged = React.useContext(MergedContext);
 
 	const keystonesReady = pureData.ready(['keystones', 'crew']);
 

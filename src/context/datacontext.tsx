@@ -74,7 +74,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats'];
+		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats'];
 		const unsatisfied = [] as string[];
 
 		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
