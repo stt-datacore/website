@@ -1077,7 +1077,7 @@ const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
 	
 	const text = (<>
 	<p></p>
-		{comboCount !== undefined && <p>There are <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{st}</span> possible polestar combinations to uniquely retrieve this crew.</p>}
+		{comboCount !== undefined && <p>There are up to <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{st}</span> polestar combinations to retrieve this crew, assuming 5 fuses are possible.</p>}
 		<p>There are two different ways to compute possible polestar combinations:</p>
 		<ul>
 		<li style={{marginBottom: '8px'}}><b>Simple exhaustion</b> runs through the number of times you can retrieve each crew member until you are out of polestars.</li>
@@ -1206,7 +1206,7 @@ const CrewTable = (props: CrewTableProps) => {
 		);
 	}
 
-	function getCombos(crew: CrewMember, returnCombos?: boolean): [number, (Polestar | undefined)[][] | undefined] {
+	function getCombos(crew: CrewMember, returnCombos?: boolean, knownGroups?: number): [number, (Polestar | undefined)[][] | undefined] {
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
 				(trait) => polestars.some(op => filterTraits(op, trait))
@@ -1222,12 +1222,12 @@ const CrewTable = (props: CrewTableProps) => {
 		let dn = combos.length;
 
 		let n = combos.length;
-		let r = n >= 5 ? 5 : n;
+		let r = knownGroups ?? 5;
 
 		let result: number;
 
-		result = factorial(n + r - 1) / (factorial(n - 1) * factorial(r));
-
+		result = factorial(n) / (factorial(n - r) * factorial(r));
+		if (result < n) result = n * 5;
 		return [result, combos];
 	}
 	function factorial(number: number) {
