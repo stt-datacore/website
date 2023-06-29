@@ -1182,7 +1182,7 @@ const CrewTable = (props: CrewTableProps) => {
 					{showCombosForCrew(crew, algo)}
 				</Table.Cell>
 				<Table.Cell width='2' textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
-					
+					onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}
 				>	
 					<div style={{
 						display: "flex",
@@ -1194,8 +1194,7 @@ const CrewTable = (props: CrewTableProps) => {
 							cursor: "pointer",
 							color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)
 							}}
-
-							onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}>
+							>
 							{activeCrew === crew.symbol ? 'Hide' : 'View'}
 							<AlgoExplain comboCount={comboCount} />
 						</div>
