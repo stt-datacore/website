@@ -29,6 +29,7 @@ type ExtraCrewDetailsState = {
 	pagination_rows: number;
 	pagination_page: number;
 	hoverItem?: CrewMember | PlayerCrew;
+	itemsReady?: boolean;
 };
 
 const pagingOptions = [
@@ -63,7 +64,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		constellation: undefined,
 		optimalpolestars: undefined,
 		pagination_rows: 10,
-		pagination_page: 1
+		pagination_page: 1,
+		itemsReady: false
 	};
 
 	constructor(props: ExtraCrewDetailsProps) {
@@ -82,8 +84,22 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	get hoverCrew(): CrewMember | PlayerCrew | null | undefined {
 		return this.state.hoverItem;
 	}
-	
+
 	componentDidMount() {
+		this.initData();
+	}
+
+	componentDidUpdate() {
+		const crewReady = this.context?.allCrew?.length !== 0;
+		const keystonesReady = !!this.context?.keystones;
+		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+
+		if (keystonesReady && crewReady && playerReady && !this.state.itemsReady) {
+			this.initData();
+		}
+	}
+
+	initData() {
 		if (this.props.ownedCrew) {
 			this.ownedCrew = this.props.ownedCrew;
 		}
@@ -113,96 +129,95 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		});
 
 		let self = this;
-		fetch('/structured/keystones.json')
-			.then(response => response.json())
-			.then((allkeystones: KeystoneBase[]) => {
-				let crew_keystone_crate = allkeystones.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
-				
-				let [crates, keystones] = categorizeKeystones(allkeystones);
 
-				// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
-				let raritystone = keystones.filter((keystone) =>
-					keystone.filter && keystone.filter.type === 'rarity' && keystone.filter.rarity === this.props.max_rarity
-				);
-				let skillstones = keystones.filter((keystone) =>
-					keystone.filter && keystone.filter.type === 'skill' && keystone.filter.skill && this.props.base_skills[keystone.filter.skill]
-				);
+		if (!this.context.keystones || !this.context.allCrew?.length) return;
 
-				if (crew_keystone_crate && crew_keystone_crate.keystones) {
-					self.setState({
-						constellation: {
-							name: crew_keystone_crate.name, 
-							flavor: crew_keystone_crate.flavor,
-							keystones: (crew_keystone_crate.keystones.map((kid) => keystones.find((k) => k.id === kid)) ?? [] as Polestar[]) as Polestar[],
-							raritystone,
-							skillstones
-						}
-					});
-				}
-			});
+		const allkeystones = this.context.keystones;
 
+		let crew_keystone_crate = allkeystones?.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
+		
+		let [crates, keystones] = categorizeKeystones(allkeystones ?? []);
 
-		fetch('/structured/crew.json')
-			.then(response => response.json())
-			.then((allcrew: PlayerCrew[]) => {
-				// Use precalculated unique polestars combos if any, otherwise get best chances
-				let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
-					this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
-					this._findOptimalPolestars(allcrew);
+		// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
+		let raritystone = keystones.filter((keystone) =>
+			keystone.filter && keystone.filter.type === 'rarity' && keystone.filter.rarity === this.props.max_rarity
+		);
+		let skillstones = keystones.filter((keystone) =>
+			keystone.filter && keystone.filter.type === 'skill' && keystone.filter.skill && this.props.base_skills[keystone.filter.skill]
+		);
+		
+		
+		let constMap: ConstellationMap = {} as ConstellationMap;
 
-				// Get variants
-				let variants: Variant[] = [];
+		if (crew_keystone_crate && crew_keystone_crate.keystones) {
+			constMap = {
+				name: crew_keystone_crate.name, 
+				flavor: crew_keystone_crate.flavor,
+				keystones: (crew_keystone_crate.keystones.map((kid) => keystones.find((k) => k.id === kid)) ?? [] as Polestar[]) as Polestar[],
+				raritystone,
+				skillstones
+			}
+		}
 
-				variantTraits.forEach(function (trait) {
-					let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
-					if (!self.masterCrew) {
-						self.masterCrew = [];
-					}
+		const allcrew = this.context.allCrew;
+		
+		// Use precalculated unique polestars combos if any, otherwise get best chances
+		let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
+			this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
+			this._findOptimalPolestars(allcrew);
 
-					self.masterCrew = [ ... self.masterCrew, ... found ];
+		// Get variants
+		let variants: Variant[] = [];
 
-					found = found.map(cp => JSON.parse(JSON.stringify(cp)) as PlayerCrew);
-					// Ignore variant group if crew is the only member of the group
-					if (found.length > 1) {
-						found.sort(function (a, b) {
-							if (a.max_rarity == b.max_rarity)
-								return a.name.localeCompare(b.name);
-							return a.max_rarity - b.max_rarity;
-						});
-						if (self.ownedCrew) {
-							if (!(found.some(x => self.ownedCrew?.some(y => x.symbol === y.symbol)))) {
-								self.ownedCrew = undefined;
-							}
-						}
-						for (let fitem of found) {
-							if (self.ownedCrew) {
-								let oc = self.ownedCrew.find(item => item.symbol === fitem.symbol);
-								if (oc && "immortal" in oc) {
-									fitem.base_skills = JSON.parse(JSON.stringify(oc.base_skills));
-									fitem.ship_battle = {...oc.ship_battle};
-									fitem.action = {...oc.action};
-									fitem.immortal = oc.immortal;
-									fitem.max_rarity = oc.max_rarity;
-									fitem.rarity = oc.rarity;
-									fitem.level = oc.level;
-								}
-								else {
-									fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
-								}
-							}	
-							else {
-								fitem.immortal = CompletionState.DisplayAsImmortalStatic;
-							}
-						}
-						// short_name may not always be the best name to use, depending on the first variant
-						//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
-						
-						variants.push({ 'name': self.getNameFromTrait(trait, found), 'trait_variants': found });
-					}
+		variantTraits.forEach(function (trait) {
+			let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
+			if (!self.masterCrew) {
+				self.masterCrew = [];
+			}
+
+			self.masterCrew = [ ... self.masterCrew, ... found ];
+
+			found = found.map(cp => JSON.parse(JSON.stringify(cp)) as PlayerCrew);
+			// Ignore variant group if crew is the only member of the group
+			if (found.length > 1) {
+				found.sort(function (a, b) {
+					if (a.max_rarity == b.max_rarity)
+						return a.name.localeCompare(b.name);
+					return a.max_rarity - b.max_rarity;
 				});
+				if (self.ownedCrew) {
+					if (!(found.some(x => self.ownedCrew?.some(y => x.symbol === y.symbol)))) {
+						self.ownedCrew = undefined;
+					}
+				}
+				for (let fitem of found) {
+					if (self.ownedCrew) {
+						let oc = self.ownedCrew.find(item => item.symbol === fitem.symbol);
+						if (oc && "immortal" in oc) {
+							fitem.base_skills = JSON.parse(JSON.stringify(oc.base_skills));
+							fitem.ship_battle = {...oc.ship_battle};
+							fitem.action = {...oc.action};
+							fitem.immortal = oc.immortal;
+							fitem.max_rarity = oc.max_rarity;
+							fitem.rarity = oc.rarity;
+							fitem.level = oc.level;
+						}
+						else {
+							fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
+						}
+					}	
+					else {
+						fitem.immortal = CompletionState.DisplayAsImmortalStatic;
+					}
+				}
+				// short_name may not always be the best name to use, depending on the first variant
+				//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
+				
+				variants.push({ 'name': self.getNameFromTrait(trait, found), 'trait_variants': found });
+			}
+		});
 
-				self.setState({ optimalpolestars, variants });
-			});
+		self.setState({ optimalpolestars, variants, constellation: constMap, itemsReady: true });
 	}
 
 	_findOptimalPolestars(allcrew: CrewMember[]) {

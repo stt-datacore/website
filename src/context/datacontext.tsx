@@ -5,8 +5,20 @@ import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 
-export type ValidDemands = 'crew' | 'ship_schematics' | 'items' | 'keystones';
-
+export type ValidDemands = 
+	'crew' | 
+	'ship_schematics' | 
+	'items' | 
+	'keystones' | 
+	'collections' |
+	'dilemmas' |
+	'disputes' |
+	'episodes' |
+	'factions' |
+	'gauntlets' |
+	'quests' |
+	'misc_stats';
+		
 export interface DataProviderProperties {
 	children: JSX.Element;
 }
@@ -62,7 +74,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['crew', 'ship_schematics', 'items', 'keystones'];
+		const valid = ['ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats'];
 		const unsatisfied = [] as string[];
 
 		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];

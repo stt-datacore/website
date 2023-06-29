@@ -66,9 +66,27 @@ type CrewRetrievalProps = {
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
 	const merged = React.useContext(MergedContext);
+	const pureData = React.useContext(DataContext);
+
+	const keystonesReady = pureData.ready(['keystones', 'crew']);
+
 	const { playerData } = merged;
 
 	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
+
+	if (!keystonesReady) {
+		return (<><Icon loading name='spinner' /> Loading...</>);
+	}
+	else if (!allKeystones) {
+		let ak = JSON.parse(JSON.stringify(pureData.keystones));
+		ak.forEach(keystone => {
+			const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
+			keystone.quantity = owned ? owned.quantity : 0;
+		});
+		setAllKeystones(ak);
+
+		return (<><Icon loading name='spinner' /> Loading...</>);
+	}
 
 	if (!playerData?.forte_root) {
 		return (
@@ -80,21 +98,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		);
 	}
 
-	if (!allKeystones) {
-		fetch('/structured/keystones.json')
-			.then(response => response.json())
-			.then(allkeystones => {
-				allkeystones.forEach(keystone => {
-					const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
-					keystone.quantity = owned ? owned.quantity : 0;
-				});
-				setAllKeystones(allkeystones);
-			});
-		return (<><Icon loading name='spinner' /> Loading...</>);
-	}
-
 	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
-
 	const allCrew = JSON.parse(JSON.stringify(merged.allCrew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities

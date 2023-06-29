@@ -8,6 +8,7 @@ import { ContextCommon, DataContext, DataProviderProperties, DefaultCore, ValidD
 import { PlayerContext } from './playercontext';
 import { CrewMember } from '../model/crew';
 import { BossBattlesRoot } from '../model/boss';
+import { KeystoneBase, Polestar, Constellation } from '../model/game-elements';
 
 export interface MergedData {
     playerData: PlayerData;
@@ -17,6 +18,7 @@ export interface MergedData {
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
+    keystones?: (KeystoneBase | Polestar | Constellation)[];
     items?: EquipmentItem[];
 }
 
