@@ -107,13 +107,13 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
-		
-		let playerData = this.context.playerData;
+		let playerData = {} as PlayerData;
+		// let playerData = this.context.playerData;
 
-		if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true) {
-			playerData = JSON.parse(JSON.stringify(playerData));
-			prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
-		}
+		// if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true) {
+		// 	playerData = JSON.parse(JSON.stringify(playerData));
+		// 	prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
+		// }
 
 		const playerCrew = playerData?.player?.character?.crew;
 
