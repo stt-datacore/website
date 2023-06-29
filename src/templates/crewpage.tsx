@@ -69,7 +69,7 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const { strippedPlayerData, buffConfig } = React.useContext(PlayerContext);
 
-	const isReady = coreData.ready(['items', 'crew']);
+	const isReady = coreData.ready(['items', 'crew', 'keystones']);
 
 	let pd = {} as PlayerData;
 
@@ -88,7 +88,8 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 					playerData: pd, 
 					allCrew: coreData.crew,
 					items: coreData.items,
-					buffConfig: buffConfig
+					buffConfig: buffConfig,
+					keystones: coreData.keystones
 					}}>
 					<StaticCrewComponent props={props} />
 				</MergedContext.Provider>
