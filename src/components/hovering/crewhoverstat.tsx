@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
-import { PlayerCrew, PlayerData } from "../../model/player";
+import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { applySkillBuff, navToCrewPage, prepareProfileData } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
@@ -84,12 +84,15 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
             if (showImmortal === true || (applyBuffs === true && buffConfig)) {
                 let cm: CrewMember | undefined = undefined;
                 if (showImmortal === true && !item.immortal) {
-                    cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);
+                    cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);                    
+                    if (cm) {
+                        cm["immortal"] = CompletionState.DisplayAsImmortalOwned;
+                    }
                 }
     
                 if (cm && showImmortal === true) {
                     item = JSON.parse(JSON.stringify(cm)) as PlayerCrew;
-                    if (item.immortal === 0) item.immortal = -2;
+                    if (item.immortal === 0) item.immortal = CompletionState.DisplayAsImmortalOwned;
                 }
                 else {
                     item = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;

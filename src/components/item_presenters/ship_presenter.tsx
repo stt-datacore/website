@@ -139,12 +139,10 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     </div> 
                 <div style={{ display: "flex", flexDirection: "column"}}>                    
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
-                        <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
-                            <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-                                style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
-                            />
-                        </a>
+                        <img
+                            src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+                            style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
+                        />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
@@ -179,7 +177,11 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     }}
                 >
                     <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{ship.name}</h3>
+                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
+                            <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
+                                {ship.name}
+                            </a>
+                        </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
                                 {

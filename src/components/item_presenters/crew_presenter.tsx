@@ -185,23 +185,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         </>}    
                     </div>        
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        
-                        <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
-                            <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                                style={{ height: compact ? (this.showShipAbility ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "9.5em") : "25em", marginRight: "8px" }}
-                            />
-                        </a>
+                        <img
+                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+                            style={{ height: compact ? (this.showShipAbility ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "9.5em") : "25em", marginRight: "8px" }}
+                        />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            
-                            {(!this.props.disableBuffs) &&
+                            {"immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortal && crew.immortal !== CompletionState.DisplayAsImmortalUnowned &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                            || 
-                            <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
                             }
-                            <i className="fighter jet icon" title="Toggle Ship Stats" style={this.showShipAbility ? activeStyle : dormantStyle} onClick={(e) => shipToggle(e)} />
-
                             {("immortal" in crew && crew.immortal >= 1 && 
                             <i className="snowflake icon" 
                                 title={printImmoText(crew.immortal)} 
@@ -209,10 +202,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 />)
                             ||
                             ("immortal" in crew && (crew.immortal === CompletionState.DisplayAsImmortalUnowned || crew.immortal === CompletionState.DisplayAsImmortalStatic) && 
-                            <i className="lock icon" 
-                                title={printImmoText(crew.immortal)} 
-                                style={frozenStyle} 
-                                />)
+                                <></>
+                                )
                             ||
                             <i className="star icon" 
                                 title={("immortal" in crew && crew.immortal) ? printImmoText(crew.immortal) : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
@@ -232,7 +223,11 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     }}
                 >
                     <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>{crew.name}</h3>
+                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
+                            <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
+                                {crew.name}
+                            </a>
+                        </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
                             {crew.in_portal &&  window.innerWidth >= mobileWidth &&
                                 (<div><img style={{
@@ -263,7 +258,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 maxRating={crew.max_rarity} 
                                 size='large' 
                                 disabled />
-                            {crew.in_portal &&  window.innerWidth < mobileWidth &&
+                                 {crew.in_portal &&  window.innerWidth < mobileWidth &&
                                 (<div><img style={{
                                     maxHeight: "1.25em",
                                     margin: "0.5em",
@@ -335,7 +330,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        {this.showShipAbility && <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [ crew.action] : []} shipInfo={crew.ship_battle} />}
+                        <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [ crew.action] : []} shipInfo={crew.ship_battle} />
                     </div>
                     <div>
                         <div
