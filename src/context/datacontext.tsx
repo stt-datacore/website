@@ -3,8 +3,9 @@ import { CrewMember } from '../model/crew';
 import { Ship, Schematics } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
+import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 
-export type ValidDemands = 'crew' | 'ship_schematics' |  'items';
+export type ValidDemands = 'crew' | 'ship_schematics' | 'items' | 'keystones';
 
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -19,7 +20,8 @@ export interface DefaultCore extends ContextCommon {
 	crew: PlayerCrew[],
 	ship_schematics: Schematics[],
 	ships: Ship[],
-	items: EquipmentItem[]
+	items: EquipmentItem[],
+	keystones: (KeystoneBase | Polestar | Constellation)[],
 	ready: (demands: ValidDemands[]) => boolean;
 };
 
@@ -27,7 +29,8 @@ const defaultData = {
 	crew: [] as CrewMember[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	items: [] as EquipmentItem[]
+	items: [] as EquipmentItem[],
+	keystones: [] as KeystoneBase[]
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -44,7 +47,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 		crew: data.crew,
 		ship_schematics: data.ship_schematics,
 		ships: data.ships,
-		items: data.items
+		items: data.items,
+		keystones: data.keystones
 	} as DefaultCore;
 
 	return (
@@ -58,7 +62,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['crew', 'ship_schematics', 'items'];
+		const valid = ['crew', 'ship_schematics', 'items', 'keystones'];
 		const unsatisfied = [] as string[];
 
 		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
