@@ -308,8 +308,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
 		}
 		if (crew.immortal !== 0) {
+			if (buffConfig) applyCrewBuffs(crew, buffConfig);
 			crew.have = true;
-			if (buffConfig) applyCrewBuffs(crew, buffConfig);			
 		}
 	}
 
@@ -360,8 +360,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	});
 
 	if (!crew.have || crew.immortal > 0) {
-		if (buffConfig) applyCrewBuffs(crew, buffConfig);
-		if (crew.immortal > 0 && rarity && rarity < crew.max_rarity && rarity > 0) {
+		if (crew.immortal <= 0 && rarity && rarity < crew.max_rarity && rarity > 0) {
 			crew = JSON.parse(JSON.stringify({ ... crew, ... crew.intermediate_skill_data[rarity] }));
 		}
 		outputcrew.push(crew);

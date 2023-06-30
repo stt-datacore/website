@@ -22,7 +22,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 		const { title, value } = this.props;
 
 		return (
-			<Label size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"} style={{ marginBottom: '0.5em', marginLeft: 0, width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em" }}>
+			<Label size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginBottom: '0.5em', marginLeft: 0, width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em" }}>
 				{title}
 				<Label.Detail>{value}</Label.Detail>
 			</Label>
@@ -181,6 +181,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}
                         />
                     </div>
+                    {crew.in_portal &&  window.innerWidth >= mobileWidth &&
+                                    (<div style={{alignSelf: "center"}}><img style={{
+                                        maxHeight: "1.5em",
+                                        margin: "0.5em"
+                                        }} 
+                                        title={"Available in the Premium Portal"}
+                                        src={"/media/portal.png"} 
+                                        /></div>
+                                    )
+                                }
                 </div>
                 <div
                     style={{
@@ -192,51 +202,54 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     }}
                 >
                     <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
-                            <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
-                                {crew.name}
-                            </a>
-                        </h3>
-                        <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            {crew.in_portal &&  window.innerWidth >= mobileWidth &&
-                                (<div><img style={{
-                                    maxHeight: "1.25em",
-                                    margin: "0.5em"
-                                    }} 
-                                    title={"Available in the Premium Portal"}
-                                    src={"/media/portal.png"} 
-                                    /></div>
-                                )
-                            }
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
-                                {
-                                    "immortal" in crew && (
-                                        ((crew.immortal === 0)) ? 
-                                        (<b>{crew.level}</b>) : 
-                                        ((crew.immortal > 0)) ? 
-                                        (<i className="snowflake icon" style={frozenStyle} />) : 
-                                        (<i className="check icon" style={checkedStyle} />) 
-                                    ) || (<i className="check icon" style={checkedStyle} />)
+                        <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+                            <h3 style={{
+                                    margin:"2px 8px", 
+                                    padding: "8px", 
+                                    marginLeft: "0px", 
+                                    paddingLeft: "0px"
+                                    }}>
+                                <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={"Go To Crew Page For '" + crew.name + "'"}>
+                                    {crew.name}
+                                </a>
+                            </h3>
+                            <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>                                
+                                <Rating
+                                    onClick={(e) => immoToggle(e)}
+                                    icon='star' 
+                                    rating={this.immortalMode !== 'full' && "rarity" in crew ? crew.rarity : crew.max_rarity} 
+                                    maxRating={crew.max_rarity} 
+                                    size='large' 
+                                    disabled />
+                                    {crew.in_portal &&  window.innerWidth < mobileWidth &&
+                                    (<div><img style={{
+                                        maxHeight: "1.25em",
+                                        margin: "0.5em",
+                                        }} 
+                                        title={"Available in the Premium Portal"}
+                                        src={"/media/portal.png"} 
+                                        /></div>
+                                    )
                                 }
-                            </h4>
-                            <Rating
-                                onClick={(e) => immoToggle(e)}
-                                icon='star' 
-                                rating={this.immortalMode !== 'full' && "rarity" in crew ? crew.rarity : crew.max_rarity} 
-                                maxRating={crew.max_rarity} 
-                                size='large' 
-                                disabled />
-                                 {crew.in_portal &&  window.innerWidth < mobileWidth &&
-                                (<div><img style={{
-                                    maxHeight: "1.25em",
-                                    margin: "0.5em",
-                                    }} 
-                                    title={"Available in the Premium Portal"}
-                                    src={"/media/portal.png"} 
-                                    /></div>
-                                )
-                            }
+                                <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
+                                    {
+                                        "immortal" in crew && (
+                                            ((crew.immortal === 0)) ? 
+                                            (<b>{crew.level}</b>) : 
+                                            ((crew.immortal > 0)) ? 
+                                            (<i className="snowflake icon" style={frozenStyle} />) : 
+                                            (<i className="check icon" style={checkedStyle} />) 
+                                        ) || (<i className="check icon" style={checkedStyle} />)
+                                    }
+                                </h4>
+                               
+                            </div>
                         </div>
+                        <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+
+                                        Herbm
+                        
+                        </div>                        
                     </div>
                     <div
                         style={{
@@ -249,41 +262,41 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             marginBottom: "2px",
                         }}
                     >
-                        <CrewStat
+                        {crew.base_skills.security_skill && <CrewStat
                             skill_name="security_skill"
                             data={crew.base_skills.security_skill}
                             scale={compact ? 0.75 : 1}
-                        />
-                        <div style={{ width: "4px" }} />
-                        <CrewStat
+                        />}
+                        
+                        {crew.base_skills.command_skill && <CrewStat
                             skill_name="command_skill"
                             data={crew.base_skills.command_skill}
                             scale={compact ? 0.75 : 1}
-                        />
-                        <div style={{ width: "4px" }} />
-                        <CrewStat
+                        />}
+                        
+                        {crew.base_skills.diplomacy_skill && <CrewStat
                             skill_name="diplomacy_skill"
                             data={crew.base_skills.diplomacy_skill}
                             scale={compact ? 0.75 : 1}
-                        />
-                        <div style={{ width: "4px" }} />
-                        <CrewStat
+                        />}
+
+                        {crew.base_skills.science_skill && <CrewStat
                             skill_name="science_skill"
                             data={crew.base_skills.science_skill}
                             scale={compact ? 0.75 : 1}
-                        />
-                        <div style={{ width: "4px" }} />
-                        <CrewStat
+                        />}
+
+                        {crew.base_skills.medicine_skill && <CrewStat
                             skill_name="medicine_skill"
                             data={crew.base_skills.medicine_skill}
                             scale={compact ? 0.75 : 1}
-                        />
-                        <div style={{ width: "4px" }} />
-                        <CrewStat
+                        />}
+
+                        {crew.base_skills.engineering_skill && <CrewStat
                             skill_name="engineering_skill"
                             data={crew.base_skills.engineering_skill}
                             scale={compact ? 0.75 : 1}
-                        />
+                        />}
                         <div style={{ width: "4px" }} />
                     </div>
                     <div
@@ -311,10 +324,41 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             }}
                         >
                             <StatLabel
+                                title="Big Book Tier"
+                                value={<div
+                                    style={{
+                                        fontWeight: "bold",
+                                        color: gradeToColor(
+                                            crew.bigbook_tier
+                                        ) ?? undefined,
+                                    }}
+                                >
+                                    {formatTierLabel(crew)}
+                                </div>}
+                            />
+                           
+                           <StatLabel
+                                title="Voyage Rank"
+                                value={"" + crew.ranks.voyRank}
+                            />
+
+                            <StatLabel
                                 title="CAB Rating"
                                 value={crew.cab_ov ?? 'None'}
                             />
-                            <StatLabel
+                        </div>
+                    </div>
+                    <div>
+                        <div
+                            style={{
+                                textAlign: "center",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                                justifyContent: window.innerWidth < mobileWidth ? "left" : "space-between",
+                            }}
+                        >
+                             <StatLabel
                                 title="CAB Grade"
                                 value={
                                     <div
@@ -330,44 +374,18 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 }
                             />
                             <StatLabel
+                                title="Gauntlet Rank"
+                                value={"" + crew.ranks.gauntletRank}
+                            />                            
+    
+                            <StatLabel
                                 title="CAB Rank"
                                 value={crew.cab_ov_rank ?? 'None'}
                             />
+
                         </div>
                     </div>
-                    <div>
-                        <div
-                            style={{
-                                textAlign: "center",
-                                display: "flex",
-                                flexWrap: "wrap",
-                                flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
-                                justifyContent: window.innerWidth < mobileWidth ? "left" : "space-between",
-                            }}
-                        >
-                            <StatLabel
-                                title="Voyage Rank"
-                                value={"" + crew.ranks.voyRank}
-                            />
-                            <StatLabel
-                                title="Gauntlet Rank"
-                                value={"" + crew.ranks.gauntletRank}
-                            />
-                            <StatLabel
-                                title="Big Book Tier"
-                                value={<div
-                                    style={{
-                                        fontWeight: "bold",
-                                        color: gradeToColor(
-                                            crew.bigbook_tier
-                                        ) ?? undefined,
-                                    }}
-                                >
-                                    {formatTierLabel(crew)}
-                                </div>}
-                            />
-                        </div>
-                    </div>
+                   
                 </div>
             </div>) : <></>
         
