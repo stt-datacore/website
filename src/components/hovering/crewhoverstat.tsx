@@ -77,7 +77,7 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
         pres = prepareOne(reference, playerData, buffConfig);
     }
     else if (state === 'full') {
-        pres = prepareOne(reference, undefined, buffConfig);
+        pres = prepareOne(reference, playerData, buffConfig, reference.max_rarity);
     }
     else if (state === 'min') {
         pres = prepareOne(reference, playerData, buffConfig, 1);

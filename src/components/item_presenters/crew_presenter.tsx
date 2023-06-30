@@ -247,7 +247,6 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         </div>
                         <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
 
-                                        Herbm
                         
                         </div>                        
                     </div>
