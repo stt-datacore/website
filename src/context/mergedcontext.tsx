@@ -18,6 +18,7 @@ export interface MergedData {
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
+    maxBuffs?: BuffStatTable;
     keystones?: (KeystoneBase | Polestar | Constellation)[];
     items?: EquipmentItem[];
 }

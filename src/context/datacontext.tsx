@@ -1,9 +1,10 @@
 import React from 'react';
-import { CrewMember } from '../model/crew';
+import { CrewMember, SkillData } from '../model/crew';
 import { Ship, Schematics } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
+import { BuffStatTable, IBuffStat } from '../utils/voyageutils';
 
 export type ValidDemands = 
 	'crew' | 
@@ -17,7 +18,8 @@ export type ValidDemands =
 	'factions' |
 	'gauntlets' |
 	'quests' |
-	'misc_stats';
+	'misc_stats' |
+	'skill_bufs';
 		
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -34,6 +36,7 @@ export interface DefaultCore extends ContextCommon {
 	ships: Ship[],
 	items: EquipmentItem[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
+	skill_bufs: BuffStatTable,
 	ready: (demands: ValidDemands[]) => boolean;
 };
 
@@ -42,7 +45,8 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	items: [] as EquipmentItem[],
-	keystones: [] as KeystoneBase[]
+	keystones: [] as KeystoneBase[],
+	skill_bufs: {} as BuffStatTable
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -54,13 +58,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 	const [data, setData] = React.useState(defaultData);
 
 	const providerValue = {
+		... data,
 		ready,
 		reset,
-		crew: data.crew,
-		ship_schematics: data.ship_schematics,
-		ships: data.ships,
-		items: data.items,
-		keystones: data.keystones
 	} as DefaultCore;
 
 	return (
@@ -74,7 +74,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats'];
+		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs'];
 		const unsatisfied = [] as string[];
 
 		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
@@ -131,6 +131,19 @@ export const DataProvider = (props: DataProviderProperties) => {
 									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
 									newData.ships = scsave;
 									newData.ship_schematics = ship_schematics;
+								}
+								else if (demand === 'skill_bufs') {
+									let sks = {} as BuffStatTable;
+									let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
+									let types = ['core', 'range_min', 'range_max'];
+									for (let skill of skills) {
+										for (let type of types) {
+											let bkey = `${skill}_skill_${type}`;
+											sks[bkey] = {} as IBuffStat;
+											sks[bkey].percent_increase = result[skill][type];
+										}
+									}
+									newData[demand] = sks;
 								}
 								else {
 									newData[demand] = result;

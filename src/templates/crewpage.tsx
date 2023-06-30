@@ -67,7 +67,7 @@ type StaticCrewPageProps = {
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const { strippedPlayerData, buffConfig } = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
 
 	const isReady = coreData.ready(['items', 'crew', 'keystones']);
 
@@ -89,6 +89,7 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 					allCrew: coreData.crew,
 					items: coreData.items,
 					buffConfig: buffConfig,
+					maxBuffs: maxBuffs,
 					keystones: coreData.keystones
 					}}>
 					<StaticCrewComponent props={props} />

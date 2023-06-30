@@ -13,7 +13,8 @@ import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PlayerBuffMode, PlayerImmortalMode } from "../hovering/crewhoverstat";
+import { PlayerBuffMode, PlayerImmortalMode, nextImmortalState, nextPlayerState } from "../hovering/crewhoverstat";
+import { MergedContext } from "../../context/mergedcontext";
 
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -34,9 +35,8 @@ export class StatLabel extends React.Component<StatLabelProps> {
 export interface CrewPresenterProps extends PresenterProps {
     crew: CrewMember | PlayerCrew;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
-    onShipToggle?: (state: boolean) => void;
-    onBuffToggle?: (state: boolean) => void;
-    onImmoToggle?: (state: boolean) => void;
+    onBuffToggle?: (state: PlayerBuffMode) => void;
+    onImmoToggle?: (state: PlayerImmortalMode) => void;
 }
 
 export interface CrewPresenterState {
@@ -44,6 +44,9 @@ export interface CrewPresenterState {
 }
 
 export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPresenterState> {
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
+
     tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
         super(props);        
@@ -74,6 +77,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
    
     render(): JSX.Element {
         const { crew, openCrew, touched } = this.props;
+        
         const { mobileWidth } = this.state;
         const compact = this.props.hover;                
 
@@ -118,25 +122,18 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
 
         var me = this;
         const immoToggle = (e) => {
-            if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal > -2) {
+            if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal >= -1) {
                 return;
             }
-            me.showImmortalized = !me.showImmortalized;
+            me.immortalMode = nextImmortalState(me.immortalMode, crew);
             if (this.props.onImmoToggle) {
-                this.props.onImmoToggle(me.showImmortalized);
+                this.props.onImmoToggle(me.immortalMode);
             }
         }
         const buffToggle = (e) => {
-            me.showPlayerBuffs = !me.showPlayerBuffs;
+            me.playerBuffMode = nextPlayerState(me.playerBuffMode, me.context.playerData, me.context.maxBuffs);
             if (this.props.onBuffToggle) {
-                this.props.onBuffToggle(me.showPlayerBuffs);
-            }
-        }
-
-        const shipToggle = (e) => {
-            me.showShipAbility = !me.showShipAbility;
-            if (this.props.onShipToggle) {
-                this.props.onShipToggle(me.showShipAbility);
+                this.props.onBuffToggle(me.playerBuffMode);
             }
         }
         
@@ -181,30 +178,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        
                         <img
                             src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                            style={{ height: compact ? (this.showShipAbility ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "9.5em") : "25em", marginRight: "8px" }}
+                            style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}
                         />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            {"immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortal && crew.immortal !== CompletionState.DisplayAsImmortalUnowned &&
-                            <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                            }
-                            {("immortal" in crew && crew.immortal >= 1 && 
-                            <i className="snowflake icon" 
-                                title={printImmoText(crew.immortal)} 
-                                style={frozenStyle} 
-                                />)
-                            ||
-                            ("immortal" in crew && (crew.immortal === CompletionState.DisplayAsImmortalUnowned || crew.immortal === CompletionState.DisplayAsImmortalStatic) && 
-                                <></>
-                                )
-                            ||
-                            <i className="star icon" 
-                                title={("immortal" in crew && crew.immortal) ? printImmoText(crew.immortal) : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
-                                style={("immortal" in crew && crew.immortal != 0 && crew.immortal > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle} 
-                                onClick={(e) => immoToggle(e)} />
-                            }
-                        </div>
                     </div>
                 </div>
                 <div
@@ -246,9 +221,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             </h4>
                             <Rating
                                 onClick={(e) => immoToggle(e)}
-                                title={("immortal" in crew && crew.immortal) ? printImmoText(crew.immortal) : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
                                 icon='star' 
-                                rating={!this.showImmortalized && "rarity" in crew ? crew.rarity : crew.max_rarity} 
+                                rating={this.immortalMode !== 'full' && "rarity" in crew ? crew.rarity : crew.max_rarity} 
                                 maxRating={crew.max_rarity} 
                                 size='large' 
                                 disabled />

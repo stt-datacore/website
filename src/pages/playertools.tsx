@@ -111,7 +111,7 @@ export const playerTools: PlayerTools = {
 const PlayerToolsPage = (props: any) => {
 	const coreData = React.useContext(DataContext);
 	const playerData = React.useContext(PlayerContext);
-	const isReady = coreData.ready(['ship_schematics', 'crew', 'items']);
+	const isReady = coreData.ready(['ship_schematics', 'crew', 'items', 'skill_bufs']);
 	return (
 		<>
 			{!isReady &&
@@ -139,7 +139,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	
 	// The context above	
 	const dataContext = props.coreData;
-	const { strippedPlayerData, setStrippedPlayerData, buffConfig } = props.playerData;
+	const { strippedPlayerData, setStrippedPlayerData, buffConfig, maxBuffs } = props.playerData;
 
 	// All things playerData
 	
@@ -163,6 +163,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
+					maxBuffs={maxBuffs}
 					playerData={playerData}
 					buffConfig={buffConfig}
 					strippedPlayerData={strippedPlayerData}
@@ -307,6 +308,7 @@ type PlayerToolsPanesProps = {
 	playerShips: Ship[];
 	fleetBossData: BossBattlesRoot;
 	buffConfig?: BuffStatTable;
+	maxBuffs?: BuffStatTable;
 
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
@@ -317,6 +319,7 @@ type PlayerToolsPanesProps = {
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const { playerData, 
 			buffConfig,
+			maxBuffs,
 			strippedPlayerData, 
 			dataSource,
 			allCrew, 
@@ -492,7 +495,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					playerData: playerData,
 					playerShips: playerShips,
 					bossData: fleetBossData,
-					buffConfig: buffConfig
+					buffConfig: buffConfig,
+					maxBuffs: maxBuffs
 				}}>
 					{tools[activeTool].render(props)}
 				</MergedContext.Provider>
