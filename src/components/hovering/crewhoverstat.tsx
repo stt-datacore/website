@@ -2,12 +2,74 @@ import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applySkillBuff, navToCrewPage, prepareProfileData } from "../../utils/crewutils";
+import { applySkillBuff, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
+
+export type PlayerBuffMode = 'none' | 'player' | 'max';
+
+export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full'
+
+export function nextImmortalState(current: PlayerImmortalMode, crew: PlayerCrew | CrewMember, backward?: boolean): PlayerImmortalMode {
+    let v: PlayerImmortalMode[];
+    
+    if (!("rarity" in crew)) {
+        if (crew.max_rarity === 5) v = ['min', 2, 3, 4, 'full'];
+        else if (crew.max_rarity === 4) v = ['min', 2, 3, 'full'];
+        else if (crew.max_rarity === 3) v = ['min', 2, 'full'];
+        else if (crew.max_rarity === 2) v = ['min', 'full'];
+        else v = ['full'];
+    }
+    else if (crew.rarity === crew.max_rarity) {
+        v = ['owned', 'full'];
+    }
+    else {
+        v ??= [];
+        v.push('owned');
+
+        for (let f = crew.rarity + 1; f < crew.max_rarity; f++) {
+            if (f === 2 || f === 3 || f === 4) {
+                v.push(f);
+            }
+        }
+
+        v.push('full');
+    }
+    
+    let z = v.indexOf(current);
+    if (z !== -1) {
+        if (backward) z--;
+        else z++;
+        
+        if (z < 0) z = v.length - 1;
+        else if (z >= v.length) z = v.length - 1;
+
+        return v[z];
+    }
+
+    return current;
+}
+
+export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable) {
+    let pres: PlayerCrew[];
+    if (state === 'owned') {
+        pres = prepareOne(reference, playerData, buffConfig);
+    }
+    else if (state === 'full') {
+        pres = prepareOne(reference, undefined, buffConfig);
+    }
+    else if (state === 'min') {
+        pres = prepareOne(reference, playerData, buffConfig, 1);
+    }
+    else {
+        pres = prepareOne(reference, playerData, buffConfig, state);
+    }
+    
+    return pres[0];
+}
 
 export interface CrewHoverStatProps extends HoverStatProps {
     crew: CrewMember | PlayerCrew | undefined;
@@ -35,28 +97,20 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         this.tiny.subscribe(this.propertyChanged);                
     }
     
-    protected get showPlayerBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', true) ?? false;
+    protected get playerBuffMode(): PlayerBuffMode {
+        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
     }
 
-    protected set showPlayerBuffs(value: boolean) {
-        this.tiny.setValue<boolean>('buff', value, true);
+    protected set playerBuffMode(value: PlayerBuffMode) {
+        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
 
-    protected get showImmortalized(): boolean {
-        return this.tiny.getValue<boolean>('immo', true) ?? false;
+    protected get immortalMode(): PlayerImmortalMode {
+        return this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
     }
 
-    protected set showImmortalized(value: boolean) {
-        this.tiny.setValue<boolean>('immo', value, true);
-    }
-
-    protected get showShipAbility(): boolean {
-        return this.tiny.getValue<boolean>('ship', true) ?? false;
-    }
-
-    protected set showShipAbility(value: boolean) {
-        this.tiny.setValue<boolean>('ship', value, true);
+    protected set immortalMode(value: PlayerImmortalMode) {
+        this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
     }
 
     protected propertyChanged = (key: string) => {
@@ -75,22 +129,22 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
         const { buffConfig } = this.context;
 
-        const applyBuffs = this.showPlayerBuffs;
-        const showImmortal = this.showImmortalized;
+        const buffMode = this.playerBuffMode;
+        const immortalMode = this.immortalMode;
 
         if (dataIn) {            
             let item: PlayerCrew = dataIn as PlayerCrew;
 
-            if (showImmortal === true || (applyBuffs === true && buffConfig)) {
+            if (immortalMode === 'full' || (buffMode === 'player' && buffConfig)) {
                 let cm: CrewMember | undefined = undefined;
-                if (showImmortal === true && !item.immortal) {
+                if (immortalMode === 'full' && !item.immortal) {
                     cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);                    
                     if (cm) {
                         cm["immortal"] = CompletionState.DisplayAsImmortalOwned;
                     }
                 }
     
-                if (cm && showImmortal === true) {
+                if (cm && immortalMode === 'full') {
                     item = JSON.parse(JSON.stringify(cm)) as PlayerCrew;
                     if (item.immortal === 0) item.immortal = CompletionState.DisplayAsImmortalOwned;
                 }
@@ -98,7 +152,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                     item = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;
                 }
     
-                if (buffConfig && applyBuffs === true) {
+                if (buffConfig && buffMode === 'player') {
                     for (let key of Object.keys(item.base_skills)) {
                         let sb = applySkillBuff(buffConfig, key, item.base_skills[key]);
                         item.base_skills[key] = {
@@ -159,29 +213,21 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
         return false;
     }
-
-    protected get showPlayerBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', true) ?? false;
+   
+    protected get playerBuffMode(): PlayerBuffMode {
+        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
     }
 
-    protected set showPlayerBuffs(value: boolean) {
-        this.tiny.setValue<boolean>('buff', value, true);
+    protected set playerBuffMode(value: PlayerBuffMode) {
+        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
 
-    protected get showImmortalized(): boolean {
-        return this.tiny.getValue<boolean>('immo', true) ?? false;
+    protected get immortalMode(): PlayerImmortalMode {
+        return this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
     }
 
-    protected set showImmortalized(value: boolean) {
-        this.tiny.setValue<boolean>('immo', value, true);
-    }
-    
-    protected get showShipAbility(): boolean {
-        return this.tiny.getValue<boolean>('ship', true) ?? false;
-    }
-
-    protected set showShipAbility(value: boolean) {
-        this.tiny.setValue<boolean>('ship', value, true);
+    protected set immortalMode(value: PlayerImmortalMode) {
+        this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
     }
 
     protected renderContent = (): JSX.Element => {

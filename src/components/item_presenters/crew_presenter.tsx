@@ -13,6 +13,7 @@ import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { PlayerBuffMode, PlayerImmortalMode } from "../hovering/crewhoverstat";
 
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -54,35 +55,28 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         this.tiny = TinyStore.getStore(props.storeName);
     }    
 
-    protected get showPlayerBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', true) ?? false;
-    }
-
-    protected set showPlayerBuffs(value: boolean) {
-        this.tiny.setValue<boolean>('buff', value, true);
-    }
-
-    protected get showImmortalized(): boolean {
-        return this.tiny.getValue<boolean>('immo', true) ?? false;
-    }
-
-    protected set showImmortalized(value: boolean) {
-        this.tiny.setValue<boolean>('immo', value, true);
-    }
     
-    protected get showShipAbility(): boolean {
-        return this.tiny.getValue<boolean>('ship', true) ?? false;
+    protected get playerBuffMode(): PlayerBuffMode {
+        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
     }
 
-    protected set showShipAbility(value: boolean) {
-        this.tiny.setValue<boolean>('ship', value, true);
+    protected set playerBuffMode(value: PlayerBuffMode) {
+        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
 
+    protected get immortalMode(): PlayerImmortalMode {
+        return this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
+    }
+
+    protected set immortalMode(value: PlayerImmortalMode) {
+        this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
+    }
+   
     render(): JSX.Element {
         const { crew, openCrew, touched } = this.props;
         const { mobileWidth } = this.state;
-        const compact = this.props.hover;    
-        
+        const compact = this.props.hover;                
+
         if (!crew) {
             return <></>
         } 

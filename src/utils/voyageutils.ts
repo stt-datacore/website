@@ -14,6 +14,38 @@ export interface BuffStatTable {
 	[key: string]: IBuffStat;
 }
 
+export function calculateMaxBuffs(playerData: Player): BuffStatTable {
+	let result: BuffStatTable = {};
+
+	const parseBuff = (value: string) => {
+		let i = value.indexOf(",");
+		if (i !== -1) {
+			let skill = value.slice(0, i);
+			let type =  value.slice(i+1);
+
+			return {
+				skill,
+				type
+			};
+		}
+		return undefined;
+	};
+
+	Object.keys(playerData.character.all_buffs_cap_hash)
+		.filter(z => z.includes("skill"))
+		.forEach(buff => {
+			let p = parseBuff(buff);
+			if (p && p.type === 'percent_increase') {
+				result[p.skill].percent_increase = playerData.character.all_buffs_cap_hash[buff];
+			}
+			else if (p && p.type === 'multiplier') {
+				result[p.skill].multiplier = playerData.character.all_buffs_cap_hash[buff];
+			}
+		});
+
+	return result;
+}
+
 export function calculateBuffConfig(playerData: Player): BuffStatTable {
 	const skills = ['command_skill', 'science_skill', 'security_skill', 'engineering_skill', 'diplomacy_skill', 'medicine_skill'];
 	const buffs = ['core', 'range_min', 'range_max'];

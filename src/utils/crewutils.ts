@@ -2,8 +2,8 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
+import { CompactCrew, CompletionState, Player, PlayerCrew, PlayerData } from '../model/player';
+import { BaseSkills, ComputedBuff, CrewMember, IntermediateSkillData, Skill } from '../model/crew';
 import { TinyStore } from "./tiny";
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
@@ -284,6 +284,92 @@ export function isImmortal(crew: PlayerCrew): boolean {
 	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
 }
 
+export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+	// Create a copy of crew instead of directly modifying the source (allcrew)
+	let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
+	let outputcrew = [] as PlayerCrew[];
+
+	crew.rarity = crew.max_rarity;
+	crew.level = 100;
+	crew.have = false;
+	crew.equipment = [0, 1, 2, 3];
+	crew.favorite = false;
+	crew.immortal = playerData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+
+	if (typeof crew.date_added === 'string') {
+		crew.date_added = new Date(crew.date_added);
+	}
+
+	if (playerData) {
+		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
+			crew.immortal = CompletionState.Frozen;
+		} else {
+			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
+			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
+		}
+		if (crew.immortal !== 0) {
+			crew.have = true;
+			if (buffConfig) applyCrewBuffs(crew, buffConfig);			
+		}
+	}
+
+	let inroster = playerData?.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+
+	inroster?.forEach(owned => {
+
+		let workitem: PlayerCrew;
+		
+		if (!rarity || rarity >= crew.rarity || rarity < 1) {
+			workitem = owned;
+		}
+		else {
+			rarity--;
+			workitem = { ...owned, ...crew.intermediate_skill_data[rarity] };
+		}
+
+		crew.rarity = workitem.rarity;
+		crew.base_skills = workitem.base_skills;
+		crew.level = workitem.level;
+		crew.have = true;
+		crew.favorite = workitem.favorite;
+		crew.equipment = workitem.equipment;
+		if (workitem.action) crew.action.bonus_amount = workitem.action.bonus_amount;
+		if (workitem.ship_battle) crew.ship_battle = workitem.ship_battle;
+
+		// Use skills directly from player data when possible
+
+		if (workitem.skills) {
+			for (let skill in CONFIG.SKILLS) {
+				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+			}
+			for (let skill in workitem.skills) {
+				crew[skill] = {
+					core: workitem.skills[skill].core,
+					min: workitem.skills[skill].range_min,
+					max: workitem.skills[skill].range_max
+				} as ComputedBuff;
+			}
+		}
+		// Otherwise apply buffs to base_skills
+		else if (buffConfig) {
+ 		    applyCrewBuffs(crew, buffConfig);
+		}
+
+		crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
+		outputcrew.push(JSON.parse(JSON.stringify(crew)));
+	});
+
+	if (!crew.have) {
+		if (buffConfig) applyCrewBuffs(crew, buffConfig);
+		if (rarity && rarity < crew.max_rarity && rarity > 0) {
+			crew = JSON.parse(JSON.stringify({ ... crew, ... crew.intermediate_skill_data[rarity] }));
+		}
+		outputcrew.push(crew);
+	}
+
+	return outputcrew;
+}
+
 export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
 	console.log("prepareProfileData enter...");
 	console.log("Caller: " + caller);
@@ -309,82 +395,14 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let unOwnedCrew = [] as PlayerCrew[];
 
 	for (let oricrew of allcrew) {
-		// Create a copy of crew instead of directly modifying the source (allcrew)
-		let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
-		crew.rarity = crew.max_rarity;
-		crew.level = 100;
-		crew.have = false;
-		crew.equipment = [0, 1, 2, 3];
-		crew.favorite = false;
-
-		if (typeof crew.date_added === 'string') {
-			crew.date_added = new Date(crew.date_added);
-		}
-
-		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
-			crew.immortal = CompletionState.Frozen;
-		} else {
-			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
-		}
-		if (crew.immortal !== 0) {
-			crew.have = true;
-			applyCrewBuffs(crew, buffConfig);
-			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-		}
-
-		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
-		inroster.forEach(owned => {
-			crew.rarity = owned.rarity;
-			crew.base_skills = owned.base_skills;
-			crew.level = owned.level;
-			crew.have = true;
-			crew.favorite = owned.favorite;
-			crew.equipment = owned.equipment;
-			if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
-			if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
-			// Use skills directly from player data when possible
-			if (owned.skills) {
-				for (let skill in CONFIG.SKILLS) {
-					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
-				}
-				for (let skill in owned.skills) {
-					crew[skill] = {
-						core: owned.skills[skill].core,
-						min: owned.skills[skill].range_min,
-						max: owned.skills[skill].range_max
-					} as ComputedBuff;
-				}
+		for (let newcrew of prepareOne(oricrew, playerData, buffConfig)) {
+			if (newcrew.have) {
+				ownedCrew.push(newcrew);
 			}
-			// Otherwise apply buffs to base_skills
 			else {
-				applyCrewBuffs(crew, buffConfig);
+				unOwnedCrew.push(newcrew);
 			}
-
-			crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
-			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-		});
-
-		if (!crew.have) {
-			// Crew is not immortal or in the active roster
-			applyCrewBuffs(crew, buffConfig);
-			// Add a copy to the list
-			unOwnedCrew.push(JSON.parse(JSON.stringify(crew)));
 		}
-		// else {
-		// 	if (crew.immortal === CompletionState.Immortalized) {
-		// 		console.log(crew.name + ": Immortalized");
-		// 	}
-		// 	else if (crew.immortal === CompletionState.Frozen) {
-		// 		console.log(crew.name + ": Frozen");
-		// 	}
-		// 	else if (crew.immortal > 1) {
-		// 		console.log(crew.name + ": Frozen (" + crew.immortal + " copies)");
-		// 	}
-		// 	else {
-		// 		console.log(crew.name + ": In Progress (Level " + crew.level + "; " + crew.rarity + " / " + crew.max_rarity + " Stars; " + (crew.equipment?.length ?? 0) + " / 4 Equipment)");
-		// 	}
-		// }
 	}
 	
 	playerData.stripped = false;

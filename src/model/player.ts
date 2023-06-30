@@ -3,7 +3,7 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, Skill } from "./crew"
+import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
 import { Icon } from "./game-elements"
@@ -421,7 +421,7 @@ export interface Player {
    * 
    * This interface inherits from both CrewMember and CompactCrew
    */
-  export interface PlayerCrew extends CrewMember, CompactCrew {
+  export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillData {
     id: number
     symbol: string
     name: string
