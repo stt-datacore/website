@@ -134,7 +134,10 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		const allkeystones = this.context.keystones;
 
-		let crew_keystone_crate = allkeystones?.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
+		let atid = this.props.crew_archetype_id;
+		let crew_keystone_crate: Constellation | undefined = undefined;
+
+		crew_keystone_crate = allkeystones?.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
 		
 		let [crates, keystones] = categorizeKeystones(allkeystones ?? []);
 
@@ -147,7 +150,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		);
 		
 		
-		let constMap: ConstellationMap = {} as ConstellationMap;
+		let constMap: ConstellationMap | undefined = undefined;
 
 		if (crew_keystone_crate && crew_keystone_crate.keystones) {
 			constMap = {
