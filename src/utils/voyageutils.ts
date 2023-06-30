@@ -34,8 +34,10 @@ export function calculateMaxBuffs(playerData: Player): BuffStatTable {
 	Object.keys(playerData.character.all_buffs_cap_hash)
 		.filter(z => z.includes("skill"))
 		.forEach(buff => {
-			let p = parseBuff(buff);
+			let p = parseBuff(buff);			
+			if (p) result[p.skill] = {} as IBuffStat;
 			if (p && p.type === 'percent_increase') {
+
 				result[p.skill].percent_increase = playerData.character.all_buffs_cap_hash[buff];
 			}
 			else if (p && p.type === 'multiplier') {
