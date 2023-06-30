@@ -365,6 +365,9 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		if (crew.immortal <= 0 && rarity && rarity < crew.max_rarity && rarity > 0) {
 			crew = JSON.parse(JSON.stringify({ ... crew, ... crew.intermediate_skill_data[rarity] }));
 		}
+		if (!crew.have) {
+			crew.immortal = CompletionState.DisplayAsImmortalUnowned;
+		}
 		outputcrew.push(crew);
 	}
 
