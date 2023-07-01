@@ -11,12 +11,12 @@ import { MergedContext } from "../../context/mergedcontext";
 
 export type PlayerBuffMode = 'none' | 'player' | 'max';
 
-export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full'
+export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
 
 export const BuffNames = {
-    'none': "None",
-    'player': "Player",
-    'max': "Max"
+    'none': "Unboosted",
+    'player': "Player Boosts",
+    'max': "Max Boosts"
 }
 
 export const ImmortalNames = {
@@ -26,6 +26,7 @@ export const ImmortalNames = {
     2: "2x Fused", 
     3: "3x Fused", 
     4: "4x Fused", 
+    "frozen": "Frozen",    
 }
 
 export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: BuffStatTable): PlayerBuffMode[] {
@@ -44,11 +45,11 @@ export function getAvailableImmortalStates(crew: PlayerCrew | CrewMember): Playe
         else if (crew.max_rarity === 2) v = ['min', 'full'];
         else v = ['full'];
     }
-    else if (crew.immortal > 0 || crew.immortal === -1) {
-        return ['owned'];
+    else if (crew.immortal > 0) {
+        return ['frozen'];
     }
-    else if (crew.immortal < -1) {
-        return[ 'full'];
+    else if (crew.immortal <= -1) {
+        return['full'];
     }
     else if (crew.rarity === crew.max_rarity && crew.immortal === 0) {
         v = ['owned', 'full'];
@@ -110,7 +111,7 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
     if (state === 'owned') {
         pres = prepareOne(reference, playerData, buffConfig);
     }
-    else if (state === 'full') {
+    else if (state === 'full' || state === 'frozen') {
         pres = prepareOne(reference, playerData, buffConfig, 6);
     }
     else if (state === 'min') {
