@@ -41,7 +41,7 @@ export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: Buf
 export function getAvailableImmortalStates(crew: PlayerCrew | CrewMember): PlayerImmortalMode[] {
     let v: PlayerImmortalMode[];
     
-    if (!("rarity" in crew) || crew.have === false || crew.immortal === CompletionState.DisplayAsImmortalUnowned) {
+    if (!("rarity" in crew) || crew.have === false || crew.immortal === CompletionState.DisplayAsImmortalUnowned || crew.immortal === CompletionState.DisplayAsImmortalStatic) {
         if (crew.max_rarity === 5) v = ['min', 2, 3, 4, 'full'];
         else if (crew.max_rarity === 4) v = ['min', 2, 3, 'full'];
         else if (crew.max_rarity === 3) v = ['min', 2, 'full'];
@@ -241,6 +241,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
             if (hasPlayer) {
                 item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
+                item = { ...dataIn, ...item };
             }
             else {
                 item = dataIn as PlayerCrew;
