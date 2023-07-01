@@ -88,23 +88,28 @@ export function nextBuffState(current: PlayerBuffMode, playerData?: PlayerData, 
     return current;
 }
 
-export function nextImmortalState(current: PlayerImmortalMode, crew: PlayerCrew | CrewMember, backward?: boolean): PlayerImmortalMode {
-    
+export function nextImmortalCrewState(current: PlayerImmortalMode, crew: PlayerCrew | CrewMember, backward?: boolean): PlayerImmortalMode {    
     let v = getAvailableImmortalStates(crew);
-    let z = v.indexOf(current);
+    return nextImmortalState(current, v, backward);
+}
+
+export function nextImmortalState(current: PlayerImmortalMode, modes: PlayerImmortalMode[], backward?: boolean): PlayerImmortalMode {    
+    let z = modes.indexOf(current);
     
     if (z !== -1) {
         if (backward) z--;
         else z++;
         
-        if (z < 0) z = v.length - 1;
-        else if (z >= v.length) z = v.length - 1;
+        if (z < 0) z = modes.length - 1;
+        else if (z >= modes.length) z = 0;
 
-        return v[z];
+        return modes[z];
     }
 
     return current;
 }
+
+
 
 export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable) {
     let pres: PlayerCrew[];

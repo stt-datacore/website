@@ -34,6 +34,11 @@ const activeStyle: React.CSSProperties = {
     cursor: "pointer"
 }
 
+const ownedGreenStyle: React.CSSProperties = {
+    ...activeStyle, 
+    color: "lightgreen",    
+}
+
 const completeStyle: React.CSSProperties = {
     background: 'transparent',
     color: 'lightgreen',            
@@ -80,6 +85,7 @@ export interface BuffSelectorProps {
 }
 
 export interface ImmortalSelectorProps {
+    owned?: boolean;
     immortalMode: PlayerImmortalMode;
     setImmortalMode: (value: PlayerImmortalMode) => void;
     style?: React.CSSProperties | undefined;
@@ -103,21 +109,21 @@ function drawBuff(data: PlayerBuffMode, buffClick?: (value: PlayerBuffMode) => v
     else if (data === 'player') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => buffclick(e, 'player')}  className="arrow alternate circle up icon" title="Player Boosts Applied" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => buffclick(e, 'player')}  className="arrow alternate circle up icon" title="Player Boosts Applied" style={{...ownedGreenStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                 {BuffNames[data]}
             </div>)
     }
     else if (data === 'max') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => buffclick(e, 'max')}  className="arrow alternate circle up icon" title="Max Boosts Applied" style={{...activeStyle, fontSize: "1em", marginRight: "0.5em"}} />
+                <i onClick={(e) => buffclick(e, 'max')}  className="arrow alternate circle up icon glow" title="Max Boosts Applied" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                 {BuffNames[data]}
             </div>)
     }
     return <></>;
 }
 
-function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMode) => void): JSX.Element {
+function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMode) => void, owned?: boolean): JSX.Element {
     const immoclick = (e: React.MouseEvent<HTMLElement, MouseEvent>, immo: PlayerImmortalMode) => {
         if (immoClick) {
             e.preventDefault();
@@ -128,7 +134,7 @@ function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMo
     if (data === 'full') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Player Boosts Applied" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Player Boosts Applied" style={{... (owned ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
@@ -175,7 +181,7 @@ export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
         <Dropdown
                 inline
 				placeholder={'Crew Level'} 
-                trigger={drawImmo(this.props.immortalMode)}
+                trigger={drawImmo(this.props.immortalMode, undefined, this.props.owned)}
 				options={this.props.available}
 				value={this.props.immortalMode}
 				onChange={(e, { value }) => this.props.setImmortalMode(value as PlayerImmortalMode)}
@@ -297,10 +303,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
 
         const nextImmo = (e) => {
-            if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal >= -1) {
-                return;
-            }
-            me.immortalMode = nextImmortalState(me.immortalMode, crew);
+            me.immortalMode = nextImmortalState(me.immortalMode, me.validImmortalModes);
             if (this.props.onImmoToggle) {
                 this.props.onImmoToggle(me.immortalMode);
             }
@@ -346,7 +349,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     text: ImmortalNames[data]
                 } as HoverSelectorConfig<PlayerImmortalMode>;
 
-                immo.content = drawImmo(data, clickImmo);
+                immo.content = drawImmo(data, clickImmo, "have" in crew && crew.have);
                 return immo;
             });
 
@@ -475,12 +478,14 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 <BuffSelector available={availBuffs} buff={me.playerBuffMode} setBuff={(e) => clickBuff(e)} />
                             </div>
                             <div style={{display:"flex", flexDirection: "row", justifyContent: "flex-end"}}>
-                                <ImmortalSelector available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
+                                <ImmortalSelector owned={"have" in crew && crew.have} available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
                             </div>
                         </div>                        
                     </div>
                     <div
+                        onClick={(e) => nextBuff(e)}
                         style={{
+                            cursor: "default",
                             display: "flex",
                             flexWrap: "wrap",
                             flexDirection:
