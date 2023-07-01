@@ -54,8 +54,7 @@ const AssignmentsList = (props: AssignmentsList) => {
 					{!assignedCrew && (<span style={{ color: 'gray' }}>(Open seat)</span>)}
 				</Table.Cell>
 				<Table.Cell>
-					{assignedCrew?.immortal > 0 && (<Icon name='snowflake' />)}
-					{assignedCrew?.prospect && (<Icon name='add user' />)}
+					{assignedCrew?.statusIcon && <Icon name={assignedCrew.statusIcon} />}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{assignedCrew && (
@@ -175,8 +174,7 @@ const AssignmentsList = (props: AssignmentsList) => {
 					</Table.Cell>
 					<Table.Cell><SeatCrewView crew={crew} /></Table.Cell>
 					<Table.Cell>
-						{crew.immortal > 0 && (<Icon name='snowflake' />)}
-						{crew.prospect && (<Icon name='add user' />)}
+						{crew.stausIcon && (<Icon name={crew.statusIcon} />)}
 					</Table.Cell>
 					<Table.Cell textAlign='center'>
 						{renderScoreChange(shuttleId, seatNum, crew.score)}

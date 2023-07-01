@@ -70,14 +70,12 @@ const EventPlanner = (props: EventPlannerProps) => {
 		myCrew.push(crewman);
 	}); 
 
-	const sharedCrew = playerData.player.character.crew_borrows;
-	if (!ignoreSharedCrew && sharedCrew) {
-		for (const skill in CONFIG.SKILLS) 
-			sharedCrew[0][skill] = sharedCrew[0].skills[skill] ?? {core: 0, range_min: 0, range_max: 0};
+	let sharedCrew = playerData.player.character.crew_borrows[0];
+	if (ignoreSharedCrew && sharedCrew) {
+		sharedCrew = {...allCrew.find(c => c.symbol == sharedCrew.symbol), ...sharedCrew };
 		sharedCrew.prospect = true;
 		sharedCrew.id = myCrew.length + 1;
-		sharedCrew.base_skills =
-		myCrew.push(sharedCrew[0]);
+		myCrew.push(sharedCrew);
 	}
 
 	const buffConfig = calculateBuffConfig(playerData.player);
