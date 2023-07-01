@@ -141,6 +141,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 											let bkey = `${skill}_skill_${type}`;
 											sks[bkey] = {} as IBuffStat;
 											sks[bkey].percent_increase = result[skill][type];
+											sks[bkey].multiplier = 1;
 										}
 									}
 									newData[demand] = sks;

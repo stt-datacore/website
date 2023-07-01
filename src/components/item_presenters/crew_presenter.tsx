@@ -1,7 +1,7 @@
 import * as React from "react";
-import { CrewMember } from "../../model/crew";
+import { CrewMember, SkillData } from "../../model/crew";
 import { CompletionState, PlayerCrew } from "../../model/player";
-import { Rating } from "semantic-ui-react";
+import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import { formatTierLabel, gradeToColor } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
@@ -13,7 +13,7 @@ import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PlayerBuffMode, PlayerImmortalMode, nextImmortalState, nextPlayerState } from "../hovering/crewhoverstat";
+import { PlayerBuffMode, PlayerImmortalMode, nextImmortalState, nextBuffState, getAvailableBuffStates, BuffNames, getAvailableImmortalStates, ImmortalNames } from "../hovering/crewhoverstat";
 import { MergedContext } from "../../context/mergedcontext";
 
 
@@ -30,7 +30,56 @@ export class StatLabel extends React.Component<StatLabelProps> {
 	}
 }
 
+export interface BuffSelectorProps {
+    buff: PlayerBuffMode;
+    setBuff: (value: PlayerBuffMode) => void;
+    available: { 
+        key: PlayerBuffMode,
+        value: PlayerBuffMode,
+        text?: string,
+        content?: JSX.Element
+    }[]
+}
 
+export interface ImmortalSelectorProps {
+    immortalMode: PlayerImmortalMode;
+    setImmortalMode: (value: PlayerImmortalMode) => void;
+    available: { 
+        key: PlayerImmortalMode,
+        value: PlayerImmortalMode,
+        text?: string,
+        content?: JSX.Element
+    }[]
+}
+
+export class BuffSelector extends React.Component<BuffSelectorProps> {
+    render() {
+
+        return <>
+        <Dropdown
+				placeholder={'Display Buffs'} 
+				options={this.props.available}
+				value={this.props.buff}
+				onChange={(e, { value }) => this.props.setBuff(value as PlayerBuffMode)}
+				closeOnChange
+			/>
+        </>
+    }
+}
+
+export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
+    render() {
+        return <>
+        <Dropdown
+				placeholder={'Crew Level'} 
+				options={this.props.available}
+				value={this.props.immortalMode}
+				onChange={(e, { value }) => this.props.setImmortalMode(value as PlayerImmortalMode)}
+				closeOnChange
+			/>
+        </>
+    }
+}
 
 export interface CrewPresenterProps extends PresenterProps {
     crew: CrewMember | PlayerCrew;
@@ -68,11 +117,48 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     }
 
     protected get immortalMode(): PlayerImmortalMode {
-        return this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
+        let value: PlayerImmortalMode;
+        if (this.props.crew) {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, 'owned') ?? 'owned';
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
+        }
+        console.log("immortal-mode")
+        console.log(value);
+        return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
-        this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
+        if (value == this.immortalMode) return;
+        if (this.props.crew) {
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, true);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
+        }
+    }
+
+    protected get validImmortalModes(): PlayerImmortalMode[] {
+        let value: PlayerImmortalMode[];
+        if (this.props.crew) {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['full']) ?? ['full'];
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
+        }
+        console.log("immortal-mode")
+        console.log(value);
+        return value;
+    }
+
+    protected set validImmortalModes(value: PlayerImmortalMode[]) {        
+        if (this.props.crew) {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, value, true);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+        }
     }
    
     render(): JSX.Element {
@@ -121,7 +207,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
 
         var me = this;
-        const immoToggle = (e) => {
+
+        const clickImmo = (e) => {
+            me.immortalMode = e;
+        }
+
+        const clickBuff = (e) => {
+            me.playerBuffMode = e;
+        }
+
+        const nextImmo = (e) => {
             if (crew && "immortal" in crew && crew.immortal != 0 && crew.immortal >= -1) {
                 return;
             }
@@ -130,13 +225,14 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                 this.props.onImmoToggle(me.immortalMode);
             }
         }
-        const buffToggle = (e) => {
-            me.playerBuffMode = nextPlayerState(me.playerBuffMode, me.context.playerData, me.context.maxBuffs);
+
+        const nextBuff = (e) => {
+            me.playerBuffMode = nextBuffState(me.playerBuffMode, me.context.playerData, me.context.maxBuffs);
             if (this.props.onBuffToggle) {
                 this.props.onBuffToggle(me.playerBuffMode);
             }
         }
-        
+
         const navClick = (e) => {
             if (!crew) return;
 
@@ -147,7 +243,42 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                 window.location.href = "/crew/" + crew.symbol;
             }
         }
-        
+
+        const availBuffs = getAvailableBuffStates(this.context.playerData, this.context.buffConfig)
+                .map((data) => {
+                    return {
+                        key: data,
+                        value: data,
+                        text: BuffNames[data]
+                    };
+                });
+
+        const availImmos = me.validImmortalModes          
+            .map((data) => {
+                return {
+                    key: data,
+                    value: data,
+                    text: ImmortalNames[data]
+                };
+            });
+
+      
+        let immo = me.immortalMode;
+        let sd = crew as SkillData;
+
+        if (typeof immo === 'number') {
+            let i = immo - 1;
+            sd = crew.skill_data[i];
+        }
+
+        const skillData = sd;
+
+        const getStars = () => {
+            if (me.immortalMode === 'min') return 1;
+            else if (me.immortalMode === 'full' || !("immortal" in crew)) return crew?.max_rarity;
+            else return skillData.rarity;
+        }
+
         return crew ? (<div style={{ 
                             fontSize: window.innerWidth < mobileWidth ? "10pt" : "11pt", 
                             display: "flex", 
@@ -215,9 +346,9 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             </h3>
                             <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>                                
                                 <Rating
-                                    onClick={(e) => immoToggle(e)}
+                                    onClick={(e) => nextImmo(e)}
                                     icon='star' 
-                                    rating={this.immortalMode !== 'full' && "rarity" in crew ? crew.rarity : crew.max_rarity} 
+                                    rating={getStars()} 
                                     maxRating={crew.max_rarity} 
                                     size='large' 
                                     disabled />
@@ -245,9 +376,11 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                
                             </div>
                         </div>
-                        <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
-
-                        
+                        <div style={{display: "flex", flexDirection: "column", justifyContent: "space-evenly"}}>
+                            <ImmortalSelector available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
+                            <div style={{display:"flex", flexDirection: "row", justifyContent: "flex-end"}}>
+                                <BuffSelector available={availBuffs} buff={me.playerBuffMode} setBuff={(e) => clickBuff(e)} />
+                            </div>
                         </div>                        
                     </div>
                     <div
@@ -261,39 +394,39 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             marginBottom: "2px",
                         }}
                     >
-                        {crew.base_skills.security_skill && <CrewStat
+                        {skillData.base_skills.security_skill && <CrewStat
                             skill_name="security_skill"
-                            data={crew.base_skills.security_skill}
+                            data={skillData.base_skills.security_skill}
                             scale={compact ? 0.75 : 1}
                         />}
                         
-                        {crew.base_skills.command_skill && <CrewStat
+                        {skillData.base_skills.command_skill && <CrewStat
                             skill_name="command_skill"
-                            data={crew.base_skills.command_skill}
+                            data={skillData.base_skills.command_skill}
                             scale={compact ? 0.75 : 1}
                         />}
                         
-                        {crew.base_skills.diplomacy_skill && <CrewStat
+                        {skillData.base_skills.diplomacy_skill && <CrewStat
                             skill_name="diplomacy_skill"
-                            data={crew.base_skills.diplomacy_skill}
+                            data={skillData.base_skills.diplomacy_skill}
                             scale={compact ? 0.75 : 1}
                         />}
 
-                        {crew.base_skills.science_skill && <CrewStat
+                        {skillData.base_skills.science_skill && <CrewStat
                             skill_name="science_skill"
-                            data={crew.base_skills.science_skill}
+                            data={skillData.base_skills.science_skill}
                             scale={compact ? 0.75 : 1}
                         />}
 
-                        {crew.base_skills.medicine_skill && <CrewStat
+                        {skillData.base_skills.medicine_skill && <CrewStat
                             skill_name="medicine_skill"
-                            data={crew.base_skills.medicine_skill}
+                            data={skillData.base_skills.medicine_skill}
                             scale={compact ? 0.75 : 1}
                         />}
 
-                        {crew.base_skills.engineering_skill && <CrewStat
+                        {skillData.base_skills.engineering_skill && <CrewStat
                             skill_name="engineering_skill"
-                            data={crew.base_skills.engineering_skill}
+                            data={skillData.base_skills.engineering_skill}
                             scale={compact ? 0.75 : 1}
                         />}
                         <div style={{ width: "4px" }} />
@@ -310,7 +443,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [ crew.action] : []} shipInfo={crew.ship_battle} />
+                        <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [crew.action] : []} shipInfo={crew.ship_battle} />
                     </div>
                     <div>
                         <div
