@@ -2,7 +2,7 @@ import * as React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applySkillBuff, getSkills, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
+import { applyCrewBuffs, applySkillBuff, getSkills, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
@@ -243,8 +243,9 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                     }
                     
                     if (buffMode === 'max' && maxBuffs) {
+                        applyCrewBuffs(item, maxBuffs);
                         getSkills(item).forEach(skill => {
-                           let sb = applySkillBuff(maxBuffs, skill, item.base_skills[skill]);
+                           let sb = item[skill];
                            item.base_skills[skill] = {
                                 core: sb.core,
                                 range_min: sb.min,
@@ -253,8 +254,9 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                         })
                     }
                     else if (buffMode === 'player' && buffConfig) {
+                        applyCrewBuffs(item, buffConfig);
                         getSkills(item).forEach(skill => {
-                            let sb = applySkillBuff(buffConfig, skill, item.base_skills[skill]);
+                            let sb = item[skill];
                             item.base_skills[skill] = {
                                  core: sb.core,
                                  range_min: sb.min,
