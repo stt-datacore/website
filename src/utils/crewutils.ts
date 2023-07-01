@@ -346,7 +346,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.favorite = workitem.favorite;
 
 			// Use skills directly from player data when possible
-			if (rarity && rarity >= 2 && rarity <= 5) {
+			if (rarity && rarity >= 1 && rarity <= 5) {
 				crew.rarity = rarity;
 				rarity--;
 				for (let skill in CONFIG.SKILLS) {
@@ -392,8 +392,9 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	}
 
 	if (!crew.have || crew.immortal > 0) {
-		if (crew.immortal <= 0 && rarity && rarity < crew.max_rarity && rarity > 0) {
-			crew = JSON.parse(JSON.stringify(crew)); // { ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) };
+		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
+			if (rarity) rarity--;
+			crew = { ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) };
 		}
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
