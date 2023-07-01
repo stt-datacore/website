@@ -19,6 +19,7 @@ import { TinyStore } from '../utils/tiny';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
 import { descriptionLabel } from '../components/crewtables/commonoptions';
+import { BuffStatTable } from '../utils/voyageutils';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -33,8 +34,16 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew']);
-	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
+	const isReady = coreData.ready(['crew', 'skill_bufs']);
+	const playerContext = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = playerContext;
+	
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
+		maxBuffs = coreData.skill_bufs;
+	} 
 
 	return (
 		<Layout>

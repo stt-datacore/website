@@ -3,7 +3,7 @@ import { CrewMember, SkillData } from "../../model/crew";
 import { CompletionState, PlayerCrew } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
-import { formatTierLabel, gradeToColor } from "../../utils/crewutils";
+import { formatTierLabel, getSkills, gradeToColor } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
@@ -234,8 +234,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         else {
             value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
         }
-        console.log("immortal-mode")
-        console.log(value);
+         // console.log("immortal-mode")
+         // console.log(value);
         return value;
     }
 
@@ -257,8 +257,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         else {
             value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
         }
-        console.log("immortal-mode")
-        console.log(value);
+         // console.log("immortal-mode")
+         // console.log(value);
         return value;
     }
 
@@ -288,7 +288,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             me.immortalMode = availmodes[availmodes.length - 1];
         }
         
-        const availstates = getAvailableBuffStates(this.context.playerData, this.context.buffConfig);
+        const availstates = getAvailableBuffStates(this.context.playerData, this.context.maxBuffs);
 
         if (availstates?.includes(me.playerBuffMode) !== true) {
             me.playerBuffMode = availstates[0];
@@ -360,6 +360,15 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         if (typeof immo === 'number') {
             let i = immo - 1;
             sd = crew.skill_data[i];
+        }
+        else {            
+            getSkills(crew).forEach(skill => {
+                sd.base_skills[skill] = {
+                    core: crew[skill].core,
+                    range_min: crew[skill].min,
+                    range_max: crew[skill].max
+                }
+            })
         }
 
         const skillData = sd;

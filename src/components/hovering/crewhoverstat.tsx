@@ -30,8 +30,11 @@ export const ImmortalNames = {
 }
 
 export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: BuffStatTable): PlayerBuffMode[] {
-    if (!buffConfig && !playerData) return ['none'];
-    else if (!playerData) return ['none', 'max'];
+    const hasPlayer = !!playerData?.player?.character?.crew?.length;
+    const hasBuff = (buffConfig && Object.keys(buffConfig)?.length) ? true : false;
+    
+    if (!hasPlayer && !hasBuff) return ['none'];
+    else if (!hasPlayer) return ['none', 'max'];
     else return ['none', 'player', 'max'];
 }
 
@@ -71,8 +74,11 @@ export function getAvailableImmortalStates(crew: PlayerCrew | CrewMember): Playe
 }
 
 export function nextBuffState(current: PlayerBuffMode, playerData?: PlayerData, buffConfig?: BuffStatTable, backward?: boolean): PlayerBuffMode {
-    if (!buffConfig) return 'none';
-    if (!playerData) return 'max';
+    const hasPlayer = !!playerData?.player?.character?.crew?.length;
+    const hasBuff = (buffConfig && Object.keys(buffConfig)?.length) ? true : false;
+
+    if (!hasPlayer) return 'none';
+    if (!hasBuff) return 'max';
 
     if (backward) {
         if (current === 'none') return 'max';
@@ -171,8 +177,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         else {
             value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
         }
-        console.log("immortal-mode")
-        console.log(value);
+         // console.log("immortal-mode")
+         // console.log(value);
         return value;
     }
 
@@ -222,16 +228,16 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
-        const { buffConfig, maxBuffs } = this.context;
-
+        const { buffConfig, maxBuffs, playerData } = this.context;
+        const hasPlayer = !!playerData?.player?.character?.crew?.length;
         const buffMode = this.playerBuffMode;
         const immortalMode = this.immortalMode;
-
+        
         if (dataIn) {            
-            let item: PlayerCrew = dataIn as PlayerCrew;
+            let item: PlayerCrew = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;
             this.validImmortalModes = getAvailableImmortalStates(item);
             
-            if (immortalMode !== 'owned' || (buffMode !== 'none' && buffConfig)) {
+            if (immortalMode !== 'owned' || (buffMode !== 'none')) {
                 let cm: CrewMember | undefined = undefined;
                 cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
@@ -242,25 +248,42 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                         item = applyImmortalState(immortalMode, cm, this.context.playerData, buffConfig ?? maxBuffs);
                     }
                     
-                    if (buffMode === 'max' && maxBuffs) {
+                    if ((maxBuffs && Object.keys(maxBuffs)?.length) && ((!hasPlayer && buffMode != 'none') || (buffMode === 'max'))) {
                         applyCrewBuffs(item, maxBuffs);
                         getSkills(item).forEach(skill => {
-                           let sb = item[skill];
-                           item.base_skills[skill] = {
-                                core: sb.core,
-                                range_min: sb.min,
-                                range_max: sb.max
-                           }
+                            let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
+                            item[skill] = sb;
                         })
                     }
-                    else if (buffMode === 'player' && buffConfig) {
-                        applyCrewBuffs(item, buffConfig);
+                    else if (buffMode === 'player' && hasPlayer) {
+                        
+                        if (buffConfig && !item.skills) {
+                            applyCrewBuffs(item, buffConfig);
+                            getSkills(item).forEach(skill => {
+                                let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
+                                item[skill] = sb;
+                              });
+                        }
+                        else {
+                            getSkills(item).forEach(skill => {
+                                let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
+                                item[skill] = {
+                                    core: item.skills[skill].core,
+                                    min: item.skills[skill].range_min,
+                                    max: item.skills[skill].range_max,
+                                };
+                              });
+    
+                        }
+
+                     }
+                     else {
                         getSkills(item).forEach(skill => {
-                            let sb = item[skill];
-                            item.base_skills[skill] = {
-                                 core: sb.core,
-                                 range_min: sb.min,
-                                 range_max: sb.max
+                            let sb = item.base_skills[skill];
+                            item[skill] = {
+                                core: sb.core,
+                                min: sb.range_min,
+                                max: sb.range_max
                             }
                           })
                      }
@@ -268,6 +291,14 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
             }
             else {
                 item = JSON.parse(JSON.stringify(item));
+                getSkills(item).forEach(skill => {
+                    let sb = item.base_skills[skill];
+                    item[skill] = {
+                        core: sb.core,
+                        min: sb.range_min,
+                        max: sb.range_max
+                    }
+                  })
             }
 
             return item;
@@ -337,8 +368,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         else {
             value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
         }
-        console.log("immortal-mode")
-        console.log(value);
+         // console.log("immortal-mode")
+         // console.log(value);
         return value;
     }
 

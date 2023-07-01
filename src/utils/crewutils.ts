@@ -216,6 +216,18 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
+function evenRound(num: number, decimalPlaces?: number) {
+    var d = decimalPlaces ?? 0;
+    var m = Math.pow(10, d);
+    var n = +(d ? num * m : num).toFixed(8); // Avoid rounding errors
+    var i = Math.floor(n), f = n - i;
+    var e = 1e-8; // Allow for rounding errors in f
+    var r = (f > 0.5 - e && f < 0.5 + e) ?
+                ((i % 2 == 0) ? i : i + 1) : Math.round(n);
+    return d ? r / m : r;
+}
+
+
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable) {
 	const getMultiplier = (skill: string, stat: string) => {
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
@@ -228,12 +240,13 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 	// Apply buffs
 	for (let skill in crew.base_skills) {
 		crew[skill] = {
-			core: Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
-			min: Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
-			max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
+			core: evenRound(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
+			min: evenRound(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
+			max: evenRound(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
 		};
 	}
 }
+
 
 export function downloadData(dataUrl: string | URL, name: string): void {
 	let pom = document.createElement('a');
@@ -289,6 +302,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
+	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
+
 	crew.rarity = crew.max_rarity;
 	crew.level = 100;
 	crew.have = false;
@@ -331,7 +346,12 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.favorite = workitem.favorite;
 
 			// Use skills directly from player data when possible
-	
+			
+			if (crew.symbol === "tendi_ev_suit_crew") {
+				console.log(crew.base_skills);
+				console.log(buffConfig);
+			}
+
 			if (workitem.skills && rarity !== 6) {
 				for (let skill in CONFIG.SKILLS) {
 					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
@@ -343,6 +363,11 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 						max: workitem.skills[skill].range_max
 					} as ComputedBuff;
 				}
+				if (crew.symbol === "tendi_ev_suit_crew") {
+					console.log(workitem.skills);
+					console.log(buffConfig);
+				}
+	
 			}
 			// Otherwise apply buffs to base_skills
 			else if (buffConfig) {
@@ -355,8 +380,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			else {
 				let ismo = isImmortal(owned);
 				crew.immortal = ismo ? CompletionState.Immortalized : CompletionState.DisplayAsImmortalOwned;
-			}
-			
+			}		
 			outputcrew.push(JSON.parse(JSON.stringify(crew)));
 		}
 	}
