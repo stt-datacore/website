@@ -276,18 +276,16 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         } 
 
         var me = this;
-        if (me.validImmortalModes?.length === 1) {
-            if (me.immortalMode != me.validImmortalModes[0]) {
-                me.immortalMode = me.validImmortalModes[0];
-            }
+        const availmodes = me.validImmortalModes;
+
+        if (availmodes?.includes(me.immortalMode) !== true) {
+            me.immortalMode = availmodes[availmodes.length - 1];
         }
         
         const availstates = getAvailableBuffStates(this.context.playerData, this.context.buffConfig);
 
-        if (availstates?.length === 1) {
-            if (me.playerBuffMode != availstates[0]) {
-                me.playerBuffMode = availstates[0];
-            }
+        if (availstates?.includes(me.playerBuffMode) !== true) {
+            me.playerBuffMode = availstates[0];
         }
 
         const clickImmo = (e) => {
