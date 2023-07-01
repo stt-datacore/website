@@ -216,18 +216,6 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
-function evenRound(num: number, decimalPlaces?: number) {
-    var d = decimalPlaces ?? 0;
-    var m = Math.pow(10, d);
-    var n = +(d ? num * m : num).toFixed(8); // Avoid rounding errors
-    var i = Math.floor(n), f = n - i;
-    var e = 1e-8; // Allow for rounding errors in f
-    var r = (f > 0.5 - e && f < 0.5 + e) ?
-                ((i % 2 == 0) ? i : i + 1) : Math.round(n);
-    return d ? r / m : r;
-}
-
-
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable) {
 	const getMultiplier = (skill: string, stat: string) => {
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
@@ -240,9 +228,9 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 	// Apply buffs
 	for (let skill in crew.base_skills) {
 		crew[skill] = {
-			core: evenRound(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
-			min: evenRound(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
-			max: evenRound(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
+			core: Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
+			min: Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
+			max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
 		};
 	}
 }
