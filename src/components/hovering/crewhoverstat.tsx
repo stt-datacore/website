@@ -23,9 +23,9 @@ export const ImmortalNames = {
     "owned": "Owned",
     "min": "Unfused",
     "full": "Immortalized",
-    2: "2x Fused", 
-    3: "3x Fused", 
-    4: "4x Fused", 
+    2: "2 Stars", 
+    3: "3 Stars", 
+    4: "4 Stars", 
     "frozen": "Frozen",    
 }
 
