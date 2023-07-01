@@ -38,7 +38,7 @@ export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: Buf
 export function getAvailableImmortalStates(crew: PlayerCrew | CrewMember): PlayerImmortalMode[] {
     let v: PlayerImmortalMode[];
     
-    if (!("rarity" in crew) || !crew.have) {
+    if (!("rarity" in crew) || crew.have === false) {
         if (crew.max_rarity === 5) v = ['min', 2, 3, 4, 'full'];
         else if (crew.max_rarity === 4) v = ['min', 2, 3, 'full'];
         else if (crew.max_rarity === 3) v = ['min', 2, 'full'];

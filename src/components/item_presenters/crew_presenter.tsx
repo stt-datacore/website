@@ -453,7 +453,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                         /></div>
                                     )
                                 }
-                                <h4 style={{margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
+                                <h4 onClick={(e) => nextImmo(e)} style={{cursor: "default", margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                     {
                                         "immortal" in crew && (
                                             ((crew.immortal === 0)) ? 
