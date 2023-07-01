@@ -118,14 +118,14 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	async componentDidMount() {
 		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
 		let playerData = {} as PlayerData;
-		// let playerData = this.context.playerData;
+		playerData = this.context.playerData;
 
-		// if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true) {
-		// 	playerData = JSON.parse(JSON.stringify(playerData));
-		// 	prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
-		// }
+		if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true) {
+			playerData = JSON.parse(JSON.stringify(playerData));
+			prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
+		}
 
-		const playerCrew = playerData?.player?.character?.crew;
+		const playerCrew: PlayerCrew[] | undefined = undefined; // playerData?.player?.character?.crew;
 
 		let c = botcrew?.length ?? 0;
 		for (let i = 0; i < c; i++) {
@@ -138,22 +138,22 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			let bcrew = crew as PlayerCrew;
 			let f: PlayerCrew | undefined = undefined;
 
-			if (playerCrew && playerCrew.length && bcrew.immortal === undefined) {
-				f = playerCrew.find((item) => item.symbol === bcrew.symbol);
-				if (f) {
-					let bcrew = botcrew[i] = { ...f, ...botcrew[i] };
-					bcrew.base_skills = JSON.parse(JSON.stringify(f.base_skills));
-					bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
-					bcrew.action.bonus_amount = f.action.bonus_amount;
-					bcrew.bonus = f.bonus;					
-				}
-				else {
-					bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
-				}
-			}
-			else {
-				bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
-			}
+			// if (playerCrew && playerCrew.length && bcrew.immortal === undefined) {
+			// 	f = playerCrew.find((item) => item.symbol === bcrew.symbol);
+			// 	if (f) {
+			// 		let bcrew = botcrew[i] = { ...f, ...botcrew[i] };
+			// 		bcrew.base_skills = JSON.parse(JSON.stringify(f.base_skills));
+			// 		bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
+			// 		bcrew.action.bonus_amount = f.action.bonus_amount;
+			// 		bcrew.bonus = f.bonus;										
+			// 	}
+			// 	else {
+			// 		bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
+			// 	}
+			// }
+			// else {
+			// 	bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
+			// }
 		}
 
 		// Check for custom initial table options from URL or <Link state>
@@ -225,7 +225,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				{count.count} {count.name}{count.count != 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
 			</span>
 		)).reduce((prev, curr) => <>{prev} {curr}</>);
-
+		
 		return (
 			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} {...attributes}>
 				<Table.Cell>

@@ -373,6 +373,21 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             else return skillData.rarity;
         }
 
+        let pt: string | undefined = undefined;
+        let npt: string | undefined = undefined;
+
+        if ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalUnowned) {
+            pt = "Unowned (Available in the Portal)";
+            npt = "Unowned (Not in the Portal)"
+        }
+        else if ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalUnowned) {
+            pt = "Available in the Portal";
+            npt = "Not in the Portal"
+        }
+
+        const portalText = pt;
+        const noPortalText = npt;
+
         return crew ? (<div style={{ 
                             fontSize: window.innerWidth < mobileWidth ? "10pt" : "11pt", 
                             display: "flex", 
@@ -450,7 +465,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 <h4 onClick={(e) => nextImmo(e)} style={{cursor: "default", margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                     {
                                         "immortal" in crew && (
-                                            ((crew.immortal === CompletionState.DisplayAsImmortalUnowned)) ? 
+                                            ((crew.immortal === CompletionState.DisplayAsImmortalUnowned) ||
+                                            (crew.immortal === CompletionState.DisplayAsImmortalStatic)) ? 
                                             <> {crew.in_portal &&
                                                 (<div style={{alignSelf: "center", 
                                                         display: "flex",
@@ -463,12 +479,12 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                                     margin: 0,
                                                     padding: 0
                                                     }} 
-                                                    title={"Unowned (Available in the Portal)"}
+                                                    title={portalText}
                                                     src={"/media/portal.png"} 
                                                     /></div>
                                                 ) ||
                                                 (
-                                                    (<i className="lock icon" style={frozenStyle} title={"Unowned (Not in the Portal)"} />)         
+                                                    (<i className="lock icon" style={frozenStyle} title={noPortalText} />)         
                                                 )
                                             } </> :
                                             ((crew.immortal === 0 || crew.rarity !== crew.max_rarity)) ? 
