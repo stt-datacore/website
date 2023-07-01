@@ -377,9 +377,11 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             </div>
                         </div>
                         <div style={{display: "flex", flexDirection: "column", justifyContent: "space-evenly"}}>
-                            <ImmortalSelector available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
                             <div style={{display:"flex", flexDirection: "row", justifyContent: "flex-end"}}>
                                 <BuffSelector available={availBuffs} buff={me.playerBuffMode} setBuff={(e) => clickBuff(e)} />
+                            </div>
+                            <div style={{display:"flex", flexDirection: "row", justifyContent: "flex-end"}}>
+                                <ImmortalSelector available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
                             </div>
                         </div>                        
                     </div>
