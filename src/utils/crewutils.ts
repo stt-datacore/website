@@ -321,7 +321,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			if (rarity !== 6) {
 				crew.rarity = workitem.rarity;
 				crew.base_skills = workitem.base_skills;
-				crew.level = workitem.level;
+				if (rarity === undefined) crew.level = workitem.level;
 				crew.equipment = workitem.equipment;
 				if (workitem.action) crew.action.bonus_amount = workitem.action.bonus_amount;
 				if (workitem.ship_battle) crew.ship_battle = workitem.ship_battle;
