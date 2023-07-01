@@ -85,7 +85,7 @@ export interface BuffSelectorProps {
 }
 
 export interface ImmortalSelectorProps {
-    owned?: boolean;
+    immoed?: boolean;
     immortalMode: PlayerImmortalMode;
     setImmortalMode: (value: PlayerImmortalMode) => void;
     style?: React.CSSProperties | undefined;
@@ -123,7 +123,7 @@ function drawBuff(data: PlayerBuffMode, buffClick?: (value: PlayerBuffMode) => v
     return <></>;
 }
 
-function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMode) => void, owned?: boolean): JSX.Element {
+function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMode) => void, immoed?: boolean): JSX.Element {
     const immoclick = (e: React.MouseEvent<HTMLElement, MouseEvent>, immo: PlayerImmortalMode) => {
         if (immoClick) {
             e.preventDefault();
@@ -134,7 +134,7 @@ function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMo
     if (data === 'full') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Player Boosts Applied" style={{... (owned ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Player Boosts Applied" style={{... (immoed ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
@@ -181,7 +181,7 @@ export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
         <Dropdown
                 inline
 				placeholder={'Crew Level'} 
-                trigger={drawImmo(this.props.immortalMode, undefined, this.props.owned)}
+                trigger={drawImmo(this.props.immortalMode, undefined, this.props.immoed)}
 				options={this.props.available}
 				value={this.props.immortalMode}
 				onChange={(e, { value }) => this.props.setImmortalMode(value as PlayerImmortalMode)}
@@ -340,6 +340,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     return buff;
                 });
 
+        const immoed = ("immortal" in crew && crew.immortal && crew.immortal >= -1) || false;
         const availImmos = me.validImmortalModes          
             .map((data) => {
 
@@ -349,7 +350,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     text: ImmortalNames[data]
                 } as HoverSelectorConfig<PlayerImmortalMode>;
 
-                immo.content = drawImmo(data, clickImmo, "have" in crew && crew.have);
+                immo.content = drawImmo(data, clickImmo, immoed);
                 return immo;
             });
 
@@ -478,7 +479,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 <BuffSelector available={availBuffs} buff={me.playerBuffMode} setBuff={(e) => clickBuff(e)} />
                             </div>
                             <div style={{display:"flex", flexDirection: "row", justifyContent: "flex-end"}}>
-                                <ImmortalSelector owned={"have" in crew && crew.have} available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
+                                <ImmortalSelector immoed={immoed} available={availImmos} immortalMode={me.immortalMode} setImmortalMode={(e) => clickImmo(e)} />
                             </div>
                         </div>                        
                     </div>

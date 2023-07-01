@@ -353,7 +353,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
 			}
 			else {
-				crew.immortal = CompletionState.DisplayAsImmortalOwned;
+				let ismo = isImmortal(owned);
+				crew.immortal = ismo ? CompletionState.Immortalized : CompletionState.DisplayAsImmortalOwned;
 			}
 			
 			outputcrew.push(JSON.parse(JSON.stringify(crew)));
