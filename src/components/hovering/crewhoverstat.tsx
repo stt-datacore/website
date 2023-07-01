@@ -77,21 +77,24 @@ export function nextBuffState(current: PlayerBuffMode, playerData?: PlayerData, 
     const hasPlayer = !!playerData?.player?.character?.crew?.length;
     const hasBuff = (buffConfig && Object.keys(buffConfig)?.length) ? true : false;
 
-    if (!hasPlayer) return 'none';
-    if (!hasBuff) return 'max';
+    if (!hasPlayer && !hasBuff) return 'none';
 
+    const allowed = getAvailableBuffStates(playerData, buffConfig);
+    let x = allowed.indexOf(current);
+
+    if (x === -1) x = 0;
+    
     if (backward) {
-        if (current === 'none') return 'max';
-        else if (current === 'player') return 'none';
-        if (current === 'max') return 'player';
+        x--;
     }
     else {
-        if (current === 'none') return 'player';
-        else if (current === 'player') return 'max';
-        if (current === 'max') return 'none';
+        x++;
     }
 
-    return current;
+    if (x < 0) x = allowed.length - 1;
+    else if (x >= allowed.length) x = 0;
+    
+    return allowed[x];
 }
 
 export function nextImmortalCrewState(current: PlayerImmortalMode, crew: PlayerCrew | CrewMember, backward?: boolean): PlayerImmortalMode {    
@@ -234,7 +237,16 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         const immortalMode = this.immortalMode;
         
         if (dataIn) {            
-            let item: PlayerCrew = JSON.parse(JSON.stringify(dataIn)) as PlayerCrew;
+            let item: PlayerCrew;
+
+            if (hasPlayer) {
+                item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
+            }
+            else {
+                item = dataIn as PlayerCrew;
+            }
+
+            item = JSON.parse(JSON.stringify(item)) as PlayerCrew;
             this.validImmortalModes = getAvailableImmortalStates(item);
             
             if (immortalMode !== 'owned' || (buffMode !== 'none')) {
@@ -255,29 +267,24 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                             item[skill] = sb;
                         })
                     }
-                    else if (buffMode === 'player' && hasPlayer) {
-                        
-                        if (buffConfig && !item.skills) {
-                            applyCrewBuffs(item, buffConfig);
-                            getSkills(item).forEach(skill => {
-                                let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
-                                item[skill] = sb;
-                              });
-                        }
-                        else {
-                            getSkills(item).forEach(skill => {
-                                let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
-                                item[skill] = {
-                                    core: item.skills[skill].core,
-                                    min: item.skills[skill].range_min,
-                                    max: item.skills[skill].range_max,
-                                };
-                              });
-    
-                        }
-
-                     }
-                     else {
+                    else if (buffMode === 'player' && hasPlayer && immortalMode === 'owned' && item.skills && Object.keys(item.skills)?.length) {
+                        getSkills(item).forEach(skill => {
+                            let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
+                            item[skill] = {
+                                core: item.skills[skill].core,
+                                min: item.skills[skill].range_min,
+                                max: item.skills[skill].range_max,
+                            };
+                            });
+                    }
+                    else if (hasPlayer && buffConfig && buffMode === 'player') {
+                        applyCrewBuffs(item, buffConfig);
+                        getSkills(item).forEach(skill => {
+                            let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
+                            item[skill] = sb;
+                        });
+                    }
+                    else {
                         getSkills(item).forEach(skill => {
                             let sb = item.base_skills[skill];
                             item[skill] = {

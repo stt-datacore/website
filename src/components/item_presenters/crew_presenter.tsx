@@ -355,21 +355,15 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             });
 
         let immo = me.immortalMode;
-        let sd = crew as SkillData;
+        let sd = JSON.parse(JSON.stringify(crew)) as SkillData;
 
-        if (typeof immo === 'number') {
-            let i = immo - 1;
-            sd = crew.skill_data[i];
-        }
-        else {            
-            getSkills(crew).forEach(skill => {
-                sd.base_skills[skill] = {
-                    core: crew[skill].core,
-                    range_min: crew[skill].min,
-                    range_max: crew[skill].max
-                }
-            })
-        }
+        getSkills(crew).forEach(skill => {
+            sd.base_skills[skill] = {
+                core: crew[skill].core,
+                range_min: crew[skill].min,
+                range_max: crew[skill].max
+            }
+        })
 
         const skillData = sd;
 

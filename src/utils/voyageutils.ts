@@ -2,7 +2,7 @@
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { CompactCrew, Player, PlayerCrew, PlayerData } from '../model/player';
+import { AllBuffsCapHash, CompactCrew, Player, PlayerCrew, PlayerData } from '../model/player';
 
 /* TODO: move IBuffStat, calculateBuffConfig to crewutils.ts (currently not used by voyage calculator) */
 export interface IBuffStat {
@@ -14,7 +14,7 @@ export interface BuffStatTable {
 	[key: string]: IBuffStat;
 }
 
-export function calculateMaxBuffs(playerData: Player): BuffStatTable {
+export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
 	let result: BuffStatTable = {};
 
 	const parseBuff = (value: string) => {
@@ -31,17 +31,17 @@ export function calculateMaxBuffs(playerData: Player): BuffStatTable {
 		return undefined;
 	};
 
-	Object.keys(playerData.character.all_buffs_cap_hash)
+	Object.keys(allBuffs)
 		.filter(z => z.includes("skill"))
 		.forEach(buff => {
 			let p = parseBuff(buff);			
 			if (p) result[p.skill] = {} as IBuffStat;
 			if (p && p.type === 'percent_increase') {
 				result[p.skill].multiplier = 1;
-				result[p.skill].percent_increase = playerData.character.all_buffs_cap_hash[buff];
+				result[p.skill].percent_increase = allBuffs[buff];
 			}
 			else if (p && p.type === 'multiplier') {
-				result[p.skill].multiplier = playerData.character.all_buffs_cap_hash[buff];
+				result[p.skill].multiplier = allBuffs[buff];
 			}
 		});
 

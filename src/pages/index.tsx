@@ -34,7 +34,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew', 'skill_bufs']);
+	const isReady = coreData.ready(['all_buffs', 'crew']);
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	
@@ -42,7 +42,7 @@ const IndexPage = (props: IndexPageProps) => {
 
 	maxBuffs = playerContext.maxBuffs;
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.skill_bufs;
+		maxBuffs = coreData.all_buffs;
 	} 
 
 	return (

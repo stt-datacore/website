@@ -346,13 +346,23 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.favorite = workitem.favorite;
 
 			// Use skills directly from player data when possible
-			
-			if (crew.symbol === "tendi_ev_suit_crew") {
-				console.log(crew.base_skills);
-				console.log(buffConfig);
-			}
+			if (rarity && rarity >= 2 && rarity <= 5) {
+				crew.rarity = rarity;
+				rarity--;
+				for (let skill in CONFIG.SKILLS) {
+					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+				}
+				for (let skill of Object.keys(workitem.skill_data[rarity].base_skills)) {
 
-			if (workitem.skills && rarity !== 6) {
+					crew[skill] = {
+						core: workitem.skill_data[rarity].base_skills[skill].core,
+						min: workitem.skill_data[rarity].base_skills[skill].range_min,
+						max: workitem.skill_data[rarity].base_skills[skill].range_max
+					} as ComputedBuff;
+				}				
+				crew.base_skills = workitem.skill_data[rarity].base_skills;
+			}
+			else if (workitem.skills && rarity !== 6) {
 				for (let skill in CONFIG.SKILLS) {
 					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
 				}
@@ -362,12 +372,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 						min: workitem.skills[skill].range_min,
 						max: workitem.skills[skill].range_max
 					} as ComputedBuff;
-				}
-				if (crew.symbol === "tendi_ev_suit_crew") {
-					console.log(workitem.skills);
-					console.log(buffConfig);
-				}
-	
+				}			
+				crew.skills = workitem.skills;	
 			}
 			// Otherwise apply buffs to base_skills
 			else if (buffConfig) {

@@ -38,6 +38,9 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	const { playerData, allCrew: crew, playerShips } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
 	
+	if (playerData?.player?.character?.all_buffs_cap_hash) {
+		console.log(JSON.stringify(playerData?.player?.character?.all_buffs_cap_hash));
+	}
 	// Check for custom initial table options from URL or <Link state>
 	//	Custom options are only available in player tool right now
 	let initOptions = initSearchableOptions(window.location);
@@ -100,7 +103,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 			return value;
 		}
 	);
-
+	
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew?.map(ac => {
 		return {

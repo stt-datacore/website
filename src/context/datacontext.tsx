@@ -4,7 +4,7 @@ import { Ship, Schematics } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
-import { BuffStatTable, IBuffStat } from '../utils/voyageutils';
+import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 
 export type ValidDemands = 
 	'crew' | 
@@ -19,7 +19,8 @@ export type ValidDemands =
 	'gauntlets' |
 	'quests' |
 	'misc_stats' |
-	'skill_bufs';
+	'skill_bufs' | 
+	'all_buffs';
 		
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -36,7 +37,7 @@ export interface DefaultCore extends ContextCommon {
 	ships: Ship[],
 	items: EquipmentItem[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
-	skill_bufs: BuffStatTable,
+	all_buffs: BuffStatTable,
 	ready: (demands: ValidDemands[]) => boolean;
 };
 
@@ -46,7 +47,7 @@ const defaultData = {
 	ships: [] as Ship[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
-	skill_bufs: {} as BuffStatTable
+	all_buffs: {} as BuffStatTable
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -74,7 +75,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs'];
+		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
 		const unsatisfied = [] as string[];
 
 		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
@@ -113,8 +114,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 		// }
 
 		demands?.forEach(demand => {
+			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
-				if (data[demand].length === 0) {
+				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 					setReadying(prev => {
 						if (!prev.includes(demand)) prev.push(demand);
@@ -145,6 +147,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 										}
 									}
 									newData[demand] = sks;
+								}
+								else if (demand === 'all_buffs') {
+									newData[demand] = calculateMaxBuffs(result);
 								}
 								else {
 									newData[demand] = result;
