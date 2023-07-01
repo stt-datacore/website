@@ -134,7 +134,7 @@ function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMo
     if (data === 'full') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)}  className="check icon" title="Immortalized" style={{... (immoed ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)}  className={immoed ? "check icon" : "star icon"} title="Immortalized" style={{... (immoed ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
