@@ -406,16 +406,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}
                         />
                     </div>
-                    {crew.in_portal &&  window.innerWidth >= mobileWidth &&
-                                    (<div style={{alignSelf: "center"}}><img style={{
-                                        maxHeight: "1.5em",
-                                        margin: "0.5em"
-                                        }} 
-                                        title={"Available in the Premium Portal"}
-                                        src={"/media/portal.png"} 
-                                        /></div>
-                                    )
-                                }
+                   
                 </div>
                 <div
                     style={{
@@ -443,7 +434,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                     onClick={(e) => nextImmo(e)}
                                     icon='star' 
                                     rating={getStars()} 
-                                    maxRating={crew.max_rarity} 
+                                    maxRating={crew.max_rarity}
                                     size='large' 
                                     disabled />
                                     {crew.in_portal &&  window.innerWidth < mobileWidth &&
@@ -459,6 +450,27 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 <h4 onClick={(e) => nextImmo(e)} style={{cursor: "default", margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                     {
                                         "immortal" in crew && (
+                                            ((crew.immortal === CompletionState.DisplayAsImmortalUnowned)) ? 
+                                            <> {crew.in_portal &&
+                                                (<div style={{alignSelf: "center", 
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        justifyContent: "center"
+                                                        
+                                                        }}>
+                                                    <img style={{
+                                                    height: "1.5em",
+                                                    margin: 0,
+                                                    padding: 0
+                                                    }} 
+                                                    title={"Unowned (Available in the Portal)"}
+                                                    src={"/media/portal.png"} 
+                                                    /></div>
+                                                ) ||
+                                                (
+                                                    (<i className="lock icon" style={frozenStyle} title={"Unowned (Not in the Portal)"} />)         
+                                                )
+                                            } </> :
                                             ((crew.immortal === 0 || crew.rarity !== crew.max_rarity)) ? 
                                             (<b>{crew.level}</b>) : 
                                             ((crew.immortal > 0)) ? 
