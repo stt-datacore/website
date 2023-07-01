@@ -134,21 +134,21 @@ function drawImmo(data: PlayerImmortalMode, immoClick?: (value: PlayerImmortalMo
     if (data === 'full') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Player Boosts Applied" style={{... (immoed ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)}  className="star icon" title="Immortalized" style={{... (immoed ? ownedGreenStyle :  activeStyle), fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
     else if (data === 'frozen') {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)}  className="snowflake icon" title="Player Boosts Applied" style={{...frozenStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)}  className="snowflake icon" title="Frozen" style={{...frozenStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
     else {
         return (
             <div style={{display: "inline-flex"}}>
-                <i onClick={(e) => immoclick(e, data)} className="star icon" title="No Boosts Applied" style={{...dormantStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                <i onClick={(e) => immoclick(e, data)} className="star icon" title="" style={{...dormantStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                 {ImmortalNames[data]}
             </div>)
     }
