@@ -120,7 +120,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		let playerData = {} as PlayerData;
 		playerData = this.context.playerData;
 
-		if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true) {
+		if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true && this.context.allCrew?.length) {
 			playerData = JSON.parse(JSON.stringify(playerData));
 			prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
 		}
@@ -138,22 +138,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			let bcrew = crew as PlayerCrew;
 			let f: PlayerCrew | undefined = undefined;
 
-			// if (playerCrew && playerCrew.length && bcrew.immortal === undefined) {
-			// 	f = playerCrew.find((item) => item.symbol === bcrew.symbol);
-			// 	if (f) {
-			// 		let bcrew = botcrew[i] = { ...f, ...botcrew[i] };
-			// 		bcrew.base_skills = JSON.parse(JSON.stringify(f.base_skills));
-			// 		bcrew.ship_battle = JSON.parse(JSON.stringify(f.ship_battle));
-			// 		bcrew.action.bonus_amount = f.action.bonus_amount;
-			// 		bcrew.bonus = f.bonus;										
-			// 	}
-			// 	else {
-			// 		bcrew.immortal = CompletionState.DisplayAsImmortalUnowned;
-			// 	}
-			// }
-			// else {
-			// 	bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
-			// }
+			bcrew.immortal = CompletionState.DisplayAsImmortalStatic;
 		}
 
 		// Check for custom initial table options from URL or <Link state>
@@ -215,6 +200,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		const attributes = {
 			positive: highlighted
 		};
+		const { playerData } = this.context;
 
 		const counts = [
 			{ name: 'event', count: crew.events },
@@ -226,6 +212,8 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			</span>
 		)).reduce((prev, curr) => <>{prev} {curr}</>);
 		
+		const targetCrew = playerData?.player?.character?.crew?.find((te) => te.symbol === crew.symbol);
+
 		return (
 			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} {...attributes}>
 				<Table.Cell>
@@ -241,7 +229,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							<CrewTarget 
 								targetGroup='indexPage' 
 								setDisplayItem={this.setActiveCrew} 
-								inputItem={crew}>
+								inputItem={targetCrew ?? crew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />								
 							</CrewTarget>							
 						</div>
@@ -304,8 +292,8 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	render() {
 		const { botcrew, tableConfig, initOptions, lockable, mode } = this.state;
 		const { playerData } = this.context;
-		const checkableValue = playerData?.player?.character?.crew?.length ? (mode === 'all' ? undefined : (mode === 'unowned' ? true : false)) : undefined;
-		const caption = playerData?.player?.character?.crew?.length ? 'Show only unowned crew' : undefined;
+		const checkableValue = undefined; // playerData?.player?.character?.crew?.length ? (mode === 'all' ? undefined : (mode === 'unowned' ? true : false)) : undefined;
+		const caption = undefined; // playerData?.player?.character?.crew?.length ? 'Show only unowned crew' : undefined;
 
 		const me = this;
 
@@ -347,25 +335,25 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			<React.Fragment>
 				<Header as='h2'>Crew stats</Header>
 				<div>
-					<SearchableTable
-						toolCaption={caption}
-						checkableValue={checkableValue}
-						setCheckableValue={setCheckableValue}
-						checkableEnabled={playerData !== undefined}
-						id="index"
-						data={preFiltered}
-						config={tableConfig}
-						renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
-						filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
-						initOptions={initOptions}
-						showFilterOptions={true}
-						showPermalink={true}
-						lockable={lockable}
-					/>
 					<MergedContext.Provider value={{
-						...this.context,
-						playerData: this.state.processedData ?? {} as PlayerData
-					}}>
+							...this.context,
+							playerData: this.state.processedData ?? {} as PlayerData
+						}}>
+						<SearchableTable
+							toolCaption={caption}
+							checkableValue={checkableValue}
+							setCheckableValue={setCheckableValue}
+							checkableEnabled={playerData !== undefined}
+							id="index"
+							data={preFiltered}
+							config={tableConfig}
+							renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
+							filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
+							initOptions={initOptions}
+							showFilterOptions={true}
+							showPermalink={true}
+							lockable={lockable}
+						/>
 						<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
 					</MergedContext.Provider>
 				</div>

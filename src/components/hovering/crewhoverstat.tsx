@@ -148,6 +148,7 @@ export interface CrewHoverStatState extends HoverStatState {
 }
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
+    ensureOwnedState?: boolean;
 }
 
 export interface CrewTargetState extends HoverStatTargetState {
