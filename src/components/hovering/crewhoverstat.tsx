@@ -235,7 +235,13 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
                 let cm: CrewMember | undefined = undefined;
                 cm = this.context.allCrew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
-                    item = applyImmortalState(immortalMode, cm, this.context.playerData, buffConfig ?? maxBuffs);
+                    if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
+                        item = applyImmortalState(immortalMode, cm, undefined, maxBuffs);
+                    }
+                    else {
+                        item = applyImmortalState(immortalMode, cm, this.context.playerData, buffConfig ?? maxBuffs);
+                    }
+                    
                     if (buffMode === 'max' && maxBuffs) {
                         getSkills(item).forEach(skill => {
                            let sb = applySkillBuff(maxBuffs, skill, item.base_skills[skill]);
