@@ -459,7 +459,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 <h4 onClick={(e) => nextImmo(e)} style={{cursor: "default", margin:"2px 8px", padding: "8px"}} className="ui segment" title={"immortal" in crew ? printImmoText(crew.immortal) : "Crew Is Shown Immortalized"}>
                                     {
                                         "immortal" in crew && (
-                                            ((crew.immortal === 0)) ? 
+                                            ((crew.immortal === 0 || crew.rarity !== crew.max_rarity)) ? 
                                             (<b>{crew.level}</b>) : 
                                             ((crew.immortal > 0)) ? 
                                             (<i className="snowflake icon" style={frozenStyle} />) : 
