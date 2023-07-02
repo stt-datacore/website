@@ -132,6 +132,7 @@ class GauntletsPage extends PureComponent {
 							)
 								})}
 						</Item.Group>
+						<></>
 					</Layout>
 				)}
 			/>
