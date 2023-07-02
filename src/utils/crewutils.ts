@@ -375,7 +375,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				let ismo = isImmortal(owned);
 				crew.immortal = ismo ? CompletionState.Immortalized : CompletionState.DisplayAsImmortalOwned;
 			}		
-			if (rarity && !crew.equipment?.length) {
+			if (rarity && crew.equipment?.length !== 4) {
 				crew.equipment = [0, 1, 2, 3];
 			}
 			outputcrew.push(JSON.parse(JSON.stringify(crew)));
