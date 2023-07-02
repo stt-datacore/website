@@ -13,9 +13,9 @@ import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PlayerBuffMode, PlayerImmortalMode, nextImmortalState, nextBuffState, getAvailableBuffStates, BuffNames, getAvailableImmortalStates, ImmortalNames } from "../hovering/crewhoverstat";
 import { MergedContext } from "../../context/mergedcontext";
 import { CrewItemsView } from "./crew_items";
+import { PlayerBuffMode, PlayerImmortalMode, BuffNames, ImmortalNames, getAvailableBuffStates, nextImmortalState, nextBuffState, CrewPreparer } from "./crew_preparer";
 
 
 const dormantStyle: React.CSSProperties = {
@@ -197,6 +197,7 @@ export interface CrewPresenterProps extends PresenterProps {
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
     onBuffToggle?: (state: PlayerBuffMode) => void;
     onImmoToggle?: (state: PlayerImmortalMode) => void;
+    selfRender?: boolean;
 }
 
 export interface CrewPresenterState {
@@ -216,8 +217,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
 
         this.tiny = TinyStore.getStore(props.storeName);
-    }    
-
+    }   
     
     protected get playerBuffMode(): PlayerBuffMode {
         return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
@@ -225,6 +225,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
 
     protected set playerBuffMode(value: PlayerBuffMode) {
         this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+        if (this.props.selfRender) this.forceUpdate();
     }
 
     protected get immortalMode(): PlayerImmortalMode {
@@ -248,6 +249,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         else {
             this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
         }
+        if (this.props.selfRender) this.forceUpdate();
     }
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
@@ -269,25 +271,20 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         }
         else {
             this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
-        }
+        }        
     }
    
     render(): JSX.Element {
-        const { crew, openCrew, touched } = this.props;
+        const { crew: inputCrew, openCrew, touched } = this.props;
         
         const { mobileWidth } = this.state;
         const compact = this.props.hover;                
 
-        if (!crew) {
+        if (!inputCrew) {
             return <></>
         } 
 
         var me = this;
-        const availmodes = me.validImmortalModes;
-
-        if (availmodes?.includes(me.immortalMode) !== true) {
-            me.immortalMode = availmodes[availmodes.length - 1];
-        }
         
         const availstates = getAvailableBuffStates(this.context.playerData, this.context.maxBuffs);
 
@@ -295,12 +292,33 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             me.playerBuffMode = availstates[0];
         }
 
+        let newcrew: PlayerCrew | undefined = undefined;
+
+        if (this.props.selfRender){
+            let res = CrewPreparer.prepareCrewMember(inputCrew, this.playerBuffMode, this.immortalMode, this.context);
+            newcrew = res[0] as PlayerCrew ?? undefined;
+            this.validImmortalModes = res[1] ?? ['full'];
+        }
+
+        const crew = newcrew ?? inputCrew as PlayerCrew;
+
+        const availmodes = me.validImmortalModes;
+        if (availmodes?.includes(me.immortalMode) !== true) {
+            me.immortalMode = availmodes[availmodes.length - 1];
+        }
+
         const clickImmo = (e) => {
             me.immortalMode = e;
+            if (this.props.onImmoToggle) {
+                this.props.onImmoToggle(e);
+            }
         }
 
         const clickBuff = (e) => {
             me.playerBuffMode = e;
+            if (this.props.onBuffToggle) {
+                this.props.onBuffToggle(e);
+            }
         }
 
         const nextImmo = (e) => {

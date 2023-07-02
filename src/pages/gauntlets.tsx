@@ -18,6 +18,7 @@ import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
 import { prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
+import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -89,6 +90,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	context!: React.ContextType<typeof MergedContext>;
 	private inited: boolean = false;
 	private gauntlets: Gauntlet[] | undefined = undefined;
+	private readonly tiny = TinyStore.getStore('gauntlets');
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
@@ -121,6 +123,73 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		}
 	}
+	
+    protected setValidImmortalModes(crew: PlayerCrew | CrewMember | undefined, value: PlayerImmortalMode[]) {
+		if (JSON.stringify(value) === JSON.stringify(this.getValidImmortalModes(crew))) return;
+        if (crew) {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + crew.symbol, value, true);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+        }
+    }
+	
+    protected getValidImmortalModes(crew: PlayerCrew | CrewMember | undefined): PlayerImmortalMode[] {
+        let value: PlayerImmortalMode[];
+        if (crew) {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + crew.symbol, ['full']) ?? ['full'];
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
+        }
+         // console.log("immortal-mode")
+         // console.log(value);
+        return value;
+    }
+
+	protected getImmortalMode(crew: PlayerCrew | CrewMember | undefined): PlayerImmortalMode {
+        let value: PlayerImmortalMode;
+        if (crew) {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + crew.symbol, 'owned') ?? 'owned';
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
+        }
+         // console.log("immortal-mode")
+         // console.log(value);
+        return value;
+    }
+
+    protected setImmortalMode(crew: PlayerCrew | CrewMember | undefined, value: PlayerImmortalMode) {
+        if (value == this.getImmortalMode(crew)) return;
+        if (crew) {
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + crew.symbol, value, true);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
+        }
+    }
+
+    protected get playerBuffMode(): PlayerBuffMode {
+        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
+    }
+
+    protected set playerBuffMode(value: PlayerBuffMode) {
+		if (this.playerBuffMode === value) return;
+        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+    }
+
+	private lastBuffMode: PlayerBuffMode | undefined = undefined;
+	onBuffToggle = (state: PlayerBuffMode) => {
+		if (state !== this.lastBuffMode) {
+			this.lastBuffMode = state;
+			this.forceUpdate();
+		}
+	}
+
+	onImmoToggle = (crew: PlayerCrew, state: PlayerImmortalMode) => {
+		
+	}
 
 	componentDidMount() {
 		this.initData();
@@ -144,7 +213,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				allCrew.filter(e => e.max_rarity > 3 && (
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 					.sort((a, b) => (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length));
-
+			
 			node.matchedCrew = matchedCrew;
 			node.prettyTraits = prettyTraits;
 		});	
@@ -155,8 +224,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let today = gaunts[0];
 			let yesterday = gaunts[1];
 			
-			gaunts = gaunts.slice(2);
+			// [0, 1].forEach((idx) => {
+			// 	gaunts[idx].matchedCrew = gaunts[idx].matchedCrew?.map((crew) => {
+			// 		let [newcrew, immomodes] = CrewPreparer.prepareCrewMember(crew, this.playerBuffMode, this.getImmortalMode(crew), this.context);
+			// 		this.setValidImmortalModes(crew, immomodes ?? ['full']);
+			// 		return newcrew as PlayerCrew;
+			// 	})
+			// });
 
+			gaunts = gaunts.slice(2);
+			
 			let ip = this.state.itemsPerPage;
 			let pc = Math.round(gaunts.length / ip);
 	
@@ -237,7 +314,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										</div>
 									</div>
 									
-									<CrewPresenter storeName='gauntlets' hover={false} crew={crew} />
+									<CrewPresenter 
+										selfRender={true}
+										onBuffToggle={this.onBuffToggle}
+										onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
+										storeName='gauntlets' 
+										hover={false} 
+										crew={crew} />
 
 								</div>
 							))}
