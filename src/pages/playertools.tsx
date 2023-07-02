@@ -34,6 +34,7 @@ import { Archetype17, Archetype20 } from '../model/archetype';
 import { DataContext, DefaultCore } from '../context/datacontext';
 import { PlayerContext, PlayerContextData } from '../context/playercontext';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { EquipmentItem } from '../model/equipment';
 
 export interface PlayerTool {
 	title: string;
@@ -149,7 +150,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 
 	// These are all the static assets loaded from DataContext
-	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics } = dataContext;
+	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = dataContext;
 
 	// These are all sessionStorage or localStorage values
 	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
@@ -164,6 +165,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 					maxBuffs={maxBuffs}
+					items={items}
 					playerData={playerData}
 					buffConfig={buffConfig}
 					strippedPlayerData={strippedPlayerData}
@@ -309,6 +311,7 @@ type PlayerToolsPanesProps = {
 	fleetBossData: BossBattlesRoot;
 	buffConfig?: BuffStatTable;
 	maxBuffs?: BuffStatTable;
+	items?: EquipmentItem[];
 
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
@@ -326,6 +329,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			allShips, 
 			playerShips, 
 			fleetBossData,
+			items,
 			requestShowForm, 
 			requestClearData, 
 		} = props;
@@ -496,7 +500,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					playerShips: playerShips,
 					bossData: fleetBossData,
 					buffConfig: buffConfig,
-					maxBuffs: maxBuffs
+					maxBuffs: maxBuffs,
+					items: items
 				}}>
 					{tools[activeTool].render(props)}
 				</MergedContext.Provider>

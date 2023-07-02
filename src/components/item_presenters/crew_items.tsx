@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { CrewMember } from "../../model/crew";
+import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { PlayerCrew, PlayerData } from "../../model/player"
 import { DataContext } from '../../context/datacontext';
 import { PlayerContext } from '../../context/playercontext';
@@ -36,7 +36,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length > 1) startlevel = startlevel - 4;
     let eqimgs = [] as string[];
-    let equip = [] as (EquipmentItem | undefined)[];
+    let equip = [] as EquipmentItem[];
 
     if (!crew.equipment_slots[startlevel] || !itemsReady) {
         //console.error(`Missing equipment slots information for crew '${crew.name}'`);
@@ -48,22 +48,25 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             'items_equipment_box02_icon.png'
         ];
     } else {
+        
         for (let i = startlevel; i < startlevel + 4; i++) {
-            let eq = crew.equipment_slots[i];
+            let eq: EquipmentSlot;
+            eq = crew.equipment_slots[i];
+            
             if (eq) {
                 let ef = coreData.items.find(item => item.symbol === eq.symbol);
                 if (ef) {
-                    equip.push(ef);
+                    equip.push(JSON.parse(JSON.stringify(ef)));
                 }
             }
-            if (equip.length === i) equip.push(undefined);
+            //if (equip.length === i) equip.push({} as EquipmentItem);
         }
 
         eqimgs = [
-            crew.equipment_slots[startlevel].imageUrl ?? "",
-            crew.equipment_slots[startlevel + 1].imageUrl ?? "",
-            crew.equipment_slots[startlevel + 2].imageUrl ?? "",
-            crew.equipment_slots[startlevel + 3].imageUrl ?? ""
+            equip[0].imageUrl ?? "items_equipment_box02_icon.png",
+            equip[1].imageUrl ?? "items_equipment_box02_icon.png",
+            equip[2].imageUrl ?? "items_equipment_box02_icon.png",
+            equip[3].imageUrl ?? "items_equipment_box02_icon.png"
         ];
     }    
 
@@ -71,7 +74,9 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         [0, 1, 2, 3].forEach(idx => {
             if ((crew.equipment as number[]).indexOf(idx) < 0) {
                 eqimgs[idx] = 'items_equipment_box02_icon.png';
-                equip[idx] = undefined;
+                equip[idx].imageUrl = "items_equipment_box02_icon.png"
+                equip[idx].empty = true;
+                equip[idx].rarity = 0;
             }
         });
     }
@@ -108,17 +113,19 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
 
     render() {
         const entry = this.props;
-        return (<div style={{
+        return (<div 
+            title={this.props.equipment?.name}
+            style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "center",
+            justifyContent: "center",            
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em"
         }}>
             <ItemDisplay
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
                 size={window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? 24 : 32}
                 maxRarity={entry?.equipment?.rarity ?? 0}
-                rarity={entry?.equipment?.rarity ?? 0}
+                rarity={entry?.equipment?.rarity ?? 0}                
             />
         </div>)
     }

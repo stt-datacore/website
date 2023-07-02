@@ -26,6 +26,8 @@ export interface EquipmentItem extends EquipmentCommon {
 
   item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe
+
+  empty?: boolean;
 }
 
 export interface EquipmentItemSource {

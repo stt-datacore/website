@@ -49,7 +49,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-		const { playerData, buffConfig } = this.context ?? { playerData: {}, buffConfig: {} };
+		const buffConfig = this.context?.buffConfig;
 
 		this.state = {
 			column: 'bigbook_tier',
@@ -96,7 +96,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			});
 			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.buffConfig ?? {} });
 			this._handleSortNew({})
-		}
+		}		
 	}
 
 	_handleSortNew(config: HandleSortOptions) {
