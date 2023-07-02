@@ -359,6 +359,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         let sd = JSON.parse(JSON.stringify(crew)) as SkillData;
 
         getSkills(crew).forEach(skill => {
+            if (!(skill in crew)) return;
             sd.base_skills[skill] = {
                 core: crew[skill].core,
                 range_min: crew[skill].min,

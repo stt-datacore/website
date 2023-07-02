@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Item, Image, Grid, Popup, Pagination, PaginationProps } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql } from 'gatsby';
-
+import * as moment from 'moment';
 import Layout from '../components/layout';
 
 import { getEpisodeName } from '../utils/episodes';
@@ -17,6 +17,7 @@ import { CrewMember } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
 import { prepareProfileData } from '../utils/crewutils';
+import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -79,6 +80,8 @@ export interface GauntletsPageState {
 	totalPages: number;
 	activePageIndex: number;
 	itemsPerPage: number;
+	today?: Gauntlet;
+	yesterday?: Gauntlet;
 }
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
@@ -138,8 +141,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				return null
 			}
 			const matchedCrew = 
-				allCrew.filter(e => e.max_rarity > 3 && prettyTraits.filter(t => e.traits_named.includes(t)).length > 1)
-				.sort((a, b) => (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length));
+				allCrew.filter(e => e.max_rarity > 3 && (
+					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
+					.sort((a, b) => (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length));
 
 			node.matchedCrew = matchedCrew;
 			node.prettyTraits = prettyTraits;
@@ -148,6 +152,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (!this.gauntlets || !this.inited) {
 
 			let gaunts = gauntlets?.filter((gauntlet) => gauntlet.prettyTraits?.length) ?? [];
+			let today = gaunts[0];
+			let yesterday = gaunts[1];
+			
+			gaunts = gaunts.slice(2);
 
 			let ip = this.state.itemsPerPage;
 			let pc = Math.round(gaunts.length / ip);
@@ -159,19 +167,92 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			this.gauntlets = gaunts;
 			this.inited = true;			
 
-			this.setState({ ... this.state, activePage: gaunts.slice(0, ip), totalPages: pc, activePageIndex: 1 });
+			this.setState({ ... this.state, activePage: gaunts.slice(0, ip), totalPages: pc, activePageIndex: 1, today, yesterday });
 		}
 	}
 
 	render() {
 		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages } = this.state;
+		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
 		if (!gauntlets) return <></>
 
 		return (
 			<Layout title='Gauntlets'>
 				
+
+				{[today, yesterday].map((node, idx) => {
+					if (!node) return undefined;
+
+					const matchedCrew = node.matchedCrew ?? [];
+
+					const prettyDate = moment(node.date).utc(false).format('dddd, D MMMM YYYY')
+					const prettyTraits = node.prettyTraits;
+
+					return (
+					<div style={{
+						marginBottom: "2em"
+					}}>
+						<h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>
+						<div style={{
+							display:"flex",
+							flexDirection: "column",
+							justifyContent: "flex-start", 
+							margin: "0.25em 0"
+						}}>
+							<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
+								{prettyDate}
+							</h3>
+							<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
+								{node.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}						
+							</h2>
+						</div>
+
+						<div style={{
+							display: "flex",
+							flexDirection: "row",
+							flexWrap: "wrap"
+						}}>
+							{matchedCrew.map((crew) => (
+								<div className="ui segment" style={{
+									display: "flex",
+									flexDirection: "row",
+									justifyContent: "space-evenly",
+									width: "100%"
+								}}>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+										alignItems: "center",
+										fontSize: "3em"
+									}}>
+
+										<div style={{margin: "0.5em"}}>
+											{prettyTraits?.filter(t => crew.traits_named.includes(t)).length == 3 ? '65%' : '45%'}
+										</div>
+										<div style={{margin: "0.5em"}}>
+											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? 
+											<img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
+											: ''}
+										</div>
+									</div>
+									
+									<CrewPresenter storeName='gauntlets' hover={false} crew={crew} />
+
+								</div>
+							))}
+						</div>
+						<hr />
+					</div>
+					)
+				})}
+				
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
+
+				<hr />
+
+				<h2>Previous Gauntlets</h2>			
+				
 				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
 			
 				<div className="ui segment">
@@ -179,7 +260,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{activePage?.map((node, index) => {
 
 							const matchedCrew = node.matchedCrew ?? [];
-							const prettyDate = new Date(node.date).toDateString();
+
+							const prettyDate = moment(node.date).utc(false).format('dddd, D MMMM YYYY')
 							const prettyTraits = node.prettyTraits;
 
 							return (
