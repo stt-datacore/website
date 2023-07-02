@@ -381,7 +381,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
             pt = "Unowned (Available in the Portal)";
             npt = "Unowned (Not in the Portal)"
         }
-        else if ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalUnowned) {
+        else if (!("immortal" in crew) || ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalStatic)) {
             pt = "Available in the Portal";
             npt = "Not in the Portal"
         }

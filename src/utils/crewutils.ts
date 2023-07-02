@@ -302,7 +302,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		crew.date_added = new Date(crew.date_added);
 	}
 
-	if (playerData) {
+	if (playerData?.player?.character) {
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;
 		} else {
@@ -389,7 +389,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		}
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
-			crew.immortal = CompletionState.DisplayAsImmortalUnowned;
+			crew.immortal = playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 		}
 		if (rarity && !crew.equipment?.length) {
 			crew.equipment = [0, 1, 2, 3];
