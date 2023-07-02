@@ -16,6 +16,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CrewMember } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
+import { prepareProfileData } from '../utils/crewutils';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -31,7 +32,13 @@ const GauntletsPage = () => {
 	const isReady = coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']);
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
-	
+	let playerData: PlayerData | undefined = undefined;
+
+	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
+		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
+		if (playerData) prepareProfileData("INDEX", coreData.crew, playerData, new Date());
+	}
+
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext.maxBuffs;
@@ -48,7 +55,7 @@ const GauntletsPage = () => {
 					<React.Fragment>
 						<MergedContext.Provider value={{
 							allCrew: coreData.crew,
-							playerData: strippedPlayerData ?? {} as PlayerData,
+							playerData: playerData ?? {} as PlayerData,
 							buffConfig: buffConfig,
 							maxBuffs: maxBuffs,
 							gauntlets: coreData.gauntlets
