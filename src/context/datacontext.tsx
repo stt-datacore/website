@@ -1,4 +1,5 @@
 import React from 'react';
+import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, SkillData } from '../model/crew';
 import { Ship, Schematics } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
@@ -38,6 +39,7 @@ export interface DefaultCore extends ContextCommon {
 	items: EquipmentItem[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
 	all_buffs: BuffStatTable,
+	gauntlets: Gauntlet[];
 	ready: (demands: ValidDemands[]) => boolean;
 };
 
@@ -47,7 +49,8 @@ const defaultData = {
 	ships: [] as Ship[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
-	all_buffs: {} as BuffStatTable
+	all_buffs: {} as BuffStatTable,
+	gauntlets: [] as Gauntlet[]
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -152,6 +155,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 									newData[demand] = calculateMaxBuffs(result);
 								}
 								else {
+									if (demand === 'gauntlets') {
+										(result as Gauntlet[])?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+									}
 									newData[demand] = result;
 								}
 								return newData;

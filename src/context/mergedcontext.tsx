@@ -9,6 +9,7 @@ import { PlayerContext } from './playercontext';
 import { CrewMember } from '../model/crew';
 import { BossBattlesRoot } from '../model/boss';
 import { KeystoneBase, Polestar, Constellation } from '../model/game-elements';
+import { Gauntlet } from '../model/gauntlets';
 
 export interface MergedData {
     playerData: PlayerData;
@@ -21,6 +22,7 @@ export interface MergedData {
     maxBuffs?: BuffStatTable;
     keystones?: (KeystoneBase | Polestar | Constellation)[];
     items?: EquipmentItem[];
+    gauntlets?: Gauntlet[];
     data?: any;
 }
 

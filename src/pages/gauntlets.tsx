@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup } from 'semantic-ui-react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql } from 'gatsby';
 
 import Layout from '../components/layout';
@@ -7,6 +7,15 @@ import Layout from '../components/layout';
 import { getEpisodeName } from '../utils/episodes';
 import { trait_names } from '../../static/structured/translation_en.json';
 import CONFIG from '../components/CONFIG';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { BuffStatTable } from '../utils/voyageutils';
+import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
+import { CrewMember } from '../model/crew';
+import { TinyStore } from '../utils/tiny';
+import { Gauntlet } from '../model/gauntlets';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -17,95 +26,165 @@ const SKILLS = {
 	medicine_skill: 'MED'
 };
 
-class GauntletsPage extends PureComponent {
+const GauntletsPage = () => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']);
+	const playerContext = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = playerContext;
+	
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
+		maxBuffs = coreData.all_buffs;
+	} 
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+					<React.Fragment>
+						<MergedContext.Provider value={{
+							allCrew: coreData.crew,
+							playerData: strippedPlayerData ?? {} as PlayerData,
+							buffConfig: buffConfig,
+							maxBuffs: maxBuffs,
+							gauntlets: coreData.gauntlets
+						}}>
+							<GauntletsPageComponent />
+						</MergedContext.Provider>
+					</React.Fragment>
+				}
+			
+		</Layout>
+	);
+
+}
+
+export interface GauntletsPageProps {
+}
+
+export interface GauntletsPageState {
+	hoverCrew: PlayerCrew | CrewMember | null | undefined;
+	activePage: Gauntlet[];
+	totalPages: number;
+	activePageIndex: number;
+	itemsPerPage: number;
+}
+
+class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
+	static contextType? = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+	private inited: boolean = false;
+	private gauntlets: Gauntlet[] | undefined = undefined;
+
+	constructor(props: GauntletsPageProps) {
+		super(props);
+
+		this.state = {
+			hoverCrew: undefined,
+			activePage: [],
+			totalPages: 0,
+			activePageIndex: 0,
+			itemsPerPage: 10
+		}
+	}
+
+	public setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
+		this.setState({ ... this.state, hoverCrew: item });
+	};
+
+	public setActivePage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps) => {
+		if (this.inited && this.gauntlets) {
+
+			let ip = this.state.itemsPerPage;
+			let ap = ((data.activePage as number) - 1);
+			if (ap < 0) ap = 0;
+			
+			let cp = ap * ip;
+			let ep = cp + ip;
+			if (ep > this.gauntlets.length) ep = this.gauntlets.length;
+			let sl = this.gauntlets.slice(cp, ep);
+			this.setState({ ... this.state, activePage: sl, activePageIndex: ap + 1 });
+
+		}
+	}
+
+	componentDidMount() {
+		this.initData();
+	}
+
+	componentDidUpdate() {
+		this.initData();
+	}
+
+	initData() {
+		const { allCrew, gauntlets } = this.context;
+		if (!(allCrew?.length) || !(gauntlets?.length)) return;
+
+		gauntlets.forEach((node, index) => {
+			
+			const prettyTraits = node.contest_data?.traits?.map(t => trait_names[t]);
+			if (!prettyTraits) {
+				return null
+			}
+			const matchedCrew = 
+				allCrew.filter(e => e.max_rarity > 3 && prettyTraits.filter(t => e.traits_named.includes(t)).length > 1)
+				.sort((a, b) => (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length));
+
+			node.matchedCrew = matchedCrew;
+			node.prettyTraits = prettyTraits;
+		});	
+
+		if (!this.gauntlets || !this.inited) {
+			let ip = this.state.itemsPerPage;
+			let pc = Math.round(gauntlets.length / ip);
+	
+			if ((pc * ip) != gauntlets.length) {
+				pc++;
+			}
+
+			this.gauntlets = gauntlets;
+			this.inited = true;			
+
+			this.setState({ ... this.state, activePage: gauntlets.slice(0, ip), totalPages: pc, activePageIndex: 1 });
+		}
+	}
+
 	render() {
+		const { gauntlets } = this;
+		const { activePage, activePageIndex, totalPages } = this.state;
+		if (!gauntlets) return <></>
+
 		return (
-			<StaticQuery
-				query={graphql`
-					query {
-						allGauntletsJson {
-							edges {
-								node {
-									gauntlet_id
-									date
-									jackpot_crew
-									contest_data {
-										featured_skill
-										traits
-									}
-								}
-							}
-						}
-						allCrewJson {
-							edges {
-								node {
-									symbol
-									name
-									traits_named
-									imageUrlPortrait
-									max_rarity
-									ranks {
-										gauntletRank
-									}
-									base_skills {
-										security_skill {
-											core
-											range_min
-											range_max
-										}
-										command_skill {
-											core
-											range_min
-											range_max
-										}
-										diplomacy_skill {
-											core
-											range_min
-											range_max
-										}
-										science_skill {
-											core
-											range_min
-											range_max
-										}
-										medicine_skill {
-											core
-											range_min
-											range_max
-										}
-										engineering_skill {
-											core
-											range_min
-											range_max
-										}
-									}
-								}
-							}
-						}
-					}
-				`}
-				render={data => (
-					<Layout title='Gauntlets'>
-						<Item.Group divided>
-							{data.allGauntletsJson.edges.sort((a, b) => Date.parse(b.node.date) - Date.parse(a.node.date)).map(({ node }, index) => {
-								const prettyDate = new Date(node.date).toDateString();
-								const prettyTraits = node.contest_data?.traits?.map(t => trait_names[t]);
-								if (!prettyTraits) {
-									return null
-								}
-								const matchedCrew = data.allCrewJson.edges.filter(e => e.node.max_rarity > 3 && prettyTraits.filter(t => e.node.traits_named.includes(t)).length > 1).sort((a, b) => (prettyTraits.filter(t => b.node.traits_named.includes(t)).length - prettyTraits.filter(t => a.node.traits_named.includes(t)).length));
-								return (
-								<Item key={index}>
-									<Item.Content>
-										<Item.Header>
-											{node.contest_data.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data.featured_skill]}
-										</Item.Header>
-										<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
-										<Item.Description>
-											<Grid stackable>
-											{matchedCrew.map(({ node: crew }) => (
-													<Grid.Column width={1} style={{textAlign: 'center'}}>
-														<a href={`/crew/${crew.symbol}`}>
+			<Layout title='Gauntlets'>
+				
+				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
+				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
+			
+				<div className="ui segment">
+					<Item.Group divided>
+						{activePage?.filter((gauntlet) => gauntlet.prettyTraits?.length).map((node, index) => {
+
+							const matchedCrew = node.matchedCrew ?? [];
+							const prettyDate = new Date(node.date).toDateString();
+							const prettyTraits = node.prettyTraits;
+
+							return (
+							<Item key={index}>
+								<Item.Content>
+									<Item.Header>
+										{node.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
+									</Item.Header>
+									<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
+									<Item.Description>
+										<Grid stackable>
+										{matchedCrew.map((crew) => (
+												<Grid.Column width={1} style={{textAlign: 'center'}}>
+													<a href={`/crew/${crew.symbol}`}>
+												<CrewTarget inputItem={crew} setDisplayItem={this.setHoverCrew} targetGroup='gauntlets'>
 													<Image
 													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 													size='tiny'
@@ -119,25 +198,25 @@ class GauntletsPage extends PureComponent {
 														marginRight: 'auto'
 													}}
 												/>
-												</a>
-												{prettyTraits.filter(t => crew.traits_named.includes(t)).length == 3 ? '65%' : '45%'}
-												<br />
-												{crew.base_skills[node.contest_data.featured_skill] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data.featured_skill}.png`} /> : ''}
-												</Grid.Column>
-											))}
-											</Grid>
-										</Item.Description>
-									</Item.Content>
-								</Item>
-							)
-								})}
-						</Item.Group>
-						<></>
-					</Layout>
-				)}
-			/>
-		);
+												</CrewTarget>
+											</a>
+											{prettyTraits?.filter(t => crew.traits_named.includes(t)).length == 3 ? '65%' : '45%'}
+											<br />
+											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
+											</Grid.Column>
+										))}
+										</Grid>
+									</Item.Description>
+								</Item.Content>
+							</Item>
+						)
+							})}
+					</Item.Group>
+				</div>
+				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
+			</Layout>
+		)}
 	}
-}
+
 
 export default GauntletsPage;
