@@ -375,11 +375,14 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				let ismo = isImmortal(owned);
 				crew.immortal = ismo ? CompletionState.Immortalized : CompletionState.DisplayAsImmortalOwned;
 			}		
+			if (rarity && !crew.equipment?.length) {
+				crew.equipment = [0, 1, 2, 3];
+			}
 			outputcrew.push(JSON.parse(JSON.stringify(crew)));
 		}
 	}
 
-	if (!crew.have || crew.immortal > 0) {
+	if (!crew.have || crew.immortal > 0) {		
 		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
 			if (rarity) rarity--;
 			crew = { ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) };
@@ -387,6 +390,9 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
 			crew.immortal = CompletionState.DisplayAsImmortalUnowned;
+		}
+		if (rarity && !crew.equipment?.length) {
+			crew.equipment = [0, 1, 2, 3];
 		}
 		outputcrew.push(crew);
 	}
