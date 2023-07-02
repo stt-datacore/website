@@ -15,6 +15,7 @@ import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PlayerBuffMode, PlayerImmortalMode, nextImmortalState, nextBuffState, getAvailableBuffStates, BuffNames, getAvailableImmortalStates, ImmortalNames } from "../hovering/crewhoverstat";
 import { MergedContext } from "../../context/mergedcontext";
+import { CrewItemsView } from "./crew_items";
 
 
 const dormantStyle: React.CSSProperties = {
@@ -421,7 +422,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}
                         />
                     </div>
-                   
+                    <div style={{marginBottom: "0.13em", marginRight: "0.5em"}}>                        
+                    
+                    <CrewItemsView crew={crew} />
+                    </div>
                 </div>
                 <div
                     style={{
