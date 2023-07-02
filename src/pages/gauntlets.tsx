@@ -146,17 +146,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		});	
 
 		if (!this.gauntlets || !this.inited) {
+
+			let gaunts = gauntlets?.filter((gauntlet) => gauntlet.prettyTraits?.length) ?? [];
+
 			let ip = this.state.itemsPerPage;
-			let pc = Math.round(gauntlets.length / ip);
+			let pc = Math.round(gaunts.length / ip);
 	
-			if ((pc * ip) != gauntlets.length) {
+			if ((pc * ip) != gaunts.length) {
 				pc++;
 			}
 
-			this.gauntlets = gauntlets;
+			this.gauntlets = gaunts;
 			this.inited = true;			
 
-			this.setState({ ... this.state, activePage: gauntlets.slice(0, ip), totalPages: pc, activePageIndex: 1 });
+			this.setState({ ... this.state, activePage: gaunts.slice(0, ip), totalPages: pc, activePageIndex: 1 });
 		}
 	}
 
@@ -173,7 +176,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			
 				<div className="ui segment">
 					<Item.Group divided>
-						{activePage?.filter((gauntlet) => gauntlet.prettyTraits?.length).map((node, index) => {
+						{activePage?.map((node, index) => {
 
 							const matchedCrew = node.matchedCrew ?? [];
 							const prettyDate = new Date(node.date).toDateString();
