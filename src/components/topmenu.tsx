@@ -108,6 +108,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		{ title: 'Events', link: '/events' },
 		{ title: 'Collections', link: '/collections' },
 		{ title: 'Items', link: '/items' },
+		{ title: 'Gauntlets', link: '/gauntlets' },
 		{ title: 'Misc stats', link: '/stats' },
 		{ title: 'Episodes', link: '/episodes' },
 		{ title: 'Hall of Fame', link: '/hall_of_fame' },

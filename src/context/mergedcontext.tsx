@@ -21,6 +21,7 @@ export interface MergedData {
     maxBuffs?: BuffStatTable;
     keystones?: (KeystoneBase | Polestar | Constellation)[];
     items?: EquipmentItem[];
+    data?: any;
 }
 
 const defaultMerged = {
