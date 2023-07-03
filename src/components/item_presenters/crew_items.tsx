@@ -59,7 +59,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                     equip.push(JSON.parse(JSON.stringify(ef)));
                 }
             }
-            //if (equip.length === i) equip.push({} as EquipmentItem);
+            if (equip.length === i) equip.push({} as EquipmentItem);
         }
 
         eqimgs = [
