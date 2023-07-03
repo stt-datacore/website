@@ -263,8 +263,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						
 						if (r) return r;
 
-						if (b.immortal > 0 && a.immortal <= 0) return -1;
-						else if (a.immortal > 0 && b.immortal <= 0) return 1;
+						// if (b.immortal > 0 && a.immortal <= 0) return -1;
+						// else if (a.immortal > 0 && b.immortal <= 0) return 1;
 
 						if (node.contest_data?.featured_skill) {
 							r = 0;
