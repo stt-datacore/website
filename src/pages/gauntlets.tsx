@@ -452,6 +452,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									
 									<CrewPresenter 
 										selfRender={true}
+										selfPrepare={true}
 										onBuffToggle={this.onBuffToggle}
 										onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
 										storeName='gauntlets' 
