@@ -243,18 +243,17 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         else {
             value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
         }
-         // console.log("immortal-mode")
-         // console.log(value);
+             
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
         if (value == this.immortalMode) return;
         if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, true);
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, false);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, false);
         }
         if (this.props.selfRender) this.forceUpdate();
     }
@@ -262,10 +261,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     protected get validImmortalModes(): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
         if (this.props.crew) {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['full']) ?? ['full'];
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['owned']) ?? ['owned'];
         }
         else {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['owned']) ?? ['owned'];
         }
          // console.log("immortal-mode")
          // console.log(value);

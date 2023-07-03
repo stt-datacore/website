@@ -10,7 +10,7 @@ import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
-import { PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { CrewMember, Skill } from '../model/crew';
@@ -38,7 +38,7 @@ const GauntletsPage = () => {
 
 	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
 		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("INDEX", coreData.crew, playerData, new Date());
+		if (playerData) prepareProfileData("GAUNTLETS", coreData.crew, playerData, new Date());
 	}
 
 	let maxBuffs: BuffStatTable | undefined;
@@ -251,14 +251,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				allCrew.filter(e => e.max_rarity > 3 && (
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 					.map((crew) => {
-						return prepareOne(crew, this.context.playerData, this.context.buffConfig)[0];
+						let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+						if (c) return c;
+						crew.immortal = this.context.playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+						return crew;
 					})
 					.sort((a, b) => {
 						if ("have" in a && "have" in b) {
 							if (a.have && !b.have) return -1;
 							else if (!a.have && b.have) return 1;
 						}
-						
+						else if ("have" in a && a.have && !("have" in b)) return -1;
+						else if ("have" in b && b.have && !("have" in a)) return 1;
+
 						let r = (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length);
 						
 						if (r) return r;

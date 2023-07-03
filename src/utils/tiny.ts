@@ -383,9 +383,6 @@ export class TinyStore {
             return JSON.parse(json) as T;
         }
 
-        if (defaultValue !== undefined)
-            this.setValue(key, defaultValue as T);
-
         return defaultValue as T;
     }
 

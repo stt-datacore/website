@@ -46,50 +46,49 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
 
-    protected get validImmortalModes(): PlayerImmortalMode[] {
-        let value: PlayerImmortalMode[];
-        if (this.props.inputItem) {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, ['full']) ?? ['full'];
-        }
-        else {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
-        }
-         // console.log("immortal-mode")
-         // console.log(value);
-        return value;
-    }
-
-    protected set validImmortalModes(value: PlayerImmortalMode[]) {
-        if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
-        }
-    }
-    
     protected get immortalMode(): PlayerImmortalMode {
         let value: PlayerImmortalMode;
-        
         if (this.props.inputItem) {
             value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, 'owned') ?? 'owned';
         }
         else {
             value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
         }
+             
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
         if (value == this.immortalMode) return;
         if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, true);
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, false);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, false);
+        }       
     }
 
+    protected get validImmortalModes(): PlayerImmortalMode[] {
+        let value: PlayerImmortalMode[];
+        if (this.props.inputItem) {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, ['owned']) ?? ['owned'];
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['owned']) ?? ['owned'];
+        }
+         // console.log("immortal-mode")
+         // console.log(value);
+        return value;
+    }
+
+    protected set validImmortalModes(value: PlayerImmortalMode[]) {        
+        if (this.props.inputItem) {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, value, true);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+        }        
+    }
 
     protected propertyChanged = (key: string) => {
         if (key === 'cancelled') return;
@@ -167,45 +166,48 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
 
+    protected get immortalMode(): PlayerImmortalMode {
+        let value: PlayerImmortalMode;
+        if (this.props.crew) {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, 'owned') ?? 'owned';
+        }
+        else {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
+        }
+             
+        return value;
+    }
+
+    protected set immortalMode(value: PlayerImmortalMode) {
+        if (value == this.immortalMode) return;
+        if (this.props.crew) {
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, false);
+        }
+        else {
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, false);
+        }
+    }
+
     protected get validImmortalModes(): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
         if (this.props.crew) {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['full']) ?? ['full'];
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['owned']) ?? ['owned'];
         }
         else {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['full']) ?? ['full'];
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['owned']) ?? ['owned'];
         }
          // console.log("immortal-mode")
          // console.log(value);
         return value;
     }
 
-    protected set validImmortalModes(value: PlayerImmortalMode[]) {
+    protected set validImmortalModes(value: PlayerImmortalMode[]) {        
         if (this.props.crew) {
             this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, value, true);
         }
         else {
             this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
-        }
-    }
-
-    protected get immortalMode(): PlayerImmortalMode {
-        if (this.props.crew) {
-            return this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, 'owned') ?? 'owned';
-        }
-        else {
-            return this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
         }        
-    }
-
-    protected set immortalMode(value: PlayerImmortalMode) {
-        if (value == this.immortalMode) return;
-        if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }
     }
 
     protected renderContent = (): JSX.Element => {
