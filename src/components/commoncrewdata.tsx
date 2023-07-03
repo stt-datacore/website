@@ -273,7 +273,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				<div style={{fontSize: "10pt", marginTop: "1em"}}>
 					<h4 style={{ marginBottom: '.25em' }}>Ship Ability</h4>
 					<hr></hr>
-					<ShipSkill isShip={false} shipInfo={crew.ship_battle} actions={[crew.action]} />
+					<ShipSkill context={crew} />
 				</div>
 
 				}

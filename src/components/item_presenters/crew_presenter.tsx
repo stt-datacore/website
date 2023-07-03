@@ -16,6 +16,8 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { MergedContext } from "../../context/mergedcontext";
 import { CrewItemsView } from "./crew_items";
 import { PlayerBuffMode, PlayerImmortalMode, BuffNames, ImmortalNames, getAvailableBuffStates, nextImmortalState, nextBuffState, CrewPreparer } from "./crew_preparer";
+import { PresenterPlugin, PresenterPluginBase } from "./presenter_plugin";
+import { Ship } from "../../model/ship";
 
 
 const dormantStyle: React.CSSProperties = {
@@ -198,22 +200,26 @@ export interface CrewPresenterProps extends PresenterProps {
     onBuffToggle?: (state: PlayerBuffMode) => void;
     onImmoToggle?: (state: PlayerImmortalMode) => void;
     selfRender?: boolean;
+    plugins?: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
 }
 
 export interface CrewPresenterState {
     mobileWidth: number;
+    pluginsUsed: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
 }
 
 export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPresenterState> {
     static contextType = MergedContext;
     context!: React.ContextType<typeof MergedContext>;
 
-    tiny: TinyStore;
+    private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
         super(props);        
+
         this.state = {
             ... this.state,
-            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
+            pluginsUsed: props.plugins ?? [ShipSkill]
         }
 
         this.tiny = TinyStore.getStore(props.storeName);
@@ -277,7 +283,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     render(): JSX.Element {
         const { crew: inputCrew, openCrew, touched } = this.props;
         
-        const { mobileWidth } = this.state;
+        const { mobileWidth, pluginsUsed } = this.state;
         const compact = this.props.hover;                
 
         if (!inputCrew) {
@@ -599,7 +605,9 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        <ShipSkill isShip={false} fontSize="0.8em" actions={crew.action ? [crew.action] : []} shipInfo={crew.ship_battle} />
+                        {pluginsUsed.map((PlugIn) => (
+                            <PlugIn context={crew} fontSize="0.8em" />
+                        ))}
                     </div>
                     <div>
                         <div

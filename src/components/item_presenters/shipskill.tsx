@@ -3,6 +3,9 @@ import CONFIG from "../CONFIG";
 import { getActionFromItem, getShipBonus, getShipChargePhases } from "../../utils/crewutils";
 import { ShipAction, Ship, ShipBonus } from "../../model/ship";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { PresenterPluginProps, PresenterPlugin, PresenterPluginState } from "./presenter_plugin";
+import { CrewMember } from "../../model/crew";
+import { PlayerCrew } from "../../model/player";
 
 const imageMap = new Map<string, string>();
 
@@ -75,23 +78,24 @@ export const getIconByKey = (key: string): string | undefined => {
 //     style?: React.CSSProperties;
 // }
 
-export interface ShipSkillProps {
-    actions: ShipAction[];    
-    shipInfo: ShipBonus | Ship;
-    isShip: boolean;
+
+export interface ShipSkillProps extends PresenterPluginProps<Ship | PlayerCrew | CrewMember> {
     withActionBorder?: boolean;
-    fontSize?: string;
 }
 
-export class ShipSkill extends React.Component<ShipSkillProps> {
+export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, ShipSkillProps, PresenterPluginState> {
+    
     constructor(props: ShipSkillProps) {
         super(props);
+    
     }
 
     render() {
-        const { actions, shipInfo: ship_battle, isShip } = this.props;
-
-      
+        if (!this.props.context) return <></>
+        const isShip = ("hull" in this.props.context);
+        const ship_battle = ("hull" in this.props.context ? this.props.context : this.props.context.ship_battle)
+        const actions = ("hull" in this.props.context ? this.props.context.actions ?? [] : [this.props.context.action]);
+        const withActionBorder = (this.props as ShipSkillProps).withActionBorder ?? isShip;
 
         const drawBullets = (actions: number): JSX.Element[] => {
             let elems: JSX.Element[] = [];
@@ -110,7 +114,7 @@ export class ShipSkill extends React.Component<ShipSkillProps> {
         return (
             <div style={{ marginBottom: "8px", fontSize: this.props.fontSize ?? "1em" }}>
                 {actions.length && actions.map((action, index) => 
-                    <div key={index} style={{marginTop: "4px", border: this.props.withActionBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: this.props.withActionBorder ? "2px" : "0px"}}>
+                    <div key={index} style={{marginTop: "4px", border: withActionBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", padding: withActionBorder ? "2px" : "0px"}}>
                         <div
                             style={{                                
                                 display: "flex",
