@@ -13,10 +13,10 @@ import { PlayerContext } from '../context/playercontext';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
-import { CrewMember } from '../model/crew';
+import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { prepareProfileData } from '../utils/crewutils';
+import { getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
@@ -212,7 +212,70 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			const matchedCrew = 
 				allCrew.filter(e => e.max_rarity > 3 && (
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
-					.sort((a, b) => (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length));
+					.map((crew) => {
+						return prepareOne(crew, this.context.playerData, this.context.buffConfig)[0];
+					})
+					.sort((a, b) => {
+						if ("have" in a && "have" in b) {
+							if (a.have && !b.have) return -1;
+							else if (!a.have && b.have) return 1;
+						}
+						
+						let r = (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length);
+						
+						if (r) return r;
+
+						if (b.immortal > 0 && a.immortal <= 0) return -1;
+						else if (a.immortal > 0 && b.immortal <= 0) return 1;
+
+						if (node.contest_data?.featured_skill) {
+							r = 0;
+							
+							let askills = getSkills(a);
+							let bskills = getSkills(b);
+
+							if (askills.includes(node.contest_data?.featured_skill)) r--; 
+							if (bskills.includes(node.contest_data?.featured_skill)) r++; 
+							
+							if (r) return r;
+
+							let sk = 0;
+							let ask: number[] = [];
+							let bsk: number[] = [];
+
+							for (let skill of askills) {
+								let bs: Skill;
+
+								if (skill in a) {
+									bs = { core: a[skill].core, range_min: a[skill].min, range_max: a[skill].max };
+								}
+								else {
+									bs = a.base_skills[skill];
+								}
+
+								sk = (bs.range_max + bs.range_min) / 2;															
+								ask.push(sk);
+							}
+
+							for (let skill of bskills) {
+								let bs: Skill;
+
+								if (skill in b) {
+									bs = { core: b[skill].core, range_min: b[skill].min, range_max: b[skill].max };
+								}
+								else {
+									bs = b.base_skills[skill];
+								}
+
+								sk = (bs.range_max + bs.range_min) / 2;																
+								bsk.push(sk);
+							}
+
+							r = bsk.reduce((prev, curr) => prev * 1.33 + curr) - ask.reduce((prev, curr) => prev * 1.33 + curr);
+						}
+
+						return r;
+					});
 			
 			node.matchedCrew = matchedCrew;
 			node.prettyTraits = prettyTraits;

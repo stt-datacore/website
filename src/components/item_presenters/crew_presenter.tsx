@@ -200,6 +200,7 @@ export interface CrewPresenterProps extends PresenterProps {
     onBuffToggle?: (state: PlayerBuffMode) => void;
     onImmoToggle?: (state: PlayerImmortalMode) => void;
     selfRender?: boolean;
+    selfPrepare?: boolean;
     plugins?: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
 }
 
@@ -300,7 +301,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
 
         let newcrew: PlayerCrew | undefined = undefined;
 
-        if (this.props.selfRender){
+        if (this.props.selfPrepare){
             let res = CrewPreparer.prepareCrewMember(inputCrew, this.playerBuffMode, this.immortalMode, this.context);
             newcrew = res[0] as PlayerCrew ?? undefined;
             this.validImmortalModes = res[1] ?? ['full'];
