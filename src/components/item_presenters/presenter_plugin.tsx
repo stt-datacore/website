@@ -13,6 +13,9 @@ export interface PresenterPluginState {
 }
 
 export abstract class PresenterPluginBase<TContext> extends React.Component<PresenterPluginProps<TContext>, PresenterPluginState> {
+
+    static title: string;
+
     constructor(props: PresenterPluginProps<TContext>)
     {
         super(props);

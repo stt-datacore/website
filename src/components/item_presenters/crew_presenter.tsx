@@ -609,7 +609,18 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             <PlugIn context={crew} fontSize="0.8em" />
                         ))}
                     </div>
+                    {pluginsUsed.length > 1 &&
+                    <div style={{display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "flex-end"}}>
+                        <div style={{display: "inline-flex", marginTop: "-1.8em"}}>
+                            <i onClick={(e) => { return; }} className="arrow alternate circle left icon" title="Previous Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                            <i onClick={(e) => { return; }} className="arrow alternate circle right icon" title="Next Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                        </div>
+                    </div>
+                    }
                     <div>
+
                         <div
                             style={{
                                 textAlign: "center",

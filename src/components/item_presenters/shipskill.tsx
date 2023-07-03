@@ -84,6 +84,7 @@ export interface ShipSkillProps extends PresenterPluginProps<Ship | PlayerCrew |
 }
 
 export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, ShipSkillProps, PresenterPluginState> {
+    static title = "Ship Ability";
     
     constructor(props: ShipSkillProps) {
         super(props);
