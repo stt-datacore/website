@@ -78,11 +78,18 @@ export interface GauntletsPageProps {
 export interface GauntletsPageState {
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	activePage: Gauntlet[];
+	activePageTabs: (PlayerCrew | CrewMember)[][];
+	today?: Gauntlet;
+	yesterday?: Gauntlet;
 	totalPages: number;
 	activePageIndex: number;
 	itemsPerPage: number;
-	today?: Gauntlet;
-	yesterday?: Gauntlet;
+
+	totalPagesTab: number[];
+	activePageIndexTab: number[];
+	itemsPerPageTab: number[];
+
+
 }
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
@@ -100,7 +107,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePage: [],
 			totalPages: 0,
 			activePageIndex: 0,
-			itemsPerPage: 10
+			itemsPerPage: 10,
+			activePageTabs: [[], []],
+			totalPagesTab: [0, 0],
+			activePageIndexTab: [0, 0],
+			itemsPerPageTab: [10, 10]
 		}
 	}
 
@@ -121,6 +132,31 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let sl = this.gauntlets.slice(cp, ep);
 			this.setState({ ... this.state, activePage: sl, activePageIndex: ap + 1 });
 
+		}
+	}
+
+	public setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
+
+		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew];
+
+		if (this.inited && tabs[index]) {
+			let crew = tabs[index] ?? [] as PlayerCrew[];
+			let ip = this.state.itemsPerPageTab[index];
+			let ap = ((data.activePage as number) - 1);
+			if (ap < 0) ap = 0;
+			
+			let cp = ap * ip;
+			let ep = cp + ip;
+			if (ep > crew.length) ep = crew.length;
+			let sl = crew.slice(cp, ep);
+
+			let naps = [ ... this.state.activePageTabs ];
+			naps[index] = sl;
+
+			let nidx = [ ... this.state.activePageIndexTab ];
+			nidx[index] = ap + 1;
+
+			this.setState({ ... this.state, activePageTabs: naps, activePageIndexTab: nidx });
 		}
 	}
 	
@@ -202,6 +238,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	initData() {
 		const { allCrew, gauntlets } = this.context;
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
+
+		if (gauntlets && this.inited) return;
 
 		gauntlets.forEach((node, index) => {
 			
@@ -304,22 +342,53 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pc++;
 			}
 
+			let apidx = [1, 1];
+			let pcs = [0, 0];
+			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
+
+			[today, yesterday].forEach((day, idx) => {
+				if (!day.matchedCrew) {
+					return;
+				}
+
+				let ip = this.state.itemsPerPageTab[idx];
+				let pc = Math.round(day.matchedCrew.length / ip);
+		
+				if ((pc * ip) != gaunts.length) {
+					pc++;
+				}
+
+				aptabs[idx] = day.matchedCrew.slice(0, ip);
+				pcs[idx] = pc;
+			})
+
+
 			this.gauntlets = gaunts;
 			this.inited = true;			
 
-			this.setState({ ... this.state, activePage: gaunts.slice(0, ip), totalPages: pc, activePageIndex: 1, today, yesterday });
+			this.setState({ ... this.state, 
+				activePage: gaunts.slice(0, ip), 
+				totalPages: pc, 
+				activePageIndex: 1, 
+				activePageTabs: aptabs,
+				totalPagesTab: pcs,
+				activePageIndexTab: apidx,
+				today, 
+				yesterday 
+			});
 		}
 	}
 
 	render() {
 		const { gauntlets } = this;
 		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
+		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
+
 		if (!gauntlets) return <></>
 
 		return (
 			<Layout title='Gauntlets'>
-				
-
+			
 				{[today, yesterday].map((node, idx) => {
 					if (!node) return undefined;
 
@@ -346,13 +415,17 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								{node.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}						
 							</h2>
 						</div>
+						
+						<div style={{margin:"1em 0"}}>
+							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+						</div>
 
 						<div style={{
 							display: "flex",
 							flexDirection: "row",
 							flexWrap: "wrap"
 						}}>
-							{matchedCrew.map((crew) => (
+							{activePageTabs[idx].map((crew) => (
 								<div className="ui segment" style={{
 									display: "flex",
 									flexDirection: "row",
@@ -388,6 +461,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								</div>
 							))}
 						</div>
+
+						<div style={{margin:"1em 0"}}>
+							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+						</div>
+
 						<hr />
 					</div>
 					)
