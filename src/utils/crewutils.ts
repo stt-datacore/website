@@ -637,6 +637,25 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	return phases;
 }
 
+export function traitNumberToColor(num: number): string | null {
+	if (num > 6) return 'lightgreen';
+	
+	switch(num) {
+		case 5:
+		case 6:
+			return "lightgreen";
+
+		case 3:
+		case 4:
+			return "aquamarine";
+
+		case 1:
+		case 2:
+			return "yellow";
+
+	}
+	return 'gray';
+}
 export function gradeToColor(grade: string | number): string | null {
 	switch(grade) {
 		case "A":
