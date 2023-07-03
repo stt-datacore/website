@@ -249,6 +249,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 			const matchedCrew = 
 				allCrew.filter(e => e.max_rarity > 3 && (
+					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 					.map((crew) => {
 						let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
@@ -263,8 +264,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 						else if ("have" in a && a.have && !("have" in b)) return -1;
 						else if ("have" in b && b.have && !("have" in a)) return 1;
-
-						let r = (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length);
+						
+						let r = 0;
+						r = (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length);
 						
 						if (r) return r;
 
@@ -314,7 +316,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								bsk.push(sk);
 							}
 
-							r = bsk.reduce((prev, curr) => prev * 1.33 + curr) - ask.reduce((prev, curr) => prev * 1.33 + curr);
+							r = bsk.reduce((prev, curr) => prev * 2.33 + curr) - ask.reduce((prev, curr) => prev * 2.33 + curr);
 						}
 
 						return r;
@@ -446,7 +448,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									}}>
 
 										<div style={{margin: "0.5em"}}>
-											{prettyTraits?.filter(t => crew.traits_named.includes(t)).length == 3 ? '65%' : '45%'}
+											{ prettyTraits?.some(t => crew.traits_named.includes(t)) && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
 										</div>
 										<div style={{margin: "0.5em"}}>
 											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? 
