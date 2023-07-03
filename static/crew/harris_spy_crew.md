@@ -3,8 +3,8 @@ name: Agent Harris
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 9
-events: 13
+bigbook_tier: 8
+events: 17
 in_portal: true
 date: 24/08/2016
 obtained: Post-Launch
