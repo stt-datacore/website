@@ -3,8 +3,8 @@ name: Mirror Geordi La Forge
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 34
+bigbook_tier: 3
+events: 37
 in_portal: true
 date: 12/09/2019
 obtained: Event

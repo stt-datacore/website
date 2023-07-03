@@ -3,8 +3,8 @@ name: Iden
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
-events: 18
+bigbook_tier: 7
+events: 19
 in_portal: true
 date: 14/10/2021
 obtained: Event

@@ -4,7 +4,7 @@ rarity: 5
 series: snw
 memory_alpha:
 bigbook_tier: 4
-events: 20
+events: 21
 in_portal:
 date: 16/11/2022
 obtained: Event

@@ -3,8 +3,8 @@ name: Beowulf Kim
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 27
+bigbook_tier: 8
+events: 28
 in_portal: true
 date: 27/12/2016
 obtained: Event

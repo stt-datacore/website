@@ -3,8 +3,8 @@ name: Romulan Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 33
+bigbook_tier: 5
+events: 36
 in_portal: true
 date: 21/09/2016
 obtained: Post-Launch

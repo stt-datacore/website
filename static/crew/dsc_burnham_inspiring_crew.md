@@ -3,7 +3,7 @@ name: Inspiring Captain Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 48
 in_portal:
 date: 10/10/2022
