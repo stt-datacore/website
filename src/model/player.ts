@@ -14,6 +14,12 @@ export interface AtlasIcon extends Icon {
     atlas_info: string
 }
 
+export interface CiteMode {
+  rarities?: number[],
+  customSorter?: (left: PlayerCrew, right: PlayerCrew) => number;
+}
+
+
 export interface PlayerData {
     player: Player;
     fleet_boss_battles_root: BossBattlesRoot;
@@ -24,6 +30,7 @@ export interface PlayerData {
     [key: string]: any;
     version?: 17 | 20;
     stripped?: boolean;
+    citeMode?: CiteMode;
 }
 
 export interface Player {

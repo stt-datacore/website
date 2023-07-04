@@ -11,10 +11,11 @@ import marked from 'marked';
 import CrewStat from './crewstat';
 import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
-import { PlayerCrew, PlayerData } from '../model/player';
+import { CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import { RarityFilter } from './crewtables/commonoptions';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -23,17 +24,24 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+
 type CiteOptimizerProps = {
 };
+
+export interface CiteData {
+	crewToCite: PlayerCrew[], 
+	crewToTrain: PlayerCrew[] 
+}
 
 type CiteOptimizerState = {
 	citePage: number;
 	trainingPage: number;
 	paginationRows: number;
-	citeData: { crewToCite: PlayerCrew[], crewToTrain: PlayerCrew[] } | undefined;
+	citeData: CiteData | undefined;
 	currentCrew: CrewMember | null | undefined;
 	touchCrew: CrewMember | null | undefined;
 	touchToggled: boolean;
+	citeMode?: CiteMode;
 };
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
@@ -50,6 +58,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
+	private lastCiteMode: CiteMode | undefined = undefined;
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
@@ -61,33 +70,53 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			citeData: undefined,
 			currentCrew: undefined,
 			touchCrew: undefined,
-			touchToggled: false
+			touchToggled: false,
+			citeMode: {
+				rarities: []
+			}
 		};
 	}
 
 	componentDidMount() {
+		const { citeMode } = this.state;
+		this.runWorker(citeMode);
+	}
+
+	componentDidUpdate(prevProps: Readonly<CiteOptimizerProps>, prevState: Readonly<CiteOptimizerState>, snapshot?: any): void {
+		if (JSON.stringify(this.state.citeMode ?? {}) !== JSON.stringify(this.lastCiteMode ?? {})) {
+			this.lastCiteMode = this.state.citeMode;
+			this.runWorker(this.lastCiteMode);
+		}
+	}
+
+	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.context;
+		
+		playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
 		worker.postMessage({
 			worker: 'citeOptimizer',
 			playerData,
 			allCrew
-		})
+		});
 	}
+
 	cc = false;
 	
+	private createStateAccessors<T>(name): [T, (value: T) => void] { return [
+		this.state[name],
+		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
+	] };
+
 	renderTable(data?: PlayerCrew[], training = true) {
 		if (!data) return <></>;
-		const createStateAccessors = (name) => [
-			this.state[name],
-			(value: any) => this.setState((prevState) => { prevState[name] = value; return prevState; })
-		];
-		const [paginationPage, setPaginationPage] = createStateAccessors(training ? 'trainingPage' : 'citePage');
-		const [otherPaginationPage, setOtherPaginationPage] = createStateAccessors(training ? 'citePage' : 'trainingPage');
-		const [paginationRows, setPaginationRows] = createStateAccessors('paginationRows');
-		const [currentCrew, setCurrentCrew] = createStateAccessors('currentCrew');
+		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
+		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
+		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
+		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
+		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
@@ -217,7 +246,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	render() {
 
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
-		const { citeData } = this.state;
+		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const [citeData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 
 		let compact = true;
 
@@ -252,6 +282,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 					]}
 				/>									
+				<Segment>
+					<h3>Filter By Rarity</h3>
+					<RarityFilter 
+						rarityFilter={citeMode?.rarities ?? []} 
+						setRarityFilter={(data) => {
+							setCiteData(undefined);
+							setCiteMode({ ... citeMode ?? {}, rarities: data });
+						}} 
+						/>
+				</Segment>
+
 				<Segment>
 					{!citeData &&
 						<>
