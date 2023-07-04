@@ -320,7 +320,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
 								<div style={{ margin: '1em 0', textAlign: 'right' }}>
 									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
-									(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
+									(<h3><a style={{color: 'lightgreen', cursor: "pointer"}} onClick={(e) => navigate("/playertools?tool=crew&search=" + crew.name)} title="Click to see crew in roster">OWNED</a></h3>)
 									||
 									<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
 									}
