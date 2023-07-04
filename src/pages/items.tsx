@@ -9,12 +9,57 @@ import CONFIG from '../components/CONFIG';
 import { Filter } from '../model/game-elements';
 import { Archetype17 } from '../model/archetype';
 import { EquipmentItem } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { BuffStatTable } from '../utils/voyageutils';
 
-type ItemsPageProps = {};
+export interface ItemsPageProps {}
 
-type ItemsPageState = {
+const ItemsPage = (props: ItemsPageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['all_buffs', 'crew', 'items']);
+	const playerContext = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = playerContext;
+	
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
+		maxBuffs = coreData.all_buffs;
+	} 
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<MergedContext.Provider value={{
+						allCrew: coreData.crew,
+						playerData: strippedPlayerData ?? {} as PlayerData,
+						buffConfig: buffConfig,
+						maxBuffs: maxBuffs,
+						items: coreData.items
+					}}>
+						<ItemsComponent isReady={isReady} />
+					</MergedContext.Provider>
+				</React.Fragment>
+			}
+		</Layout>
+	);
+};
+
+
+
+interface ItemsComponentProps {
+	isReady: boolean;
+};
+
+interface ItemsComponentState {
 	items?: EquipmentItem[];
 	crew?: (PlayerCrew | CrewMember)[];
 };
@@ -26,8 +71,12 @@ const tableConfig: ITableConfigRow[] = [
 	{ width: 3, column: 'flavor', title: 'Flavor' }
 ];
 
-class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
-	constructor(props: ItemsPageProps) {
+class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState> {
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+	private inited: boolean;
+
+	constructor(props: ItemsComponentProps) {
 		super(props);
 
 		this.state = {
@@ -36,52 +85,118 @@ class ItemsPage extends Component<ItemsPageProps, ItemsPageState> {
 		};
 	}
 
+	componentDidUpdate(prevProps: Readonly<ItemsComponentProps>, prevState: Readonly<ItemsComponentState>, snapshot?: any): void {
+		if (this.props.isReady && !this.inited) {
+			this.initData();
+		}
+	}
+
 	componentDidMount() {
-		fetch('/structured/crew.json')
-			.then(response => response.json())
-			.then(crew => {
-				this.setState({ crew });
+		if (this.props.isReady) this.initData();
+	}
+	
+	private binaryLocate(symbol: string, items: EquipmentItem[]) : EquipmentItem | undefined {
+		let lo = 0, hi = items.length - 1;
 
-				fetch('/structured/items.json')
-					.then(response => response.json())
-					.then((items: EquipmentItem[]) => {
-						items = items.filter(item => item.imageUrl);
+		while (true)
+		{
+			if (lo > hi) break;
 
-						// Fill in something useful for flavor where it's missing
-						items.forEach(item => {
-							if (!item.flavor) {
-								if (item.type === 2 && (!item.item_sources || item.item_sources.length === 0) && !item.recipe) {
-									// Most likely a galaxy item
-									item.flavor = 'Unused or Galaxy Event item';
-								}
+			let p = Math.floor((hi + lo) / 2);
+			let elem = items[p];
 
-								let crew_levels = new Set();
-								crew.forEach(cr => {
-									cr.equipment_slots.forEach(es => {
-										if (es.symbol === item.symbol) {
-											crew_levels.add(cr.name);
-										}
-									});
-								});
+			let c = symbol.localeCompare(items[p].symbol);
 
-								if (crew_levels.size > 0) {
-									if (crew_levels.size > 5) {
-										item.flavor = `Equippable by ${crew_levels.size} crew`;
-									} else {
-										item.flavor = 'Equippable by: ' + [...crew_levels].join(', ');
-									}
-								}
-							}
-						});
+			if (c == 0)
+			{
+				return elem;
+			}
+			else if (c < 0)
+			{
+				hi = p - 1;
+			}
+			else
+			{
+				lo = p + 1;
+			}
+		}
 
-						items = items.filter(item => (item.type !== 2) || item.flavor);
+		return undefined;
+	}
 
-						this.setState({ items });
-					})
-					.catch(err => {
-						this.setState({ items: [] });
-					});
+	private initData() {
+
+		const { items: origItems, allCrew: origCrew } = this.context;
+		let crew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew[];
+		let items = JSON.parse(JSON.stringify(origItems)) as EquipmentItem[];
+		items = items.filter(item => item.imageUrl && item.imageUrl !== '');
+		let origpos = items.map(item => item.symbol);
+
+		// Fill in something useful for flavor where it's missing
+		items.forEach(item => {
+			if (!item.flavor) {
+				if (item.type === 2 && (!item.item_sources || item.item_sources.length === 0) && !item.recipe) {
+					// Most likely a galaxy item
+					item.flavor = 'Unused or Galaxy Event item';
+				}
+
+				// let crew_levels = new Set();
+				// crew.forEach(cr => {
+				// 	cr.equipment_slots.forEach(es => {
+				// 		if (es.symbol === item.symbol) {
+				// 			crew_levels.add(cr.name);
+				// 		}
+				// 	});
+				// });
+
+				// if (crew_levels.size > 0) {
+				// 	if (crew_levels.size > 5) {
+				// 		item.flavor = `Equippable by ${crew_levels.size} crew`;
+				// 	} else {
+				// 		item.flavor = 'Equippable by: ' + [...crew_levels].join(', ');
+				// 	}
+				// }
+			}
+		});
+		
+		
+		items.sort((a, b) => a.symbol.localeCompare(b.symbol));
+  		let crew_levels: { [key: string]: Set<string>; } = {};
+		
+		crew.forEach(cr => {
+			cr.equipment_slots.forEach(es => {
+				let item = this.binaryLocate(es.symbol, items);
+				if (item) {
+					crew_levels[es.symbol] ??= new Set();
+					crew_levels[es.symbol].add(cr.name);
+				}
 			});
+		});
+
+		for (let symbol in crew_levels) {
+			if (crew_levels[symbol] && crew_levels[symbol].size > 0) {
+				let item = this.binaryLocate(symbol, items);
+				if (item) {
+					if (crew_levels[symbol].size > 5) {
+						item.flavor = `Equippable by ${crew_levels[symbol].size} crew`;
+					} else {
+						item.flavor = 'Equippable by: ' + [...crew_levels[symbol]].join(', ');
+					}
+				}
+			}
+		}
+
+		let itemsFinal = [] as EquipmentItem[];
+
+		for (let symbol of origpos) {
+			let item = this.binaryLocate(symbol, items);
+			if (item) itemsFinal.push(item);
+		}
+
+		items = itemsFinal.filter(item => (item.type !== 2) || item.flavor);
+
+		this.setState({ ... this.state, crew, items: items });
+		this.inited = true;
 	}
 
 	_filterItem(item: any, filters: Filter[]): boolean {
