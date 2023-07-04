@@ -29,9 +29,36 @@ import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shi
 import { MergedContext } from '../context/mergedcontext';
 import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker } from './crewtables/shipoptions';
 
-type ProfileCrewProps = {
+/**
+ * Crew View Filter Panes to be enabled.
+ * 
+ * These values can be OR'd together.
+ * 
+ * Any false-y value will activate all available panes.
+ */
+export enum CrewFilterPanes {
+
+	/** Show all Panes */
+	All = 0,
+
+	/** Show base stats */	
+	BaseStats = 1,
+
+	/** Show ship stats */
+	ShipStats = 2,
+
+	/** Show gauntlet stats (not currently used) */
+	GauntletStats = 4,
+
+	/** Show caller-provided custom filter content */
+	CustomFilters = 8
+}
+
+export type ProfileCrewProps = {
 	isTools?: boolean;
 	location: any;
+
+	
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
@@ -226,7 +253,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	// }
 };
 
-type ProfileCrewTableProps = {
+export type ProfileCrewTableProps = {
 	pageId?: string;
 	crew: PlayerCrew[];
 	allCrew: CrewMember[];
@@ -235,7 +262,44 @@ type ProfileCrewTableProps = {
 	wizard?: any;
 	ships?: Ship[];
 	playerData: PlayerData;
+
+	/** Indicates which panes are showing */
+	activePanes?: CrewFilterPanes;
+
+	/** Configure which panes are showing */
+	setActivePanes?: (value: CrewFilterPanes) => void;
+	
+	/** Custom filter content (the widgets, drop-downs, text inputs and other filter options) */
+	customFilterContent?: (typeof CustomFilterComponentBase<PlayerCrew | CrewMember, CustomFilterProps<PlayerCrew | CrewMember>>)[];
+
+	/** For the custom filters to store and change their own visibility */
+	activeCustomFilters?: number[];
+	
+	/** For the custom filters to store and change their own visibility */
+	setActiveCustomFilters?: (value?: number[]) => void;
 };
+
+export interface FilterItemMethodConfig<T> { 
+	key: string | number, 
+	filterItem: (value: T) => boolean 
+}
+
+export interface CustomFilterProps<T> {
+	key: string | number;
+	setFilterItemMethod: (props: FilterItemMethodConfig<T>) => void;	
+}
+
+export abstract class CustomFilterComponentBase<TItem, TProps extends CustomFilterProps<TItem>> extends React.Component<TProps> {
+
+	constructor(props: TProps) {
+		super(props);
+
+		const { setFilterItemMethod, key } = this.props;
+		setFilterItemMethod({ key, filterItem: this.filterItem });
+	}
+	
+	protected abstract filterItem(item: TItem): boolean;
+}
 
 interface ShipFilterConfig {
 	selectedShip?: Ship;
@@ -246,7 +310,7 @@ interface ShipFilterConfig {
 	selectedUses?: number[];
 }
 
-const ProfileCrewTable = (props: ProfileCrewTableProps) => {
+export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const pageId = props.pageId ?? 'crew';
 
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
@@ -511,6 +575,11 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			if (selectedSeats?.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
 			else if (availableSeats?.length && !availableSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
+		else if (tableView === 'custom') {
+			for (let cfg of filterConfig ?? []) {
+				if (cfg.filterItem && !cfg.filterItem(crew)) return false;
+			}
+		}
 
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
@@ -588,31 +657,98 @@ const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return !selectedShip?.actions?.some(ab => ab.status && ab.status != 16);
 	}
 
+	const activePanes: number[] = [];		
+
+	if (props.activePanes) {
+		if (props.activePanes & CrewFilterPanes.BaseStats) {
+			activePanes.push(0);
+		}
+		if (props.activePanes & CrewFilterPanes.ShipStats) {
+			activePanes.push(1);
+		}
+		if (props.activePanes & CrewFilterPanes.CustomFilters) {
+			if (props.customFilterContent?.length) {
+				activePanes.push(3);
+			}
+		}		
+	}
+	else {
+		activePanes.push(0);
+		activePanes.push(1);
+		if (props.customFilterContent?.length) {
+			activePanes.push(3);
+		}
+	}
+	
+	const activeElements: JSX.Element[] = [];
+	const [filterConfig, setFilterConfig] = React.useState<FilterItemMethodConfig<PlayerCrew | CrewMember>[]>([]);
+
+	const setItemConfig = (props: FilterItemMethodConfig<PlayerCrew | CrewMember>) => {
+		let cfilters = [ ... filterConfig ];
+		for (let flt of cfilters) {
+			if (flt.key === props.key) {
+				flt.filterItem = props.filterItem;
+				setFilterConfig(cfilters);
+				return;
+			}
+		}
+		cfilters.push(props);
+		setFilterConfig(cfilters);
+	}
+
+	if (activePanes.includes(3) && props.customFilterContent?.length) {		
+		props.customFilterContent.forEach((FilterView, idx) => {
+			if (!props.activeCustomFilters?.length || props.activeCustomFilters.includes(idx)) {
+				activeElements.push(<FilterView key={idx} setFilterItemMethod={setItemConfig} />);
+			}
+		});
+	}
+
+	const viewModeButtons = [] as JSX.Element[];
+	if (activePanes.includes(0)) viewModeButtons.push(<Button
+			onClick={() => setTableView("base")}
+			positive={tableView === "base" ? true : false}
+			size="large"
+		>
+			Base Skills
+		</Button>);
+
+	if (activePanes.includes(1)) viewModeButtons.push(<Button
+			onClick={() => setTableView("ship")}
+			positive={tableView === "ship" ? true : false}
+			size="large"
+		>
+			Ship Abilities
+		</Button>)
+
+	if (activePanes.includes(3)) viewModeButtons.push(<Button
+			onClick={() => setTableView("custom")}
+			positive={tableView === "custom" ? true : false}
+			size="large"
+		>
+			Custom Filters
+		</Button>);
+
+
+
 	return (
         <React.Fragment>
             {pageId === "crewTool" && (
 					<Button.Group>
-						<Button
-							onClick={() => setTableView("base")}
-							positive={tableView === "base" ? true : false}
-							size="large"
-						>
-							Base Skills
-						</Button>
-						<Button.Or />
-						<Button
-							onClick={() => setTableView("ship")}
-							positive={tableView === "ship" ? true : false}
-							size="large"
-						>
-							Ship Abilities
-						</Button>
+
+					{viewModeButtons.map((btn, idx) => {
+
+						if (idx > 0) return <>
+							<Button.Or />
+							{btn}
+						</>
+
+						return btn;
+					})}
+
 					</Button.Group>
             )}
-
-			
 			{
-
 			tableView === 'ship' && 
 				<div style={{
 					display: "flex",
