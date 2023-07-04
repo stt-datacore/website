@@ -19,6 +19,7 @@ import { Gauntlet } from '../model/gauntlets';
 import { getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -318,10 +319,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									bs = item.base_skills[skill];
 								}
 
-								sk = (bs.range_max * 1.25 + bs.range_min * 2) / 2;
+								sk = bs.range_max + (bs.range_max - bs.range_min);
 
 								if (skill === node.contest_data?.featured_skill) {
-									sk *= 1.35
+									sk *= 2
 								}
 
 								sk *= traits[idx];
@@ -435,13 +436,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return (
 			<Layout title='Gauntlets'>
 			
-				{[today, yesterday].map((node, idx) => {
-					if (!node) return undefined;
+				{[today, yesterday].map((gauntlet, idx) => {
+					if (!gauntlet) return undefined;
 
-					const matchedCrew = node.matchedCrew ?? [];
+					const matchedCrew = gauntlet.matchedCrew ?? [];
 
-					const prettyDate = moment(node.date).utc(false).format('dddd, D MMMM YYYY')
-					const prettyTraits = node.prettyTraits;
+					const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY')
+					const prettyTraits = gauntlet.prettyTraits;
 
 					return (
 					<div style={{
@@ -458,7 +459,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								{prettyDate}
 							</h3>
 							<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-								{node.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}						
+								{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
 							</h2>
 						</div>
 						
@@ -478,25 +479,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									justifyContent: "space-evenly",
 									width: "100%"
 								}}>
-									<div style={{
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-										alignItems: "center",
-										fontSize: "3em"
-									}}>
-
-										<div style={{margin: "0.5em"}}>
-											{ prettyTraits?.some(t => crew.traits_named.includes(t)) && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-										</div>
-										<div style={{margin: "0.5em"}}>
-											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? 
-											<img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
-											: ''}
-										</div>
-									</div>
-									
 									<CrewPresenter 
+										plugins={[GauntletSkill]}
+										pluginData={[gauntlet]}
 										selfRender={true}
 										selfPrepare={true}
 										onBuffToggle={this.onBuffToggle}

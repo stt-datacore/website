@@ -194,14 +194,18 @@ export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
     }
 }
 
-export interface CrewPresenterProps extends PresenterProps {
+export interface CrewPlugins {
+    plugins?: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
+    pluginData?: any[];
+}
+
+export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
     crew: CrewMember | PlayerCrew;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
     onBuffToggle?: (state: PlayerBuffMode) => void;
     onImmoToggle?: (state: PlayerImmortalMode) => void;
     selfRender?: boolean;
     selfPrepare?: boolean;
-    plugins?: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
 }
 
 export interface CrewPresenterState {
@@ -281,7 +285,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     }
    
     render(): JSX.Element {
-        const { crew: inputCrew, openCrew, touched } = this.props;
+        const { crew: inputCrew, openCrew, touched, hover, pluginData } = this.props;
         
         const { mobileWidth, pluginsUsed } = this.state;
         const compact = this.props.hover;                
@@ -549,9 +553,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             cursor: "default",
                             display: "flex",
                             flexWrap: "wrap",
+                            fontSize: hover ? "1.2em" : "0.9em",
                             flexDirection:
                             window.innerWidth < mobileWidth ? "column" : "row",
-                            justifyContent: "flex-start",
+                            justifyContent: "space-evenly",
                             marginTop: "4px",
                             marginBottom: "2px",
                         }}
@@ -605,8 +610,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        {pluginsUsed.map((PlugIn) => (
-                            <PlugIn context={crew} fontSize="0.8em" />
+                        {(!pluginData || (pluginData && pluginData.length == pluginsUsed.length)) && pluginsUsed.map((PlugIn, idx) => (
+                            <PlugIn context={crew} fontSize="0.8em" data={pluginData ? pluginData[idx] : undefined} />
                         ))}
                     </div>
                     {pluginsUsed.length > 1 &&

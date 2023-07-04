@@ -1,10 +1,8 @@
 import React from "react";
-import { PlayerCrew } from "../../model/player";
-import { CrewMember } from "../../model/crew";
-import { Ship } from "../../model/ship";
 
 export interface PresenterPluginProps<TContext> {
     context: TContext;
+    data?: any;
     updateContext?: (value: TContext) => void;
     fontSize?: string;
 }

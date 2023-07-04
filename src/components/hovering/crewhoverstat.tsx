@@ -4,14 +4,14 @@ import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { applyCrewBuffs, applySkillBuff, getSkills, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-import { CrewPresenter } from "../item_presenters/crew_presenter";
+import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
 import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
 
 
-export interface CrewHoverStatProps extends HoverStatProps {
+export interface CrewHoverStatProps extends HoverStatProps, CrewPlugins {
     crew: CrewMember | PlayerCrew | undefined;
     disableBuffs?: boolean;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
@@ -214,7 +214,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
-        const { targetGroup, crew: displayItem, openCrew } = this.props;
+        const { targetGroup, crew: displayItem, openCrew, plugins, pluginData } = this.props;
         const { mobileWidth, touchToggled } = this.state;
         const compact = true;    
         
@@ -247,6 +247,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         }   
         
         return displayItem ? (<CrewPresenter 
+                        plugins={plugins}
+                        pluginData={pluginData}
                         close={() => closeClick()} 
                         openCrew={(crew) => navClick()} 
                         crew={displayItem} 
