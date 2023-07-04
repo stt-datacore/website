@@ -42,26 +42,31 @@ export interface ITableConfigRow {
 	tiebreakers?: string[];
 }
 
-type SearchableTableProps = {
+export interface SearchableTableProps {
 	id?: string;
 	data: any[];
-	explanation?: React.ReactNode;
-	config: ITableConfigRow[];
-	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
 	filterRow: (row: any, filter: any, filterType?: string) => boolean;
+	config: ITableConfigRow[];
+	overflowX?: 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto';
+
+	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
+
 	initOptions?: any;
+	explanation?: React.ReactNode;
     showFilterOptions?: boolean;
 	showPermalink?: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
+
 	toolCaption?: string;
+
 	checkableValue?: boolean;
 	checkableEnabled?: boolean;
 	setCheckableValue?: (value?: boolean) => void;
+
 	dropDownChoices?: string[];
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
-	overflowX?: 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto';
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -231,7 +236,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Sorting by pre-calculated ranks should filter out crew without matching skills
 	//	Otherwise crew without skills show up first (because 0 comes before 1)
-	if (sortColumn.substr(0, 5) === 'ranks') {
+	if (sortColumn.slice(0, 5) === 'ranks') {
 		const rank = column?.split('.')[1];
 		if (rank) data = data.filter(row => row.ranks[rank] > 0);
 	}
@@ -332,16 +337,16 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 					<span style={{ paddingLeft: '2em' }}>
 						<Dropdown inline
-									options={props.dropDownChoices.map((c) => {return {
-										content: c,
-										value: c
-									}})}
-									value={props.dropDownValue}
-									onChange={(event, {value}) => {
-										if (props.setDropDownValue) {
-											props.setDropDownValue(value as string);
-										}
-									}}
+							options={props.dropDownChoices.map((c) => {return {
+								content: c,
+								value: c
+							}})}
+							value={props.dropDownValue}
+							onChange={(event, {value}) => {
+								if (props.setDropDownValue) {
+									props.setDropDownValue(value as string);
+								}
+							}}
 						/>
 					</span>
 					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
