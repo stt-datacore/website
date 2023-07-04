@@ -9,40 +9,44 @@ import CommonCrewData from '../components/commoncrewdata';
 
 import { getStoredItem } from '../utils/storage';
 import { CrewMember } from '../model/crew';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { ICrewDemands, ICrewDemandsMeta } from '../utils/equipment';
 import { MarkdownRemark } from '../model/game-elements';
+import { PlayerContext } from '../context/playercontext';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
 
 type BeholdsPageProps = {
 	location: any;
 };
 
 const BeholdsPage = (props: BeholdsPageProps) => {
-	const [allCrew, setAllCrew] = React.useState(undefined);
+	const coreData = React.useContext(DataContext);
+	const playerContext = React.useContext(PlayerContext);	
 
-	React.useEffect(() => {
-		fetchAllCrew();
-	}, []);
+	const { crew: allCrew } = coreData;
+	const { strippedPlayerData } = playerContext;
+	const isReady = coreData.ready(['crew', 'items', 'all_buffs']);
 
 	return (
 		<Layout title='Behold helper'>
-			{!allCrew &&
+			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
-			{allCrew &&
+			{isReady &&
 				<React.Fragment>
-					<Header as='h2'>Behold helper</Header>
-					<CrewSelector crewList={allCrew} />
+					<MergedContext.Provider value={{
+						allCrew,
+						playerData: strippedPlayerData ?? {} as PlayerData,
+						items: coreData.items
+					}}>
+						<Header as='h2'>Behold helper</Header>
+						<CrewSelector crewList={allCrew} />
+					</MergedContext.Provider>
 				</React.Fragment>
 			}
 		</Layout>
 	);
-
-	async function fetchAllCrew(): Promise<void> {
-		const response = await fetch('/structured/crew.json');
-		const allcrew = await response.json();
-		setAllCrew(allcrew);
-	}
 };
 
 const CrewSelector = (props) => {

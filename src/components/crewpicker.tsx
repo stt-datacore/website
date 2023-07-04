@@ -3,6 +3,10 @@ import { InView } from 'react-intersection-observer';
 import { Modal, Input, Button, Icon, Grid, Rating, Message, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
+import { DataContext } from '../context/datacontext';
+import { PlayerContext } from '../context/playercontext';
+import { MergedContext } from '../context/mergedcontext';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 const DEFAULT_OPTIONS = {
 	portal: '',
@@ -19,13 +23,16 @@ type CrewPickerProps = {
 
 const CrewPicker = (props: CrewPickerProps) => {
 	const { handleSelect } = props;
+	
+	const context = React.useContext(MergedContext);
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [options, setOptions] = React.useState({...DEFAULT_OPTIONS, ...props.options});
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
-	const [selectedCrew, setSelectedCrew] = React.useState<(PlayerCrew | CrewMember) | undefined>(undefined);
+	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
+	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	const inputRef = React.createRef<Input>();
 
@@ -45,6 +52,9 @@ const CrewPicker = (props: CrewPickerProps) => {
 	}, [options, searchFilter]);
 
 	return (
+		<div>
+		<CrewHoverStat targetGroup='crew_picker' crew={hoverCrew} />
+
 		<Modal
 			open={modalIsOpen}
 			onClose={() => setModalIsOpen(false)}
@@ -83,6 +93,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 				)}
 			</Modal.Actions>
 		</Modal>
+		</div>
 	);
 
 	function renderDefaultTrigger(): JSX.Element {
@@ -125,7 +136,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 		// Pagination
 		const itemsPerPage = 24, itemsToShow = itemsPerPage*paginationPage;
 
-		return (
+		return (<>
 			<div>
 				<Grid doubling columns={3} textAlign='center'>
 					{data.slice(0, itemsToShow).map(crew => {
@@ -135,7 +146,9 @@ const CrewPicker = (props: CrewPickerProps) => {
 							onDoubleClick={() => confirmSelection(crew)}
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
-							<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget inputItem={crew} targetGroup='crew_picker' setDisplayItem={(crew) => setHoverCrew(crew ?? undefined)}>
+								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 							<div>{crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
 						</Grid.Column>
@@ -151,7 +164,9 @@ const CrewPicker = (props: CrewPickerProps) => {
 				{itemsToShow >= data.length && (
 					<Message style={{ marginTop: '2em' }}>Tip: Double-tap to select a crew more quickly.</Message>
 				)}
-			</div>
+			</div>			
+			</>
+
 		);
 	}
 
