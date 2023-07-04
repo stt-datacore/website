@@ -291,7 +291,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							for (let skill of askills) {
 								let bs: Skill;
 
-								if (skill in a) {
+								if (skill in a.base_skills) {
+									bs = a.base_skills[skill];
+								}
+								else if (skill in a) {
 									bs = { core: a[skill].core, range_min: a[skill].min, range_max: a[skill].max };
 								}
 								else {
@@ -299,24 +302,57 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 
 								sk = (bs.range_max + bs.range_min) / 2;															
+								if (skill === node.contest_data.featured_skill) {
+									sk *= 1.35
+								}
 								ask.push(sk);
 							}
 
 							for (let skill of bskills) {
 								let bs: Skill;
 
-								if (skill in b) {
+								if (skill in b.base_skills) {
+									bs = b.base_skills[skill];
+								}
+								else if (skill in b) {
 									bs = { core: b[skill].core, range_min: b[skill].min, range_max: b[skill].max };
 								}
 								else {
 									bs = b.base_skills[skill];
 								}
-
+								bs = b.base_skills[skill];
+								if (!bs) continue;
 								sk = (bs.range_max + bs.range_min) / 2;																
+								if (skill === node.contest_data.featured_skill) {
+									sk *= 1.35
+								}
 								bsk.push(sk);
 							}
 
-							r = bsk.reduce((prev, curr) => prev * 2.33 + curr) - ask.reduce((prev, curr) => prev * 2.33 + curr);
+							ask.sort((a, b) => b - a);
+							bsk.sort((a, b) => b - a);
+
+							if (ask.length >= 1) {
+								ask[0] += ask[0] * 0.35;
+								if (ask.length >= 2) {
+									ask[1] += ask[1] * 0.25;
+									if (ask.length >= 3) {
+										ask[2] += ask[2] * 0.1;
+									}
+								}
+							}
+
+							if (bsk.length >= 1) {
+								bsk[0] += bsk[0] * 0.35;
+								if (bsk.length >= 2) {
+									bsk[1] += bsk[1] * 0.25;
+									if (bsk.length >= 3) {
+										bsk[2] += bsk[2] * 0.1;
+									}
+								}
+							}
+
+							r = bsk.reduce((prev, curr) => prev + curr) - ask.reduce((prev, curr) => prev + curr);
 						}
 
 						return r;
