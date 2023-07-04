@@ -1,6 +1,8 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Modal, Input, Button, Icon, Grid, Rating, Message, Dropdown } from 'semantic-ui-react';
+import { Modal, Input, Button, Icon, Grid, Rating, Message, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
+import { PlayerCrew } from '../model/player';
+import { CrewMember } from '../model/crew';
 
 const DEFAULT_OPTIONS = {
 	portal: '',
@@ -9,23 +11,23 @@ const DEFAULT_OPTIONS = {
 };
 
 type CrewPickerProps = {
-	crewList: any[];
+	crewList: (PlayerCrew | CrewMember)[];
 	handleSelect: (value: string) => void;
 	options: any;
-	renderTrigger: () => JSX.Element;
+	renderTrigger?: () => JSX.Element;
 };
 
 const CrewPicker = (props: CrewPickerProps) => {
 	const { handleSelect } = props;
 
-	const [crewList, setCrewList] = React.useState([]);
+	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [options, setOptions] = React.useState({...DEFAULT_OPTIONS, ...props.options});
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
-	const [selectedCrew, setSelectedCrew] = React.useState(undefined);
+	const [selectedCrew, setSelectedCrew] = React.useState<(PlayerCrew | CrewMember) | undefined>(undefined);
 
-	const inputRef = React.createRef();
+	const inputRef = React.createRef<Input>();
 
 	React.useEffect(() => {
 		const crewList = props.crewList.slice()
@@ -34,7 +36,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 	}, [props.crewList]);
 
 	React.useEffect(() => {
-		if (modalIsOpen) inputRef.current.focus();
+		if (modalIsOpen) inputRef.current?.focus();
 	}, [modalIsOpen]);
 
 	React.useEffect(() => {
@@ -61,7 +63,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 					onChange={(e, { value }) => { setSearchFilter(value); }}>
 						<input />
 						<Icon name='search' />
-						<Button icon onClick={() => { setSearchFilter(''); inputRef.current.focus(); }}>
+						<Button icon onClick={() => { setSearchFilter(''); inputRef.current?.focus(); }}>
 							<Icon name='delete' />
 						</Button>
 				</Input>
@@ -126,17 +128,18 @@ const CrewPicker = (props: CrewPickerProps) => {
 		return (
 			<div>
 				<Grid doubling columns={3} textAlign='center'>
-					{data.slice(0, itemsToShow).map(crew => (
-						<Grid.Column key={crew.pickerId} style={{ cursor: 'pointer' }}
+					{data.slice(0, itemsToShow).map(crew => {
+						if (!crew) return <></>	
+						return <Grid.Column key={crew.pickerId} style={{ cursor: 'pointer' }}
 							onClick={() => setSelectedCrew(crew)}
 							onDoubleClick={() => confirmSelection(crew)}
-							color={selectedCrew?.pickerId === crew.pickerId ? 'blue' : null}
+							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
 							<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							<div>{crew.name}</div>
-							<div><Rating defaultRating={crew.rarity ?? crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
+							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
 						</Grid.Column>
-					))}
+					})}
 				</Grid>
 				{itemsToShow < data.length && (
 					<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
@@ -161,7 +164,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 
 type OptionsModalProps = {
 	options: any;
-	setOptions: () => void;
+	setOptions: (value: any) => void;
 };
 
 const OptionsModal = (props: OptionsModalProps) => {

@@ -53,6 +53,9 @@ export interface CrewMember {
   constellation?: CrewConstellation
   kwipment?: any[]
   q_bits?: number
+
+  /** Used internally, not part of incoming data */
+  pickerId?: number;
 }
 
 export interface EquipmentSlot {

@@ -170,3 +170,19 @@ export interface SymbolName {
   name: string;
 }
 
+export interface MarkdownRemark {
+  frontmatter: {
+      name?: string;
+      rarity?: number;
+      series?: string;
+      memory_alpha?: string;
+      bigbook_tier?: number;
+      events?: number;
+      in_portal?: boolean;
+      date?: Date;
+      obtained?: string;
+      mega?: boolean;
+      published?: boolean;
+  }
+}
+

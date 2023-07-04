@@ -8,6 +8,10 @@ import CrewPicker from '../components/crewpicker';
 import CommonCrewData from '../components/commoncrewdata';
 
 import { getStoredItem } from '../utils/storage';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player';
+import { ICrewDemands, ICrewDemandsMeta } from '../utils/equipment';
+import { MarkdownRemark } from '../model/game-elements';
 
 type BeholdsPageProps = {
 	location: any;
@@ -34,7 +38,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 		</Layout>
 	);
 
-	async function fetchAllCrew(): void {
+	async function fetchAllCrew(): Promise<void> {
 		const response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
 		setAllCrew(allcrew);
@@ -42,7 +46,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 };
 
 const CrewSelector = (props) => {
-	const [selectedCrew, setSelectedCrew] = React.useState([]);
+	const [selectedCrew, setSelectedCrew] = React.useState<string[]>([]);
 
 	const crewList = JSON.parse(JSON.stringify(props.crewList))
 		.sort((a, b) => a.name.localeCompare(b.name));
@@ -85,14 +89,22 @@ const CrewSelector = (props) => {
 };
 
 type CrewComparisonProps = {
-	selectedCrew: any[];
-	handleDismiss: (selectedIndex: number) => void;
+	selectedCrew: string[];
+	handleDismiss: (selectedIndex: number) => void;	
+	crewList: (PlayerCrew | CrewMember)[];
 };
 
-const CrewComparison = (props) => {
+export interface CrewComparisonEntry {
+	markdown: string;
+	crew: (PlayerCrew | CrewMember);
+	crewDemands: ICrewDemandsMeta;
+	markdownRemark: MarkdownRemark;
+}
+
+const CrewComparison = (props: CrewComparisonProps) => {
 	const { selectedCrew } = props;
 
-	const entries = [];
+	const entries = [] as CrewComparisonEntry[];
 	selectedCrew.forEach(symbol => {
 		const crew = props.crewList.find(crew => crew.symbol === symbol);
 		if (!crew) {
@@ -130,7 +142,7 @@ const CrewComparison = (props) => {
 						</Message.Header>
 						<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
 					</Message>
-					<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} roster={false}/>
+					<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} roster={undefined} />
 					{entry.markdown && (
 						<React.Fragment>
 							<div dangerouslySetInnerHTML={{ __html: entry.markdown }} />

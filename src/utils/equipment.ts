@@ -10,7 +10,13 @@ export interface IDemand {
 	have: number;
 }
 
-export interface ICrewDemands {
+export interface ICrewDemandsMeta {
+	factionOnlyTotal: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export interface ICrewDemands extends ICrewDemandsMeta {
 	demands: IDemand[];
 	factionOnlyTotal: number;
 	totalChronCost: number;
