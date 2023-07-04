@@ -203,7 +203,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData } = this.context;
+		const { allCrew, playerData, items } = this.context;
 
 		const { data: playerCrew, itemsReady } = this.state;
 		const { isMobile } = this.props;
@@ -324,7 +324,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						}}
 					>
 						{data?.map((crew, idx) => (
-							<VaultCrew allCrew={allCrew} playerData={playerData} buffs={buffs} key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
+							<VaultCrew items={items} allCrew={allCrew} playerData={playerData} buffs={buffs} key={idx} crew={crew} size={zoomFactor} itemsReady={itemsReady} />
 						))}
 					</div>
 				</Segment>

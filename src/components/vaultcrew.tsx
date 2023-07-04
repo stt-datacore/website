@@ -7,8 +7,9 @@ import { Link } from 'gatsby';
 import CONFIG from './CONFIG';
 import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { PlayerCrew, PlayerData } from '../model/player';
-import { CrewMember, Skill } from '../model/crew';
+import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
 import { BuffStatTable } from '../utils/voyageutils';
+import { EquipmentItem } from '../model/equipment';
 
 type VaultCrewProps = {
 	playerData?: PlayerData;
@@ -17,6 +18,7 @@ type VaultCrewProps = {
 	style?: React.CSSProperties;
 	crew: PlayerCrew;
 	itemsReady: boolean;
+	items?: EquipmentItem[];
 	allCrew?: CrewMember[];
 };
 
@@ -47,9 +49,9 @@ function formatCrewStats(crew: PlayerCrew, playerData?: PlayerData, allCrew?: Cr
 	);
 }
 
-class VaultCrew extends PureComponent<VaultCrewProps> {
+class VaultCrew extends PureComponent<VaultCrewProps> {	
 	render() {
-		const { allCrew, playerData, buffs, crew, itemsReady } = this.props;
+		const { allCrew, playerData, buffs, crew, itemsReady, items } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
@@ -161,6 +163,13 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 				'items_equipment_box02_icon.png'
 			];
 		} else {
+			for (let i = startlevel; i < startlevel + 4; i++) {
+				let found = items?.find((item) => item.symbol === crew.equipment_slots[i].symbol);
+				if (found) {
+					crew.equipment_slots[i] ??= {} as EquipmentSlot;
+					crew.equipment_slots[i].imageUrl = found.imageUrl;
+				}
+			}
 			eqimgs = [
 				crew.equipment_slots[startlevel].imageUrl ?? "",
 				crew.equipment_slots[startlevel + 1].imageUrl ?? "",
