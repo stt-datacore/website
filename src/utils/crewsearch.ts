@@ -16,7 +16,7 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 
 	for (let filter of filters) {
 		let meetsAllConditions = true;
-		if (filter.conditionArray?.length ?? 0 === 0) {
+		if ((filter.conditionArray?.length ?? 0) === 0) {
 			// text search only
 			for (let segment of filter.textSegments ?? []) {
 				let segmentResult =
