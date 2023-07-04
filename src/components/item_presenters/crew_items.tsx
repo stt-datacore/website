@@ -47,6 +47,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             'items_equipment_box02_icon.png',
             'items_equipment_box02_icon.png'
         ];
+        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
     } else {
         
         for (let i = startlevel; i < startlevel + 4; i++) {
