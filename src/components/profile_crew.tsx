@@ -28,37 +28,12 @@ import { Ship } from '../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shiputils';
 import { MergedContext } from '../context/mergedcontext';
 import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker } from './crewtables/shipoptions';
+import { CrewFilterPanes, CrewTableCustomFilter, FilterItemMethodConfig } from './crewtables/customviews';
 
-/**
- * Crew View Filter Panes to be enabled.
- * 
- * These values can be OR'd together.
- * 
- * Any false-y value will activate all available panes.
- */
-export enum CrewFilterPanes {
-
-	/** Show all Panes */
-	All = 0,
-
-	/** Show base stats */	
-	BaseStats = 1,
-
-	/** Show ship stats */
-	ShipStats = 2,
-
-	/** Reserved (not currently used) */
-	Reserved = 4,
-
-	/** Show caller-provided custom filter content */
-	CustomFilters = 8
-}
 
 export type ProfileCrewProps = {
 	isTools?: boolean;
 	location: any;
-
-	
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
@@ -253,21 +228,18 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	// }
 };
 
-export interface CrewTableCustomFilter {
-	filterComponent: (typeof CustomFilterComponentBase<PlayerCrew | CrewMember, CustomFilterProps<PlayerCrew | CrewMember>>);
-	customColumns?: ITableConfigRow[];
-	title: string;
-}
 
 export type ProfileCrewTableProps = {
 	pageId?: string;
+
+	playerData: PlayerData;
 	crew: PlayerCrew[];
 	allCrew: CrewMember[];
+	ships?: Ship[];
+
 	initOptions: any;
 	lockable?: any[];
 	wizard?: any;
-	ships?: Ship[];
-	playerData: PlayerData;
 
 	/** Indicates which panes are showing */
 	activePanes?: CrewFilterPanes;
@@ -276,28 +248,6 @@ export type ProfileCrewTableProps = {
 	customFilters?: CrewTableCustomFilter[];
 };
 
-export interface FilterItemMethodConfig<T> { 
-	index: number, 
-	filterItem: (value: T) => boolean 
-}
-
-export interface CustomFilterProps<T> {
-	index: number;
-	setFilterItemMethod: (props: FilterItemMethodConfig<T>) => void;	
-}
-
-export abstract class CustomFilterComponentBase<TItem, TProps extends CustomFilterProps<TItem>> extends React.Component<TProps> {
-	static title: string;
-
-	constructor(props: TProps) {
-		super(props);
-
-		const { setFilterItemMethod, index: key } = this.props;
-		setFilterItemMethod({ index: key, filterItem: this.filterItem });
-	}
-	
-	protected abstract filterItem(item: TItem): boolean;
-}
 
 interface ShipFilterConfig {
 	selectedShip?: Ship;
@@ -889,6 +839,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                     </Form.Group>
                 </Form>
             </div>
+
             <SearchableTable				
                 id={`${pageId}/table_`}
                 data={myCrew}
