@@ -299,50 +299,64 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let res = [0, 0];
 						let traits = [atrait, btrait];
 						let skills = [askills, bskills];
+						let tsorted = [[], []] as number[][];
 
 						[a, b].forEach((item, idx) => {
-							if (node.contest_data?.featured_skill) {
+							let sk = 0;
+							let ask: number[] = [];
 
-								let sk = 0;
-								let ask: number[] = [];
+							for (let skill of skills[idx]) {
+								let bs: Skill;
 
-								for (let skill of skills[idx]) {
-									let bs: Skill;
-
-									if (skill in item.base_skills) {
-										bs = item.base_skills[skill];
-									}
-									else if (skill in item) {
-										bs = { core: item[skill].core, range_min: item[skill].min, range_max: item[skill].max };
-									}
-									else {
-										bs = item.base_skills[skill];
-									}
-
-									sk = (bs.range_max + bs.range_min) / 2;															
-									if (skill === node.contest_data.featured_skill) {
-										sk *= 1.35
-									}
-
-									sk *= traits[idx];
-									ask.push(sk);
+								if (skill in item.base_skills) {
+									bs = item.base_skills[skill];
+								}
+								else if (skill in item) {
+									bs = { core: item[skill].core, range_min: item[skill].min, range_max: item[skill].max };
+								}
+								else {
+									bs = item.base_skills[skill];
 								}
 
-								ask.sort((a, b) => b - a);
+								sk = (bs.range_max * 1.25 + bs.range_min * 2) / 2;
 
-								if (ask.length >= 1) {
-									ask[0] += ask[0] * 0.35;
-									if (ask.length >= 2) {
-										ask[1] += ask[1] * 0.25;
-										if (ask.length >= 3) {
-											ask[2] += ask[2] * 0.1;
-										}
-									}
+								if (skill === node.contest_data?.featured_skill) {
+									sk *= 1.35
 								}
 
-								res[idx] = ask.reduce((prev, curr) => prev + curr);
+								sk *= traits[idx];
+								ask.push(sk);
 							}
+
+							ask.sort((a, b) => b - a);
+
+							if (ask.length >= 1) {
+								ask[0] += ask[0] * 0.35;
+								if (ask.length >= 2) {
+									ask[1] += ask[1] * 0.25;
+									if (ask.length >= 3) {
+										ask[2] += ask[2] * 0.1;
+									}
+								}
+							}
+
+							tsorted[idx] = ask;
+							res[idx] = ask.reduce((prev, curr) => prev + curr);
 						});
+
+						r = 0;
+						
+						let la = tsorted[0].length;
+						let lb = tsorted[1].length;
+						
+						if (lb < la) la = lb;
+
+						for (let i = 0; i < la; i++) {
+							if (tsorted[0][i] > tsorted[1][i]) r--;
+							else if (tsorted[0][i] < tsorted[1][i]) r++;
+						}
+
+						if (r) return r;
 
 						return res[1] - res[0];
 					});
