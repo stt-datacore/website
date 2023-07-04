@@ -266,96 +266,85 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if ("have" in b && b.have && !("have" in a)) return 1;
 						
 						let r = 0;
-						r = (prettyTraits.filter(t => b.traits_named.includes(t)).length - prettyTraits.filter(t => a.traits_named.includes(t)).length);
-						
-						if (r) return r;
+						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
+						let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
+
+						if (atrait >= 3) atrait = 1.65;
+						else if (atrait >= 2) atrait = 1.45;
+						else if (atrait >= 1) atrait = 1.25;
+						else atrait = 1.05;
+
+						if (btrait >= 3) btrait = 1.65;
+						else if (btrait >= 2) btrait = 1.45;
+						else if (btrait >= 1) btrait = 1.25;
+						else btrait = 1.05;
+
+						//if (r) return r;
 
 						// if (b.immortal > 0 && a.immortal <= 0) return -1;
 						// else if (a.immortal > 0 && b.immortal <= 0) return 1;
 
-						if (node.contest_data?.featured_skill) {
-							r = 0;
-							
-							let askills = getSkills(a);
-							let bskills = getSkills(b);
+						let askills = getSkills(a);
+						let bskills = getSkills(b);
 
+						r = 0;
+						if (node.contest_data?.featured_skill) {
+	
 							if (askills.includes(node.contest_data?.featured_skill)) r--; 
 							if (bskills.includes(node.contest_data?.featured_skill)) r++; 
 							
 							if (r) return r;
-
-							let sk = 0;
-							let ask: number[] = [];
-							let bsk: number[] = [];
-
-							for (let skill of askills) {
-								let bs: Skill;
-
-								if (skill in a.base_skills) {
-									bs = a.base_skills[skill];
-								}
-								else if (skill in a) {
-									bs = { core: a[skill].core, range_min: a[skill].min, range_max: a[skill].max };
-								}
-								else {
-									bs = a.base_skills[skill];
-								}
-
-								sk = (bs.range_max + bs.range_min) / 2;															
-								if (skill === node.contest_data.featured_skill) {
-									sk *= 1.35
-								}
-								ask.push(sk);
-							}
-
-							for (let skill of bskills) {
-								let bs: Skill;
-
-								if (skill in b.base_skills) {
-									bs = b.base_skills[skill];
-								}
-								else if (skill in b) {
-									bs = { core: b[skill].core, range_min: b[skill].min, range_max: b[skill].max };
-								}
-								else {
-									bs = b.base_skills[skill];
-								}
-								bs = b.base_skills[skill];
-								if (!bs) continue;
-								sk = (bs.range_max + bs.range_min) / 2;																
-								if (skill === node.contest_data.featured_skill) {
-									sk *= 1.35
-								}
-								bsk.push(sk);
-							}
-
-							ask.sort((a, b) => b - a);
-							bsk.sort((a, b) => b - a);
-
-							if (ask.length >= 1) {
-								ask[0] += ask[0] * 0.35;
-								if (ask.length >= 2) {
-									ask[1] += ask[1] * 0.25;
-									if (ask.length >= 3) {
-										ask[2] += ask[2] * 0.1;
-									}
-								}
-							}
-
-							if (bsk.length >= 1) {
-								bsk[0] += bsk[0] * 0.35;
-								if (bsk.length >= 2) {
-									bsk[1] += bsk[1] * 0.25;
-									if (bsk.length >= 3) {
-										bsk[2] += bsk[2] * 0.1;
-									}
-								}
-							}
-
-							r = bsk.reduce((prev, curr) => prev + curr) - ask.reduce((prev, curr) => prev + curr);
 						}
 
-						return r;
+						let res = [0, 0];
+						let traits = [atrait, btrait];
+						let skills = [askills, bskills];
+
+						[a, b].forEach((item, idx) => {
+							if (node.contest_data?.featured_skill) {
+
+								let sk = 0;
+								let ask: number[] = [];
+
+								for (let skill of skills[idx]) {
+									let bs: Skill;
+
+									if (skill in item.base_skills) {
+										bs = item.base_skills[skill];
+									}
+									else if (skill in item) {
+										bs = { core: item[skill].core, range_min: item[skill].min, range_max: item[skill].max };
+									}
+									else {
+										bs = item.base_skills[skill];
+									}
+
+									sk = (bs.range_max + bs.range_min) / 2;															
+									if (skill === node.contest_data.featured_skill) {
+										sk *= 1.35
+									}
+
+									sk *= traits[idx];
+									ask.push(sk);
+								}
+
+								ask.sort((a, b) => b - a);
+
+								if (ask.length >= 1) {
+									ask[0] += ask[0] * 0.35;
+									if (ask.length >= 2) {
+										ask[1] += ask[1] * 0.25;
+										if (ask.length >= 3) {
+											ask[2] += ask[2] * 0.1;
+										}
+									}
+								}
+
+								res[idx] = ask.reduce((prev, curr) => prev + curr);
+							}
+						});
+
+						return res[1] - res[0];
 					});
 			
 			node.matchedCrew = matchedCrew;
