@@ -367,27 +367,30 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					<Table.Footer>
 						<Table.Row>
 							<Table.HeaderCell colSpan={props.config.length}>
-								<Pagination
-									totalPages={totalPages}
-									activePage={activePage}
-									onPageChange={(event, { activePage }) => {
-										setPaginationPage(activePage as number);
-										setActiveLock(undefined);	// Remove lock when changing pages
-									}}
-								/>
-								<span style={{ paddingLeft: '2em'}}>
-									Rows per page:{' '}
-									<Dropdown
-										inline
-										options={pagingOptions}
-										value={pagination_rows}
-										onChange={(event, {value}) => {
-											setPaginationPage(1);
-											setPaginationRows(value as number);
+								<div style={{zIndex: "1000", width: "100%"}}>
+									<Pagination
+										totalPages={totalPages}
+										activePage={activePage}
+										onPageChange={(event, { activePage }) => {
+											setPaginationPage(activePage as number);
+											setActiveLock(undefined);	// Remove lock when changing pages
 										}}
 									/>
-								</span>
-								{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
+									<span style={{ paddingLeft: '2em'}}>
+										Rows per page:{' '}
+										<Dropdown
+											inline
+											upward
+											options={pagingOptions}
+											value={pagination_rows}
+											onChange={(event, {value}) => {
+												setPaginationPage(1);
+												setPaginationRows(value as number);
+											}}
+										/>
+									</span>
+									{props.showPermalink && (<span style={{ paddingLeft: '5em'}}>{renderPermalink()}</span>)}
+								</div>
 							</Table.HeaderCell>
 						</Table.Row>
 					</Table.Footer>
