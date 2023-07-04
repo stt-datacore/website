@@ -20,6 +20,7 @@ import { getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
+import { ShipSkill } from '../components/item_presenters/shipskill';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -480,8 +481,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									width: "100%"
 								}}>
 									<CrewPresenter 
-										plugins={[GauntletSkill]}
-										pluginData={[gauntlet]}
+										plugins={[GauntletSkill, ShipSkill]}
+										pluginData={[gauntlet, undefined]}
 										selfRender={true}
 										selfPrepare={true}
 										onBuffToggle={this.onBuffToggle}

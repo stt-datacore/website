@@ -141,7 +141,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         };        
     }    
-
+    
     protected checkBorder = (crew?: PlayerCrew | CrewMember, setState?: boolean) => {
         crew ??= this.props.crew;
         const { boxStyle } = this.state;

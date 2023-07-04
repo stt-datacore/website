@@ -211,6 +211,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
 export interface CrewPresenterState {
     mobileWidth: number;
     pluginsUsed: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
+    selectedPlugin: number;
 }
 
 export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPresenterState> {
@@ -224,11 +225,20 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
-            pluginsUsed: props.plugins ?? [ShipSkill]
+            pluginsUsed: props.plugins ?? [ShipSkill],
+            selectedPlugin: 0
         }
 
         this.tiny = TinyStore.getStore(props.storeName);
     }   
+
+    private setSelectedPlugin = (index: number) => {
+        
+        if (index < 0) index = this.state.pluginsUsed.length - 1;
+        else if (index >= this.state.pluginsUsed.length) index = 0;
+
+        this.setState({ ... this.state, selectedPlugin: index });
+    }
     
     protected get playerBuffMode(): PlayerBuffMode {
         return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
@@ -287,7 +297,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     render(): JSX.Element {
         const { crew: inputCrew, openCrew, touched, hover, pluginData } = this.props;
         
-        const { mobileWidth, pluginsUsed } = this.state;
+        const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
         const compact = this.props.hover;                
 
         if (!inputCrew) {
@@ -610,17 +620,20 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         {crew.traits_named.join(", ")}
                     </div>
                     <div>
-                        {(!pluginData || (pluginData && pluginData.length == pluginsUsed.length)) && pluginsUsed.map((PlugIn, idx) => (
+                        {(!pluginData || (pluginData && pluginData.length == pluginsUsed.length)) && pluginsUsed.map((PlugIn, idx) => {                            
+                            if (selectedPlugin !== idx) return <></>;
+                            return (
                             <PlugIn context={crew} fontSize="0.8em" data={pluginData ? pluginData[idx] : undefined} />
-                        ))}
+                            )
+                        })}
                     </div>
                     {pluginsUsed.length > 1 &&
                     <div style={{display: "flex",
                             flexDirection: "row",
                             justifyContent: "flex-end"}}>
                         <div style={{display: "inline-flex", marginTop: "-1.8em"}}>
-                            <i onClick={(e) => { return; }} className="arrow alternate circle left icon" title="Previous Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
-                            <i onClick={(e) => { return; }} className="arrow alternate circle right icon" title="Next Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                            <i onClick={(e) => { this.setSelectedPlugin(selectedPlugin - 1) }} className="arrow alternate circle left icon" title="Previous Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
+                            <i onClick={(e) => { this.setSelectedPlugin(selectedPlugin + 1)  }} className="arrow alternate circle right icon" title="Next Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                         </div>
                     </div>
                     }
