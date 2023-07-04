@@ -10,6 +10,7 @@ export interface Schematics {
   rarity: number;
 }
 
+/** Ship bonuses.  Ship derives from this, and PlayerCrew/CrewMember directly reference this */
 export interface ShipBonus {
   accuracy?: number;
   evasion?: number;
@@ -17,6 +18,9 @@ export interface ShipBonus {
   crit_bonus?: number;
 }
 
+/**
+ * Ship
+ */
 export interface Ship extends ShipBonus {
   archetype_id?: number;
   symbol: string;

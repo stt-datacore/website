@@ -442,6 +442,10 @@ export interface Player {
     max_xp: number
     favorite: boolean
     level: number
+
+    /**
+     * This means the crew is in the recycle-bin and are eligible for re-enlistment in exchange for honor
+     */
     in_buy_back_state: boolean
     max_level: number
     rarity: number
@@ -472,11 +476,18 @@ export interface Player {
     passive_index: number
     traits: string[]
     traits_hidden: string[]
+    /** This typically lists the current in-game skills with buffs applied */
     skills: BaseSkills
+    /** This typically lists the immortalized skills (without buffs) */
     base_skills: BaseSkills
+    
+    /** Ship battle ability. Is a superclass of Ship */
     ship_battle: ShipBonus
+
+    /** Ship action */
     action: ShipAction
     default_avatar: boolean
+    /** If this crew can be fused with other crew */
     cross_fuse_targets: CrossFuseTarget;
     cap_achiever: CapAchiever
     addedEV?: number;
@@ -484,7 +495,11 @@ export interface Player {
     totalEVRemaining?: number;
     evPerCitation?: number;
     voyagesImproved?: string[];
+
+    /** Highest rarity from out of all copies of crew owned by the player */
     highest_owned_rarity?: number;
+
+    /** Highest level from out of all copies of crew owned by the player */
     highest_owned_level?: number;
     
     /**
@@ -500,33 +515,67 @@ export interface Player {
      * To determine a specific value other than a positive number, consult CompletionState
      */
     immortal: CompletionState | number;
+    
+    /**
+     * Return the ID numbers of all the collections the crew is a member of
+     */
     collectionIds?: number[];
+
+    /** Used internally. Not part of source data.  */
     unmaxedIds?: number[];
+
+    /** Collection rewards for immortalizing this crew. Used internally. Not part of source data.  */
     immortalRewards?: ImmortalReward[];    
+
+    /** Crew is an inserted prospect on the crew table. Used internally. Not part of source data.  */
     prospect?: boolean;
+    
+    /**
+     * Indicates whether the crew is owned by the player or not.
+     * Used internally. Not part of source data.
+     */
     have?: boolean;
+
+    /** Used internally. Not part of source data.  */
     traits_matched?: string[];
+    /** Used internally. Not part of source data.  */
     only_frozen?: boolean;
 
+    /** Used internally. Not part of source data.  */
     combos?: EventCombos;
+    /** Used internally. Not part of source data.  */
     bestPair?: EventPair;
+    /** Used internally. Not part of source data.  */
     bestSkill?: EventSkill;
 
+    /** Reserved for Combo Matches  */
     nodes?: number[];
+    /** Reserved for Combo Matches  */
     node_matches?: NodeMatches;
+    /** Reserved for Combo Matches  */
     nodes_rarity?: number;
 
+    /** Used internally. Not part of source data.  */
     ssId?: string;
+
+    /** Used internally. Not part of source data.  */
     score?: number;
 
+    /** Used internally. Not part of source data.  */
     utility?: PlayerUtility
 
     // used for exports
+    /** Used for exports and internally. Not part of source data.  */
     command_skill?: ComputedBuff;
+    /** Used for exports and internally. Not part of source data.  */
     diplomacy_skill?: ComputedBuff;
+    /** Used for exports and internally. Not part of source data.  */
     security_skill?: ComputedBuff;
+    /** Used for exports and internally. Not part of source data.  */
     science_skill?: ComputedBuff;
+    /** Used for exports and internally. Not part of source data.  */
     medicine_skill?: ComputedBuff;
+    /** Used for exports and internally. Not part of source data.  */
     engineering_skill?: ComputedBuff;
   } 
 
