@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps } from 'semantic-ui-react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -473,7 +473,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							flexDirection: "row",
 							flexWrap: "wrap"
 						}}>
-							{activePageTabs[idx].map((crew) => (
+							{activePageTabs[idx].map((crew, idx) => (
 								<div className="ui segment" style={{
 									display: "flex",
 									flexDirection: "row",
@@ -490,7 +490,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										storeName='gauntlets' 
 										hover={false} 
 										crew={crew} />
-
 								</div>
 							))}
 						</div>
@@ -549,7 +548,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 												/>
 												</CrewTarget>
 											</a>
-											{prettyTraits?.filter(t => crew.traits_named.includes(t)).length == 3 ? '65%' : '45%'}
+											{ ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
 											<br />
 											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
 											</Grid.Column>
