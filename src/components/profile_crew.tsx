@@ -47,8 +47,8 @@ export enum CrewFilterPanes {
 	/** Show ship stats */
 	ShipStats = 2,
 
-	/** Show gauntlet stats (not currently used) */
-	GauntletStats = 4,
+	/** Reserved (not currently used) */
+	Reserved = 4,
 
 	/** Show caller-provided custom filter content */
 	CustomFilters = 8
@@ -253,6 +253,12 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	// }
 };
 
+export interface CrewTableCustomFilter {
+	filterComponent: (typeof CustomFilterComponentBase<PlayerCrew | CrewMember, CustomFilterProps<PlayerCrew | CrewMember>>);
+	customColumns?: ITableConfigRow[];
+	title: string;
+}
+
 export type ProfileCrewTableProps = {
 	pageId?: string;
 	crew: PlayerCrew[];
@@ -265,37 +271,29 @@ export type ProfileCrewTableProps = {
 
 	/** Indicates which panes are showing */
 	activePanes?: CrewFilterPanes;
-
-	/** Configure which panes are showing */
-	setActivePanes?: (value: CrewFilterPanes) => void;
 	
 	/** Custom filter content (the widgets, drop-downs, text inputs and other filter options) */
-	customFilterContent?: (typeof CustomFilterComponentBase<PlayerCrew | CrewMember, CustomFilterProps<PlayerCrew | CrewMember>>)[];
-
-	/** For the custom filters to store and change their own visibility */
-	activeCustomFilters?: number[];
-	
-	/** For the custom filters to store and change their own visibility */
-	setActiveCustomFilters?: (value?: number[]) => void;
+	customFilters?: CrewTableCustomFilter[];
 };
 
 export interface FilterItemMethodConfig<T> { 
-	key: string | number, 
+	index: number, 
 	filterItem: (value: T) => boolean 
 }
 
 export interface CustomFilterProps<T> {
-	key: string | number;
+	index: number;
 	setFilterItemMethod: (props: FilterItemMethodConfig<T>) => void;	
 }
 
 export abstract class CustomFilterComponentBase<TItem, TProps extends CustomFilterProps<TItem>> extends React.Component<TProps> {
+	static title: string;
 
 	constructor(props: TProps) {
 		super(props);
 
-		const { setFilterItemMethod, key } = this.props;
-		setFilterItemMethod({ key, filterItem: this.filterItem });
+		const { setFilterItemMethod, index: key } = this.props;
+		setFilterItemMethod({ index: key, filterItem: this.filterItem });
 	}
 	
 	protected abstract filterItem(item: TItem): boolean;
@@ -312,6 +310,7 @@ interface ShipFilterConfig {
 
 export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const pageId = props.pageId ?? 'crew';
+	const { customFilters } = props;
 
 	const [tableView, setTableView] = useStateWithStorage(pageId+'/tableView', 'base');
 	const [usableFilter, setUsableFilter] = useStateWithStorage(pageId+'/usableFilter', '');
@@ -521,8 +520,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			props.wizard.columns.forEach(column => tableConfig.push(column));
 		}
 	}
-
-	if (tableView === 'ship') {
+	else if (tableView === 'ship') {
 		tableConfig.push(
 			{ width: 1, column: 'action.bonus_type', title: 'Boosts' },
 			{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
@@ -540,7 +538,16 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			{ width: 1, column: 'ship_battle.evasion', title: 'Evasion', reverse: true }
 		);
 	}
-
+	else if (customFilters?.length && tableView.startsWith("custom")) {
+		let idx = Number.parseInt(tableView.replace("custom", ""));
+		if (idx < customFilters.length) {
+			if (customFilters[idx].customColumns?.length) {
+				for (let column of customFilters[idx].customColumns ?? []) {
+					tableConfig.push(column);
+				}
+			}
+		}
+	}
 	if (traitFilter.length > 0) {
 		myCrew.forEach(crew => {
 			crew.traits_matched = traitFilter.filter(trait => crew.traits.includes(trait));
@@ -575,8 +582,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			if (selectedSeats?.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
 			else if (availableSeats?.length && !availableSeats.some(seat => getSkills(crew).includes(seat))) return false;
 		}
-		else if (tableView === 'custom') {
-			for (let cfg of filterConfig ?? []) {
+		else if (tableView.startsWith("custom")) {
+			let idx = Number.parseInt(tableView.replace("custom", ""));
+			if (idx < (filterConfig?.length ?? 0)) {
+				let cfg = filterConfig[idx];
 				if (cfg.filterItem && !cfg.filterItem(crew)) return false;
 			}
 		}
@@ -657,26 +666,26 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return !selectedShip?.actions?.some(ab => ab.status && ab.status != 16);
 	}
 
-	const activePanes: number[] = [];		
+	const discoveredPanes: CrewFilterPanes[] = [];		
 
 	if (props.activePanes) {
 		if (props.activePanes & CrewFilterPanes.BaseStats) {
-			activePanes.push(0);
+			discoveredPanes.push(CrewFilterPanes.BaseStats);
 		}
 		if (props.activePanes & CrewFilterPanes.ShipStats) {
-			activePanes.push(1);
+			discoveredPanes.push(CrewFilterPanes.ShipStats);
 		}
 		if (props.activePanes & CrewFilterPanes.CustomFilters) {
-			if (props.customFilterContent?.length) {
-				activePanes.push(3);
+			if (customFilters?.length) {
+				discoveredPanes.push(CrewFilterPanes.CustomFilters);
 			}
 		}		
 	}
 	else {
-		activePanes.push(0);
-		activePanes.push(1);
-		if (props.customFilterContent?.length) {
-			activePanes.push(3);
+		discoveredPanes.push(CrewFilterPanes.BaseStats);
+		discoveredPanes.push(CrewFilterPanes.ShipStats);
+		if (customFilters?.length) {
+			discoveredPanes.push(CrewFilterPanes.CustomFilters);
 		}
 	}
 	
@@ -685,27 +694,32 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const setItemConfig = (props: FilterItemMethodConfig<PlayerCrew | CrewMember>) => {
 		let cfilters = [ ... filterConfig ];
+		let seen = false;
+		let update = false;
+
 		for (let flt of cfilters) {
-			if (flt.key === props.key) {
-				flt.filterItem = props.filterItem;
-				setFilterConfig(cfilters);
-				return;
+			if (flt.index === props.index) {
+				if (flt.filterItem !== props.filterItem) {
+					flt.filterItem = props.filterItem;
+					update = true;
+				}
+				seen = true;
+				break;
 			}
 		}
-		cfilters.push(props);
-		setFilterConfig(cfilters);
+		if (!seen) cfilters.push(props);
+		if (!seen || update) setFilterConfig(cfilters);
 	}
 
-	if (activePanes.includes(3) && props.customFilterContent?.length) {		
-		props.customFilterContent.forEach((FilterView, idx) => {
-			if (!props.activeCustomFilters?.length || props.activeCustomFilters.includes(idx)) {
-				activeElements.push(<FilterView key={idx} setFilterItemMethod={setItemConfig} />);
-			}
+	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {		
+		customFilters.forEach((filter, idx) => {
+			const FilterView = filter.filterComponent;
+			activeElements.push(<FilterView key={idx} index={idx} setFilterItemMethod={setItemConfig} />);
 		});
 	}
 
 	const viewModeButtons = [] as JSX.Element[];
-	if (activePanes.includes(0)) viewModeButtons.push(<Button
+	if (discoveredPanes.includes(CrewFilterPanes.BaseStats)) viewModeButtons.push(<Button
 			onClick={() => setTableView("base")}
 			positive={tableView === "base" ? true : false}
 			size="large"
@@ -713,7 +727,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			Base Skills
 		</Button>);
 
-	if (activePanes.includes(1)) viewModeButtons.push(<Button
+	if (discoveredPanes.includes(CrewFilterPanes.ShipStats)) viewModeButtons.push(<Button
 			onClick={() => setTableView("ship")}
 			positive={tableView === "ship" ? true : false}
 			size="large"
@@ -721,35 +735,47 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			Ship Abilities
 		</Button>)
 
-	if (activePanes.includes(3)) viewModeButtons.push(<Button
-			onClick={() => setTableView("custom")}
-			positive={tableView === "custom" ? true : false}
-			size="large"
-		>
-			Custom Filters
-		</Button>);
+	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {
+		customFilters.forEach((cfg, idx) => {
+			const FilterView = cfg.filterComponent;
+			const title = cfg.title;
 
-
+			viewModeButtons.push(<Button
+				key={idx}
+				onClick={() => setTableView("custom" + idx)}
+				positive={tableView === ("custom" + idx) ? true : false}
+				size="large"
+			>
+				{title ?? FilterView.title}
+			</Button>);
+		});
+	} 
 
 	return (
         <React.Fragment>
             {pageId === "crewTool" && (
 					<Button.Group>
-
 					{viewModeButtons.map((btn, idx) => {
-
 						if (idx > 0) return <>
-							<Button.Or />
+							<Button.Or key={-idx} />
 							{btn}
 						</>
 
 						return btn;
 					})}
-
 					</Button.Group>
             )}
-			{
-			tableView === 'ship' && 
+			{(
+			(tableView.startsWith("custom") && 
+			<div style={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "flex-start"
+			}}>
+				{activeElements[Number.parseInt(tableView.replace("custom", ""))]}
+			</div>)
+			||
+			(tableView === 'ship' && 
 				<div style={{
 					display: "flex",
 					flexDirection: "column",
@@ -818,7 +844,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>}	
 					</div>
 				</div>
-			}
+			))}
             <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
 
             <div style={{ margin: "1em 0" }}>
