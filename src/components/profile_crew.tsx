@@ -14,7 +14,7 @@ import RosterSummary from '../components/crewtables/rostersummary';
 import UtilityWizard from '../components/crewtables/utilitywizard';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { ShipSkillRanking, ShipStatMap, applySkillBuff, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, mapToRankings, navToCrewPage } from '../utils/crewutils';
+import { ShipSkillRanking, ShipStatMap, applySkillBuff, createShipStatMap, crewCopy, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, mapToRankings, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CompletionState, Player, PlayerCrew, PlayerData } from '../model/player';
@@ -93,15 +93,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [wizard, setWizard] = React.useState(undefined);
 
-	const myCrew = JSON.parse(
-		JSON.stringify(props.myCrew), 
-		(key, value) => {
-			if (key === 'date_added' && typeof value === 'string') {
-				return new Date(value);
-			}
-			return value;
-		}
-	);
+	const myCrew = props.myCrew;
 	
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew?.map(ac => {
@@ -154,7 +146,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	prospects?.forEach((p) => {
 		let crew = allCrew.find((c) => c.symbol == p.symbol);
 		if (crew) {
-			let prospect = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
+			let prospect = oneCrewCopy(crew) as PlayerCrew;		
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
 			prospect.have = false;

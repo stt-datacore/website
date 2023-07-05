@@ -12,7 +12,7 @@ import { Collection, Filter } from '../model/game-elements';
 import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { navToCrewPage } from '../utils/crewutils';
+import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { MergedContext } from '../context/mergedcontext';
 
 const CollectionsTool = () => {
@@ -30,10 +30,10 @@ const CollectionsTool = () => {
 	}
 
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
-	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
+	const myCrew = crewCopy(playerData.player.character.crew);
 
 	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
-		const crew = JSON.parse(JSON.stringify(allCrew.find(ac => ac.symbol == acs))) as PlayerCrew;
+		const crew = oneCrewCopy(allCrew.find(ac => ac.symbol == acs) as PlayerCrew) as PlayerCrew;
 		crew.highest_owned_rarity = 0;
 		crew.highest_owned_level = 0;
 		crew.immortal = CompletionState.DisplayAsImmortalUnowned;

@@ -11,6 +11,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { BossCrew, ExportPreferences, FilterPreferences, FilteredGroup, FilteredGroups, NodeMatches, NodeRarities, NodeRarity, Optimizer, SolverNode, SolverTrait, Spotter, TraitRarities, ViableCombo } from '../../model/boss';
 import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
+import { crewCopy } from '../../utils/crewutils';
 
 const filterDefaults = {
 	alpha: 'flag',
@@ -37,7 +38,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	const [optimizer, setOptimizer] = React.useState<Optimizer | undefined>(undefined);
 
 	React.useEffect(() => {
-		let resolvedCrew = JSON.parse(JSON.stringify(solver.crew)) as BossCrew[];
+		let resolvedCrew = crewCopy<BossCrew>(solver.crew);
 		if (filterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);
 
 		const optimalCombos = getOptimalCombos(resolvedCrew);

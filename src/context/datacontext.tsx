@@ -7,11 +7,11 @@ import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 
-export type ValidDemands = 
-	'crew' | 
-	'ship_schematics' | 
-	'items' | 
-	'keystones' | 
+export type ValidDemands =
+	'crew' |
+	'ship_schematics' |
+	'items' |
+	'keystones' |
 	'collections' |
 	'dilemmas' |
 	'disputes' |
@@ -20,9 +20,9 @@ export type ValidDemands =
 	'gauntlets' |
 	'quests' |
 	'misc_stats' |
-	'skill_bufs' | 
+	'skill_bufs' |
 	'all_buffs';
-		
+
 export interface DataProviderProperties {
 	children: JSX.Element;
 }
@@ -62,7 +62,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 	const [data, setData] = React.useState(defaultData);
 
 	const providerValue = {
-		... data,
+		...data,
 		ready,
 		reset,
 	} as DefaultCore;
@@ -81,41 +81,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
 		const unsatisfied = [] as string[];
 
-		// const unsatisfied = valid.filter((demand) => demands.includes(demand as ValidDemands) && data[demand].length === 0) ?? [];
-
-		// if (unsatisfied.length) {
-		// 	setReadying(unsatisfied);
-		// 	let fetches: Promise<Response>[] = [];
-
-		// 	for (let demand of unsatisfied) {
-		// 		fetches.push(fetch(`/structured/${demand}.json`))
-		// 	}			
-
-		// 	Promise.all(fetches)
-		// 		.then(responses => {
-		// 			let jsons: Promise<any>[] = [];
-		// 			for (let response of responses){
-		// 				jsons.push(response.json());
-		// 			}
-		// 			Promise.all(jsons).then((results) => {
-		// 				const newData = {...data};
-		// 				let i = 0;
-		// 				for (let demand of unsatisfied) {
-		// 					if (demand === 'ship_schematics') {
-		// 						let ship_schematics = results[i] as Schematics[];
-		// 						let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-		// 						newData.ships = scsave;
-		// 					}
-
-		// 					newData[demand] = results[i++];
-		// 				}
-
-		// 				setData(newData);
-		// 				setReadying([]);
-		// 			});
-		// 		});
-		// }
-
 		demands?.forEach(demand => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
@@ -125,12 +90,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 						if (!prev.includes(demand)) prev.push(demand);
 						return prev;
 					});
-			
+
 					fetch(`/structured/${demand}.json`)
 						.then(response => response.json())
 						.then(result => {
 							setData(prev => {
-								const newData = {...prev};
+								const newData = { ...prev };
 								if (demand === 'ship_schematics') {
 									let ship_schematics = result as Schematics[];
 									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
@@ -153,6 +118,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 								}
 								else if (demand === 'all_buffs') {
 									newData[demand] = calculateMaxBuffs(result);
+								}
+								else if (demand === 'crew') {
+									(result as CrewMember[]).forEach((item) => {
+										if (typeof item.date_added === 'string') {
+											item.date_added = new Date(item.date_added);
+										}
+									});
+									newData[demand] = result;
 								}
 								else {
 									if (demand === 'gauntlets') {
@@ -185,7 +158,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function reset(): boolean {
-		setData({...defaultData});
+		setData({ ...defaultData });
 		return true;
 	}
 };

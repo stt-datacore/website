@@ -15,6 +15,7 @@ import { MarkdownRemark } from '../model/game-elements';
 import { PlayerContext } from '../context/playercontext';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
+import { crewCopy } from '../utils/crewutils';
 
 type BeholdsPageProps = {
 	location: any;
@@ -49,10 +50,10 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	);
 };
 
-const CrewSelector = (props) => {
+const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 	const [selectedCrew, setSelectedCrew] = React.useState<string[]>([]);
 
-	const crewList = JSON.parse(JSON.stringify(props.crewList))
+	const crewList = crewCopy<PlayerCrew>(props.crewList)
 		.sort((a, b) => a.name.localeCompare(b.name));
 
 	return (

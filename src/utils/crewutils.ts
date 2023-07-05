@@ -298,10 +298,6 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	crew.equipment = [0, 1, 2, 3];
 	crew.favorite = false;
 
-	if (typeof crew.date_added === 'string') {
-		crew.date_added = new Date(crew.date_added);
-	}
-
 	if (playerData?.player?.character) {
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;
@@ -378,14 +374,14 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			if (rarity && crew.equipment?.length !== 4) {
 				crew.equipment = [0, 1, 2, 3];
 			}
-			outputcrew.push(JSON.parse(JSON.stringify(crew)));
+			outputcrew.push(oneCrewCopy(crew));
 		}
 	}
 
 	if (!crew.have || crew.immortal > 0) {		
 		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
 			if (rarity) rarity--;
-			crew = { ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) };
+			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity]))});
 		}
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
@@ -443,6 +439,39 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.player.character.crew = ownedCrew;
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
+
+/**
+ * Make a deep copy of an array of any crew type, while also ensuring Date objects for date_added.
+ * @param crew The crew array to copy
+ * @returns A deep copy an array of crew with Date objects ensured
+ */
+export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
+	let result = JSON.parse(JSON.stringify(crew)) as T[];
+	for (let item of result) {
+		if (typeof item.date_added === 'string') {
+			item.date_added = new Date(item.date_added);
+		}
+	}
+
+	return result;
+}
+
+
+/**
+ * Make a deep copy of any crew type, while also ensuring Date object for date_added.
+ * @param crew The crew array to copy
+ * @returns A deep copy of a single crew with Date objects ensured
+ */
+export function oneCrewCopy<T extends CrewMember>(crew: T): T {
+	let result = JSON.parse(JSON.stringify(crew)) as T;
+	if (typeof crew.date_added === 'string') {
+		crew.date_added = new Date(crew.date_added);
+	}
+
+	return result;
+}
+
+
 
 // export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
 // 	console.log("prepareProfileData enter...");

@@ -16,6 +16,7 @@ import { Schematics, Ship } from '../model/ship';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
+import { crewCopy } from '../utils/crewutils';
 
 export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
@@ -38,7 +39,7 @@ const VoyageCalculator = () => {
 		};
 	});
 
-	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew)) as PlayerCrew[];
+	const myCrew = crewCopy(playerData.player.character.crew) as PlayerCrew[];
 	myCrew.forEach((crew, crewId) => {
 		crew.id = crewId+1;
 

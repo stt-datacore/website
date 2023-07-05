@@ -10,6 +10,7 @@ import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import { crewCopy } from '../utils/crewutils';
 
 enum SkillSort {
 	Base = '.core',
@@ -85,7 +86,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
 
 		if (!this.state.itemsReady && itemsReady && playerReady) {
-			const data = JSON.parse(JSON.stringify(this.context?.playerData?.player?.character?.crew)) as PlayerCrew[];
+			const data = crewCopy(this.context?.playerData?.player?.character?.crew) as PlayerCrew[];
 			data.forEach((crew) => {
 				Object.keys(crew).forEach((p) => {
 					if(p.slice(-6) === '_skill') {
