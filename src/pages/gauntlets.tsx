@@ -260,12 +260,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						return crew;
 					})
 					.sort((a, b) => {
-						// if ("have" in a && "have" in b) {
-						// 	if (a.have && !b.have) return -1;
-						// 	else if (!a.have && b.have) return 1;
-						// }
-						// else if ("have" in a && a.have && !("have" in b)) return -1;
-						// else if ("have" in b && b.have && !("have" in a)) return 1;
+						if ("have" in a && "have" in b) {
+							if (a.have && !b.have) return -1;
+							else if (!a.have && b.have) return 1;
+						}
+						else if ("have" in a && a.have && !("have" in b)) return -1;
+						else if ("have" in b && b.have && !("have" in a)) return 1;
 						
 						let r = 0;
 						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
@@ -281,8 +281,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.25;
 						else btrait = 1.05;
 
-						// r = btrait - atrait;
-						// if (r) return r;
+						r = btrait - atrait;
+						if (r) return r;
 
 						//if (r) return r;
 
