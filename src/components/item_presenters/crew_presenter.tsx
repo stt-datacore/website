@@ -18,6 +18,7 @@ import { CrewItemsView } from "./crew_items";
 import { PlayerBuffMode, PlayerImmortalMode, BuffNames, ImmortalNames, getAvailableBuffStates, nextImmortalState, nextBuffState, CrewPreparer } from "./crew_preparer";
 import { PresenterPlugin, PresenterPluginBase } from "./presenter_plugin";
 import { Ship } from "../../model/ship";
+import { navigate } from "gatsby";
 
 
 const dormantStyle: React.CSSProperties = {
@@ -362,7 +363,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                 openCrew(crew)
             }
             else {
-                window.location.href = "/crew/" + crew.symbol;
+                navigate("/crew/" + crew.symbol);
             }
         }
 

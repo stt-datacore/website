@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table } from 'semantic-ui-react';
-import { StaticQuery, navigate, graphql } from 'gatsby';
+import { StaticQuery, navigate, graphql, Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
 
@@ -260,12 +260,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						return crew;
 					})
 					.sort((a, b) => {
-						if ("have" in a && "have" in b) {
-							if (a.have && !b.have) return -1;
-							else if (!a.have && b.have) return 1;
-						}
-						else if ("have" in a && a.have && !("have" in b)) return -1;
-						else if ("have" in b && b.have && !("have" in a)) return 1;
+						// if ("have" in a && "have" in b) {
+						// 	if (a.have && !b.have) return -1;
+						// 	else if (!a.have && b.have) return 1;
+						// }
+						// else if ("have" in a && a.have && !("have" in b)) return -1;
+						// else if ("have" in b && b.have && !("have" in a)) return 1;
 						
 						let r = 0;
 						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
@@ -305,6 +305,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let traits = [atrait, btrait];
 						let skills = [askills, bskills];
 						let tsorted = [[], []] as number[][];
+						let hasFeatured = [false, false];
+						let featured = [0, 0];
 
 						[a, b].forEach((item, idx) => {
 							let sk = 0;
@@ -324,50 +326,59 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 
 								sk = bs.range_max + (bs.range_max - bs.range_min);
+								sk *= traits[idx];
 
-								if (skill === node.contest_data?.featured_skill) {
-									sk *= 2
+								if (skill === node.contest_data?.featured_skill) {									
+									featured[idx] = sk;									
 								}
 
-								sk *= traits[idx];
 								ask.push(sk);
 							}
 
 							ask.sort((a, b) => b - a);
 
 							if (ask.length >= 1) {
+								if (ask[0] == featured[0]) ask[0] *= 1.5;
 								ask[0] += ask[0] * 0.35;
 								if (ask.length >= 2) {
+									if (ask[1] == featured[1]) ask[0] *= 1.5;
 									ask[1] += ask[1] * 0.25;
 									if (ask.length >= 3) {
-										ask[2] += ask[2] * 0.1;
+										if (ask[2] == featured[2]) ask[0] *= 1.5;
+										ask[2] += ask[2] * 0.05;
 									}
-									else {
-										ask.push(0);
-									}
-								}
-								else {
-									ask.push(0);
 								}
 							}
 
 							tsorted[idx] = ask;
-							res[idx] = ask.reduce((prev, curr) => prev + curr);
+							res[idx] = ask.reduce((prev, curr) => (prev + curr));
 						});
 
-						r = 0;
-						
-						let la = tsorted[0].length;
-						let lb = tsorted[1].length;
-						
-						if (lb < la) la = lb;
+						// r = featured[1] - featured[0];
+						// if (r) return r;
 
-						for (let i = 0; i < la; i++) {
-							if (tsorted[0][i] > tsorted[1][i]) r--;
-							else if (tsorted[0][i] < tsorted[1][i]) r++;
-						}
+						// r = 0;
+						
+						// let la = tsorted[0].length;
+						// let lb = tsorted[1].length;
+						
+						// if (la != lb) {							
+						// 	if (la > lb) {
+						// 		if (featured[1] > featured[0]) return 1;
+						// 		else return -1;
+						// 	}
+						// 	else if (la < lb) {
+						// 		if (featured[0] > featured[1]) return -1;
+						// 		else return 1;
+						// 	}
+						// }
 
-						if (r) return r;
+						// for (let i = 0; i < la; i++) {
+						// 	if (tsorted[0][i] > tsorted[1][i]) r--;
+						// 	else if (tsorted[0][i] < tsorted[1][i]) r++;
+						// }
+
+						// if (r) return r;
 
 						return res[1] - res[0];
 					});
@@ -540,7 +551,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										<Grid stackable>
 										{matchedCrew.map((crew) => (
 												<Grid.Column width={1} style={{textAlign: 'center'}}>
-													<a href={`/crew/${crew.symbol}`}>
+													<Link to={`/crew/${crew.symbol}`}>
 												<CrewTarget inputItem={crew} setDisplayItem={this.setHoverCrew} targetGroup='gauntlets'>
 													<Image
 													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
@@ -556,7 +567,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 													}}
 												/>
 												</CrewTarget>
-											</a>
+											</Link>
 											{ ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
 											<br />
 											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
