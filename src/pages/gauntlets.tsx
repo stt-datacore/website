@@ -281,6 +281,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.25;
 						else btrait = 1.05;
 
+						// r = btrait - atrait;
+						// if (r) return r;
+
 						//if (r) return r;
 
 						// if (b.immortal > 0 && a.immortal <= 0) return -1;
@@ -339,6 +342,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									if (ask.length >= 3) {
 										ask[2] += ask[2] * 0.1;
 									}
+									else {
+										ask.push(0);
+									}
+								}
+								else {
+									ask.push(0);
 								}
 							}
 
