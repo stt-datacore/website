@@ -435,7 +435,9 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
 		{ key: 'impact', value: 'impact', text: 'Only show crew needing 1 fuse' },
 		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
-		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' }
+		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' },
+		{ key: 'faves', value: 'faves', text: 'Only show favorite crew' },
+
 	];
 
 	const tableConfig: ITableConfigRow[] = [
@@ -508,6 +510,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
 		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
 		if (usableFilter === 'frozen' && crew.immortal <= 0) return false;
+		if (rosterFilter === 'faves' && !crew.favorite) return false;
 		if (rosterFilter === 'freezable' && (crew.immortal !== -1 || !isImmortal(crew))) return false;
 		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
