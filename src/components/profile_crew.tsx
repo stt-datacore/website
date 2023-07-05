@@ -39,10 +39,7 @@ export type ProfileCrewProps = {
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const { playerData, allCrew: crew, playerShips } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
-	
-	if (playerData?.player?.character?.all_buffs_cap_hash) {
-		console.log(JSON.stringify(playerData?.player?.character?.all_buffs_cap_hash));
-	}
+		
 	// Check for custom initial table options from URL or <Link state>
 	//	Custom options are only available in player tool right now
 	let initOptions = initSearchableOptions(window.location);
@@ -287,7 +284,12 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 
-	const myCrew = [...props.crew];
+	const myCrew = props.crew.map((crew) => {
+		if (typeof crew.date_added === 'string') {
+			crew.date_added = new Date(crew.date_added);
+		}
+		return crew;
+	});
 	const allCrew = [...props.allCrew];
 
 	const makeUses = (crew: (PlayerCrew | CrewMember)[]) => {

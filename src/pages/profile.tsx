@@ -50,7 +50,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 
 	let profData: PlayerData | undefined = undefined;
 
-	if (isReady && strippedPlayerData) {
+	if (isReady && strippedPlayerData && strippedPlayerData?.stripped !== false) {
 		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified);
 		
@@ -260,7 +260,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		let ship_schematics = await response.json();
 
 		response = await fetch('/structured/crew.json');
-		let allcrew = await response.json();
+		let allcrew = await response.json() as CrewMember[];
 
 		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
 		let shipdata = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : undefined;
@@ -360,7 +360,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			let demands: IDemand[] = [];
 			let dupeChecker = new Set<string>();
 			// all levels past crew.level
-			acrew.equipment_slots
+			acrew?.equipment_slots
 				.filter(es => es.level >= startLevel)
 				.forEach(es => {
 					craftCost += demandsPerSlot(es, items, dupeChecker, demands);
