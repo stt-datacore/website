@@ -288,7 +288,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 	}
 
-	let myCrew = JSON.parse(JSON.stringify(props.crew)) as PlayerCrew[];
+	let myCrew = props.crew;
 
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) myCrew = myCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
