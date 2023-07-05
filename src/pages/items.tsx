@@ -62,6 +62,7 @@ interface ItemsComponentProps {
 interface ItemsComponentState {
 	items?: EquipmentItem[];
 	crew?: (PlayerCrew | CrewMember)[];
+	crewLevels?: { [key: string]: Set<string>; };
 };
 
 const tableConfig: ITableConfigRow[] = [
@@ -161,26 +162,26 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 		
 		
 		items.sort((a, b) => a.symbol.localeCompare(b.symbol));
-  		let crew_levels: { [key: string]: Set<string>; } = {};
+  		let crewLevels: { [key: string]: Set<string>; } = {};
 		
 		crew.forEach(cr => {
 			cr.equipment_slots.forEach(es => {
 				let item = this.binaryLocate(es.symbol, items);
 				if (item) {
-					crew_levels[es.symbol] ??= new Set();
-					crew_levels[es.symbol].add(cr.name);
+					crewLevels[es.symbol] ??= new Set();
+					crewLevels[es.symbol].add(cr.name);
 				}
 			});
 		});
 
-		for (let symbol in crew_levels) {
-			if (crew_levels[symbol] && crew_levels[symbol].size > 0) {
+		for (let symbol in crewLevels) {
+			if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
 				let item = this.binaryLocate(symbol, items);
 				if (item) {
-					if (crew_levels[symbol].size > 5) {
-						item.flavor = `Equippable by ${crew_levels[symbol].size} crew`;
+					if (crewLevels[symbol].size > 5) {
+						item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
 					} else {
-						item.flavor = 'Equippable by: ' + [...crew_levels[symbol]].join(', ');
+						item.flavor = 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
 					}
 				}
 			}
@@ -195,7 +196,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 		items = itemsFinal.filter(item => (item.type !== 2) || item.flavor);
 
-		this.setState({ ... this.state, crew, items: items });
+		this.setState({ ... this.state, crew, items: items, crewLevels });
 		this.inited = true;
 	}
 

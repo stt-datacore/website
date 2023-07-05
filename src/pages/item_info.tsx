@@ -6,17 +6,71 @@ import Layout from '../components/layout';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
+import { Demand, PlayerData } from '../model/player';
+import { IDemand } from '../utils/equipment';
+import { EquipmentItem } from '../model/equipment';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { BuffStatTable } from '../utils/voyageutils';
+import { CrewMember } from '../model/crew';
 
-type ItemInfoPageProps = {};
+interface ItemInfoPageProps {};
 
-type ItemInfoPageState = {
-	item_data?: any;
-	errorMessage?: string;
-	items?: any;
+interface ItemInfoComponentProps {
+	isReady: boolean;
 };
 
-class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
-	constructor(props: ItemInfoPageProps) {
+interface ItemInfoComponentState {
+	item_data?: any;
+	errorMessage?: string;
+	items?: EquipmentItem[];
+};
+
+const ItemInfoPage = (props: ItemInfoPageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready(['all_buffs', 'crew', 'items']);
+	const playerContext = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = playerContext;
+	
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
+		maxBuffs = coreData.all_buffs;
+	} 
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<MergedContext.Provider value={{
+						allCrew: coreData.crew,
+						playerData: strippedPlayerData ?? {} as PlayerData,
+						buffConfig: buffConfig,
+						maxBuffs: maxBuffs,
+						items: coreData.items
+					}}>
+						<ItemInfoComponent isReady={isReady} />
+					</MergedContext.Provider>
+				</React.Fragment>
+			}
+		</Layout>
+	);
+};
+
+
+
+class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
+	static contextType = DataContext;
+	context!: React.ContextType<typeof DataContext>;
+	
+	private inited: boolean = false;
+
+	constructor(props: ItemInfoComponentProps) {
 		super(props);
 
 		this.state = {
@@ -24,51 +78,52 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 			item_data: undefined
 		};
 	}
+	componentDidUpdate() {
+		if (this.props.isReady) {
+			this.initData();
+		}
+	}
 
 	componentDidMount() {
+		if (this.props.isReady && !this.inited) {
+			this.initData();
+		}
+	}
+
+	private initData() {
 		let urlParams = new URLSearchParams(window.location.search);
+		const { crew: allcrew, items } = this.context;
+
 		if (urlParams.has('symbol')) {
 			let item_symbol = urlParams.get('symbol');
+			let item = items.find(entry => entry.symbol === item_symbol);
 
-			fetch('/structured/items.json')
-				.then(response => response.json())
-				.then(items => {
-					this.setState({ items });
-					fetch('/structured/crew.json')
-						.then(response => response.json())
-						.then(allcrew => {
-							let item = items.find(entry => entry.symbol === item_symbol);
-
-							let crew_levels = [];
-							allcrew.forEach(crew => {
-								crew.equipment_slots.forEach(es => {
-									if (es.symbol === item_symbol) {
-										crew_levels.push({
-											crew: crew,
-											level: es.level
-										});
-									}
-								});
-							});
-
-							// Find other items' whose recipes use this one
-							let builds = [];
-							items.forEach(it => {
-								if (it.recipe && it.recipe.list && it.recipe.list.find(entry => entry.symbol === item_symbol)) {
-									builds.push(it);
-								}
-							});
-
-							if (item === undefined) {
-								this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
-							} else {
-								this.setState({ item_data: { item, crew_levels, builds } });
-							}
+			let crew_levels = [] as { crew: CrewMember, level: number }[];
+			allcrew.forEach(crew => {
+				crew.equipment_slots.forEach(es => {
+					if (es.symbol === item_symbol) {
+						crew_levels.push({
+							crew: crew,
+							level: es.level
 						});
-				})
-				.catch(err => {
-					this.setState({ errorMessage: err });
+					}
 				});
+			});
+
+			// Find other items' whose recipes use this one
+			let builds = [] as EquipmentItem[];
+
+			items.forEach(it => {
+				if (it.recipe && it.recipe.list && it.recipe.list.find(entry => entry.symbol === item_symbol)) {
+					builds.push(it);
+				}
+			});
+
+			if (item === undefined) {
+				this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
+			} else {
+				this.setState({ item_data: { item, crew_levels, builds } });
+			}				
 		}
 	}
 
@@ -96,7 +151,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 
 		console.log(item_data);
 
-		let bonusText = [];
+		let bonusText = [] as string[];
 		if (item_data.item.bonuses) {
 			for (let [key, value] of Object.entries(item_data.item.bonuses)) {
 				let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
@@ -109,15 +164,16 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 		}
 
 		// TODO: share this code with equipment.ts
-		let demands = [];
+		let demands = [] as IDemand[];
 		if (item_data.item.recipe) {
 			for (let iter of item_data.item.recipe.list) {
-				let recipeEquipment = items.find(item => item.symbol === iter.symbol);
+				let recipeEquipment = items?.find(item => item.symbol === iter.symbol);
 				demands.push({
 					count: iter.count,
 					symbol: iter.symbol,
 					equipment: recipeEquipment,
-					factionOnly: iter.factionOnly
+					factionOnly: iter.factionOnly,
+					have: 0
 				});
 			}
 		}
@@ -150,8 +206,9 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 					<div>
 						<Header as="h4">Craft it for {item_data.item.recipe.craftCost} chrons using this recipe:</Header>
 						<Grid columns={3} padded>
-							{demands.map((entry, idx) => (
-								<Grid.Column key={idx}>
+							{demands.map((entry, idx) => {
+								if (!entry.equipment) return <></>
+								return <Grid.Column key={idx}>
 									<Popup
 										trigger={
 											<Header
@@ -178,7 +235,7 @@ class ItemInfoPage extends Component<ItemInfoPageProps, ItemInfoPageState> {
 										wide
 									/>
 								</Grid.Column>
-							))}
+								})}
 						</Grid>
 					</div>
 				)}
