@@ -30,6 +30,10 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 
 	render() {
 		const { collections, allcrew } = this.state;
+		const theme = window.localStorage.getItem('theme') ?? 'dark';
+
+		const foreColor = theme === 'dark' ? 'white' : 'black';
+
 		if (!collections || collections.length === 0) {
 			return (
 				<Layout title='Collections'>
@@ -47,9 +51,11 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 							<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
 
 							<Item.Content>
-								<Item.Header>{collection.name}<hr></hr></Item.Header>
+								<Item.Header><div className='text'>{collection.name}</div><hr/></Item.Header>
 								<Item.Meta>
-									<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+									<div style={{color:foreColor}}>
+										<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+									</div>
 								</Item.Meta>
 								<Item.Description>
 									<b>Crew: </b>
