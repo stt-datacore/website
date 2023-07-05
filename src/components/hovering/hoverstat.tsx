@@ -23,6 +23,7 @@ export interface HoverStatProps {
     windowEdgeMinPadding?: Coord;
     boxStyle?: React.CSSProperties;
     mobileWidth?: number;
+    useBoundingClient?: boolean;
 }
 
 /**
@@ -257,6 +258,11 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
             x += el.offsetLeft - el.scrollLeft;
             y += el.offsetTop - el.scrollTop;
+            if (el.scrollTop) {
+                console.log("Scroll");
+                console.log(el.offsetTop);
+                console.log(el.scrollTop);
+            }
             if (el === stopAt) break;
             el = el.offsetParent as HTMLElement ?? null;
         }
@@ -310,7 +316,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected activate = (target: HTMLElement): void => {
         if (!this.canActivate) return;
-        
+        const { useBoundingClient } = this.props;
         const { divId } = this.state;        
         let hoverstat = document.getElementById(divId);        
         this._nodismiss = false;
@@ -320,7 +326,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             let ancestor = this.findCommonAncestor(target, hoverstat);
             this.currentTarget = target;
 
-            let { top , left } = this.getOffset(target, ancestor);
+            let { top , left } = useBoundingClient ? rect : this.getOffset(target, ancestor);
             let { left: tx, top: ty } = this.getOffset(target, ancestor);
 
             let x = left + rect.width;

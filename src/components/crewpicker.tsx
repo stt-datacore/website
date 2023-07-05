@@ -53,7 +53,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 
 	return (
 		<div>
-		<CrewHoverStat targetGroup='crew_picker' crew={hoverCrew} />
+		<CrewHoverStat useBoundingClient={true} targetGroup='crew_picker' crew={hoverCrew} />
 
 		<Modal
 			open={modalIsOpen}
