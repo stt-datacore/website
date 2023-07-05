@@ -296,7 +296,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     }
    
     render(): JSX.Element {
-        const { crew: inputCrew, openCrew, touched, hover, pluginData } = this.props;
+        const { crew: inputCrew, openCrew, touched, hover, pluginData, width, imageWidth } = this.props;
         
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
         const compact = this.props.hover;                
@@ -432,7 +432,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         return crew ? (<div style={{ 
                             fontSize: window.innerWidth < mobileWidth ? "10pt" : "11pt", 
                             display: "flex", 
-                            flexDirection: "row" // window.innerWidth < mobileWidth ? "column" : "row" 
+                            flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
+                            width: hover ? undefined : width
                             }}>
                     <div style={{ 
                         zIndex: -1, 
@@ -449,14 +450,14 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         alignItems: "center"}}>
                     
                     {compact && crew.series && <Image src={`/media/series/${crew.series}.png`}  />}
-                    </div>
-                <div style={{ display: "flex", flexDirection: "column"}}>            
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", width: hover ? undefined : imageWidth}}>            
                     <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
                         {touched && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
                         </>}    
                     </div>        
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", flexDirection:"row"}}>                        
+                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>                        
                         <img
                             src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                             style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}

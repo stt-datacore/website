@@ -14,6 +14,8 @@ export interface PresenterProps {
     mobileWidth?: number;
     close?: () => void;
     touched?: boolean;
+    width?: string;
+    imageWidth?: string;
 }
 
 export interface ShipPresenterProps extends PresenterProps {
