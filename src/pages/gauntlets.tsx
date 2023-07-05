@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table } from 'semantic-ui-react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql, Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -91,7 +91,7 @@ export interface GauntletsPageState {
 	activePageIndexTab: number[];
 	itemsPerPageTab: number[];
 
-
+	searchDate?: Date;
 }
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
@@ -446,88 +446,109 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			});
 		}
 	}
-
-	render() {
-		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
+	
+	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
 		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
+		if (!gauntlet) return undefined;
 
-		if (!gauntlets) return <></>
+		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
 
 		return (
-			<Layout title='Gauntlets'>
+		<div style={{
+			marginBottom: "2em"
+		}}>
+			<h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>
+			<div style={{
+				display:"flex",
+				flexDirection: "column",
+				justifyContent: "flex-start", 
+				margin: "0.25em 0"
+			}}>
+				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
+					{prettyDate}
+				</h3>
+				<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
+					{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
+				</h2>
+			</div>
 			
-				{[today, yesterday].map((gauntlet, idx) => {
-					if (!gauntlet) return undefined;
+			<div style={{margin:"1em 0"}}>
+				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+			</div>
 
-					const matchedCrew = gauntlet.matchedCrew ?? [];
-
-					const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY')
-					const prettyTraits = gauntlet.prettyTraits;
-
-					return (
-					<div style={{
-						marginBottom: "2em"
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap"
+			}}>
+				{activePageTabs[idx].map((crew, idx) => (
+					<div className="ui segment" style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-evenly",
+						width: "100%"
 					}}>
-						<h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>
-						<div style={{
-							display:"flex",
-							flexDirection: "column",
-							justifyContent: "flex-start", 
-							margin: "0.25em 0"
-						}}>
-							<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
-								{prettyDate}
-							</h3>
-							<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-								{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
-							</h2>
-						</div>
-						
-						<div style={{margin:"1em 0"}}>
-							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-						</div>
-
-						<div style={{
-							display: "flex",
-							flexDirection: "row",
-							flexWrap: "wrap"
-						}}>
-							{activePageTabs[idx].map((crew, idx) => (
-								<div className="ui segment" style={{
-									display: "flex",
-									flexDirection: "row",
-									justifyContent: "space-evenly",
-									width: "100%"
-								}}>
-									<CrewPresenter 
-										plugins={[GauntletSkill, ShipSkill]}
-										pluginData={[gauntlet, undefined]}
-										selfRender={true}
-										selfPrepare={true}
-										onBuffToggle={this.onBuffToggle}
-										onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
-										storeName='gauntlets' 
-										hover={false} 
-										crew={crew} />
-								</div>
-							))}
-						</div>
-
-						<div style={{margin:"1em 0"}}>
-							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-						</div>
-
-						<hr />
+						<CrewPresenter 
+							width="100%"
+							imageWidth="50%"
+							plugins={[GauntletSkill, ShipSkill]}
+							pluginData={[gauntlet, undefined]}
+							selfRender={true}
+							selfPrepare={true}
+							onBuffToggle={this.onBuffToggle}
+							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
+							storeName='gauntlets' 
+							hover={false} 
+							crew={crew} />
 					</div>
-					)
-				})}
-				
-				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
+				))}
+			</div>
 
-				<hr />
+			<div style={{margin:"1em 0"}}>
+				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+			</div>
 
-				<h2>Previous Gauntlets</h2>			
+			<hr />
+		</div>
+		)
+
+	}
+
+	private changeDate = (e: string) => {
+		this.setState({ ...this.state, searchDate: new Date(e) });
+	}
+
+	renderPreviousGauntlets() {
+		const { gauntlets } = this;
+		const { activePage, activePageIndex, totalPages, searchDate } = this.state;
+
+		if (!gauntlets) return <></>
+		
+		const theme = window.localStorage.getItem('theme') ?? 'dark';
+		const foreColor = theme === 'dark' ? 'white' : 'black';
+
+		return (<>
+				<div style={{
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "space-between"
+				}}>
+					<h2>Previous Gauntlets</h2>			
+					{/* <div style={{
+						margin: "0.25em",
+						marginRight: 0,
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "center",
+						justifyItems: "center",
+						alignItems: "center",
+						alignContent: "center"
+					}}>
+						<h4 style={{marginTop:"0.5em"}}>Search By Date:&nbsp;</h4>
+						<input value={searchDate?.toDateString()} max={(new Date(gauntlets[0].date).toDateString())} onChange={(e) => this.changeDate((e.nativeEvent.target as HTMLInputElement).value)} className="ui input button" style={{color:foreColor, margin :"0.25em", marginRight: 0}} type="date" />
+						<i style={{marginLeft:"0.5em", cursor: "pointer"}} className="icon remove circle button" />
+					</div> */}
+				</div>
 				
 				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
 			
@@ -582,6 +603,35 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</Item.Group>
 				</div>
 				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
+			</>)
+	}
+
+	render() {
+		const { gauntlets } = this;
+		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
+		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
+
+		if (!gauntlets) return <></>
+
+		const tabPanes = [
+			{
+				menuItem: "Today's Gauntlet",
+				render: () => this.renderGauntletBig(today, 0)
+			},
+			{
+				menuItem: "Yesterday's Gauntlet",
+				render: () => this.renderGauntletBig(yesterday, 1)
+			},
+			{
+				menuItem: "Previous Gauntlets",
+				render: () => this.renderPreviousGauntlets()
+			}
+		]
+
+		return (
+			<Layout title='Gauntlets'>
+				<Tab menu={{ attached: false }} panes={tabPanes} />
+				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
 			</Layout>
 		)}
 	}
