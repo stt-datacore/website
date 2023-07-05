@@ -533,7 +533,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexDirection: "row",
 					justifyContent: "space-between"
 				}}>
-					<h2>Previous Gauntlets</h2>			
+					<h2>Previous Gauntlets</h2>		
+						
 					{/* <div style={{
 						margin: "0.25em",
 						marginRight: 0,
