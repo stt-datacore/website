@@ -3,7 +3,7 @@ name: EV Suit Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 47
 in_portal: true
 date: 08/10/2020
