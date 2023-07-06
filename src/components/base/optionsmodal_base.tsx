@@ -81,13 +81,13 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
         const { modalTitle } = this.props;
 
         const optionGroups = this.optionGroups;
-
+        const me = this;
 		return (
 			<Modal
 				open={modalIsOpen}
-				onClose={() => { this.revertOptions(); this.setModalIsOpen(false); }}
-				onOpen={() => this.setModalIsOpen(true)}
-				trigger={this.renderTrigger()}
+				onClose={() => { me.revertOptions(); me.setModalIsOpen(false); }}
+				onOpen={() => me.setModalIsOpen(true)}
+				trigger={me.renderTrigger()}
 				size='tiny'
 			>
 				<Modal.Header>
@@ -107,7 +107,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
                                     placeholder={group.placeholder}
                                     options={group.options}
                                     value={(options as OptionsBase)[group.key]}
-                                    onChange={(e, { value }) => this.setGroupValue(group, value)}
+                                    onChange={(e, { value }) => me.setGroupValue(group, value)}
                                 />
                             </div>
                         )
@@ -115,15 +115,15 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 					
 				</Modal.Content>
 				<Modal.Actions>
-					{!isDefault && <Button content='Reset' onClick={() => this.resetOptions()} />}
-					{isDirty && <Button positive={true} content='Apply filters' onClick={() => this.applyOptions()} />}
-					{!isDirty && <Button content='Close' onClick={() => this.setModalIsOpen(false)} />}
+					{!isDefault && <Button content='Reset' onClick={(e) => me.resetOptions()} />}
+					{isDirty && <Button positive={true} content='Apply filters' onClick={(e) => me.applyOptions()} />}
+					{!isDirty && <Button content='Close' onClick={(e) => me.setModalIsOpen(false)} />}
 				</Modal.Actions>
 			</Modal>
 		);
 	}
 
-	protected renderTrigger(): JSX.Element {
+	renderTrigger(): JSX.Element {
 		const { isDefault } = this.state;
 
 		return (
@@ -134,30 +134,36 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		);
 	}
 
-	protected revertOptions(): void {
+	revertOptions(): void {
 		this.setOptions({...this.props.options});
 	}
 
-	protected resetOptions(): void {
-		this.setOptions({... this.getDefaultOptions() });
+	resetOptions(): void {        
+        let newstate = { ... this.state };
+
+        for(let group of this.optionGroups){
+            (newstate.options as OptionsBase)[group.key] = group.initialValue;
+        }
+
+		this.setState(newstate);
 	}
 
-	protected applyOptions(): void {
+	applyOptions(): void {
 		this.props.setOptions({...this.state.options});
 		this.setModalIsOpen(false);
 	}
 
-	protected setOptions(value: TOptions) {
+	setOptions(value: TOptions) {
 		this.setState({ ... this.state, options: value });
 	}
 
-    protected setGroupValue(group: OptionGroup, value: any) {
-        let newstate = { ... this.state } as OptionsModalState<TOptions>;
-        (newstate.options as OptionsBase)[group.key] = value;
-        this.setState({ ... newstate });
+    setGroupValue(group: OptionGroup, value: any) {
+        let newopts = { ... this.state.options } as TOptions;
+        (newopts as OptionsBase)[group.key] = value;
+        this.setState({ ... this.state, options: newopts });
     }
 	
-	protected setModalIsOpen(value: boolean) {
+	setModalIsOpen(value: boolean) {
 		this.setState({ ... this.state, modalIsOpen: value });
 	}
 };
