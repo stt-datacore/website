@@ -72,7 +72,7 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 		</React.Fragment>
 	);
 
-	function onCrewPick(crew: any): void {
+	function onCrewPick(crew: PlayerCrew | CrewMember): void {
 		if (!selectedCrew.includes(crew.symbol)) {
 			selectedCrew.push(crew.symbol);
 			setSelectedCrew([...selectedCrew]);
