@@ -1500,6 +1500,7 @@ export interface BuffBase {
     fleet_boss_battles_enabled: boolean
     fleet_boss_battles: FleetBossBattles
     continuum_mission_enabled: boolean
+    continuum_containers?: ContinuumContainer[];
     use_v2_activities_panel: boolean
     grant_current_season_entitlement: boolean
     should_reject_disabled_activities: boolean
@@ -1622,3 +1623,16 @@ export interface BuffBase {
     dupes: number;
 
   }
+  export interface ContinuumContainer {
+    fill_cap: number;
+    fill_rate: FillRate;
+    cooldown_time: number;
+    cooldown_skip_cost_per_hour: number;
+    unlock_cost: number;
+    unlock_currency: string;
+}
+
+export interface FillRate {
+  quantity: number;
+  time_unit: string;
+}
