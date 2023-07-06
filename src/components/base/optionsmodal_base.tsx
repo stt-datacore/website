@@ -37,11 +37,11 @@ export interface ModalOption {
     text: string;
 }
 
-export abstract class OptionsModal<TOptions extends OptionsBase, TProps extends OptionsModalProps<TOptions>, TState extends OptionsModalState<TOptions>> extends React.Component<TProps, TState> {
+export abstract class OptionsModal<TOptions extends OptionsBase> extends React.Component<OptionsModalProps<TOptions>, OptionsModalState<TOptions>> {
 
     protected readonly optionGroups: OptionGroup[];
 
-	constructor(props: TProps) {
+	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
 
 		let newstate = {
@@ -49,7 +49,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase, TProps extends 
 			isDirty: false,
 			options: props.options,
 			modalIsOpen: false            
-		} as TState;
+		} as OptionsModalState<TOptions>;
 
         this.optionGroups = this.getOptionGroups();        
 
@@ -72,7 +72,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase, TProps extends 
 		this.checkState();
 	}
 
-	componentDidUpdate(prevProps: Readonly<TProps>, prevState: Readonly<TState>, snapshot?: any): void {
+	componentDidUpdate(prevProps: Readonly<OptionsModalProps<TOptions>>, prevState: Readonly<OptionsModalState<TOptions>>, snapshot?: any): void {
 		this.checkState();
 	}
 
@@ -152,7 +152,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase, TProps extends 
 	}
 
     protected setGroupValue(group: OptionGroup, value: any) {
-        let newstate = { ... this.state } as TState;
+        let newstate = { ... this.state } as OptionsModalState<TOptions>;
         (newstate.options as OptionsBase)[group.key] = value;
         this.setState({ ... newstate });
     }

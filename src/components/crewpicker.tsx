@@ -9,39 +9,34 @@ import { MergedContext } from '../context/mergedcontext';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { OptionsModal, OptionsModalProps, OptionsModalState, OptionGroup, OptionsBase } from './base/optionsmodal_base';
 
-interface BeholdModalOptions extends OptionsBase {
-	portal: string;
-	series: string[];
-	rarities: number[];
-}
-
-const DEFAULT_OPTIONS = {
-	portal: '',
-	series: [],
-	rarities: []
-} as BeholdModalOptions;
-
-type CrewPickerProps = {
+export interface CrewPickerProps<T extends OptionsBase> {
 	crewList: (PlayerCrew | CrewMember)[];
 	handleSelect: (value: PlayerCrew | CrewMember) => void;
-	options: any;
+	options: T;
+	setOptions: (value: T) => void;
+	defaultOptions: T;
+
 	renderTrigger?: () => JSX.Element;
+	pickerModal: typeof OptionsModal<T>;
+	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
+	
 };
 
-const CrewPicker = (props: CrewPickerProps) => {
+const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const { handleSelect } = props;
 	
 	const context = React.useContext(MergedContext);
+	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const [options, setOptions] = React.useState({...DEFAULT_OPTIONS, ...props.options});
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	const inputRef = React.createRef<Input>();
+	const { pickerModal: PickerModal } = props;
 
 	React.useEffect(() => {
 		const crewList = props.crewList.slice()
@@ -89,7 +84,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 				{renderGrid()}
 			</Modal.Content>
 			<Modal.Actions>
-				<BeholdOptionsModal modalTitle='Optional filters' options={options} setOptions={setOptions} />
+				<PickerModal modalTitle='Optional filters' options={options} setOptions={setOptions} />
 				{selectedCrew && (
 					<Button color='blue'
 						content={`Select ${selectedCrew.name}`}
@@ -113,26 +108,12 @@ const CrewPicker = (props: CrewPickerProps) => {
 	}
 
 	function renderGrid(): JSX.Element {
+		const { filterCrew } = props;
+
 		if (!modalIsOpen) return (<></>);
 
-		let data = crewList.slice();
+		let data = filterCrew(crewList.slice(), searchFilter);
 
-		// Filtering
-		const portalFilter = (crew: PlayerCrew | CrewMember) => {
-			if (options.portal.substr(0, 6) === 'portal' && !crew.in_portal) return false;
-			if (options.portal === 'portal-unique' && (crew.unique_polestar_combos?.length ?? 0) === 0) return false;
-			if (options.portal === 'portal-nonunique' && (crew.unique_polestar_combos?.length ?? 0) > 0) return false;
-			if (options.portal === 'nonportal' && crew.in_portal) return false;
-			return true;
-		};
-		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(searchFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
-		data = data.filter(crew =>
-			true
-				&& (options.portal === '' || portalFilter(crew))
-				&& (options.series.length === 0 || options.series.includes(crew.series))
-				&& (options.rarities.length === 0 || options.rarities.includes(crew.max_rarity))
-				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
-		);
 
 		if (data.length === 0) return (
 			<Message>
@@ -343,94 +324,6 @@ const CrewPicker = (props: CrewPickerProps) => {
 // 		this.setState({ ... this.state, modalIsOpen: value });
 // 	}
 // };
-
-
-class BeholdOptionsModal extends OptionsModal<BeholdModalOptions, OptionsModalProps<BeholdModalOptions>, OptionsModalState<BeholdModalOptions>> {
-    
-    protected getOptionGroups(): OptionGroup[] {
-        return [
-            {
-                title: "Filter by retrieval option:",
-                key: 'portal',
-                options: BeholdOptionsModal.portalOptions,
-                multi: false,
-				initialValue: ''
-            },
-            {
-                title: "Filter by series:",
-                key: 'series',
-                multi: true,
-                options: BeholdOptionsModal.seriesOptions,
-				initialValue: [] as string[]
-            },
-            {
-                title: "Filter by rarity:",
-                key: "rarities",
-                multi: true,
-                options: BeholdOptionsModal.rarityOptions,
-				initialValue: [] as number[]
-            }]
-    }
-    protected getDefaultOptions(): BeholdModalOptions {
-        return DEFAULT_OPTIONS;
-    }
-
-	static readonly portalOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'portal', value: 'portal', text: 'Only show retrievable crew' },
-		{ key: 'portal-unique', value: 'portal-unique', text: 'Only show uniquely retrievable crew' },
-		{ key: 'portal-nonunique', value: 'portal-nonunique', text: 'Only show non-uniquely retrievable crew' },
-		{ key: 'nonportal', value: 'nonportal', text: 'Only show non-retrievable crew' }
-	];
-
-	static readonly seriesOptions = [
-		{ key: 'tos', value: 'tos', text: 'The Original Series' },
-		{ key: 'tas', value: 'tas', text: 'The Animated Series' },
-		{ key: 'tng', value: 'tng', text: 'The Next Generation' },
-		{ key: 'ds9', value: 'ds9', text: 'Deep Space Nine' },
-		{ key: 'voy', value: 'voy', text: 'Voyager' },
-		{ key: 'ent', value: 'ent', text: 'Enterprise' },
-		{ key: 'dsc', value: 'dsc', text: 'Discovery' },
-		{ key: 'pic', value: 'pic', text: 'Picard' },
-		{ key: 'low', value: 'low', text: 'Lower Decks' },
-		{ key: 'snw', value: 'snw', text: 'Strange New Worlds' },
-		{ key: 'original', value: 'original', text: 'Timelines Originals' }
-	];
-
-	static readonly rarityOptions = [
-		{ key: '1*', value: 1, text: '1* Common' },
-		{ key: '2*', value: 2, text: '2* Uncommon' },
-		{ key: '3*', value: 3, text: '3* Rare' },
-		{ key: '4*', value: 4, text: '4* Super Rare' },
-		{ key: '5*', value: 5, text: '5* Legendary' }
-	];
-
-	constructor(props: OptionsModalProps<BeholdModalOptions>) {
-		super(props);
-
-		this.state = {
-			isDefault: false,
-			isDirty: false,
-			options: props.options,
-			modalIsOpen: false
-		}
-	}
-
-	protected checkState() {
-		const { options } = this.state;
-
-		const isDefault = options.portal === '' && options.series.length === 0 && options.rarities.length === 0;
-		const isDirty = options.portal !== ''
-			|| options.series.length !== this.props.options.series.length || !this.props.options.series.every(s => options.series.includes(s))
-			|| options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
-
-		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
-			this.setState({ ... this.state, isDefault, isDirty });
-		}
-	}
-
-
-};
 
 
 export default CrewPicker;
