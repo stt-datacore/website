@@ -95,12 +95,12 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 				</Modal.Header>
 				<Modal.Content>
 
-                    {optionGroups.map((group) => {
+                    {optionGroups.map((group, idx) => {
                         if (group.content) {
-                            return <div style={group.containerStyle}>{group.content}</div>;
+                            return <div key={idx} style={group.containerStyle}>{group.content}</div>;
                         }
                         else return (
-                            <div style={group.containerStyle}>
+                            <div key={idx} style={group.containerStyle}>
                                 {group.title}
                                 <Dropdown selection clearable fluid
                                     multiple={group.multi}

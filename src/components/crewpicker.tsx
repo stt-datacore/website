@@ -127,8 +127,8 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		return (<>
 			<div>
 				<Grid doubling columns={3} textAlign='center'>
-					{data.slice(0, itemsToShow).map(crew => {
-						if (!crew) return <></>	
+					{data.slice(0, itemsToShow).map((crew, idx) => {
+						if (!crew) return <div key={idx} />
 						return <Grid.Column key={crew.pickerId} style={{ cursor: 'pointer' }}
 							onClick={() => setSelectedCrew(crew)}
 							onDoubleClick={() => confirmSelection(crew)}

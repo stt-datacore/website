@@ -95,7 +95,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 padding: 0
             }}>
             {equip.map((item) => (
-                    <CrewItemDisplay mobileWidth={mobileWidth} crew={crew} equipment={item} />
+                    <CrewItemDisplay key={item.symbol} mobileWidth={mobileWidth} crew={crew} equipment={item} />
                 ))}
             </div>
         || <></>
