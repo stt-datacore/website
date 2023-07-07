@@ -16,7 +16,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { MergedContext } from "../../context/mergedcontext";
 import { CrewItemsView } from "./crew_items";
 import { PlayerBuffMode, PlayerImmortalMode, BuffNames, ImmortalNames, getAvailableBuffStates, nextImmortalState, nextBuffState, CrewPreparer } from "./crew_preparer";
-import { PresenterPlugin, PresenterPluginBase } from "./presenter_plugin";
+import { PresenterPlugin, PresenterPluginBase, PresenterPluginProps } from "./presenter_plugin";
 import { Ship } from "../../model/ship";
 import { navigate } from "gatsby";
 
@@ -211,7 +211,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
 
 export interface CrewPresenterState {
     mobileWidth: number;
-    pluginsUsed: (typeof React.Component<PlayerCrew | CrewMember | any, any, any>)[]
+    pluginsUsed: (typeof React.Component<PresenterPluginProps<PlayerCrew | CrewMember | any>, any, any>)[]
     selectedPlugin: number;
 }
 
