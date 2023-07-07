@@ -16,7 +16,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
+import { comparePairs, getPlayerPairs, getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
@@ -281,8 +281,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.25;
 						else btrait = 1.05;
 
-						r = btrait - atrait;
-						if (r) return r;
+						// r = btrait - atrait;
+						// if (r) return r;
 
 						//if (r) return r;
 
@@ -301,86 +301,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							if (r) return r;
 						}
 
-						let res = [0, 0];
-						let traits = [atrait, btrait];
-						let skills = [askills, bskills];
-						let tsorted = [[], []] as number[][];
-						let hasFeatured = [false, false];
-						let featured = [0, 0];
-
-						[a, b].forEach((item, idx) => {
-							let sk = 0;
-							let ask: number[] = [];
-
-							for (let skill of skills[idx]) {
-								let bs: Skill;
-
-								if (skill in item.base_skills) {
-									bs = item.base_skills[skill];
-								}
-								else if (skill in item) {
-									bs = { core: item[skill].core, range_min: item[skill].min, range_max: item[skill].max };
-								}
-								else {
-									bs = item.base_skills[skill];
-								}
-
-								sk = bs.range_max + (bs.range_max - bs.range_min);
-								sk *= traits[idx];
-
-								if (skill === node.contest_data?.featured_skill) {									
-									featured[idx] = sk;									
-								}
-
-								ask.push(sk);
-							}
-
-							ask.sort((a, b) => b - a);
-
-							if (ask.length >= 1) {
-								if (ask[0] == featured[0]) ask[0] *= 1.5;
-								ask[0] += ask[0] * 0.35;
-								if (ask.length >= 2) {
-									if (ask[1] == featured[1]) ask[0] *= 1.5;
-									ask[1] += ask[1] * 0.25;
-									if (ask.length >= 3) {
-										if (ask[2] == featured[2]) ask[0] *= 1.5;
-										ask[2] += ask[2] * 0.05;
-									}
+						let ap = getPlayerPairs(a, atrait);
+						let bp = getPlayerPairs(b, btrait);
+						if (ap && bp) {
+							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill);
+							if (r === 0 && ap.length > 1 && bp.length > 1) {
+								r = comparePairs(ap[1], bp[1], node.contest_data?.featured_skill);
+								if (r === 0 && ap.length > 2 && bp.length > 2) {
+									r = comparePairs(ap[2], bp[2], node.contest_data?.featured_skill);
 								}
 							}
-
-							tsorted[idx] = ask;
-							res[idx] = ask.reduce((prev, curr) => (prev + curr));
-						});
-
-						// r = featured[1] - featured[0];
-						// if (r) return r;
-
-						// r = 0;
+						}
 						
-						// let la = tsorted[0].length;
-						// let lb = tsorted[1].length;
-						
-						// if (la != lb) {							
-						// 	if (la > lb) {
-						// 		if (featured[1] > featured[0]) return 1;
-						// 		else return -1;
-						// 	}
-						// 	else if (la < lb) {
-						// 		if (featured[0] > featured[1]) return -1;
-						// 		else return 1;
-						// 	}
-						// }
-
-						// for (let i = 0; i < la; i++) {
-						// 	if (tsorted[0][i] > tsorted[1][i]) r--;
-						// 	else if (tsorted[0][i] < tsorted[1][i]) r++;
-						// }
-
-						// if (r) return r;
-
-						return res[1] - res[0];
+						return r;
 					});
 			
 			node.matchedCrew = matchedCrew;
@@ -392,14 +325,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let gaunts = gauntlets?.filter((gauntlet) => gauntlet.prettyTraits?.length) ?? [];
 			let today = gaunts[0];
 			let yesterday = gaunts[1];
-			
-			// [0, 1].forEach((idx) => {
-			// 	gaunts[idx].matchedCrew = gaunts[idx].matchedCrew?.map((crew) => {
-			// 		let [newcrew, immomodes] = CrewPreparer.prepareCrewMember(crew, this.playerBuffMode, this.getImmortalMode(crew), this.context);
-			// 		this.setValidImmortalModes(crew, immomodes ?? ['full']);
-			// 		return newcrew as PlayerCrew;
-			// 	})
-			// });
 
 			gaunts = gaunts.slice(2);
 			

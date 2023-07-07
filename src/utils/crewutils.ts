@@ -471,6 +471,52 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	return result;
 }
 
+export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {
+	let an = 0;
+	let bn = 0;
+	let choiceMult = multiplier ?? 1.33;
+	
+	a.forEach(ai => an += (ai.skill === featuredSkill ? choiceMult : 1) * (ai.range_max + ai.range_min));
+	b.forEach(bi => bn += (bi.skill === featuredSkill ? choiceMult : 1) * (bi.range_max + bi.range_min));
+
+	return bn - an;
+}
+
+export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
+	let multi = multiplier ?? 1;
+	let skills = getSkills(crew).map(skill => { return { ... crew[skill], skill: skill } as Skill });
+
+	if (!skills?.length || !skills[0].range_max) {
+		skills = getSkills(crew).map(skill =>  { return { ... crew.base_skills[skill], skill: skill } as Skill });
+	}
+	
+	if (skills && skills.length) {
+		for (let skillObj of skills) {
+			skillObj.core *= multi;
+		
+			if ("min" in skillObj && !skillObj.range_min) skillObj.range_min = skillObj["min"] as number;
+			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
+
+			skillObj.range_min *= multi;
+			skillObj.range_max *= multi;
+		}
+		skills.sort((a, b) => (b.range_max + b.range_min) - (a.range_max + a.range_min));
+
+		let pairs = [] as Skill[][];
+
+		if (skills.length <= 2) {
+			pairs.push(skills);
+			return pairs;
+		}
+
+		pairs.push([skills[0], skills[1]]);
+		pairs.push([skills[0], skills[2]]);
+		pairs.push([skills[1], skills[2]]);
+		return pairs;
+	}
+
+	return undefined;
+}
 
 
 // export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
