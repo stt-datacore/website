@@ -188,7 +188,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						<Message.Header>Work in progress!</Message.Header>
 							This section is under development and not fully functional yet.
 						</Message.Content>
-				</Message>
+					</Message>
 				<Header as="h3">
 					{item_data.item.name}{' '}
 					<Rating icon='star' rating={item_data.item.rarity} maxRating={item_data.item.rarity} size="large" disabled />

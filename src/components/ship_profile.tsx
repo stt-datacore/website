@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Message } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -73,6 +73,13 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
                 justifyContent: "center",
 				alignItems: "center"
             }}>
+				<Message icon warning>
+					<Icon name="exclamation triangle" />
+					<Message.Content>
+						<Message.Header>Work in progress!</Message.Header>
+							This section is under development and not fully functional yet.
+						</Message.Content>
+					</Message>
 
                 <ShipPresenter hover={false} ship={ship} storeName='shipProfile' />
 

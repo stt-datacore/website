@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab } from 'semantic-ui-react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql, Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -556,6 +556,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return (
 			<Layout title='Gauntlets'>
+				<Message icon warning>
+				<Icon name="exclamation triangle" />
+					<Message.Content>
+						<Message.Header>Work in progress!</Message.Header>
+						This section is under development and not fully functional yet.
+					</Message.Content>
+				</Message>
+
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
 			</Layout>
