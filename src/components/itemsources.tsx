@@ -12,7 +12,7 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
 
-		let res = [];
+		let res = [] as JSX.Element[];
 		if (disputeMissions.length > 0) {
 			res.push(
 				<p key={'disputeMissions'}>

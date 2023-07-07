@@ -28,7 +28,7 @@ import { Ship } from '../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shiputils';
 import { MergedContext } from '../context/mergedcontext';
 import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker } from './crewtables/shipoptions';
-import { CrewFilterPanes, CrewTableCustomFilter, FilterItemMethodConfig } from './crewtables/customviews';
+import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMethodConfig } from './crewtables/customviews';
 
 
 export type ProfileCrewProps = {
@@ -660,7 +660,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {		
 		customFilters.forEach((filter, idx) => {
-			const FilterView = filter.filterComponent;
+			const FilterView = filter.filterComponent as unknown as typeof React.Component<CustomFilterProps<PlayerCrew | CrewMember>, any, any>;
 			activeElements.push(<FilterView key={idx} index={idx} setFilterItemMethod={setItemConfig} />);
 		});
 	}
