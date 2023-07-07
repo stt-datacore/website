@@ -142,12 +142,3 @@ export interface ExportCrew {
     max_rarity: number;
     skillData: number[];
 }
-
-export interface MergedContext {
-    playerData: PlayerData;
-    allCrew?: PlayerCrew[];
-    allShips?: Ship[];
-    playerShips?: Ship[];
-    buffConfig?: BuffStatTable;
-    items?: EquipmentItem[];    
-}

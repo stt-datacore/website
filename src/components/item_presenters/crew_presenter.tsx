@@ -211,7 +211,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
 
 export interface CrewPresenterState {
     mobileWidth: number;
-    pluginsUsed: (typeof PresenterPluginBase<PlayerCrew | CrewMember | any>)[]
+    pluginsUsed: (typeof React.Component<PlayerCrew | CrewMember | any, any, any>)[]
     selectedPlugin: number;
 }
 
@@ -226,7 +226,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
-            pluginsUsed: props.plugins ?? [ShipSkill],
+            pluginsUsed: (props.plugins ?? [ShipSkill]).map((comp: unknown) => comp as unknown as typeof React.Component<PlayerCrew | CrewMember | any, any, any>),
             selectedPlugin: 0
         }
 
@@ -623,7 +623,9 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                     </div>
                     <div>
                         {(!pluginData || (pluginData && pluginData.length == pluginsUsed.length)) && pluginsUsed.map((PlugIn, idx) => {                            
+                            
                             if (selectedPlugin !== idx) return <div key={idx} />;
+
                             return (
                             <PlugIn key={idx} context={crew} fontSize="0.8em" data={pluginData ? pluginData[idx] : undefined} />
                             )

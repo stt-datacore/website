@@ -36,7 +36,8 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	const inputRef = React.createRef<Input>();
-	const { pickerModal: PickerModal } = props;
+	const { pickerModal } = props;
+	const PickerModal = pickerModal as unknown as (typeof React.Component<OptionsModalProps<T>, any, any>);
 
 	React.useEffect(() => {
 		const crewList = props.crewList.slice()
