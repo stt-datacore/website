@@ -189,17 +189,10 @@ const PlayerToolsPage = (props: any) =>  {
 			inputPlayerData.item_archetype_cache = {
 				archetypes: inputPlayerData.archetype_cache.archetypes.map((a) => {
 					return {
-						id: a.id,
-						symbol: a.symbol,
+						// In case we find we need a deep copy...
+						// ... JSON.parse(JSON.stringify(a)),  
+						... a,
 						type: a.item_type,
-						name: a.name,
-						icon: a.icon,
-						flavor: a.flavor,
-						rarity: a.rarity,
-						recipe: a.recipe,
-						item_sources: a.item_sources,
-						bonuses: a.bonuses,
-						short_name: a.short_name
 					};
 				})
 			}
