@@ -50,6 +50,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
     } else {
         
+        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+
         for (let i = startlevel; i < startlevel + 4; i++) {
             let eq: EquipmentSlot;
             eq = crew.equipment_slots[i];
@@ -57,10 +59,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             if (eq) {
                 let ef = coreData.items.find(item => item.symbol === eq.symbol);
                 if (ef) {
-                    equip.push(JSON.parse(JSON.stringify(ef)));
+                    equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
                 }
             }
-            if (equip.length === i) equip.push({} as EquipmentItem);
+            
         }
 
         eqimgs = [
@@ -94,8 +96,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 margin: 0,
                 padding: 0
             }}>
-            {equip.map((item) => (
-                    <CrewItemDisplay key={item.symbol} mobileWidth={mobileWidth} crew={crew} equipment={item} />
+            {equip.map((item, idx) => (
+                    <CrewItemDisplay key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
                 ))}
             </div>
         || <></>
