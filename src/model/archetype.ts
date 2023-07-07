@@ -8,7 +8,20 @@ export interface ArchetypeRoot17 {
     archetypes: Archetype17[]
 }
 
-export interface Archetype20 {
+export interface ArchetypeBase {
+  id: number
+  symbol: string
+  name: string
+  icon: Icon;
+  flavor: string
+  rarity: number
+  recipe?: ArchetypeRecipe
+  item_sources: ItemSource[]
+  bonuses?: ArchetypeBonus
+  short_name?: string
+}
+
+export interface Archetype20 extends ArchetypeBase {
     id: number
     symbol: string
     type: string
@@ -23,7 +36,7 @@ export interface Archetype20 {
     short_name?: string
   }
   
-  export interface Archetype17 {
+  export interface Archetype17 extends ArchetypeBase {
     id: number
     symbol: string
     type: number;

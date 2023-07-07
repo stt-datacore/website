@@ -30,7 +30,7 @@ import { Schematics, Ship } from '../model/ship';
 import { EventData } from '../utils/events';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import { mergeShips } from '../utils/shiputils';
-import { Archetype17, Archetype20 } from '../model/archetype';
+import { Archetype17, Archetype20, ArchetypeBase } from '../model/archetype';
 import { DataContext, DefaultCore } from '../context/datacontext';
 import { PlayerContext, PlayerContextData } from '../context/playercontext';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
@@ -211,17 +211,8 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 			inputPlayerData.item_archetype_cache = {
 				archetypes: inputPlayerData.archetype_cache.archetypes.map((a: Archetype20) => {
 					return {
-						id: a.id,
-						symbol: a.symbol,
+						... a as ArchetypeBase,
 						type: a.item_type,
-						name: a.name,
-						icon: a.icon,
-						flavor: a.flavor,
-						rarity: a.rarity,
-						recipe: a.recipe,
-						item_sources: a.item_sources,
-						bonuses: a.bonuses,
-						short_name: a.short_name
 					} as Archetype17;
 				})
 			}
