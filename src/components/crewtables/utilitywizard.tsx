@@ -354,7 +354,7 @@ const RanksModal = (props: RanksModalProps) => {
 			open={modalIsOpen}
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
-			trigger=<Button content={crew.utility.thresholds.length} />
+			trigger={<Button content={crew.utility.thresholds.length} />}
 			size='tiny'
 		>
 			<Modal.Header>

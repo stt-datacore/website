@@ -9,45 +9,26 @@ export interface ArchetypeRoot17 {
 }
 
 export interface ArchetypeBase {
-  id: number
-  symbol: string
-  name: string
+  id: number;
+  type: string | number;
+  symbol: string;
+  name: string;
   icon: Icon;
-  flavor: string
-  rarity: number
-  recipe?: ArchetypeRecipe
-  item_sources: ItemSource[]
-  bonuses?: ArchetypeBonus
-  short_name?: string
+  flavor: string;
+  rarity: number;
+  recipe?: ArchetypeRecipe;
+  item_sources: ItemSource[];
+  bonuses?: ArchetypeBonus;
+  short_name?: string;
 }
 
 export interface Archetype20 extends ArchetypeBase {
-    id: number
-    symbol: string
-    type: string
-    item_type: number
-    name: string
-    icon: Icon;
-    flavor: string
-    rarity: number
-    recipe?: ArchetypeRecipe
-    item_sources: ItemSource[]
-    bonuses?: ArchetypeBonus
-    short_name?: string
+    type: string;
+    item_type: number;
   }
   
   export interface Archetype17 extends ArchetypeBase {
-    id: number
-    symbol: string
     type: number;
-    name: string
-    icon: Icon;
-    flavor: string
-    rarity: number
-    recipe?: ArchetypeRecipe
-    item_sources: ItemSource[]
-    bonuses?: ArchetypeBonus
-    short_name?: string
   }
   
   export interface ArchetypeRecipe {
