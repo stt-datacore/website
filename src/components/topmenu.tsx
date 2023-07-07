@@ -98,7 +98,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		</Menu.Item>
 	];
 
-	items.push(createSubMenu('Player tools', Object.entries(playerTools).map(([key, value]) => ({
+	items.push(createSubMenu('Player tools', Object.entries(playerTools).filter(([key, value]) => !value.noMenu).map(([key, value]) => ({
 			title: value.title,
 			link: `/playertools?tool=${key}`
 		})))
@@ -171,7 +171,9 @@ type NavBarProps = {
 
 const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
-
+	
+	// TODO: Rewrite this
+	// MediaContextProvider is incompatible with Node 16+
 	return (
 		<MediaContextProvider>			
 			<Media at='mobile'>

@@ -39,6 +39,7 @@ import { EquipmentItem } from '../model/equipment';
 export interface PlayerTool {
 	title: string;
 	render: (props: { crew?: PlayerCrew, ship?: string, location?: any}) => JSX.Element;	
+	noMenu?: boolean;
 }
 
 export interface PlayerTools {
@@ -81,6 +82,11 @@ export const playerTools: PlayerTools = {
 	'ships': {
 		title: 'Ships',
 		render: () => <ProfileShips />
+	},
+	'ship': {
+		title: 'Ship Details',
+		render: () => <ShipProfile />,
+		noMenu: true
 	},
 	'factions': {
 		title: 'Factions',
