@@ -79,13 +79,13 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		};
 	}
 	componentDidUpdate() {
-		if (this.props.isReady) {
+		if (this.props.isReady && !this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady && !this.inited) {
+		if (this.props.isReady) {
 			this.initData();
 		}
 	}
@@ -121,8 +121,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 			if (item === undefined) {
 				this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
+				this.inited = true;
 			} else {
 				this.setState({ item_data: { item, crew_levels, builds } });
+				this.inited = true;
 			}				
 		}
 	}
