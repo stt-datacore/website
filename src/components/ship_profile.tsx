@@ -156,6 +156,22 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
         if (!ship) return <></>
 
 		return (<>
+			<div>
+			<CrewPicker 					
+					isOpen={modalOpen}
+					setIsOpen={this.setModalOpen}
+					filterCrew={this.filterCrew}
+					renderTrigger={() => <div></div>}
+					crewList={currentStationCrew} 
+					defaultOptions={DEFAULT_SHIP_OPTIONS}
+					pickerModal={ShipCrewOptionsModal} 
+					options={modalOptions} 
+					setOptions={(opt) => this.setOptions(opt)} 
+					handleSelect={(crew) => this.onCrewPick(crew)}
+					/>
+
+			</div>
+
 			<CrewHoverStat crew={hoverItem} targetGroup='ship_profile' />
             <div style={{
                 display: "flex",				
@@ -165,6 +181,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
                 justifyContent: "center",
 				alignItems: "center"
             }}>
+
+
 				<Message icon warning>
 					<Icon name="exclamation triangle" />
 					<Message.Content>
@@ -217,19 +235,6 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					))}
 				</div>
 
-				<CrewPicker 
-					isOpen={modalOpen}
-					setIsOpen={this.setModalOpen}
-					filterCrew={this.filterCrew}
-					renderTrigger={() => <div></div>}
-					crewList={currentStationCrew} 
-					defaultOptions={DEFAULT_SHIP_OPTIONS}
-					pickerModal={ShipCrewOptionsModal} 
-					options={modalOptions} 
-					setOptions={(opt) => this.setOptions(opt)} 
-					handleSelect={(crew) => this.onCrewPick(crew)}
-					
-					/>
             </div>
 			</>);
 	}

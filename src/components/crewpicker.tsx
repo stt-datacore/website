@@ -22,6 +22,8 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	
 	setIsOpen?: (value: boolean) => void;
 	isOpen?: boolean;
+
+	hoverBoundingClient?: boolean;
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
@@ -60,7 +62,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 	return (
 		<div>
-		<CrewHoverStat useBoundingClient={true} targetGroup='crew_picker' crew={hoverCrew} />
+		<CrewHoverStat useBoundingClient={props.hoverBoundingClient ?? true} targetGroup='crew_picker' crew={hoverCrew} />
 
 		<Modal
 			open={modalIsOpen}

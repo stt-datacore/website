@@ -341,7 +341,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 y -= window.scrollY;   
             }
 
-            if (!ancestor) {
+            if (!ancestor || useBoundingClient) {
                 hoverstat.style.position = "fixed";
             }
             else {
