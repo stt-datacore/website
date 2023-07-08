@@ -27,7 +27,7 @@ type ShipProfileState = {
 	originals: Ship[];
 	activeShip?: Ship | null;
 	inputShip?: Ship | null;
-	currentStationCrew: PlayerCrew[];
+	currentStationCrew: (PlayerCrew | CrewMember)[];
 	currentStation: number;
 	modalOptions: ShipCrewModalOptions;
 	crewStations: (PlayerCrew | undefined)[];
@@ -80,7 +80,10 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 
 	private clickStation(index: number, skill: string) {
-		let newCrew = this.context.playerData.player.character.crew.filter((crew) => getSkills(crew).includes(skill));
+		const { inputShip } = this.state;
+
+		let newCrew: (PlayerCrew | CrewMember)[] = this.context.playerData.player.character.crew.filter((crew) => getSkills(crew).includes(skill)) ?? [];
+		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
 		this.setState({ ... this.state, modalOpen: true, currentStationCrew: newCrew, currentStation: index });
 	}
 
@@ -96,7 +99,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		const { crewStations } = this.state;
-
+		
 		const myFilter = searchFilter ??= '';
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		let data = crew.filter(crew =>
