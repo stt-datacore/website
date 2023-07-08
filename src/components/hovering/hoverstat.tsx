@@ -316,7 +316,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     protected abstract get canActivate(): boolean;
     
-    protected realignTarget = (target?: HTMLElement, show?: boolean) => {
+    protected realignTarget = (target?: HTMLElement) => {
 
         const { useBoundingClient } = this.props;
         const { divId } = this.state;  
@@ -400,11 +400,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
             hoverstat.style.opacity = "1";
             hoverstat.style.transition = "opacity 0.25s";
-            if (show) {
-                window.addEventListener("resize", this.resizer);       
-            }
-
-        }, show ? this.hoverDelay : 0)
+            window.addEventListener("resize", this.resizer);       
+        }, this.hoverDelay)
     }
 
     /**
@@ -413,13 +410,12 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
      */
     protected activate = (target: HTMLElement): void => {
         if (!this.canActivate) return;
-        const { useBoundingClient } = this.props;
         const { divId } = this.state;        
         let hoverstat = document.getElementById(divId);        
         this._nodismiss = false;
         
         if (hoverstat) {            
-            this.realignTarget(target, true);
+            this.realignTarget(target);
         }
     }
 
@@ -473,12 +469,6 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             }
             if (target.src.includes("star_reward")) return;
             this.activate(target);
-            // if (this.currentTarget && this.currentTarget !== target) {
-            //     this.realignTarget(target);
-            // }
-            // else {
-            //     this.activate(target);
-            // }            
         }
     }
 
