@@ -319,17 +319,17 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.5;
 						else btrait = 0.30;
 
-						let askills = getSkills(a);
-						let bskills = getSkills(b);
+						// let askills = getSkills(a);
+						// let bskills = getSkills(b);
 
-						r = 0;
-						if (node.contest_data?.featured_skill) {
+						// r = 0;
+						// if (node.contest_data?.featured_skill) {
 	
-							if (askills.includes(node.contest_data?.featured_skill)) r--; 
-							if (bskills.includes(node.contest_data?.featured_skill)) r++; 
+						// 	if (askills.includes(node.contest_data?.featured_skill)) r--; 
+						// 	if (bskills.includes(node.contest_data?.featured_skill)) r++; 
 							
-							if (r) return r;
-						}
+						// 	if (r) return r;
+						// }
 
 						let ap = getPlayerPairs(a, atrait);
 						let bp = getPlayerPairs(b, btrait);
