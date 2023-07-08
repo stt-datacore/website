@@ -271,15 +271,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 						let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
-						if (atrait >= 3) atrait = 1.65;
-						else if (atrait >= 2) atrait = 1.45;
-						else if (atrait >= 1) atrait = 1.25;
-						else atrait = 1.05;
+						if (atrait >= 3) atrait = 3.90;
+						else if (atrait >= 2) atrait = 2.7;
+						else if (atrait >= 1) atrait = 1.5;
+						else atrait = 0.30;
 
-						if (btrait >= 3) btrait = 1.65;
-						else if (btrait >= 2) btrait = 1.45;
-						else if (btrait >= 1) btrait = 1.25;
-						else btrait = 1.05;
+						if (btrait >= 3) btrait = 3.90;
+						else if (btrait >= 2) btrait = 2.7;
+						else if (btrait >= 1) btrait = 1.5;
+						else btrait = 0.30;
 
 						// r = btrait - atrait;
 						// if (r) return r;
