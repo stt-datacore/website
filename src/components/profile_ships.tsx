@@ -36,6 +36,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
+	inited: boolean;
 
 	constructor(props: ProfileShipsProps) {
 		super(props);
@@ -52,20 +53,19 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	componentDidMount() {
-		// const dataContext = this.context as AllData;
-		// if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return;
+		this.initData();
+	}
 
-		// const { allShips, playerShips } = dataContext;
+	componentDidUpdate(prevProps: Readonly<ProfileShipsProps>, prevState: Readonly<ProfileShipsState>, snapshot?: any): void {
+		this.initData();
+	}
 
-		// this.setState({ data: playerShips, originals: allShips });
-
-		// fetch('/structured/ship_schematics.json')
-		// 	.then(response => response.json())
-		// 	.then((ship_schematics: Schematics[]) => {
-		// 		let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-		// 		let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
-		// 		this.setState({ data, originals: scsave });
-		// 	});
+	initData() {
+		if (!this.context.playerShips?.length) return;
+		if (this.inited) return;		
+		
+		this.inited = true;
+		this.setState({ ... this.state, data: this.context.playerShips });
 	}
 
 	_onChangePage(activePage) {
@@ -103,7 +103,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		const dataContext = this.context;
 		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
 
-		let data = [ ... dataContext.playerShips ];
+		let { data } = this.state;
 		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 

@@ -20,16 +20,18 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
 	
+	setIsOpen?: (value: boolean) => void;
+	isOpen?: boolean;
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const { handleSelect } = props;
 	
 	const context = React.useContext(MergedContext);
-	const { options, setOptions } = props;
+	const { options, setOptions, isOpen, setIsOpen } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [modalIsOpen, setModalIsOpen] = React.useState(isOpen ?? false);
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
@@ -38,7 +40,9 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const inputRef = React.createRef<Input>();
 	const { pickerModal } = props;
 	const PickerModal = pickerModal as unknown as (typeof React.Component<OptionsModalProps<T>, any, any>);
-
+	if (isOpen !== undefined && isOpen !== modalIsOpen) {
+		setModalIsOpen(isOpen);
+	}
 	React.useEffect(() => {
 		const crewList = props.crewList.slice()
 			.map((crew, idx) => { return {...crew, pickerId: idx} });
@@ -92,7 +96,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 						onClick={() => confirmSelection(selectedCrew)} />
 				)}
 				{!selectedCrew && (
-					<Button content='Close' onClick={() => setModalIsOpen(false)} />
+					<Button content='Close' onClick={() => { if (setIsOpen) setIsOpen(false); setModalIsOpen(false); }} />
 				)}
 			</Modal.Actions>
 		</Modal>

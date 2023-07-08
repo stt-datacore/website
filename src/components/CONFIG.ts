@@ -141,10 +141,10 @@ export default class CONFIG {
 		6: '+Shield Regeneration',
 		7: '+Attack Speed',
 		8: 'Increases Boarding Damage',
-		// 9: 'Resets enemy cooldown timers',
-		// 10: 'Speeds Up Cooldown Timers',
-		// 11: 'Decrease Incoming Hull Damage',
-		// 12: 'Reflection Damage',
+		9: 'Resets enemy cooldown timers',
+		10: 'Speeds Up Cooldown Timers',
+		11: 'Decrease Incoming Hull Damage',
+		12: 'Reflection Damage',
 	};
 
 

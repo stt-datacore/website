@@ -26,13 +26,13 @@ export interface OptionGroup {
     options?: ModalOption[];
     placeholder?: string;
     multi?: boolean;
-    content?: JSX.Element;
+    renderContent?: () => JSX.Element;
     initialValue: OptionValueType;
     containerStyle?: React.CSSProperties;
 }
 
 export interface ModalOption {
-    key: string;
+    key: string | number;
     value: string | number;
     text: string;
 }
@@ -44,7 +44,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
 
-		let newstate = {
+		const newstate = {
 			isDefault: false,
 			isDirty: false,
 			options: props.options,
@@ -52,7 +52,6 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		} as OptionsModalState<TOptions>;
 
         this.optionGroups = this.getOptionGroups();        
-
         newstate.options ??= {} as TOptions;
 
         for(let group of this.optionGroups){
@@ -62,7 +61,20 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
         this.state = newstate;
 	}
 
-	protected abstract checkState();
+	protected checkState(): boolean {
+		let j1 = JSON.stringify(this.state.options);
+		let j2 = JSON.stringify(this.getDefaultOptions());
+		let j3 = JSON.stringify(this.props.options);
+
+		const isDefault = j1 === j2;
+		const isDirty = j1 !== j3;
+
+		if (this.state.isDirty !== isDirty || this.state.isDefault !== isDefault) {
+			this.setState({ ... this.state, isDefault, isDirty });
+			return true;
+		}
+		return false;
+	}
 
     protected abstract getOptionGroups(): OptionGroup[];
 
@@ -96,8 +108,8 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 				<Modal.Content>
 
                     {optionGroups.map((group, idx) => {
-                        if (group.content) {
-                            return <div key={idx} style={group.containerStyle}>{group.content}</div>;
+                        if (group.renderContent) {
+                            return <div key={idx} style={group.containerStyle}>{group.renderContent()}</div>;
                         }
                         else return (
                             <div key={idx} style={group.containerStyle}>

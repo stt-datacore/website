@@ -275,7 +275,7 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 		}
 	}
 
-	protected checkState() {
+	protected checkState(): boolean {
 		const { options } = this.state;
 
 		const isDefault = options.portal === '' && options.series.length === 0 && options.rarities.length === 0;
@@ -285,7 +285,10 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 
 		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
 			this.setState({ ... this.state, isDefault, isDirty });
+			return true;
 		}
+
+		return false;
 	}
 	
 

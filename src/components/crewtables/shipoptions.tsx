@@ -165,7 +165,6 @@ export const ShipPicker = (props: ShipPickerProps) => {
         }		
 	}
 };
-
 export type ShipAbilityPickerProps = {
     playerData?: PlayerData;
     availableAbilities?: string[];
@@ -190,10 +189,7 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 	});
 
 	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Ship Abilities';
-
-    React.useEffect(() => {
-        populateOptions();
-    }, [availableAbilities]);
+	
 
     React.useEffect(() => {
         setSelectedAbilities(selection);
