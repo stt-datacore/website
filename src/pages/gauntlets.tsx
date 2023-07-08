@@ -77,6 +77,11 @@ const GauntletsPage = () => {
 export interface GauntletsPageProps {
 }
 
+export interface FilterProps {
+	ownedStatus: string[];
+	rarity: number[];
+}
+
 export interface GauntletsPageState {
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	activePage: Gauntlet[];
@@ -92,7 +97,14 @@ export interface GauntletsPageState {
 	itemsPerPageTab: number[];
 
 	searchDate?: Date;
+	filteredCrew: (PlayerCrew | CrewMember)[][];
+	filterProps: FilterProps[];
 }
+
+const DEFAULT_FILTER_PROPS = {
+	ownedStatus: [] as number[],
+	rarity: [] as number[]
+};
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
 	static contextType? = MergedContext;
@@ -103,7 +115,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
-
 		this.state = {
 			hoverCrew: undefined,
 			activePage: [],
@@ -113,15 +124,17 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageTabs: [[], []],
 			totalPagesTab: [0, 0],
 			activePageIndexTab: [0, 0],
-			itemsPerPageTab: [10, 10]
+			itemsPerPageTab: [10, 10],
+			filteredCrew: [[], []],
+			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
 	}
 
-	public setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
+	public readonly setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
 		this.setState({ ... this.state, hoverCrew: item });
 	};
 
-	public setActivePage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps) => {
+	public readonly setActivePage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps) => {
 		if (this.inited && this.gauntlets) {
 
 			let ip = this.state.itemsPerPage;
@@ -137,7 +150,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 	}
 
-	public setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
+	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
 		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew];
 
@@ -218,15 +231,45 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
     }
 
 	private lastBuffMode: PlayerBuffMode | undefined = undefined;
-	onBuffToggle = (state: PlayerBuffMode) => {
+
+	readonly onBuffToggle = (state: PlayerBuffMode) => {
 		if (state !== this.lastBuffMode) {
 			this.lastBuffMode = state;
 			this.forceUpdate();
 		}
 	}
 
-	onImmoToggle = (crew: PlayerCrew, state: PlayerImmortalMode) => {
+	readonly onImmoToggle = (crew: PlayerCrew, state: PlayerImmortalMode) => {
 		
+	}
+
+	readonly applyFilters = (filter: FilterProps, filterCrew: (PlayerCrew | CrewMember)[]) => {
+
+		let newcrew = [] as (PlayerCrew | CrewMember)[];
+
+		for (let crew of filterCrew) {
+			if (filter.rarity?.length) {
+				if (!filter.rarity.some(r => r === crew.max_rarity)) continue;
+			}
+
+			if (filter.ownedStatus?.length) {
+				if ("have" in crew && crew.have) {
+					if (!filter.ownedStatus.includes('have')) continue;
+				}
+				else if (!("have" in crew) || !crew.have) {
+					if (!filter.ownedStatus.includes('not_have')) continue;
+				}
+
+				if ("immortal" in crew) {
+					if (crew.immortal >= 1 && !filter.ownedStatus.includes('frozen')) continue;
+					else if (crew.immortal < 1 && !filter.ownedStatus.includes('unfrozen')) continue;
+				}
+			}
+
+			newcrew.push(crew);
+		}
+		
+		return newcrew;
 	}
 
 	componentDidMount() {
@@ -243,13 +286,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (gauntlets && this.inited) return;
 
-		gauntlets.forEach((node, index) => {
-			
+		gauntlets.forEach((node, index) => {			
 			const prettyTraits = node.contest_data?.traits?.map(t => trait_names[t]);
 			if (!prettyTraits) {
 				return null
 			}
-			const matchedCrew = 
+			const matchedCrew = 				
 				allCrew.filter(e => e.max_rarity > 3 && (
 					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
@@ -260,14 +302,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						return crew;
 					})
 					.sort((a, b) => {
-						if ("have" in a && "have" in b) {
-							if (a.have && !b.have) return -1;
-							else if (!a.have && b.have) return 1;
-						}
-						else if ("have" in a && a.have && !("have" in b)) return -1;
-						else if ("have" in b && b.have && !("have" in a)) return 1;
-						
 						let r = 0;
+
 						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 						let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
@@ -280,14 +316,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 2) btrait = 2.7;
 						else if (btrait >= 1) btrait = 1.5;
 						else btrait = 0.30;
-
-						// r = btrait - atrait;
-						// if (r) return r;
-
-						//if (r) return r;
-
-						// if (b.immortal > 0 && a.immortal <= 0) return -1;
-						// else if (a.immortal > 0 && b.immortal <= 0) return 1;
 
 						let askills = getSkills(a);
 						let bskills = getSkills(b);
@@ -304,11 +332,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let ap = getPlayerPairs(a, atrait);
 						let bp = getPlayerPairs(b, btrait);
 						if (ap && bp) {
-							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill);
+							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill, 1.65);
 							if (r === 0 && ap.length > 1 && bp.length > 1) {
-								r = comparePairs(ap[1], bp[1], node.contest_data?.featured_skill);
+								r = comparePairs(ap[1], bp[1], node.contest_data?.featured_skill, 1.65);
 								if (r === 0 && ap.length > 2 && bp.length > 2) {
-									r = comparePairs(ap[2], bp[2], node.contest_data?.featured_skill);
+									r = comparePairs(ap[2], bp[2], node.contest_data?.featured_skill, 1.65);
 								}
 							}
 						}
@@ -329,12 +357,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			gaunts = gaunts.slice(2);
 			
 			let ip = this.state.itemsPerPage;
-			let pc = Math.round(gaunts.length / ip);
+			let pc = Math.ceil(gaunts.length / ip);
 	
-			if ((pc * ip) != gaunts.length) {
-				pc++;
-			}
-
 			let apidx = [1, 1];
 			let pcs = [0, 0];
 			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
@@ -345,16 +369,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 
 				let ip = this.state.itemsPerPageTab[idx];
-				let pc = Math.round(day.matchedCrew.length / ip);
-		
-				if ((pc * ip) != gaunts.length) {
-					pc++;
-				}
+				let pc = Math.ceil(day.matchedCrew.length / ip);
 
 				aptabs[idx] = day.matchedCrew.slice(0, ip);
 				pcs[idx] = pc;
 			})
-
 
 			this.gauntlets = gaunts;
 			this.inited = true;			
