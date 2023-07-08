@@ -24,6 +24,11 @@ export interface HoverStatProps {
     boxStyle?: React.CSSProperties;
     mobileWidth?: number;
     useBoundingClient?: boolean;
+
+    /**
+     * Time in milliseconds to wait before activating the window
+     */
+    activationDelay?: number;
 }
 
 /**
@@ -194,12 +199,13 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
 
-        if (navigator.userAgent.includes("Firefox")) {
-            this.hoverDelay = 0;
-        }
-        else {
-            this.hoverDelay = 0;
-        }
+        this.hoverDelay = props.activationDelay ?? 0;
+        // if (navigator.userAgent.includes("Firefox")) {
+        //     this.hoverDelay = 0;
+        // }
+        // else {
+        //     this.hoverDelay = 0;
+        // }
     }
 
     protected propertyChanged = (key: string): void => {
@@ -309,6 +315,97 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
     }
 
     protected abstract get canActivate(): boolean;
+    
+    protected realignTarget = (target?: HTMLElement, show?: boolean) => {
+
+        const { useBoundingClient } = this.props;
+        const { divId } = this.state;  
+        const hoverstat = document.getElementById(divId);    
+        target ??= this.currentTarget;  
+        if (!target || !hoverstat) return;
+
+        let rect = target.getBoundingClientRect();
+        let ancestor = useBoundingClient ? undefined : this.findCommonAncestor(target, hoverstat);
+        this.currentTarget = target;
+
+        let { top , left } = useBoundingClient ? rect : this.getOffset(target, ancestor);
+        let { left: tx, top: ty } = this.getOffset(target, ancestor);
+
+        let x = left + rect.width;
+        let y = top;
+        let off = { ... this.targetOffset };             
+        let pad = { ... this.windowEdgeMinPadding };
+        if (target.clientWidth >= 64) {
+            off.x += ((target.clientWidth / 2));
+        }
+        if (!ancestor && !useBoundingClient) {
+            x -= window.scrollX;
+            y -= window.scrollY;   
+        }
+
+        if (!ancestor) {
+            hoverstat.style.position = "fixed";
+        }
+        else {
+            hoverstat.style.position = "absolute";
+        }            
+
+        hoverstat.style.display = "flex";
+        hoverstat.style.opacity = "0";
+
+        window.setTimeout(() => {
+            let hoverstat = document.getElementById(divId);     
+            // console.log("Activate " + divId);
+
+            if (!hoverstat) return;   
+
+            y -= (hoverstat.clientHeight - off.y);
+            x -= off.x;
+
+            // if (off.centerX) {
+            //     x = (tx + (target.clientWidth / 2)) - (hoverstat.clientWidth / 2);
+            // }
+            // else {
+            //     if (tx >= window.innerWidth / 2) {
+            //         x -= (hoverstat.clientWidth + rect.width);
+            //         x += off.x;
+            //     }
+            //     else {
+            //         x -= off.x;
+            //     }
+            // }
+            
+            let scrolly = useBoundingClient ? 0 : window.scrollY;
+
+            if (y < scrolly + pad.y) {
+                y = scrolly + pad.y;
+            }
+            
+            if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
+                x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth - 16;
+            }
+
+            if (y + hoverstat.clientHeight + (pad.y * 2) > scrolly + window.innerHeight) {
+                y = (scrolly + window.innerHeight) - (hoverstat.clientHeight + (pad.y * 2));
+            }                
+
+            if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
+                x = pad.x;
+                hoverstat.style.width = window.innerWidth - (pad.x * 2) + 'px';
+            }                
+            
+            hoverstat.style.left = x + "px";
+            hoverstat.style.top = y + "px";
+            hoverstat.style.zIndex = "1009";
+
+            hoverstat.style.opacity = "1";
+            hoverstat.style.transition = "opacity 0.25s";
+            if (show) {
+                window.addEventListener("resize", this.resizer);       
+            }
+
+        }, show ? this.hoverDelay : 0)
+    }
 
     /**
      * Activate the hover window
@@ -321,84 +418,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         let hoverstat = document.getElementById(divId);        
         this._nodismiss = false;
         
-        if (hoverstat) {
-            let rect = target.getBoundingClientRect();
-            let ancestor = this.findCommonAncestor(target, hoverstat);
-            this.currentTarget = target;
-
-            let { top , left } = useBoundingClient ? rect : this.getOffset(target, ancestor);
-            let { left: tx, top: ty } = this.getOffset(target, ancestor);
-
-            let x = left + rect.width;
-            let y = top;
-            let off = { ... this.targetOffset };             
-            let pad = { ... this.windowEdgeMinPadding };
-            if (target.clientWidth >= 64) {
-                off.x += ((target.clientWidth / 2));
-            }
-            if (!ancestor) {
-                x -= window.scrollX;
-                y -= window.scrollY;   
-            }
-
-            if (!ancestor || useBoundingClient) {
-                hoverstat.style.position = "fixed";
-            }
-            else {
-                hoverstat.style.position = "absolute";
-            }            
-
-            hoverstat.style.display = "flex";
-            hoverstat.style.opacity = "0";
-
-            window.setTimeout(() => {
-                let hoverstat = document.getElementById(divId);     
-                // console.log("Activate " + divId);
-
-                if (!hoverstat) return;   
-
-                y -= (hoverstat.clientHeight - off.y);
-                x -= off.x;
-
-                // if (off.centerX) {
-                //     x = (tx + (target.clientWidth / 2)) - (hoverstat.clientWidth / 2);
-                // }
-                // else {
-                //     if (tx >= window.innerWidth / 2) {
-                //         x -= (hoverstat.clientWidth + rect.width);
-                //         x += off.x;
-                //     }
-                //     else {
-                //         x -= off.x;
-                //     }
-                // }
-                
-
-                if (y < window.scrollY + pad.y) {
-                    y = window.scrollY + pad.y;
-                }
-                
-                if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
-                    x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth - 16;
-                }
-
-                if (y + hoverstat.clientHeight + (pad.y * 2) > window.scrollY + window.innerHeight) {
-                    y = (window.scrollY + window.innerHeight) - (hoverstat.clientHeight + (pad.y * 2));
-                }                
-
-                if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
-                    x = pad.x;
-                    hoverstat.style.width = window.innerWidth - (pad.x * 2) + 'px';
-                }                
-                
-                hoverstat.style.left = x + "px";
-                hoverstat.style.top = y + "px";
-                hoverstat.style.zIndex = "1009";
-                
-                hoverstat.style.opacity = "1";
-                hoverstat.style.transition = "opacity 0.25s";
-                window.addEventListener("resize", this.resizer);       
-            }, this.hoverDelay)
+        if (hoverstat) {            
+            this.realignTarget(target, true);
         }
     }
 
@@ -452,6 +473,12 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
             }
             if (target.src.includes("star_reward")) return;
             this.activate(target);
+            // if (this.currentTarget && this.currentTarget !== target) {
+            //     this.realignTarget(target);
+            // }
+            // else {
+            //     this.activate(target);
+            // }            
         }
     }
 

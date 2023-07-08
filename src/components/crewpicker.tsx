@@ -62,7 +62,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 	return (
 		<div>
-		<CrewHoverStat useBoundingClient={props.hoverBoundingClient ?? true} targetGroup='crew_picker' crew={hoverCrew} />
+		<CrewHoverStat activationDelay={1000} useBoundingClient={props.hoverBoundingClient ?? true} targetGroup='crew_picker' crew={hoverCrew} />
 
 		<Modal
 			open={modalIsOpen}

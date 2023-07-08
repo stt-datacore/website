@@ -9,6 +9,7 @@ import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import { navigate } from 'gatsby';
 
 type ProfileShipsProps = {
 };
@@ -112,7 +113,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		}
 	
 		const navToShip = (ship: Ship) => {
-			// window.location.href = '/playertools?tool=ship&ship='+ship.symbol;
+			navigate('/playertools?tool=ship&ship='+ship.symbol);
 		}
 
 		// Pagination
@@ -197,7 +198,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 										</ShipTarget>
 									</div>
-									<div style={{ gridArea: 'stats' }}>
+									<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 									</div>
 									<div style={{ gridArea: 'description' }}>{ship.traits_named?.join(', ')}</div>
