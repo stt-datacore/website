@@ -99,6 +99,7 @@ export interface GauntletsPageState {
 	searchDate?: Date;
 	filteredCrew: (PlayerCrew | CrewMember)[][];
 	filterProps: FilterProps[];
+	appliedFilters: FilterProps[];
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -126,7 +127,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageIndexTab: [0, 0],
 			itemsPerPageTab: [10, 10],
 			filteredCrew: [[], []],
-			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
+			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
+			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
 	}
 
@@ -243,7 +245,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		
 	}
 
-	readonly applyFilters = (filter: FilterProps, filterCrew: (PlayerCrew | CrewMember)[]) => {
+	readonly filterCrew = (filter: FilterProps, filterCrew: (PlayerCrew | CrewMember)[]) => {
 
 		let newcrew = [] as (PlayerCrew | CrewMember)[];
 
@@ -389,6 +391,38 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				yesterday 
 			});
 		}
+	}
+
+	private readonly updatePaging = () => {
+		const { today, yesterday } = this.state;
+		if (!today || !yesterday) return;
+
+		let apidx = [1, 1];
+			let pcs = [0, 0];
+			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
+
+			[today, yesterday].forEach((day, idx) => {
+				if (!day.matchedCrew) {
+					return;
+				}
+
+				let ip = this.state.itemsPerPageTab[idx];
+				let pc = Math.ceil(day.matchedCrew.length / ip);
+
+				aptabs[idx] = day.matchedCrew.slice(0, ip);
+				pcs[idx] = pc;
+			})
+
+			this.inited = true;			
+
+			this.setState({ ... this.state, 
+				activePageIndex: 1, 
+				activePageTabs: aptabs,
+				totalPagesTab: pcs,
+				activePageIndexTab: apidx,
+				today, 
+				yesterday 
+			});
 	}
 	
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
