@@ -330,7 +330,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
 					
-					{" if all duplicate crew is dismissed)"}</span>
+					{" if all duplicate crew are dismissed)"}</span>
 				)}
 			</span>
 		)
