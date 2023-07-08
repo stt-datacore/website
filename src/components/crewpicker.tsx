@@ -24,6 +24,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	isOpen?: boolean;
 
 	hoverBoundingClient?: boolean;
+	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
@@ -115,7 +116,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	}
 
 	function renderGrid(): JSX.Element {
-		const { filterCrew } = props;
+		const { filterCrew, renderCrewCaption } = props;
 
 		if (!modalIsOpen) return (<></>);
 
@@ -144,7 +145,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							<CrewTarget inputItem={crew} targetGroup='crew_picker' setDisplayItem={(crew) => setHoverCrew(crew ?? undefined)}>
 								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
-							<div>{crew.name}</div>
+							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
 						</Grid.Column>
 					})}

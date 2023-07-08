@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { CompletionState } from "../../model/player";
 import { Rating } from "semantic-ui-react";
 import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill } from "./shipskill";
+import { ShipSkill, ShipSkillProps } from "./shipskill";
 import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -16,6 +16,8 @@ export interface PresenterProps {
     touched?: boolean;
     width?: string;
     imageWidth?: string;
+    showIcon?: boolean;
+    tabs?: boolean;
 }
 
 export interface ShipPresenterProps extends PresenterProps {
@@ -66,7 +68,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     }
 
     render(): JSX.Element {
-        const { ship: ship, touched } = this.props;
+        const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
 
@@ -243,7 +245,10 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     </div>
                     <div>
                         {ship.actions && <ShipSkill 
-                                context={ship} fontSize="0.8em" />}
+                                withActionIcons={showIcon}
+                                grouped={tabs}
+                                context={ship} 
+                                fontSize="0.8em" />}
                     </div>
                 </div>
             </div>) : <></>

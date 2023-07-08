@@ -85,6 +85,9 @@ export interface ShipAction {
   ability_text?: string;
   ability_trigger?: string;
   charge_text?: string;
+
+  /** Not part of data, used internally */
+  source?: string;
 }
 
 export interface Penalty {

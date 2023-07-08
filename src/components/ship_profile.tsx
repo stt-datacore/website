@@ -26,6 +26,7 @@ type ShipProfileState = {
 	data: Ship[];
 	originals: Ship[];
 	activeShip?: Ship | null;
+	inputShip?: Ship | null;
 	currentStationCrew: PlayerCrew[];
 	currentStation: number;
 	modalOptions: ShipCrewModalOptions;
@@ -48,7 +49,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	constructor(props: ShipProfileProps) {
 		super(props);
 
-		this.state = {
+		this.state = {			
 			data: [],
 			originals: [],
 			currentStationCrew: [],
@@ -63,24 +64,23 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			this.setState({ ... this.state, modalOpen: value });
 		}
 	}
+	
 	private onCrewPick(crew: PlayerCrew | CrewMember): void {
 		let stations = [ ... this.state.crewStations ];
 		stations[this.state.currentStation] = crew as PlayerCrew;
-
-		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
+		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });	
+		window.setTimeout(() => this.setActiveShip());
 	}
 
 	private clearStation(index: number) {
 		let stations = [ ... this.state.crewStations ];
 		stations[index] = undefined;
-
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
+		window.setTimeout(() => this.setActiveShip());
 	}
 
 	private clickStation(index: number, skill: string) {
-
 		let newCrew = this.context.playerData.player.character.crew.filter((crew) => getSkills(crew).includes(skill));
-
 		this.setState({ ... this.state, modalOpen: true, currentStationCrew: newCrew, currentStation: index });
 	}
 
@@ -90,22 +90,78 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	private readonly setHoverItem = (crew: PlayerCrew | CrewMember | undefined) => {
 		if (this.state.hoverItem?.symbol !== crew?.symbol) {
-			this.setState({ ...this.state, hoverItem : crew });
+			this.setState({ ...this.state, hoverItem: crew });
 		}
 	}
 
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
-		
+		const { crewStations } = this.state;
+
 		const myFilter = searchFilter ??= '';
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		let data = crew.filter(crew =>
 			true
+				&& (!crewStations.some((c) => c?.symbol === crew.symbol))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
 				&& (!this.state.modalOptions.rarities?.length || this.state.modalOptions.rarities.some((r) => crew.max_rarity === r))
 				&& (!this.state.modalOptions.abilities?.length || this.state.modalOptions.abilities.some((a) => crew.action.ability?.type.toString() === a))
 		);
+		data.sort((a, b) => {
+			let r = b.action.bonus_amount - a.action.bonus_amount;
 
+			if (!r) {
+				r = (b.action.ability ? 1 : 0) - (a.action.ability ? 1 : 0);
+				if (r) return r;
+
+				if (a.action.ability?.amount && b.action.ability?.amount) {
+					r = b.action.ability.amount - a.action.ability.amount;
+				}
+				if (r) return r;
+
+				r = b.action.initial_cooldown - a.action.initial_cooldown;
+				if (r) return r;
+
+				if (!a.action.limit && b.action.limit) return -1;
+				else if (!b.action.limit && a.action.limit) return 1;
+			}
+
+			return r;
+		})
 		return data;
+	}
+
+	private readonly setActiveShip = () => {
+		const { crewStations, inputShip: ship } = this.state;
+		
+		if (!ship || !crewStations?.length) return;
+
+		for (let action of ship.actions ?? []) {
+			action.source = ship.name;
+		}
+
+		let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+
+		for (let crew of crewStations) {
+			if (crew === undefined) continue;
+			newship.crit_bonus ??= 0;
+			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
+			
+			newship.crit_chance ??= 0;
+			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
+
+			newship.evasion ??= 0;
+			newship.evasion += crew.ship_battle.evasion ?? 0;
+
+
+			newship.accuracy ??= 0;
+			newship.accuracy += crew.ship_battle.accuracy ?? 0;
+
+			newship.actions ??= [];
+			crew.action.source = crew.name;
+			newship.actions.push(crew.action);
+		}
+
+		this.setState({ ... this.state, activeShip: newship });
 	}
 
 	componentDidMount() {
@@ -132,7 +188,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					n.push(undefined);
 				}
 	
-				this.setState({ ... this.state, activeShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.allShips ?? []});
+				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.allShips ?? []});
+				window.setTimeout(() => this.setActiveShip());
 			}
 		}
 	}
@@ -191,7 +248,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						</Message.Content>
 					</Message>
 
-                <ShipPresenter hover={false} ship={activeShip ?? ship} storeName='shipProfile' />
+                <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
 
 				<h3>Battle Stations</h3>
 				<div style={{
