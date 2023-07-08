@@ -274,7 +274,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewardsTitle(rewards): JSX.Element {
-		const { voyageData } = this.props;
+		const { roster } = this.props;
 		const crewGained = rewards.filter(r => r.type === 1);
 		const bestRarity = crewGained.length == 0 ? 0 : crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
 		const bestCrewCount = crewGained
@@ -285,19 +285,53 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const chrons = chronReward.length == 0 ? 0 : chronReward[0].quantity;
 		const honorReward = rewards.filter(r => r.symbol === 'honor');
 		const honor = honorReward.length == 0 ? 0 : honorReward[0].quantity;
+		let h = 0;
+		if (roster?.length && crewGained?.length) {
+			let duplicates = crewGained.filter((crew) => roster.some((rost) => rost.symbol === crew.symbol && rost.rarity === rost.max_rarity)).map((cg) => roster.find(r => r.symbol === cg.symbol));
+			if (duplicates?.length) {
+				for (let crew of duplicates) {
+					if (crew.max_rarity === 5) {
+						h += 550;
+					}
+					else if (crew.max_rarity === 4) {
+						h += 200;
+					}
+					else if (crew.max_rarity === 3) {
+						h += 100;
+					}
+					else {
+						h += 50;
+					}
+				}
+			}	
+		}
+
+		const dupeHonor = h + honor;
+
 		return (
 			<span>
 				{`Rewards: ${bestCrewCount} ${bestRarity}* `}&nbsp;
-				{` ${chrons} `}
+				{` ${chrons.toLocaleString()} `}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>&nbsp;&nbsp;
-				{` ${honor} `}
+				{` ${honor.toLocaleString()} `}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
+
+				{dupeHonor && (
+					<span>{" (or "}
+				{` ${dupeHonor.toLocaleString()} `}
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+					style={{width : '16px', verticalAlign: 'text-bottom'}}
+				/>
+					
+					{" if all duplicate crew is dismissed)"}</span>
+				)}
 			</span>
 		)
 	}
@@ -334,7 +368,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		const itemsOwned = item => {
 			const pItem = playerItems?.find(i => i.symbol == item.symbol);
-			return `(Have ${pItem ? pItem?.quantity ?? 0 > 1000 ? `${Math.floor(pItem.quantity ?? 0/1000)}k+` : pItem.quantity : 0})`;
+			return `(Have ${pItem ? (pItem?.quantity ?? 0) > 1000 ? `${Math.floor((pItem.quantity ?? 0)/1000)}k+` : pItem.quantity : 0})`;
 		};
 		const ownedFuncs = [
 			item => '',
@@ -381,7 +415,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 									/>
 								}
 								content={entry.name}
-								subheader={`Got ${entry.quantity} ${ownedFuncs[entry.type](entry)}`}
+								subheader={`Got ${entry.quantity?.toLocaleString()} ${ownedFuncs[entry.type](entry)}`}
 							/>
 						</Grid.Column>
 					))}
