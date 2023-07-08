@@ -16,6 +16,7 @@ import { BeholdOptionsModal } from '../pages/behold';
 import { ShipAbilityPicker } from './crewtables/shipoptions';
 import CrewPicker from './crewpicker';
 import { getSkills } from '../utils/crewutils';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 
 type ShipProfileProps = {
     ship?: string;
@@ -30,6 +31,7 @@ type ShipProfileState = {
 	modalOptions: ShipCrewModalOptions;
 	crewStations: (PlayerCrew | undefined)[];
 	modalOpen: boolean;	
+	hoverItem?: PlayerCrew | CrewMember;
 };
 
 const pagingOptions = [
@@ -86,6 +88,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		this.setState({ ... this.state, modalOptions: options });
 	}
 
+	private readonly setHoverItem = (crew: PlayerCrew | CrewMember | undefined) => {
+		if (this.state.hoverItem?.symbol !== crew?.symbol) {
+			this.setState({ ...this.state, hoverItem : crew });
+		}
+	}
+
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		
 		const myFilter = searchFilter ??= '';
@@ -130,7 +138,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 
 	render() {
-    	const { data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip } = this.state;
+    	const { data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
         let ship_key: string | undefined = this.props.ship;
 
         if (!ship_key) {
@@ -148,6 +156,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
         if (!ship) return <></>
 
 		return (<>
+			<CrewHoverStat crew={hoverItem} targetGroup='ship_profile' />
             <div style={{
                 display: "flex",				
 				width: "100%",
@@ -175,7 +184,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					padding: 0
 				}}>
 					{ship.battle_stations?.map((bs, idx) => (
-						<div>
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center"
+						}}>
 						<div key={idx} 
 							onClick={(e) => this.clickStation(idx, bs.skill)}
 							className="ui segment button" 
@@ -189,15 +203,15 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 								justifyContent: "center", 
 								alignItems: "center"}}>
 							{crewStations[idx] && (
-								<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "64px"}} />
+								<CrewTarget inputItem={crewStations[idx]} setDisplayItem={(crew) => this.setHoverItem(crew ?? undefined)} targetGroup='ship_profile'>
+								<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px"}} />
+								</CrewTarget>
 							) ||
 								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px"}} />
 							}
 						</div>
 						<div>
-							{crewStations[idx] && (
-							<Button onClick={(e) => this.clearStation(idx)}>Clear Station</Button>
-							)}
+							<Button disabled={!crewStations[idx]} onClick={(e) => this.clearStation(idx)}>Clear Station</Button>
 						</div>
 					</div>
 					))}
