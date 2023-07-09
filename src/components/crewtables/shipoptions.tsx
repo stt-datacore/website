@@ -217,7 +217,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
     }, [selection]);
 
 	const rankToRating = (rank: number): number => {
-		return 6 - rank;		
+		return rank <= 5 ? 6 - rank : 0;	 	
 	}
 
 	const poolList = availableAbilities?.map((c) => (
