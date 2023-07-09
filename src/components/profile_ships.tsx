@@ -3,7 +3,7 @@ import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
+import { Ship, Schematics, Ability, ShipBonus, BattleStation } from '../model/ship';
 import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
@@ -119,7 +119,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
-		return (<>
+		return (<>	
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>

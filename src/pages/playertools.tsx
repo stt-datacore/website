@@ -38,7 +38,7 @@ import { EquipmentItem } from '../model/equipment';
 
 export interface PlayerTool {
 	title: string;
-	render: (props: { crew?: PlayerCrew, ship?: string, location?: any}) => JSX.Element;	
+	render: (props: { crew?: PlayerCrew, ship?: string, location?: any }) => JSX.Element;
 	noMenu?: boolean;
 }
 
@@ -57,7 +57,7 @@ export const playerTools: PlayerTools = {
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({location}) => <ProfileCrew isTools={true} location={location} />
+		render: ({ location }) => <ProfileCrew isTools={true} location={location} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
@@ -134,20 +134,20 @@ const PlayerToolsPage = (props: any) => {
 
 export interface PlayerToolsProps {
 	location: any;
-	coreData: DefaultCore;	
+	coreData: DefaultCore;
 	playerData: PlayerContextData;
 }
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
-	
+
 	// The context above	
 	const dataContext = props.coreData;
 	const { strippedPlayerData, setStrippedPlayerData, buffConfig, maxBuffs } = props.playerData;
 
 	// All things playerData
-	
+
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
-	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);	
+	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
 	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 
@@ -166,20 +166,21 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	// Profile data ready, show player tool panes
 	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
-					maxBuffs={maxBuffs}
-					items={items}
-					playerData={playerData}
-					buffConfig={buffConfig}
-					strippedPlayerData={strippedPlayerData}
-					dataSource={dataSource}
-					allCrew={allCrew}
-					allShips={allShips}
-					fleetBossData={fleetbossData}
-					playerShips={playerShips}					
-					requestShowForm={setShowForm}
-					requestClearData={clearPlayerData}
-					location={props.location}
-				/>);
+			maxBuffs={maxBuffs}
+			items={items}
+			playerData={playerData}
+			buffConfig={buffConfig}
+			strippedPlayerData={strippedPlayerData}
+			dataSource={dataSource}
+			allCrew={allCrew}
+			allShips={allShips}
+			fleetBossData={fleetbossData}
+			playerShips={playerShips}
+			requestShowForm={setShowForm}
+			requestClearData={clearPlayerData}
+			location={props.location}
+			data={schematics}
+		/>);
 	}
 
 	// Preparing profile data, show spinner
@@ -209,7 +210,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
 		//	so store a copy for player tools (i.e. voyage calculator, event planner)
 		if (!inputPlayerData) return false;
-		if (inputPlayerData.item_archetype_cache){
+		if (inputPlayerData.item_archetype_cache) {
 			inputPlayerData.version = 17;
 		}
 		else if (inputPlayerData.archetype_cache) {
@@ -217,7 +218,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 			inputPlayerData.item_archetype_cache = {
 				archetypes: inputPlayerData.archetype_cache.archetypes.map((a: Archetype20) => {
 					return {
-						... a as ArchetypeBase,
+						...a as ArchetypeBase,
 						type: a.item_type,
 					} as Archetype17;
 				})
@@ -238,7 +239,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 		setEventData([...inputPlayerData.player.character.events ?? []]);
 		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
 		setActiveCrew(activeCrew);
-    
+
 		if (inputPlayerData.player.character.shuttle_adventures) {
 			inputPlayerData.player.character.crew
 				.filter(crew => crew.active_status === 2)
@@ -255,7 +256,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 		let dtImported = new Date();
 
 		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
-		let strippedData = stripPlayerData(allItems ?? [], {...inputPlayerData});
+		let strippedData = stripPlayerData(allItems ?? [], { ...inputPlayerData });
 		strippedData.calc = { 'lastImported': dtImported };
 		setStrippedPlayerData(JSON.parse(JSON.stringify(strippedData)));
 
@@ -283,7 +284,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
 			setPlayerShips(data);
 		}
-	
+
 		setDataSource('session');
 	}
 
@@ -310,27 +311,29 @@ type PlayerToolsPanesProps = {
 	requestClearData: () => void;
 
 	location: any;
+	data: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
-	const { playerData, 
-			buffConfig,
-			maxBuffs,
-			strippedPlayerData, 
-			dataSource,
-			allCrew, 
-			allShips, 
-			playerShips, 
-			fleetBossData,
-			items,
-			requestShowForm, 
-			requestClearData, 
-		} = props;
+	const { playerData,
+		buffConfig,
+		maxBuffs,
+		strippedPlayerData,
+		dataSource,
+		allCrew,
+		allShips,
+		playerShips,
+		fleetBossData,
+		items,
+		requestShowForm,
+		requestClearData,
+		data
+	} = props;
 
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
-	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
-	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid+'/tools/profileAutoUpdate', false, { rememberForever: true });
+	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
+	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid + '/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [profileUploaded, setProfileUploaded] = React.useState(false);
 	const [profileUploading, setProfileUploading] = React.useState(false);
 	const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
@@ -362,7 +365,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	const StaleMessage = () => {
 		const STALETHRESHOLD = 3;	// in hours
-		if (showIfStale && new Date().getTime()-(playerData.calc?.lastModified?.getTime() ?? 0) > STALETHRESHOLD*60*60*1000) {
+		if (showIfStale && new Date().getTime() - (playerData.calc?.lastModified?.getTime() ?? 0) > STALETHRESHOLD * 60 * 60 * 1000) {
 			return (
 				<Message
 					warning
@@ -395,13 +398,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 								Click here to{' '}
 								<Button size='small' color='green' onClick={() => shareProfile()}>
 									{profileUploading && <Icon loading name='spinner' />}share your profile
-									</Button>{' '}
-									and unlock more tools and export options for items and ships. More details:
+								</Button>{' '}
+								and unlock more tools and export options for items and ships. More details:
 							</p>
 							<Message.List>
 								<Message.Item>
 									Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
-									</Message.Item>
+								</Message.Item>
 								<Message.Item>
 									There is no private information included in the player profile; information being shared is limited to:{' '}
 									<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
@@ -438,23 +441,23 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		const currentValue = playerData.player.character.xp - playerData.player.character.xp_for_current_level;
 		const percent = (currentValue / endingValue) * 100;
 		return (
-		  <Progress
-			percent={percent.toPrecision(3)}
-			label={`Level ${playerData.player.character.level}: ${playerData.player.character.xp} / ${playerData.player.character.xp_for_next_level}`}
-			progress
-		  />
+			<Progress
+				percent={percent.toPrecision(3)}
+				label={`Level ${playerData.player.character.level}: ${playerData.player.character.xp} / ${playerData.player.character.xp_for_next_level}`}
+				progress
+			/>
 		);
-	 };
-	 
-	 let tt: string | undefined = undefined;
+	};
 
-	 if (tools[activeTool].title === 'Ship Page' && selectedShip) {
+	let tt: string | undefined = undefined;
+
+	if (tools[activeTool].title === 'Ship Page' && selectedShip) {
 		let s = playerShips?.find((sp) => sp.symbol === selectedShip);
 		if (s) {
 			tt = s.name;
 		}
-	 }
-	
+	}
+
 	return (
 		<Layout title='Player tools'>
 			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
@@ -471,16 +474,16 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 						<Dropdown.Item onClick={() => requestClearData()}>Clear player data</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
-			  <Dropdown item text='Export'>
-				<Dropdown.Menu>
-					<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
-						<Dropdown.Item onClick={() => exportCrewTool()} content='Download CSV...' />
-					} />
-					<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
-						<Dropdown.Item onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
-					} />
-				</Dropdown.Menu>
-			</Dropdown>
+				<Dropdown item text='Export'>
+					<Dropdown.Menu>
+						<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
+							<Dropdown.Item onClick={() => exportCrewTool()} content='Download CSV...' />
+						} />
+						<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
+							<Dropdown.Item onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
+						} />
+					</Dropdown.Menu>
+				</Dropdown>
 			</Menu>
 
 			<React.Fragment>
@@ -494,7 +497,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					bossData: fleetBossData,
 					buffConfig: buffConfig,
 					maxBuffs: maxBuffs,
-					items: items
+					items: items,
+					data
 				}}>
 					{tools[activeTool].render(props)}
 				</MergedContext.Provider>
@@ -575,12 +579,12 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					Open this page in your browser:{' '}
 					<a href={PLAYERLINK} target='_blank'>
 						{PLAYERLINK}
-						</a>
+					</a>
 				</li>
 				<li>
 					Log in if asked, then wait for the page to finish loading. It should start with:{' '}
 					<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-					</li>
+				</li>
 				<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
 				<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
 				<li>Click the 'Import data' button</li>
@@ -613,14 +617,14 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					<Message.Header>Error</Message.Header>
 					<p>{errorMessage}</p>
 				</Message>
-			)}			
-			
+			)}
+
 			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
 				<a href={PLAYERLINK} target='_blank'>
 					your player data
-						</a>
+				</a>
 				{' '}to your device, then click the 'Upload data file' button.
-					</p>
+			</p>
 			<p>
 				<Modal
 					trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
@@ -629,7 +633,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 						<li>Go to your player data using the link provided, logging in if asked.</li>
 						<li>Wait for the page to finish loading. It should start with:{' '}
 							<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-								</li>
+						</li>
 						<li>Press the share icon while viewing the page.</li>
 						<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
 						<li>Come back to this page (DataCore.app player tools).</li>
@@ -660,7 +664,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			if (testData) {
 				// Test for playerData array glitch
 				if (Array.isArray(testData)) {
-					testData = {...testData[0]};
+					testData = { ...testData[0] };
 				}
 				if (testData.player && testData.player.display_name) {
 					if (testData.player.character && testData.player.character.crew && (testData.player.character.crew.length > 0)) {

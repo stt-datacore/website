@@ -106,3 +106,8 @@ export interface ChargePhase {
   bonus_amount?: number;
   duration?: number;
 }
+
+export interface BattleStations {
+	symbol: string;
+	battle_stations: BattleStation[]
+}

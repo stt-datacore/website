@@ -158,6 +158,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         })
     );
 
+    // We should keep all ship data from the player
+    //
     // p.player.character.ships = p.player.character.ships.map((ship) => ({
     //     id: ship.id,
     //     level: ship.level,
@@ -173,6 +175,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     attacks_per_second: ship.attacks_per_second,
     //     shield_regen: ship.shield_regen,
     //     rarity: ship.rarity,
+    //     battle_stations: ship.battle_stations
     // }));
 
     p.player.character.crew = p.player.character.crew

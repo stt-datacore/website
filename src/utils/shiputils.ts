@@ -150,7 +150,11 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.rarity = owned.rarity;
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
-			schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
+			
+			if (owned.battle_stations?.length) {
+				schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
+			}
+			
 			if (owned.actions) {
 				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
 			}

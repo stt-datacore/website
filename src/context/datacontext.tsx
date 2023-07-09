@@ -1,13 +1,14 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, SkillData } from '../model/crew';
-import { Ship, Schematics } from '../model/ship';
+import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 
 export type ValidDemands =
+	'battle_stations' |
 	'crew' |
 	'ship_schematics' |
 	'items' |
@@ -35,6 +36,7 @@ export interface ContextCommon {
 export interface DefaultCore extends ContextCommon {
 	crew: PlayerCrew[],
 	ship_schematics: Schematics[],
+	battle_stations: BattleStations[],
 	ships: Ship[],
 	items: EquipmentItem[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
@@ -46,6 +48,7 @@ export interface DefaultCore extends ContextCommon {
 const defaultData = {
 	crew: [] as CrewMember[],
 	ship_schematics: [] as Schematics[],
+	battle_stations: [] as BattleStations[],
 	ships: [] as Ship[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
@@ -78,8 +81,13 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
+		const valid = ['battle_stations', 'crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
 		const unsatisfied = [] as string[];
+		demands ??= [];
+
+		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
+			demands.push('battle_stations');
+		}
 
 		demands?.forEach(demand => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
@@ -96,13 +104,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						.then(result => {
 							setData(prev => {
 								const newData = { ...prev };
-								if (demand === 'ship_schematics') {
-									let ship_schematics = result as Schematics[];
-									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-									newData.ships = scsave;
-									newData.ship_schematics = ship_schematics;
-								}
-								else if (demand === 'skill_bufs') {
+								if (demand === 'skill_bufs') {
 									let sks = {} as BuffStatTable;
 									let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
 									let types = ['core', 'range_min', 'range_max'];
@@ -132,6 +134,21 @@ export const DataProvider = (props: DataProviderProperties) => {
 										(result as Gauntlet[])?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
 									}
 									newData[demand] = result;
+								}
+								if ((demand ==='ship_schematics' || demand === 'battle_stations') &&
+									newData.battle_stations?.length && newData.ship_schematics?.length) {
+									for (let sch of newData.ship_schematics) {
+										let battle = newData.battle_stations.find(b => b.symbol === sch.ship.symbol);
+										if (battle) {
+											sch.ship.battle_stations = battle.battle_stations;
+										}
+									}
+									
+									let ship_schematics = demand === 'ship_schematics' ? result : newData.ship_schematics as Schematics[];
+									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
+
+									newData.ships = scsave;
+									newData.ship_schematics = ship_schematics;
 								}
 								return newData;
 							});
