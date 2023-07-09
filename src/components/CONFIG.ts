@@ -131,6 +131,22 @@ export default class CONFIG {
 		12: '%VAL%% of incoming damage also taken by the attacker',
 	};
 
+	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT: { [index: number]: string } = {
+		0: '+%VAL% to bonus boost',
+		1: '%VAL%% damage',
+		2: '%VAL%% hull repair',
+		3: '%VAL%% shield repair',
+		4: '+%VAL% crit rating',
+		5: '+%VAL% crit bonus',
+		6: '+%VAL% shield regen.',
+		7: '+%VAL%% attack speed',
+		8: '%VAL%% boarding damage',
+		9: 'Resets enemy cooldown timers',
+		10: '+%VAL%s to cooldown timers',
+		11: '-%VAL%% hull damage',
+		12: '%VAL%% reflection damage',
+	};
+
 	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT: { [index: number]: string } = {
 		0: 'Increases Bonus Boost',
 		1: 'Immediate Damage',

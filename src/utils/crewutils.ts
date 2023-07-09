@@ -660,13 +660,22 @@ export function getActionFromItem(item?: PlayerCrew | CrewMember | ShipAction | 
 	return actionIn;
 }
 
-export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string {
+export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, short?: boolean): string {
 	if (!item) return "";
 	let actionIn = getActionFromItem(item, index);
 	if (!actionIn) return "";
 	const action = actionIn;
 	if (!action || !action.ability) return "";
-	let bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
+	let bonusText: string; 
+	
+	if (short) {
+		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[action.ability.type];
+	}
+	else {
+		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
+	}
+	
+	
 	if (action.ability.type === 0)
 		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]} boost to`);
 	const bonusVal = action.ability.type === 0

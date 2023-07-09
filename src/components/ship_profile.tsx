@@ -15,8 +15,9 @@ import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps,
 import { BeholdOptionsModal } from '../pages/behold';
 import { ShipAbilityPicker } from './crewtables/shipoptions';
 import CrewPicker from './crewpicker';
-import { getSkills } from '../utils/crewutils';
+import { getShipBonus, getSkills } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { getActionColor, getShipBonusIcon } from './item_presenters/shipskill';
 
 type ShipProfileProps = {
     ship?: string;
@@ -113,8 +114,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			let r = b.action.bonus_amount - a.action.bonus_amount;
 
 			if (!r) {
-				r = (b.action.ability ? 1 : 0) - (a.action.ability ? 1 : 0);
-				if (r) return r;
+				if (b.action.ability !== undefined && a.action.ability === undefined) return 1;
+				else if (a.action.ability !== undefined && b.action.ability === undefined) return -1;
 
 				if (a.action.ability?.amount && b.action.ability?.amount) {
 					r = b.action.ability.amount - a.action.ability.amount;
@@ -212,12 +213,54 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				navigate('/playertools?tool=ships');
 			}		
 		}
+
+		const renderCrewCaption = (crew: PlayerCrew | CrewMember) => {
+			return (
+				<div style={{
+					display: "flex",
+					justifyContent: "center",
+					flexDirection: "column",
+					alignItems: "center"
+				}}>
+					<div>{crew.name}</div>
+					<div style={{
+						color: getActionColor(crew.action.bonus_type)
+					}}>
+						Boosts{" "}
+                        {
+                        	CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
+                            	crew.action.bonus_type
+                            	]
+						}{" "}
+                        by {crew.action.bonus_amount}
+					</div>
+					<div style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "center",
+						alignItems: "center"
+					}}>
+					<img style={{
+							margin: "0.25em 0.25em 0.25em 0.25em", 
+							maxWidth: "2em", 
+							maxHeight: "1.5em"
+						}} 
+						src={getShipBonusIcon(crew.action)} 
+					/>
+					<span style={{ lineHeight: "1.3em"}}> 
+						{getShipBonus(crew.action, undefined, true)}
+					</span>
+				</div>
+			</div>)
+		}
+
         const ship = data.find(d => d.symbol === ship_key);
         if (!ship) return <></>
 
 		return (<>
 			<div>
 			<CrewPicker 					
+					renderCrewCaption={renderCrewCaption}
 					isOpen={modalOpen}
 					setIsOpen={this.setModalOpen}
 					filterCrew={this.filterCrew}
@@ -347,7 +390,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
                 options: abilityOptions,
                 multi: false,
 				initialValue: [] as number[],
-				renderContent: () => <div style={{margin: "0.25em 0px"}}>
+				renderContent: () => <div style={{margin: "0.5em 0px"}}>
 					<ShipAbilityPicker selectedAbilities={this.state.options['abilities'] as string[]} setSelectedAbilities={(a) => this.setAbility(a)} />
 					</div>
 				

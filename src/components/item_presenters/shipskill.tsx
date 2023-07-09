@@ -300,10 +300,19 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             flexDirection: "row",
                                             justifyContent: "flex-start",
                                             alignItems: "center"
-                                        }}>{(<img style={{margin: "0.25em 0.5em 0.25em 0.25em", maxWidth: "2em", maxHeight: "1.5em"}} src={getShipBonusIcon(action)} />)}  
+                                        }}>
+                                        
+                                        <img style={{
+                                                margin: "0.25em 0.5em 0.25em 0.25em", 
+                                                maxWidth: "2em", 
+                                                maxHeight: "1.5em"
+                                            }} 
+                                            src={getShipBonusIcon(action)} />
+
                                         <div style={{ lineHeight: "1.3em"}}> 
                                             {getShipBonus(action)}
                                         </div>
+                                        
                                         </div>
                                     </div>
                                 </div>
