@@ -412,7 +412,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			}
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
 		}	
-		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT));
+		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT).slice(0, 9));
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);		
 	}
 

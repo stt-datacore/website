@@ -142,7 +142,7 @@ export type ShipAbilityPickerProps = {
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 	const { selectedAbilities, setSelectedAbilities } = props;
-    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE);
+    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9);
 
 	const [selection, setSelection] = React.useState(selectedAbilities);	
 
@@ -217,21 +217,9 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
     }, [selection]);
 
 	const rankToRating = (rank: number): number => {
-		switch(rank) {
-			case 1:
-				return 5;
-			case 2:
-				return 4;
-			case 3:
-				return 3;
-			case 4:
-				return 2;
-			case 5:
-				return 1;
-			default:
-				return 0;
-		}
+		return 6 - rank;		
 	}
+
 	const poolList = availableAbilities?.map((c) => (
 		{
 			key: c.key,
