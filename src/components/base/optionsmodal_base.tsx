@@ -47,17 +47,11 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		const newstate = {
 			isDefault: false,
 			isDirty: false,
-			options: props.options,
+			options: props.options ?? this.getDefaultOptions(),
 			modalIsOpen: false            
 		} as OptionsModalState<TOptions>;
 
         this.optionGroups = this.getOptionGroups();        
-        newstate.options ??= {} as TOptions;
-
-        for(let group of this.optionGroups){
-            (newstate.options as OptionsBase)[group.key] = group.initialValue;
-        }
-
         this.state = newstate;
 	}
 
@@ -93,13 +87,13 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
         const { modalTitle } = this.props;
 
         const optionGroups = this.optionGroups;
-        const me = this;
+        
 		return (
 			<Modal
 				open={modalIsOpen}
-				onClose={() => { me.revertOptions(); me.setModalIsOpen(false); }}
-				onOpen={() => me.setModalIsOpen(true)}
-				trigger={me.renderTrigger()}
+				onClose={() => { this.revertOptions(); this.setModalIsOpen(false); }}
+				onOpen={() => this.setModalIsOpen(true)}
+				trigger={this.renderTrigger()}
 				size='tiny'
 			>
 				<Modal.Header>
@@ -119,7 +113,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
                                     placeholder={group.placeholder}
                                     options={group.options}
                                     value={(options as OptionsBase)[group.key]}
-                                    onChange={(e, { value }) => me.setGroupValue(group, value)}
+                                    onChange={(e, { value }) => this.setGroupValue(group, value)}
                                 />
                             </div>
                         )
@@ -127,9 +121,9 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 					
 				</Modal.Content>
 				<Modal.Actions>
-					{!isDefault && <Button content='Reset' onClick={(e) => me.resetOptions()} />}
-					{isDirty && <Button positive={true} content='Apply filters' onClick={(e) => me.applyOptions()} />}
-					{!isDirty && <Button content='Close' onClick={(e) => me.setModalIsOpen(false)} />}
+					{!isDefault && <Button content='Reset' onClick={(e) => this.resetOptions()} />}
+					{isDirty && <Button positive={true} content='Apply filters' onClick={(e) => this.applyOptions()} />}
+					{!isDirty && <Button content='Close' onClick={(e) => this.setModalIsOpen(false)} />}
 				</Modal.Actions>
 			</Modal>
 		);
