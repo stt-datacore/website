@@ -34,12 +34,14 @@ import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMe
 export type ProfileCrewProps = {
 	isTools?: boolean;
 	location: any;
+	pageId?: string;
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
 	const { playerData, allCrew: crew, playerShips } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
-		
+	const { pageId } = props;
+
 	// Check for custom initial table options from URL or <Link state>
 	//	Custom options are only available in player tool right now
 	let initOptions = initSearchableOptions(window.location);
@@ -55,7 +57,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	if (props.isTools) {
 		const buffConfig = calculateBuffConfig(playerData.player);
 		return (
-			<ProfileCrewTools playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
+			<ProfileCrewTools pageId={pageId} playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
 				ships={playerShips} initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
 				dbid={`${playerData.player.dbid}`} />
 		);
@@ -72,7 +74,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 	}
 
-	return (<ProfileCrewTable playerData={playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
+	return (<ProfileCrewTable pageId={pageId} playerData={playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
 };
 
 type ProfileCrewToolsProps = {
@@ -85,10 +87,11 @@ type ProfileCrewToolsProps = {
 	initHighlight: string;
 	initProspects: string[];
 	dbid: string;
+	pageId?: string;
 };
 
 const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
-	const { allCrew, buffConfig, initOptions, ships } = props;
+	const { pageId, allCrew, buffConfig, initOptions, ships } = props;
 	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('crewTool/prospects', []);
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [wizard, setWizard] = React.useState(undefined);
@@ -197,11 +200,13 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 
 	return (
 		<React.Fragment>
-			<ProfileCrewTable ships={ships} allCrew={allCrew} playerData={props.playerData} pageId='crewTool' crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
-			<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />
+			<ProfileCrewTable ships={ships} allCrew={allCrew} playerData={props.playerData} pageId={pageId ?? 'crewTool'} crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
+			{!(pageId?.includes("profile_")) && 
+				<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />}
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
 			<UtilityWizard myCrew={myCrew} handleWizard={(wizardData: any) => setWizard({...wizardData})} dbid={props.dbid} />
+			<div style={{height: "2em"}}>&nbsp;</div>
 		</React.Fragment>
 	);
 
@@ -559,7 +564,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} setDisplayItem={setCrew} targetGroup='targetClass'>
+							<CrewTarget inputItem={crew} setDisplayItem={setCrew} targetGroup={pageId+"targetClass"}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
@@ -700,7 +705,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	return (
         <React.Fragment>
-            {pageId === "crewTool" && (
+            {pageId?.includes("crewTool") && (
 					<Button.Group>
 					{viewModeButtons.map((btn, idx) => {
 						if (idx > 0) return <>
@@ -792,7 +797,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					</div>
 				</div>
 			))}
-            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup="targetClass" />
+            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup={pageId+"targetClass"} />
 
             <div style={{ margin: "1em 0" }}>
                 <Form>

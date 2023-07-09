@@ -42,7 +42,7 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew', 'ship_schematics', 'items']);
+	const isReady = coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']);
 
 	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
 	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
@@ -166,7 +166,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => playerData && <ProfileCrew isTools={true} location={location} /> || <></>
+				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} isTools={true} location={location} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
