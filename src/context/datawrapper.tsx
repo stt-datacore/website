@@ -14,23 +14,35 @@ export interface DataWrapperProps {
 	notReadyMessage?: string;
 	header: string;
 	children: JSX.Element;
-	demands: ValidDemands[]
+
+    /**
+     * Default demands are crew, items, ship_schematics, and all_buffs.
+     */
+	demands?: ValidDemands[]
 
 	/** default is true */
 	initPlayerData?: boolean;
-    pageTitle?: string;
+
+    /**
+     * Page title, header property is used if undefined
+     */
+    pageTitle?: string;    
 	pageId?: string;
     data?: any;
 }
 
+/**
+ * Merged Context Page Wrapper w/ Layout
+ */
 export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const coreData = React.useContext(DataContext);
 	const playerContext = React.useContext(PlayerContext);	
 	const { crew: allCrew } = coreData;
 	
-	const { data, demands, notReadyMessage, children, header, pageId, pageTitle, initPlayerData } = props;
+	const { data, notReadyMessage, children, header, pageId, pageTitle, initPlayerData } = props;
 	const { strippedPlayerData, buffConfig } = playerContext;
-
+    
+    const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
     const isReady = coreData.ready(demands);
 
     let playerData: PlayerData | undefined = undefined;
@@ -64,6 +76,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 			{isReady &&
 				<React.Fragment>
 					<MergedContext.Provider value={{
+                        pageId,
                         data,
 						allCrew,
 						items: coreData.items,

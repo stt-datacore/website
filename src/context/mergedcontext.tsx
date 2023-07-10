@@ -24,6 +24,7 @@ export interface MergedData {
     items?: EquipmentItem[];
     gauntlets?: Gauntlet[];
     data?: any;
+    pageId?: string;
 }
 
 const defaultMerged = {
