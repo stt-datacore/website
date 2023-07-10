@@ -367,7 +367,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
     protected getOptionGroups(): OptionGroup[] {
 		const abilityOptions = [] as ModalOption[];
 
-		Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT).map((key, idx) => {
+		Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT).forEach((key, idx) => {
 			if (idx >= 9) return;
 			abilityOptions.push({
 				key: key,
