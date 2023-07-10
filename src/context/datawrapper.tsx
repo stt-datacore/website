@@ -1,0 +1,83 @@
+import React from "react";
+import { Header } from "semantic-ui-react";
+import Layout from "../components/layout";
+import { PlayerData } from "../model/player";
+import { ValidDemands, DataContext } from "./datacontext";
+import { MergedContext } from "./mergedcontext";
+import { PlayerContext } from "./playercontext";
+import { prepareProfileData } from "../utils/crewutils";
+import { BuffStatTable } from "../utils/voyageutils";
+import { mergeShips } from "../utils/shiputils";
+import { Ship } from "../model/ship";
+
+export interface DataWrapperProps {
+	notReadyMessage?: string;
+	header: string;
+	children: JSX.Element;
+	demands: ValidDemands[]
+
+	/** default is true */
+	initPlayerData?: boolean;
+	pageId?: string;
+    data?: any;
+}
+
+export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
+	const coreData = React.useContext(DataContext);
+	const playerContext = React.useContext(PlayerContext);	
+	const { crew: allCrew } = coreData;
+	
+	const { data, demands, notReadyMessage, children, header, pageId, initPlayerData } = props;
+	const { strippedPlayerData, buffConfig } = playerContext;
+
+	const isReady = coreData.ready(demands);
+    let playerData: PlayerData | undefined = undefined;
+    let playerShips: Ship[] | undefined = undefined;
+
+	if (isReady && initPlayerData !== false && demands.includes('crew') && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
+		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
+		if (playerData) {
+            prepareProfileData(pageId ?? "data_wrapper", coreData.crew, playerData, playerData.calc?.lastModified);
+            if (demands.includes('ship_schematics')) {
+                let schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
+                playerShips = mergeShips(schematics, playerData.player.character.ships);
+            }
+        }
+
+	}
+
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady && demands.includes("all_buffs")) {
+		maxBuffs = coreData.all_buffs;
+	} 
+
+	return (
+		<Layout title='Behold helper'>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>{notReadyMessage ?? "Loading data..."}</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<MergedContext.Provider value={{
+                        data,
+						allCrew,
+						items: coreData.items,
+                        playerData: playerData ?? strippedPlayerData ?? {} as PlayerData,
+                        buffConfig: buffConfig,
+                        maxBuffs: maxBuffs,
+                        playerShips,
+                        allShips: playerShips ? coreData.ships : undefined,
+                        gauntlets: demands.includes('gauntlets') ? coreData.gauntlets : undefined,
+                        keystones: demands.includes('keystones') ? coreData.keystones : undefined,
+					}}>
+						<Header as='h2'>{header}</Header>
+						{children}
+					</MergedContext.Provider>
+				</React.Fragment>
+			}
+		</Layout>
+	);
+
+}
