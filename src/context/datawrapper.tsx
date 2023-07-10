@@ -8,7 +8,7 @@ import { PlayerContext } from "./playercontext";
 import { prepareProfileData } from "../utils/crewutils";
 import { BuffStatTable } from "../utils/voyageutils";
 import { mergeShips } from "../utils/shiputils";
-import { Ship } from "../model/ship";
+import { Schematics, Ship } from "../model/ship";
 
 export interface DataWrapperProps {
 	notReadyMessage?: string;
@@ -18,6 +18,7 @@ export interface DataWrapperProps {
 
 	/** default is true */
 	initPlayerData?: boolean;
+    pageTitle?: string;
 	pageId?: string;
     data?: any;
 }
@@ -27,19 +28,21 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const playerContext = React.useContext(PlayerContext);	
 	const { crew: allCrew } = coreData;
 	
-	const { data, demands, notReadyMessage, children, header, pageId, initPlayerData } = props;
+	const { data, demands, notReadyMessage, children, header, pageId, pageTitle, initPlayerData } = props;
 	const { strippedPlayerData, buffConfig } = playerContext;
 
-	const isReady = coreData.ready(demands);
+    const isReady = coreData.ready(demands);
+
     let playerData: PlayerData | undefined = undefined;
     let playerShips: Ship[] | undefined = undefined;
+    let schematics: Schematics[] | undefined = undefined;
 
 	if (isReady && initPlayerData !== false && demands.includes('crew') && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
 		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
 		if (playerData) {
             prepareProfileData(pageId ?? "data_wrapper", coreData.crew, playerData, playerData.calc?.lastModified);
             if (demands.includes('ship_schematics')) {
-                let schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
+                schematics = JSON.parse(JSON.stringify(coreData.ship_schematics)) as Schematics[];
                 playerShips = mergeShips(schematics, playerData.player.character.ships);
             }
         }
@@ -54,7 +57,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	} 
 
 	return (
-		<Layout title='Behold helper'>
+		<Layout title={pageTitle ?? header}>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>{notReadyMessage ?? "Loading data..."}</div>
 			}
