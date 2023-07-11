@@ -3,6 +3,7 @@ import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { DataContext } from '../context/datacontext';
+import { PlayerContext } from '../context/playercontext';
 import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
@@ -21,7 +22,9 @@ type IndexPageProps = {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew']);
+	const playerData = React.useContext(PlayerContext);
+	const isReady = coreData.ready(['crew', 'items']);
+
 	return (
 		<Layout>
 			{!isReady &&
@@ -30,7 +33,7 @@ const IndexPage = (props: IndexPageProps) => {
 			{isReady &&
 				<React.Fragment>
 					<Announcement />
-					<CrewStats location={props.location} allCrew={coreData.crew} />
+					<CrewStats location={props.location} allCrew={coreData.crew} playerData={playerData.loaded ? playerData.profile : false} />
 				</React.Fragment>
 			}
 		</Layout>
@@ -40,6 +43,7 @@ const IndexPage = (props: IndexPageProps) => {
 type CrewStatsProps = {
 	location: any;
 	allCrew: any[];
+	playerData: any | boolean;
 };
 
 type CrewStatsState = {
@@ -50,8 +54,6 @@ type CrewStatsState = {
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
-	static contextType = DataContext;
-
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -157,6 +159,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 						<div style={{ gridArea: 'description' }}>
 							{formattedCounts}
 						</div>
+						{this.props.playerData && (
+							<div>
+								{this.showOwned(crew.symbol)}
+							</div>
+						)}
 					</div>
 				</Table.Cell>
 				<Table.Cell>
@@ -229,6 +236,14 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				/>
 			</React.Fragment>
 		);
+	}
+
+	showOwned(crewSymbol: string): JSX.Element {
+		const myCrew = this.props.playerData.player.character.crew;
+		if (myCrew.filter(crew => crew.symbol === crewSymbol).length > 0)
+			return <span style={{ color: 'green' }}>OWNED!</span>;
+		else
+			return <span style={{ color: 'red', whiteSpace: 'nowrap' }}>NOT OWNED</span>;
 	}
 }
 

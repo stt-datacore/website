@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { withPrefix, StaticQuery, graphql } from 'gatsby';
 import TopMenu from './topmenu';
+import PlayerMenu from './playermenu';
 
 type LayoutProps = {
 	title?: string;
@@ -34,6 +35,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 					)}
 				/>
 				<TopMenu narrowLayout={narrowLayout}>
+					<PlayerMenu />
 					{this.props.children}
 				</TopMenu>
 			</React.Fragment>
