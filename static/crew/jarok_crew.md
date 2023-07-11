@@ -1,7 +1,7 @@
 ---
 name: Alidar Jarok
 rarity: 4
-series: ds9
+series: tng
 memory_alpha:
 bigbook_tier: 6
 events: 11

@@ -3,7 +3,7 @@ name: Anxious Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 37
 in_portal: true
 date: 22/03/2021

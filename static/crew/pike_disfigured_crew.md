@@ -3,7 +3,7 @@ name: Tribunal Pike
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 11
 in_portal: true
 date: 20/02/2019

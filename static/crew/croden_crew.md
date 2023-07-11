@@ -3,7 +3,7 @@ name: Croden
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 22
 in_portal:
 date: 26/10/2022
