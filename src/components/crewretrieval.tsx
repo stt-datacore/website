@@ -92,7 +92,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		return (
 			<div>
 				<h2>Crew Retrieval Unavailable</h2>
-				<p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file.
+				<p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=20">newer version</a> of your player file.
 				   Please follow the link and copy the correct version to paste.</p>
 			</div>
 		);
