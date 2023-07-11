@@ -319,20 +319,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.5;
 						else btrait = 0.30;
 
-						// let askills = getSkills(a);
-						// let bskills = getSkills(b);
-
-						// r = 0;
-						// if (node.contest_data?.featured_skill) {
-	
-						// 	if (askills.includes(node.contest_data?.featured_skill)) r--; 
-						// 	if (bskills.includes(node.contest_data?.featured_skill)) r++; 
-							
-						// 	if (r) return r;
-						// }
-
 						let ap = getPlayerPairs(a, atrait);
-						let bp = getPlayerPairs(b, btrait);
+						let bp = getPlayerPairs(b, btrait);		
+						
 						if (ap && bp) {
 							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill, 1.65);
 							if (r === 0 && ap.length > 1 && bp.length > 1) {
@@ -342,7 +331,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 							}
 						}
-						
 						return r;
 					});
 			

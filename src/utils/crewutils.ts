@@ -470,6 +470,40 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	return result;
 }
 
+// export function averagePairs(skills: Skill[][]) {
+
+// 	let avg = [] as Skill[];
+// 	[0, 1].forEach(i => {
+// 		avg.push({
+// 			core: 0,
+// 			range_max: 0,
+// 			range_min: 0
+// 		})
+// 	});
+
+// 	for (let pair of skills) {
+// 		avg[0].core += pair[0].core;
+// 		avg[0].range_min += pair[0].range_max;
+// 		avg[0].range_max += pair[0].range_max;
+// 		if (pair[1]) {
+// 			avg[1].core += pair[1].core;
+// 			avg[1].range_min += pair[1].range_max;
+// 			avg[1].range_max += pair[1].range_max;
+// 		}
+// 	}
+// 	let sl = skills.length;
+
+// 	avg[0].core = Math.round(avg[0].core / sl);
+// 	avg[0].range_max = Math.round(avg[0].range_max / sl);
+// 	avg[0].range_min = Math.round(avg[0].range_min / sl);
+
+// 	avg[1].core = Math.round(avg[1].core / sl);
+// 	avg[1].range_max = Math.round(avg[1].range_max / sl);
+// 	avg[1].range_min = Math.round(avg[1].range_min / sl);
+
+// 	return avg;
+// }
+
 export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {
 	let an = 0;
 	let bn = 0;
@@ -480,6 +514,8 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 
 	return bn - an;
 }
+
+
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 1;
