@@ -3,7 +3,7 @@ name: Returning Ezri Dax
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 events: 29
 in_portal:
 date: 14/02/2023

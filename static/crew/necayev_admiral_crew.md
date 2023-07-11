@@ -3,7 +3,7 @@ name: Admiral Nechayev
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 5
 in_portal: true
 date: 17/11/2017
