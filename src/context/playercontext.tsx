@@ -8,12 +8,9 @@ import { stripPlayerData } from '../utils/playerutils';
 const defaultPlayer = {
 	loaded: false,
 	profile: undefined,
-	strippedPlayerData: undefined,
-	voyageData: undefined,
-	eventData: undefined,
-	fleetbossData: undefined,
-	activeCrew: undefined,
-	activeShuttles: undefined,
+	ephmeral: undefined,
+	stripped: undefined,
+	setInput: undefined,
 	reset: undefined
 };
 
@@ -24,25 +21,20 @@ export const PlayerProvider = (props) => {
 	const coreData = React.useContext(DataContext);
 
 	const [loaded, setLoaded] = React.useState(false);
-
 	const [profile, setProfile] = React.useState(undefined);
-	const [strippedPlayerData, setStrippedPlayerData] = React.useState(undefined);
-	const [voyageData, setVoyageData] = React.useState(undefined);
-	const [eventData, setEventData] = React.useState(undefined);
-	const [fleetbossData, setFleetbossData] = React.useState(undefined);
-	const [activeCrew, setActiveCrew] = React.useState(undefined);
-	const [activeShuttles, setActiveShuttles] = React.useState(undefined);
+
+	// Can store stripped and ephemeral in sessionStorage to remember playerData across reloads
+	//	OR store stripped in localStorage to remember across tabs and sessions
+	const [stripped, setStripped] = React.useState(undefined);
+	const [ephemeral, setEphemeral] = React.useState(undefined);
 
 	const [input, setInput] = React.useState(undefined);
 
 	const providerValue = {
 		loaded,
 		profile,
-		voyageData,
-		eventData,
-		fleetbossData,
-		activeCrew,
-		activeShuttles,
+		ephemeral,
+		stripped,
 		setInput,
 		reset
 	};
@@ -50,30 +42,30 @@ export const PlayerProvider = (props) => {
 	React.useEffect(() => {
 		if (!input) return;
 
-		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
-		//	so store a copy for player tools (i.e. voyage calculator, event planner)
+		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
+		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [];
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 			}
 		});
-		const voyageData = {
-			voyage_descriptions: [...input.player.character.voyage_descriptions],
+		setEphemeral({
+			activeCrew,
+			events: [...input.player.character.events],
+			fleetBossBattlesRoot: input.fleet_boss_battles_root,
+			shuttleAdventures: [...input.player.character.shuttle_adventures],
 			voyage: [...input.player.character.voyage],
-		}
-		setVoyageData(voyageData);
-		setEventData([...input.player.character.events]);
-		setFleetbossData(input.fleet_boss_battles_root);
-		setActiveCrew(activeCrew);
-		setActiveShuttles([...input.player.character.shuttle_adventures]);
+			voyageDescriptions: [...input.player.character.voyage_descriptions]
+		});
 
 		const dtImported = new Date();
 
-		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
+		// stripped is used for any storage purpose, i.e. sharing profile and keeping in session
+		//	Ephmeral data is stripped from playerData here
 		const strippedData = stripPlayerData(coreData.items, {...input});
 		strippedData.calc = { 'lastImported': dtImported };
-		setStrippedPlayerData(JSON.parse(JSON.stringify(strippedData)));
+		setStripped(JSON.parse(JSON.stringify(strippedData)));
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
 		//	so other components don't have to keep calculating the same data
@@ -92,8 +84,9 @@ export const PlayerProvider = (props) => {
 	);
 
 	function reset(): void {
+		setStripped(undefined);
+		setEphemeral(undefined);
 		setProfile(undefined);
 		setLoaded(false);
-		// should clear all states here
 	}
 };

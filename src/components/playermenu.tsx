@@ -1,14 +1,19 @@
 import React from 'react';
 import { Button, Form, TextArea, Message } from 'semantic-ui-react';
 
+import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 
 const PlayerMenu = () => {
+	const coreData = React.useContext(DataContext);
 	const playerData = React.useContext(PlayerContext);
+
+	// Requires both core crew and items. Don't show player menu if either core isn't loaded
+	if (coreData.crew?.length === 0 || coreData.items?.length === 0) return (<></>);
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			Player data: {playerData.loaded ? playerData.profile.player.character.display_name : 'Not loaded'}
+			Global player data: {playerData.loaded ? playerData.profile.player.character.display_name : 'Not loaded'}
 			{playerData.loaded && (
 				<span style={{ marginLeft: '1em' }}>
 					<Button compact onClick={() => playerData.reset()}>Clear</Button>
