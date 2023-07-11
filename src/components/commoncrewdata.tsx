@@ -95,7 +95,7 @@ class StatLabel extends Component<StatLabelProps> {
 }
 
 type CommonCrewDataProps = {
-	crew: CrewMember;
+	crew: CrewMember | PlayerCrew;
 	markdownRemark: any;
 	compact?: boolean;
 	crewDemands?: any;
@@ -355,7 +355,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<StatLabel title="CAB Rating" value={crew.cab_ov ?? 'None'} />
 							<StatLabel title="Portal" 
 								value={<>
-									<div style={{color: crew.in_portal ? 'green': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
 										{crew.in_portal ? 'Yes' : 'No'}									
 									</div>								
 								</>} />

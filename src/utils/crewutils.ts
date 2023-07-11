@@ -314,7 +314,6 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		let inroster = playerData?.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
 
 		for (let owned of inroster ?? []) {
-			
 			let workitem: PlayerCrew = owned;
 			
 			if (rarity !== 6) {
@@ -327,7 +326,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			}
 
 			crew.have = true;
-			crew.favorite = workitem.favorite;
+			crew.favorite = workitem.favorite;			
 
 			// Use skills directly from player data when possible
 			if (rarity && rarity >= 1 && rarity <= 5) {

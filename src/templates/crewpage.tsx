@@ -212,6 +212,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
 			if (discovered) {
 				crew.immortal = discovered.immortal;
+				crew.in_portal ??= discovered.in_portal;
 			}
 		}
 

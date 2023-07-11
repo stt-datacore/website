@@ -97,7 +97,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 				name: valid.name,
 				imageUrlPortrait: valid.imageUrlPortrait,
 				rarity: valid.max_rarity,
-				max_rarity: valid.max_rarity
+				max_rarity: valid.max_rarity,
 			} as LockedProspect;
 			prospects.push(prospect);
 			setProspects([...prospects]);

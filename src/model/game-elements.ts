@@ -150,10 +150,10 @@ export interface LockedProspect {
   symbol: string;
   name: string;
   rarity: number;
-  level: number;
-  prospect: boolean;
-  imageUrlPortrait: string;
-  max_rarity: number;
+  level?: number;
+  prospect?: boolean;
+  imageUrlPortrait?: string;
+  max_rarity?: number;
 }
 
 export interface InitialOptions {

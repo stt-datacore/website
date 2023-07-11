@@ -9,6 +9,8 @@ import { useStateWithStorage } from '../utils/storage';
 import SearchString from 'search-string/src/searchString';
 import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player';
 
 const filterTypeOptions = [
     { key : '0', value : 'Exact', text : 'Exact match only' },
@@ -80,7 +82,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
-	const [activeLock, setActiveLock] = React.useState(undefined);
+	const [activeLock, setActiveLock] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	// Override stored values with custom initial options and reset all others to defaults
 	//	Previously stored values will be rendered before an override triggers a re-render
@@ -351,13 +353,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					</span>
 					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
 				</div>
-			)}
-
-
-			{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+			)}		
 			
 			</div>
-
+			<div>
+				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+			</div>
 			{filteredCount === 0 && (
 				<div style={{ margin: '2em 0' }}>
 					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}

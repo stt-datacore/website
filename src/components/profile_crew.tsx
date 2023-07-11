@@ -96,7 +96,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [wizard, setWizard] = React.useState(undefined);
 
-	const myCrew = props.myCrew;
+	const myCrew = prospects?.length ? JSON.parse(JSON.stringify(props.myCrew)) : props.myCrew;
 	
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew?.map(ac => {
@@ -108,7 +108,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	myCrew.forEach((crew, crewId) => {
 		crew.active_status = 0;
 		if (!crew.immortal) {
-			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
+			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment?.join('');
 			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crew.active_status = active.active_status;
@@ -172,7 +172,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 			if (!prospect.action.ability) prospect.action.ability = { type: 0, condition: 0, amount: 0 };
 			myCrew.push(prospect);
 			lockable.push({
-				...prospect,
+				//...prospect,
 				symbol: prospect.symbol,
 				name: prospect.name,
 				rarity: prospect.rarity,
@@ -671,7 +671,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	const viewModeButtons = [] as JSX.Element[];
+	let btnidx = 0;
+
 	if (discoveredPanes.includes(CrewFilterPanes.BaseStats)) viewModeButtons.push(<Button
+			key={btnidx++}
 			onClick={() => setTableView("base")}
 			positive={tableView === "base" ? true : false}
 			size="large"
@@ -679,27 +682,33 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			Base Skills
 		</Button>);
 
-	if (discoveredPanes.includes(CrewFilterPanes.ShipStats)) viewModeButtons.push(<Button
-			onClick={() => setTableView("ship")}
+	if (discoveredPanes.includes(CrewFilterPanes.ShipStats)) {
+		if (viewModeButtons.length) viewModeButtons.push(<Button.Or key={btnidx++} />);
+		viewModeButtons.push(<Button
+		key={btnidx++}
+		onClick={() => setTableView("ship")}
 			positive={tableView === "ship" ? true : false}
 			size="large"
 		>
 			Ship Abilities
 		</Button>)
+	}
 
 	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {
 		customFilters.forEach((cfg, idx) => {
 			const FilterView = cfg.filterComponent;
 			const title = cfg.title;
 
+			if (viewModeButtons.length) viewModeButtons.push(<Button.Or key={btnidx++} />);
 			viewModeButtons.push(<Button
-				key={idx}
+				key={btnidx++}
 				onClick={() => setTableView("custom" + idx)}
 				positive={tableView === ("custom" + idx) ? true : false}
 				size="large"
 			>
 				{title ?? FilterView.title}
 			</Button>);
+			
 		});
 	} 
 
@@ -708,11 +717,6 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
             {pageId?.includes("crewTool") && (
 					<Button.Group>
 					{viewModeButtons.map((btn, idx) => {
-						if (idx > 0) return <>
-							<Button.Or key={-idx} />
-							{btn}
-						</>
-
 						return btn;
 					})}
 					</Button.Group>
