@@ -3,8 +3,8 @@ name: Breakthrough Booker
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 28
+bigbook_tier: 7
+events: 29
 in_portal:
 date: 05/10/2022
 obtained: Event

@@ -3,8 +3,8 @@ name: Dr. Hippocrates Noah
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 2
-events: 30
+bigbook_tier: 3
+events: 31
 in_portal: true
 date: 13/03/2017
 obtained: Event

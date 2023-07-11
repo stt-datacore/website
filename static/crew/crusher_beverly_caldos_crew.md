@@ -3,8 +3,8 @@ name: Caldos IV Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
-events: 22
+bigbook_tier: 7
+events: 24
 in_portal: true
 date: 28/01/2021
 obtained: Event

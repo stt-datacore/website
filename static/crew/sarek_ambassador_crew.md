@@ -3,8 +3,8 @@ name: Ambassador Sarek
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 26
+bigbook_tier: 5
+events: 27
 in_portal: true
 date: 17/08/2016
 obtained: Post-Launch

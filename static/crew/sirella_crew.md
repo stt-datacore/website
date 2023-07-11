@@ -3,8 +3,8 @@ name: Lady Sirella
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 19
+bigbook_tier: 9
+events: 20
 in_portal: true
 date: 14/01/2021
 obtained: Event

@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Falling out of voyage contention, Nog might find some early game work if fused for other reasons, but is easily dismissed by a single legendary star in most cases. To compensate, a post-release value perk in the immense Costume Party collection is now often the primary reason to behold Nog.
-
-As for events and the chance to utilize Nog's strong ENG base - the optimist would say that we haven't had a Ferengi mega yet, the pessimist would say that he's only had one bonus in nearly three years. So...is the vault half empty or half full?
+With Nog falling out of voyage contention, we’re primarily eyeing his collection count which, barring a show mega, seems to have hit its ceiling. As for events and the chance to utilize Nog's workable ENG base - the optimist would say that we haven't had a Ferengi mega yet, the pessimist would say that he's only had one variant event in nearly three years. So...is the safe half empty or half full?

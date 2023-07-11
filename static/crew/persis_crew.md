@@ -3,8 +3,8 @@ name: Persis
 rarity: 2
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 18
+bigbook_tier: 7
+events: 22
 in_portal: true
 date: 01/01/2016
 obtained: Launch

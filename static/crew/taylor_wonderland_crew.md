@@ -3,8 +3,8 @@ name: Wonderland Taylor
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
-events: 9
+bigbook_tier: 6
+events: 10
 in_portal: true
 date: 05/04/2022
 obtained: Event

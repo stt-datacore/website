@@ -4,7 +4,7 @@ rarity: 2
 series: voy
 memory_alpha:
 bigbook_tier: 9
-events: 24
+events: 25
 in_portal:
 date: 31/03/2018
 obtained: Honor Hall

@@ -3,8 +3,8 @@ name: Temporal Agent Seven
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 10
-events: 19
+bigbook_tier: 9
+events: 27
 in_portal: true
 date: 01/03/2016
 obtained: Post-Launch

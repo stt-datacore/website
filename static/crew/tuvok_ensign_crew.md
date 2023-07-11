@@ -3,8 +3,8 @@ name: Ensign Tuvok
 rarity: 1
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 17
+bigbook_tier: 7
+events: 19
 in_portal: true
 date: 01/01/2016
 obtained: Launch

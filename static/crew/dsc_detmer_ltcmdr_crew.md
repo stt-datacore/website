@@ -3,8 +3,8 @@ name: Lt. Commander Detmer
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
-events: 39
+bigbook_tier: 6
+events: 40
 in_portal:
 date: 07/12/2022
 obtained: Event

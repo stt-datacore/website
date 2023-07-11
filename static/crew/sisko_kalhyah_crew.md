@@ -3,8 +3,8 @@ name: Kal'Hyah Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 32
+bigbook_tier: 7
+events: 34
 in_portal: true
 date: 07/10/2021
 obtained: Event

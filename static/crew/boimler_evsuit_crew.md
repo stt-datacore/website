@@ -3,8 +3,8 @@ name: EV Suit Boimler
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 3
-events: 14
+bigbook_tier: 4
+events: 16
 in_portal:
 date: 20/09/2022
 obtained: WebStore

@@ -3,8 +3,8 @@ name: Torpedo Surgeon McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 28
+bigbook_tier: 8
+events: 29
 in_portal: true
 date: 19/12/2019
 obtained: Event

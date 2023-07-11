@@ -3,7 +3,7 @@ name: Mirror Jennifer Sisko
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 19
 in_portal: true
 date: 29/07/2016

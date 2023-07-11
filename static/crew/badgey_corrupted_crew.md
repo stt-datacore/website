@@ -3,8 +3,8 @@ name: Corrupted Badgey
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 2
-events: 16
+bigbook_tier: 3
+events: 17
 in_portal:
 date: 27/07/2022
 obtained: Event

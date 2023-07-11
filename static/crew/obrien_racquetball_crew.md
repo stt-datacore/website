@@ -3,8 +3,8 @@ name: Racquetball O'Brien
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 19
+bigbook_tier: 6
+events: 20
 in_portal: true
 date: 18/11/2021
 obtained: Event

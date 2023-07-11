@@ -89,7 +89,10 @@ class GauntletsPage extends PureComponent {
 						<Item.Group divided>
 							{data.allGauntletsJson.edges.sort((a, b) => Date.parse(b.node.date) - Date.parse(a.node.date)).map(({ node }, index) => {
 								const prettyDate = new Date(node.date).toDateString();
-								const prettyTraits = node.contest_data.traits.map(t => trait_names[t]);
+								const prettyTraits = node.contest_data?.traits?.map(t => trait_names[t]);
+								if (!prettyTraits) {
+									return null
+								}
 								const matchedCrew = data.allCrewJson.edges.filter(e => e.node.max_rarity > 3 && prettyTraits.filter(t => e.node.traits_named.includes(t)).length > 1).sort((a, b) => (prettyTraits.filter(t => b.node.traits_named.includes(t)).length - prettyTraits.filter(t => a.node.traits_named.includes(t)).length));
 								return (
 								<Item key={index}>

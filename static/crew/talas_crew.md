@@ -3,8 +3,8 @@ name: Talas
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 15
+bigbook_tier: 9
+events: 19
 in_portal: true
 date: 24/12/2019
 obtained: Pack
