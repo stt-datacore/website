@@ -10,6 +10,7 @@ import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
 import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
 
+const isWindow = typeof window !== 'undefined';
 
 export interface CrewHoverStatProps extends HoverStatProps, CrewPlugins {
     crew: CrewMember | PlayerCrew | undefined;
@@ -116,7 +117,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidUpdate(): void {
         if (this.props.inputItem) {
             const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.imageUrlFullBody}`;
-            window.setTimeout(() => {
+            if (isWindow)  window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
                     img.src = url;                    
@@ -212,7 +213,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected renderContent = (): JSX.Element => {
         if (this.checkBorder()) {
-            window.setTimeout(() => this.checkBorder(undefined, true));
+            if (isWindow) window.setTimeout(() => this.checkBorder(undefined, true));
         }
         const { targetGroup, crew: displayItem, openCrew, plugins, pluginData } = this.props;
         const { mobileWidth, touchToggled } = this.state;
@@ -221,7 +222,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         if (!displayItem) {
             // console.log("Deactivating empty popover");
             this.cancelled = false;
-            window.setTimeout(() => this.deactivate());
+            if (isWindow) window.setTimeout(() => this.deactivate());
         } 
 
         const navClick = () => {

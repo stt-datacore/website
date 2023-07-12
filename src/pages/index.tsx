@@ -34,7 +34,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew']);
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	

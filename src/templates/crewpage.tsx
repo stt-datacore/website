@@ -69,7 +69,7 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
 
-	const isReady = coreData.ready(['items', 'crew', 'keystones']);
+	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones']) : false;
 
 	let pd = {} as PlayerData;
 

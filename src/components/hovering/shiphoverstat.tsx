@@ -8,6 +8,8 @@ import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
 
+const isWindow = typeof window !== 'undefined';
+
 export interface ShipHoverStatProps extends HoverStatProps {
     displayItem: Ship | undefined | null;
     disableBuffs?: boolean;
@@ -101,7 +103,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     componentDidUpdate(): void {
         if (this.props.inputItem) {
             const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
-            window.setTimeout(() => {
+            if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
                     img.src = url;                    

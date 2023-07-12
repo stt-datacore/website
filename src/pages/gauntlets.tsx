@@ -33,7 +33,7 @@ const SKILLS = {
 
 const GauntletsPage = () => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']);
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
@@ -490,7 +490,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (!gauntlets) return <></>
 		
-		const theme = window.localStorage.getItem('theme') ?? 'dark';
+		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 
 		return (<>

@@ -2,6 +2,8 @@ import React from "react";
 import * as uuid from 'uuid';
 import { TinyStore } from "../../utils/tiny";
 
+const isWindow = typeof window !== 'undefined';
+
 export const DEFAULT_MOBILE_WIDTH = 512;
 
 export interface Coord {
@@ -353,7 +355,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         hoverstat.style.display = "flex";
         hoverstat.style.opacity = "0";
 
-        window.setTimeout(() => {
+        if (isWindow) window.setTimeout(() => {
             let hoverstat = document.getElementById(divId);     
             // console.log("Activate " + divId);
 
@@ -400,7 +402,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
             hoverstat.style.opacity = "1";
             hoverstat.style.transition = "opacity 0.25s";
-            window.addEventListener("resize", this.resizer);       
+            if (isWindow) window.addEventListener("resize", this.resizer);       
         }, this.hoverDelay)
     }
 
@@ -427,7 +429,7 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
         let metarget = this.currentTarget;
         this._nodismiss = false;
 
-        window.setTimeout(() => {
+        if (isWindow) window.setTimeout(() => {
             if (this.cancelled || this.currentTarget !== metarget) {
                 this.cancelled = false;
                 return;
@@ -441,8 +443,8 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
                 hoverstat.style.transition = "opacity 0.25s";
                 
                 this.currentTarget = undefined;                
-                window.removeEventListener("resize", this.resizer);
-                window.setTimeout(() => hoverstat.style.display = "none", 0.25);
+                if (isWindow) window.removeEventListener("resize", this.resizer);
+                if (isWindow) window.setTimeout(() => hoverstat.style.display = "none", 0.25);
             }
         }, 0);
     }

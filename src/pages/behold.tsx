@@ -28,7 +28,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 
 	const { crew: allCrew } = coreData;
 	const { strippedPlayerData } = playerContext;
-	const isReady = coreData.ready(['crew', 'items', 'all_buffs']);
+	const isReady = coreData.ready ? coreData.ready(['crew', 'items', 'all_buffs']) : false;
 
 	return (
 		<Layout title='Behold helper'>

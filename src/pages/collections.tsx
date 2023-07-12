@@ -30,7 +30,7 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 
 	render() {
 		const { collections, allcrew } = this.state;
-		const theme = window.localStorage.getItem('theme') ?? 'dark';
+		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 

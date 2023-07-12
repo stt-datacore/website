@@ -8,7 +8,7 @@ import { getEpisodeName } from '../utils/episodes';
 
 class EpisodesPage extends PureComponent {
 	render() {
-		const theme = window.localStorage.getItem('theme') ?? 'dark';
+		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 		return (

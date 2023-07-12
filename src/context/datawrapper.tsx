@@ -43,7 +43,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const { strippedPlayerData, buffConfig } = playerContext;
     
     const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
-    const isReady = coreData.ready(demands);
+    const isReady = coreData.ready ? coreData.ready(demands) : false;
 
     let playerData: PlayerData | undefined = undefined;
     let playerShips: Ship[] | undefined = undefined;

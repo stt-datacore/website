@@ -29,7 +29,7 @@ interface ItemInfoComponentState {
 
 const ItemInfoPage = (props: ItemInfoPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew', 'items']);
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	

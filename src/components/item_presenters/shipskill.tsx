@@ -9,9 +9,11 @@ import { PlayerCrew } from "../../model/player";
 
 const imageMap = new Map<string, string>();
 
+const isWindow = typeof window !== 'undefined';
+
 // For Firefox, we would not need to do this
 // But Chrome makes us do this thing
-window.setTimeout(() => {
+if (isWindow) window.setTimeout(() => {
     let imgs = Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON);
     imgs = imgs.concat(Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON));
     imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_ABILITY_ICON));

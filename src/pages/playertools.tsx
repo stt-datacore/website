@@ -114,7 +114,7 @@ export const playerTools: PlayerTools = {
 const PlayerToolsPage = (props: any) => {
 	const coreData = React.useContext(DataContext);
 	const playerData = React.useContext(PlayerContext);
-	const isReady = coreData.ready(['ship_schematics', 'crew', 'items', 'skill_bufs']);
+	const isReady = coreData.ready ? coreData.ready(['ship_schematics', 'crew', 'items', 'skill_bufs']) : false;
 	return (
 		<>
 			{!isReady &&
