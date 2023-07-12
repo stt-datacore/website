@@ -3,7 +3,7 @@ name: Suspiria
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 13
 in_portal: true
 date: 11/06/2020
