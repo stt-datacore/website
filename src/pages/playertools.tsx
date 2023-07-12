@@ -126,12 +126,12 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
 	// The context above	
 	
-	const { playerData, buffConfig, maxBuffs } = mergedContext;
+	const { playerShips, playerData, buffConfig, maxBuffs } = mergedContext;
 
 	// All things playerData
 
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
-	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
+	// [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
 
 	// These are all the static assets loaded from DataContext
 	const { dataSource, ephemeral, crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext;
