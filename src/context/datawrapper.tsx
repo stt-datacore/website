@@ -75,7 +75,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
                         maxBuffs: maxBuffs,
 						dataSource: playerContext.dataSource,
                         playerShips,
-						fleetBossBattlesRoot: playerContext.ephemeral?.fleetBossBattlesRoot,					
+						ephemeral: playerContext.ephemeral,					
 						clearPlayerData: playerContext.reset,						
 						ship_schematics: coreData.ship_schematics,
                         ships: playerShips ? coreData.ships : undefined,

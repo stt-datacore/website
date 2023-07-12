@@ -117,14 +117,16 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 			}
 		});
 
-		setEphemeral({
-			activeCrew,
-			events: [...input.player.character.events ?? []],
-			fleetBossBattlesRoot: input.fleet_boss_battles_root,
-			shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
-			voyage: [...input.player.character.voyage ?? []],
-			voyageDescriptions: [...input.player.character.voyage_descriptions ?? []]
-		});
+		if (input.stripped !== true) {
+			setEphemeral({
+				activeCrew,
+				events: [...input.player.character.events ?? []],
+				fleetBossBattlesRoot: input.fleet_boss_battles_root,
+				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
+				voyage: [...input.player.character.voyage ?? []],
+				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []]
+			});
+		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
 

@@ -28,6 +28,7 @@ import { MergedContext } from '../context/mergedcontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { EquipmentItem } from '../model/equipment';
 import { DataWrapper } from '../context/datawrapper';
+import { EphemeralData } from '../context/playercontext';
 
 export interface PlayerTool {
 	title: string;
@@ -133,15 +134,14 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
 
 	// These are all the static assets loaded from DataContext
-	const { dataSource, fleetBossBattlesRoot: fleetbossData, crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext;
-
+	const { dataSource, ephemeral, crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext;
 	const [showForm, setShowForm] = React.useState(false);
 
 	const clearPlayerData = () => {
 		if (mergedContext.clearPlayerData) mergedContext.clearPlayerData();
 	}
 	// Profile data ready, show player tool panes
-	if (playerData && dataSource && dataSource && fleetbossData && playerShips) {
+	if (playerData && dataSource && dataSource && ephemeral && playerShips) {
 		return (<PlayerToolsPanes
 			maxBuffs={maxBuffs}
 			items={items}
@@ -150,7 +150,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 			dataSource={dataSource}
 			allCrew={allCrew}
 			allShips={allShips ?? []}
-			fleetBossData={fleetbossData}
+			ephemeral={ephemeral}
 			playerShips={playerShips}
 			requestShowForm={setShowForm}
 			requestClearData={clearPlayerData}
@@ -170,7 +170,7 @@ type PlayerToolsPanesProps = {
 	allCrew: PlayerCrew[];
 	allShips: Ship[];
 	playerShips: Ship[];
-	fleetBossData: BossBattlesRoot;
+	ephemeral: EphemeralData;
 	buffConfig?: BuffStatTable;
 	maxBuffs?: BuffStatTable;
 	items?: EquipmentItem[];
@@ -191,7 +191,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		allCrew,
 		allShips,
 		playerShips,
-		fleetBossData,
+		ephemeral,
 		items,
 		requestShowForm,
 		requestClearData,
@@ -362,7 +362,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					ships: allShips,
 					playerData: playerData,
 					playerShips: playerShips,
-					fleetBossBattlesRoot: fleetBossData,
+					ephemeral: ephemeral,
 					buffConfig: buffConfig,
 					maxBuffs: maxBuffs,
 					items: items,
