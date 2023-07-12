@@ -45,8 +45,8 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
     const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
 	if (!demands.includes('crew')) demands.push('crew');
 	if (!demands.includes('items')) demands.push('items');
-
-    const isReady = coreData.ready(demands);
+    
+    const isReady = coreData.ready ? coreData.ready(demands) : false;
 
 	const { playerData, playerShips } = playerContext;
     

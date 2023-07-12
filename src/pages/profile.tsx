@@ -27,6 +27,8 @@ import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
+const isWindow = typeof window !== 'undefined';
+
 type ProfilePageProps = {
 	setPlayerData?: (value?: PlayerData) => void;
 	setLastModified?: (value?: Date) => void;
@@ -42,7 +44,7 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']);
+	const isReady = coreData.ready ? coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']) : false;
 
 	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
 	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
@@ -143,7 +145,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 				.then(playerData => {
 					const me = this;
 
-					window.setTimeout(() => {
+					if (isWindow) window.setTimeout(() => {
 						if (me.props.props.setPlayerData) {
 							me.props.props.setPlayerData(playerData);
 							me.setState({... this.state, lastModified : lastModified });

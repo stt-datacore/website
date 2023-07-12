@@ -30,6 +30,7 @@ import { MergedContext } from '../context/mergedcontext';
 import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker } from './crewtables/shipoptions';
 import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMethodConfig } from './crewtables/customviews';
 
+const isWindow = typeof window !== 'undefined';
 
 export type ProfileCrewProps = {
 	isTools?: boolean;
@@ -417,7 +418,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}
 
 	if (!rankings?.length) {
-		window.setTimeout(() => updateRankings());
+		if (isWindow) window.setTimeout(() => updateRankings());
 	}
 
 	const usableFilterOptions = [

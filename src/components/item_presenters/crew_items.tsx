@@ -20,7 +20,7 @@ export interface CrewItemsViewProps {
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const coreData = React.useContext(DataContext);
-	const itemsReady = coreData.ready(['all_buffs', 'crew', 'items']);
+	const itemsReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;

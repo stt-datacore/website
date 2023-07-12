@@ -19,6 +19,8 @@ import { getShipBonus, getSkills } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { getActionColor, getShipBonusIcon } from './item_presenters/shipskill';
 
+const isWindow = typeof window !== 'undefined';
+
 type ShipProfileProps = {
     ship?: string;
 };
@@ -70,14 +72,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		let stations = [ ... this.state.crewStations ];
 		stations[this.state.currentStation] = crew as PlayerCrew;
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });	
-		window.setTimeout(() => this.setActiveShip());
+		if (isWindow) window.setTimeout(() => this.setActiveShip());
 	}
 
 	private clearStation(index: number) {
 		let stations = [ ... this.state.crewStations ];
 		stations[index] = undefined;
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
-		window.setTimeout(() => this.setActiveShip());
+		if (isWindow) window.setTimeout(() => this.setActiveShip());
 	}
 
 	private clickStation(index: number, skill: string) {
@@ -193,7 +195,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				}
 	
 				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.ships ?? []});
-				window.setTimeout(() => this.setActiveShip());
+				if (isWindow) window.setTimeout(() => this.setActiveShip());
 			}
 		}
 	}
@@ -208,7 +210,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
                 ship_key = urlParams.get('ship') ?? undefined;
             }
         }
-		if (window.location.href.includes("ship")) {
+		if (isWindow && window.location.href.includes("ship")) {
 			if (!ship_key || !data) {
 				navigate('/playertools?tool=ships');
 			}		

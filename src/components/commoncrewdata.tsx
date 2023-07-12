@@ -14,6 +14,8 @@ import { PlayerCrew } from '../model/player';
 import { ShipSkill } from './item_presenters/shipskill';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
+const isWindow = typeof window !== 'undefined';
+
 export type StatLabelProps = {
 	title: string;
 	value: number | string | JSX.Element;
@@ -27,7 +29,7 @@ class StatLabel extends Component<StatLabelProps> {
 		const size = this.props.size ?? 'medium';
 
 		const getPadding = () => {
-			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+			if (isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
 				if (size === 'jumbo') {
 					return "0.5em";
 				}
@@ -50,7 +52,7 @@ class StatLabel extends Component<StatLabelProps> {
 		}
 
 		const getFontSize = () => {
-			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+			if (isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
 				if (size === 'jumbo') {
 					return "14pt";
 				}
@@ -87,7 +89,7 @@ class StatLabel extends Component<StatLabelProps> {
 					marginTop: 0 }}>
 				{title}
 				<div>
-					<Label.Detail>{<div style={{fontSize: size === 'jumbo' && window.innerWidth >= DEFAULT_MOBILE_WIDTH ? '2em' : undefined}}> {value}</div>}</Label.Detail>
+					<Label.Detail>{<div style={{fontSize: size === 'jumbo' && isWindow && window.innerWidth >= DEFAULT_MOBILE_WIDTH ? '2em' : undefined}}> {value}</div>}</Label.Detail>
 				</div>
 			</Label>
 		);
@@ -172,7 +174,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 						<div style={{
 								display:"flex", 
 								width: "100%", 
-								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+								flexDirection: isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
 								justifyContent: "space-evenly",
 								}}>
 							{crew.base_skills.security_skill && 
@@ -232,7 +234,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 													<div style={{
 														display:"flex", 
 														width: "100%", 
-														flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+														flexDirection: isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
 														justifyContent: "space-between",
 														flexWrap: "wrap",								
 														}}>
