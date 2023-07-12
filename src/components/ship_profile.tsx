@@ -192,7 +192,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					n.push(undefined);
 				}
 	
-				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.allShips ?? []});
+				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.ships ?? []});
 				window.setTimeout(() => this.setActiveShip());
 			}
 		}

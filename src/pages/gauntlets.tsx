@@ -1,10 +1,9 @@
-import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message } from 'semantic-ui-react';
-import { StaticQuery, navigate, graphql, Link } from 'gatsby';
-import * as moment from 'moment';
-import Layout from '../components/layout';
 
-import { getEpisodeName } from '../utils/episodes';
+import React from 'react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message } from 'semantic-ui-react';
+import { Link } from 'gatsby';
+import * as moment from 'moment';
+
 import { trait_names } from '../../static/structured/translation_en.json';
 import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
@@ -16,11 +15,12 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { comparePairs, getPlayerPairs, getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
+import { comparePairs, getPlayerPairs } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
+import { DataWrapper } from '../context/datawrapper';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -31,45 +31,11 @@ const SKILLS = {
 	medicine_skill: 'MED'
 };
 
-const GauntletsPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']);
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("GAUNTLETS", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	} 
-
+const GauntletsPage = () => {	
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-					<React.Fragment>
-						<MergedContext.Provider value={{
-							allCrew: coreData.crew,
-							playerData: playerData ?? {} as PlayerData,
-							buffConfig: buffConfig,
-							maxBuffs: maxBuffs,
-							gauntlets: coreData.gauntlets
-						}}>
-							<GauntletsPageComponent />
-						</MergedContext.Provider>
-					</React.Fragment>
-				}
-			
-		</Layout>
+		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
+			<GauntletsPageComponent />
+		</DataWrapper>
 	);
 
 }
@@ -283,7 +249,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { allCrew, gauntlets } = this.context;
+		const { crew: allCrew, gauntlets } = this.context;
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
 
 		if (gauntlets && this.inited) return;
@@ -596,7 +562,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		]
 
 		return (
-			<Layout title='Gauntlets'>
+			<div>
 				<Message icon warning>
 				<Icon name="exclamation triangle" />
 					<Message.Content>
@@ -607,7 +573,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
-			</Layout>
+			</div>
 		)}
 	}
 

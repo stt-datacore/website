@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
+import { Header, Image, Divider, Grid, Rating, Dropdown, Popup, Label, Button } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
-
-import SimpleMDE from 'react-simplemde-editor';
-import marked from 'marked';
 
 import Layout from '../components/layout';
 import ItemDisplay from '../components/itemdisplay';
@@ -14,20 +11,14 @@ import CommonCrewData from '../components/commoncrewdata';
 import ExtraCrewDetails from '../components/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
-import { getShipBonus, getShipChargePhases, prepareProfileData } from '../utils/crewutils';
-import { useStateWithStorage } from '../utils/storage';
-import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
-import { CrewMember } from '../model/crew';
-import { EquipmentItem } from '../model/equipment';
-import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
+
 const DEFAULT_MOBILE_WIDTH = 768;
-
-
 
 export interface CrewPageOptions {
 	key: string;
@@ -67,26 +58,19 @@ type StaticCrewPageProps = {
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
+	const { playerData: pd, buffConfig, maxBuffs } = React.useContext(PlayerContext);
 
 	const isReady = coreData.ready(['items', 'crew', 'keystones']);
-
-	let pd = {} as PlayerData;
-
-	if (strippedPlayerData) {
-		pd = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
-		prepareProfileData('ITEM_PAGE', coreData.crew, pd, new Date());
-	}
 
 	return (
 		<Layout narrowLayout={true}>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
-			{isReady &&
+			{isReady && pd &&
 				<MergedContext.Provider value={{ 
 					playerData: pd, 
-					allCrew: coreData.crew,
+					crew: coreData.crew,
 					items: coreData.items,
 					buffConfig: buffConfig,
 					maxBuffs: maxBuffs,

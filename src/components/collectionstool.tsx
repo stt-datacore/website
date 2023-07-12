@@ -17,7 +17,7 @@ import { MergedContext } from '../context/mergedcontext';
 
 const CollectionsTool = () => {
 
-	const { playerData, allCrew: crew } = React.useContext(MergedContext);
+	const { playerData, crew: crew } = React.useContext(MergedContext);
 	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
 	if (!allCollections) {

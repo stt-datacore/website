@@ -67,10 +67,10 @@ export const ProfilePage = (props: ProfilePageProps) => {
 				<React.Fragment>
 					<Announcement />
 						<MergedContext.Provider value={{
-							allCrew: coreData.crew,
+							crew: coreData.crew,
 							playerData: profData ?? strippedPlayerData ?? {} as PlayerData,
 							buffConfig: buffConfig,							
-							allShips: coreData.ships,
+							ships: coreData.ships,
 							items: coreData.items,
 							playerShips: profData?.player.character.ships,							
 						}}>

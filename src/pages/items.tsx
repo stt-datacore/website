@@ -15,48 +15,21 @@ import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
+import { DataWrapper } from '../context/datawrapper';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew', 'items']);
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	} 
-
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items
-					}}>
-						<ItemsComponent isReady={isReady} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-		</Layout>
+		<DataWrapper demands={['all_buffs', 'crew', 'items']} header='Items'>
+			<ItemsComponent  />
+		</DataWrapper>
 	);
 };
 
 
 
 interface ItemsComponentProps {
-	isReady: boolean;
 };
 
 interface ItemsComponentState {
@@ -87,13 +60,13 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	componentDidUpdate(prevProps: Readonly<ItemsComponentProps>, prevState: Readonly<ItemsComponentState>, snapshot?: any): void {
-		if (this.props.isReady && !this.inited) {
+		if (!this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady) this.initData();
+		this.initData();
 	}
 	
 	private binaryLocate(symbol: string, items: EquipmentItem[]) : EquipmentItem | undefined {
@@ -127,7 +100,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 	private initData() {
 
-		const { items: origItems, allCrew: origCrew } = this.context;
+		const { items: origItems, crew: origCrew } = this.context;
 		let crew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew[];
 		let items = JSON.parse(JSON.stringify(origItems)) as EquipmentItem[];
 		items = items.filter(item => item.imageUrl && item.imageUrl !== '');
@@ -140,23 +113,6 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					// Most likely a galaxy item
 					item.flavor = 'Unused or Galaxy Event item';
 				}
-
-				// let crew_levels = new Set();
-				// crew.forEach(cr => {
-				// 	cr.equipment_slots.forEach(es => {
-				// 		if (es.symbol === item.symbol) {
-				// 			crew_levels.add(cr.name);
-				// 		}
-				// 	});
-				// });
-
-				// if (crew_levels.size > 0) {
-				// 	if (crew_levels.size > 5) {
-				// 		item.flavor = `Equippable by ${crew_levels.size} crew`;
-				// 	} else {
-				// 		item.flavor = 'Equippable by: ' + [...crew_levels].join(', ');
-				// 	}
-				// }
 			}
 		});
 		
@@ -265,7 +221,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 	render() {
 		return (
-			<Layout title='Items'>
+			<>
 				<Header as="h2">Items</Header>
 
 				{!this.state.items && (
@@ -287,7 +243,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						config={tableConfig}
 					/>
 				)}
-			</Layout>
+			</>
 		);
 	}
 }

@@ -38,7 +38,7 @@ export type ProfileCrewProps = {
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const { playerData, allCrew: crew, playerShips } = React.useContext(MergedContext);
+	const { playerData, crew: crew, playerShips } = React.useContext(MergedContext);
 	const myCrew = [...playerData.player.character.crew];
 	const { pageId } = props;
 

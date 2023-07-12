@@ -23,7 +23,7 @@ export const DIFFICULTY_NAME = {
 export const BossDataContext = React.createContext<MergedData | null>(null);
 
 export const FleetBossBattles = () => {
-	const { bossData: fleetbossData, playerData, allCrew: crew } = React.useContext(MergedContext);
+	const { fleetBossBattlesRoot: fleetbossData, playerData, crew: crew } = React.useContext(MergedContext);
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
@@ -35,8 +35,8 @@ export const FleetBossBattles = () => {
 
 	const allData: MergedData = {
 		playerData,
-		allCrew,
-		bossData: fleetbossData ?? {} as BossBattlesRoot
+		crew: allCrew,
+		fleetBossBattlesRoot: fleetbossData ?? {} as BossBattlesRoot
 	};
 
 	return (
@@ -54,13 +54,13 @@ const ChainPicker = () => {
 	const [chain, setChain] = React.useState<Combo | undefined>(undefined);
 
 	const describeChain = (boss) => {
-		const bossName = allData?.bossData?.groups?.find(group => group.symbol === boss.group)?.name;
+		const bossName = allData?.fleetBossBattlesRoot?.groups?.find(group => group.symbol === boss.group)?.name;
 		return `${bossName}, ${DIFFICULTY_NAME[boss.difficulty_id]}, Chain #${boss.combo.previous_node_counts.length+1}`;
 	};
 
 	React.useEffect(() => {
 		if (activeBoss && allData) {
-			const boss = allData.bossData?.statuses.find(b => b.id === activeBoss);
+			const boss = allData.fleetBossBattlesRoot?.statuses.find(b => b.id === activeBoss);
 			if (!boss) return;
 			const chainIndex = boss.combo?.previous_node_counts.length;
 			const chain = {
@@ -76,11 +76,11 @@ const ChainPicker = () => {
 		}
 	}, [activeBoss]);
 
-	if (!allData?.bossData)
+	if (!allData?.fleetBossBattlesRoot)
 		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;
 
 	const chainOptions = [] as NumericOptions[];
-	allData.bossData.statuses.forEach(boss => {
+	allData.fleetBossBattlesRoot.statuses.forEach(boss => {
 		if (boss.ends_in) {
 			const unlockedNodes = boss.combo?.nodes.filter(node => node.unlocked_character);
 			if ((boss.combo?.nodes?.length ?? 0) - (unlockedNodes?.length ?? 0) > 0) {
@@ -115,7 +115,7 @@ const ChainPicker = () => {
 				/>
 			}
 			{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
-			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.allCrew} dbid={`${allData.playerData.player.dbid}`} />}
+			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.crew} dbid={`${allData.playerData.player.dbid}`} />}
 		</React.Fragment>
 	);
 };

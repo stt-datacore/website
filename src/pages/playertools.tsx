@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
-import { navigate } from 'gatsby';
 
 import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
@@ -19,22 +18,16 @@ import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 import FleetBossBattles from '../components/fleetbossbattles';
 
-import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
-import { stripPlayerData } from '../utils/playerutils';
+import { exportCrew, downloadData } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompactCrew, GameEvent, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription, VoyageInfo } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { BossBattlesRoot } from '../model/boss';
-import { ShuttleAdventure } from '../model/shuttle';
 import ShipProfile from '../components/ship_profile';
-import { Schematics, Ship } from '../model/ship';
-import { EventData } from '../utils/events';
-import { MergedData, MergedContext } from '../context/mergedcontext';
-import { mergeShips } from '../utils/shiputils';
-import { Archetype17, Archetype20, ArchetypeBase } from '../model/archetype';
-import { DataContext, DefaultCore } from '../context/datacontext';
-import { PlayerContext, PlayerContextData } from '../context/playercontext';
-import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { Ship } from '../model/ship';
+import { MergedContext } from '../context/mergedcontext';
+import { BuffStatTable } from '../utils/voyageutils';
 import { EquipmentItem } from '../model/equipment';
+import { DataWrapper } from '../context/datawrapper';
 
 export interface PlayerTool {
 	title: string;
@@ -112,68 +105,51 @@ export const playerTools: PlayerTools = {
 
 
 const PlayerToolsPage = (props: any) => {
-	const coreData = React.useContext(DataContext);
-	const playerData = React.useContext(PlayerContext);
-	const isReady = coreData.ready(['ship_schematics', 'crew', 'items', 'skill_bufs']);
+
+
+
 	return (
-		<>
-			{!isReady &&
-				<Layout title='Player tools'>
-					<></>
-					<div className='ui medium centered text active inline loader'>Loading data...</div>
-				</Layout>
-			}
-			{isReady &&
-				<React.Fragment>
-					<PlayerToolsComponent location={props.location} coreData={coreData} playerData={playerData} />
-				</React.Fragment>
-			}
-		</>
+		<DataWrapper header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs']}>
+				<PlayerToolsComponent location={props.location} />
+		</DataWrapper>
 	);
 };
 
 export interface PlayerToolsProps {
 	location: any;
-	coreData: DefaultCore;
-	playerData: PlayerContextData;
 }
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
+	const mergedContext = React.useContext(MergedContext);
+
 	// The context above	
-	const dataContext = props.coreData;
-	const { strippedPlayerData, setStrippedPlayerData, buffConfig, maxBuffs } = props.playerData;
+	
+	const { playerData, buffConfig, maxBuffs } = mergedContext;
 
 	// All things playerData
 
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
-	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
-	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
 
 	// These are all the static assets loaded from DataContext
-	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = dataContext;
-
-	// These are all sessionStorage or localStorage values
-	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
-	const [, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
-	const [, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
-	const [, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
-	const [, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
+	const { dataSource, fleetBossBattlesRoot: fleetbossData, crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext;
 
 	const [showForm, setShowForm] = React.useState(false);
 
+	const clearPlayerData = () => {
+		if (mergedContext.clearPlayerData) mergedContext.clearPlayerData();
+	}
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
+	if (playerData && dataSource && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
 			maxBuffs={maxBuffs}
 			items={items}
 			playerData={playerData}
 			buffConfig={buffConfig}
-			strippedPlayerData={strippedPlayerData}
 			dataSource={dataSource}
 			allCrew={allCrew}
-			allShips={allShips}
+			allShips={allShips ?? []}
 			fleetBossData={fleetbossData}
 			playerShips={playerShips}
 			requestShowForm={setShowForm}
@@ -182,116 +158,8 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 			data={schematics}
 		/>);
 	}
-
-	// Preparing profile data, show spinner
-	if ((inputPlayerData || strippedPlayerData) && !showForm) {
-		if (inputPlayerData) {
-			prepareProfileDataFromInput();
-		}
-		else {
-			prepareProfileDataFromSession();
-		}
-		return (<PlayerToolsLoading />);
-	}
-
-	// No data available, show input form
-	return (<PlayerToolsForm setValidInput={setValidInput} />);
-
-	function setValidInput(inputData: PlayerData) {
-		setPlayerData(undefined);
-		setInputPlayerData(inputData);
-		setShowForm(false);
-	}
-
-	function prepareProfileDataFromInput() {
-		// Reset session before storing new variables
-		sessionStorage.clear();
-
-		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
-		//	so store a copy for player tools (i.e. voyage calculator, event planner)
-		if (!inputPlayerData) return false;
-		if (inputPlayerData.item_archetype_cache) {
-			inputPlayerData.version = 17;
-		}
-		else if (inputPlayerData.archetype_cache) {
-			inputPlayerData.version = 20;
-			inputPlayerData.item_archetype_cache = {
-				archetypes: inputPlayerData.archetype_cache.archetypes.map((a: Archetype20) => {
-					return {
-						...a as ArchetypeBase,
-						type: a.item_type,
-					} as Archetype17;
-				})
-			}
-		}
-
-		let activeCrew = [] as CompactCrew[];
-		inputPlayerData.player.character.crew.forEach(crew => {
-			if (crew.active_status > 0) {
-				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
-			}
-		});
-		let voyageData = {
-			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions ?? []],
-			voyage: [...inputPlayerData.player.character.voyage ?? []],
-		}
-		setVoyageData(voyageData);
-		setEventData([...inputPlayerData.player.character.events ?? []]);
-		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
-		setActiveCrew(activeCrew);
-
-		if (inputPlayerData.player.character.shuttle_adventures) {
-			inputPlayerData.player.character.crew
-				.filter(crew => crew.active_status === 2)
-				.forEach(crew => {
-					let shuttle = inputPlayerData.player.character.shuttle_adventures?.find(x => x.shuttles[0].id === crew.active_id);
-					if (shuttle) {
-						shuttle.shuttles[0].slots[crew.active_index].crew_symbol = crew.symbol;
-					}
-				});
-		}
-
-		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures ?? []]);
-
-		let dtImported = new Date();
-
-		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
-		let strippedData = stripPlayerData(allItems ?? [], { ...inputPlayerData });
-		strippedData.calc = { 'lastImported': dtImported };
-		setStrippedPlayerData(JSON.parse(JSON.stringify(strippedData)));
-
-		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
-		//	so other components don't have to keep calculating the same data
-		// After this point, playerData should always be preparedProfileData, here and in all components
-		let preparedProfileData = JSON.parse(JSON.stringify(strippedData));
-		prepareProfileData("prepareProfileDataFromInput", allCrew ?? [], preparedProfileData, dtImported);
-		setPlayerData(preparedProfileData);
-
-		if (preparedProfileData && schematics) {
-			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
-			setPlayerShips(data);
-		}
-
-		setDataSource('input');
-	}
-
-	function prepareProfileDataFromSession() {
-		let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
-		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData?.calc?.lastImported as string)));
-		setPlayerData(preparedProfileData);
-
-		if (preparedProfileData && schematics) {
-			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
-			setPlayerShips(data);
-		}
-
-		setDataSource('session');
-	}
-
-	function clearPlayerData() {
-		sessionStorage.clear();	// also clears form data for all subcomponents
-		[setPlayerData, setInputPlayerData, setStrippedPlayerData]
-			.forEach(setFn => { setFn(undefined); });
+	else {
+		return <></>
 	}
 }
 
@@ -459,7 +327,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	}
 
 	return (
-		<Layout title='Player tools'>
+		<>
 			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
 			<PlayerLevelProgress />
 			<StaleMessage />
@@ -490,11 +358,11 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 				<ShareMessage />
 				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
 				<MergedContext.Provider value={{
-					allCrew: allCrew,
-					allShips: allShips,
+					crew: allCrew,
+					ships: allShips,
 					playerData: playerData,
 					playerShips: playerShips,
-					bossData: fleetBossData,
+					fleetBossBattlesRoot: fleetBossData,
 					buffConfig: buffConfig,
 					maxBuffs: maxBuffs,
 					items: items,
@@ -503,7 +371,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					{tools[activeTool].render(props)}
 				</MergedContext.Provider>
 			</React.Fragment>
-		</Layout>
+		</>
 	);
 
 	function variableReady(keyName: string) {

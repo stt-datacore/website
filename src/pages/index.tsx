@@ -20,6 +20,7 @@ import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
 import { descriptionLabel } from '../components/crewtables/commonoptions';
 import { BuffStatTable } from '../utils/voyageutils';
+import { DataWrapper } from '../context/datawrapper';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -33,37 +34,13 @@ interface Lockable {
 }
 
 const IndexPage = (props: IndexPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew']);
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	} 
-
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<Announcement />
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs
-					}}>
-						<CrewStats location={props.location} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-		</Layout>
+		<DataWrapper header='Crew Stats' demands={['all_buffs', 'crew', 'items']}>
+			<React.Fragment>
+				<Announcement />
+				<CrewStats location={props.location} />
+			</React.Fragment>
+		</DataWrapper>
 	);
 };
 
@@ -116,14 +93,9 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	async componentDidMount() {
-		const botcrew = JSON.parse(JSON.stringify(this.context.allCrew)) as (CrewMember | PlayerCrew)[];
+		const botcrew = JSON.parse(JSON.stringify(this.context.crew)) as (CrewMember | PlayerCrew)[];
 		let playerData = {} as PlayerData;
 		playerData = this.context.playerData;
-
-		if (playerData?.player?.character?.crew?.length && this.context.playerData.stripped === true && this.context.allCrew?.length) {
-			playerData = JSON.parse(JSON.stringify(playerData));
-			prepareProfileData("INDEX", this.context.allCrew, playerData, new Date());
-		}
 
 		const playerCrew: PlayerCrew[] | undefined = undefined; // playerData?.player?.character?.crew;
 
@@ -234,11 +206,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							</CrewTarget>							
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.crew)}>{crew.name}</a></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned && crew.immortal !== CompletionState.DisplayAsImmortalStatic) && 
-								descriptionLabel(crew, true) || formattedCounts}
+							{targetCrew &&
+								descriptionLabel(targetCrew as PlayerCrew, true) || formattedCounts}
 						</div>
 					</div>
 				</Table.Cell>
@@ -335,27 +307,22 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			<React.Fragment>
 				<Header as='h2'>Crew stats</Header>
 				<div>
-					<MergedContext.Provider value={{
-							...this.context,
-							playerData: this.state.processedData ?? {} as PlayerData
-						}}>
-						<SearchableTable
-							toolCaption={caption}
-							checkableValue={checkableValue}
-							setCheckableValue={setCheckableValue}
-							checkableEnabled={playerData !== undefined}
-							id="index"
-							data={preFiltered}
-							config={tableConfig}
-							renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
-							filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
-							initOptions={initOptions}
-							showFilterOptions={true}
-							showPermalink={true}
-							lockable={lockable}
-						/>
-						<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
-					</MergedContext.Provider>
+					<SearchableTable
+						toolCaption={caption}
+						checkableValue={checkableValue}
+						setCheckableValue={setCheckableValue}
+						checkableEnabled={playerData !== undefined}
+						id="index"
+						data={preFiltered}
+						config={tableConfig}
+						renderTableRow={(crew, idx, highlighted) => this.renderTableRow(crew, idx ?? -1, highlighted ?? false)}
+						filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
+						initOptions={initOptions}
+						showFilterOptions={true}
+						showPermalink={true}
+						lockable={lockable}
+					/>
+					<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
 				</div>
 			</React.Fragment>
 		);

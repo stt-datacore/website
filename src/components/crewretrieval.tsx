@@ -99,7 +99,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 	}
 
 	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
-	const allCrew = JSON.parse(JSON.stringify(merged.allCrew)) as PlayerCrew[];
+	const allCrew = JSON.parse(JSON.stringify(merged.crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {

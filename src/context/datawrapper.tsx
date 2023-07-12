@@ -37,39 +37,29 @@ export interface DataWrapperProps {
 export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const coreData = React.useContext(DataContext);
 	const playerContext = React.useContext(PlayerContext);	
-	const { crew: allCrew } = coreData;
+	const { crew: crew } = coreData;
 	
-	const { data, notReadyMessage, children, header, pageId, pageTitle, initPlayerData } = props;
-	const { strippedPlayerData, buffConfig } = playerContext;
+	const { data, notReadyMessage, children, header, pageId, pageTitle } = props;
+	const { buffConfig } = playerContext;
     
     const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
+	if (!demands.includes('crew')) demands.push('crew');
+	if (!demands.includes('items')) demands.push('items');
+
     const isReady = coreData.ready(demands);
 
-    let playerData: PlayerData | undefined = undefined;
-    let playerShips: Ship[] | undefined = undefined;
-    let schematics: Schematics[] | undefined = undefined;
-
-	if (isReady && initPlayerData !== false && demands.includes('crew') && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) {
-            prepareProfileData(pageId ?? "data_wrapper", coreData.crew, playerData, playerData.calc?.lastModified);
-            if (demands.includes('ship_schematics')) {
-                schematics = JSON.parse(JSON.stringify(coreData.ship_schematics)) as Schematics[];
-                playerShips = mergeShips(schematics, playerData.player.character.ships);
-            }
-        }
-
-	}
-
+	const { playerData, playerShips } = playerContext;
+    
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext.maxBuffs;
+
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady && demands.includes("all_buffs")) {
 		maxBuffs = coreData.all_buffs;
 	} 
 
 	return (
-		<Layout title={pageTitle ?? header}>
+		<Layout header={header} title={pageTitle ?? header}>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>{notReadyMessage ?? "Loading data..."}</div>
 			}
@@ -78,17 +68,20 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 					<MergedContext.Provider value={{
                         pageId,
                         data,
-						allCrew,
+						crew,
 						items: coreData.items,
-                        playerData: playerData ?? strippedPlayerData ?? {} as PlayerData,
+                        playerData: playerData ?? {} as PlayerData,
                         buffConfig: buffConfig,
                         maxBuffs: maxBuffs,
+						dataSource: playerContext.dataSource,
                         playerShips,
-                        allShips: playerShips ? coreData.ships : undefined,
+						fleetBossBattlesRoot: playerContext.ephemeral?.fleetBossBattlesRoot,					
+						clearPlayerData: playerContext.reset,						
+						ship_schematics: coreData.ship_schematics,
+                        ships: playerShips ? coreData.ships : undefined,
                         gauntlets: demands.includes('gauntlets') ? coreData.gauntlets : undefined,
                         keystones: demands.includes('keystones') ? coreData.keystones : undefined,
-					}}>
-						<Header as='h2'>{header}</Header>
+					}}>						
 						{children}
 					</MergedContext.Provider>
 				</React.Fragment>

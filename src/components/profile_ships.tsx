@@ -102,7 +102,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
-		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
+		if (!dataContext || !dataContext.ships || !dataContext.playerShips) return <></>;
 
 		let { data } = this.state;
 		

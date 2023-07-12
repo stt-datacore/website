@@ -204,7 +204,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData, items } = this.context;
+		const { crew: allCrew, playerData, items } = this.context;
 
 		const { data: playerCrew, itemsReady } = this.state;
 		const { isMobile } = this.props;

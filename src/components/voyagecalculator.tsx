@@ -21,7 +21,7 @@ import { crewCopy } from '../utils/crewutils';
 export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
 const VoyageCalculator = () => {
-	const { playerData, allCrew } = React.useContext(MergedContext);
+	const { playerData, crew: allCrew } = React.useContext(MergedContext);
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
@@ -72,7 +72,7 @@ const VoyageCalculator = () => {
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
 	const allData = {
-		allCrew, allShips, playerData
+		crew: allCrew, ships: allShips, playerData
 	} as MergedData;
 
 	return (
@@ -158,7 +158,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 };
 
 const VoyageActiveCard = (props: any) => {
-	const { allShips } = React.useContext(VoyageContext);
+	const { ships: allShips } = React.useContext(VoyageContext);
 	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
@@ -210,7 +210,7 @@ type VoyageActiveProps = {
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { allShips, playerData, allCrew } = React.useContext(VoyageContext);
+	const { ships: allShips, playerData, crew: allCrew } = React.useContext(VoyageContext);
 	const { voyageConfig, myCrew } = props;
 	const [hoverItem, setHoverItem] = React.useState<PlayerCrew | CrewMember | undefined | null>();
 
@@ -242,7 +242,7 @@ type VoyageInputProps = {
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { allCrew, allShips, playerData } = React.useContext(VoyageContext);
+	const { crew: allCrew, ships: allShips, playerData } = React.useContext(VoyageContext);
 	const [voyageConfig, setVoyageConfig] = React.useState<Voyage>(JSON.parse(JSON.stringify(props.voyageConfig)));
 	const allData = {
 		allCrew, allShips, playerData

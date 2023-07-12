@@ -91,7 +91,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
-		const { playerData, allCrew } = this.context;
+		const { playerData, crew: allCrew } = this.context;
 		
 		playerData.citeMode = citeMode;
 

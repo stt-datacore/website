@@ -21,7 +21,7 @@ import { MergedContext } from '../context/mergedcontext';
 
 
 const EventPlanner = () => {
-	const { playerData, allCrew } = React.useContext(MergedContext);
+	const { playerData, crew: allCrew } = React.useContext(MergedContext);
 
 	const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);

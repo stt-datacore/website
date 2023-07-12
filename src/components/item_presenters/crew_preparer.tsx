@@ -165,7 +165,7 @@ export class CrewPreparer {
             
             if (immortalMode !== 'owned' || (buffMode !== 'none')) {
                 let cm: CrewMember | undefined = undefined;
-                cm = context.allCrew.find(c => c.symbol === dataIn.symbol);
+                cm = context.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
                         item = applyImmortalState(immortalMode, cm, undefined, buffConfig ?? maxBuffs);

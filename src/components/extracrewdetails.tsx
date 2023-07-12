@@ -130,7 +130,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 		let self = this;
 
-		if (!this.context.keystones || !this.context.allCrew?.length) return;
+		if (!this.context.keystones || !this.context.crew?.length) return;
 
 		const allkeystones = this.context.keystones;
 
@@ -162,7 +162,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			}
 		}
 
-		const allcrew = this.context.allCrew;
+		const allcrew = this.context.crew;
 		
 		// Use precalculated unique polestars combos if any, otherwise get best chances
 		let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?

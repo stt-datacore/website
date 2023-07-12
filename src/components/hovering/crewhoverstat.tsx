@@ -1,14 +1,13 @@
 import * as React from "react";
-import { CrewMember, Skill } from "../../model/crew";
-import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
+import { CrewMember } from "../../model/crew";
+import { PlayerCrew } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applyCrewBuffs, applySkillBuff, getSkills, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
-import { BuffStatTable } from "../../utils/voyageutils";
+import { navToCrewPage } from "../../utils/crewutils";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
-import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
+import { PlayerBuffMode, PlayerImmortalMode, CrewPreparer } from "../item_presenters/crew_preparer";
 
 
 export interface CrewHoverStatProps extends HoverStatProps, CrewPlugins {
@@ -231,7 +230,7 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
                 openCrew(displayItem)
             }
             else {
-                const { buffConfig, allCrew, playerData } = this.context;
+                const { buffConfig, crew: allCrew, playerData } = this.context;
                 if (playerData && "player" in playerData) {
                     navToCrewPage(displayItem, playerData.player.character.crew, buffConfig, allCrew);
                 }

@@ -2,9 +2,13 @@ import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { withPrefix, StaticQuery, graphql } from 'gatsby';
 import TopMenu from './topmenu';
+import PlayerMenu from './playermenu';
+import { Header } from 'semantic-ui-react';
 
 type LayoutProps = {
 	title?: string;
+	header?: string;
+	headerAfterPlayerTools?: boolean;
 	narrowLayout?: boolean;
 	children?: React.ReactNode[]
 };
@@ -16,7 +20,6 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 		const { title, narrowLayout } = this.props;
 		return (
 			<React.Fragment>
-
 				<StaticQuery
 					query={query}
 					render={(data) => (
@@ -35,6 +38,9 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 					)}
 				/>
 				<TopMenu narrowLayout={narrowLayout}>
+					{this.props.header && !this.props.headerAfterPlayerTools && <Header as='h2'>{this.props.header}</Header>}
+					<PlayerMenu />
+					{this.props.header && this.props.headerAfterPlayerTools && <Header as='h2'>{this.props.header}</Header>}
 					{this.props.children}
 				</TopMenu>
 			</React.Fragment>

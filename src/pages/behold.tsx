@@ -38,7 +38,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 			{isReady &&
 				<React.Fragment>
 					<MergedContext.Provider value={{
-						allCrew,
+						crew: allCrew,
 						playerData: strippedPlayerData ?? {} as PlayerData,
 						items: coreData.items
 					}}>

@@ -2,23 +2,19 @@ import React, { Component } from 'react';
 import { Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import Layout from '../components/layout';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
-import { Demand, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
-import { PlayerContext } from '../context/playercontext';
-import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
+import { DataWrapper } from '../context/datawrapper';
 
 interface ItemInfoPageProps {};
 
 interface ItemInfoComponentProps {
-	isReady: boolean;
+	setHeader: (value: string) => void;	
 };
 
 interface ItemInfoComponentState {
@@ -28,41 +24,15 @@ interface ItemInfoComponentState {
 };
 
 const ItemInfoPage = (props: ItemInfoPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready(['all_buffs', 'crew', 'items']);
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	
-	let maxBuffs: BuffStatTable | undefined;
 
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	} 
+	const [header, setHeader] = React.useState<string>('Item Info');
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items
-					}}>
-						<ItemInfoComponent isReady={isReady} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-		</Layout>
+		<DataWrapper header={header} demands={['crew', 'items', 'all_buffs']}>
+			<ItemInfoComponent setHeader={setHeader} />
+		</DataWrapper>
 	);
 };
-
-
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
 	static contextType = DataContext;
@@ -79,15 +49,13 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		};
 	}
 	componentDidUpdate() {
-		if (this.props.isReady && !this.inited) {
+		if (!this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady) {
-			this.initData();
-		}
+		this.initData();
 	}
 
 	private initData() {
@@ -124,6 +92,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				this.inited = true;
 			} else {
 				this.setState({ item_data: { item, crew_levels, builds } });
+				this.props.setHeader(item.name);
 				this.inited = true;
 			}				
 		}
@@ -134,7 +103,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Item information'>
+				<>
 					<Header as="h4">Item information</Header>
 					{errorMessage && (
 						<Message negative>
@@ -147,7 +116,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							<Icon loading name="spinner" /> Loading...
 						</div>
 					)}
-				</Layout>
+				</>
 			);
 		}
 
@@ -181,7 +150,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		}
 
 		return (
-			<Layout title={item_data.item.name}>
+			<>
 				<Message icon warning>
 					<Icon name="exclamation triangle" />
 					<Message.Content>
@@ -302,7 +271,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</Grid>
 					</div>
 				)}
-			</Layout>
+			</>
 		);
 	}
 }

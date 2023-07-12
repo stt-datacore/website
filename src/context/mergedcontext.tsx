@@ -13,23 +13,26 @@ import { Gauntlet } from '../model/gauntlets';
 
 export interface MergedData {
     playerData: PlayerData;
-    allCrew: PlayerCrew[];
-    allShips?: Ship[];
-    playerShips?: Ship[];    
+    crew: PlayerCrew[];
+    ships?: Ship[];
+    playerShips?: Ship[];  
+    ship_schematics?: Schematics[];  
     useInVoyage?: boolean;
-    bossData?: BossBattlesRoot;
+    fleetBossBattlesRoot?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
     maxBuffs?: BuffStatTable;
+    dataSource?: string;
     keystones?: (KeystoneBase | Polestar | Constellation)[];
     items?: EquipmentItem[];
     gauntlets?: Gauntlet[];
     data?: any;
     pageId?: string;
+    clearPlayerData?: () => void;
 }
 
 const defaultMerged = {
     playerData: {} as PlayerData,
-    allCrew: []
+    crew: []
 } as MergedData;
 
 export const MergedContext = React.createContext<MergedData>(defaultMerged);
