@@ -17,13 +17,13 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { crewCopy } from '../utils/crewutils';
+import { EphemeralData, PlayerContext } from '../context/playercontext';
 
 export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
 const VoyageCalculator = () => {
-	const { playerData, crew: allCrew } = React.useContext(MergedContext);
-
-	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
+	const { ephemeral, playerData, crew: allCrew } = React.useContext(MergedContext);
+	const activeCrew = ephemeral?.activeCrew;
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	
 	if (!allShips) {
@@ -61,7 +61,7 @@ const VoyageCalculator = () => {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
-				crew.active_status = active.active_status;
+				crew.active_status = active.active_status ?? 0;
 				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 		}
@@ -123,9 +123,13 @@ type VoyageMainProps = {
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
+	const playerContext = React.useContext(PlayerContext);
+	const ephemeral = playerContext.ephemeral ?? {} as EphemeralData;
+	const { voyage, voyageDescriptions } = ephemeral;
+	
 	const { myCrew } = props;
-
-	const [voyageData, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
+	const voyageData = { voyage, voyage_descriptions: voyageDescriptions };
+	
 	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase | undefined>(undefined);
 	const [showInput, setShowInput] = React.useState(true);
 
