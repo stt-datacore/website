@@ -20,10 +20,15 @@ export const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
-export const BossDataContext = React.createContext<MergedData | null>(null);
+export interface BossData extends MergedData {
+	fleetBossBattlesRoot: BossBattlesRoot;
+}
+
+export const BossDataContext = React.createContext<BossData | null>(null);
 
 export const FleetBossBattles = () => {
-	const { fleetBossBattlesRoot: fleetbossData, playerData, crew: crew } = React.useContext(MergedContext);
+	const { ephemeral, playerData, crew: crew } = React.useContext(MergedContext);
+	
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
@@ -33,10 +38,11 @@ export const FleetBossBattles = () => {
 		ac.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
 	});
 
-	const allData: MergedData = {
+	const allData: BossData = {
 		playerData,
 		crew: allCrew,
-		fleetBossBattlesRoot: fleetbossData ?? {} as BossBattlesRoot
+		ephemeral: ephemeral,
+		fleetBossBattlesRoot: ephemeral?.fleetBossBattlesRoot ?? {} as BossBattlesRoot
 	};
 
 	return (
@@ -48,7 +54,7 @@ export const FleetBossBattles = () => {
 };
 
 const ChainPicker = () => {
-	const allData = React.useContext(BossDataContext);
+	const allData = React.useContext(BossDataContext);	
 
 	const [activeBoss, setActiveBoss] = useStateWithStorage<number | undefined>('fbb/active', undefined);
 	const [chain, setChain] = React.useState<Combo | undefined>(undefined);
