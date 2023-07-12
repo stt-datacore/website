@@ -21,10 +21,12 @@ import { MergedContext } from '../context/mergedcontext';
 
 
 const EventPlanner = () => {
-	const { playerData, crew: allCrew } = React.useContext(MergedContext);
+	const { ephemeral, playerData, crew: allCrew } = React.useContext(MergedContext);
 
-	const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);
+	const eventData = ephemeral?.events ?? [];
+	//const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
+	const activeCrew = ephemeral?.activeCrew ?? [];
+	//const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);
 
 	const [activeEvents, setActiveEvents] = React.useState<EventData[] | undefined>(undefined);
 	if (!activeEvents) {
@@ -55,7 +57,7 @@ const EventPlanner = () => {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
-				crewman.active_status = active.active_status;
+				crewman.active_status = active.active_status ?? 0;
 				active.id = '';	// Clear this id so that dupes are counted properly
 			}
 		}
