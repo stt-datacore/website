@@ -681,7 +681,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<div style={{
 							margin: "0.5em"
 						}}>
-						{pair[0].range_max}-{pair[0].range_min}
+						{pair[0].range_min}-{pair[0].range_max}
 					</div>
 				</div>
 				{pair.length > 1 &&
@@ -693,7 +693,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<div style={{
 							margin: "0.5em"
 						}}>
-						{pair[1].range_max}-{pair[1].range_min}
+						{pair[1].range_min}-{pair[1].range_max}
 					</div>
 				</div>}
 			</div>
