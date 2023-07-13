@@ -418,7 +418,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (!gauntlet) return undefined;
 
 		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
-
+		const displayOptions = [{
+			key: "big",
+			value:"big",
+			text: "Large Presentation"
+			},
+			{
+			key: "medium",
+			value:"medium",
+			text: "Small Presentation"
+			},
+			{
+			key: "table",
+			value:"table",
+			text: "Table"
+			}]
+			
 		return (
 		<div style={{
 			marginBottom: "2em"
@@ -452,13 +467,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						display: "flex",
 						flexDirection: "row",
 						justifyContent: "space-evenly",
-						width: "100%"
+						flexWrap: "wrap",
+						width: "50%",
+						margin: "0"
 					}}>
-						<CrewPresenter 
-							width="100%"
-							imageWidth="50%"
-							plugins={[GauntletSkill, ShipSkill]}
-							pluginData={[gauntlet, undefined]}
+						<CrewPresenter
+							hideStats
+							compact 
+							proficiencies
+							plugins={[GauntletSkill]}
+							pluginData={[gauntlet]}
 							selfRender={true}
 							selfPrepare={true}
 							onBuffToggle={this.onBuffToggle}

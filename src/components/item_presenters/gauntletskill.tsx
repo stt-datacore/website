@@ -4,7 +4,7 @@ import { CrewMember, Skill } from "../../model/crew";
 import { Gauntlet } from "../../model/gauntlets";
 import { PlayerCrew } from "../../model/player";
 import { PresenterPlugin, PresenterPluginBase, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
-import { getSkills } from "../../utils/crewutils";
+import { getPlayerPairs, getSkills } from "../../utils/crewutils";
 
 
 
@@ -29,7 +29,10 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         const { context: crew, data: node } = this.props;
         const prettyTraits = node.prettyTraits;
 
+
         const skills = getSkills(crew);
+        const pairs = getPlayerPairs(crew) ?? [[], []];
+
         let ask = [] as { name: string, max: number, min: number }[];
 
         for (let skill of skills) {
@@ -64,16 +67,21 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 justifyContent: "space-evenly",
                 alignItems: "center",
                 fontSize: "3em",
-                minHeight: "4em"
+//                minHeight: "4em"
             }}>
 
-                <div style={{margin: "0.5em"}}>
-                    { ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+                <div>
+                {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
                 </div>
                 <div style={{margin: "0.5em"}}>
                     {crew.base_skills[node.contest_data?.featured_skill ?? ""] ? 
                     <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
                     : ''}
+                </div>
+                <div style={{fontSize: "12pt", marginTop: "1em"}} title="Best Pair">                    
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} /> 
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} /> 
+                    <div style={{margin: "0.25em"}}>{"Best Pair"}</div>
                 </div>
             </div>
         </div>);
