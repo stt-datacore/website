@@ -17,9 +17,10 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
+import { DataWrapper } from '../context/datawrapper';
 
 const DEFAULT_MOBILE_WIDTH = 768;
-
+const isWindow = typeof window !== 'undefined';
 export interface CrewPageOptions {
 	key: string;
 	text: string;
@@ -63,23 +64,9 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones']) : false;
 
 	return (
-		<Layout narrowLayout={true}>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady && pd &&
-				<MergedContext.Provider value={{ 
-					playerData: pd, 
-					crew: coreData.crew,
-					items: coreData.items,
-					buffConfig: buffConfig,
-					maxBuffs: maxBuffs,
-					keystones: coreData.keystones
-					}}>
-					<StaticCrewComponent props={props} />
-				</MergedContext.Provider>
-			}
-		</Layout>
+		<DataWrapper header={''} demands={['items', 'crew', 'keystones']} narrowLayout={true}>
+			<StaticCrewComponent props={props} />
+		</DataWrapper> 
 	);
 };
 
@@ -239,6 +226,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						<div 
 							id='static_avatar'
 							style={{
+								width: 700,
 								display: "flex",								
 								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
 								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
@@ -248,27 +236,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								flexDirection: "column",
 								alignItems: "center",
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
-							}}>
-								{/* {window.innerWidth >= DEFAULT_MOBILE_WIDTH && this.state.itemBig &&
-								(<div style={{ 
-									zIndex: -1, 
-									position: "absolute", 
-									left: "0", 
-									top: "0", 
-									width: "100%", 
-									height: "100%", 
-									opacity: 0.025,
-									display: "flex", 
-									flexDirection: "column", 
-									justifyContent: "center", 
-									padding: "2.5em",
-									alignItems: "center"}}>
-									{crew.series && <img src={`/media/series/${crew.series}.png`} style={{ width: '40em' }} />}
-								</div>) ||
-								(<div>
-									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'medium' : 'small'} />}
-								</div>)								
-								} */}
+							}}>								
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
 								</div>

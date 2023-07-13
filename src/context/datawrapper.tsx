@@ -11,6 +11,7 @@ import { mergeShips } from "../utils/shiputils";
 import { Schematics, Ship } from "../model/ship";
 
 export interface DataWrapperProps {
+	narrowLayout?: boolean;
 	notReadyMessage?: string;
 	header: string;
 	children: JSX.Element;
@@ -44,7 +45,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const playerContext = React.useContext(PlayerContext);	
 	const { crew: crew } = coreData;
 	
-	const { data, notReadyMessage, children, header, pageId, pageTitle, clone } = props;
+	const { narrowLayout, data, notReadyMessage, children, header, pageId, pageTitle, clone } = props;
 	const { buffConfig } = playerContext;
     
     const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
@@ -90,7 +91,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	}
 
 	return (
-		<Layout header={header} title={pageTitle ?? header}>
+		<Layout header={header} title={pageTitle ?? header} narrowLayout={narrowLayout}>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>{notReadyMessage ?? "Loading data..."}</div>
 			}
