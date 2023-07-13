@@ -22,6 +22,8 @@ import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 
+export type GauntletViewMode = 'big' | 'small' | 'table';
+
 const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
@@ -101,7 +103,9 @@ export interface GauntletsPageState {
 	filterProps: FilterProps[];
 	appliedFilters: FilterProps[];
 
-	viewModes: ('big' | 'small' | 'table')[];
+	viewModes: GauntletViewMode[];
+
+	lastPlayerDate?: Date;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -119,8 +123,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	constructor(props: GauntletsPageProps) {
 		super(props);
 
-		const v1 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_0', 'big') ?? 'big';
-		const v2 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_1', 'big') ?? 'big';
+		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'big') ?? 'big';
+		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'big') ?? 'big';
 
 		this.state = {
 			hoverCrew: undefined,
@@ -243,11 +247,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return this.state.viewModes[index];
 	}
 
-	protected setViewMode(index: number, viewMode: 'big' | 'small' | 'table') {
+	protected setViewMode(index: number, viewMode: GauntletViewMode) {
 		if (this.state.viewModes[index] != viewMode) {
 			let vm = [ ... this.state.viewModes ];
 			vm[index] = viewMode;
-			this.tiny.setValue('viewMode_' + index, viewMode);
+			this.tiny.setValue('viewMode_' + index, viewMode, true);
 			this.setState({ ... this.state, viewModes: vm });
 		}
 	}
@@ -299,12 +303,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
+		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
+			this.gauntlets = undefined;
+			this.inited = false;
+		}
 		this.initData();
 	}
 
 	initData() {
-		const { allCrew, gauntlets } = this.context;
+		const { allCrew, gauntlets: gauntsin } = this.context;
+		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
+
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
+		
+		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		if (gauntlets && this.inited) return;
 
@@ -320,7 +332,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					.map((crew) => {
 						let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 						if (c) return c;
-						crew.immortal = this.context.playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+						if (!hasPlayer) crew.rarity = crew.max_rarity;
+						else crew.rarity = 0;
+						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 						return crew;
 					})
 					.sort((a, b) => {
@@ -396,7 +410,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
 				today, 
-				yesterday 
+				yesterday,
+				lastPlayerDate: this.context.playerData?.calc?.lastModified
 			});
 		}
 	}
@@ -486,7 +501,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					
 						options={displayOptions}
 							value={viewModes[idx]}
-							onChange={(e, { value }) => this.setViewMode(idx, value as ('big' | 'small' | 'table'))}
+							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
 							/>
 					</div>
 				</div>
