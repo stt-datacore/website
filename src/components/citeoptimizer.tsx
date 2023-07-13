@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -29,8 +30,8 @@ type CiteOptimizerProps = {
 };
 
 export interface CiteData {
-	crewToCite: PlayerCrew[], 
-	crewToTrain: PlayerCrew[] 
+	crewToCite: PlayerCrew[],
+	crewToTrain: PlayerCrew[]
 }
 
 type CiteOptimizerState = {
@@ -62,7 +63,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
-		
+
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,
@@ -92,7 +93,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
 		const { playerData, allCrew } = this.context;
-		
+
 		playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
@@ -104,7 +105,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 
 	cc = false;
-	
+
 	private createStateAccessors<T>(name): [T, (value: T) => void] { return [
 		this.state[name],
 		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
@@ -121,7 +122,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
-		
+
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
 			// if (matchMedia('(hover: hover)').matches) {
@@ -129,7 +130,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// }
 		}
 
-		return (<div style={{overflowX: "auto"}}>			
+		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -156,7 +157,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							>
 								<Table.Cell>{baseRow + idx + 1}</Table.Cell>
 								<Table.Cell>
-									<div										
+									<div
 										style={{
 											display: 'grid',
 											gridTemplateColumns: '60px auto',
@@ -164,24 +165,22 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											gridGap: '1px'
 										}}>
 										<div style={{ gridArea: 'icon' }}
-											
+
 										>
-											<CrewTarget targetGroup='citationTarget' 
-												inputItem={crew} 
+											<CrewTarget targetGroup='citationTarget'
+												inputItem={crew}
 												setDisplayItem={setCurrentCrew}>
-												<img 
+												<img
 													onClick={(e) => imageClick(e, crew)}
-													width={48} 
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
+													width={48}
+													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 													/>
 											</CrewTarget>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
-											<a onClick={(e) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}>
-												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-											</a>											
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 										</div>
-										
+
 									</div>
 								</Table.Cell>
 								<Table.Cell>
@@ -242,7 +241,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	get crew(): CrewMember | undefined {
 		return this.state.currentCrew ?? undefined;
 	}
-	
+
 	render() {
 
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
@@ -281,15 +280,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							}
 						}
 					]}
-				/>									
+				/>
 				<Segment>
 					<h3>Filter By Rarity</h3>
-					<RarityFilter 
-						rarityFilter={citeMode?.rarities ?? []} 
+					<RarityFilter
+						rarityFilter={citeMode?.rarities ?? []}
 						setRarityFilter={(data) => {
 							setCiteData(undefined);
 							setCiteMode({ ... citeMode ?? {}, rarities: data });
-						}} 
+						}}
 						/>
 				</Segment>
 
@@ -302,13 +301,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 					{citeData &&
 						<>
-						<Tab						
+						<Tab
 						 	panes={[
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, true) }
 						]} />
 						</>
-					}						
+					}
 				</Segment>
 				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
 

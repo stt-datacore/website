@@ -19,7 +19,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	renderTrigger?: () => JSX.Element;
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
-	
+
 	setIsOpen?: (value: boolean) => void;
 	isOpen?: boolean;
 
@@ -29,12 +29,12 @@ export interface CrewPickerProps<T extends OptionsBase> {
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const { handleSelect } = props;
-	
+
 	const context = React.useContext(MergedContext);
-	const { options, setOptions, isOpen, setIsOpen } = props;
+	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
-	const [modalIsOpen, setModalIsOpen] = React.useState(isOpen ?? false);
+	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
@@ -43,9 +43,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const inputRef = React.createRef<Input>();
 	const { pickerModal } = props;
 	const PickerModal = pickerModal as unknown as (typeof React.Component<OptionsModalProps<T>, any, any>);
-	if (isOpen !== undefined && isOpen !== modalIsOpen) {
-		setModalIsOpen(isOpen);
-	}
+
 	React.useEffect(() => {
 		const crewList = props.crewList.slice()
 			.map((crew, idx) => { return {...crew, pickerId: idx} });
@@ -55,6 +53,12 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	React.useEffect(() => {
 		if (modalIsOpen) inputRef.current?.focus();
 	}, [modalIsOpen]);
+
+	React.useEffect(() => {
+		if (props.isOpen !== undefined && props.isOpen) {
+			setModalIsOpen(true);
+		}
+	}, [props.isOpen]);
 
 	React.useEffect(() => {
 		setPaginationPage(1);
@@ -67,7 +71,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 		<Modal
 			open={modalIsOpen}
-			onClose={() => setModalIsOpen(false)}
+			onClose={closeModal}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
 			size='tiny'
@@ -99,12 +103,17 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 						onClick={() => confirmSelection(selectedCrew)} />
 				)}
 				{!selectedCrew && (
-					<Button content='Close' onClick={() => { if (setIsOpen) setIsOpen(false); setModalIsOpen(false); }} />
+					<Button content='Close' onClick={closeModal} />
 				)}
 			</Modal.Actions>
 		</Modal>
 		</div>
 	);
+
+	function closeModal(): void {
+		if (props.setIsOpen) props.setIsOpen(false);
+		setModalIsOpen(false);
+	}
 
 	function renderDefaultTrigger(): JSX.Element {
 		return (
@@ -160,7 +169,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 				{itemsToShow >= data.length && (
 					<Message style={{ marginTop: '2em' }}>Tip: Double-tap to select a crew more quickly.</Message>
 				)}
-			</div>			
+			</div>
 			</>
 
 		);

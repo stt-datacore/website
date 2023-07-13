@@ -53,7 +53,7 @@ const CollectionsTool = () => {
 			crew.immortal = owned[0].immortal;
 			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && (!owned[0].equipment || owned[0].equipment?.length == 4))) {
 				crew.immortal = CompletionState.Immortalized;
-			}			
+			}
 			crew.rarity = owned[0].rarity;
 			crew.level = owned[0].level;
 			crew.base_skills = {...owned[0].base_skills};
@@ -63,7 +63,7 @@ const CollectionsTool = () => {
 		}
 		return crew;
 	});
-	
+
 	const playerCollections = allCollections.map(ac => {
 		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0 };
 		if (playerData.player.character.cryo_collections) {
@@ -79,7 +79,7 @@ const CollectionsTool = () => {
 			collection.neededPct = 1 - collection.progressPct;
 			collection.needed = collection.milestone.goal > 0 ? Math.max(collection.milestone.goal - collection.progress, 0) : 0;
 		}
-		
+
 		collection.totalRewards = (collection.milestone.buffs?.length ?? 0) + (collection.milestone.rewards?.length ?? 0);
 		collection.owned = 0;
 
@@ -157,7 +157,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		setCollectionsFilter([collectionId]);
 		let opt: ScrollOptions
 		crewAnchor.current.scrollIntoView({
-			behavior: 'smooth',			
+			behavior: 'smooth',
 		});
 	}
 };
@@ -223,7 +223,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 					</Form.Group>
 				</Form>
 			</div>
-			<SearchableTable			
+			<SearchableTable
 				id='collections/progress'
 				data={playerCollections}
 				config={tableConfig}
@@ -267,7 +267,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 			if (filter.conditionArray?.length === 0) {
 				// text search only
 				for (let segment of filter.textSegments ?? []) {
-					let segmentResult = 
+					let segmentResult =
 						matchesFilter(collection.name, segment.text) ||
 						matchesFilter(collection.simpleDescription ?? "", segment.text) ||
 						collection.traits?.some(t => matchesFilter(t, segment.text));
@@ -316,7 +316,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const { allCrew, playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
 
 	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | undefined | null>(undefined);
-	
+
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
@@ -429,9 +429,9 @@ const CrewTable = (props: CrewTableProps) => {
 		if (crew.immortal === -1 || crew.immortal > 0) {
 			return false;
 		}
-		
+
 		if (!filterType) return true;
-		
+
 		if (collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < collectionsFilter.length; i++) {
@@ -483,7 +483,7 @@ const CrewTable = (props: CrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>

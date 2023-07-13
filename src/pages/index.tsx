@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Header, Table, Rating, Icon } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import { Link } from 'gatsby';
 
 import { DataContext, ValidDemands } from '../context/datacontext';
 import Layout from '../components/layout';
@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, isImmortal, navToCrewPage, prepareProfileData } from '../utils/crewutils';
+import { formatTierLabel, isImmortal, prepareProfileData } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -28,7 +28,7 @@ type IndexPageProps = {
 };
 
 interface Lockable {
-	symbol: string; 
+	symbol: string;
 	name: string;
 }
 
@@ -37,13 +37,13 @@ const IndexPage = (props: IndexPageProps) => {
 	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
-	
+
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext.maxBuffs;
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
 		maxBuffs = coreData.all_buffs;
-	} 
+	}
 
 	return (
 		<Layout>
@@ -80,7 +80,7 @@ type CrewStatsState = {
 	botcrew: (CrewMember | PlayerCrew)[],
 	playerCrew?: (CrewMember | PlayerCrew)[],
 	processedData?: PlayerData,
-	mode: "all" | "unowned" | "owned";	
+	mode: "all" | "unowned" | "owned";
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
@@ -92,7 +92,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		super(props);
 		this.tiny = TinyStore.getStore('index_page');
 
-		let mode = this.tiny.getValue<string>('mode', 'all');				
+		let mode = this.tiny.getValue<string>('mode', 'all');
 		this.state = {
 			botcrew: [],
 			tableConfig: [],
@@ -102,7 +102,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			mode
 		} as CrewStatsState;
 	}
-	
+
 	componentWillUnmount(): void {
 	}
 
@@ -112,7 +112,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	readonly setActiveCrew = (value: PlayerCrew | CrewMember | null | undefined): void => {
-		this.setState({ ... this.state, hoverCrew: value ?? undefined });		
+		this.setState({ ... this.state, hoverCrew: value ?? undefined });
 	}
 
 	async componentDidMount() {
@@ -132,7 +132,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			let crew = botcrew[i];
 			// Add dummy fields for sorting to work
 			CONFIG.SKILLS_SHORT.forEach(skill => {
-				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;				
+				crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
 			});
 
 			let bcrew = crew as PlayerCrew;
@@ -211,11 +211,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				{count.count} {count.name}{count.count != 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
 			</span>
 		)).reduce((prev, curr) => <>{prev} {curr}</>);
-		
+
 		const targetCrew = playerData?.player?.character?.crew?.find((te) => te.symbol === crew.symbol);
 
 		return (
-			<Table.Row key={crew.symbol} style={{ cursor: 'zoom-in' }} {...attributes}>
+			<Table.Row key={crew.symbol} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -225,19 +225,19 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							gridGap: '1px'
 						}}>
 						<div style={{ gridArea: 'icon', display: 'flex' }}>
-		
-							<CrewTarget 
-								targetGroup='indexPage' 
-								setDisplayItem={this.setActiveCrew} 
+
+							<CrewTarget
+								targetGroup='indexPage'
+								setDisplayItem={this.setActiveCrew}
 								inputItem={targetCrew ?? crew}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />								
-							</CrewTarget>							
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, playerCrew, this.context.buffConfig, this.context.allCrew)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>
-							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned && crew.immortal !== CompletionState.DisplayAsImmortalStatic) && 
+							{("immortal" in crew && crew.immortal !== CompletionState.DisplayAsImmortalUnowned && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 								descriptionLabel(crew, true) || formattedCounts}
 						</div>
 					</div>
@@ -288,7 +288,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			</Table.Row>
 		);
 	}
-	
+
 	render() {
 		const { botcrew, tableConfig, initOptions, lockable, mode } = this.state;
 		const { playerData } = this.context;

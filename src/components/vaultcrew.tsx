@@ -44,12 +44,12 @@ function formatCrewStats(crew: PlayerCrew, playerData?: PlayerData, allCrew?: Cr
 		<div>
 			<h4>Tier {formatTierLabel(crew)}</h4>
 			{skills}
-			<a onClick={(e) => navToCrewPage(crew, playerData?.player.character.crew, buffs, allCrew)}>Full details</a>
+			<Link to={`/crew/${crew.symbol}/`}>Full details</Link>
 		</div>
 	);
 }
 
-class VaultCrew extends PureComponent<VaultCrewProps> {	
+class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
 		const { allCrew, playerData, buffs, crew, itemsReady, items } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
