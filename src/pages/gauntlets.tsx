@@ -22,6 +22,8 @@ import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataWrapper } from '../context/datawrapper';
 
+export type GauntletViewMode = 'big' | 'small' | 'table';
+
 const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
@@ -67,7 +69,7 @@ export interface GauntletsPageState {
 	filterProps: FilterProps[];
 	appliedFilters: FilterProps[];
 
-	viewModes: ('big' | 'small' | 'table')[];
+	viewModes: GauntletViewMode[];
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -85,8 +87,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	constructor(props: GauntletsPageProps) {
 		super(props);
 
-		const v1 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_0', 'big') ?? 'big';
-		const v2 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_1', 'big') ?? 'big';
+		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'big') ?? 'big';
+		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'big') ?? 'big';
 
 		this.state = {
 			hoverCrew: undefined,
@@ -209,11 +211,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return this.state.viewModes[index];
 	}
 
-	protected setViewMode(index: number, viewMode: 'big' | 'small' | 'table') {
+	protected setViewMode(index: number, viewMode: GauntletViewMode) {
 		if (this.state.viewModes[index] != viewMode) {
 			let vm = [ ... this.state.viewModes ];
 			vm[index] = viewMode;
-			this.tiny.setValue('viewMode_' + index, viewMode);
+			this.tiny.setValue('viewMode_' + index, viewMode, true);
 			this.setState({ ... this.state, viewModes: vm });
 		}
 	}
@@ -452,7 +454,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					
 						options={displayOptions}
 							value={viewModes[idx]}
-							onChange={(e, { value }) => this.setViewMode(idx, value as ('big' | 'small' | 'table'))}
+							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
 							/>
 					</div>
 				</div>
