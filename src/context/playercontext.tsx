@@ -71,6 +71,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setStripped(undefined);
 		setEphemeral(undefined);
 		setProfile(undefined);
+		setPlayerShips(undefined);
+		setInput(undefined);
 		setLoaded(false);
 	}
 

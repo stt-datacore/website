@@ -3,7 +3,7 @@ import { Header } from "semantic-ui-react";
 import Layout from "../components/layout";
 import { PlayerData } from "../model/player";
 import { ValidDemands, DataContext } from "./datacontext";
-import { MergedContext } from "./mergedcontext";
+import { MergedContext, MergedData } from "./mergedcontext";
 import { PlayerContext } from "./playercontext";
 import { prepareProfileData } from "../utils/crewutils";
 import { BuffStatTable } from "../utils/voyageutils";
@@ -19,6 +19,11 @@ export interface DataWrapperProps {
      * Default demands are crew, items, ship_schematics, and all_buffs.
      */
 	demands?: ValidDemands[]
+
+    /**
+     * The demands to clone. Children will get a copy of the data.
+     */
+	clone?: ValidDemands[]
 
 	/** default is true */
 	initPlayerData?: boolean;
@@ -39,7 +44,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const playerContext = React.useContext(PlayerContext);	
 	const { crew: crew } = coreData;
 	
-	const { data, notReadyMessage, children, header, pageId, pageTitle } = props;
+	const { data, notReadyMessage, children, header, pageId, pageTitle, clone } = props;
 	const { buffConfig } = playerContext;
     
     const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
@@ -57,6 +62,32 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady && demands.includes("all_buffs")) {
 		maxBuffs = coreData.all_buffs;
 	} 
+	
+	const contextData = {
+		pageId,
+		data,
+		crew,
+		items: coreData.items,
+		playerData: playerData ?? {} as PlayerData,
+		buffConfig: buffConfig,
+		maxBuffs: maxBuffs,
+		dataSource: playerContext.dataSource,
+		playerShips,
+		ephemeral: playerContext.ephemeral,					
+		clearPlayerData: playerContext.reset,						
+		ship_schematics: coreData.ship_schematics,
+		ships: playerShips ? coreData.ships : undefined,
+		gauntlets: demands.includes('gauntlets') ? coreData.gauntlets : undefined,
+		keystones: demands.includes('keystones') ? coreData.keystones : undefined,
+	} as MergedData;
+
+	if (clone?.length) {
+		for (let cl of clone) {
+			if (cl in contextData) {
+				contextData[cl] = JSON.parse(JSON.stringify(contextData[cl]));
+			}
+		}
+	}
 
 	return (
 		<Layout header={header} title={pageTitle ?? header}>
@@ -65,23 +96,7 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 			}
 			{isReady &&
 				<React.Fragment>
-					<MergedContext.Provider value={{
-                        pageId,
-                        data,
-						crew,
-						items: coreData.items,
-                        playerData: playerData ?? {} as PlayerData,
-                        buffConfig: buffConfig,
-                        maxBuffs: maxBuffs,
-						dataSource: playerContext.dataSource,
-                        playerShips,
-						ephemeral: playerContext.ephemeral,					
-						clearPlayerData: playerContext.reset,						
-						ship_schematics: coreData.ship_schematics,
-                        ships: playerShips ? coreData.ships : undefined,
-                        gauntlets: demands.includes('gauntlets') ? coreData.gauntlets : undefined,
-                        keystones: demands.includes('keystones') ? coreData.keystones : undefined,
-					}}>						
+					<MergedContext.Provider value={contextData}>						
 						{children}
 					</MergedContext.Provider>
 				</React.Fragment>
