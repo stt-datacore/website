@@ -277,11 +277,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	initData() {
 		const { crew: allCrew, gauntlets: gauntin, playerData } = this.context;
+		if (!(allCrew?.length) || !(gauntin?.length)) return;
+
 		const gauntlets = JSON.parse(JSON.stringify(gauntin)) as Gauntlet[];
-		const haveData = !!playerData?.player?.character?.crew?.length;
-		if (!(allCrew?.length) || !(gauntlets?.length)) return;
-		
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!playerData?.player?.character?.crew?.length;
 
 		if (gauntlets && this.inited) return;
 
@@ -297,9 +296,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					.map((crew) => {
 						let c = playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 						if (c) return c;						
-						if (!haveData) crew.rarity = crew.max_rarity;
+						if (!hasPlayer) crew.rarity = crew.max_rarity;
 						else crew.rarity = 0;
-						crew.immortal = haveData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 						return crew;
 					})
 					.sort((a, b) => {
