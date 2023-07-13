@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message } from 'semantic-ui-react';
+import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message, Select, Dropdown, Rating } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql, Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -10,13 +10,13 @@ import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
-import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { BuffStatTable } from '../utils/voyageutils';
+import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { comparePairs, getPlayerPairs, getSkills, prepareOne, prepareProfileData } from '../utils/crewutils';
+import { comparePairs, getPlayerPairs, getSkills, navToCrewPage, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
@@ -100,6 +100,8 @@ export interface GauntletsPageState {
 	filteredCrew: (PlayerCrew | CrewMember)[][];
 	filterProps: FilterProps[];
 	appliedFilters: FilterProps[];
+
+	viewModes: ('big' | 'small' | 'table')[];
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -116,6 +118,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
+
+		const v1 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_0', 'big') ?? 'big';
+		const v2 = this.tiny.getValue<'big' | 'small' | 'table'>('viewMode_1', 'big') ?? 'big';
+
 		this.state = {
 			hoverCrew: undefined,
 			activePage: [],
@@ -127,6 +133,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageIndexTab: [0, 0],
 			itemsPerPageTab: [10, 10],
 			filteredCrew: [[], []],
+			viewModes: [v1, v2],
 			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
 			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
@@ -231,6 +238,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (this.playerBuffMode === value) return;
         this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
     }
+
+	protected getViewMode(index: number) {
+		return this.state.viewModes[index];
+	}
+
+	protected setViewMode(index: number, viewMode: 'big' | 'small' | 'table') {
+		if (this.state.viewModes[index] != viewMode) {
+			let vm = [ ... this.state.viewModes ];
+			vm[index] = viewMode;
+			this.tiny.setValue('viewMode_' + index, viewMode);
+			this.setState({ ... this.state, viewModes: vm });
+		}
+	}
 
 	private lastBuffMode: PlayerBuffMode | undefined = undefined;
 
@@ -414,7 +434,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 	
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
-		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
+		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes } = this.state;
 		if (!gauntlet) return undefined;
 
 		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
@@ -424,8 +444,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			text: "Large Presentation"
 			},
 			{
-			key: "medium",
-			value:"medium",
+			key: "small",
+			value:"small",
 			text: "Small Presentation"
 			},
 			{
@@ -448,15 +468,63 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
 					{prettyDate}
 				</h3>
-				<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-					{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
-				</h2>
+				<div style={{
+					display: "flex",
+					flexDirection:"row",
+					justifyContent: "space-between"
+				}}>
+					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
+						{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
+					</h2>
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+					}}>
+					<h4><b>View Mode</b></h4>
+					
+					<Dropdown
+					
+						options={displayOptions}
+							value={viewModes[idx]}
+							onChange={(e, { value }) => this.setViewMode(idx, value as ('big' | 'small' | 'table'))}
+							/>
+					</div>
+				</div>
 			</div>
 			
 			<div style={{margin:"1em 0"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>
 
+			{viewModes[idx] === 'big' &&
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap"
+			}}>
+				{activePageTabs[idx].map((crew, idx) => (
+					<div className="ui segment" style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-evenly",
+						width: "100%"
+					}}>
+						<CrewPresenter 
+							width="100%"
+							imageWidth="50%"
+							plugins={[GauntletSkill, ShipSkill]}
+							pluginData={[gauntlet, undefined]}
+							selfRender={true}
+							selfPrepare={true}
+							onBuffToggle={this.onBuffToggle}
+							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
+							storeName='gauntlets' 
+							hover={false} 
+							crew={crew} />
+					</div>
+				))}
+			</div>}
+			{viewModes[idx] === 'small' &&
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
@@ -486,8 +554,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							crew={crew} />
 					</div>
 				))}
-			</div>
-
+			</div>}
+			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
 			<div style={{margin:"1em 0"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>
@@ -496,6 +564,141 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		</div>
 		)
 
+	}
+
+
+	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
+		if (!data) return <></>;
+		
+		let pp = this.state.activePageIndexTab[idx] - 1;
+		pp *= this.state.itemsPerPageTab[idx];
+		
+		const buffConfig = this.context.buffConfig;
+		
+		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
+			console.log("imageClick");
+			// if (matchMedia('(hover: hover)').matches) {
+			// 	window.location.href = "/crew/" + data.symbol;
+			// }
+		}
+		
+		const setCurrentCrew = (crew) => {
+			this.setState({ ... this.state, hoverCrew: crew });
+		}
+		const prettyTraits = gauntlet.prettyTraits;
+		return (<div style={{overflowX: "auto"}}>			
+			<Table sortable celled selectable striped collapsing unstackable compact="very">
+				<Table.Header>
+					<Table.Row>
+						<Table.HeaderCell>Rank</Table.HeaderCell>
+						<Table.HeaderCell>Crew</Table.HeaderCell>
+						<Table.HeaderCell>Rarity</Table.HeaderCell>
+						<Table.HeaderCell>Crit Chance</Table.HeaderCell>
+						<Table.HeaderCell>1st Pair</Table.HeaderCell>
+						<Table.HeaderCell>2nd Pair</Table.HeaderCell>
+						<Table.HeaderCell>3rd Pair</Table.HeaderCell>
+						<Table.HeaderCell>Owned</Table.HeaderCell>
+						<Table.HeaderCell>In Portal</Table.HeaderCell>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{data.map((row, idx: number) => {
+						const crew = row;
+						const pairs = getPlayerPairs(crew);
+
+						return (crew &&
+							<Table.Row key={idx}
+							>
+								<Table.Cell>{idx + pp + 1}</Table.Cell>
+								<Table.Cell>
+									<div										
+										style={{
+											display: 'grid',
+											gridTemplateColumns: '60px auto',
+											gridTemplateAreas: `'icon stats' 'icon description'`,
+											gridGap: '1px'
+										}}>
+										<div style={{ gridArea: 'icon' }}
+											
+										>
+											<CrewTarget targetGroup='gauntletTable' 
+												inputItem={crew} 
+												setDisplayItem={setCurrentCrew}>
+												<img 
+													onClick={(e) => imageClick(e, crew)}
+													width={48} 
+													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
+													/>
+											</CrewTarget>
+										</div>
+										<div style={{ gridArea: 'stats' }}>
+											<a onClick={(e) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}>
+												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
+											</a>											
+										</div>
+										
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
+								</Table.Cell>
+								<Table.Cell>
+								{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+								</Table.Cell>								
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 1 && this.formatPair(pairs[0])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 2 && this.formatPair(pairs[1])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 3 && this.formatPair(pairs[2])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{crew.have === true ? "Yes" : "No"}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{crew.in_portal ? "Yes" : "No"}
+								</Table.Cell>
+							</Table.Row>
+						);
+					})}
+				</Table.Body>				
+			</Table>
+			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
+			</div>);
+	}
+
+	private formatPair(pair: Skill[]): JSX.Element {
+		
+		return (
+			<div>
+				<div style={{
+					display: "flex",
+					flexDirection: "row"
+				}}>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} /> 
+					<div style={{
+							margin: "0.5em"
+						}}>
+						{pair[0].range_max}-{pair[0].range_min}
+					</div>
+				</div>
+				{pair.length > 1 &&
+				<div style={{
+					display: "flex",
+					flexDirection: "row"
+				}}>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} /> 
+					<div style={{
+							margin: "0.5em"
+						}}>
+						{pair[1].range_max}-{pair[1].range_min}
+					</div>
+				</div>}
+			</div>
+			
+		)
 	}
 
 	private changeDate = (e: string) => {
@@ -574,7 +777,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 												/>
 												</CrewTarget>
 											</Link>
-											{ ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+											{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
 											<br />
 											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
 											</Grid.Column>
