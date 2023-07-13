@@ -35,7 +35,7 @@ const SKILLS = {
 
 const GauntletsPage = () => {	
 	return (
-		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
+		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']} clone={['crew']}>
 			<GauntletsPageComponent />
 		</DataWrapper>
 	);
@@ -51,6 +51,7 @@ export interface FilterProps {
 }
 
 export interface GauntletsPageState {
+	lastPlayerDate?: Date;
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	activePage: Gauntlet[];
 	activePageTabs: (PlayerCrew | CrewMember)[][];
@@ -267,17 +268,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
+		if (this.context.playerData?.calc?.lastModified !== this.state.lastPlayerDate) {
+			this.inited = false;
+			this.gauntlets = undefined;
+		}
 		this.initData();
 	}
 
 	initData() {
-		const { crew: allCrew, gauntlets } = this.context;
+		const { crew: allCrew, gauntlets: gauntin, playerData } = this.context;
+		const gauntlets = JSON.parse(JSON.stringify(gauntin)) as Gauntlet[];
+		const haveData = !!playerData?.player?.character?.crew?.length;
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
 
 		if (gauntlets && this.inited) return;
 
-		gauntlets.forEach((node, index) => {			
-			const prettyTraits = node.contest_data?.traits?.map(t => trait_names[t]);
+		gauntlets.forEach((gauntlet, index) => {			
+			const prettyTraits = gauntlet.contest_data?.traits?.map(t => trait_names[t]);
 			if (!prettyTraits) {
 				return null
 			}
@@ -286,9 +293,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 					.map((crew) => {
-						let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
-						if (c) return c;
-						crew.immortal = this.context.playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+						let c = playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+						if (c) return c;						
+						if (!haveData) crew.rarity = crew.max_rarity;
+						else crew.rarity = 0;
+						crew.immortal = haveData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 						return crew;
 					})
 					.sort((a, b) => {
@@ -311,19 +320,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let bp = getPlayerPairs(b, btrait);		
 						
 						if (ap && bp) {
-							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill, 1.65);
+							r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.65);
 							if (r === 0 && ap.length > 1 && bp.length > 1) {
-								r = comparePairs(ap[1], bp[1], node.contest_data?.featured_skill, 1.65);
+								r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.65);
 								if (r === 0 && ap.length > 2 && bp.length > 2) {
-									r = comparePairs(ap[2], bp[2], node.contest_data?.featured_skill, 1.65);
+									r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.65);
 								}
 							}
 						}
 						return r;
 					});
 			
-			node.matchedCrew = matchedCrew;
-			node.prettyTraits = prettyTraits;
+			gauntlet.matchedCrew = matchedCrew;
+			gauntlet.prettyTraits = prettyTraits;
 		});	
 
 		if (!this.gauntlets || !this.inited) {
@@ -364,7 +373,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
 				today, 
-				yesterday 
+				yesterday,
+				lastPlayerDate: this.context.playerData?.calc?.lastModified
 			});
 		}
 	}
