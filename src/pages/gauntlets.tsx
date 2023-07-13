@@ -24,6 +24,8 @@ import { DataWrapper } from '../context/datawrapper';
 
 export type GauntletViewMode = 'big' | 'small' | 'table';
 
+export type GauntletViewMode = 'big' | 'small' | 'table';
+
 const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
@@ -268,9 +270,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.context.playerData?.calc?.lastModified !== this.state.lastPlayerDate) {
-			this.inited = false;
+		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
 			this.gauntlets = undefined;
+			this.inited = false;
 		}
 		this.initData();
 	}
@@ -280,6 +282,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const gauntlets = JSON.parse(JSON.stringify(gauntin)) as Gauntlet[];
 		const haveData = !!playerData?.player?.character?.crew?.length;
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
+		
+		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		if (gauntlets && this.inited) return;
 
