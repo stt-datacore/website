@@ -24,8 +24,6 @@ import { DataWrapper } from '../context/datawrapper';
 
 export type GauntletViewMode = 'big' | 'small' | 'table';
 
-export type GauntletViewMode = 'big' | 'small' | 'table';
-
 const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
