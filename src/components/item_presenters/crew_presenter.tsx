@@ -207,6 +207,10 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
     onImmoToggle?: (state: PlayerImmortalMode) => void;
     selfRender?: boolean;
     selfPrepare?: boolean;
+    compact?: boolean;
+    hideStats?: boolean;
+    showPortrait?: boolean;
+    proficiencies?: boolean;
 }
 
 export interface CrewPresenterState {
@@ -296,11 +300,10 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
     }
    
     render(): JSX.Element {
-        const { crew: inputCrew, openCrew, touched, hover, pluginData, width, imageWidth } = this.props;
+        const { proficiencies, crew: inputCrew, openCrew, touched, hover, showPortrait, pluginData, width, imageWidth, compact, hideStats } = this.props;
         
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
-        const compact = this.props.hover;                
-
+        
         if (!inputCrew) {
             return <></>
         } 
@@ -449,7 +452,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         padding: "2.5em",
                         alignItems: "center"}}>
                     
-                    {compact && crew.series && <Image src={`/media/series/${crew.series}.png`}  />}
+                    {hover && crew.series && <Image src={`/media/series/${crew.series}.png`}  />}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", width: hover ? undefined : imageWidth}}>            
                     <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
@@ -458,15 +461,28 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         </>}    
                     </div>        
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>                        
+                        {!showPortrait &&
                         <img
                             src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-                            style={{ height: compact ? (window.innerWidth < mobileWidth ? "15em" : "19em") : "25em", marginRight: "8px" }}
-                        />
+                            style={{ 
+                                height: hover ? (window.innerWidth < mobileWidth ? "15em" : "19em") : (compact ? '10em' : "25em"), 
+                                marginRight: "8px" 
+                            }}
+                        />}
+                        {showPortrait &&
+                        <img
+                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                            style={{ 
+                                width: (compact ? '5em' : "10em"), 
+                                marginRight: "8px" 
+                            }}
+                        />}
                     </div>
+                    {!compact &&
                     <div style={{marginBottom: "0.13em", marginRight: "0.5em"}}>                        
                     
                     <CrewItemsView crew={crew} />
-                    </div>
+                    </div>}
                 </div>
                 <div
                     style={{
@@ -574,39 +590,45 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         }}
                     >
                         {skillData.base_skills.security_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="security_skill"
                             data={skillData.base_skills.security_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
                         
                         {skillData.base_skills.command_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="command_skill"
                             data={skillData.base_skills.command_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
                         
                         {skillData.base_skills.diplomacy_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="diplomacy_skill"
                             data={skillData.base_skills.diplomacy_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
 
                         {skillData.base_skills.science_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="science_skill"
                             data={skillData.base_skills.science_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
 
                         {skillData.base_skills.medicine_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="medicine_skill"
                             data={skillData.base_skills.medicine_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
 
                         {skillData.base_skills.engineering_skill && <CrewStat
+                            proficiencies={proficiencies}
                             skill_name="engineering_skill"
                             data={skillData.base_skills.engineering_skill}
-                            scale={compact ? 0.75 : 1}
+                            scale={hover ? 0.75 : 1}
                         />}
                         <div style={{ width: "4px" }} />
                     </div>
@@ -639,10 +661,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             <i onClick={(e) => { this.setSelectedPlugin(selectedPlugin - 1) }} className="arrow alternate circle left icon" title="Previous Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                             <i onClick={(e) => { this.setSelectedPlugin(selectedPlugin + 1)  }} className="arrow alternate circle right icon" title="Next Pane" style={{...activeStyle, fontSize: "0.8em", marginRight: "0.5em"}} />
                         </div>
-                    </div>
-                    }
-                    <div>
-
+                    </div>}                    
+                    {!hideStats && <div>
                         <div
                             style={{
                                 textAlign: "center",
@@ -676,8 +696,8 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                                 value={crew.cab_ov ?? 'None'}
                             />
                         </div>
-                    </div>
-                    <div>
+                    </div>}
+                    {!hideStats && <div>
                         <div
                             style={{
                                 textAlign: "center",
@@ -713,7 +733,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                             />
 
                         </div>
-                    </div>
+                    </div>}
                    
                 </div>
             </div>) : <></>
