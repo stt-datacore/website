@@ -433,7 +433,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
         const noPortalText = npt;
 
         return crew ? (<div style={{ 
-                            fontSize: window.innerWidth < mobileWidth ? "10pt" : "11pt", 
+                            fontSize: window.innerWidth < mobileWidth || compact ? "10pt" : "11pt", 
                             display: "flex", 
                             flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
                             width: hover ? undefined : width
@@ -465,7 +465,7 @@ export class CrewPresenter extends React.Component<CrewPresenterProps, CrewPrese
                         <img
                             src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                             style={{ 
-                                height: hover ? (window.innerWidth < mobileWidth ? "15em" : "19em") : (compact ? '10em' : "25em"), 
+                                height: hover ? (window.innerWidth < mobileWidth ? "15em" : "19em") : (compact ? '14em' : "25em"), 
                                 marginRight: "8px" 
                             }}
                         />}
