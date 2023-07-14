@@ -478,7 +478,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				flexDirection: "column",
 				justifyContent: "flex-start",
 				margin: "0.25em 0"
-			}}>
+			}}> 
 				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
 					{prettyDate}
 				</h3>
