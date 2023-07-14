@@ -87,6 +87,8 @@ export interface GauntletsPageState {
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	activePage: Gauntlet[];
 	activePageTabs: (PlayerCrew | CrewMember)[][];
+	activePrevGauntlet?: Gauntlet;
+
 	today?: Gauntlet;
 	yesterday?: Gauntlet;
 	totalPages: number;
@@ -297,6 +299,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return newcrew;
 	}
 
+
+
 	componentDidMount() {
 		this.initData();
 	}
@@ -309,6 +313,61 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.initData();
 	}
 
+	readonly getGauntletCrew = (gauntlet: Gauntlet) => {
+		const { allCrew } = this.context;
+		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+
+		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
+		if (!prettyTraits) {
+			return null
+		}
+		const matchedCrew =
+			allCrew.filter(e => e.max_rarity > 3 && (
+				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
+				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
+				.map((crew) => {
+					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+					if (c) return c;
+					if (!hasPlayer) crew.rarity = crew.max_rarity;
+					else crew.rarity = 0;
+					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					return crew;
+				})
+				.sort((a, b) => {
+					let r = 0;
+
+					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
+					let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
+
+					if (atrait >= 3) atrait = 3.90;
+					else if (atrait >= 2) atrait = 2.7;
+					else if (atrait >= 1) atrait = 1.5;
+					else atrait = 0.30;
+
+					if (btrait >= 3) btrait = 3.90;
+					else if (btrait >= 2) btrait = 2.7;
+					else if (btrait >= 1) btrait = 1.5;
+					else btrait = 0.30;
+
+					let ap = getPlayerPairs(a, atrait);
+					let bp = getPlayerPairs(b, btrait);
+
+					if (ap && bp) {
+						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.65);
+						if (r === 0 && ap.length > 1 && bp.length > 1) {
+							r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.65);
+							if (r === 0 && ap.length > 2 && bp.length > 2) {
+								r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.65);
+							}
+						}
+					}
+					return r;
+				});
+
+		gauntlet.matchedCrew = matchedCrew;
+		gauntlet.prettyTraits = prettyTraits;
+	}
+
 	initData() {
 		const { allCrew, gauntlets: gauntsin } = this.context;
 		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
@@ -319,7 +378,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (gauntlets && this.inited) return;
 
-		gauntlets.forEach((node, index) => {
+		gauntlets.slice(0, 2).forEach((node, index) => {
 			const prettyTraits = node.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 			if (!prettyTraits) {
 				return null
