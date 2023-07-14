@@ -1,13 +1,17 @@
 import React from 'react';
-import { Header, Grid, Rating, Divider, Message, Button } from 'semantic-ui-react';
+import { Header, Button, Segment, Table, Rating } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import marked, { options } from 'marked';
 
 import Layout from '../components/layout';
 import CrewPicker from '../components/crewpicker';
-import CommonCrewData from '../components/commoncrewdata';
+import { CrewPresenter } from '../components/item_presenters/crew_presenter';
+import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
 
-import { getStoredItem } from '../utils/storage';
+import CONFIG from '../components/CONFIG';
+
+import { crewMatchesSearchFilter } from '../utils/crewsearch';
+import CABExplanation from '../components/cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { ICrewDemands, ICrewDemandsMeta } from '../utils/equipment';
@@ -15,7 +19,7 @@ import { MarkdownRemark } from '../model/game-elements';
 import { PlayerContext } from '../context/playercontext';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
-import { crewCopy } from '../utils/crewutils';
+import { formatTierLabel, crewCopy } from '../utils/crewutils';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../components/base/optionsmodal_base';
 
 type BeholdsPageProps = {
@@ -24,10 +28,8 @@ type BeholdsPageProps = {
 
 const BeholdsPage = (props: BeholdsPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const playerContext = React.useContext(PlayerContext);	
+	const playerContext = React.useContext(PlayerContext);
 
-	const { crew: allCrew } = coreData;
-	const { strippedPlayerData } = playerContext;
 	const isReady = coreData.ready ? coreData.ready(['crew', 'items', 'all_buffs']) : false;
 
 	return (
@@ -38,12 +40,12 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 			{isReady &&
 				<React.Fragment>
 					<MergedContext.Provider value={{
-						allCrew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
+						allCrew: coreData.crew,
+						playerData: {} as PlayerData,	/* Disable support for playerData until global player finalized */
 						items: coreData.items
 					}}>
 						<Header as='h2'>Behold helper</Header>
-						<CrewSelector crewList={allCrew} />
+						<CrewSelector crewList={coreData.crew} />
 					</MergedContext.Provider>
 				</React.Fragment>
 			}
@@ -61,7 +63,7 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 	const filterCrew = (data: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		const myFilter = searchFilter ??= '';
 
-		// Filtering	
+		// Filtering
 		const portalFilter = (crew: PlayerCrew | CrewMember) => {
 			if (options.portal.substr(0, 6) === 'portal' && !crew.in_portal) return false;
 			if (options.portal === 'portal-unique' && (crew.unique_polestar_combos?.length ?? 0) === 0) return false;
@@ -80,21 +82,14 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 		);
 
 		return data;
-	}
+	};
 
 	return (
 		<React.Fragment>
 			<CrewPicker defaultOptions={DEFAULT_BEHOLD_OPTIONS} filterCrew={filterCrew} pickerModal={BeholdOptionsModal} crewList={crewList} handleSelect={onCrewPick} options={options} setOptions={setOptions} />
-			<Divider horizontal hidden />
-			<CrewComparison crewList={crewList} selectedCrew={selectedCrew} handleDismiss={onCrewDismiss} />
-			{selectedCrew.length > 0 &&
-				<Message>
-					<Message.Header>
-						Preview in your roster
-					</Message.Header>
-					<Button compact icon='add user' color='green' content='Preview all in your roster' onClick={addProspects} />
-				</Message>
-			}
+			<CrewDetails selectedCrew={selectedCrew} crewList={crewList} handleDismiss={onCrewDismiss} />
+			{selectedCrew.length > 0 && <CrewTable selectedCrew={selectedCrew} crewList={crewList} />}
+			{selectedCrew.length > 0 && <div style={{ marginTop: '2em' }}>Permalink (To do)</div>}
 		</React.Fragment>
 	);
 
@@ -109,33 +104,25 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 		selectedCrew.splice(selectedIndex, 1);
 		setSelectedCrew([...selectedCrew]);
 	}
-
-	function addProspects(): void {
-		const linkUrl = '/playertools?tool=crew';
-		const linkState = {
-			prospect: selectedCrew
-		};
-		navigate(linkUrl, { state: linkState });
-	}
 };
 
-type CrewComparisonProps = {
+type CrewDetailsProps = {
 	selectedCrew: string[];
-	handleDismiss: (selectedIndex: number) => void;	
 	crewList: (PlayerCrew | CrewMember)[];
+	handleDismiss: (selectedIndex: number) => void;
 };
 
-export interface CrewComparisonEntry {
+interface CrewDetailsEntry {
 	markdown: string;
 	crew: (PlayerCrew | CrewMember);
 	crewDemands: ICrewDemandsMeta;
 	markdownRemark: MarkdownRemark;
 }
 
-const CrewComparison = (props: CrewComparisonProps) => {
+const CrewDetails = (props: CrewDetailsProps) => {
 	const { selectedCrew } = props;
 
-	const entries = [] as CrewComparisonEntry[];
+	const entries = [] as CrewDetailsEntry[];
 	selectedCrew.forEach(symbol => {
 		const crew = props.crewList.find(crew => crew.symbol === symbol);
 		if (!crew) {
@@ -162,33 +149,194 @@ const CrewComparison = (props: CrewComparisonProps) => {
 	});
 
 	return (
-		<Grid columns={3} stackable centered padded divided>
+		<div style={{ marginTop: '2em' }}>
 			{entries.map((entry, idx) => (
-				<Grid.Column key={idx}>
-					<Message onDismiss={() => { props.handleDismiss(idx); }}>
-						<Message.Header>
-							<Link to={`/crew/${entry.crew.symbol}/`}>
-								{entry.crew.name}
-							</Link>
-						</Message.Header>
-						<Rating defaultRating={entry.crew.max_rarity} maxRating={entry.crew.max_rarity} icon='star' size='small' disabled />
-					</Message>
-					<CommonCrewData compact={true} crewDemands={entry.crewDemands} crew={entry.crew} markdownRemark={entry.markdownRemark} roster={undefined} />
-					{entry.markdown && (
-						<React.Fragment>
-							<div dangerouslySetInnerHTML={{ __html: entry.markdown }} />
-							<div style={{ marginTop: '1em' }}>
-								<a href={`https://www.bigbook.app/crew/${entry.crew.symbol}`}>View {entry.crew.name} on Big Book</a>
-							</div>
-						</React.Fragment>
-					)}
-				</Grid.Column>
+				<Segment key={entry.crew.symbol} style={{ width: '100%' }}>
+					<CrewPresenter
+						width='100%'
+						imageWidth='50%'
+						selfRender={true}
+						selfPrepare={true}
+						storeName='behold'
+						hover={false}
+						crew={entry.crew} />
+					<div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: entry.markdown }} />
+					<div style={{ marginTop: '1em', textAlign: 'right' }}>
+						<a href={`https://www.bigbook.app/crew/${entry.crew.symbol}`} target='_blank'>
+							View {entry.crew.name} on Big Book
+						</a>
+					</div>
+					<div style={{ marginTop: '1em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+						<Button compact icon='add user' color='green'
+							content={`Preview ${entry.crew.name} in your roster`}
+							onClick={() => addProspects([entry.crew.symbol])}
+						/>
+						<Button compact icon='ban'
+							content='Dismiss'
+							onClick={() => { props.handleDismiss(idx); }}
+						/>
+					</div>
+				</Segment>
 			))}
-		</Grid>
+			{selectedCrew.length > 0 &&
+				<Button icon='add user' color='green'
+					content='Preview all in your roster'
+					onClick={() => addProspects(selectedCrew)}
+				/>
+			}
+		</div>
 	);
+
+	function addProspects(crewSymbols: string[]): void {
+		const linkUrl = '/playertools?tool=crew';
+		const linkState = {
+			prospect: crewSymbols
+		};
+		navigate(linkUrl, { state: linkState });
+	}
 };
 
+type CrewTableProps = {
+	selectedCrew: string[];
+	crewList: (PlayerCrew | CrewMember)[];
+};
 
+const CrewTable = (props: CrewTableProps) => {
+	const { selectedCrew } = props;
+
+	const data = [] as (CrewMember | PlayerCrew)[];
+	selectedCrew.forEach(symbol => {
+		const crew = props.crewList.find(crew => crew.symbol === symbol);
+		if (!crew) {
+			console.error(`Crew ${symbol} not found in crew.json!`);
+			return;
+		}
+		// Add dummy fields for sorting to work
+		CONFIG.SKILLS_SHORT.forEach(skill => {
+			crew[skill.name] = crew.base_skills[skill.name] ? crew.base_skills[skill.name].core : 0;
+		});
+		crew.unique_polestar_combos = crew.unique_polestar_combos ?? [];
+		data.push(crew);
+	});
+
+	const tableConfig: ITableConfigRow[] = [
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'date_added'] },
+		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
+		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
+		{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
+		{ width: 1, column: 'ranks.gauntletRank', title: 'Gauntlet' },
+		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
+		{ width: 1, column: 'events', title: 'Events', reverse: true },
+		{ width: 1, column: 'unique_polestar_combos.length', title: 'Unique Combos', reverse: true, tiebreakers: ['in_portal'] },
+		{ width: 1, column: 'factionOnlyTotal', title: 'Faction items' },
+		{ width: 1, column: 'totalChronCost', title: 'Chron cost' },
+		{ width: 1, column: 'craftCost', title: 'Credit cost' }
+	];
+	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		tableConfig.push({
+			width: 1,
+			column: `${skill.name}`,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			reverse: true
+		});
+	});
+
+	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+
+	return (
+		<div style={{ marginTop: '2em' }}>
+			<SearchableTable
+				id='behold'
+				data={data}
+				config={tableConfig}
+				renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? -1)}
+				filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
+				showFilterOptions={true}
+			/>
+		</div>
+	);
+
+	function renderTableRow(crew: CrewMember | PlayerCrew, idx: number): JSX.Element {
+		let bestGPair = '', bestGRank = 1000;
+		Object.keys(crew.ranks).forEach(key => {
+			if (key.slice(0, 1) === 'G') {
+				if (crew.ranks[key] < bestGRank) {
+					bestGPair = key.slice(2).replace('_', '/');
+					bestGRank = crew.ranks[key];
+				}
+			}
+		});
+
+		return (
+			<Table.Row key={crew.symbol}>
+				<Table.Cell>
+					<div
+						style={{
+							display: 'grid',
+							gridTemplateColumns: '60px auto',
+							gridTemplateAreas: `'icon stats' 'icon description'`,
+							gridGap: '1px'
+						}}>
+						<div style={{ gridArea: 'icon', display: 'flex' }}>
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+						</div>
+						<div style={{ gridArea: 'stats' }}>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+						</div>
+					</div>
+				</Table.Cell>
+				<Table.Cell>
+					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					<b>{formatTierLabel(crew)}</b>
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>{crew.cab_ov}</b><br />
+					<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>#{crew.ranks.voyRank}</b><br />
+					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					<b>#{crew.ranks.gauntletRank}</b>
+					{bestGPair !== '' && <><br /><small>{bestGPair} #{bestGRank}</small></>}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{crew.collections.length}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{crew.events}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{!crew.in_portal ? 'N/A' : crew.unique_polestar_combos.length}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{crew.factionOnlyTotal}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{crew.totalChronCost}
+				</Table.Cell>
+				<Table.Cell style={{ textAlign: 'center' }}>
+					{crew.craftCost}
+				</Table.Cell>
+				{CONFIG.SKILLS_SHORT.map(skill =>
+					crew.base_skills[skill.name] ? (
+						<Table.Cell key={skill.name} textAlign='center'>
+							<b>{crew.base_skills[skill.name].core}</b>
+							<br />
+							+({crew.base_skills[skill.name].range_min}-{crew.base_skills[skill.name].range_max})
+						</Table.Cell>
+					) : (
+						<Table.Cell key={skill.name} />
+					)
+				)}
+			</Table.Row>
+		);
+	}
+};
 
 export interface BeholdModalOptions extends OptionsBase {
 	portal: string;
@@ -205,7 +353,7 @@ export const DEFAULT_BEHOLD_OPTIONS = {
 export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
 	props: any;
-    
+
     protected getOptionGroups(): OptionGroup[] {
         return [
             {
@@ -283,17 +431,13 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 			|| options.series.length !== this.props.options.series.length || !this.props.options.series.every(s => options.series.includes(s))
 			|| options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
 
-		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
-			this.setState({ ... this.state, isDefault, isDirty });
+		if (this.state.isDefault !== isDefault || this.state.isDirty !== isDirty) {
+			this.setState({ ...this.state, isDefault, isDirty });
 			return true;
 		}
 
 		return false;
 	}
-	
-
 };
-
-
 
 export default BeholdsPage;
