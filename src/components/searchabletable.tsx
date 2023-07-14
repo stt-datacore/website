@@ -27,7 +27,7 @@ const pagingOptions = [
 
 export enum SortDirection {
 	Ascending = 'ascending',
-	Descending = 'descending'	
+	Descending = 'descending'
 }
 
 export interface SortConfig {
@@ -271,15 +271,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	const { toolCaption: caption, checkableEnabled, checkableValue, setCheckableValue } = props;
 
-
-
 	return (
 		<div>
-			<div style={{ 
-				display: "flex", 
+			<div style={{
+				display: "flex",
 				flexDirection: "row",
 				alignItems: "center",
-				justifyContent: "flex-start" 
+				justifyContent: "flex-start"
 				}}>
 
 			<Input
@@ -313,15 +311,15 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			{caption && setCheckableValue !== undefined && (
 				<div style={{
 					margin: "0.5em",
-					display:"flex", 
+					display:"flex",
 					flexDirection: "row",
 					alignItems: "center",
 					justifyContent: "flex-start",
 					alignSelf: "flex-end"
 				}}>
-					<Checkbox 						
-						onChange={(e, d) => setCheckableValue(d.checked)} 
-						checked={checkableValue} 
+					<Checkbox
+						onChange={(e, d) => setCheckableValue(d.checked)}
+						checked={checkableValue}
 						disabled={!checkableEnabled} />
 					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
 				</div>
@@ -330,7 +328,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			{caption && props.dropDownChoices?.length && (
 				<div style={{
 					margin: "0.5em",
-					display:"flex", 
+					display:"flex",
 					flexDirection: "row",
 					alignItems: "center",
 					justifyContent: "flex-start",
@@ -353,12 +351,14 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					</span>
 					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
 				</div>
-			)}		
-			
+			)}
+
 			</div>
+
 			<div>
 				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 			</div>
+
 			{filteredCount === 0 && (
 				<div style={{ margin: '2em 0' }}>
 					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
@@ -366,7 +366,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div style={{overflowX: props.overflowX ?? 'auto'}}>
+				<div style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
 				<Table sortable celled selectable striped collapsing unstackable compact="very">
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>

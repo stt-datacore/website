@@ -34,7 +34,7 @@ type ShipProfileState = {
 	currentStation: number;
 	modalOptions: ShipCrewModalOptions;
 	crewStations: (PlayerCrew | undefined)[];
-	modalOpen: boolean;	
+	modalOpen: boolean;
 	hoverItem?: PlayerCrew | CrewMember;
 };
 
@@ -52,7 +52,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	constructor(props: ShipProfileProps) {
 		super(props);
 
-		this.state = {			
+		this.state = {
 			data: [],
 			originals: [],
 			currentStationCrew: [],
@@ -67,11 +67,11 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			this.setState({ ... this.state, modalOpen: value });
 		}
 	}
-	
+
 	private onCrewPick(crew: PlayerCrew | CrewMember): void {
 		let stations = [ ... this.state.crewStations ];
 		stations[this.state.currentStation] = crew as PlayerCrew;
-		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });	
+		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
 		if (isWindow) window.setTimeout(() => this.setActiveShip());
 	}
 
@@ -102,7 +102,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		const { crewStations } = this.state;
-		
+
 		const myFilter = searchFilter ??= '';
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		let data = crew.filter(crew =>
@@ -138,7 +138,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	private readonly setActiveShip = () => {
 		const { crewStations, inputShip: ship } = this.state;
-		
+
 		if (!ship || !crewStations?.length) return;
 
 		for (let action of ship.actions ?? []) {
@@ -151,7 +151,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			if (crew === undefined) continue;
 			newship.crit_bonus ??= 0;
 			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
-			
+
 			newship.crit_chance ??= 0;
 			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
 
@@ -182,9 +182,9 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		if (window.location.href.includes("ship")) {
 			if (!ship_key || !this.context.playerShips) {
 				navigate('/playertools?tool=ships');
-			}		
+			}
 		}
-        
+
 		const ship = this.context.playerShips?.find(d => d.symbol === ship_key);
 
 		if (ship) {
@@ -213,7 +213,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		if (isWindow && window.location.href.includes("ship")) {
 			if (!ship_key || !data) {
 				navigate('/playertools?tool=ships');
-			}		
+			}
 		}
 
 		const renderCrewCaption = (crew: PlayerCrew | CrewMember) => {
@@ -243,13 +243,13 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						alignItems: "center"
 					}}>
 					<img style={{
-							margin: "0.25em 0.25em 0.25em 0.25em", 
-							maxWidth: "2em", 
+							margin: "0.25em 0.25em 0.25em 0.25em",
+							maxWidth: "2em",
 							maxHeight: "1.5em"
-						}} 
-						src={getShipBonusIcon(crew.action)} 
+						}}
+						src={getShipBonusIcon(crew.action)}
 					/>
-					<span style={{ lineHeight: "1.3em"}}> 
+					<span style={{ lineHeight: "1.3em"}}>
 						{getShipBonus(crew.action, undefined, true)}
 					</span>
 				</div>
@@ -261,17 +261,17 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		return (<>
 			<div>
-			<CrewPicker 					
+			<CrewPicker
 					renderCrewCaption={renderCrewCaption}
 					isOpen={modalOpen}
 					setIsOpen={this.setModalOpen}
 					filterCrew={this.filterCrew}
 					renderTrigger={() => <div></div>}
-					crewList={currentStationCrew} 
+					crewList={currentStationCrew}
 					defaultOptions={DEFAULT_SHIP_OPTIONS}
-					pickerModal={ShipCrewOptionsModal} 
-					options={modalOptions} 
-					setOptions={(opt) => this.setOptions(opt)} 
+					pickerModal={ShipCrewOptionsModal}
+					options={modalOptions}
+					setOptions={(opt) => this.setOptions(opt)}
 					handleSelect={(crew) => this.onCrewPick(crew)}
 					/>
 
@@ -279,7 +279,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 			<CrewHoverStat crew={hoverItem} targetGroup='ship_profile' />
             <div style={{
-                display: "flex",				
+                display: "flex",
 				width: "100%",
                 fontSize: "12pt",
                 flexDirection: "column",
@@ -307,23 +307,23 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					padding: 0
 				}}>
 					{ship.battle_stations?.map((bs, idx) => (
-						<div style={{
+						<div key={idx} style={{
 							display: "flex",
 							flexDirection: "column",
 							justifyContent: "center",
 							alignItems: "center"
 						}}>
-						<div key={idx} 
+						<div
 							onClick={(e) => this.clickStation(idx, bs.skill)}
-							className="ui segment button" 
+							className="ui segment button"
 							style={{
 								margin: "2em",
 								display: "flex",
 								flexDirection: "row",
-								width: "128px", 
-								height: "128px", 
-								padding: "1em", 
-								justifyContent: "center", 
+								width: "128px",
+								height: "128px",
+								padding: "1em",
+								justifyContent: "center",
 								alignItems: "center"}}>
 							{crewStations[idx] && (
 								<CrewTarget inputItem={crewStations[idx]} setDisplayItem={(crew) => this.setHoverItem(crew ?? undefined)} targetGroup='ship_profile'>
@@ -356,13 +356,13 @@ export const DEFAULT_SHIP_OPTIONS = {
 	abilities: [],
 } as ShipCrewModalOptions;
 
-export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {	
+export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 	protected setAbility(abilities: string[]) {
 		let opt = { ... this.state.options }  as ShipCrewModalOptions;
-		
+
 		if (!('abilities' in opt) || (JSON.stringify(opt['abilities']) != JSON.stringify(abilities))) {
 			opt.abilities = abilities;
-			this.setState({ ... this.state, options: opt }); 
+			this.setState({ ... this.state, options: opt });
 		}
 	}
 
@@ -373,7 +373,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 			if (idx >= 9) return;
 			abilityOptions.push({
 				key: key,
-				value: key,				
+				value: key,
 				text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[key]
 			});
 		});
@@ -395,7 +395,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 				renderContent: () => <div style={{margin: "0.5em 0px"}}>
 					<ShipAbilityPicker selectedAbilities={this.state.options['abilities'] as string[]} setSelectedAbilities={(a) => this.setAbility(a)} />
 					</div>
-				
+
             }]
     }
 
@@ -439,7 +439,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 
 		return false;
 	}
-	
+
 
 };
 

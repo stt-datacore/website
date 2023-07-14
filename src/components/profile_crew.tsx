@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Table, Icon, Rating, Form, Header, Button, Dropdown, Checkbox } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import { Link } from 'gatsby';
 
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption } from '../components/searchabletable';
 
@@ -98,7 +98,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const [wizard, setWizard] = React.useState(undefined);
 
 	const myCrew = prospects?.length ? JSON.parse(JSON.stringify(props.myCrew)) : props.myCrew;
-	
+
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew?.map(ac => {
 		return {
@@ -150,7 +150,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	prospects?.forEach((p) => {
 		let crew = allCrew.find((c) => c.symbol == p.symbol);
 		if (crew) {
-			let prospect = oneCrewCopy(crew) as PlayerCrew;		
+			let prospect = oneCrewCopy(crew) as PlayerCrew;
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
 			prospect.have = false;
@@ -159,7 +159,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 			let mc = myCrew.find(item => item.symbol === p.symbol);
 			if (!mc) {
 				prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
-			}			
+			}
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score = { "core": 0, "min": 0, "max" : 0 };
 				if (prospect.base_skills[skill.name]) {
@@ -202,7 +202,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	return (
 		<React.Fragment>
 			<ProfileCrewTable ships={ships} allCrew={allCrew} playerData={props.playerData} pageId={pageId ?? 'crewTool'} crew={myCrew} initOptions={initOptions} lockable={lockable} wizard={wizard} />
-			{!(pageId?.includes("profile_")) && 
+			{!(pageId?.includes("profile_")) &&
 				<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />}
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
@@ -238,7 +238,7 @@ export type ProfileCrewTableProps = {
 
 	/** Indicates which panes are showing */
 	activePanes?: CrewFilterPanes;
-	
+
 	/** Custom filter content (the widgets, drop-downs, text inputs and other filter options) */
 	customFilters?: CrewTableCustomFilter[];
 };
@@ -270,14 +270,14 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const { selectedShip, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 
-	
+
 	const [availableUses, setAvailableUses] = React.useState([] as number[]);
 	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
 	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
 
 	const [shipCrew, setShipCrew] = React.useState<string[]>([]);
 	const [rankings, setRankings] = React.useState<ShipSkillRanking[] | undefined>([]);
-	
+
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const buffConfig = calculateBuffConfig(props.playerData.player);
@@ -292,8 +292,8 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const makeUses = (crew: (PlayerCrew | CrewMember)[]) => {
 		let uses = crew.map((item) => item.action.limit ?? 0);
-		uses = uses.filter((item, index) => uses.indexOf(item) === index);		
-		
+		uses = uses.filter((item, index) => uses.indexOf(item) === index);
+
 		uses.sort((a, b) => a - b);
 
 		return uses;
@@ -308,7 +308,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}, [selectedShip]);
 
 	React.useEffect(() => {
-		if (usableFilter === 'frozen') setRosterFilter('');		
+		if (usableFilter === 'frozen') setRosterFilter('');
 	}, [usableFilter]);
 
 	React.useEffect(() => {
@@ -335,16 +335,16 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			setShipPickerFilter(newFilter);
 		}
 	}, [shipRarityFilter]);
-	
+
 	React.useEffect(() => {
 		if (selectedRankings?.length) {
 			let newselranks = selectedRankings?.filter(ab => rankings?.some(av => av.key === ab));
 			if (newselranks.length != selectedRankings.length) {
 				setShipFilters({ ... shipFilters, selectedRankings: newselranks });
 			}
-		}		
+		}
 	}, [rankings])
-	
+
 	React.useEffect(() => {
 		if (selectedUses?.length) {
 			let usesel = selectedUses.filter(su => availableUses.some(v => v == su));
@@ -354,10 +354,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		}
 	}, [availableUses])
 
-	React.useEffect(() => {		
+	React.useEffect(() => {
 		updateRankings();
 	}, [shipCrew, selectedAbilities]);
-	
+
 	React.useEffect(() => {
 		updateShipCrew();
 	}, [shipFilters])
@@ -390,14 +390,14 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			newRankings = mapToRankings(statmap);
 		}
 		if (selectedAbilities && selectedAbilities.length) {
-			newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));	
+			newRankings = newRankings.filter(r => selectedAbilities.some(sel => sel === r.type.toString()));
 		}
 		if (JSON.stringify(rankings) !== JSON.stringify(newRankings)) {
-			setRankings(newRankings);	
+			setRankings(newRankings);
 		}
 	}
 
-	const updateShipCrew = () => { 
+	const updateShipCrew = () => {
 		let sc: (PlayerCrew | CrewMember)[] | undefined = undefined;
 
 		if (selectedShip) {
@@ -412,9 +412,9 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				sc = myCrew?.filter(c => selectedAbilities.some(able => c.action.ability?.type.toString() === able));
 			}
 			setAvailableSeats(Object.keys(CONFIG.SKILLS));
-		}	
+		}
 		setAvailableAbilities(Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT).slice(0, 9));
-		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);		
+		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
 	}
 
 	if (!rankings?.length) {
@@ -444,7 +444,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
 	];
-	
+
 	if (traitFilter.length > 1) {
 		tableConfig.push(
 			{ width: 1, column: 'traits_matched.length', title: 'Matches', reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
@@ -519,11 +519,11 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (traitFilter.length > 0 && (crew.traits_matched?.length ?? 0) < minTraitMatches) return false;
-		
+
 		// Ship filter
-		if (tableView === 'ship' && ((shipCrew) || (selectedSeats?.length) || selectedRankings?.length || availableSeats?.length)) {			
+		if (tableView === 'ship' && ((shipCrew) || (selectedSeats?.length) || selectedRankings?.length || availableSeats?.length)) {
 			if (shipCrew && !shipCrew.some(cm => cm === crew.symbol)) return false;
-			
+
 			if (selectedUses?.length) {
 				if (!selectedUses.some(su => su === crew.action.limit || (su === 0 && crew.action.limit === undefined))) return false;
 			}
@@ -545,16 +545,16 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
-	
+
 	function renderTableRow(crew: PlayerCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<PlayerCrew | CrewMember | null | undefined>> | undefined = undefined): JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
-				
+
 		setCrew ??= (e) => { return; };
-		
+
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
+			<Table.Row key={idx} {...attributes}>
 				<Table.Cell className='sticky'>
 					<div
 						style={{
@@ -570,11 +570,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
-								<a onClick={(e) => navToCrewPage(crew, myCrew, buffConfig, allCrew)}>
-									{crew.name}
-								</a>
-							</span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>
@@ -590,7 +586,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		);
 	}
 
-	
+
 	// Adapted from function of same name in crewutils.ts
 	// function formatChargePhases(crew): string {
 	// 	let totalTime = 0;
@@ -619,7 +615,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		return !selectedShip?.actions?.some(ab => ab.status && ab.status != 16);
 	}
 
-	const discoveredPanes: CrewFilterPanes[] = [];		
+	const discoveredPanes: CrewFilterPanes[] = [];
 
 	if (props.activePanes) {
 		if (props.activePanes & CrewFilterPanes.BaseStats) {
@@ -632,7 +628,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			if (customFilters?.length) {
 				discoveredPanes.push(CrewFilterPanes.CustomFilters);
 			}
-		}		
+		}
 	}
 	else {
 		discoveredPanes.push(CrewFilterPanes.BaseStats);
@@ -641,7 +637,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			discoveredPanes.push(CrewFilterPanes.CustomFilters);
 		}
 	}
-	
+
 	const activeElements: JSX.Element[] = [];
 	const [filterConfig, setFilterConfig] = React.useState<FilterItemMethodConfig<PlayerCrew | CrewMember>[]>([]);
 
@@ -664,7 +660,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (!seen || update) setFilterConfig(cfilters);
 	}
 
-	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {		
+	if (discoveredPanes.includes(CrewFilterPanes.CustomFilters) && customFilters?.length) {
 		customFilters.forEach((filter, idx) => {
 			const FilterView = filter.filterComponent as unknown as typeof React.Component<CustomFilterProps<PlayerCrew | CrewMember>, any, any>;
 			activeElements.push(<FilterView key={idx} index={idx} setFilterItemMethod={setItemConfig} />);
@@ -709,9 +705,9 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			>
 				{title ?? FilterView.title}
 			</Button>);
-			
+
 		});
-	} 
+	}
 
 	return (
         <React.Fragment>
@@ -723,7 +719,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					</Button.Group>
             )}
 			{(
-			(tableView.startsWith("custom") && 
+			(tableView.startsWith("custom") &&
 			<div style={{
 				display: "flex",
 				flexDirection: "column",
@@ -732,7 +728,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				{activeElements[Number.parseInt(tableView.replace("custom", ""))]}
 			</div>)
 			||
-			(tableView === 'ship' && 
+			(tableView === 'ship' &&
 				<div style={{
 					display: "flex",
 					flexDirection: "column",
@@ -742,17 +738,17 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						margin: "1em 0",
 						display: "flex",
 						flexDirection: window.innerWidth < 725 ? "column" : "row",
-						justifyContent: "flex-start"					
+						justifyContent: "flex-start"
 					}}>
 						<div style={{marginRight: "16px"}}>
 							<RarityFilter
 									altTitle='Filter ship rarity'
 									rarityFilter={shipRarityFilter}
 									setRarityFilter={setShipRarityFilter}
-								/>					
+								/>
 						</div>
 						<div style={{marginRight: "16px", width: window.innerWidth < 725 ? "auto" : "25em"}}>
-							<ShipPicker 							
+							<ShipPicker
 								filter={shipPickerFilter}
 								selectedShip={selectedShip}
 								pool={props.ships}
@@ -764,7 +760,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 									setSelectedSeats={(item) => setShipFilters({ ... shipFilters, selectedSeats: item })}
 									selectedSeats={selectedSeats ?? []}
 									availableSeats={availableSeats}
-								/>					
+								/>
 						</div>
 
 					</div>
@@ -773,21 +769,21 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						marginTop: 0,
 						display: "flex",
 						flexDirection: window.innerWidth < 725 ? "column" : "row",
-						justifyContent: "flex-start"					
+						justifyContent: "flex-start"
 					}}>
 						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipAbilityPicker
 									selectedAbilities={selectedAbilities ?? []}
 									setSelectedAbilities={(item) => setShipFilters({ ... shipFilters, selectedAbilities: item })}
 									availableAbilities={availableAbilities}
-								/>					
+								/>
 						</div>
 						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipAbilityRankPicker
 									selectedRankings={selectedRankings ?? []}
 									setSelectedRankings={(item) => setShipFilters({ ... shipFilters, selectedRankings: item })}
 									availableRankings={rankings}
-								/>					
+								/>
 						</div>
 						<div>
 							<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
@@ -798,7 +794,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
 							<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
 							<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
-						</div>}	
+						</div>}
 					</div>
 				</div>
 			))}
@@ -847,7 +843,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                 </Form>
             </div>
 
-            <SearchableTable				
+            <SearchableTable
                 id={`${pageId}/table_`}
                 data={myCrew}
                 config={tableConfig}
@@ -856,7 +852,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                         crew,
                         idx ?? -1,
                         highlighted ?? false,
-                        setFocusedCrew						
+                        setFocusedCrew
                     )
                 }
                 filterRow={(crew, filters, filterType) =>

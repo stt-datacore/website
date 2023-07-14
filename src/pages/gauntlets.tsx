@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Popup, Pagination, PaginationProps, Table, Tab, Icon, Message, Select, Dropdown, Rating } from 'semantic-ui-react';
-import { StaticQuery, navigate, graphql, Link } from 'gatsby';
+import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
 
-import { trait_names } from '../../static/structured/translation_en.json';
+import allTraits from '../../static/structured/translation_en.json';
 import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
@@ -118,7 +118,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let ip = this.state.itemsPerPage;
 			let ap = ((data.activePage as number) - 1);
 			if (ap < 0) ap = 0;
-			
+
 			let cp = ap * ip;
 			let ep = cp + ip;
 			if (ep > this.gauntlets.length) ep = this.gauntlets.length;
@@ -137,7 +137,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let ip = this.state.itemsPerPageTab[index];
 			let ap = ((data.activePage as number) - 1);
 			if (ap < 0) ap = 0;
-			
+
 			let cp = ap * ip;
 			let ep = cp + ip;
 			if (ep > crew.length) ep = crew.length;
@@ -152,7 +152,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			this.setState({ ... this.state, activePageTabs: naps, activePageIndexTab: nidx });
 		}
 	}
-	
+
     protected setValidImmortalModes(crew: PlayerCrew | CrewMember | undefined, value: PlayerImmortalMode[]) {
 		if (JSON.stringify(value) === JSON.stringify(this.getValidImmortalModes(crew))) return;
         if (crew) {
@@ -162,7 +162,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
             this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
         }
     }
-	
+
     protected getValidImmortalModes(crew: PlayerCrew | CrewMember | undefined): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
         if (crew) {
@@ -231,7 +231,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	readonly onImmoToggle = (crew: PlayerCrew, state: PlayerImmortalMode) => {
-		
+
 	}
 
 	readonly filterCrew = (filter: FilterProps, filterCrew: (PlayerCrew | CrewMember)[]) => {
@@ -259,7 +259,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			newcrew.push(crew);
 		}
-		
+
 		return newcrew;
 	}
 
@@ -285,11 +285,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlets && this.inited) return;
 
 		gauntlets.forEach((gauntlet, index) => {			
-			const prettyTraits = gauntlet.contest_data?.traits?.map(t => trait_names[t]);
+			const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits[t]);
 			if (!prettyTraits) {
 				return null
 			}
-			const matchedCrew = 				
+			const matchedCrew =
 				allCrew.filter(e => e.max_rarity > 3 && (
 					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
@@ -318,8 +318,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else btrait = 0.30;
 
 						let ap = getPlayerPairs(a, atrait);
-						let bp = getPlayerPairs(b, btrait);		
-						
+						let bp = getPlayerPairs(b, btrait);
+
 						if (ap && bp) {
 							r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.65);
 							if (r === 0 && ap.length > 1 && bp.length > 1) {
@@ -343,10 +343,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let yesterday = gaunts[1];
 
 			gaunts = gaunts.slice(2);
-			
+
 			let ip = this.state.itemsPerPage;
 			let pc = Math.ceil(gaunts.length / ip);
-	
+
 			let apidx = [1, 1];
 			let pcs = [0, 0];
 			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
@@ -364,16 +364,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			})
 
 			this.gauntlets = gaunts;
-			this.inited = true;			
+			this.inited = true;
 
-			this.setState({ ... this.state, 
-				activePage: gaunts.slice(0, ip), 
-				totalPages: pc, 
-				activePageIndex: 1, 
+			this.setState({ ... this.state,
+				activePage: gaunts.slice(0, ip),
+				totalPages: pc,
+				activePageIndex: 1,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
-				today, 
+				today,
 				yesterday,
 				lastPlayerDate: this.context.playerData?.calc?.lastModified
 			});
@@ -400,18 +400,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pcs[idx] = pc;
 			})
 
-			this.inited = true;			
+			this.inited = true;
 
-			this.setState({ ... this.state, 
-				activePageIndex: 1, 
+			this.setState({ ... this.state,
+				activePageIndex: 1,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
-				today, 
-				yesterday 
+				today,
+				yesterday
 			});
 	}
-	
+
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
 		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes } = this.state;
 		if (!gauntlet) return undefined;
@@ -432,7 +432,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			value:"table",
 			text: "Table"
 			}]
-			
+
 		return (
 		<div style={{
 			marginBottom: "2em"
@@ -441,7 +441,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			<div style={{
 				display:"flex",
 				flexDirection: "column",
-				justifyContent: "flex-start", 
+				justifyContent: "flex-start",
 				margin: "0.25em 0"
 			}}>
 				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
@@ -453,16 +453,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					justifyContent: "space-between"
 				}}>
 					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-						{gauntlet.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}						
+						{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
 					</h2>
 					<div style={{
 						display: "flex",
 						flexDirection: "column",
 					}}>
 					<h4><b>View Mode</b></h4>
-					
+
 					<Dropdown
-					
+
 						options={displayOptions}
 							value={viewModes[idx]}
 							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
@@ -470,7 +470,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>
 				</div>
 			</div>
-			
+
 			<div style={{margin:"1em 0"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>
@@ -481,14 +481,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				flexDirection: "row",
 				flexWrap: "wrap"
 			}}>
-				{activePageTabs[idx].map((crew, idx) => (
-					<div className="ui segment" style={{
+				{activePageTabs[idx].map((crew) => (
+					<div key={crew.symbol} className="ui segment" style={{
 						display: "flex",
 						flexDirection: "row",
 						justifyContent: "space-evenly",
 						width: "100%"
 					}}>
-						<CrewPresenter 
+						<CrewPresenter
 							width="100%"
 							imageWidth="50%"
 							plugins={[GauntletSkill, ShipSkill]}
@@ -497,8 +497,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							selfPrepare={true}
 							onBuffToggle={this.onBuffToggle}
 							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
-							storeName='gauntlets' 
-							hover={false} 
+							storeName='gauntlets'
+							hover={false}
 							crew={crew} />
 					</div>
 				))}
@@ -509,8 +509,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				flexDirection: "row",
 				flexWrap: "wrap"
 			}}>
-				{activePageTabs[idx].map((crew, idx) => (
-					<div className="ui segment" style={{
+				{activePageTabs[idx].map((crew) => (
+					<div key={crew.symbol} className="ui segment" style={{
 						display: "flex",
 						flexDirection: "row",
 						justifyContent: "space-evenly",
@@ -520,7 +520,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}}>
 						<CrewPresenter
 							hideStats
-							compact 
+							compact
 							proficiencies
 							plugins={[GauntletSkill]}
 							pluginData={[gauntlet]}
@@ -528,8 +528,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							selfPrepare={true}
 							onBuffToggle={this.onBuffToggle}
 							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
-							storeName='gauntlets' 
-							hover={false} 
+							storeName='gauntlets'
+							hover={false}
 							crew={crew} />
 					</div>
 				))}
@@ -548,24 +548,24 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
 		if (!data) return <></>;
-		
+
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
-		
+
 		const buffConfig = this.context.buffConfig;
-		
+
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
 			// if (matchMedia('(hover: hover)').matches) {
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-		
+
 		const setCurrentCrew = (crew) => {
 			this.setState({ ... this.state, hoverCrew: crew });
 		}
 		const prettyTraits = gauntlet.prettyTraits;
-		return (<div style={{overflowX: "auto"}}>			
+		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -590,7 +590,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							>
 								<Table.Cell>{idx + pp + 1}</Table.Cell>
 								<Table.Cell>
-									<div										
+									<div
 										style={{
 											display: 'grid',
 											gridTemplateColumns: '60px auto',
@@ -598,24 +598,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 											gridGap: '1px'
 										}}>
 										<div style={{ gridArea: 'icon' }}
-											
+
 										>
-											<CrewTarget targetGroup='gauntletTable' 
-												inputItem={crew} 
+											<CrewTarget targetGroup='gauntletTable'
+												inputItem={crew}
 												setDisplayItem={setCurrentCrew}>
-												<img 
+												<img
 													onClick={(e) => imageClick(e, crew)}
-													width={48} 
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} 
+													width={48}
+													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 													/>
 											</CrewTarget>
 										</div>
 										<div style={{ gridArea: 'stats' }}>
-											<a onClick={(e) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}>
-												<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-											</a>											
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 										</div>
-										
 									</div>
 								</Table.Cell>
 								<Table.Cell>
@@ -623,7 +620,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								</Table.Cell>
 								<Table.Cell>
 								{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-								</Table.Cell>								
+								</Table.Cell>
 								<Table.Cell width={2}>
 									{pairs && pairs.length >= 1 && this.formatPair(pairs[0])}
 								</Table.Cell>
@@ -642,21 +639,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							</Table.Row>
 						);
 					})}
-				</Table.Body>				
+				</Table.Body>
 			</Table>
 			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
 			</div>);
 	}
 
 	private formatPair(pair: Skill[]): JSX.Element {
-		
+
 		return (
 			<div>
 				<div style={{
 					display: "flex",
 					flexDirection: "row"
 				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} /> 
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
 					<div style={{
 							margin: "0.5em"
 						}}>
@@ -668,7 +665,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					display: "flex",
 					flexDirection: "row"
 				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} /> 
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
 					<div style={{
 							margin: "0.5em"
 						}}>
@@ -676,7 +673,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>
 				</div>}
 			</div>
-			
+
 		)
 	}
 
@@ -689,7 +686,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const { activePage, activePageIndex, totalPages, searchDate } = this.state;
 
 		if (!gauntlets) return <></>
-		
+
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 
@@ -699,8 +696,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexDirection: "row",
 					justifyContent: "space-between"
 				}}>
-					<h2>Previous Gauntlets</h2>		
-						
+					<h2>Previous Gauntlets</h2>
+
 					{/* <div style={{
 						margin: "0.25em",
 						marginRight: 0,
@@ -716,9 +713,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<i style={{marginLeft:"0.5em", cursor: "pointer"}} className="icon remove circle button" />
 					</div> */}
 				</div>
-				
+
 				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
-			
+
 				<div className="ui segment">
 					<Item.Group divided>
 						{activePage?.map((node, index) => {
@@ -732,13 +729,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<Item key={index}>
 								<Item.Content>
 									<Item.Header>
-										{node.contest_data?.traits.map(t => trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
+										{node.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
 									</Item.Header>
 									<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
 									<Item.Description>
 										<Grid stackable>
 										{matchedCrew.map((crew) => (
-												<Grid.Column width={1} style={{textAlign: 'center'}}>
+												<Grid.Column key={crew.symbol} width={1} style={{textAlign: 'center'}}>
 													<Link to={`/crew/${crew.symbol}`}>
 												<CrewTarget inputItem={crew} setDisplayItem={this.setHoverCrew} targetGroup='gauntlets'>
 													<Image

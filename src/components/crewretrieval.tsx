@@ -110,7 +110,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		else {
 			ac.highest_owned_level = 0;
 		}
-		
+
 	});
 
 	let cArr = [...new Set(allCrew.map(a => a.collections).flat())].sort();
@@ -252,7 +252,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				)
 			)
 		);
-		
+
 		retrievable = retrievable.filter(ownedFilters[ownedFilter](myCrew));
 		if (ownedFilterOptions[2].value === ownedFilter) {
 			retrievable = retrievable.filter(crew => (crew.max_rarity ?? 0) > (crew?.highest_owned_rarity ?? 0));
@@ -271,7 +271,7 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 			if (mc) {
 				ret.level = mc.level;
 				ret.base_skills = JSON.parse(JSON.stringify(mc.base_skills)) as BaseSkills;
-				ret.rarity = mc.rarity;		
+				ret.rarity = mc.rarity;
 				ret.max_rarity = mc.max_rarity;
 				ret.immortal = mc.immortal;
 			}
@@ -318,18 +318,18 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 					/>
 					<div style={{
 						display: "flex",
-						flexDirection: "column",						
+						flexDirection: "column",
 					}}>
 						<h4 style={{marginLeft: "1em" }}>
 							Calculation Method<AlgoExplain />
 						</h4>
 						<Dropdown
 								style={{ marginLeft: '1em' }}
-								options={algos}							
-								value={algo}		
-								onChange={(e, v) => setAlgo(v.value as string)}					
+								options={algos}
+								value={algo}
+								onChange={(e, v) => setAlgo(v.value as string)}
 							/>
-						
+
 					</div>
 				</Form.Group>
 			</Form>
@@ -568,7 +568,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 				else if (polestar.filter.type === 'skill' && polestar.filter.skill) {
 					polestar.crew_count = allCrew.filter(c => c.in_portal && c.base_skills[polestar.filter?.skill as string]).length;
 				}
-					
+
 				else if (polestar.filter.type === 'trait' && polestar.filter.trait) {
 					polestar.crew_count = allCrew.filter(c => c.in_portal && c.traits.some(trait => trait === polestar.filter?.trait as string)).length;
 				}
@@ -712,11 +712,11 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						</div>
 					</div>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>				
+				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>
 					<Table.Cell textAlign='center'>{((polestar.crate_count ?? 0)/crewCrates*100).toFixed(1)}%</Table.Cell>
 					<Table.Cell textAlign='center'>{((polestar.scan_odds ?? 0)*100).toFixed(2)}%</Table.Cell>
 					<Table.Cell textAlign='center'>{((polestar.owned_best_odds ?? 0)*100).toFixed(1)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>					
+				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
 				</Table.Cell>
@@ -803,7 +803,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 					<b>{p.short_name}</b>{pdx < polestars.length-1 ? ',' : ''}
 				</span>
 				));
-		
+
 		let retval: JSX.Element[] = [];
 		let i = 0;
 		for (var cm of mp) {
@@ -1004,7 +1004,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 			onChange={(e, { value }) => updateCrew(value as string) }
 		/>
 	);
-	
+
 	function populatePlaceholders(): void {
 		const options: RetrievalOptions = { initialized: false, list: [] };
 		if (props.value != '') {
@@ -1078,7 +1078,7 @@ const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
 		pt = Math.floor(comboCount);
 		st = pt.toLocaleString();
 	}
-	
+
 	const text = (<>
 	<p></p>
 		{comboCount !== undefined && <p>There are up to <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{st}</span> polestar combinations to retrieve this crew, assuming 5 fuses are possible.</p>}
@@ -1091,10 +1091,10 @@ const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
 		{(comboCount !== undefined && comboCount < RECURSION_FORBID && comboCount >= RECURSION_WARN) && (<p style={{fontWeight: 'bold', color: 'orange'}}>Using the deep recursion method is <b>not advised</b> for this crew member.</p>)}
 
 	</>)
-	
+
 	return (<Popup wide size='large' trigger={<Icon name="help" />} header={'Combo Calculations'} content={text}/>)
 };
-  
+
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
 	const { allCrew, algo, setAlgo } = props;
@@ -1102,7 +1102,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
 	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | null | undefined>(null);
 	const { playerData } = props;
-	
+
 	const dataContext = React.useContext(MergedContext);
 
 	if (!data) return (<></>);
@@ -1128,11 +1128,11 @@ const CrewTable = (props: CrewTableProps) => {
 			showFilterOptions={true}
 		/>
 		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
-		
+
 		</>
 	);
 
-	
+
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
 		const buffConfig = dataContext.buffConfig;
@@ -1155,7 +1155,7 @@ const CrewTable = (props: CrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
 					</div>
@@ -1187,13 +1187,13 @@ const CrewTable = (props: CrewTableProps) => {
 				</Table.Cell>
 				<Table.Cell width='2' textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
 					onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}
-				>	
+				>
 					<div style={{
 						display: "flex",
 						flexDirection:"column",
 						justifyItems: "center"
 					}}>
-						
+
 						<div style={{
 							cursor: "pointer",
 							color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)
@@ -1249,21 +1249,21 @@ const CrewTable = (props: CrewTableProps) => {
 		// Exit here if activecrew has 0 combos after changing filters
 		if (!combos || !(combos?.length)) return (<></>);
 
-		let fuseGroups: FuseGroups;		
+		let fuseGroups: FuseGroups;
 
 		if (comboCount < RECURSION_FORBID && algo === 'slow') {
 			fuseGroups = groupByFuses(combos, 0, []);
 		}
 		else {
 			fuseGroups = groupByFusesShort(combos, 0, []);
-		}		
+		}
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
-	interface ComboTrack { 
-		id: number, 
-		quantity: number, 
-		used: number 
+	interface ComboTrack {
+		id: number,
+		quantity: number,
+		used: number
 	}
 
 	function dingCT(lh: ComboTrack[], rh: ComboTrack[]) {
@@ -1308,20 +1308,20 @@ const CrewTable = (props: CrewTableProps) => {
 		}
 
 		let comboout: number[][][] = [[], [], [], [], [], []];
-		
+
 		let fn = combos.length < 5 ? combos.length : 5;
 		for (let f = 1; f <= fn; f++) {
 			seen = duplications.map(d => false);
 			let option = 0;
-			
+
 			for (let n = 0; n < duplications.length; n++) {
-				comboout[f].push([duplications[n]]);	
+				comboout[f].push([duplications[n]]);
 				let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
 
 				let cc = 1;
 				seen[n] = true;
 
-				for (let y = 0; y < duplications.length; y++) {					
+				for (let y = 0; y < duplications.length; y++) {
 					if (seen[y]) continue;
 					let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
 					if (!dingCT(ps, xs)) continue;
@@ -1331,10 +1331,10 @@ const CrewTable = (props: CrewTableProps) => {
 
 					cc++;
 					if (cc >= f) break;
-				}				
+				}
 
-				option++;			
-			}	
+				option++;
+			}
 		}
 
 		let result: FuseGroups = {};
@@ -1344,14 +1344,14 @@ const CrewTable = (props: CrewTableProps) => {
 			result[key] = [] as number[][];
 
 			for (let res of comboout[f]) {
-				if (res.length === f) { 
+				if (res.length === f) {
 					result[key].push(res);
 				}
 			}
 
 			for (let res of result[key]) {
 				res.sort((a, b) => a - b);
-			}		
+			}
 		}
 
 		for (let f = 1; f <= 5; f++) {
@@ -1359,7 +1359,7 @@ const CrewTable = (props: CrewTableProps) => {
 			let strres = result[key].map(m => JSON.stringify(m));
 			strres = strres.filter((s, i) => strres.indexOf(s) === i);
 
-			let numres = strres.map(s => JSON.parse(s) as number[]);			
+			let numres = strres.map(s => JSON.parse(s) as number[]);
 			numres.sort((a, b) => {
 				let r = countCombos(a, combos) - countCombos(b, combos);
 				if (r === 0) {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
 
@@ -368,7 +368,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
 	});
-	
+
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
@@ -423,7 +423,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		};
 
 		return (
-			<Table.Row key={idx} style={{ cursor: 'zoom-in' }} {...attributes}>
+			<Table.Row key={idx} {...attributes}>
 				<Table.Cell>
 					<div
 						style={{
@@ -439,7 +439,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><a onClick={(e) => navToCrewPage(crew, props.crew, buffConfig)}>{crew.name}</a></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>
