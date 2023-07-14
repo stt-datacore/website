@@ -311,7 +311,7 @@ const CrewTable = (props: CrewTableProps) => {
 					{crew.events}
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
-					{!crew.in_portal ? 'N/A' : crew.unique_polestar_combos.length}
+					{!crew.in_portal ? 'N/A' : (crew.unique_polestar_combos?.length ?? 0)}
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					{crew.factionOnlyTotal}
