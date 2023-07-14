@@ -3,8 +3,11 @@ import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Messa
 import { Link } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
-
+import { AllTraits } from '../model/traits';
 import allTraits from '../../static/structured/translation_en.json';
+const traits = allTraits as AllTraits;
+
+
 import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
@@ -285,7 +288,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlets && this.inited) return;
 
 		gauntlets.forEach((gauntlet, index) => {			
-			const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits[t]);
+			const prettyTraits = gauntlet.contest_data?.traits?.map(t => traits.trait_names[t]);
 			if (!prettyTraits) {
 				return null
 			}
@@ -453,7 +456,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					justifyContent: "space-between"
 				}}>
 					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-						{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
+						{gauntlet.contest_data?.traits.map(t => traits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
 					</h2>
 					<div style={{
 						display: "flex",
@@ -729,7 +732,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<Item key={index}>
 								<Item.Content>
 									<Item.Header>
-										{node.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
+										{node.contest_data?.traits.map(t => traits.trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
 									</Item.Header>
 									<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
 									<Item.Description>
