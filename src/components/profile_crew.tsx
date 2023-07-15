@@ -270,7 +270,6 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const { selectedShip, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 
-
 	const [availableUses, setAvailableUses] = React.useState([] as number[]);
 	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
 	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
@@ -279,16 +278,8 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const [rankings, setRankings] = React.useState<ShipSkillRanking[] | undefined>([]);
 
 	const [focusedCrew, setFocusedCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
-
-	const buffConfig = calculateBuffConfig(props.playerData.player);
-
-	const myCrew = props.crew.map((crew) => {
-		if (typeof crew.date_added === 'string') {
-			crew.date_added = new Date(crew.date_added);
-		}
-		return crew;
-	});
-	const allCrew = [...props.allCrew];
+	
+	const myCrew = props.crew; 
 
 	const makeUses = (crew: (PlayerCrew | CrewMember)[]) => {
 		let uses = crew.map((item) => item.action.limit ?? 0);
