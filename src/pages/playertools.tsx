@@ -234,7 +234,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 		if ("item_archetype_cache" in inputPlayerData){
 			inputPlayerData.version = 17;
 		}
-		else if ("archetype_cache" in inputPlayerData) {
+		else if ("archetype_cache" in inputPlayerData && inputPlayerData.archetype_cache) {
 			inputPlayerData.version = 20;
 			inputPlayerData.item_archetype_cache = {
 				archetypes: inputPlayerData.archetype_cache.archetypes.map((a) => {
