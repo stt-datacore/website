@@ -84,15 +84,16 @@ export interface FilterProps {
 }
 
 export interface GauntletsPageState {
+
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
-	activePage: Gauntlet[];
+	gauntlets: Gauntlet[];
+	
 	activePageTabs: (PlayerCrew | CrewMember)[][];
-	activePrevGauntlet?: Gauntlet;
 
 	today?: Gauntlet;
 	yesterday?: Gauntlet;
-	totalPages: number;
-	activePageIndex: number;
+	activePrevGauntlet?: Gauntlet;
+
 	itemsPerPage: number;
 
 	totalPagesTab: number[];
@@ -100,12 +101,12 @@ export interface GauntletsPageState {
 	itemsPerPageTab: number[];
 
 	searchDate?: Date;
+
 	filteredCrew: (PlayerCrew | CrewMember)[][];
 	filterProps: FilterProps[];
 	appliedFilters: FilterProps[];
 
 	viewModes: GauntletViewMode[];
-
 	lastPlayerDate?: Date;
 }
 
@@ -117,52 +118,34 @@ const DEFAULT_FILTER_PROPS = {
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
 	static contextType? = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
-	private inited: boolean = false;
-	private gauntlets: Gauntlet[] | undefined = undefined;
+	private inited: boolean = false;	
 	private readonly tiny = TinyStore.getStore('gauntlets');
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
 
-		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'big') ?? 'big';
-		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'big') ?? 'big';
-
+		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'table') ?? 'table';
+		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'table') ?? 'table';
+		const v3 = this.tiny.getValue<GauntletViewMode>('viewMode_2', 'table') ?? 'table';
+		
 		this.state = {
 			hoverCrew: undefined,
-			activePage: [],
-			totalPages: 0,
-			activePageIndex: 0,
 			itemsPerPage: 10,
-			activePageTabs: [[], []],
-			totalPagesTab: [0, 0],
-			activePageIndexTab: [0, 0],
-			itemsPerPageTab: [10, 10],
-			filteredCrew: [[], []],
-			viewModes: [v1, v2],
-			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
-			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
+			activePageTabs: [[], [], []],
+			totalPagesTab: [0, 0, 0],
+			activePageIndexTab: [0, 0, 0],
+			itemsPerPageTab: [10, 10, 10],
+			filteredCrew: [[], [], []],
+			viewModes: [v1, v2, v3],
+			gauntlets: [],
+			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
+			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
 	}
 
 	public readonly setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
 		this.setState({ ... this.state, hoverCrew: item });
 	};
-
-	public readonly setActivePage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps) => {
-		if (this.inited && this.gauntlets) {
-
-			let ip = this.state.itemsPerPage;
-			let ap = ((data.activePage as number) - 1);
-			if (ap < 0) ap = 0;
-
-			let cp = ap * ip;
-			let ep = cp + ip;
-			if (ep > this.gauntlets.length) ep = this.gauntlets.length;
-			let sl = this.gauntlets.slice(cp, ep);
-			this.setState({ ... this.state, activePage: sl, activePageIndex: ap + 1 });
-
-		}
-	}
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
@@ -306,8 +289,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
-			this.gauntlets = undefined;
+		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {			
 			this.inited = false;
 		}
 		this.initData();
@@ -378,74 +360,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (gauntlets && this.inited) return;
 
-		gauntlets.slice(0, 2).forEach((node, index) => {
-			const prettyTraits = node.contest_data?.traits?.map(t => allTraits.trait_names[t]);
-			if (!prettyTraits) {
-				return null
-			}
-			const matchedCrew =
-				allCrew.filter(e => e.max_rarity > 3 && (
-					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
-					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
-					.map((crew) => {
-						let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
-						if (c) return c;
-						if (!hasPlayer) crew.rarity = crew.max_rarity;
-						else crew.rarity = 0;
-						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
-						return crew;
-					})
-					.sort((a, b) => {
-						let r = 0;
-
-						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
-						let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
-
-						if (atrait >= 3) atrait = 3.90;
-						else if (atrait >= 2) atrait = 2.7;
-						else if (atrait >= 1) atrait = 1.5;
-						else atrait = 0.30;
-
-						if (btrait >= 3) btrait = 3.90;
-						else if (btrait >= 2) btrait = 2.7;
-						else if (btrait >= 1) btrait = 1.5;
-						else btrait = 0.30;
-
-						let ap = getPlayerPairs(a, atrait);
-						let bp = getPlayerPairs(b, btrait);
-
-						if (ap && bp) {
-							r = comparePairs(ap[0], bp[0], node.contest_data?.featured_skill, 1.65);
-							if (r === 0 && ap.length > 1 && bp.length > 1) {
-								r = comparePairs(ap[1], bp[1], node.contest_data?.featured_skill, 1.65);
-								if (r === 0 && ap.length > 2 && bp.length > 2) {
-									r = comparePairs(ap[2], bp[2], node.contest_data?.featured_skill, 1.65);
-								}
-							}
-						}
-						return r;
-					});
-
-			node.matchedCrew = matchedCrew;
-			node.prettyTraits = prettyTraits;
+		gauntlets.slice(0, 3).forEach((node, index) => {
+			this.getGauntletCrew(node);
 		});
 
-		if (!this.gauntlets || !this.inited) {
+		if (!this.state.gauntlets?.length || !this.inited) {
 
-			let gaunts = gauntlets?.filter((gauntlet) => gauntlet.prettyTraits?.length) ?? [];
-			let today = gaunts[0];
-			let yesterday = gaunts[1];
+			const og: Gauntlet[] = gauntlets; //?.filter((gauntlet: Gauntlet) => gauntlet.prettyTraits?.length) ?? [] as Gauntlet[];
+			const today = og[0];
+			const yesterday = og[1];
+			const activePrevGauntlet = og[2];
+			const gaunts = og.slice(2);
 
-			gaunts = gaunts.slice(2);
+			let apidx = [1, 1, 1];
+			let pcs = [0, 0, 0];
+			let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
 
-			let ip = this.state.itemsPerPage;
-			let pc = Math.ceil(gaunts.length / ip);
-
-			let apidx = [1, 1];
-			let pcs = [0, 0];
-			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
-
-			[today, yesterday].forEach((day, idx) => {
+			[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
 				if (!day.matchedCrew) {
 					return;
 				}
@@ -457,53 +388,193 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pcs[idx] = pc;
 			})
 
-			this.gauntlets = gaunts;
 			this.inited = true;
 
 			this.setState({ ... this.state,
-				activePage: gaunts.slice(0, ip),
-				totalPages: pc,
-				activePageIndex: 1,
+				gauntlets: gaunts,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
 				today,
 				yesterday,
-				lastPlayerDate: this.context.playerData?.calc?.lastModified
+				lastPlayerDate: this.context.playerData?.calc?.lastModified,
+				activePrevGauntlet
 			});
 		}
 	}
 
-	private readonly updatePaging = () => {
+	private changeGauntlet = (date: string) => {
+		const g = this.state.gauntlets?.find((g) => g.date === date);
+		this.updatePaging(g);
+	}
+
+	private readonly updatePaging = (activePrevGauntlet?: Gauntlet) => {
 		const { today, yesterday } = this.state;
-		if (!today || !yesterday) return;
 
-		let apidx = [1, 1];
-			let pcs = [0, 0];
-			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
+		if (activePrevGauntlet) {
+			this.getGauntletCrew(activePrevGauntlet);
+		}
+		let apidx = this.state.activePageIndexTab;
+		let pcs = [0, 0, 0];
+		let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
 
-			[today, yesterday].forEach((day, idx) => {
-				if (!day.matchedCrew) {
-					return;
-				}
+		[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
 
-				let ip = this.state.itemsPerPageTab[idx];
-				let pc = Math.ceil(day.matchedCrew.length / ip);
+			if(!day) return;
 
-				aptabs[idx] = day.matchedCrew.slice(0, ip);
-				pcs[idx] = pc;
-			})
+			if (!day.matchedCrew) {
+				return;
+			}
 
-			this.inited = true;
+			let ip = this.state.itemsPerPageTab[idx];
+			let pc = Math.ceil(day.matchedCrew.length / ip);
 
-			this.setState({ ... this.state,
-				activePageIndex: 1,
-				activePageTabs: aptabs,
-				totalPagesTab: pcs,
-				activePageIndexTab: apidx,
-				today,
-				yesterday
-			});
+			aptabs[idx] = day.matchedCrew.slice(0, ip);
+			pcs[idx] = pc;
+			if (apidx[idx] > pc) apidx[idx] = pc;
+		});
+
+		this.inited = true;
+
+		this.setState({ ... this.state,
+			activePageTabs: aptabs,
+			totalPagesTab: pcs,
+			activePageIndexTab: apidx,
+			today,
+			yesterday,
+			activePrevGauntlet
+		});
+	}
+
+	private formatPair(pair: Skill[]): JSX.Element {
+
+		return (
+			<div>
+				<div style={{
+					display: "flex",
+					flexDirection: "row"
+				}}>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+					<div style={{
+							margin: "0.5em"
+						}}>
+						{pair[0].range_min}-{pair[0].range_max}
+					</div>
+				</div>
+				{pair.length > 1 &&
+				<div style={{
+					display: "flex",
+					flexDirection: "row"
+				}}>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+					<div style={{
+							margin: "0.5em"
+						}}>
+						{pair[1].range_min}-{pair[1].range_max}
+					</div>
+				</div>}
+			</div>
+
+		)
+	}
+
+	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
+		if (!data) return <></>;
+
+		let pp = this.state.activePageIndexTab[idx] - 1;
+		pp *= this.state.itemsPerPageTab[idx];
+
+		const buffConfig = this.context.buffConfig;
+
+		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
+			console.log("imageClick");
+			// if (matchMedia('(hover: hover)').matches) {
+			// 	window.location.href = "/crew/" + data.symbol;
+			// }
+		}
+
+		const setCurrentCrew = (crew) => {
+			this.setState({ ... this.state, hoverCrew: crew });
+		}
+		const prettyTraits = gauntlet.prettyTraits;
+		return (<div style={{overflowX: "auto"}}>
+			<Table sortable celled selectable striped collapsing unstackable compact="very">
+				<Table.Header>
+					<Table.Row>
+						<Table.HeaderCell>Rank</Table.HeaderCell>
+						<Table.HeaderCell>Crew</Table.HeaderCell>
+						<Table.HeaderCell>Rarity</Table.HeaderCell>
+						<Table.HeaderCell>Crit Chance</Table.HeaderCell>
+						<Table.HeaderCell>1st Pair</Table.HeaderCell>
+						<Table.HeaderCell>2nd Pair</Table.HeaderCell>
+						<Table.HeaderCell>3rd Pair</Table.HeaderCell>
+						<Table.HeaderCell>Owned</Table.HeaderCell>
+						<Table.HeaderCell>In Portal</Table.HeaderCell>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{data.map((row, idx: number) => {
+						const crew = row;
+						const pairs = getPlayerPairs(crew);
+
+						return (crew &&
+							<Table.Row key={idx}
+							>
+								<Table.Cell>{idx + pp + 1}</Table.Cell>
+								<Table.Cell>
+									<div
+										style={{
+											display: 'grid',
+											gridTemplateColumns: '60px auto',
+											gridTemplateAreas: `'icon stats' 'icon description'`,
+											gridGap: '1px'
+										}}>
+										<div style={{ gridArea: 'icon' }}
+
+										>
+											<CrewTarget targetGroup='gauntletTable'
+												inputItem={crew}
+												setDisplayItem={setCurrentCrew}>
+												<img
+													onClick={(e) => imageClick(e, crew)}
+													width={48}
+													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+													/>
+											</CrewTarget>
+										</div>
+										<div style={{ gridArea: 'stats' }}>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+										</div>
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
+								</Table.Cell>
+								<Table.Cell>
+								{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 1 && this.formatPair(pairs[0])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 2 && this.formatPair(pairs[1])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{pairs && pairs.length >= 3 && this.formatPair(pairs[2])}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{crew.have === true ? "Yes" : "No"}
+								</Table.Cell>
+								<Table.Cell width={2}>
+									{crew.in_portal ? "Yes" : "No"}
+								</Table.Cell>
+							</Table.Row>
+						);
+					})}
+				</Table.Body>
+			</Table>
+			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
+			</div>);
 	}
 
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
@@ -512,26 +583,28 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
 		const displayOptions = [{
-			key: "big",
-			value:"big",
-			text: "Large Presentation"
+				key: "big",
+				value:"big",
+				text: "Large Presentation"
 			},
 			{
-			key: "small",
-			value:"small",
-			text: "Small Presentation"
+				key: "small",
+				value:"small",
+				text: "Small Presentation"
 			},
 			{
-			key: "table",
-			value:"table",
-			text: "Table"
+				key: "table",
+				value:"table",
+				text: "Table"
 			}]
 
 		return (
 		<div style={{
 			marginBottom: "2em"
 		}}>
-			<h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>
+			{idx === 2 && "Previous Gauntlets"}
+			{idx !== 2 && <h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>}
+
 			<div style={{
 				display:"flex",
 				flexDirection: "column",
@@ -639,150 +712,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	}
 
-
-	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
-		if (!data) return <></>;
-
-		let pp = this.state.activePageIndexTab[idx] - 1;
-		pp *= this.state.itemsPerPageTab[idx];
-
-		const buffConfig = this.context.buffConfig;
-
-		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
-			console.log("imageClick");
-			// if (matchMedia('(hover: hover)').matches) {
-			// 	window.location.href = "/crew/" + data.symbol;
-			// }
-		}
-
-		const setCurrentCrew = (crew) => {
-			this.setState({ ... this.state, hoverCrew: crew });
-		}
-		const prettyTraits = gauntlet.prettyTraits;
-		return (<div style={{overflowX: "auto"}}>
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell>Rank</Table.HeaderCell>
-						<Table.HeaderCell>Crew</Table.HeaderCell>
-						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Crit Chance</Table.HeaderCell>
-						<Table.HeaderCell>1st Pair</Table.HeaderCell>
-						<Table.HeaderCell>2nd Pair</Table.HeaderCell>
-						<Table.HeaderCell>3rd Pair</Table.HeaderCell>
-						<Table.HeaderCell>Owned</Table.HeaderCell>
-						<Table.HeaderCell>In Portal</Table.HeaderCell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{data.map((row, idx: number) => {
-						const crew = row;
-						const pairs = getPlayerPairs(crew);
-
-						return (crew &&
-							<Table.Row key={idx}
-							>
-								<Table.Cell>{idx + pp + 1}</Table.Cell>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}>
-										<div style={{ gridArea: 'icon' }}
-
-										>
-											<CrewTarget targetGroup='gauntletTable'
-												inputItem={crew}
-												setDisplayItem={setCurrentCrew}>
-												<img
-													onClick={(e) => imageClick(e, crew)}
-													width={48}
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-													/>
-											</CrewTarget>
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
-										</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
-								</Table.Cell>
-								<Table.Cell>
-								{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 1 && this.formatPair(pairs[0])}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 2 && this.formatPair(pairs[1])}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 3 && this.formatPair(pairs[2])}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{crew.have === true ? "Yes" : "No"}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{crew.in_portal ? "Yes" : "No"}
-								</Table.Cell>
-							</Table.Row>
-						);
-					})}
-				</Table.Body>
-			</Table>
-			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
-			</div>);
-	}
-
-	private formatPair(pair: Skill[]): JSX.Element {
-
-		return (
-			<div>
-				<div style={{
-					display: "flex",
-					flexDirection: "row"
-				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
-					<div style={{
-							margin: "0.5em"
-						}}>
-						{pair[0].range_min}-{pair[0].range_max}
-					</div>
-				</div>
-				{pair.length > 1 &&
-				<div style={{
-					display: "flex",
-					flexDirection: "row"
-				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
-					<div style={{
-							margin: "0.5em"
-						}}>
-						{pair[1].range_min}-{pair[1].range_max}
-					</div>
-				</div>}
-			</div>
-
-		)
-	}
-
-	private changeDate = (e: string) => {
-		this.setState({ ...this.state, searchDate: new Date(e) });
-	}
-
 	renderPreviousGauntlets() {
-		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages, searchDate } = this.state;
+		const { activePrevGauntlet, gauntlets } = this.state;
 
 		if (!gauntlets) return <></>
 
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
+
+		const gauntOpts = gauntlets.map((g) => {
+			let text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]})`
+			return {
+				key: g.date,
+				value: g.date,
+				text: text
+			};
+		})
 
 		return (<>
 				<div style={{
@@ -792,82 +737,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}}>
 					<h2>Previous Gauntlets</h2>
 
-					{/* <div style={{
-						margin: "0.25em",
-						marginRight: 0,
+					<div style={{
 						display: "flex",
-						flexDirection: "row",
-						justifyContent: "center",
-						justifyItems: "center",
-						alignItems: "center",
-						alignContent: "center"
+						flexDirection: "column"
 					}}>
-						<h4 style={{marginTop:"0.5em"}}>Search By Date:&nbsp;</h4>
-						<input value={searchDate?.toDateString()} max={(new Date(gauntlets[0].date).toDateString())} onChange={(e) => this.changeDate((e.nativeEvent.target as HTMLInputElement).value)} className="ui input button" style={{color:foreColor, margin :"0.25em", marginRight: 0}} type="date" />
-						<i style={{marginLeft:"0.5em", cursor: "pointer"}} className="icon remove circle button" />
-					</div> */}
+						<Dropdown 
+							scrolling
+							options={gauntOpts}
+							value={activePrevGauntlet?.date}
+							onChange={(e, { value }) => this.changeGauntlet(value as string)}
+							/>
+
+					</div>
 				</div>
-
-				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
-
-				<div className="ui segment">
-					<Item.Group divided>
-						{activePage?.map((node, index) => {
-
-							const matchedCrew = node.matchedCrew ?? [];
-
-							const prettyDate = moment(node.date).utc(false).format('dddd, D MMMM YYYY')
-							const prettyTraits = node.prettyTraits;
-
-							return (
-							<Item key={index}>
-								<Item.Content>
-									<Item.Header>
-										{node.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
-									</Item.Header>
-									<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
-									<Item.Description>
-										<Grid stackable>
-										{matchedCrew.map((crew) => (
-												<Grid.Column key={crew.symbol} width={1} style={{textAlign: 'center'}}>
-													<Link to={`/crew/${crew.symbol}`}>
-												<CrewTarget inputItem={crew} setDisplayItem={this.setHoverCrew} targetGroup='gauntlets'>
-													<Image
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-													size='tiny'
-													alt={crew.name}
-													style={{
-														borderColor: CONFIG.RARITIES[crew.max_rarity].color,
-														borderWidth: '1px',
-														borderRadius: '4px',
-														borderStyle: 'solid',
-														marginLeft: 'auto',
-														marginRight: 'auto'
-													}}
-												/>
-												</CrewTarget>
-											</Link>
-											{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-											<br />
-											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
-											</Grid.Column>
-										))}
-										</Grid>
-									</Item.Description>
-								</Item.Content>
-							</Item>
-						)
-							})}
-					</Item.Group>
-				</div>
-				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
+				{this.renderGauntletBig(activePrevGauntlet, 2)}
 			</>)
 	}
 
 	render() {
-		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
-		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
+		const { gauntlets, today, yesterday } = this.state;
 
 		if (!gauntlets) return <></>
 
