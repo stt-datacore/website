@@ -23,7 +23,6 @@ const EventPlanner = (props: EventPlannerProps) => {
 
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', []);
-	const [ignoreSharedCrew, setIgnoreSharedCrew ] = useStateWithStorage('tools/ignoreSharedCrew', false)
 	const [activeEvents, setActiveEvents] = React.useState(undefined);
 	if (!activeEvents) {
 		identifyActiveEvents();
@@ -65,18 +64,13 @@ const EventPlanner = (props: EventPlannerProps) => {
 				rarity: crew.max_rarity,
 				base_skills: ff.base_skills
 			});
+		} else {
+			crewman.statusIcon = 'snowflake';
 		}
 
 		myCrew.push(crewman);
 	}); 
 
-	let sharedCrew = playerData.player.character.crew_borrows[0];
-	if (ignoreSharedCrew && sharedCrew) {
-		sharedCrew = {...allCrew.find(c => c.symbol == sharedCrew.symbol), ...sharedCrew };
-		sharedCrew.prospect = true;
-		sharedCrew.id = myCrew.length + 1;
-		myCrew.push(sharedCrew);
-	}
 
 	const buffConfig = calculateBuffConfig(playerData.player);
 
@@ -115,6 +109,7 @@ const EventPicker = (props: EventPickerProps) => {
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
 	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', []);
+	const [ignoreSharedCrew, setIgnoreSharedCrew ] = useStateWithStorage('tools/ignoreSharedCrew', false)
 
 	const eventsList = [];
 	events.forEach((activeEvent, eventId) => {
@@ -160,20 +155,12 @@ const EventPicker = (props: EventPickerProps) => {
 			prospect = JSON.parse(JSON.stringify(prospect));
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
+			prospect.statusIcon = "user add";
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
 			prospect.immortal = 0;
-			CONFIG.SKILLS_SHORT.forEach(skill => {
-				let score = { core: 0, min: 0, max: 0 };
-				if (prospect.base_skills[skill.name]) {
-					if (prospect.rarity == prospect.max_rarity)
-						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
-					else
-						score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity-1].base_skills[skill.name]);
-				}
-				prospect[skill.name] = score;
-			});
+			generateBuffedSkills(prospect, buffConfig);
 			myCrew.push(prospect);
 			lockable.push({
 				symbol: prospect.symbol,
@@ -184,6 +171,18 @@ const EventPicker = (props: EventPickerProps) => {
 			});
 		}
 	});
+
+	let sharedCrew = playerData.player.character.crew_borrows[0];
+
+	if (!ignoreSharedCrew && sharedCrew) {
+		sharedCrew = {...allCrew.find(c => c.symbol == sharedCrew.symbol), ...sharedCrew };
+		generateBuffedSkills(sharedCrew, buffConfig);
+		sharedCrew.shared = true;
+		sharedCrew.statusIcon = "share alternate";
+		sharedCrew.have = false;
+		sharedCrew.id = myCrew.length + 1;
+		myCrew.push(sharedCrew);
+	}
 
 	return (
 		<React.Fragment>
@@ -471,8 +470,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				<div><Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
 				<div>
 					{crew.favorite && <Icon name='heart' />}
-					{crew.immortal > 0 && <Icon name='snowflake' />}
-					{crew.prospect && <Icon name='add user' />}
+					{crew.statusIcon && <Icon name={crew.statusIcon} />}
 					<span>{crew.immortal ? (`${crew.immortal} frozen`) : (`Level ${crew.level}`)}</span>
 				</div>
 			</div>
@@ -566,9 +564,8 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		if (!best) best = {score: 0};
 		if (best.score > 0) {
 			let bestCrew = crew.find(c => c.id === best.id);
-			let icon = (<></>);
-			if (bestCrew.immortal) icon = (<Icon name='snowflake' />);
-			if (bestCrew.prospect) icon = (<Icon name='add user' />);
+			const icon = (bestCrew.statusIcon) ? (<Icon name={bestCrew.statusIcon} />) : (<></>);
+			
 			return (
 				<Table.Cell key={key} textAlign='center' style={{ cursor: 'zoom-in' }} onClick={() => handleClick(skillA, skillB)}>
 					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
@@ -668,6 +665,19 @@ function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core
 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
 	};
+}
+
+function generateBuffedSkills(crew, buffConfig) {
+	CONFIG.SKILLS_SHORT.forEach(skill => {
+		let score = { core: 0, min: 0, max: 0 };
+		if (crew.base_skills[skill.name]) {
+			if (crew.rarity == crew.max_rarity)
+				score = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
+			else
+				score = applySkillBuff(buffConfig, skill.name, crew.skill_data[prospect.rarity-1].base_skills[skill.name]);
+		}
+		crew[skill.name] = score;
+	});
 }
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
