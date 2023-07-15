@@ -33,7 +33,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 
 	const isReady = coreData.ready ? coreData.ready(['crew', 'items', 'all_buffs']) : false;
 
-	let crewFromUrl = [];
+	let crewFromUrl = [] as string[];
 	if (props.location) {
 		const urlParams = new URLSearchParams(props.location.search);
 		if (urlParams.has('crew')) crewFromUrl = urlParams.getAll('crew');
@@ -61,7 +61,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 };
 
 type CrewSelectorProps = {
-	crewList: PlayerCrew[];
+	crewList: (PlayerCrew | CrewMember)[];
 	initSelection: string[];
 };
 
@@ -145,7 +145,6 @@ const CrewDetails = (props: CrewDetailsProps) => {
 			console.error(`Crew ${symbol} not found in crew.json!`);
 			return;
 		}
-		crew.markdown = marked(crew.markdownContent);
 		data.push(crew);
 	});
 
@@ -161,7 +160,7 @@ const CrewDetails = (props: CrewDetailsProps) => {
 						storeName='behold'
 						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
 						crew={crew} />
-					<div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: crew.markdown }} />
+					{crew.markdownContent && <div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} />}
 					<div style={{ marginTop: '1em', textAlign: 'right' }}>
 						<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
 							View {crew.name} on Big Book
