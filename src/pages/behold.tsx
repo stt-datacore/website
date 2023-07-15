@@ -69,7 +69,7 @@ const CrewSelector = (props: CrewSelectorProps) => {
 	const [selectedCrew, setSelectedCrew] = React.useState<string[]>(props.initSelection);
 	const [options, setOptions] = React.useState<BeholdModalOptions>(DEFAULT_BEHOLD_OPTIONS);
 
-	const crewList = crewCopy<PlayerCrew>(props.crewList)
+	const crewList = crewCopy<PlayerCrew | CrewMember>(props.crewList)
 		.sort((a, b) => a.name.localeCompare(b.name));
 
 	const filterCrew = (data: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
