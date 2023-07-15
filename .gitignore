@@ -17,3 +17,9 @@ public_web
 public_old
 schema.json
 schema.graphql
+
+
+# VS Code Dev Environment
+.vscode/
+.config/
+.prettierrc
