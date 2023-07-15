@@ -5,6 +5,7 @@ import { Gauntlet } from "../../model/gauntlets";
 import { PlayerCrew } from "../../model/player";
 import { PresenterPlugin, PresenterPluginBase, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
 import { getPlayerPairs, getSkills } from "../../utils/crewutils";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 
 
@@ -29,6 +30,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         const { context: crew, data: node } = this.props;
         const prettyTraits = node.prettyTraits;
 
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
         const skills = getSkills(crew);
         const pairs = getPlayerPairs(crew) ?? [[], []];
@@ -63,14 +65,16 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
             
             <div style={{
                 display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-evenly",
+                flexDirection: isMobile ? 'column' : "row",
+                justifyContent: isMobile ? 'center' : "space-evenly",
+                justifyItems: 'center',
+                alignContent: 'center',
                 alignItems: "center",
                 fontSize: "3em",
 //                minHeight: "4em"
             }}>
 
-                <div>
+                <div style={{margin: "0.5em"}}>
                 {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
                 </div>
                 <div style={{margin: "0.5em"}}>
@@ -78,7 +82,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                     <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
                     : ''}
                 </div>
-                <div style={{fontSize: "12pt", marginTop: "1em"}} title="Best Pair">                    
+                <div style={{fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">                    
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} /> 
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} /> 
                     <div style={{margin: "0.25em"}}>{"Best Pair"}</div>

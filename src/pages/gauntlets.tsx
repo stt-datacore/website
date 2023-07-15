@@ -20,8 +20,10 @@ import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
+import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
 export type GauntletViewMode = 'big' | 'small' | 'table';
+const isWindow = typeof window !== 'undefined';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -600,9 +602,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return (
 		<div style={{
-			marginBottom: "2em"
+			marginBottom: "2em",
+			overflowX:"auto"
 		}}>
-			{idx === 2 && "Previous Gauntlets"}
+			{/* {idx === 2 && <h1>Previous Gauntlets</h1>} */}
 			{idx !== 2 && <h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>}
 
 			<div style={{
@@ -616,7 +619,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</h3>
 				<div style={{
 					display: "flex",
-					flexDirection:"row",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
 					justifyContent: "space-between"
 				}}>
 					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
@@ -625,20 +628,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<div style={{
 						display: "flex",
 						flexDirection: "column",
+						textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 					}}>
 					<h4><b>View Mode</b></h4>
 
 					<Dropdown
-
+						direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
 						options={displayOptions}
-							value={viewModes[idx]}
-							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
-							/>
+						value={viewModes[idx]}
+						onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
+						/>
 					</div>
 				</div>
 			</div>
 
-			<div style={{margin:"1em 0"}}>
+			<div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>
 
@@ -646,17 +650,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
-				flexWrap: "wrap"
+				flexWrap: "wrap",
+				overflowX: "auto"
 			}}>
 				{activePageTabs[idx].map((crew) => (
 					<div key={crew.symbol} className="ui segment" style={{
 						display: "flex",
 						flexDirection: "row",
 						justifyContent: "space-evenly",
-						width: "100%"
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"
 					}}>
 						<CrewPresenter
-							width="100%"
+							width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"}
 							imageWidth="50%"
 							plugins={[GauntletSkill, ShipSkill]}
 							pluginData={[gauntlet, undefined]}
@@ -665,7 +670,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							onBuffToggle={this.onBuffToggle}
 							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
 							storeName='gauntlets'
-							hover={false}
+							hover={window.innerWidth < DEFAULT_MOBILE_WIDTH ? true : false}
 							crew={crew} />
 					</div>
 				))}
@@ -674,7 +679,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
-				flexWrap: "wrap"
+				flexWrap: "wrap",
+				overflowX: "auto"
 			}}>
 				{activePageTabs[idx].map((crew) => (
 					<div key={crew.symbol} className="ui segment" style={{
@@ -682,7 +688,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						flexDirection: "row",
 						justifyContent: "space-evenly",
 						flexWrap: "wrap",
-						width: "50%",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '100%' : "50%",
 						margin: "0"
 					}}>
 						<CrewPresenter
@@ -702,7 +708,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				))}
 			</div>}
 			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
-			<div style={{margin:"1em 0"}}>
+			<div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>
 
@@ -732,10 +738,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return (<>
 				<div style={{
 					display: "flex",
-					flexDirection: "row",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 					justifyContent: "space-between"
 				}}>
-					<h2>Previous Gauntlets</h2>
+					<h1>Previous Gauntlets</h1>
 
 					<div style={{
 						display: "flex",
@@ -756,26 +762,28 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	render() {
 		const { gauntlets, today, yesterday } = this.state;
-
+		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		if (!gauntlets) return <></>
+		
+		const fs = isMobile ? "0.75em" : "1em";
 
 		const tabPanes = [
 			{
-				menuItem: "Today's Gauntlet",
-				render: () => this.renderGauntletBig(today, 0)
+				menuItem: isMobile ? "Today": "Today's Gauntlet",
+				render: () => <div style={{fontSize: fs}}>{this.renderGauntletBig(today, 0)}</div>
 			},
 			{
-				menuItem: "Yesterday's Gauntlet",
-				render: () => this.renderGauntletBig(yesterday, 1)
+				menuItem: isMobile ? "Yesterday" : "Yesterday's Gauntlet",
+				render: () => <div style={{fontSize: fs}}>{this.renderGauntletBig(yesterday, 1)}</div>
 			},
 			{
-				menuItem: "Previous Gauntlets",
-				render: () => this.renderPreviousGauntlets()
+				menuItem: isMobile ? "Previous" : "Previous Gauntlets",
+				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets()}</div>
 			}
 		]
 
 		return (
-			<Layout title='Gauntlets'>
+			<>
 				<Message icon warning>
 				<Icon name="exclamation triangle" />
 					<Message.Content>
@@ -783,10 +791,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						This section is under development and not fully functional yet.
 					</Message.Content>
 				</Message>
-
+				<div>
+				{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH && 
+				<Tab menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
 				<Tab menu={{ attached: false }} panes={tabPanes} />
+				}
+				</div>
+				
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
-			</Layout>
+			</>
 		)}
 	}
 
