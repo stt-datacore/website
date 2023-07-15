@@ -24,8 +24,10 @@ import { PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenter
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataWrapper } from '../context/datawrapper';
+import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
 export type GauntletViewMode = 'big' | 'small' | 'table';
+const isWindow = typeof window !== 'undefined';
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -55,15 +57,16 @@ export interface FilterProps {
 
 export interface GauntletsPageState {
 	lastPlayerDate?: Date;
+
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
-	activePage: Gauntlet[];
+	gauntlets: Gauntlet[];
+	
 	activePageTabs: (PlayerCrew | CrewMember)[][];
-	activePrevGauntlet?: Gauntlet;
 
 	today?: Gauntlet;
 	yesterday?: Gauntlet;
-	totalPages: number;
-	activePageIndex: number;
+	activePrevGauntlet?: Gauntlet;
+
 	itemsPerPage: number;
 
 	totalPagesTab: number[];
@@ -71,6 +74,7 @@ export interface GauntletsPageState {
 	itemsPerPageTab: number[];
 
 	searchDate?: Date;
+
 	filteredCrew: (PlayerCrew | CrewMember)[][];
 	filterProps: FilterProps[];
 	appliedFilters: FilterProps[];
@@ -86,52 +90,34 @@ const DEFAULT_FILTER_PROPS = {
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
 	static contextType? = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
-	private inited: boolean = false;
-	private gauntlets: Gauntlet[] | undefined = undefined;
+	private inited: boolean = false;	
 	private readonly tiny = TinyStore.getStore('gauntlets');
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
 
-		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'big') ?? 'big';
-		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'big') ?? 'big';
-
+		const v1 = this.tiny.getValue<GauntletViewMode>('viewMode_0', 'table') ?? 'table';
+		const v2 = this.tiny.getValue<GauntletViewMode>('viewMode_1', 'table') ?? 'table';
+		const v3 = this.tiny.getValue<GauntletViewMode>('viewMode_2', 'table') ?? 'table';
+		
 		this.state = {
 			hoverCrew: undefined,
-			activePage: [],
-			totalPages: 0,
-			activePageIndex: 0,
 			itemsPerPage: 10,
-			activePageTabs: [[], []],
-			totalPagesTab: [0, 0],
-			activePageIndexTab: [0, 0],
-			itemsPerPageTab: [10, 10],
-			filteredCrew: [[], []],
-			viewModes: [v1, v2],
-			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
-			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
+			activePageTabs: [[], [], []],
+			totalPagesTab: [0, 0, 0],
+			activePageIndexTab: [0, 0, 0],
+			itemsPerPageTab: [10, 10, 10],
+			filteredCrew: [[], [], []],
+			viewModes: [v1, v2, v3],
+			gauntlets: [],
+			filterProps: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))],
+			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
 	}
 
 	public readonly setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
 		this.setState({ ... this.state, hoverCrew: item });
 	};
-
-	public readonly setActivePage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps) => {
-		if (this.inited && this.gauntlets) {
-
-			let ip = this.state.itemsPerPage;
-			let ap = ((data.activePage as number) - 1);
-			if (ap < 0) ap = 0;
-
-			let cp = ap * ip;
-			let ep = cp + ip;
-			if (ep > this.gauntlets.length) ep = this.gauntlets.length;
-			let sl = this.gauntlets.slice(cp, ep);
-			this.setState({ ... this.state, activePage: sl, activePageIndex: ap + 1 });
-
-		}
-	}
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
@@ -275,8 +261,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
-			this.gauntlets = undefined;
+		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {			
 			this.inited = false;
 		}
 		this.initData();
@@ -346,74 +331,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (gauntlets && this.inited) return;
 
-		gauntlets.forEach((gauntlet, index) => {			
-			const prettyTraits = gauntlet.contest_data?.traits?.map(t => traits.trait_names[t]);
-			if (!prettyTraits) {
-				return null
-			}
-			const matchedCrew =
-				allCrew.filter(e => e.max_rarity > 3 && (
-					Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
-					prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
-					.map((crew) => {
-						let c = playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
-						if (c) return c;						
-						if (!hasPlayer) crew.rarity = crew.max_rarity;
-						else crew.rarity = 0;
-						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
-						return crew;
-					})
-					.sort((a, b) => {
-						let r = 0;
+		gauntlets.slice(0, 3).forEach((node, index) => {
+			this.getGauntletCrew(node);
+		});
 
-						let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
-						let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
+		if (!this.state.gauntlets?.length || !this.inited) {
 
-						if (atrait >= 3) atrait = 3.90;
-						else if (atrait >= 2) atrait = 2.7;
-						else if (atrait >= 1) atrait = 1.5;
-						else atrait = 0.30;
+			const og: Gauntlet[] = gauntlets; //?.filter((gauntlet: Gauntlet) => gauntlet.prettyTraits?.length) ?? [] as Gauntlet[];
+			const today = og[0];
+			const yesterday = og[1];
+			const activePrevGauntlet = og[2];
+			const gaunts = og.slice(2);
 
-						if (btrait >= 3) btrait = 3.90;
-						else if (btrait >= 2) btrait = 2.7;
-						else if (btrait >= 1) btrait = 1.5;
-						else btrait = 0.30;
+			let apidx = [1, 1, 1];
+			let pcs = [0, 0, 0];
+			let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
 
-						let ap = getPlayerPairs(a, atrait);
-						let bp = getPlayerPairs(b, btrait);
-
-						if (ap && bp) {
-							r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.65);
-							if (r === 0 && ap.length > 1 && bp.length > 1) {
-								r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.65);
-								if (r === 0 && ap.length > 2 && bp.length > 2) {
-									r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.65);
-								}
-							}
-						}
-						return r;
-					});
-			
-			gauntlet.matchedCrew = matchedCrew;
-			gauntlet.prettyTraits = prettyTraits;
-		});	
-
-		if (!this.gauntlets || !this.inited) {
-
-			let gaunts = gauntlets?.filter((gauntlet) => gauntlet.prettyTraits?.length) ?? [];
-			let today = gaunts[0];
-			let yesterday = gaunts[1];
-
-			gaunts = gaunts.slice(2);
-
-			let ip = this.state.itemsPerPage;
-			let pc = Math.ceil(gaunts.length / ip);
-
-			let apidx = [1, 1];
-			let pcs = [0, 0];
-			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
-
-			[today, yesterday].forEach((day, idx) => {
+			[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
 				if (!day.matchedCrew) {
 					return;
 				}
@@ -425,188 +359,95 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pcs[idx] = pc;
 			})
 
-			this.gauntlets = gaunts;
 			this.inited = true;
 
 			this.setState({ ... this.state,
-				activePage: gaunts.slice(0, ip),
-				totalPages: pc,
-				activePageIndex: 1,
+				gauntlets: gaunts,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
 				activePageIndexTab: apidx,
 				today,
 				yesterday,
-				lastPlayerDate: this.context.playerData?.calc?.lastModified
+				lastPlayerDate: this.context.playerData?.calc?.lastModified,
+				activePrevGauntlet
 			});
 		}
 	}
 
-	private readonly updatePaging = () => {
-		const { today, yesterday } = this.state;
-		if (!today || !yesterday) return;
-
-		let apidx = [1, 1];
-			let pcs = [0, 0];
-			let aptabs = [[], []] as (PlayerCrew | CrewMember)[][];
-
-			[today, yesterday].forEach((day, idx) => {
-				if (!day.matchedCrew) {
-					return;
-				}
-
-				let ip = this.state.itemsPerPageTab[idx];
-				let pc = Math.ceil(day.matchedCrew.length / ip);
-
-				aptabs[idx] = day.matchedCrew.slice(0, ip);
-				pcs[idx] = pc;
-			})
-
-			this.inited = true;
-
-			this.setState({ ... this.state,
-				activePageIndex: 1,
-				activePageTabs: aptabs,
-				totalPagesTab: pcs,
-				activePageIndexTab: apidx,
-				today,
-				yesterday
-			});
+	private changeGauntlet = (date: string) => {
+		const g = this.state.gauntlets?.find((g) => g.date === date);
+		this.updatePaging(g);
 	}
 
-	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
-		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes } = this.state;
-		if (!gauntlet) return undefined;
+	private readonly updatePaging = (activePrevGauntlet?: Gauntlet) => {
+		const { today, yesterday } = this.state;
 
-		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
-		const displayOptions = [{
-			key: "big",
-			value:"big",
-			text: "Large Presentation"
-			},
-			{
-			key: "small",
-			value:"small",
-			text: "Small Presentation"
-			},
-			{
-			key: "table",
-			value:"table",
-			text: "Table"
-			}]
+		if (activePrevGauntlet) {
+			this.getGauntletCrew(activePrevGauntlet);
+		}
+		let apidx = this.state.activePageIndexTab;
+		let pcs = [0, 0, 0];
+		let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
+
+		[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
+
+			if(!day) return;
+
+			if (!day.matchedCrew) {
+				return;
+			}
+
+			let ip = this.state.itemsPerPageTab[idx];
+			let pc = Math.ceil(day.matchedCrew.length / ip);
+
+			aptabs[idx] = day.matchedCrew.slice(0, ip);
+			pcs[idx] = pc;
+			if (apidx[idx] > pc) apidx[idx] = pc;
+		});
+
+		this.inited = true;
+
+		this.setState({ ... this.state,
+			activePageTabs: aptabs,
+			totalPagesTab: pcs,
+			activePageIndexTab: apidx,
+			today,
+			yesterday,
+			activePrevGauntlet
+		});
+	}
+
+	private formatPair(pair: Skill[]): JSX.Element {
 
 		return (
-		<div style={{
-			marginBottom: "2em"
-		}}>
-			<h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>
-			<div style={{
-				display:"flex",
-				flexDirection: "column",
-				justifyContent: "flex-start",
-				margin: "0.25em 0"
-			}}> 
-				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
-					{prettyDate}
-				</h3>
+			<div>
 				<div style={{
 					display: "flex",
-					flexDirection:"row",
-					justifyContent: "space-between"
+					flexDirection: "row"
 				}}>
-					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
-						{gauntlet.contest_data?.traits.map(t => traits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
-					</h2>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
 					<div style={{
-						display: "flex",
-						flexDirection: "column",
-					}}>
-					<h4><b>View Mode</b></h4>
-
-					<Dropdown
-
-						options={displayOptions}
-							value={viewModes[idx]}
-							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
-							/>
+							margin: "0.5em"
+						}}>
+						{pair[0].range_min}-{pair[0].range_max}
 					</div>
 				</div>
-			</div>
-
-			<div style={{margin:"1em 0"}}>
-				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-			</div>
-
-			{viewModes[idx] === 'big' &&
-			<div style={{
-				display: "flex",
-				flexDirection: "row",
-				flexWrap: "wrap"
-			}}>
-				{activePageTabs[idx].map((crew) => (
-					<div key={crew.symbol} className="ui segment" style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-evenly",
-						width: "100%"
-					}}>
-						<CrewPresenter
-							width="100%"
-							imageWidth="50%"
-							plugins={[GauntletSkill, ShipSkill]}
-							pluginData={[gauntlet, undefined]}
-							selfRender={true}
-							selfPrepare={true}
-							onBuffToggle={this.onBuffToggle}
-							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
-							storeName='gauntlets'
-							hover={false}
-							crew={crew} />
+				{pair.length > 1 &&
+				<div style={{
+					display: "flex",
+					flexDirection: "row"
+				}}>
+					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+					<div style={{
+							margin: "0.5em"
+						}}>
+						{pair[1].range_min}-{pair[1].range_max}
 					</div>
-				))}
-			</div>}
-			{viewModes[idx] === 'small' &&
-			<div style={{
-				display: "flex",
-				flexDirection: "row",
-				flexWrap: "wrap"
-			}}>
-				{activePageTabs[idx].map((crew) => (
-					<div key={crew.symbol} className="ui segment" style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-evenly",
-						flexWrap: "wrap",
-						width: "50%",
-						margin: "0"
-					}}>
-						<CrewPresenter
-							hideStats
-							compact
-							proficiencies
-							plugins={[GauntletSkill]}
-							pluginData={[gauntlet]}
-							selfRender={true}
-							selfPrepare={true}
-							onBuffToggle={this.onBuffToggle}
-							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
-							storeName='gauntlets'
-							hover={false}
-							crew={crew} />
-					</div>
-				))}
-			</div>}
-			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
-			<div style={{margin:"1em 0"}}>
-				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+				</div>}
 			</div>
 
-			<hr />
-		</div>
 		)
-
 	}
-
 
 	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
 		if (!data) return <></>;
@@ -707,155 +548,211 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			</div>);
 	}
 
-	private formatPair(pair: Skill[]): JSX.Element {
+	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
+		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes } = this.state;
+		if (!gauntlet) return undefined;
+
+		const prettyDate = moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY');
+		const displayOptions = [{
+				key: "big",
+				value:"big",
+				text: "Large Presentation"
+			},
+			{
+				key: "small",
+				value:"small",
+				text: "Small Presentation"
+			},
+			{
+				key: "table",
+				value:"table",
+				text: "Table"
+			}]
 
 		return (
-			<div>
+		<div style={{
+			marginBottom: "2em",
+			overflowX:"auto"
+		}}>
+			{/* {idx === 2 && <h1>Previous Gauntlets</h1>} */}
+			{idx !== 2 && <h1>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>}
+
+			<div style={{
+				display:"flex",
+				flexDirection: "column",
+				justifyContent: "flex-start",
+				margin: "0.25em 0"
+			}}> 
+				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
+					{prettyDate}
+				</h3>
 				<div style={{
 					display: "flex",
-					flexDirection: "row"
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
+					justifyContent: "space-between"
 				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
+						{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
+					</h2>
 					<div style={{
-							margin: "0.5em"
-						}}>
-						{pair[0].range_min}-{pair[0].range_max}
+						display: "flex",
+						flexDirection: "column",
+						textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+					}}>
+					<h4><b>View Mode</b></h4>
+
+					<Dropdown
+						direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+						options={displayOptions}
+						value={viewModes[idx]}
+						onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
+						/>
 					</div>
 				</div>
-				{pair.length > 1 &&
-				<div style={{
-					display: "flex",
-					flexDirection: "row"
-				}}>
-					<img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
-					<div style={{
-							margin: "0.5em"
-						}}>
-						{pair[1].range_min}-{pair[1].range_max}
-					</div>
-				</div>}
 			</div>
 
-		)
-	}
+			<div style={{margin:"1em 0", width: "100%"}}>
+				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+			</div>
 
-	private changeDate = (e: string) => {
-		this.setState({ ...this.state, searchDate: new Date(e) });
+			{viewModes[idx] === 'big' &&
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap",
+				overflowX: "auto"
+			}}>
+				{activePageTabs[idx].map((crew) => (
+					<div key={crew.symbol} className="ui segment" style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-evenly",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"
+					}}>
+						<CrewPresenter
+							width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"}
+							imageWidth="50%"
+							plugins={[GauntletSkill, ShipSkill]}
+							pluginData={[gauntlet, undefined]}
+							selfRender={true}
+							selfPrepare={true}
+							onBuffToggle={this.onBuffToggle}
+							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
+							storeName='gauntlets'
+							hover={window.innerWidth < DEFAULT_MOBILE_WIDTH ? true : false}
+							crew={crew} />
+					</div>
+				))}
+			</div>}
+			{viewModes[idx] === 'small' &&
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap",
+				overflowX: "auto"
+			}}>
+				{activePageTabs[idx].map((crew) => (
+					<div key={crew.symbol} className="ui segment" style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-evenly",
+						flexWrap: "wrap",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '100%' : "50%",
+						margin: "0"
+					}}>
+						<CrewPresenter
+							hideStats
+							compact
+							proficiencies
+							plugins={[GauntletSkill]}
+							pluginData={[gauntlet]}
+							selfRender={true}
+							selfPrepare={true}
+							onBuffToggle={this.onBuffToggle}
+							onImmoToggle={(state) => this.onImmoToggle(crew as PlayerCrew, state)}
+							storeName='gauntlets'
+							hover={false}
+							crew={crew} />
+					</div>
+				))}
+			</div>}
+			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
+			<div style={{margin:"1em 0", width: "100%"}}>
+				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+			</div>
+
+			<hr />
+		</div>
+		)
+
 	}
 
 	renderPreviousGauntlets() {
-		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages, searchDate } = this.state;
+		const { activePrevGauntlet, gauntlets } = this.state;
 
 		if (!gauntlets) return <></>
 
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 
+		const gauntOpts = gauntlets.map((g) => {
+			let text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]})`
+			return {
+				key: g.date,
+				value: g.date,
+				text: text
+			};
+		})
+
 		return (<>
 				<div style={{
 					display: "flex",
-					flexDirection: "row",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 					justifyContent: "space-between"
 				}}>
-					<h2>Previous Gauntlets</h2>
+					<h1>Previous Gauntlets</h1>
 
-					{/* <div style={{
-						margin: "0.25em",
-						marginRight: 0,
+					<div style={{
 						display: "flex",
-						flexDirection: "row",
-						justifyContent: "center",
-						justifyItems: "center",
-						alignItems: "center",
-						alignContent: "center"
+						flexDirection: "column"
 					}}>
-						<h4 style={{marginTop:"0.5em"}}>Search By Date:&nbsp;</h4>
-						<input value={searchDate?.toDateString()} max={(new Date(gauntlets[0].date).toDateString())} onChange={(e) => this.changeDate((e.nativeEvent.target as HTMLInputElement).value)} className="ui input button" style={{color:foreColor, margin :"0.25em", marginRight: 0}} type="date" />
-						<i style={{marginLeft:"0.5em", cursor: "pointer"}} className="icon remove circle button" />
-					</div> */}
+						<Dropdown 
+							scrolling
+							options={gauntOpts}
+							value={activePrevGauntlet?.date}
+							onChange={(e, { value }) => this.changeGauntlet(value as string)}
+							/>
+
+					</div>
 				</div>
-
-				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
-
-				<div className="ui segment">
-					<Item.Group divided>
-						{activePage?.map((node, index) => {
-
-							const matchedCrew = node.matchedCrew ?? [];
-
-							const prettyDate = moment(node.date).utc(false).format('dddd, D MMMM YYYY')
-							const prettyTraits = node.prettyTraits;
-
-							return (
-							<Item key={index}>
-								<Item.Content>
-									<Item.Header>
-										{node.contest_data?.traits.map(t => traits.trait_names[t]).join("/")}/{SKILLS[node.contest_data?.featured_skill ?? ""]}
-									</Item.Header>
-									<Item.Meta style={{color: 'white'}}>{prettyDate}</Item.Meta>
-									<Item.Description>
-										<Grid stackable>
-										{matchedCrew.map((crew) => (
-												<Grid.Column key={crew.symbol} width={1} style={{textAlign: 'center'}}>
-													<Link to={`/crew/${crew.symbol}`}>
-												<CrewTarget inputItem={crew} setDisplayItem={this.setHoverCrew} targetGroup='gauntlets'>
-													<Image
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-													size='tiny'
-													alt={crew.name}
-													style={{
-														borderColor: CONFIG.RARITIES[crew.max_rarity].color,
-														borderWidth: '1px',
-														borderRadius: '4px',
-														borderStyle: 'solid',
-														marginLeft: 'auto',
-														marginRight: 'auto'
-													}}
-												/>
-												</CrewTarget>
-											</Link>
-											{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-											<br />
-											{crew.base_skills[node.contest_data?.featured_skill ?? ""] ? <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> : ''}
-											</Grid.Column>
-										))}
-										</Grid>
-									</Item.Description>
-								</Item.Content>
-							</Item>
-						)
-							})}
-					</Item.Group>
-				</div>
-				<Pagination fluid totalPages={totalPages} activePage={activePageIndex} onPageChange={this.setActivePage} />
+				{this.renderGauntletBig(activePrevGauntlet, 2)}
 			</>)
 	}
 
 	render() {
-		const { gauntlets } = this;
-		const { activePage, activePageIndex, totalPages, today, yesterday } = this.state;
-		const { activePageTabs, activePageIndexTab, totalPagesTab } = this.state;
-
+		const { gauntlets, today, yesterday } = this.state;
+		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		if (!gauntlets) return <></>
+		
+		const fs = isMobile ? "0.75em" : "1em";
 
 		const tabPanes = [
 			{
-				menuItem: "Today's Gauntlet",
-				render: () => this.renderGauntletBig(today, 0)
+				menuItem: isMobile ? "Today": "Today's Gauntlet",
+				render: () => <div style={{fontSize: fs}}>{this.renderGauntletBig(today, 0)}</div>
 			},
 			{
-				menuItem: "Yesterday's Gauntlet",
-				render: () => this.renderGauntletBig(yesterday, 1)
+				menuItem: isMobile ? "Yesterday" : "Yesterday's Gauntlet",
+				render: () => <div style={{fontSize: fs}}>{this.renderGauntletBig(yesterday, 1)}</div>
 			},
 			{
-				menuItem: "Previous Gauntlets",
-				render: () => this.renderPreviousGauntlets()
+				menuItem: isMobile ? "Previous" : "Previous Gauntlets",
+				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets()}</div>
 			}
 		]
 
 		return (
-			<div>
+			<>
 				<Message icon warning>
 				<Icon name="exclamation triangle" />
 					<Message.Content>
@@ -863,10 +760,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						This section is under development and not fully functional yet.
 					</Message.Content>
 				</Message>
-
+				<div>
+				{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH && 
+				<Tab menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
 				<Tab menu={{ attached: false }} panes={tabPanes} />
+				}
+				</div>
+				
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
-			</div>
+			</>
 		)}
 	}
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
@@ -34,7 +34,7 @@ const EventPlanner = () => {
 		return (<></>);
 	}
 
-	if (activeEvents.length == 0)
+	if (activeEvents.length === 0)
 		return (<p>Event data currently not available.</p>);
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
@@ -66,7 +66,7 @@ const EventPlanner = () => {
 		//	allCrew stores immortalized numbers as base_skills,
 		//	but playerData base_skills of unleveled crew are unbuffed skills at current level
 		if (crew.immortal === CompletionState.NotComplete) {
-			const ff = allCrew.find((c) => c.symbol == crew.symbol);
+			const ff = allCrew.find((c) => c.symbol === crew.symbol);
 			if (ff)
 				crewman.skill_data.push({
 					rarity: crew.max_rarity,
@@ -143,7 +143,7 @@ const EventPicker = (props: EventPickerProps) => {
 
 	const phaseList = [] as EventMap[];
 	eventData.content_types.forEach((contentType, phaseId) => {
-		if (!phaseList.find((phase) => phase.key == contentType)) {
+		if (!phaseList.find((phase) => phase.key === contentType)) {
 			phaseList.push(
 				{
 					key: contentType,
@@ -161,7 +161,7 @@ const EventPicker = (props: EventPickerProps) => {
 	const lockable = [] as LockedProspect[];
 
 	prospects.forEach((p) => {
-		let crew = allCrew.find((c) => c.symbol == p.symbol);
+		let crew = allCrew.find((c) => c.symbol === p.symbol);
 		if (crew) {
 			let prospect = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 			prospect.id = myCrew.length+1;
@@ -173,7 +173,7 @@ const EventPicker = (props: EventPickerProps) => {
 			CONFIG.SKILLS_SHORT.forEach(skill => {
 				let score: ComputedBuff = { core: 0, min: 0, max: 0 };
 				if (prospect.base_skills[skill.name]) {
-					if (prospect.rarity == prospect.max_rarity)
+					if (prospect.rarity === prospect.max_rarity)
 						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
 					else
 						score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity-1].base_skills[skill.name]);
@@ -182,7 +182,6 @@ const EventPicker = (props: EventPickerProps) => {
 			});
 			myCrew.push(prospect);
 			lockable.push({
-				...prospect,
 				symbol: prospect.symbol,
 				name: prospect.name,
 				rarity: prospect.rarity,
@@ -208,7 +207,7 @@ const EventPicker = (props: EventPickerProps) => {
 			</Form>
 			<EventCrewTable allCrew={allCrew} crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
 			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
-			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
+			{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
 	);
 };
@@ -237,7 +236,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		setInitOptions({});
 	}, [eventData, phaseIndex]);
 
-	if (eventData.bonus.length == 0)
+	if (eventData.bonus.length === 0)
 		return (
 			<div style={{ marginTop: '1em' }}>
 				Featured crew not yet identified for this event.
@@ -261,7 +260,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 
 	// Check for custom column (i.e. combo from crew matrix click)
 	let customColumn = '';
-	if (initOptions?.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1) {
+	if (initOptions?.column && tableConfig.findIndex(col => col.column === initOptions.column) === -1) {
 		customColumn = initOptions.column;
 		const customSkills = customColumn.replace('combos.', '').split(',');
 		tableConfig.push({
@@ -290,7 +289,8 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 	}
 
-	let myCrew = props.crew;
+	// Always calculate new skill numbers from original, unaltered crew list
+	let myCrew = JSON.parse(JSON.stringify(props.crew));
 
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) myCrew = myCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
@@ -310,17 +310,17 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		if (applyBonus || showPotential) {
 			crew.bonus = 1;
 			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				if (phaseType == 'gather') crew.bonus = 10;
-				else if (phaseType == 'shuttles') crew.bonus = 3;
+				if (phaseType === 'gather') crew.bonus = 10;
+				else if (phaseType === 'shuttles') crew.bonus = 3;
 			}
 			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				if (phaseType == 'gather') crew.bonus = 5;
-				else if (phaseType == 'shuttles') crew.bonus = 2;
+				if (phaseType === 'gather') crew.bonus = 5;
+				else if (phaseType === 'shuttles') crew.bonus = 2;
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
-						if (showPotential && (crew.immortal === 0 || crew.immortal <= -2) && !crew.prospect) {
+						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
@@ -331,8 +331,8 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 		// Then calculate skill combination scores
 		let combos: EventCombos = {...zeroCombos};
-		let bestPair: EventPair = { score: 0, skillA: "", skillB: "" };
-		let bestSkill: EventSkill = { score: 0, skill: "" };
+		let bestPair: EventPair = { score: 0, skillA: '', skillB: '' };
+		let bestSkill: EventSkill = { score: 0, skill: '' };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			const firstSkill = CONFIG.SKILLS_SHORT[first];
 			const single = {
@@ -407,12 +407,12 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				data={myCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx, highlighted) => renderTableRow(crew, idx ?? -1, highlighted ?? false)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType ?? "")}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType ?? '')}
 				initOptions={initOptions}
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
-			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
@@ -454,19 +454,19 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				<Table.Cell textAlign='center'>
 					<b>{scoreLabel(crew.bestPair.score)}</b>
 					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
-					{crew.bestPair.skillB != '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+					{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
 						<Table.Cell key={skill.name} textAlign='center'>
 							<b>{scoreLabel(crew[skill.name].core)}</b>
-							{phaseType != 'gather' && (<span><br /><small>+({crew[skill.name].min}-{crew[skill.name].max})</small></span>)}
+							{phaseType !== 'gather' && (<span><br /><small>+({crew[skill.name].min}-{crew[skill.name].max})</small></span>)}
 						</Table.Cell>
 					) : (
 						<Table.Cell key={skill.name} />
 					)
 				)}
-				{customColumn != '' && (
+				{customColumn !== '' && (
 						<Table.Cell key='custom' textAlign='center'>
 							<b>{scoreLabel(customColumn.split('.').reduce((prev, curr) => prev.hasOwnProperty(curr) ? prev[curr] : undefined, crew))}</b>
 						</Table.Cell>
@@ -541,12 +541,12 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		<React.Fragment>
 			<Header as='h4'>Skill Matrix</Header>
 			<p>This table shows your best crew for each possible skill combination. Use this table to identify your best crew for this event{phaseType === 'shuttles' ? ` and the best candidates to share in a faction event if you are a squad leader` : ''}.</p>
-			<Table definition celled striped collapsing unstackable compact='very'>
+			<Table definition celled striped collapsing unstackable compact='very' style={{ width: '100%' }}>
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell />
 						{CONFIG.SKILLS_SHORT.map((skill, cellId) => (
-							<Table.HeaderCell key={cellId} textAlign='center'>
+							<Table.HeaderCell key={cellId} width={2} textAlign='center'>
 								<img alt={`${skill.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
 							</Table.HeaderCell>
 						))}
@@ -683,15 +683,16 @@ function calculateGalaxyChance(skillValue: number) : number {
 		specialist_maximum_success_chance: 0.99
 	};
 
-	let midpointOffset = skillValue / craft_config.specialist_challenge_rating;
-	let val = Math.floor(
+	const midpointOffset = skillValue / craft_config.specialist_challenge_rating;
+	const val = Math.floor(
 		100 /
-		(1 +
-			Math.exp(
-				-craft_config.specialist_chance_formula.steepness *
-				(midpointOffset - craft_config.specialist_chance_formula.midpoint)
-				))
-		);
+			(1 +
+				Math.exp(
+					-craft_config.specialist_chance_formula.steepness *
+						(midpointOffset - craft_config.specialist_chance_formula.midpoint)
+				)
+			)
+	);
 	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 

@@ -141,7 +141,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                     alignItems:  "center",
                                 }}
                             >
-                                <h4 style={{ marginBottom: ".25em", maxWidth: "75%", fontSize: "1.25em" }}>
+                                <h4 style={{ marginBottom: ".25em", maxWidth: "72%", fontSize: "1.25em" }}>
                                     {action.name}
                                 </h4>
                                 <div

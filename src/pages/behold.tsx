@@ -21,6 +21,7 @@ import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 import { formatTierLabel, crewCopy } from '../utils/crewutils';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../components/base/optionsmodal_base';
+import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
 type BeholdsPageProps = {
 	location: any;
@@ -153,12 +154,12 @@ const CrewDetails = (props: CrewDetailsProps) => {
 			{entries.map((entry, idx) => (
 				<Segment key={entry.crew.symbol} style={{ width: '100%' }}>
 					<CrewPresenter
-						width='100%'
-						imageWidth='50%'
+						width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
+						imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
 						selfRender={true}
 						selfPrepare={true}
 						storeName='behold'
-						hover={false}
+						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
 						crew={entry.crew} />
 					<div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: entry.markdown }} />
 					<div style={{ marginTop: '1em', textAlign: 'right' }}>
