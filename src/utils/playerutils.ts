@@ -61,6 +61,12 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.location_channel_prefix;
 	delete p.player.character.events;
 
+	delete p.fleet_boss_battles_root;
+	delete p.captains_bridge_root;
+	delete p.scanning_root;
+	delete p.objective_root;
+	delete p.objective_event_root;
+
 	if (p.player.character.crew_avatar && p.player.character.crew_avatar.symbol) {
 		p.player.character.crew_avatar = {
 			symbol: p.player.character.crew_avatar.symbol,
