@@ -666,7 +666,7 @@ export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 		return '$';
 	}
 	if (!crew.bigbook_tier || crew.bigbook_tier === -1) {
-		return 'none';
+		return '?';
 	}
 	return `${crew.bigbook_tier}`;
 }

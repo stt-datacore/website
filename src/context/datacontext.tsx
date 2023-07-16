@@ -90,7 +90,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}
 
 		demands?.forEach(demand => {
+			// this is a hack because BB uses all buffs but we don't always have player data
+			// and our skill_bufs does not yet match BB data. So for now, we're ignoring them.
 			if (demand === 'skill_bufs') demand = 'all_buffs';
+			
 			if (valid.includes(demand)) {
 				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);

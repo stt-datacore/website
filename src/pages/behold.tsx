@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Button, Segment, Table, Rating } from 'semantic-ui-react';
+import { Header, Button, Segment, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import marked, { options } from 'marked';
 
@@ -33,6 +33,12 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 
 	const isReady = coreData.ready ? coreData.ready(['crew', 'items', 'all_buffs']) : false;
 
+	let crewFromUrl = [] as string[];
+	if (props.location) {
+		const urlParams = new URLSearchParams(props.location.search);
+		if (urlParams.has('crew')) crewFromUrl = urlParams.getAll('crew');
+	}
+
 	return (
 		<Layout title='Behold helper'>
 			{!isReady &&
@@ -46,7 +52,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 						items: coreData.items
 					}}>
 						<Header as='h2'>Behold helper</Header>
-						<CrewSelector crewList={coreData.crew} />
+						<CrewSelector crewList={coreData.crew} initSelection={crewFromUrl} />
 					</MergedContext.Provider>
 				</React.Fragment>
 			}
@@ -54,11 +60,16 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	);
 };
 
-const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
-	const [selectedCrew, setSelectedCrew] = React.useState<string[]>([]);
+type CrewSelectorProps = {
+	crewList: (PlayerCrew | CrewMember)[];
+	initSelection: string[];
+};
+
+const CrewSelector = (props: CrewSelectorProps) => {
+	const [selectedCrew, setSelectedCrew] = React.useState<string[]>(props.initSelection);
 	const [options, setOptions] = React.useState<BeholdModalOptions>(DEFAULT_BEHOLD_OPTIONS);
 
-	const crewList = crewCopy<PlayerCrew>(props.crewList)
+	const crewList = crewCopy<PlayerCrew | CrewMember>(props.crewList)
 		.sort((a, b) => a.name.localeCompare(b.name));
 
 	const filterCrew = (data: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
@@ -85,12 +96,18 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 		return data;
 	};
 
+	const permalink = selectedCrew.reduce((prev, curr) => { if (prev !== '') prev += '&'; return prev+'crew='+curr; }, '');
+
 	return (
 		<React.Fragment>
 			<CrewPicker defaultOptions={DEFAULT_BEHOLD_OPTIONS} filterCrew={filterCrew} pickerModal={BeholdOptionsModal} crewList={crewList} handleSelect={onCrewPick} options={options} setOptions={setOptions} />
-			<CrewDetails selectedCrew={selectedCrew} crewList={crewList} handleDismiss={onCrewDismiss} />
+			<CrewDetails selectedCrew={selectedCrew} crewList={crewList} handleDismiss={onCrewDismiss} handleDismissAll={onCrewDismissAll} />
 			{selectedCrew.length > 0 && <CrewTable selectedCrew={selectedCrew} crewList={crewList} />}
-			{selectedCrew.length > 0 && <div style={{ marginTop: '2em' }}>Permalink (To do)</div>}
+			{selectedCrew.length > 0 &&
+				<div style={{ marginTop: '2em' }}>
+					<Link to={`/behold?${permalink}`}><Icon name='linkify' /> Permalink</Link>
+				</div>
+			}
 		</React.Fragment>
 	);
 
@@ -105,54 +122,36 @@ const CrewSelector = (props: { crewList: PlayerCrew[] }) => {
 		selectedCrew.splice(selectedIndex, 1);
 		setSelectedCrew([...selectedCrew]);
 	}
+
+	function onCrewDismissAll(): void {
+		setSelectedCrew([]);
+	}
 };
 
 type CrewDetailsProps = {
 	selectedCrew: string[];
 	crewList: (PlayerCrew | CrewMember)[];
 	handleDismiss: (selectedIndex: number) => void;
+	handleDismissAll: () => void;
 };
-
-interface CrewDetailsEntry {
-	markdown: string;
-	crew: (PlayerCrew | CrewMember);
-	crewDemands: ICrewDemandsMeta;
-	markdownRemark: MarkdownRemark;
-}
 
 const CrewDetails = (props: CrewDetailsProps) => {
 	const { selectedCrew } = props;
 
-	const entries = [] as CrewDetailsEntry[];
+	const data = [] as (CrewMember | PlayerCrew)[];
 	selectedCrew.forEach(symbol => {
 		const crew = props.crewList.find(crew => crew.symbol === symbol);
 		if (!crew) {
 			console.error(`Crew ${symbol} not found in crew.json!`);
 			return;
 		}
-		// This emulates the Gatsby markdown output until the transition to dynamic loading entirely
-		entries.push({
-			markdown: marked(crew.markdownContent),
-			crew,
-			crewDemands: {
-				factionOnlyTotal: crew.factionOnlyTotal,
-				totalChronCost: crew.totalChronCost,
-				craftCost: crew.craftCost
-			},
-			markdownRemark: {
-				frontmatter: {
-					bigbook_tier: crew.bigbook_tier,
-					events: crew.events,
-					in_portal: crew.in_portal
-				}
-			}
-		});
+		data.push(crew);
 	});
 
 	return (
 		<div style={{ marginTop: '2em' }}>
-			{entries.map((entry, idx) => (
-				<Segment key={entry.crew.symbol} style={{ width: '100%' }}>
+			{data.map((crew, idx) => (
+				<Segment key={crew.symbol} style={{ width: '100%' }}>
 					<CrewPresenter
 						width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
 						imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
@@ -160,17 +159,17 @@ const CrewDetails = (props: CrewDetailsProps) => {
 						selfPrepare={true}
 						storeName='behold'
 						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
-						crew={entry.crew} />
-					<div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: entry.markdown }} />
+						crew={crew} />
+					{crew.markdownContent && <div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} />}
 					<div style={{ marginTop: '1em', textAlign: 'right' }}>
-						<a href={`https://www.bigbook.app/crew/${entry.crew.symbol}`} target='_blank'>
-							View {entry.crew.name} on Big Book
+						<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
+							View {crew.name} on Big Book
 						</a>
 					</div>
 					<div style={{ marginTop: '1em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
 						<Button compact icon='add user' color='green'
-							content={`Preview ${entry.crew.name} in your roster`}
-							onClick={() => addProspects([entry.crew.symbol])}
+							content={`Preview ${crew.name} in your roster`}
+							onClick={() => addProspects([crew.symbol])}
 						/>
 						<Button compact icon='ban'
 							content='Dismiss'
@@ -180,10 +179,16 @@ const CrewDetails = (props: CrewDetailsProps) => {
 				</Segment>
 			))}
 			{selectedCrew.length > 0 &&
-				<Button icon='add user' color='green'
-					content='Preview all in your roster'
-					onClick={() => addProspects(selectedCrew)}
-				/>
+				<React.Fragment>
+					<Button icon='add user' color='green'
+						content='Preview all in your roster'
+						onClick={() => addProspects(selectedCrew)}
+					/>
+					<Button icon='ban'
+						content='Dismiss all'
+						onClick={() => props.handleDismissAll()}
+					/>
+				</React.Fragment>
 			}
 		</div>
 	);
@@ -229,10 +234,10 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'ranks.gauntletRank', title: 'Gauntlet' },
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
 		{ width: 1, column: 'events', title: 'Events', reverse: true },
-		{ width: 1, column: 'unique_polestar_combos.length', title: 'Unique Combos', reverse: true, tiebreakers: ['in_portal'] },
-		{ width: 1, column: 'factionOnlyTotal', title: 'Faction items' },
-		{ width: 1, column: 'totalChronCost', title: 'Chron cost' },
-		{ width: 1, column: 'craftCost', title: 'Credit cost' }
+		{ width: 1, column: 'unique_polestar_combos.length', title: <>Unique<br />Retrievals</>, reverse: true, tiebreakers: ['in_portal'] },
+		{ width: 1, column: 'factionOnlyTotal', title: <>Faction Items<br /><small>Build Cost</small></> },
+		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>Build Cost</small></> },
+		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>Build Cost</small></> }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
@@ -279,7 +284,7 @@ const CrewTable = (props: CrewTableProps) => {
 							gridTemplateAreas: `'icon stats' 'icon description'`,
 							gridGap: '1px'
 						}}>
-						<div style={{ gridArea: 'icon', display: 'flex' }}>
+						<div style={{ gridArea: 'icon' }}>
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>

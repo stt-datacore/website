@@ -318,3 +318,52 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 	);
 
 };
+
+
+export type TriggerPickerProps = {    
+    triggers?: string[];
+    zeroText?: string;
+	selectedTriggers?: string[];
+	setSelectedTriggers: (triggers: string[]) => void;
+	altTitle?: string;
+};
+
+export const TriggerPicker = (props: TriggerPickerProps) => {
+
+	const { selectedTriggers, setSelectedTriggers } = props;
+	
+	const [triggers, setTriggers] = React.useState<string[]>(selectedTriggers ?? []);
+	
+    const triggerOptions = props.triggers?.map((u) => {
+        return {
+            key: u,
+            text: u,
+            value: CONFIG.CREW_SHIP_BATTLE_TRIGGER[u]
+        }
+    }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_TRIGGER).map((dt) => {
+		return {
+			key: dt,
+			value: dt,
+			text: CONFIG.CREW_SHIP_BATTLE_TRIGGER[dt]
+		}
+	});
+  
+	React.useEffect(() => {
+		setSelectedTriggers(triggers);
+	}, [triggers])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Triggers'} 
+				clearable
+				multiple
+				selection
+				options={triggerOptions}
+				value={triggers}
+				onChange={(e, { value }) => setTriggers(value as string[])}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};

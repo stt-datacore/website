@@ -226,8 +226,8 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						<div 
 							id='static_avatar'
 							style={{
-								width: 700,
-								display: "flex",								
+								display: "flex",		
+								maxWidth: "700px",						
 								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
 								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
 							}}>
@@ -236,7 +236,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								flexDirection: "column",
 								alignItems: "center",
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
-							}}>								
+							}}>
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
 								</div>

@@ -379,10 +379,10 @@ export class CrewPresenter extends React.Component<
             this.tiny.setValue<PlayerImmortalMode>(
                 "immomode/" + this.props.crew.symbol,
                 value,
-                false
+                true
             );
         } else {
-            this.tiny.setValue<PlayerImmortalMode>("immomode", value, false);
+            this.tiny.setValue<PlayerImmortalMode>("immomode", value, true);
         }
         if (this.props.selfRender) this.forceUpdate();
     }
@@ -409,7 +409,7 @@ export class CrewPresenter extends React.Component<
             this.tiny.setValue<PlayerImmortalMode[]>(
                 "immomodevalid/" + this.props.crew.symbol,
                 value,
-                true
+                false
             );
         } else {
             this.tiny.setValue<PlayerImmortalMode[]>("immomodevalid", value, true);
@@ -1004,7 +1004,7 @@ export class CrewPresenter extends React.Component<
                                     value={"" + crew.ranks.voyRank}
                                 />
 
-                                <StatLabel title="CAB Rating" value={crew.cab_ov ?? "None"} />
+                                <StatLabel title="CAB Rating" value={crew.cab_ov ?? "?"} />
                             </div>
                         </div>
                     )}
@@ -1032,7 +1032,7 @@ export class CrewPresenter extends React.Component<
                                                     undefined,
                                             }}
                                         >
-                                            {crew.cab_ov_grade ?? "None"}
+                                            {crew.cab_ov_grade ?? "?"}
                                         </div>
                                     }
                                 />
@@ -1043,7 +1043,7 @@ export class CrewPresenter extends React.Component<
 
                                 <StatLabel
                                     title="CAB Rank"
-                                    value={crew.cab_ov_rank ?? "None"}
+                                    value={crew.cab_ov_rank ?? "?"}
                                 />
                             </div>
                         </div>

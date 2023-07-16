@@ -409,85 +409,50 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								}
 							/>
 							<StatLabel
-								title="CAB Grade"
-								size="jumbo"
-								value={
-									<div
-										style={{
-											fontWeight: "bold",
-											color:
-												gradeToColor(crew.cab_ov_grade as string) ?? undefined,
-										}}
-									>
-										{crew.cab_ov_grade ?? "None"}
-									</div>
-								}
-							/>
-							<StatLabel
-								title="Voyage Rank"
-								value={rankLinker(
-									false,
-									crew.ranks.voyRank,
-									crew.symbol,
-									"ranks.voyRank"
-								)}
-							/>
-							<StatLabel
-								title="Gauntlet Rank"
-								value={rankLinker(
-									false,
-									crew.ranks.gauntletRank,
-									crew.symbol,
-									"ranks.gauntletRank"
-								)}
-							/>
+                                title="CAB Grade"
+								size='jumbo'
+                                value={
+                                    <div
+                                        style={{
+                                            fontWeight: "bold",
+                                            color: gradeToColor(
+                                                crew.cab_ov_grade as string
+                                            ) ?? undefined,
+                                        }}
+                                    >
+                                        {crew.cab_ov_grade ?? '?'}
+                                    </div>
+                                }
+                            />
+							<StatLabel title="Voyage Rank"
+								value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
+							<StatLabel title="Gauntlet Rank"
+								value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
 						</div>
 
 						<br></br>
 
-						<div
-							style={{
-								display: "flex",
-								margin: "0.25em",
-								marginRight: 0,
-								marginLeft: 0,
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								flexWrap: "wrap",
-							}}
-						>
-							<StatLabel
-								title="CAB Rank"
-								value={
-									crew.cab_ov_rank
-										? rankLinker(
-											false,
-											crew.cab_ov_rank,
-											crew.symbol,
-											"cab_ov",
-											"descending",
-											"rarity:" + crew.max_rarity
-										)
-										: "None"
-								}
-							/>
-							<StatLabel title="CAB Rating" value={crew.cab_ov ?? "None"} />
-							<StatLabel
-								title="Portal"
-								value={
-									<>
-										<div
-											style={{
-												color: crew.in_portal ? "lightgreen" : undefined,
-												fontWeight: crew.in_portal ? "bold" : undefined,
-											}}
-										>
-											{crew.in_portal ? "Yes" : "No"}
-										</div>
-									</>
-								}
-							/>
+						<div style={{
+							display: "flex", 
+							margin: "0.25em",
+							marginRight: 0,
+							marginLeft: 0,
+							flexDirection: "row", 
+							justifyContent:"space-between", 
+							alignItems: "center",
+							flexWrap: "wrap"}}>
+							
+							<StatLabel 
+									title="CAB Rank"
+									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+									/>
+							<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
+							<StatLabel title="Portal" 
+								value={<>
+									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+										{crew.in_portal ? 'Yes' : 'No'}									
+									</div>								
+								</>} />
 							{markdownRemark.frontmatter.events !== null && (
 								<StatLabel
 									title="Events"

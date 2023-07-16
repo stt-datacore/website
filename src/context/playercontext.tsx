@@ -56,11 +56,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [loaded, setLoaded] = React.useState(false);
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 
-	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined);
+	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
 
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 
-	const [ephemeral, setEphemeral] = useStateWithStorage<EphemeralData | undefined>('ephemeralPlayerData', undefined);
+	const [ephemeral, setEphemeral] = useStateWithStorage<EphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const { children } = props;
 	

@@ -22,8 +22,8 @@ export interface CiteMode {
 
 export interface PlayerData {
     player: Player;
-    fleet_boss_battles_root: BossBattlesRoot;
-    captains_bridge_root: CaptainsBridgeRoot;
+    fleet_boss_battles_root?: BossBattlesRoot;
+    captains_bridge_root?: CaptainsBridgeRoot;
     calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
     archetype_cache?: ArchetypeRoot20;
     item_archetype_cache?: ArchetypeRoot17;
