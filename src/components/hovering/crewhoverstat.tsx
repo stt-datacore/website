@@ -62,10 +62,10 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     protected set immortalMode(value: PlayerImmortalMode) {
         if (value == this.immortalMode) return;
         if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, false);
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, true);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, false);
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
         }       
     }
 
@@ -84,10 +84,10 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
     protected set validImmortalModes(value: PlayerImmortalMode[]) {        
         if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.inputItem.symbol, value, false);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, false);
         }        
     }
 
@@ -182,10 +182,10 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     protected set immortalMode(value: PlayerImmortalMode) {
         if (value == this.immortalMode) return;
         if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, false);
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, true);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, false);
+            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
         }
     }
 
@@ -204,10 +204,10 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected set validImmortalModes(value: PlayerImmortalMode[]) {        
         if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, value, false);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, false);
         }        
     }
 
