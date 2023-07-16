@@ -151,7 +151,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
-		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew];
+		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew];
 
 		if (this.inited && tabs[index]) {
 			let crew = tabs[index] ?? [] as PlayerCrew[];
@@ -177,10 +177,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
     protected setValidImmortalModes(crew: PlayerCrew | CrewMember | undefined, value: PlayerImmortalMode[]) {
 		if (JSON.stringify(value) === JSON.stringify(this.getValidImmortalModes(crew))) return;
         if (crew) {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + crew.symbol, value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + crew.symbol, value, false);
         }
         else {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, true);
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, false);
         }
     }
 
