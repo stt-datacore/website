@@ -29,6 +29,7 @@ import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shi
 import { MergedContext } from '../context/mergedcontext';
 import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from './crewtables/shipoptions';
 import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMethodConfig } from './crewtables/customviews';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -753,7 +754,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>
 						
 					</div>
-					<div style={{margin: "1em 0", display: "flex", flexDirection:"row", alignItems: "center"}}>
+					<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
 						<div style={{marginRight: "1em"}}>
 							<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
 						</div>
@@ -767,7 +768,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
 							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item })} />
 						</div>}
-						<div style={{marginLeft: "1em"}}>
+						<div style={{
+							marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0' : "1em",
+							marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.25em' : 0						
+							}}>
 							<ShipSeatPicker
 									setSelectedSeats={(item) => setShipFilters({ ... shipFilters, selectedSeats: item })}
 									selectedSeats={selectedSeats ?? []}
