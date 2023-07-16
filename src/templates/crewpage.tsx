@@ -255,7 +255,8 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						<div 
 							id='static_avatar'
 							style={{
-								display: "flex",								
+								display: "flex",		
+								maxWidth: "700px",						
 								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
 								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
 							}}>
@@ -265,26 +266,6 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								alignItems: "center",
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
 							}}>
-								{/* {window.innerWidth >= DEFAULT_MOBILE_WIDTH && this.state.itemBig &&
-								(<div style={{ 
-									zIndex: -1, 
-									position: "absolute", 
-									left: "0", 
-									top: "0", 
-									width: "100%", 
-									height: "100%", 
-									opacity: 0.025,
-									display: "flex", 
-									flexDirection: "column", 
-									justifyContent: "center", 
-									padding: "2.5em",
-									alignItems: "center"}}>
-									{crew.series && <img src={`/media/series/${crew.series}.png`} style={{ width: '40em' }} />}
-								</div>) ||
-								(<div>
-									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'medium' : 'small'} />}
-								</div>)								
-								} */}
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
 								</div>
