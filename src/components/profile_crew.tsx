@@ -777,7 +777,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 					</div>
 					<div style={{
-						margin: "0.5em 0",
+						margin: "0.25em 0",
 						marginTop: 0,
 						display: "flex",
 						flexDirection: window.innerWidth < 725 ? "column" : "row",
