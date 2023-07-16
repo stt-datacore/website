@@ -23,7 +23,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const dataContext = React.useContext(DataContext);
 
 	const { children } = props;
-	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined);
+	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage<PlayerData | undefined>('tools/playerData', undefined, { compress: true });
 	
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 	const maxBuffs = strippedPlayerData ? calculateMaxBuffs(strippedPlayerData.player?.character?.all_buffs_cap_hash) : (dataContext.all_buffs ?? undefined);

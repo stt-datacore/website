@@ -19,7 +19,7 @@ const StorageDefaultOptions: StorageOptions = {
 	useDefault: false,
 	useAndStoreDefault: false,
 	onInitialize: undefined,
-	compress: true
+	compress: false
 };
 
 /**
@@ -86,8 +86,15 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
 const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean, compress?: boolean) => {
-	if (windowGlobal && windowGlobal.sessionStorage)
-		windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
+	if (windowGlobal && windowGlobal.sessionStorage) {
+		if (compress) {
+			windowGlobal.sessionStorage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
+		}
+		else {
+			windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
+		}		
+	}
+		
 	if (useLocalStorage) {
 		if (compress) {
 			localForage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
