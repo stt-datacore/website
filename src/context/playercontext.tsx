@@ -123,7 +123,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 			setEphemeral({
 				activeCrew,
 				events: [...input.player.character.events ?? []],
-				fleetBossBattlesRoot: input.fleet_boss_battles_root,
+				fleetBossBattlesRoot: input.fleet_boss_battles_root ?? {} as BossBattlesRoot,
 				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
 				voyage: [...input.player.character.voyage ?? []],
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []]
