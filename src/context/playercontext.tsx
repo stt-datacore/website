@@ -74,6 +74,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setPlayerShips(undefined);
 		setInput(undefined);
 		setLoaded(false);
+		sessionStorage.clear();
 	}
 
 	const context = {
