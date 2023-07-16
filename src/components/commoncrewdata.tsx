@@ -328,7 +328,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
                                             ) ?? undefined,
                                         }}
                                     >
-                                        {crew.cab_ov_grade ?? 'None'}
+                                        {crew.cab_ov_grade ?? '?'}
                                     </div>
                                 }
                             />
@@ -352,9 +352,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							
 							<StatLabel 
 									title="CAB Rank"
-									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}
+									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
 									/>
-							<StatLabel title="CAB Rating" value={crew.cab_ov ?? 'None'} />
+							<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
 							<StatLabel title="Portal" 
 								value={<>
 									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
