@@ -322,7 +322,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 2, column: 'name', title: 'Crew' },
+		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
 		{ width: 1, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
 		{ width: 3, column: 'immortalRewards.length', title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>, reverse: true }
