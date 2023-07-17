@@ -40311,7 +40311,7 @@ body.pushable > .pusher {
 /*******************************
          Site Overrides
 *******************************/
-
+/* 
 .flipscroll-container {
   overflow-x: scroll;
   overflow-y: auto;
@@ -40325,4 +40325,4 @@ body.pushable > .pusher {
 .flipscroll-table {
   width: 100%;
   display: block;
-}
+} */

@@ -40438,7 +40438,7 @@ img[src$="icon_security_skill.png"] {
 	filter: invert(1) grayscale(1);
 }
 
-
+/* 
 .flipscroll-container {
   overflow-x: scroll;
   overflow-y: auto;
@@ -40452,4 +40452,4 @@ img[src$="icon_security_skill.png"] {
 .flipscroll-table {
   width: 100%;
   display: block;
-}
+} */
