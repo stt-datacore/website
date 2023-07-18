@@ -56,6 +56,7 @@ export interface CrewMember {
 
   /** Used internally, not part of incoming data */
   pickerId?: number;
+  pairs?: Skill[][];  
 }
 
 export interface EquipmentSlot {

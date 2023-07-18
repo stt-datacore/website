@@ -509,13 +509,18 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 	let bn = 0;
 	let choiceMult = multiplier ?? 1.33;
 	
-	a.forEach(ai => an += (ai.skill === featuredSkill ? choiceMult : 1) * (ai.range_max + ai.range_min));
-	b.forEach(bi => bn += (bi.skill === featuredSkill ? choiceMult : 1) * (bi.range_max + bi.range_min));
+	for (let ai of a) {
+		an += (ai.skill === featuredSkill ? choiceMult : 1) * (ai.range_max + ai.range_min);
+	}
 
-	return bn - an;
+	for (let bi of b) {
+		bn += (bi.skill === featuredSkill ? choiceMult : 1) * (bi.range_max + bi.range_min);
+	}
+
+	if (an > bn) return -1;
+	else if (bn > an) return 1;
+	else return 0;
 }
-
-
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 1;
