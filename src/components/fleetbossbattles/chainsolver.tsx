@@ -88,7 +88,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 				hiddenLeft,
 				open: hiddenLeft > 0,
 				spotSolve: !!spotSolve,
-				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a))[0]
+				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0]
 			});
 		});
 
@@ -144,7 +144,6 @@ const ChainSolver = (props: ChainSolverProps) => {
 							matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched, combos };
 							combos.forEach(combo => {
 								const existing = allComboCounts.find(cc =>
-									
 									cc && cc.index !== undefined && cc.combo !== undefined && cc.index === node.index
 									&& cc.combo.length === combo.length
 									&& cc.combo.every(trait => combo.includes(trait))
@@ -221,7 +220,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 				let combosCompliant = node.combos.length;
 				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index)?.alphaTest;
 				node.combos.forEach(combo => {
-					if (alphaTest && !combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
+					if (alphaTest && !combo.every(trait => trait.localeCompare(alphaTest, 'en') === 1)) {
 						crew.alpha_rule?.exceptions.push({ index: node.index, combo });
 						combosCompliant--;
 					}

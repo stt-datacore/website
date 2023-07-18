@@ -40311,3 +40311,18 @@ body.pushable > .pusher {
 /*******************************
          Site Overrides
 *******************************/
+/* 
+.flipscroll-container {
+  overflow-x: scroll;
+  overflow-y: auto;
+  transform: rotateX(180deg);
+}
+
+.flipscroll-container table {
+  transform: rotateX(180deg);
+}
+
+.flipscroll-table {
+  width: 100%;
+  display: block;
+} */

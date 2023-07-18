@@ -40437,3 +40437,19 @@ img[src$="icon_security_skill.png"] {
 	-webkit-filter: invert(1) grayscale(1);
 	filter: invert(1) grayscale(1);
 }
+
+/* 
+.flipscroll-container {
+  overflow-x: scroll;
+  overflow-y: auto;
+  transform: rotateX(180deg);
+}
+
+.flipscroll-container table {
+  transform: rotateX(180deg);
+}
+
+.flipscroll-table {
+  width: 100%;
+  display: block;
+} */

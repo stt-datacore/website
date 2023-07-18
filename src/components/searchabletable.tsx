@@ -366,8 +366,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
-				<Table sortable celled selectable striped collapsing unstackable compact="very">
+				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
+				<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table'>
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
 					<Table.Footer>
