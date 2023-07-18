@@ -110,6 +110,10 @@ export interface GauntletsPageState {
 
 	viewModes: GauntletViewMode[];
 	lastPlayerDate?: Date;
+
+	sortKey: string[];
+	sortDirection: ('ascending' | 'descending' | undefined)[];
+
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -131,6 +135,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const v3 = this.tiny.getValue<GauntletViewMode>('viewMode_2', 'table') ?? 'table';
 		
 		this.state = {
+			sortKey: ['', '', ''],
+			sortDirection: [undefined, undefined, undefined],
 			hoverCrew: undefined,
 			itemsPerPage: 10,
 			activePageTabs: [[], [], []],
@@ -284,8 +290,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return newcrew;
 	}
 
-
-
 	componentDidMount() {
 		this.initData();
 	}
@@ -315,6 +319,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
 					else crew.rarity = 0;
 					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					crew.pairs = getPlayerPairs(crew);
 					return crew;
 				})
 				.sort((a, b) => {
@@ -337,18 +342,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let bp = getPlayerPairs(b, btrait);
 
 					if (ap && bp) {
-						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.65);
+						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.5);
 						if (r === 0 && ap.length > 1 && bp.length > 1) {
-							r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.65);
+							r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.5);
 							if (r === 0 && ap.length > 2 && bp.length > 2) {
-								r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.65);
+								r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.5);
 							}
 						}
 					}
 					return r;
-				});
+			});
 
 		gauntlet.matchedCrew = matchedCrew;
+		gauntlet.origRanks = {};
+
+		matchedCrew.forEach((crew, idx) => {
+			gauntlet.origRanks ??= {};
+			gauntlet.origRanks[crew.symbol] = idx + 1;
+		});
+
 		gauntlet.prettyTraits = prettyTraits;
 	}
 
@@ -377,7 +389,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let apidx = [1, 1, 1];
 			let pcs = [0, 0, 0];
 			let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
-
+			
 			[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
 				if (!day.matchedCrew) {
 					return;
@@ -410,17 +422,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.updatePaging(g);
 	}
 
-	private readonly updatePaging = (activePrevGauntlet?: Gauntlet) => {
-		const { today, yesterday } = this.state;
+	private readonly updatePaging = (newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number) => {
+		const { today, yesterday, activePrevGauntlet, sortKey, sortDirection } = this.state;
+		
+		if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
 
-		if (activePrevGauntlet) {
-			this.getGauntletCrew(activePrevGauntlet);
+		if (newSelGauntlet) {
+			this.getGauntletCrew(newSelGauntlet);
 		}
+		
 		let apidx = this.state.activePageIndexTab;
 		let pcs = [0, 0, 0];
 		let aptabs = [[], [], []] as (PlayerCrew | CrewMember)[][];
 
-		[today, yesterday, activePrevGauntlet].forEach((day, idx) => {
+		[today, yesterday, newSelGauntlet ?? activePrevGauntlet].forEach((day, idx) => {
+			if (replaceIndex !== undefined && replaceIndex === idx) {
+				day = replaceGauntlet;
+			}
 
 			if(!day) return;
 
@@ -442,10 +460,170 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageTabs: aptabs,
 			totalPagesTab: pcs,
 			activePageIndexTab: apidx,
-			today,
-			yesterday,
-			activePrevGauntlet
+			today: replaceIndex === 0 ? replaceGauntlet : today ? { ... today } : undefined,
+			yesterday: replaceIndex === 1 ? replaceGauntlet : yesterday ? { ... yesterday } : undefined,
+			activePrevGauntlet: replaceIndex === 2 ? replaceGauntlet : newSelGauntlet ?? activePrevGauntlet,
+			sortKey: [...sortKey],
+			sortDirection: [...sortDirection]
 		});
+	}
+
+	private readonly columns = [
+		{ title: "Rank", key: "index" },
+		{ title: "Crew", key: "name" },
+		{ title: "Rarity", key: "rarity" },
+		{ title: "Crit Chance", key: "crit" },
+		{ title: "1st Pair", key: "pair_1" },
+		{ title: "2nd Pair", key: "pair_2" },
+		{ title: "3rd Pair", key: "pair_3" },
+		{ title: "Owned", key: "have" },
+		{ title: "In Portal", key: "in_portal" },
+	]
+
+	private columnClick = (key: string, tabidx: number) => {
+		const { today, yesterday, activePrevGauntlet, sortDirection, sortKey } = this.state;
+		const pages = [today, yesterday, activePrevGauntlet];
+
+		if (tabidx in pages && pages[tabidx]) {
+
+			const page = pages[tabidx] ?? {} as Gauntlet;
+			const prettyTraits = page?.prettyTraits;
+			
+			var newarr = [ ... pages[tabidx]?.matchedCrew ?? []];
+
+			if (sortDirection[tabidx] === undefined) {
+				if (key === 'name') {
+					sortDirection[tabidx] = 'ascending';
+				}
+				else {
+					sortDirection[tabidx] = 'descending';
+				}
+			}
+			else if (key === sortKey[tabidx]) {				
+				if (sortDirection[tabidx] === 'descending') {
+					sortDirection[tabidx] = 'ascending';
+				}
+				else {
+					sortDirection[tabidx] = 'descending';
+				}
+			}
+
+			if (key === 'rank' && page.origRanks) {
+				newarr = newarr.sort((a, b) => {
+					if (page.origRanks) {
+						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+						}
+					}
+					
+					return 0;
+				})
+			}
+			else if (key === 'name') {
+				newarr = newarr.sort((a, b) => a.name.localeCompare(b.name));
+			}
+			else if (key === 'rarity') {
+				newarr = newarr.sort((a, b) => {
+					let r = a.max_rarity - b.max_rarity;
+					if (r === 0 && "rarity" in a && "rarity" in b) {
+						r = (a.rarity ?? 0) - (b.rarity ?? 0);
+					}
+					return r;
+				});
+			}
+			else if (key === 'crit') {
+				newarr = newarr.sort((a, b) => {
+					const atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
+					const btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
+					const anser = atr - btr;
+					if (!anser) {
+						if (page.origRanks) {
+							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+								return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+							}
+						}
+					}
+					return 0;
+				});
+			}
+			else if (key.startsWith("pair")) {
+				let pairIdx = Number.parseInt(key.slice(5)) - 1;
+				newarr = newarr.sort((a, b) => {
+					let pa = [...a.pairs ?? []];
+					let pb = [...b.pairs ?? []];
+
+					if (pa.length > pairIdx && pb.length > pairIdx) {
+						return -comparePairs(pa[pairIdx], pb[pairIdx]);
+					}
+					else if (pa.length <= pairIdx) {
+						return -1;
+					}
+					else if (pb.length <= pairIdx) {
+						return 1;
+					}
+					if (page.origRanks) {
+						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+						}
+					}
+					
+					return 0;
+				});
+			}
+			else if (key === 'owned') {
+				newarr = newarr.sort((a, b) => {
+					if ("have" in a && "have" in b) {
+						if (a.have != b.have) {
+							if (a.have) return 1;
+							else return -1;
+						}
+					}
+					else if ("have" in a) {
+						if (a.have) return 1;
+						else return 0;
+					}
+					else if ("have" in b) {
+						if (b.have) return -1;
+					}
+					if (page.origRanks) {
+						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+						}
+					}
+					
+					if (page.origRanks) {
+						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+						}
+					}
+					
+					return 0;
+				})
+			}
+			else if (key === 'in_portal') {
+				newarr = newarr.sort((a, b) => {
+					let r = (a.in_portal ? 1 : 0) - (b.in_portal ? 1 : 0);
+					if (!r) {
+						if (page.origRanks) {
+							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+								return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+							}
+						}
+						
+						return 0;
+					}
+					return r;
+				})
+			}
+
+			sortKey[tabidx] = key;
+
+			if (sortDirection[tabidx] === 'descending') {
+				newarr = newarr.reverse();
+			}
+
+			this.updatePaging(undefined, { ...page, matchedCrew: newarr }, tabidx);			
+		}
 	}
 
 	private formatPair(pair: Skill[]): JSX.Element {
@@ -482,6 +660,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
 		if (!data) return <></>;
+		
+		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey } = this.state;
 
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
@@ -498,31 +678,38 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const setCurrentCrew = (crew) => {
 			this.setState({ ... this.state, hoverCrew: crew });
 		}
+		
 		const prettyTraits = gauntlet.prettyTraits;
+
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell>Rank</Table.HeaderCell>
-						<Table.HeaderCell>Crew</Table.HeaderCell>
-						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Crit Chance</Table.HeaderCell>
-						<Table.HeaderCell>1st Pair</Table.HeaderCell>
-						<Table.HeaderCell>2nd Pair</Table.HeaderCell>
-						<Table.HeaderCell>3rd Pair</Table.HeaderCell>
-						<Table.HeaderCell>Owned</Table.HeaderCell>
-						<Table.HeaderCell>In Portal</Table.HeaderCell>
+						<Table.HeaderCell colSpan={9}>
+						<div style={{margin:"1em 0", width: "100%"}}>
+							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+						</div>
+					</Table.HeaderCell>
 					</Table.Row>
+					<Table.Row>
+						{this.columns.map((col, hidx) => 
+						<Table.HeaderCell 
+								sorted={sortKey[idx] === col.key ? sortDirection[idx] : undefined}
+								onClick={(e) => this.columnClick(col.key, idx)}
+								key={"k_"+hidx}>
+							{col.title}
+							</Table.HeaderCell>)}
+					</Table.Row>					
 				</Table.Header>
 				<Table.Body>
 					{data.map((row, idx: number) => {
 						const crew = row;
-						const pairs = getPlayerPairs(crew);
-
+						const pairs = crew.pairs ?? getPlayerPairs(crew);
+						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
 						return (crew &&
 							<Table.Row key={idx}
 							>
-								<Table.Cell>{idx + pp + 1}</Table.Cell>
+								<Table.Cell>{rank}</Table.Cell>
 								<Table.Cell>
 									<div
 										style={{
@@ -574,6 +761,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						);
 					})}
 				</Table.Body>
+				<Table.Footer>
+					<Table.Row>
+						<Table.Cell colSpan={9}>
+						<div style={{margin:"1em 0", width: "100%"}}>
+							<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
+						</div>
+						</Table.Cell>
+					</Table.Row>
+				</Table.Footer>
 			</Table>
 			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
 			</div>);
@@ -642,9 +838,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>
 			</div>
 
-			<div style={{margin:"1em 0", width: "100%"}}>
+			{viewModes[idx] !== 'table' && <div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-			</div>
+			</div>}
 
 			{viewModes[idx] === 'big' &&
 			<div style={{
@@ -708,9 +904,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				))}
 			</div>}
 			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
-			<div style={{margin:"1em 0", width: "100%"}}>
+			{viewModes[idx] !== 'table' && <div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-			</div>
+			</div>}
 
 			<hr />
 		</div>

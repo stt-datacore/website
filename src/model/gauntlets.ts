@@ -11,7 +11,8 @@ export interface Gauntlet {
     unavailable_msg?: string
     unavailable_desc_msg?: string,
     matchedCrew?: (PlayerCrew | CrewMember)[];
-    prettyTraits: string[] | undefined;
+    prettyTraits: string[] | undefined;    
+	origRanks?: { [key: string]: number };
 }
   
 export interface ContestData {
