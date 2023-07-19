@@ -532,7 +532,7 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 		range_min: 0
 	} as Skill;
 
-	let skills = getSkills(crew).map(skill => { return { ... crew[skill], skill: skill } as Skill });
+	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
 		skills = getSkills(crew).map(skill =>  { return { ... crew.base_skills[skill], skill: skill } as Skill });
@@ -548,11 +548,14 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 			skillObj.range_min *= multi;
 			skillObj.range_max *= multi;
 		}
-		skills.sort((a, b) => (b.range_max + b.range_min) - (a.range_max + a.range_min));
+		if (skills.length > 1) skills.sort((a, b) => (b.range_max + b.range_min) - (a.range_max + a.range_min));
 
 		let pairs = [] as Skill[][];
 
 		if (skills.length <= 2) {
+			if (skills.length === 1) {
+				skills.push(JSON.parse(JSON.stringify(emptySkill)));
+			}
 			pairs.push(skills);
 			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
 			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
