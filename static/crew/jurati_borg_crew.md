@@ -4,8 +4,8 @@ rarity: 4
 series: pic
 memory_alpha:
 bigbook_tier: 3
-events: 38
-in_portal:
+events: 41
+in_portal: true
 date: 18/10/2022
 obtained: Event
 mega: false

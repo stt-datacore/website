@@ -3,9 +3,9 @@ name: Vindicta Mariner
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 1
-events: 13
-in_portal:
+bigbook_tier: 2
+events: 15
+in_portal: true
 date: 03/08/2022
 obtained: Event
 mega: false

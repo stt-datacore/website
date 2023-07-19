@@ -3,9 +3,9 @@ name: Acting Captain Arex
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 2
-events: 13
-in_portal:
+bigbook_tier: 3
+events: 14
+in_portal: true
 date: 31/08/2022
 obtained: Event
 mega: false

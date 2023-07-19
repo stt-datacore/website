@@ -3,8 +3,8 @@ name: EV Suit Phlox
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
-events: 21
+bigbook_tier: 5
+events: 22
 in_portal: true
 date: 13/08/2020
 obtained: Event

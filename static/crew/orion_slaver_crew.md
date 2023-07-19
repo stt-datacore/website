@@ -3,8 +3,8 @@ name: Orion Slaver
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 15
+bigbook_tier: 9
+events: 18
 in_portal: true
 date: 03/10/2016
 obtained: Launch

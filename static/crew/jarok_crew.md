@@ -1,10 +1,10 @@
 ---
 name: Alidar Jarok
 rarity: 4
-series: ds9
+series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 9
+events: 11
 in_portal: true
 date: 31/07/2017
 obtained: Event

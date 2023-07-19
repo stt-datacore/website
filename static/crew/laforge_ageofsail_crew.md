@@ -3,8 +3,8 @@ name: Age of Sail La Forge
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 35
+bigbook_tier: 8
+events: 36
 in_portal: true
 date: 27/03/2017
 obtained: Pack

@@ -3,8 +3,8 @@ name: Vagrant Braxton
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 18
+bigbook_tier: 8
+events: 20
 in_portal: true
 date: 21/05/2020
 obtained: Event
