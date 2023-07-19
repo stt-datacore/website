@@ -18,7 +18,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { comparePairs, getPlayerPairs, getSkills, navToCrewPage, prepareOne, prepareProfileData } from '../utils/crewutils';
+import { applyCrewBuffs, comparePairs, getPlayerPairs, getSkills, navToCrewPage, prepareOne, prepareProfileData } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
@@ -196,15 +196,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
         }
     }
 
-    protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
-    }
-
-    protected set playerBuffMode(value: PlayerBuffMode) {
-		if (this.playerBuffMode === value) return;
-        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
-    }
-
 	protected getViewMode(index: number) {
 		return this.state.viewModes[index];
 	}
@@ -272,7 +263,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	readonly getGauntletCrew = (gauntlet: Gauntlet) => {
-		const { crew: allCrew } = this.context;
+		const { crew: allCrew, buffConfig, maxBuffs } = this.context;
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
@@ -285,6 +276,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					const crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+					if (buffConfig) {
+						applyCrewBuffs(crew, buffConfig);
+					}
+
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 					if (c) return c;
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
