@@ -60,6 +60,14 @@ export function stripPlayerData(items: any[], p: any): any {
 	delete p.player.character.stimpack;
 	delete p.player.character.location_channel_prefix;
 	delete p.player.character.events;
+	
+	if ("archetype_cache" in p){
+		delete p.archetype_cache;
+	}
+
+	if ("item_archetype_cache" in p){
+		delete p.item_archetype_cache;
+	}
 
 	if (p.player.character.crew_avatar && p.player.character.crew_avatar.symbol) {
 		p.player.character.crew_avatar = {
