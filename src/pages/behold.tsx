@@ -150,12 +150,18 @@ const CrewDetails = (props: CrewDetailsProps) => {
 
 	return (
 		<div style={{ marginTop: '2em' }}>
-			<div style={{ display: "flex", flexDirection: "row", marginBottom:"2em", flexWrap: "wrap" }}>
+			<div style={{ display: "flex", 
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+						flexWrap: "wrap",
+						justifyContent: "center",
+						marginBottom:"2em" }}>
 			{data.map((crew, idx) => (
 				<Segment key={crew.symbol} 
 					style={{ 
-						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '33%', 
-						margin: "0 0.5em 0 0", marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : undefined }}
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '32%', 
+						//width: "100%"
+						margin: "0 0.5em 0 0", marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : undefined 
+						}}
 						>
 					<CrewPresenter
 						forceVertical={true}
