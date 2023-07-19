@@ -510,11 +510,11 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 	let choiceMult = multiplier ?? 1.33;
 	
 	for (let ai of a) {
-		an += (ai.skill === featuredSkill ? choiceMult : 1) * (ai.range_max + ai.range_min);
+		an += (("skill" in ai && ai.skill === featuredSkill) ? choiceMult : 1) * (ai.range_max + ai.range_min);
 	}
 
 	for (let bi of b) {
-		bn += (bi.skill === featuredSkill ? choiceMult : 1) * (bi.range_max + bi.range_min);
+		bn += (("skill" in bi && bi.skill === featuredSkill) ? choiceMult : 1) * (bi.range_max + bi.range_min);
 	}
 
 	if (an > bn) return -1;
@@ -524,6 +524,14 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 1;
+	
+	const emptySkill = {
+		skill: undefined,
+		core: 0,
+		range_max: 0,
+		range_min: 0
+	} as Skill;
+
 	let skills = getSkills(crew).map(skill => { return { ... crew[skill], skill: skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
@@ -546,6 +554,8 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 		if (skills.length <= 2) {
 			pairs.push(skills);
+			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
+			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
 			return pairs;
 		}
 

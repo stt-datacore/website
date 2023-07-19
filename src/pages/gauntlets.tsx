@@ -283,7 +283,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			allCrew.filter(e => e.max_rarity > 3 && (
 				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
-				.map((crew) => {
+				.map((inputCrew) => {
+					const crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 					if (c) return c;
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
@@ -458,7 +459,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			const page = pages[tabidx] ?? {} as Gauntlet;
 			const prettyTraits = page?.prettyTraits;
 			
-			var newarr = [ ... pages[tabidx]?.matchedCrew ?? []];
+			var newarr = JSON.parse(JSON.stringify(pages[tabidx]?.matchedCrew ?? [])) as PlayerCrew[];
 
 			if (sortDirection[tabidx] === undefined) {
 				if (key === 'name') {
@@ -477,11 +478,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 			}
 
-			if (key === 'rank' && page.origRanks) {
+			sortKey[tabidx] = key;
+
+			const dir = sortDirection[tabidx] === 'descending' ? -1 : 1;
+
+			if (key === 'index' && page.origRanks) {
 				newarr = newarr.sort((a, b) => {
 					if (page.origRanks) {
 						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+							return dir * (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
 						}
 					}
 					
@@ -489,7 +494,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 			}
 			else if (key === 'name') {
-				newarr = newarr.sort((a, b) => a.name.localeCompare(b.name));
+				newarr = newarr.sort((a, b) => dir * a.name.localeCompare(b.name));
 			}
 			else if (key === 'rarity') {
 				newarr = newarr.sort((a, b) => {
@@ -497,76 +502,82 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (r === 0 && "rarity" in a && "rarity" in b) {
 						r = (a.rarity ?? 0) - (b.rarity ?? 0);
 					}
-					return r;
+					if (!r) {
+						if (page.origRanks) {
+							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
+								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
+							}
+						}
+					}
+					return dir * r;
 				});
 			}
 			else if (key === 'crit') {
 				newarr = newarr.sort((a, b) => {
-					const atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
-					const btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
-					const anser = atr - btr;
-					if (!anser) {
+					let atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
+					let btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
+					let answer = atr - btr;
+					if (!answer) {
 						if (page.origRanks) {
 							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-								return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
 							}
 						}
 					}
-					return 0;
+					return dir * answer;
 				});
 			}
-			else if (key.startsWith("pair")) {
+			else if (key.startsWith("pair_")) {
 				let pairIdx = Number.parseInt(key.slice(5)) - 1;
 				newarr = newarr.sort((a, b) => {
-					let pa = [...a.pairs ?? []];
-					let pb = [...b.pairs ?? []];
+					let apairs = getPlayerPairs(a);
+					let bpairs = getPlayerPairs(b);
 
-					if (pa.length > pairIdx && pb.length > pairIdx) {
-						return -comparePairs(pa[pairIdx], pb[pairIdx]);
+					if (apairs && bpairs) {
+						let pa = [...apairs ?? []];
+						let pb = [...bpairs ?? []];
+						return dir * (-1 * comparePairs(pa[pairIdx], pb[pairIdx]));
 					}
-					else if (pa.length <= pairIdx) {
-						return -1;
+					else if (apairs) {
+						return dir * -1;
 					}
-					else if (pb.length <= pairIdx) {
-						return 1;
+					else if (bpairs) {
+						return dir * 1;
 					}
-					if (page.origRanks) {
-						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
-						}
+					else {
+						return 0;
 					}
-					
-					return 0;
 				});
 			}
-			else if (key === 'owned') {
+			else if (key === 'have') {
 				newarr = newarr.sort((a, b) => {
+					let r = 0;
 					if ("have" in a && "have" in b) {
 						if (a.have != b.have) {
-							if (a.have) return 1;
-							else return -1;
+							if (a.have) r = 1;
+							else r = -1;
 						}
 					}
 					else if ("have" in a) {
-						if (a.have) return 1;
-						else return 0;
+						if (a.have) r = 1;
 					}
 					else if ("have" in b) {
-						if (b.have) return -1;
+						if (b.have) r = -1;
 					}
-					if (page.origRanks) {
+					
+					if (r === 0 && page.origRanks) {
 						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+							return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
 						}
 					}
 					
-					if (page.origRanks) {
+					if (r === 0 && page.origRanks) {
 						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+							return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
 						}
 					}
 					
-					return 0;
+					return r * dir;
 				})
 			}
 			else if (key === 'in_portal') {
@@ -575,28 +586,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!r) {
 						if (page.origRanks) {
 							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-								return page.origRanks[a.symbol] - page.origRanks[b.symbol];
+								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
 							}
 						}
 						
 						return 0;
 					}
-					return r;
+					return dir * r;
 				})
 			}
 
-			sortKey[tabidx] = key;
-
-			if (sortDirection[tabidx] === 'descending') {
-				newarr = newarr.reverse();
-			}
-
-			this.updatePaging(undefined, { ...page, matchedCrew: newarr }, tabidx);			
+			this.updatePaging(undefined, { ...page, matchedCrew: newarr }, tabidx);
 		}
 	}
 
 	private formatPair(pair: Skill[]): JSX.Element {
-
+		if (!pair[0].skill) return <></>
 		return (
 			<div>
 				<div style={{
