@@ -3,9 +3,9 @@ name: EV Suit Rutherford
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 13
-in_portal:
+in_portal: true
 date: 27/07/2022
 obtained: Event
 mega: false
