@@ -29,7 +29,9 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 	delete p.scanning_root;
 	delete p.objective_root;
 	delete p.objective_event_root;
-
+    delete p.archetype_cache;
+    delete p.item_archetype_cache;
+    
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
     delete p.player.character.shuttle_adventures;
