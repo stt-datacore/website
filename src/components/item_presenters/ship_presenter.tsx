@@ -12,6 +12,8 @@ export interface PresenterProps {
     storeName: string;
     disableBuffs?: boolean;
     mobileWidth?: number;
+    forceVertical?: boolean;
+    verticalLayout?: 0 | 1 | 2;
     close?: () => void;
     touched?: boolean;
     width?: string;

@@ -150,9 +150,11 @@ const CrewDetails = (props: CrewDetailsProps) => {
 
 	return (
 		<div style={{ marginTop: '2em' }}>
+			<div style={{ display: "flex", flexDirection: "row", marginBottom:"2em" }}>
 			{data.map((crew, idx) => (
-				<Segment key={crew.symbol} style={{ width: '100%' }}>
+				<Segment key={crew.symbol} style={{ width: '33%', margin: "0 0.5em 0 0" }}>
 					<CrewPresenter
+						forceVertical={true}
 						width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
 						imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
 						selfRender={true}
@@ -178,6 +180,7 @@ const CrewDetails = (props: CrewDetailsProps) => {
 					</div>
 				</Segment>
 			))}
+			</div>
 			{selectedCrew.length > 0 &&
 				<React.Fragment>
 					<Button icon='add user' color='green'
