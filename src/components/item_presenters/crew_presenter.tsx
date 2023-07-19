@@ -578,13 +578,13 @@ export class CrewPresenter extends React.Component<
 
         const portalText = pt;
         const noPortalText = npt;
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < mobileWidth;
+        const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
             <div
                 style={{
                     fontSize:
-                        window.innerWidth < mobileWidth || compact ? "10pt" : "11pt",
+                        isMobile || compact ? "10pt" : "11pt",
                     display: "flex",
                     flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
                     width: hover ? undefined : width,
@@ -650,7 +650,7 @@ export class CrewPresenter extends React.Component<
                                 src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
                                 style={{
                                     height: hover
-                                        ? window.innerWidth < mobileWidth
+                                        ? isMobile
                                             ? "15em"
                                             : "19em"
                                         : compact
@@ -682,13 +682,13 @@ export class CrewPresenter extends React.Component<
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",
-                        width: window.innerWidth < mobileWidth ? "15m" : "32em",
+                        width: isMobile ? "15m" : "32em",
                     }}
                 >
                     <div
                         style={{
                             display: "flex",
-                            flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                            flexDirection: isMobile ? "column" : "row",
                             justifyContent: "space-between",
                         }}
                     >
@@ -732,7 +732,7 @@ export class CrewPresenter extends React.Component<
                                     size="large"
                                     disabled
                                 />
-                                {crew.in_portal && window.innerWidth < mobileWidth && (
+                                {crew.in_portal && isMobile && (
                                     <div>
                                         <img
                                             style={{
@@ -848,7 +848,7 @@ export class CrewPresenter extends React.Component<
                             display: "flex",
                             flexWrap: "wrap",
                             fontSize: hover ? "1.2em" : "0.9em",
-                            flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+                            flexDirection: isMobile ? "column" : "row",
                             justifyContent: "space-evenly",
                             marginTop: "4px",
                             marginBottom: "2px",
@@ -980,9 +980,9 @@ export class CrewPresenter extends React.Component<
                                     display: "flex",
                                     flexWrap: "wrap",
                                     flexDirection:
-                                        window.innerWidth < mobileWidth ? "column" : "row",
+                                        isMobile ? "column" : "row",
                                     justifyContent:
-                                        window.innerWidth < mobileWidth ? "left" : "space-between",
+                                        isMobile ? "left" : "space-between",
                                 }}
                             >
                                 <StatLabel
@@ -1016,9 +1016,9 @@ export class CrewPresenter extends React.Component<
                                     display: "flex",
                                     flexWrap: "wrap",
                                     flexDirection:
-                                        window.innerWidth < mobileWidth ? "column" : "row",
+                                        isMobile ? "column" : "row",
                                     justifyContent:
-                                        window.innerWidth < mobileWidth ? "left" : "space-between",
+                                        isMobile ? "left" : "space-between",
                                 }}
                             >
                                 <StatLabel
