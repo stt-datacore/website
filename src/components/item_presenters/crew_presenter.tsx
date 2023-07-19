@@ -732,18 +732,6 @@ export class CrewPresenter extends React.Component<
                                     size="large"
                                     disabled
                                 />
-                                {crew.in_portal && isMobile && (
-                                    <div>
-                                        <img
-                                            style={{
-                                                maxHeight: "1.25em",
-                                                margin: "0.5em",
-                                            }}
-                                            title={"Available in the Premium Portal"}
-                                            src={"/media/portal.png"}
-                                        />
-                                    </div>
-                                )}
                                 <h4
                                     onClick={(e) => nextImmo(e)}
                                     style={{
