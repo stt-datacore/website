@@ -1,12 +1,12 @@
 ---
-name: Ceti Alpha V Khan
+name: Mutinous Trip Tucker
 rarity: 5
-series: tos
+series: ent
 memory_alpha:
-bigbook_tier: 1
-events: 38
+bigbook_tier: 3
+events: 21
 in_portal:
-date: 12/07/2023
+date: 19/07/2023
 obtained: Event
 mega: false
 published: true
