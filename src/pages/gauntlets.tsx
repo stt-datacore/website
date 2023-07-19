@@ -463,7 +463,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			sortDirection: [...sortDirection]
 		});
 	}
-
+ 
 	private readonly columns = [
 		{ title: "Rank", key: "index" },
 		{ title: "Crew", key: "name" },
