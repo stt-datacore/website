@@ -67,7 +67,6 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 	return (
 		<div>
-		<CrewHoverStat activationDelay={1000} useBoundingClient={props.hoverBoundingClient ?? true} targetGroup='crew_picker' crew={hoverCrew} />
 
 		<Modal
 			open={modalIsOpen}
@@ -151,9 +150,9 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							onDoubleClick={() => confirmSelection(crew)}
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
-							<CrewTarget inputItem={crew} targetGroup='crew_picker' setDisplayItem={(crew) => setHoverCrew(crew ?? undefined)}>
+						
 								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							</CrewTarget>
+						
 							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
 						</Grid.Column>
