@@ -1,5 +1,5 @@
 ---
-name: “Bullseye” Kyle
+name: '"Bullseye" Kyle'
 rarity: 5
 series: tos
 memory_alpha:
