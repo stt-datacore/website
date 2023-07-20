@@ -1,5 +1,5 @@
 ---
-name: C.O.P Janeway
+name: C.O.P. Janeway
 rarity: 5
 series: original
 memory_alpha:

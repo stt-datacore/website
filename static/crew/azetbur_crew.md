@@ -1,5 +1,5 @@
 ---
-name: Azetbur
+name: Chancellor Azetbur
 rarity: 5
 series: tos
 memory_alpha:
