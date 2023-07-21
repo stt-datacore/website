@@ -3,9 +3,9 @@ name: Doctor M'Benga
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 16
-in_portal:
+in_portal: true
 date: 29/06/2022
 obtained: Event
 mega: false

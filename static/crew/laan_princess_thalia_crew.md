@@ -3,9 +3,9 @@ name: Princess Thalia and Runa
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 6
-events: 16
-in_portal:
+bigbook_tier: 7
+events: 17
+in_portal: true
 date: 26/10/2022
 obtained: Event
 mega: false

@@ -3,9 +3,9 @@ name: Lt. Commander Ortegas
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 9
-in_portal:
+in_portal: true
 date: 13/07/2022
 obtained: Event
 mega: false

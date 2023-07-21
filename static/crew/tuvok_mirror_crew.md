@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 1
-events: 36
+events: 37
 in_portal:
 date: 18/04/2023
 obtained: FactionStore

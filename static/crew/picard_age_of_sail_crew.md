@@ -3,7 +3,7 @@ name: Age of Sail Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 33
 in_portal: true
 date: 02/06/2020

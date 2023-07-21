@@ -3,8 +3,8 @@ name: Tourist Tucker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 10
-events: 16
+bigbook_tier: 9
+events: 20
 in_portal: true
 date: 28/03/2019
 obtained: Event

@@ -3,8 +3,8 @@ name: Losira
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 7
-events: 13
+bigbook_tier: 8
+events: 14
 in_portal: true
 date: 10/10/2018
 obtained: Event

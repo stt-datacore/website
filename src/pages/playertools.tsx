@@ -181,6 +181,22 @@ const PlayerToolsPage = (props: any) =>  {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
 			}
 		});
+		if ("item_archetype_cache" in inputPlayerData){
+			inputPlayerData.version = 17;
+		}
+		else if ("archetype_cache" in inputPlayerData) {
+			inputPlayerData.version = 20;
+			inputPlayerData.item_archetype_cache = {
+				archetypes: inputPlayerData.archetype_cache.archetypes.map((a) => {
+					return {
+						// In case we find we need a deep copy...
+						// ... JSON.parse(JSON.stringify(a)),  
+						... a,
+						type: a.item_type,
+					};
+				})
+			}
+		}
 		let voyageData = {
 			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions],
 			voyage: [...inputPlayerData.player.character.voyage],
@@ -428,7 +444,7 @@ type PlayerToolsFormProps = {
 };
 
 const PlayerToolsForm = (props: PlayerToolsFormProps) => {
-	const PLAYERLINK = 'https://stt.disruptorbeam.com/player?client_api=17';
+	const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=17&only_read_state=true';
 
 	const { setValidInput } = props;
 
@@ -458,7 +474,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				<li>
 					Open this page in your browser:{' '}
 					<a href={PLAYERLINK} target='_blank'>
-						https://stt.disruptorbeam.com/player
+						{PLAYERLINK}
 						</a>
 				</li>
 				<li>

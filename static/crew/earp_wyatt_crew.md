@@ -3,8 +3,8 @@ name: Wyatt Earp
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
-events: 8
+bigbook_tier: 8
+events: 9
 in_portal: true
 date: 25/02/2021
 obtained: Event

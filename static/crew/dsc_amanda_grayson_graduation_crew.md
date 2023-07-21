@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 6
-events: 40
+events: 41
 in_portal: true
 date: 26/01/2022
 obtained: Mega

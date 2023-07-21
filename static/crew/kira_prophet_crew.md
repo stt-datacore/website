@@ -3,8 +3,8 @@ name: Prophet Kira
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 31
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 25/11/2021
 obtained: Event

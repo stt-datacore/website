@@ -3,9 +3,9 @@ name: Enterprise Pike
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 11
-in_portal:
+in_portal: true
 date: 01/06/2022
 obtained: Giveaway
 mega: false

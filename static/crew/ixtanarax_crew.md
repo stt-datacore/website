@@ -3,9 +3,9 @@ name: Ixtana'Rax
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 14
-in_portal:
+bigbook_tier: 7
+events: 15
+in_portal: true
 date: 18/10/2022
 obtained: Event
 mega: false

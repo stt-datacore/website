@@ -3,9 +3,9 @@ name: King Ridley
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 21
-in_portal:
+in_portal: true
 date: 16/11/2022
 obtained: Event
 mega: false

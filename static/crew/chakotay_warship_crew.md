@@ -3,8 +3,8 @@ name: Warship Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 21
+bigbook_tier: 8
+events: 22
 in_portal: true
 date: 19/12/2016
 obtained: Event

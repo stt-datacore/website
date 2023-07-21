@@ -3,8 +3,8 @@ name: Warship EMA
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 31
+bigbook_tier: 6
+events: 32
 in_portal: true
 date: 03/01/2019
 obtained: Event

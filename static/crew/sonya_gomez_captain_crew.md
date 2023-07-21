@@ -3,9 +3,9 @@ name: Captain Sonya Gomez
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 4
-in_portal:
+in_portal: true
 date: 31/10/2022
 obtained: Pack
 mega: false

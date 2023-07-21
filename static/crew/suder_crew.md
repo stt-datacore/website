@@ -3,8 +3,8 @@ name: Lon Suder
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
-events: 4
+bigbook_tier: 10
+events: 5
 in_portal: true
 date: 12/10/2016
 obtained: Post-Launch

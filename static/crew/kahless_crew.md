@@ -3,8 +3,8 @@ name: Kahless the Unforgettable
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 19
+bigbook_tier: 4
+events: 21
 in_portal:
 date: 27/04/2017
 obtained: Honor Hall
