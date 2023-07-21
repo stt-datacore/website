@@ -34,7 +34,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 		maxBuffs = coreData.all_buffs;
 	}     
     let startlevel = Math.floor(crew.level / 10) * 4;
-    if (crew.level % 10 == 0 && crew.equipment.length > 1) startlevel = startlevel - 4;
+    if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
     let eqimgs = [] as string[];
     let equip = [] as EquipmentItem[];
 
