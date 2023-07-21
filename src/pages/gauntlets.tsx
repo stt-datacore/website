@@ -275,17 +275,32 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
-					const crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 					if (buffConfig) {
 						applyCrewBuffs(crew, buffConfig);
 					}
-
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
-					if (c) return c;
+					
+					if (c) {
+						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
+					}
+					else {
+						let skills = getSkills(crew);
+						for (let s of skills) {
+							crew[s] = {
+								core: 0,
+								min: 0,
+								max: 0
+							}
+						}
+					}
+
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
 					else crew.rarity = 0;
+					
 					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 					crew.pairs = getPlayerPairs(crew);
+
 					return crew;
 				})
 				.sort((a, b) => {
