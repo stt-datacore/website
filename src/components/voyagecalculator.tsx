@@ -22,12 +22,13 @@ import { EphemeralData, PlayerContext } from '../context/playercontext';
 export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
 const VoyageCalculator = () => {
-	const { ephemeral, playerData, crew: allCrew } = React.useContext(MergedContext);
+	const mergedData = React.useContext(MergedContext);
+	const { ships, ephemeral, playerData, crew: allCrew } = mergedData;
 	const activeCrew = ephemeral?.activeCrew;
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	
-	if (!allShips) {
-		fetchAllShips();
+	if (!allShips && ships) {
+		fetchAllShips(ships);
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
@@ -72,6 +73,7 @@ const VoyageCalculator = () => {
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
 	const allData = {
+		... mergedData,
 		crew: allCrew, ships: allShips, playerData
 	} as MergedData;
 
@@ -81,12 +83,7 @@ const VoyageCalculator = () => {
 		</VoyageContext.Provider>
 	);
 
-	async function fetchAllShips() {
-		const [shipsResponse ] = await Promise.all([
-			fetch('/structured/ship_schematics.json')
-		]);
-		const allships = await shipsResponse.json() as Schematics[];
-		const ships = mergeShips(allships, playerData.player.character.ships);
+	function fetchAllShips(ships: Ship[]) {
 
 		const ownedCount = playerData.player.character.ships.length;
 		playerData.player.character.ships.sort((a, b) => (a?.archetype_id ?? 0) - (b?.archetype_id ?? 0)).forEach((ship, idx) => {
@@ -123,7 +120,7 @@ type VoyageMainProps = {
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
-	const playerContext = React.useContext(PlayerContext);
+	const playerContext = React.useContext(VoyageContext);
 	const ephemeral = playerContext.ephemeral ?? {} as EphemeralData;
 	const { voyage, voyageDescriptions } = ephemeral;
 	
@@ -134,7 +131,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 	const [showInput, setShowInput] = React.useState(true);
 
 	if (!voyageConfig) {
-		if (voyageData) {
+		if (voyageData?.voyage_descriptions?.length) {
 			// Voyage started, config will be full voyage data
 			if (voyageData.voyage && voyageData.voyage.length > 0) {
 				setVoyageConfig(voyageData.voyage[0]);
