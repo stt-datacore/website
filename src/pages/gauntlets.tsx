@@ -780,6 +780,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				text: "Table"
 			}]
 
+		if (gauntlet.unavailable_msg) {
+			return (				<Message icon warning>
+				<Icon name="exclamation triangle" />
+					<Message.Content>
+						<Message.Header>{gauntlet.unavailable_msg}</Message.Header>
+						{gauntlet.unavailable_desc_msg}
+					</Message.Content>
+				</Message>
+			)
+		}
 		return (
 		<div style={{
 			marginBottom: "2em",
@@ -977,7 +987,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				}
 				</div>
-				
 				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
 			</>
 		)}
