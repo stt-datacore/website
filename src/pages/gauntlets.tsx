@@ -326,7 +326,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
-					else crew.rarity = 0;
+					else if (!c) crew.rarity = 0;
 					
 					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 					crew.pairs = getPlayerPairs(crew);
