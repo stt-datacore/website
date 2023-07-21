@@ -13,6 +13,7 @@ export interface Gauntlet {
     matchedCrew?: (PlayerCrew | CrewMember)[];
     prettyTraits: string[] | undefined;    
 	origRanks?: { [key: string]: number };
+    template?: boolean;
 }
   
 export interface ContestData {
