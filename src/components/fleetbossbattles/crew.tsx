@@ -250,12 +250,11 @@ const ChainCrew = (props: ChainCrewProps) => {
 			);
 
 			let alphaExceptions = 0;
-			traits.forEach(trait => { if (trait.localeCompare(node?.alphaTest ?? "") < 0) alphaExceptions++; });
-			node.hiddenLeft ??= 0;
-			const alphaException = traits.length - alphaExceptions < node.hiddenLeft;
+			traits.forEach(trait => { if (trait.localeCompare(node?.alphaTest ?? '', 'en') < 0) alphaExceptions++; });
+			const alphaException = traits.length - alphaExceptions < (node.hiddenLeft ?? 0);
 
 			const crewSet = [] as string[];
-			getAllCombos(traits, node.hiddenLeft).forEach(combo => {
+			getAllCombos(traits, (node.hiddenLeft ?? 0)).forEach(combo => {
 				const combos = comboRarity.find(rarity => rarity.combo?.every(trait => combo.includes(trait)));
 				if (combos) {
 					combos.crew?.forEach(crew => {
@@ -295,7 +294,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 			spotter.solves ??= [];
 			spotter.solves.push({ node: nodeIndex, traits });
 		}
-		updateSpotter({...spotter, solves: spotter.solves});		
+		updateSpotter({...spotter, solves: spotter.solves});
 	}
 
 	function onCrewMarked(crewSymbol: string): void {
