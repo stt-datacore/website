@@ -116,7 +116,7 @@ const GroupTable = (props: GroupTableProps) => {
 						<Table.HeaderCell key={idx}
 							sorted={column === cell.column ? direction : null}
 							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
-							
+
 							width={cell.width as SemanticWIDTHS} textAlign={cell.center ? 'center' : 'left'}
 						>
 							{cell.title}
@@ -186,7 +186,7 @@ const GroupTable = (props: GroupTableProps) => {
 				let test = 0;
 				while (tests.length > 0 && test === 0) {
 					let shtest = tests.shift();
-					if (shtest) shtest(a, b);
+					test = shtest ? shtest(a, b) : 0;
 				}
 				return test;
 			});

@@ -50,7 +50,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 		let test = 0;
 		while (comps.length > 0 && test === 0) {
 			let shtest = comps.shift();
-			if (shtest) shtest(a, b);
+			test = shtest ? shtest(a, b) : 0;
 		}
 		return test;
 	};
@@ -65,7 +65,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 					name += ` ${needed}`;
 				}
 			}
-			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
+			if (alphaTest !== '' && trait.localeCompare(alphaTest, 'en') < 0)
 				name += `-${prefValue(exportPrefs, 'flag_alpha')}`;
 			return name;
 		};

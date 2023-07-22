@@ -65,7 +65,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					</Header>
 					{solveOptions.map(option => (
 						<div key={option.key} style={{ paddingBottom: '.5em' }}>
-							<SolveButton node={node}								
+							<SolveButton node={node}
 								traits={option.value ?? []} rarity={option.rarity}
 								traitData={props.solver.traits} solveNode={handleSolveClick}
 							/>
@@ -86,7 +86,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				</Modal.Actions>
 			</Modal>
 		);
-		
+
 		function handleSolveClick(nodeIndex: number, traits: string[]): void {
 			node.index ??= 0;
 			props.solveNode(node.index, getUpdatedSolve(node, traits));
@@ -165,7 +165,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 				<div>
 					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
-						<span style={{ fontStyle: crew.nodes_rarity ?? 0 > 1 ? 'italic' : 'normal' }}>
+						<span style={{ fontStyle: (crew.nodes_rarity ?? 0) > 1 ? 'italic' : 'normal' }}>
 							{crew.name}
 						</span>
 					</span>
@@ -283,7 +283,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 				{nodes.map(node => {
 
 					node.index ??= 0;
-					
+
 
 
 
@@ -370,7 +370,7 @@ const SolveButton = (props: SolveButtonProps) => {
 
 	function getTraitsStyle(rarity: number): any {
 		// Traits include alpha rule exception
-		if (traits.filter(trait => trait !== '?' && trait.localeCompare(node.alphaTest) === -1).length > 0) {
+		if (traits.filter(trait => trait !== '?' && trait.localeCompare(node.alphaTest, 'en') === -1).length > 0) {
 			return {
 				background: '#f2711c',
 				color: 'white'
