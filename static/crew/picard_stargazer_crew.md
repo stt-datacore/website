@@ -4,7 +4,7 @@ rarity: 1
 series: tng
 memory_alpha:
 bigbook_tier: 4
-events: 25
+events: 26
 in_portal:
 date: 27/04/2017
 obtained: Honor Hall
