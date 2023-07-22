@@ -1,6 +1,4 @@
-import { BossCrew } from "../../model/boss";
-import { CrewMember } from "../../model/crew";
-import { PlayerCrew } from "../../model/player";
+import { BossCrew, RarityStyle } from "../../model/boss";
 
 export function getAllCombos(traits: string[], count: number): string[][] {
 	if (count === 1) return traits.map(trait => [trait]);
@@ -25,8 +23,8 @@ export function getComboIndexOf(combos: string[][], combo: string[]): number {
 }
 
 export function removeCrewNodeCombo(crew: BossCrew, nodeIndex: number, combo: string[]): void {
-	crew.node_matches ??= {};
 	const crewMatches = crew.node_matches[`node-${nodeIndex}`];
+	if (!crewMatches) return;
 	const combosIndex = getComboIndexOf(crewMatches.combos, combo);
 	if (combosIndex === -1) return;
 	crewMatches.combos.splice(combosIndex, 1);
@@ -40,17 +38,16 @@ export function removeCrewNodeCombo(crew: BossCrew, nodeIndex: number, combo: st
 		crewMatches.traits = validTraits;
 	}
 	else {
-		const crewNodesIndex = crew.nodes?.indexOf(nodeIndex) ?? -1;
+		const crewNodesIndex = crew.nodes.indexOf(nodeIndex);
 		if (crewNodesIndex >= 0) {
-			crew.nodes?.splice(crewNodesIndex, 1);
+			crew.nodes.splice(crewNodesIndex, 1);
 			delete crew.node_matches[`node-${nodeIndex}`];
-			crew.nodes_rarity ??= 0;
 			crew.nodes_rarity--;
 		}
 	}
 }
 
-export function getStyleByRarity(rarity: number): any {
+export function getStyleByRarity(rarity: number): RarityStyle {
 	let background = 'grey', color = 'white';
 	if (rarity === 0) {
 		background = '#000000';
@@ -71,6 +68,10 @@ export function getStyleByRarity(rarity: number): any {
 	}
 	else if (rarity === 5) {
 		background = '#9b9b9b';
+	}
+	else if (rarity > 5) {
+		background = '#ddd';
+		color = '#333';
 	}
 	return { background, color };
 }

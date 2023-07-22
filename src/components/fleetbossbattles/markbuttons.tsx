@@ -1,13 +1,12 @@
 import React from 'react';
-import { Header, Icon, Button, Popup, Modal, Grid, Label, SemanticWIDTHS } from 'semantic-ui-react';
+import { Header, Icon, Button, Popup, Modal, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { getStyleByRarity } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, NodeRarities, OpenNode, Optimizer, Solver, SolverNode, TraitRarities } from '../../model/boss';
-import { NodeMatch, PlayerCrew } from '../../model/player';
+import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
 type MarkGroupProps = {
 	node: SolverNode;
@@ -27,25 +26,21 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		if (!modalIsOpen) setFirstTrait('');
 	}, [modalIsOpen]);
 
-	props.optimizer ??= {} as Optimizer;
-	props.optimizer.rarities ??= {};
-
 	const nodeRarities = props.optimizer.rarities[`node-${node.index}`];
 	const comboRarity = nodeRarities.combos;
 	const traitRarity = nodeRarities.traits;
 
 	const GroupSolvePicker = () => {
-		const solveOptions = comboRarity.filter(rarity => rarity.combo?.includes(firstTrait) && (rarity.crew?.length ?? 0) > 0)
-			.sort((a, b) => (b.crew?.length ?? 0) - (a.crew?.length ?? 0))
+		const solveOptions = comboRarity.filter(rarity => rarity.combo.includes(firstTrait) && rarity.crew.length > 0)
+			.sort((a, b) => b.crew.length - a.crew.length)
 			.map((rarity, idx) => {
 				return {
 					key: idx,
 					value: rarity.combo,
-					rarity: rarity.crew?.length ?? 0
+					rarity: rarity.crew.length
 				};
 		});
 
-		node.index ??= 0;
 		return (
 			<Modal
 				open={true}
@@ -57,11 +52,11 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
 					<Header as='h4'>
-						{node.traitsKnown?.map((trait, traitIndex) => (
+						{node.traitsKnown.map((trait, traitIndex) => (
 							<span key={traitIndex}>
 								{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
 							</span>
-						)).reduce((prev, curr) => <>{prev} {curr}</>)}
+						)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					</Header>
 					{solveOptions.map(option => (
 						<div key={option.key} style={{ paddingBottom: '.5em' }}>
@@ -70,11 +65,11 @@ export const MarkGroup = (props: MarkGroupProps) => {
 								traitData={props.solver.traits} solveNode={handleSolveClick}
 							/>
 						</div>
-					)).reduce((prev, curr) => <>{prev} {curr}</>)}
+					)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					<div style={{ marginTop: '2em' }}>
 						<Header as='h4'>Partial Solve</Header>
 						<SolveButton node={node}
-							traits={[firstTrait, '?']} rarity={traitRarity[firstTrait]}
+							traits={[firstTrait, '?']} rarity={Math.min(traitRarity[firstTrait], 5)}
 							traitData={props.solver.traits} solveNode={handleSolveClick}
 						/>
 					</div>
@@ -88,7 +83,6 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		);
 
 		function handleSolveClick(nodeIndex: number, traits: string[]): void {
-			node.index ??= 0;
 			props.solveNode(node.index, getUpdatedSolve(node, traits));
 			setModalIsOpen(false);
 		}
@@ -98,11 +92,11 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		<React.Fragment>
 			{(traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => (
 				<SolveButton key={trait} node={node}
-					traits={[trait]} rarity={traitRarity[trait]}
+					traits={[trait]} rarity={Math.min(traitRarity[trait], 5)}
 					traitData={props.solver.traits} solveNode={handleSingleTrait}
 					compact={true}
 				/>
-			)) as JSX.Element[]).reduce((prev, curr) => <>{prev} {curr}</>)}
+			)) as JSX.Element[]).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 			{modalIsOpen && <GroupSolvePicker />}
 		</React.Fragment>
 	);
@@ -112,7 +106,6 @@ export const MarkGroup = (props: MarkGroupProps) => {
 
 		// Always auto-solve when only 1 trait required
 		if (node.hiddenLeft === 1) {
-			node.index ??= 0;
 			props.solveNode(node.index, getUpdatedSolve(node, [trait]));
 			return;
 		}
@@ -165,7 +158,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 				<div>
 					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
-						<span style={{ fontStyle: (crew.nodes_rarity ?? 0) > 1 ? 'italic' : 'normal' }}>
+						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
 							{crew.name}
 						</span>
 					</span>
@@ -208,8 +201,6 @@ export const MarkCrew = (props: MarkCrewProps) => {
 			const match = Object.values(crew.node_matches)[0];
 			const node = props.solver.nodes.find(n => n.index === match.index);
 			if (node) {
-				node.hiddenLeft ??= 0;
-				node.index ??= 0;
 				if (match.traits.length === node.hiddenLeft) {
 					props.solveNode(node.index, getUpdatedSolve(node, match.traits));
 					return;
@@ -232,7 +223,7 @@ type SolvePickerProps = {
 const SolvePicker = (props: SolvePickerProps) => {
 	const { crew, setModalIsOpen } = props;
 
-	const nodeMatches = Object.values(crew.node_matches ?? []);
+	const nodeMatches = Object.values(crew.node_matches);
 
 	return (
 		<Modal
@@ -259,15 +250,14 @@ const SolvePicker = (props: SolvePickerProps) => {
 		let traitId = 0;
 		const nodes = nodeMatches.map(node => {
 			const open = props.solver.nodes.find(n => n.index === node.index);
-			props.optimizer ??= {} as Optimizer;
-			props.optimizer.rarities ??= {} as NodeRarities;
+
 			const comboRarities = props.optimizer.rarities[`node-${node.index}`].combos;
 			const solveOptions = node.combos.map((combo, idx) => {
-				const rarity = comboRarities.find(rarity => rarity.combo?.every(trait => combo.includes(trait)));
+				const rarity = comboRarities.find(rarity => rarity.combo.every(trait => combo.includes(trait)));
 				return {
 					key: idx,
 					value: combo,
-					rarity: rarity?.crew?.length ?? 0
+					rarity: rarity ? rarity.crew.length : 0
 				};
 			}).sort((a, b) => b.rarity - a.rarity);
 
@@ -278,35 +268,30 @@ const SolvePicker = (props: SolvePickerProps) => {
 			};
 		}) as SolverNode[];
 
-		return (!nodes || !nodes.length && <></> ||
+		return (
 			<Grid doubling columns={nodes.length as SemanticWIDTHS} textAlign='center'>
 				{nodes.map(node => {
-
-					node.index ??= 0;
-
-
-
-
-					return (<Grid.Column key={node.index}>
-						<Header as='h4' style={{ marginBottom: '0' }}>
-							{node.traitsKnown?.map((trait, traitIndex) => (
-								<span key={traitIndex}>
-									{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
-								</span>
-							)).reduce((prev, curr) => <>{prev} {curr}</>)}
-						</Header>
-						<p>Node {node.index+1}</p>
-						{node?.solveOptions?.map(option => (
-							<div key={option.key} style={{ paddingBottom: '.5em' }}>
-								<SolveButton node={node}
-									traits={option.value ?? []} rarity={option.rarity}
-									traitData={props.solver.traits} solveNode={handleSolveClick}
-								/>
-							</div>
-						)).reduce((prev, curr) => <>{prev} {curr}</>)}
-					</Grid.Column>)
-					}
-				)}
+					return (
+						<Grid.Column key={node.index}>
+							<Header as='h4' style={{ marginBottom: '0' }}>
+								{node.traitsKnown.map((trait, traitIndex) => (
+									<span key={traitIndex}>
+										{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
+									</span>
+								)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
+							</Header>
+							<p>Node {node.index+1}</p>
+							{node.solveOptions?.map(option => (
+								<div key={option.key} style={{ paddingBottom: '.5em' }}>
+									<SolveButton node={node}
+										traits={option.value ?? []} rarity={option.rarity}
+										traitData={props.solver.traits} solveNode={handleSolveClick}
+									/>
+								</div>
+							)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
+						</Grid.Column>
+					);
+				})}
 			</Grid>
 		);
 	}
@@ -319,17 +304,16 @@ const SolvePicker = (props: SolvePickerProps) => {
 	function handleSolveClick(nodeIndex: number, traits: string[]): void {
 		const node = props.solver.nodes.find(n => n.index === nodeIndex);
 		if (!node) return;
-		node.index ??= 0;
 		props.solveNode(node.index, getUpdatedSolve(node, traits));
 		setModalIsOpen(false);
 	}
 };
 
 type SolveButtonProps = {
-	node: any;
+	node: SolverNode;
 	traits: string[];
 	rarity: number;
-	traitData: any[];
+	traitData: SolverTrait[];
 	compact?: boolean;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
@@ -356,7 +340,7 @@ const SolveButton = (props: SolveButtonProps) => {
 					<span key={idx}>
 						{trait === '?' ? '?' : getTraitName(trait)}
 					</span>
-				)).reduce((prev, curr, currIdx, elems) => <>{prev} {elems.length ?? 0 > 0  ? ' + ' : ''} {curr}</>)}
+				)).reduce((prev, curr, currIdx) => <>{prev} {currIdx > 0  ? ' + ' : ''} {curr}</>, <></>)}
 			</React.Fragment>
 		);
 	}
@@ -368,7 +352,7 @@ const SolveButton = (props: SolveButtonProps) => {
 		return `${allTraits.trait_names[trait]} (${needed})`;
 	}
 
-	function getTraitsStyle(rarity: number): any {
+	function getTraitsStyle(rarity: number): RarityStyle {
 		// Traits include alpha rule exception
 		if (traits.filter(trait => trait !== '?' && trait.localeCompare(node.alphaTest, 'en') === -1).length > 0) {
 			return {
@@ -380,10 +364,9 @@ const SolveButton = (props: SolveButtonProps) => {
 	}
 };
 
-const getUpdatedSolve = (node: any, traits: string[]) => {
+const getUpdatedSolve = (node: SolverNode, traits: string[]) => {
 	// Replace first remaining ? on partial solves
 	if (node.solve.length > 1 && traits.length === 1) {
-		let solvedIndex = 0;
 		const solve = node.solve.map(hiddenTrait => {
 			if (hiddenTrait === '?') return traits[0];
 			return hiddenTrait;
