@@ -8,7 +8,7 @@ import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { AlphaRule, BossCrew, Combo, IgnoredCombo, NodeMatches, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
+import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
 import { PlayerCrew } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 
@@ -26,7 +26,7 @@ const userDefaults = {
 };
 
 type ChainSolverProps = {
-	chain: Combo;
+	chain: Chain;
 	allCrew: PlayerCrew[];
 	dbid: string;
 };
@@ -72,7 +72,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 			});
 
 			let solve = node.hidden_traits;
-			const spotSolve = spotter.solves?.find(solve => solve.node === nodeIndex);
+			const spotSolve = spotter.solves.find(solve => solve.node === nodeIndex);
 			if (solve.includes('?') && spotSolve) solve = spotSolve.traits;
 			const traitsKnown = node.open_traits.slice();
 			solve.forEach(trait => {
@@ -109,12 +109,12 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 		// Mark consumed pool traits
 		solverNodes.forEach((node, nodeIndex) => {
-			node.solve?.forEach(trait => {
+			node.solve.forEach(trait => {
 				if (trait !== '?') {
 					traitsConsumed.push(trait);
 					const instanceCount = traitsConsumed.filter(t => t === trait).length;
 					const consumed = solverTraits.find(t => t.trait === trait && t.instance === instanceCount);
-					if (consumed !== undefined) consumed.consumed = true;
+					if (consumed) consumed.consumed = true;
 				}
 			});
 		});
@@ -122,36 +122,34 @@ const ChainSolver = (props: ChainSolverProps) => {
 		// Update trait pool to filter out consumed traits
 		const traitPool = [] as string[];
 		solverTraits.filter(t => t.source === 'pool').forEach(t => {
-			if (!traitPool.includes(t.trait) && !t.consumed && !spotter.ignoredTraits?.includes(t.trait))
+			if (!traitPool.includes(t.trait) && !t.consumed && !spotter.ignoredTraits.includes(t.trait))
 				traitPool.push(t.trait);
 		});
 
 		const allMatchingCrew = [] as BossCrew[];
-		const allComboCounts = [] as SolverNode[];
+		const allComboCounts = [] as ComboCount[];
 		props.allCrew.forEach(crew => {
-			if (chain.difficultyId !== undefined && crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
+			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
 				const nodes = [] as number[];
-				const matchesByNode = {};
+				const matchesByNode = {} as NodeMatches;
 				solverNodes.filter(node => node.open).forEach(node => {
 					// Crew must have every known trait
-					if (node.traitsKnown !== undefined && node.traitsKnown.every(trait => crew.traits.includes(trait))) {
-						const nodePool = traitPool.filter(trait => !node.traitsKnown?.includes(trait));
+					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
 						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
 						// Crew must have at least the same number of matching traits as remaining hidden traits
-						if (traitsMatched.length >= (node?.hiddenLeft ?? 0)) {
-							nodes.push(node.index ?? -1);
-							const combos = getAllCombos(traitsMatched, (node.hiddenLeft ?? 0));
+						if (traitsMatched.length >= node.hiddenLeft) {
+							nodes.push(node.index);
+							const combos = getAllCombos(traitsMatched, node.hiddenLeft);
 							matchesByNode[`node-${node.index}`] = { index: node.index, traits: traitsMatched, combos };
 							combos.forEach(combo => {
 								const existing = allComboCounts.find(cc =>
-									cc && cc.index !== undefined && cc.combo !== undefined && cc.index === node.index
+									cc.index === node.index
 									&& cc.combo.length === combo.length
 									&& cc.combo.every(trait => combo.includes(trait))
 								);
 								if (existing) {
-									existing.crew ??= [];
 									existing.crew.push(crew.symbol);
-									existing.portals ??= 0;
 									if (crew.in_portal) existing.portals++;
 								}
 								else {
@@ -171,9 +169,9 @@ const ChainSolver = (props: ChainSolverProps) => {
 			}
 		});
 
-		const ignoredCombos = [] as SolverNode[];
+		const ignoredCombos = [] as IgnoredCombo[];
 		const ignoreCombo = (nodeIndex: number, combo: string[]) => {
-			if (!ignoredCombos.find(ignored => ignored.index === nodeIndex && ignored.combo?.every(trait => combo.includes(trait))))
+			if (!ignoredCombos.find(ignored => ignored.index === nodeIndex && ignored.combo.every(trait => combo.includes(trait))))
 				ignoredCombos.push({ index: nodeIndex, combo });
 		};
 
@@ -185,47 +183,60 @@ const ChainSolver = (props: ChainSolverProps) => {
 		[confirmedSolves, spotter.attemptedCrew].forEach(group => {
 			group?.forEach(attempt => {
 				const crew = props.allCrew.find(ac => ac.symbol === attempt);
-				solverNodes.filter(node => node.open).forEach(node => {
-					if (node.traitsKnown?.every(trait => crew?.traits.includes(trait))) {
-						const nodePool = traitPool.filter(trait => !node.traitsKnown?.includes(trait));
-						const traitsMatched = nodePool.filter(trait => crew?.traits.includes(trait));
-						const combos = getAllCombos(traitsMatched, node.hiddenLeft ?? -1);
-						combos.forEach(combo => { if (node.index !== undefined) ignoreCombo(node.index, combo) });
-					}
-				});
+				if (crew) {
+					solverNodes.filter(node => node.open).forEach(node => {
+						if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+							const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
+							const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
+							const combos = getAllCombos(traitsMatched, node.hiddenLeft);
+							combos.forEach(combo => ignoreCombo(node.index, combo));
+						}
+					});
+				}
 			});
 		});
 
 		// Ignore ALL unique combos
-		allComboCounts.filter(count => (count.portals ?? -1) <= 1).forEach(count => {
-			if (count.index !== undefined && count.combo !== undefined) ignoreCombo(count.index, count.combo);
+		allComboCounts.filter(count => count.portals <= 1).forEach(count => {
+			ignoreCombo(count.index, count.combo);
 		});
 
 		// Validate matching combos and traits, factoring ignored combos
 		ignoredCombos.forEach(ignored => {
 			allMatchingCrew.forEach(crew => {
-				if (crew.nodes && ignored.index !== undefined && ignored.combo !== undefined) {
-					if (crew.nodes.includes(ignored.index))
+				if (crew.nodes.includes(ignored.index))
 					removeCrewNodeCombo(crew, ignored.index, ignored.combo);
-				}
 			});
 		});
 
-		const validatedCrew = allMatchingCrew.filter(crew => (crew.nodes_rarity ?? 0) > 0);
+		const validatedCrew = allMatchingCrew.filter(crew => crew.nodes_rarity > 0);
 
+		// Annotate remaining exceptions to unofficial rules (i.e. alpha, one hand)
 		validatedCrew.forEach(crew => {
-			// Annotate remaining exceptions to alpha rule
-			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as AlphaRule;
-			Object.values(crew.node_matches ?? []).forEach(node => {
-				let combosCompliant = node.combos.length;
+			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as Rule;
+			crew.onehand_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as Rule;
+			Object.values(crew.node_matches).forEach(node => {
+				let alphaCompliant = node.combos.length, oneHandCompliant = node.combos.length;
 				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index)?.alphaTest;
 				node.combos.forEach(combo => {
-					if (alphaTest && !combo.every(trait => trait.localeCompare(alphaTest, 'en') === 1)) {
-						crew.alpha_rule?.exceptions.push({ index: node.index, combo });
-						combosCompliant--;
+					if (alphaTest) {
+						if (!combo.every(trait => trait.localeCompare(alphaTest, 'en') === 1)) {
+							crew.alpha_rule.exceptions.push({ index: node.index, combo });
+							alphaCompliant--;
+						}
+					}
+					const comboCount = allComboCounts.find(cc =>
+						cc.index === node.index
+							&& cc.combo.length === combo.length
+							&& cc.combo.every(trait => combo.includes(trait))
+					);
+					if (comboCount && comboCount.portals > 5) {
+						crew.onehand_rule.exceptions.push({ index: node.index, combo });
+						oneHandCompliant--;
 					}
 				});
-				if (crew?.alpha_rule && combosCompliant === 0) crew.alpha_rule.compliant--;
+				if (alphaCompliant === 0) crew.alpha_rule.compliant--;
+				if (oneHandCompliant === 0) crew.onehand_rule.compliant--;
 			});
 		});
 

@@ -6,7 +6,7 @@ import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { ExportPreferences, FilterPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
+import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
 
 const FinderContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
 
@@ -33,7 +33,7 @@ const CrewGroups = (props: CrewGroupsProps) => {
 };
 
 type NodeGroupsProps = {
-	node: any;
+	node: SolverNode;
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
@@ -44,7 +44,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 		<span key={idx}>
 			{idx > 0 ? <> + </> : <></>}{allTraits.trait_names[trait]}
 		</span>
-	)).reduce((prev, curr) => [prev, curr], []);
+	)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
 	const nodeGroups = finderData.optimizer.filtered.groups[`node-${node.index}`];
@@ -73,8 +73,8 @@ const NodeGroups = (props: NodeGroupsProps) => {
 };
 
 type GroupTableProps = {
-	node: any;
-	data: any[];
+	node: SolverNode;
+	data: FilteredGroup[];
 };
 
 const GroupTable = (props: GroupTableProps) => {
@@ -116,7 +116,6 @@ const GroupTable = (props: GroupTableProps) => {
 						<Table.HeaderCell key={idx}
 							sorted={column === cell.column ? direction : null}
 							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
-
 							width={cell.width as SemanticWIDTHS} textAlign={cell.center ? 'center' : 'left'}
 						>
 							{cell.title}
@@ -132,9 +131,10 @@ const GroupTable = (props: GroupTableProps) => {
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
+								{row.notes.oneHandException && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
 								{row.notes.alphaException && <Label color='orange'>Alpha exception</Label>}
 								{row.notes.uniqueCrew && <Label style={{ background: '#fdd26a', color: 'black' }}>Unique</Label>}
-								{row.notes.nonPortal && <Label color='grey'>Non-portal</Label>}
+								{row.notes.nonPortal && <Label style={{ background: '#000000', color: '#fdd26a' }}>Non-portal</Label>}
 								{row.notes.nonOptimal && <Label color='grey'>Non-optimal</Label>}
 							</Table.Cell>
 						}
@@ -215,7 +215,7 @@ const GroupTable = (props: GroupTableProps) => {
 };
 
 type GroupCrewProps = {
-	crewList: any[];
+	crewList: BossCrew[];
 };
 
 const GroupCrew = (props: GroupCrewProps) => {
