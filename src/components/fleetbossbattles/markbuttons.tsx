@@ -61,7 +61,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					{solveOptions.map(option => (
 						<div key={option.key} style={{ paddingBottom: '.5em' }}>
 							<SolveButton node={node}
-								traits={option.value ?? []} rarity={option.rarity}
+								traits={option.value ?? []} rarity={option.rarity} onehand={true}
 								traitData={props.solver.traits} solveNode={handleSolveClick}
 							/>
 						</div>
@@ -69,7 +69,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					<div style={{ marginTop: '2em' }}>
 						<Header as='h4'>Partial Solve</Header>
 						<SolveButton node={node}
-							traits={[firstTrait, '?']} rarity={Math.min(traitRarity[firstTrait], 5)}
+							traits={[firstTrait, '?']} rarity={traitRarity[firstTrait]} onehand={false}
 							traitData={props.solver.traits} solveNode={handleSolveClick}
 						/>
 					</div>
@@ -92,7 +92,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		<React.Fragment>
 			{(traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => (
 				<SolveButton key={trait} node={node}
-					traits={[trait]} rarity={Math.min(traitRarity[trait], 5)}
+					traits={[trait]} rarity={traitRarity[trait]} onehand={false}
 					traitData={props.solver.traits} solveNode={handleSingleTrait}
 					compact={true}
 				/>
@@ -284,7 +284,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 							{node.solveOptions?.map(option => (
 								<div key={option.key} style={{ paddingBottom: '.5em' }}>
 									<SolveButton node={node}
-										traits={option.value ?? []} rarity={option.rarity}
+										traits={option.value ?? []} rarity={option.rarity} onehand={true}
 										traitData={props.solver.traits} solveNode={handleSolveClick}
 									/>
 								</div>
@@ -313,13 +313,14 @@ type SolveButtonProps = {
 	node: SolverNode;
 	traits: string[];
 	rarity: number;
+	onehand: boolean;
 	traitData: SolverTrait[];
 	compact?: boolean;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
 const SolveButton = (props: SolveButtonProps) => {
-	const { node, traits, rarity, traitData, compact } = props;
+	const { node, traits, rarity, onehand, traitData, compact } = props;
 
 	const traitSort = (a: string, b: string) => {
 		if (a === '?') return 1;
@@ -329,6 +330,7 @@ const SolveButton = (props: SolveButtonProps) => {
 
 	return (
 		<Button compact={compact} style={getTraitsStyle(rarity)} onClick={() => props.solveNode(node.index, traits)}>
+			{onehand && rarity > 5 && <Icon name='hand paper' />}
 			{renderTraits()}
 		</Button>
 	);
