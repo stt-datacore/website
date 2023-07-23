@@ -3,8 +3,8 @@ name: Ensign Hoya
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 3
+bigbook_tier: 4
+events: 4
 in_portal: true
 date: 03/10/2022
 obtained: Pack

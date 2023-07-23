@@ -35,7 +35,7 @@
     "gatsby-plugin-typescript": "^3.0.0",
     "gatsby-source-filesystem": "^3.0.0",
     "gatsby-transformer-json": "^3.0.0",
-    "gatsby-transformer-remark": "^3.0.0",
+    "gatsby-transformer-remark": "^5.25.1",
     "graphql-typescript-definitions": "^0.22.0",
     "localforage": "^1.9.0",
     "lodash": "^4.17.21",

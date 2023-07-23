@@ -4,7 +4,7 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 7
-events: 29
+events: 30
 in_portal: true
 date: 25/11/2021
 obtained: Campaign

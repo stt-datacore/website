@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 3
-events: 5
+events: 6
 in_portal:
 date: 12/06/2023
 obtained: Campaign
