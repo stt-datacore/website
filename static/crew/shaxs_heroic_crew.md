@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 4
-events: 13
+events: 14
 in_portal:
 date: 16/05/2023
 obtained: Honor Hall
