@@ -1030,8 +1030,8 @@ export class CrewPresenter extends React.Component<
                                 />
 
                                 <StatLabel
-                                    title="CAB Rank"
-                                    value={crew.cab_ov_rank ?? "?"}
+                                    title="In Portal"
+                                    value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : "No" }
                                 />
                             </div>
                         </div>
