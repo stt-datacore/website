@@ -272,7 +272,6 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const { selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 	
-	const [availableUses, setAvailableUses] = React.useState([] as number[]);
 	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
 	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
 
@@ -291,6 +290,8 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 		return uses;
 	}
+
+	const [availableUses, setAvailableUses] = React.useState(makeUses(myCrew));
 
 	React.useEffect(() => {
 		if (selectedShip && !selectedShip?.actions?.some(l => l.status && l.status !== 16)) {
@@ -371,7 +372,6 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	const updateRankings = () => {
 		let statmap: ShipStatMap;
 		let newRankings: ShipSkillRanking[];
-		let newuses: number[];
 
 		if (shipCrew && shipCrew.length !== 0) {
 			statmap = createShipStatMap(myCrew.filter(item => shipCrew.some(sc => sc === item.symbol)));

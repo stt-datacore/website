@@ -19,8 +19,6 @@ export type AbilityUsesProps = {
 export const AbilityUses = (props: AbilityUsesProps) => {
 
 	const { selectedUses, setSelectedUses } = props;
-	
-	const [uses, setUses] = React.useState<number[]>(selectedUses);
 
 	const zeroText = props.zeroText ?? "Unlimited";
     const abilityUsesOptions = props.uses.map((u) => {
@@ -31,10 +29,6 @@ export const AbilityUses = (props: AbilityUsesProps) => {
         }
     })
   
-	React.useEffect(() => {
-		setSelectedUses(uses);
-	}, [uses])
-
 	return (
 		<Form.Field>
 			<Dropdown
@@ -43,8 +37,8 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 				multiple
 				selection
 				options={abilityUsesOptions}
-				value={uses}
-				onChange={(e, { value }) => setUses(value as number[])}
+				value={selectedUses}
+				onChange={(e, { value }) => setSelectedUses(value as number[])}
 				closeOnChange
 			/>
 		</Form.Field>
