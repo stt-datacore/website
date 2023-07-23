@@ -410,6 +410,12 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		setShipCrew(sc?.map(f=>f.symbol).filter(g=>g) as string[]);
 	}
 
+	const clearShipFilters = () => {
+		setShipFilters({});
+		setShipPickerFilter({});
+		setShipRarityFilter([]);
+	}
+	
 	if (!rankings?.length) {
 		if (isWindow) window.setTimeout(() => updateRankings());
 	}
@@ -737,14 +743,14 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						flexDirection: window.innerWidth < 725 ? "column" : "row",
 						justifyContent: "flex-start"
 					}}>
-						<div style={{marginRight: "16px"}}>
+						<div style={{marginRight: "1em"}}>
 							<RarityFilter
 									altTitle='Filter ship rarity'
 									rarityFilter={shipRarityFilter}
 									setRarityFilter={setShipRarityFilter}
 								/>
 						</div>
-						<div style={{marginRight: "16px", width: window.innerWidth < 725 ? "auto" : "25em"}}>
+						<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 							<ShipPicker
 								filter={shipPickerFilter}
 								selectedShip={selectedShip}
@@ -752,7 +758,24 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								setSelectedShip={(item) => setShipFilters({ ... shipFilters, selectedShip: item })}
 								playerData={props.playerData} />
 						</div>
-						
+						<div className="ui button" 
+								title={"Clear Ship Filters"}
+								onClick={(e) => clearShipFilters()}
+								style={{
+									height: "3em", 
+									width: "3em",
+									display: "flex", 
+									flexDirection: "row", 
+									textAlign: "center", 
+									justifyContent: "center", 
+									alignItems: "center"
+									}}
+									
+									>
+							<i style={{margin:0}}
+								
+								className="trash icon alt" />
+						</div>
 					</div>
 					<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
 						<div style={{marginRight: "1em"}}>
@@ -765,12 +788,12 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 							<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 						</div>}
 						{!selectedShip &&
-						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+						<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
 							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item })} />
 						</div>}
 						<div style={{
-							marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0' : "1em",
-							marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.25em' : 0						
+							marginLeft: (window.innerWidth < DEFAULT_MOBILE_WIDTH || (isCheckDisabled() && !!selectedShip)) ? '0' : "1em",
+							marginTop: (window.innerWidth < DEFAULT_MOBILE_WIDTH) ? '0.25em' : 0						
 							}}>
 							<ShipSeatPicker
 									setSelectedSeats={(item) => setShipFilters({ ... shipFilters, selectedSeats: item })}

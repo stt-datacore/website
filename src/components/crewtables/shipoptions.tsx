@@ -65,8 +65,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
-	const [selection, setSelection] = React.useState(selectedShip?.symbol);
-
+	
 	if (!availableShips || availableShips.length === 0) {
         if (!props.playerData) return <></>;        
         let pd = props.playerData;
@@ -82,9 +81,9 @@ export const ShipPicker = (props: ShipPickerProps) => {
 	const placeholder = 'Select Ship';
 
     React.useEffect(() => {
-        setShip();
-    }, [selection, filteredShips]);
-
+        setShip(selectedShip?.symbol ?? '');
+    }, [filteredShips]);
+	
     const poolList = filteredShips?.map((c) => (
 		{
 			key: c.symbol,
@@ -113,18 +112,19 @@ export const ShipPicker = (props: ShipPickerProps) => {
                 fluid
 				placeholder={placeholder}
 				options={poolList}                
-				value={selection}								
-				onChange={(e, { value }) => setSelection(value as string | undefined)}
+				value={selectedShip?.symbol ?? ''}								
+				onChange={(e, { value }) => setShip(value as string)}
 			/>
 		</React.Fragment>
 	);
 
-	function setShip(): void {
-		if (selection == '')  {
+	function setShip(value: string): void {
+		if (value == '' || value === undefined)  {
 			setSelectedShip(undefined);
 			return;
 		}
-		let valid = filteredShips?.find((c) => c.symbol == selection);
+		let valid = filteredShips?.find((c) => c.symbol === value);
+
 		if (valid) {
 			setSelectedShip(valid);
 		}
