@@ -154,7 +154,7 @@ const CrewTable = (props: CrewTableProps) => {
 					color: 'white'
 				};
 			}
-			return getStyleByRarity(Math.min(traitRarity[trait], 5));
+			return getStyleByRarity(traitRarity[trait]);
 		};
 		const traitNameInstance = (trait: string) => {
 			const instances = solver.traits.filter(t => t.trait === trait);
