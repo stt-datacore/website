@@ -92,7 +92,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		return (
 			<div>
 				<h2>Crew Retrieval Unavailable</h2>
-				<p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=20">newer version</a> of your player file.
+				<p>Crew retrieval requires a <a href='https://app.startrektimelines.com/player?client_api=20&only_read_state=true' target='_blank'>newer version</a> of your player file.
 				   Please follow the link and copy the correct version to paste.</p>
 			</div>
 		);
@@ -547,19 +547,19 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		constellations.forEach(keystone => {
 			if (keystone.type == 'crew_keystone_crate') {
 				totalCrates++;
-				totalDrops += keystone.keystones?.length ?? 0;
+				totalDrops += keystone.keystones.length;
 			}
 		});
 		keystones.filter(k => k.type == 'keystone').forEach(polestar => {
-			const crates = constellations.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones?.includes(polestar.id));
+			const crates = constellations.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones.includes(polestar.id));
 			const nochance = polestar.filter?.type == 'rarity' || polestar.filter?.type == 'skill' || crates.length == 0;
 			polestar.crate_count = nochance ? 0 : crates.length;
 			//polestar.scan_odds = nochance ? 0 : crates.length/totalDrops; // equal chance of dropping
-			polestar.scan_odds = nochance ? 0 : crates.reduce((prev, curr) => prev + (1/(curr.keystones?.length ?? 1)), 0)/totalCrates; // conditional probability
+			polestar.scan_odds = nochance ? 0 : crates.reduce((prev, curr) => prev + (1/curr.keystones.length), 0)/totalCrates; // conditional probability
 			const owned = crates.filter(k => k.quantity > 0);
 			polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.quantity, 0);
-			polestar.owned_best_odds = owned.length == 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones?.length ?? 0), 100);
-			polestar.owned_total_odds = owned.length == 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones?.length ?? 0 - 1)/(curr.keystones?.length ?? 1))**curr.quantity), 1);
+			polestar.owned_best_odds = owned.length == 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
+			polestar.owned_total_odds = owned.length == 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.quantity), 1);
 
 			if (polestar.filter) {
 				if (polestar.filter.type === 'rarity') {
@@ -776,9 +776,9 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			const usablePolestars = usefulPolestars.filter(p => (p.owned_crate_count ?? 0) > 0);
 			if (usablePolestars.length == 0) return (<></>);
 
-			const constellations = ownedConstellations.filter(k => k.keystones?.some(kId => usablePolestars.find(p => p.id === kId)));
+			const constellations = ownedConstellations.filter(k => k.keystones.some(kId => usablePolestars.find(p => p.id === kId)));
 			if (constellations.length == 1)
-				return constellations.map(k => renderPolestarsFromConstellation(k, usablePolestars.filter(p => k.keystones?.some(kId => kId === p.id))));
+				return constellations.map(k => renderPolestarsFromConstellation(k, usablePolestars.filter(p => k.keystones.some(kId => kId === p.id))));
 
 			return usablePolestars.sort((a, b) => {
 					if (b.owned_total_odds == a.owned_total_odds)
@@ -883,7 +883,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 
 	function renderConstellationsWithPolestar(polestar: Polestar): JSX.Element {
 		const constellations = [] as Constellation[];
-		ownedConstellations.filter(k => k.keystones?.includes(polestar.id))
+		ownedConstellations.filter(k => k.keystones.includes(polestar.id))
 			.forEach(k => {
 				for (let i = 0; i < k.quantity; i++) {
 					const newName = k.quantity > 1 ? k.name + " #"+(i+1) : k.name;
@@ -895,14 +895,14 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			<p key={polestar.symbol}>
 				Open{` `}
 				{
-					constellations.sort((a, b) => 1/(b.keystones?.length ?? 1) - 1/(a.keystones?.length ?? 1)).map((k, kdx) => (
+					constellations.sort((a, b) => 1/b.keystones.length - 1/a.keystones.length).map((k, kdx) => (
 						<span key={kdx} onClick={() => setAsActive('constellation', k.symbol) }>
-							<b>{k.name}</b> ({(1/(k.keystones?.length ?? 1)*100).toFixed(1)}%){kdx < constellations.length-1 ? ' or ' : ''}
+							<b>{k.name}</b> ({(1/k.keystones.length*100).toFixed(1)}%){kdx < constellations.length-1 ? ' or ' : ''}
 						</span>
 					)).reduce((prev, curr) => <>{prev}&nbsp;{curr}</>)
 				}{` `}
 				for a chance of acquiring the <b><span onClick={() => setActivePolestar(polestar.symbol)}>{polestar.name}</span></b>
-				{constellations.length > 1 && (<span>; open all for a <b>{(polestar.owned_total_odds ?? 0 * 100).toFixed(1)}%</b> chance</span>)}
+				{constellations.length > 1 && (<span>; open all for a <b>{((polestar.owned_total_odds ?? 0) * 100).toFixed(1)}%</b> chance</span>)}
 			</p>
 		);
 	}
