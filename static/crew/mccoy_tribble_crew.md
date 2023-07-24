@@ -3,7 +3,7 @@ name: Tribble McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 30
 in_portal: true
 date: 29/07/2021
