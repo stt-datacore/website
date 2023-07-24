@@ -379,7 +379,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					if (c.rarity < c.max_rarity)
 						return '(Fusable)';
 
-				return  owned?.length ?? 0 > 0 ? '(Duplicate)' : '(Unowned)';
+				return  (owned?.length ?? 0) > 0 ? '(Duplicate)' : '(Unowned)';
 			},
 			itemsOwned,
 			item => '',

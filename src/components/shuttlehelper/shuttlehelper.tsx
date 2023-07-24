@@ -270,9 +270,9 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					if (props.crew[i][skill].core === 0) continue;
 
 					let iMultiplier = 1;
-					if (props.eventData?.featured?.indexOf(props.crew[i].symbol) ?? 0 >= 0)
+					if ((props.eventData?.featured?.indexOf(props.crew[i].symbol) ?? 0) >= 0)
 						iMultiplier = 3;
-					else if (props.eventData?.bonus?.indexOf(props.crew[i].symbol) ?? 0 >= 0)
+					else if ((props.eventData?.bonus?.indexOf(props.crew[i].symbol) ?? 0) >= 0)
 						iMultiplier = 2;
 					const iSkillScore = props.crew[i][skill].core*iMultiplier;
 
