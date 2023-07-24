@@ -206,7 +206,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                     }{" "}
                                     by {action.bonus_amount}
                                 </li>
-                                {"status" in action && (action.status ?? 0 > 0) && (
+                                {"status" in action && ((action.status ?? 0) > 0) && (
                                     <li>
                                         Grants<b>{" "}
                                         {
