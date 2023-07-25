@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-Medic's respectable voyage MED is paired with two trickier skill combos to give him 8+ hour staying power in the face of a sinking overall score. Boasting multiple Paris events in each calendar year, this particular variant has also struck big bonus feature gold four times, making a MED skill that sometimes struggles to find shuttle seating a high-impact tool. With the advent of the Costume Party collection, Tom slows his value slide caused by sinking ranks and ends up being a well-rounded super rare with something to offer everyone.
+Once upon a time, Paris’ Voyage and Shuttle ability was prettier to look at than Betty Grable’s gams, but nobody beats Father Time, especially with naught but a Colt M1911.
+
+Power creep’s wake hasn’t left much of note beyond a crazy number of big bonus event features. There’s a realistic chance that new players will be able to fuse him up from an event in which case he’d be aces on your roster, but be prepared to freeze him as even unfused Legendary crew begin to edge him out of service. Hang on Brigitte, Bobby’s comin’ home.
