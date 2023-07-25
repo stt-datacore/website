@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-If it wasn’t for his spot in the Ferengi collection and blue suede shoes, Quark’s usefulness would be relegated to Nightmare Mode players. But we try to be more forward thinking around here and his devious smattering of traits keep the door cracked open for more collection value down the line.
-
-The green light shuttle and voyage metrics will be of interest to those aforementioned masochists, but are too easily outclassed by higher rarity options for the rest of us. Requiring a couple handfuls of faction items to immortalize, feel free to airlock this Quark a few times until you have the spare replicator uses to clear him from your active roster.
+Thanks to the addition of the Gambler Collection, Quark’s usefulness is at an all-time high. Young rosters (and Nightmare Mode players) will love his Shuttle and Voyage metrics, but like all Common crew these are easily outclassed by higher rarity options as time goes on. Requiring a couple handfuls of faction items to Immortalize, he may be a bit expensive early on, but keep an open mind whenever you see him show up!
