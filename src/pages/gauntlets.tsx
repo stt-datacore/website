@@ -301,7 +301,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.initData();
 	}
 
-	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[]) => {
+	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
 		let rmap = crew.map((item) => Object.keys(item.ranks));
 		let ranks = [] as string[];
 		ranks.push('');
@@ -312,6 +312,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 			}
 		}
+
+		ranks.sort((a, b) => {
+			if (featuredSkill) {
+				let ak = a.includes(featuredSkill);
+				let bk = b.includes(featuredSkill);
+
+				if (ak != bk) {
+					if (ak) return -1;
+					else return 1;
+				}
+			}
+
+			return a.localeCompare(b);
+		})
 		return ranks;
 	}
 
@@ -356,7 +370,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
 					else if (!c) crew.rarity = 0;
 					
-					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					if (!crew.immortal || crew.immortal < 0) {
+						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					}
+					
 					crew.pairs = getPlayerPairs(crew);
 
 					return crew;
@@ -496,11 +513,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private changeGauntlet = (date: string, unique?: boolean) => {
 		if (unique) {
 			const g = this.state.uniques?.find((g) => g.date === date);
-			this.updatePaging(undefined, g, 3);
+			this.updatePaging(false, undefined, g, 3);
 			}
 		else {
 			const g = this.state.gauntlets?.find((g) => g.date === date);
-			this.updatePaging(g);
+			this.updatePaging(false, g);
 		}
 	}
 
@@ -509,11 +526,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const gauntlets = [today, yesterday, activePrevGauntlet, browsingGauntlet];
 
 		pair ??= 'none';
-		this.updatePaging(undefined, gauntlets[idx], idx, pair);
+		this.updatePaging(false, undefined, gauntlets[idx], idx, pair);
 	}
 
-	private readonly updatePaging = (newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string) => {
+	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string) => {
 		const { today, yesterday, activePrevGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
+
 		let newBrowseGauntlet: Gauntlet | undefined = undefined;
 		let newToday: Gauntlet | undefined = undefined;
 		let newYesterday: Gauntlet | undefined = undefined;
@@ -522,16 +540,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		else if (replaceIndex === 1) newYesterday = replaceGauntlet;
 		else if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
 		else if (replaceIndex === 3) newBrowseGauntlet = replaceGauntlet;
-			
-		if (replaceGauntlet) {
-			this.getGauntletCrew(replaceGauntlet, replaceRank);
-		}
 		
-		if (newSelGauntlet && replaceGauntlet !== newSelGauntlet) {
-			this.getGauntletCrew(newSelGauntlet);
+		if (!preSorted && newSelGauntlet) {
+			this.getGauntletCrew(newSelGauntlet, replaceRank);
 		}
-		else if (newBrowseGauntlet && replaceGauntlet !== newBrowseGauntlet) {
-			this.getGauntletCrew(newBrowseGauntlet);			
+		else if (!preSorted && newBrowseGauntlet) {
+			this.getGauntletCrew(newBrowseGauntlet, replaceRank);			
+		}
+		else if (!preSorted && replaceGauntlet) {
+			this.getGauntletCrew(replaceGauntlet, replaceRank);			
 		}
 		
 		let apidx = this.state.activePageIndexTab;
@@ -542,6 +559,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (replaceIndex !== undefined && replaceIndex === idx) {
 				day = replaceGauntlet;
 				rankByPair[replaceIndex] = replaceRank ?? 'none';
+				if (rankByPair[replaceIndex] !== 'none') {
+					sortDirection[replaceIndex] = undefined;
+					sortKey[replaceIndex] = '';
+				}
 			}
 
 			if (!day) return;
@@ -587,10 +608,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	]
 
 	private columnClick = (key: string, tabidx: number) => {
-		const { today, yesterday, activePrevGauntlet, sortDirection, sortKey } = this.state;
-		const pages = [today, yesterday, activePrevGauntlet];
+		const { today, yesterday, activePrevGauntlet, browsingGauntlet, sortDirection, sortKey, rankByPair } = this.state;
+		const pages = [today, yesterday, activePrevGauntlet, browsingGauntlet];
 
 		if (tabidx in pages && pages[tabidx]) {
+
+			rankByPair[tabidx] = 'none';
 
 			const page = pages[tabidx] ?? {} as Gauntlet;
 			const prettyTraits = page?.prettyTraits;
@@ -732,7 +755,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 			}
 
-			this.updatePaging(undefined, { ...page, matchedCrew: newarr }, tabidx);
+			this.updatePaging(true, undefined, { ...page, matchedCrew: newarr }, tabidx, 'none');
 		}
 	}
 
@@ -840,6 +863,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 													/>
 											</CrewTarget>
+											{crew.immortal > 0 && 
+												<div style={{
+													marginTop: "-16px",
+													color: "white",
+													display: "flex",
+													flexDirection: "row",
+													justifyContent: "flex-end"
+													}}>
+													<i className="snowflake icon" />
+												</div>}
 										</div>
 										<div style={{ gridArea: 'stats' }}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>

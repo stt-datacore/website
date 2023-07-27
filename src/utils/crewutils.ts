@@ -504,6 +504,24 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 // 	return avg;
 // }
 
+export function rankToSkill(rank: string) {
+	if (rank === "CMD") return "command_skill";
+	else if (rank === "SEC") return "security_skill";
+	else if (rank === "DIP") return "diplomacy_skill";
+	else if (rank === "SCI") return "science_skill";
+	else if (rank === "MED") return "medicine_skill";
+	else if (rank === "ENG") return "engineering_skill";
+}
+
+export function skillToRank(skill: string) {
+	if (skill.includes("command")) return "CMD";
+	else if (skill.includes("security")) return "SEC";
+	else if (skill.includes("diplomacy")) return "DIP";
+	else if (skill.includes("science")) return "SCI";
+	else if (skill.includes("medicine")) return "MED";
+	else if (skill.includes("engineering")) return "ENG";
+}
+
 export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {
 	let an = 0;
 	let bn = 0;
@@ -531,7 +549,7 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 		range_max: 0,
 		range_min: 0
 	} as Skill;
-
+	
 	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
