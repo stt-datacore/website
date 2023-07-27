@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Pel's a crew you might have to do a double take for to find the value. Her plus trait set bore fruit in the form of Costume Party and it's giant 100 threshold bonuses as well as her first mega; Costumed. Besides that speculative event work (including two big bonus features) and nice-to-have collections, She's also great for an episode 4 DIP node unlock to allow you access to the best mission for rare polyalloys.
+Hmm. Yes. I find it fascinating that her family chose to drop the suffix Orton from her surname. It was my understanding that Pel Orton is a more noble appellation than simply Pel. Perhaps the recent Arkarian trend toward a more egalitarian society is partly responsible, eh? *Slaps back far too hard*
 
-Adding breadth to this two-skiller is an arena offering that's similar to Ardra with comparable numbers in some metrics save an admittedly large drop in crit bonus. With offerings for rosters young and old, don't let the lack of a third skill or undersized lobes turn you off from a crew that you should be happy to add stars to.
+For an old two-skiller, there’s a bit more here than one might assume. Pel’s reasonable trait lineup offers her more event chances than past history might suggest and there is certainly no lack of DIP and CMD shuttle seats. Traits also power the only attribute which matters to most veterans perusing the Super Rare ranks: collections. Offering an early game, niche arena ability as well, Pel has avenues to contribute, but certainly doesn’t bring anything irreplaceable to the table.
