@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-This Cheekoof is realistically just a collection piece. We're obligated to mention "events" and "SEC/SCI", but with power levels in the basement, he's almost always a freeze and forget past the six month mark.
+This Cheekoof is realistically just a low end collection piece. We're obligated to mention events as a second point of interest, but with power levels in the basement and Walt a forgotten man, he's almost always an instant freeze and forget Ron Popeil special.
