@@ -7,7 +7,7 @@ bigbook_tier: 4
 events: 11
 in_portal:
 date: 27/07/2023
-obtained:
+obtained: Giveaway
 mega: false
 published: true
 ---
