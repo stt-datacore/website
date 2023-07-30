@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 4
-events: 21
+events: 22
 in_portal:
 date: 17/04/2023
 obtained: Campaign
