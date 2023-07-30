@@ -848,6 +848,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                         />
                         {usableFilter !== "frozen" && (
                             <Form.Field
+								style={{width:"17em"}}							
                                 placeholder="Roster maintenance"
                                 control={Dropdown}
                                 clearable
