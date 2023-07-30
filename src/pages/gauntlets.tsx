@@ -1105,8 +1105,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	}
 
-	renderPreviousGauntlets(browsing?: boolean) {
-
+	renderPreviousGauntlets(browsing?: boolean, searching?: boolean) {
 		const { activePrevGauntlet, browsingGauntlet, gauntlets, uniques } = this.state;
 
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
@@ -1137,12 +1136,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}}>
 					<h1>{browsing ? "Browse" : "Previous"} Gauntlets</h1>
 
-					<div style={{
-						display: "flex",
+					<div style={{						
+						display: "flex",						
 						flexDirection: "column"
 					}}>
-						<Dropdown 
+						<Dropdown
 							scrolling
+							clearable={searching}
+							selection={searching}
+							search={searching}
 							options={gauntOpts}
 							value={browsing ? (browsingGauntlet?.date ?? "g_0") : (activePrevGauntlet?.date ?? "")}
 							onChange={(e, { value }) => this.changeGauntlet(value as string, browsing ? true : false)}
@@ -1176,7 +1178,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			},
 			{
 				menuItem: isMobile ? "Browse" : "Browse Gauntlets",
-				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets(true)}</div>
+				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets(true, true)}</div>
 			}
 
 		]
