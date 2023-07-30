@@ -98,15 +98,16 @@ class StatLabel extends Component<StatLabelProps> {
 
 type CommonCrewDataProps = {
 	crew: CrewMember | PlayerCrew;
-	markdownRemark: any;
+	markdownRemark?: any;
 	compact?: boolean;
+	ultraCompact?: boolean;
 	crewDemands?: any;
 	roster?: PlayerCrew[];
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
 	render() {
-		const { markdownRemark, crew, compact, crewDemands, roster } = this.props;
+		const { markdownRemark, crew, compact, crewDemands, roster, ultraCompact } = this.props;
 
 		let panels = [
 			{
@@ -129,7 +130,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 		return (
 			<React.Fragment>
-				{compact ? (
+				{!ultraCompact &&
+				((compact) ? (
 					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center"}}>
 					<Segment>
 						<Grid columns={2}>
@@ -216,7 +218,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							}
 						</div>
 						</Segment>
-					)}
+					))}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
 					<Accordion
@@ -280,12 +282,12 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 				}
 
-				{compact && (
+				{(compact && !ultraCompact) && (
 					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
 						<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-						{markdownRemark.frontmatter.events !== null && (
+						{markdownRemark && markdownRemark.frontmatter.events !== null && (
 							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
 					</div>
