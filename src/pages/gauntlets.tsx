@@ -40,7 +40,7 @@ const SKILLS = {
 
 const GauntletsPage = () => {	
 	return (
-		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']} clone={['crew']}>
+		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
 			<GauntletsPageComponent />
 		</DataWrapper>
 	);

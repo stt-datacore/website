@@ -16,13 +16,17 @@ const PlayerMenu = () => {
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			Global player data: {playerData.loaded ? playerData.playerData?.player.character.display_name : 'Not loaded'}
-			{playerData.loaded && (
-				<span style={{ marginLeft: '1em' }}>
-					<Button compact onClick={() => playerData.reset && playerData.reset()}>Clear</Button>
-				</span>
-			)}
-			{!playerData.loaded && <PlayerInputForm setValidInput={playerData.setInput} />}
+			{!playerData.loaded && <PlayerInputForm setValidInput={playerData.setInput} />
+			|| 
+			<div>
+				Global player data: {playerData.loaded ? playerData.playerData?.player.character.display_name : 'Not loaded'}
+				{playerData.loaded && (
+					<span style={{ marginLeft: '1em' }}>
+						<Button compact onClick={() => playerData.reset && playerData.reset()}>Clear</Button>
+					</span>
+				)}
+			</div>
+			}
 		</div>
 	);
 };

@@ -301,8 +301,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		);
 	};
 
-	if (!varsReady)
-		return (<PlayerToolsLoading />);
+	// if (!varsReady)
+	// 	return (<PlayerToolsLoading />);
 
 	const PlayerLevelProgress = () => {
 		const endingValue = playerData.player.character.xp_for_next_level - playerData.player.character.xp_for_current_level;

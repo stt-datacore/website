@@ -505,7 +505,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			}
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
-					allCrew={context.allCrew}
+					allCrew={context.crew}
 					playerData={context.playerData}
 					targetGroup='voyageLineup'
 					setHoverItem={setHoverCrew}

@@ -90,7 +90,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	}
 
 	componentDidUpdate() {
-		const crewReady = this.context?.allCrew?.length !== 0;
+		const crewReady = this.context?.crew?.length !== 0;
 		const keystonesReady = !!this.context?.keystones;
 		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
 
