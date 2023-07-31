@@ -74,8 +74,9 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 	};
 
 	const SeatAssignmentPicker = () => {
-		const { shuttleId, seatNum } = editAssignment;
-		if (!seatNum || !shuttleId) return <></>;
+		if (editAssignment.seatNum === undefined || editAssignment.shuttleId === undefined) return <></>;
+		const seatNum = editAssignment.seatNum;
+		const shuttleId = editAssignment.shuttleId;
 
 		const [paginationPage, setPaginationPage] = React.useState(1);
 		const seat = shuttlers?.shuttles?.find(shuttle => shuttle.id === shuttleId)?.seats[seatNum];
@@ -219,7 +220,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 		function cycleShuttleSeat(): void {
 			const nextAssignment = {
 				shuttleId: shuttleId as string,
-				seatNum: (seatNum ?? 0 + 1 >= (shuttle?.seats?.length ? 0 : seatNum ?? 0 + 1)) as number
+				seatNum: (seatNum + 1) >= (shuttle?.seats?.length ?? 0) ? 0 : seatNum + 1
 			};
 			setEditAssignment(nextAssignment);
 		}
@@ -285,7 +286,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			{editAssignment && (<SeatAssignmentPicker />)}
+			{editAssignment.shuttleId && (<SeatAssignmentPicker />)}
 		</React.Fragment>
 	);
 

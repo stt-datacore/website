@@ -582,7 +582,7 @@ const InputCrewExcluder = (props: InputCrewExcluderProps) => {
 
 	function populatePlaceholders(): void {
 		const options = { initialized: false, list: [] } as GameWorkerOptions;
-		if (props.excludedCrew?.length ?? 0 > 0) {
+		if ((props.excludedCrew?.length ?? 0) > 0) {
 			let crewList = [...props.myCrew];
 			if (!props.showFrozen) crewList = crewList.filter(c => c.immortal <= 0);
 			options.list = crewList.filter(c => props.excludedCrew?.includes(c.id)).map(c => {

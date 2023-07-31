@@ -22,6 +22,7 @@ import { MergedContext } from '../context/mergedcontext';
 import { formatTierLabel, crewCopy } from '../utils/crewutils';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../components/base/optionsmodal_base';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+import CommonCrewData from '../components/commoncrewdata';
 
 type BeholdsPageProps = {
 	location: any;
@@ -136,7 +137,8 @@ type CrewDetailsProps = {
 };
 
 const CrewDetails = (props: CrewDetailsProps) => {
-	const { selectedCrew } = props;
+	const { selectedCrew } = props;	
+	const context = React.useContext(MergedContext);
 
 	const data = [] as (CrewMember | PlayerCrew)[];
 	selectedCrew.forEach(symbol => {
@@ -160,7 +162,8 @@ const CrewDetails = (props: CrewDetailsProps) => {
 					style={{ 
 						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '32%', 
 						//width: "100%"
-						margin: "0 0.5em 0 0", marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : undefined 
+						margin: "0 0.5em 0 0", 
+						marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : (idx === data.length - 1 ? '13px': undefined)
 						}}
 						>
 					<CrewPresenter
@@ -172,6 +175,11 @@ const CrewDetails = (props: CrewDetailsProps) => {
 						storeName='behold'
 						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
 						crew={crew} />
+					<CommonCrewData 
+						ultraCompact={true}
+						roster={context.allCrew}
+						compact={true}
+						crew={crew}  />
 					{crew.markdownContent && <div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} />}
 					<div style={{ marginTop: '1em', textAlign: 'right' }}>
 						<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>

@@ -127,15 +127,16 @@ class StatLabel extends Component<StatLabelProps> {
 
 type CommonCrewDataProps = {
 	crew: CrewMember | PlayerCrew;
-	markdownRemark: any;
+	markdownRemark?: any;
 	compact?: boolean;
+	ultraCompact?: boolean;
 	crewDemands?: any;
 	roster?: PlayerCrew[];
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
 	render() {
-		const { markdownRemark, crew, compact, crewDemands, roster } = this.props;
+		const { markdownRemark, crew, compact, crewDemands, roster, ultraCompact } = this.props;
 
 		let panels = [
 			{
@@ -169,60 +170,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 		return (
 			<React.Fragment>
-				{compact ? (
-					<div
-						style={{
-							display: "flex",
-							width: "100%",
-							flexDirection: "row",
-							justifyContent: "space-evenly",
-							alignItems: "center",
-						}}
-					>
-						<Segment>
-							<Grid columns={2}>
-								<Grid.Column width={4}>
-									<Image
-										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
-										size="tiny"
-									/>
-								</Grid.Column>
-								<Grid.Column width={12}>
-									<CrewStat
-										skill_name="security_skill"
-										data={crew.base_skills.security_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-									<CrewStat
-										skill_name="command_skill"
-										data={crew.base_skills.command_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-									<CrewStat
-										skill_name="diplomacy_skill"
-										data={crew.base_skills.diplomacy_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-									<CrewStat
-										skill_name="science_skill"
-										data={crew.base_skills.science_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-									<CrewStat
-										skill_name="medicine_skill"
-										data={crew.base_skills.medicine_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-									<CrewStat
-										skill_name="engineering_skill"
-										data={crew.base_skills.engineering_skill}
-										scale={compact ? 0.75 : 1}
-									/>
-								</Grid.Column>
-							</Grid>
-						</Segment>
-					</div>
-				) : (
+				{!ultraCompact &&
+				((compact) ? (
+					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center"}}>
 					<Segment>
 						<div
 							style={{
@@ -278,8 +228,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								/>
 							)}
 						</div>
-					</Segment>
-				)}
+						</Segment>
+					))}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
 					<Accordion
@@ -367,16 +317,13 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					</div>
 				)}
 
-				{compact && (
-					<div style={{ textAlign: "center" }}>
+				{(compact && !ultraCompact) && (
+					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
 						<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-						{markdownRemark.frontmatter.events !== null && (
-							<StatLabel
-								title="Events"
-								value={markdownRemark.frontmatter.events}
-							/>
+						{markdownRemark && markdownRemark.frontmatter.events !== null && (
+							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
 					</div>
 				)}

@@ -299,8 +299,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					else if (crew.max_rarity === 3) {
 						h += 100;
 					}
-					else {
+					else if (crew.max_rarity === 2) {
 						h += 50;
+					}
+					else {
+						h += 25;
 					}
 				}
 			}	
@@ -379,7 +382,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					if (c.rarity < c.max_rarity)
 						return '(Fusable)';
 
-				return  owned?.length ?? 0 > 0 ? '(Duplicate)' : '(Unowned)';
+				return  (owned?.length ?? 0) > 0 ? '(Duplicate)' : '(Unowned)';
 			},
 			itemsOwned,
 			item => '',

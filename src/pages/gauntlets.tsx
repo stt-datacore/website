@@ -86,6 +86,8 @@ export interface GauntletsPageState {
 	sortKey: string[];
 	sortDirection: ('ascending' | 'descending' | undefined)[];
 
+	discoveredPairs: string[][];
+	rankByPair: string[];
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -108,11 +110,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const v4 = this.tiny.getValue<GauntletViewMode>('viewMode_3', 'table') ?? 'table';
 		
 		this.state = {
-			sortKey: ['', '', ''],
+			sortKey: ['', '', '', ''],
 			sortDirection: [undefined, undefined, undefined, undefined],
 			hoverCrew: undefined,
 			itemsPerPage: 10,
 			activePageTabs: [[], [], [], []],
+			discoveredPairs: [[], [], [], []],
+			rankByPair: ['none', 'none', 'none', 'none'],
 			totalPagesTab: [0, 0, 0, 0],
 			activePageIndexTab: [0, 0, 0, 0],
 			itemsPerPageTab: [10, 10, 10, 10],
@@ -267,7 +271,37 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.initData();
 	}
 
-	readonly getGauntletCrew = (gauntlet: Gauntlet) => {
+	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
+		let rmap = crew.map((item) => Object.keys(item.ranks));
+		let ranks = [] as string[];
+		ranks.push('');
+		for (let rc of rmap) {
+			for (let rank of rc) {
+				if (rank.startsWith("G_") && !ranks.includes(rank)) {
+					ranks.push(rank);
+				}
+			}
+		}
+
+		ranks.sort((a, b) => {
+			if (featuredSkill) {
+				let ak = a.includes(featuredSkill);
+				let bk = b.includes(featuredSkill);
+
+				if (ak != bk) {
+					if (ak) return -1;
+					else return 1;
+				}
+			}
+
+			return a.localeCompare(b);
+		})
+		return ranks;
+	}
+
+	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string) => {
+		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
+
 		const { crew: allCrew, buffConfig, maxBuffs } = this.context;
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
@@ -277,13 +311,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 		const matchedCrew =
 			allCrew.filter(e => e.max_rarity > 3 && (
-				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 650) ||
+				(!rankByPair || (rankByPair in e.ranks)) &&
+				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 500) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+					
 					if (buffConfig) {
 						applyCrewBuffs(crew, buffConfig);
 					}
+
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 					
 					if (c) {
@@ -303,12 +340,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
 					else if (!c) crew.rarity = 0;
 					
-					crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					if (!crew.immortal || crew.immortal < 0) {
+						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					}
+					
 					crew.pairs = getPlayerPairs(crew);
 
 					return crew;
 				})
 				.sort((a, b) => {
+
+					if (rankByPair) {
+						return a.ranks[rankByPair] - b.ranks[rankByPair];
+					}
+
 					let r = 0;
 
 					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
@@ -371,7 +416,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		for (let q of qmaps) {
 			let qparse = uniques.find(x => x.contest_data && JSON.stringify(x.contest_data) === q);
 			if (qparse) {
-				qparse = JSON.parse(JSON.stringify(qparse));
+				qparse = JSON.parse(JSON.stringify(qparse)) as Gauntlet;
 				qparse.template = true;
 				pass2.push(qparse);
 			} 
@@ -437,36 +482,56 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private changeGauntlet = (date: string, unique?: boolean) => {
 		if (unique) {
 			const g = this.state.uniques?.find((g) => g.date === date);
-			this.updatePaging(undefined, g, 3);
+			this.updatePaging(false, undefined, g, 3);
 			}
 		else {
 			const g = this.state.gauntlets?.find((g) => g.date === date);
-			this.updatePaging(g);
+			this.updatePaging(false, g);
 		}
 	}
 
-	private readonly updatePaging = (newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number) => {
+	private changeRankPair = (idx: number, pair?: string) => {
 		const { today, yesterday, activePrevGauntlet, sortKey, sortDirection, browsingGauntlet } = this.state;
+		const gauntlets = [today, yesterday, activePrevGauntlet, browsingGauntlet];
+
+		pair ??= 'none';
+		this.updatePaging(false, undefined, gauntlets[idx], idx, pair);
+	}
+
+	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string) => {
+		const { today, yesterday, activePrevGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
+
 		let newBrowseGauntlet: Gauntlet | undefined = undefined;
+		let newToday: Gauntlet | undefined = undefined;
+		let newYesterday: Gauntlet | undefined = undefined;
 
-		if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
+		if (replaceIndex === 0) newToday = replaceGauntlet;
+		else if (replaceIndex === 1) newYesterday = replaceGauntlet;
+		else if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
 		else if (replaceIndex === 3) newBrowseGauntlet = replaceGauntlet;
-
-		if (newSelGauntlet) {
-			this.getGauntletCrew(newSelGauntlet);
+		
+		if (!preSorted && newSelGauntlet) {
+			this.getGauntletCrew(newSelGauntlet, replaceRank);
 		}
-
-		if (newBrowseGauntlet) {
-			this.getGauntletCrew(newBrowseGauntlet);
+		else if (!preSorted && newBrowseGauntlet) {
+			this.getGauntletCrew(newBrowseGauntlet, replaceRank);			
+		}
+		else if (!preSorted && replaceGauntlet) {
+			this.getGauntletCrew(replaceGauntlet, replaceRank);			
 		}
 		
 		let apidx = this.state.activePageIndexTab;
 		let pcs = [0, 0, 0, 0];
 		let aptabs = [[], [], [], []] as (PlayerCrew | CrewMember)[][];
 
-		[today, yesterday, newSelGauntlet ?? activePrevGauntlet, newBrowseGauntlet ?? browsingGauntlet].forEach((day, idx) => {
+		[newToday ?? today, newYesterday ?? yesterday, newSelGauntlet ?? activePrevGauntlet, newBrowseGauntlet ?? browsingGauntlet].forEach((day, idx) => {
 			if (replaceIndex !== undefined && replaceIndex === idx) {
 				day = replaceGauntlet;
+				rankByPair[replaceIndex] = replaceRank ?? 'none';
+				if (rankByPair[replaceIndex] !== 'none') {
+					sortDirection[replaceIndex] = undefined;
+					sortKey[replaceIndex] = '';
+				}
 			}
 
 			if (!day) return;
@@ -486,6 +551,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.inited = true;
 
 		this.setState({ ... this.state,
+			rankByPair: [...rankByPair],
 			activePageTabs: aptabs,
 			totalPagesTab: pcs,
 			activePageIndexTab: apidx,
@@ -511,10 +577,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	]
 
 	private columnClick = (key: string, tabidx: number) => {
-		const { today, yesterday, activePrevGauntlet, sortDirection, sortKey } = this.state;
-		const pages = [today, yesterday, activePrevGauntlet];
+		const { today, yesterday, activePrevGauntlet, browsingGauntlet, sortDirection, sortKey, rankByPair } = this.state;
+		const pages = [today, yesterday, activePrevGauntlet, browsingGauntlet];
 
 		if (tabidx in pages && pages[tabidx]) {
+
+			rankByPair[tabidx] = 'none';
 
 			const page = pages[tabidx] ?? {} as Gauntlet;
 			const prettyTraits = page?.prettyTraits;
@@ -656,7 +724,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 			}
 
-			this.updatePaging(undefined, { ...page, matchedCrew: newarr }, tabidx);
+			this.updatePaging(true, undefined, { ...page, matchedCrew: newarr }, tabidx, 'none');
 		}
 	}
 
@@ -764,6 +832,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 													/>
 											</CrewTarget>
+											{crew.immortal > 0 && 
+												<div style={{
+													marginTop: "-16px",
+													color: "white",
+													display: "flex",
+													flexDirection: "row",
+													justifyContent: "flex-end"
+													}}>
+													<i className="snowflake icon" />
+												</div>}
 										</div>
 										<div style={{ gridArea: 'stats' }}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
@@ -810,8 +888,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
-		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes } = this.state;
+
+		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair } = this.state;
+
 		if (!gauntlet) return undefined;
+
+		const pairs = this.discoverPairs(gauntlet.matchedCrew ?? [])
+				.map((pair) => {
+					let pf = pair === '' ? 'none' : pair;
+					let pn = pair === '' ? '' : pair.slice(2).replace("_", "/");
+
+					return {
+						key: pf,
+						value: pf,
+						text: pn == '' ? 'None' : pn
+					}
+				});
 
 		const prettyDate = !gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "";
 		const displayOptions = [{
@@ -866,19 +958,42 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<h2 style={{fontSize:"2em", margin: "0.25em 0"}}>
 						{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
 					</h2>
-					<div style={{
-						display: "flex",
-						flexDirection: "column",
-						textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
-					}}>
-					<h4><b>View Mode</b></h4>
 
-					<Dropdown
-						direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
-						options={displayOptions}
-						value={viewModes[idx]}
-						onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
-						/>
+					<div style={{
+						display:"flex",
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+					}}>
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							marginRight: "2em",
+							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+						}}>
+						<h4><b>Rank By Pair</b></h4>
+
+						<Dropdown
+							direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+							options={pairs}
+							value={rankByPair[idx]}
+							onChange={(e, { value }) => this.changeRankPair(idx, value as string)}
+							/>
+						</div>
+
+
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+						}}>
+						<h4><b>View Mode</b></h4>
+
+						<Dropdown
+							direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+							options={displayOptions}
+							value={viewModes[idx]}
+							onChange={(e, { value }) => this.setViewMode(idx, value as (GauntletViewMode))}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -959,8 +1074,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	}
 
-	renderPreviousGauntlets(browsing?: boolean) {
-
+	renderPreviousGauntlets(browsing?: boolean, searching?: boolean) {
 		const { activePrevGauntlet, browsingGauntlet, gauntlets, uniques } = this.state;
 
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
@@ -991,12 +1105,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}}>
 					<h1>{browsing ? "Browse" : "Previous"} Gauntlets</h1>
 
-					<div style={{
-						display: "flex",
+					<div style={{						
+						display: "flex",						
 						flexDirection: "column"
 					}}>
-						<Dropdown 
+						<Dropdown
 							scrolling
+							clearable={searching}
+							selection={searching}
+							search={searching}
 							options={gauntOpts}
 							value={browsing ? (browsingGauntlet?.date ?? "g_0") : (activePrevGauntlet?.date ?? "")}
 							onChange={(e, { value }) => this.changeGauntlet(value as string, browsing ? true : false)}
@@ -1030,7 +1147,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			},
 			{
 				menuItem: isMobile ? "Browse" : "Browse Gauntlets",
-				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets(true)}</div>
+				render: () => <div style={{fontSize: fs}}>{this.renderPreviousGauntlets(true, true)}</div>
 			}
 
 		]

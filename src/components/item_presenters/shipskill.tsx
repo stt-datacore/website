@@ -139,6 +139,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                     flexDirection: "row",
                                     justifyContent: "space-between",
                                     alignItems:  "center",
+                                    flexWrap: "wrap"
                                 }}
                             >
                                 <h4 style={{ marginBottom: ".25em", maxWidth: "72%", fontSize: "1.25em" }}>
@@ -206,7 +207,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                     }{" "}
                                     by {action.bonus_amount}
                                 </li>
-                                {"status" in action && (action.status ?? 0 > 0) && (
+                                {"status" in action && ((action.status ?? 0) > 0) && (
                                     <li>
                                         Grants<b>{" "}
                                         {
