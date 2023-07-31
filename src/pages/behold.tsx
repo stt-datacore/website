@@ -163,7 +163,7 @@ const CrewDetails = (props: CrewDetailsProps) => {
 						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '32%', 
 						//width: "100%"
 						margin: "0 0.5em 0 0", 
-						marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : (idx === data.length - 1 ? '13px': undefined)
+						marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : (idx === data.length - 1 ? '1em': undefined)
 						}}
 						>
 					<CrewPresenter
