@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-This laughing Vulcan and his dog is having a chuckle at how many pies he's stuck his fingers into. Despite insufficient power in almost every area, his skill set affords him some early game possibilties in the realms of voyage and gauntlet, while the Tuvok brand name and associated traits might earn a SCI base that only barely peaks over 800 with full bonuses the occasional cryo reprieve for Faction event work.
-
-Despite being generally ineffectual for actual use, Tuvok's multi-faceted ability means that the odds are good some rosters will find work for him, though a pair of strong collections is really all the justification you need to behold and immortalize.
+This laughing Vulcan and his dog are having a chuckle at how many pies he's stuck his fingers into.  Tuvok Shakur, as he is affectionately known, has found himself passed by in terms of daily use with the exception of clearing nodes in Fleet Boss Battles due to his myriad of Traits.  These Traits have also given him lasting game value with four stat-boosting Collections, plus the off chance of one to two more in the recent future.  Very new players may find use for him in Gauntlet, and his ship ability does include a hunk of Crit Bonus, so he’s still an appetizing choice in Beholds.
