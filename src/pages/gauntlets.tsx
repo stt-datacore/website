@@ -96,6 +96,7 @@ export interface GauntletsPageState {
 	gauntlets: Gauntlet[];
 	uniques: Gauntlet[];
 	ranges: number[];
+	tops: number[];
 
 	activePageTabs: (PlayerCrew | CrewMember)[][];
 
@@ -150,6 +151,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const r3 = this.tiny.getValue('gauntletRangeMax_2', 500) ?? 500;
 		const r4 = this.tiny.getValue('gauntletRangeMax_3', 500) ?? 500;
 		
+		const t1 = this.tiny.getValue('gauntletTops_0', 10) ?? 10;
+		const t2 = this.tiny.getValue('gauntletTops_1', 10) ?? 10;
+		const t3 = this.tiny.getValue('gauntletTops_2', 10) ?? 10;
+		const t4 = this.tiny.getValue('gauntletTops_3', 10) ?? 10;
+		
 		this.state = {
 			sortKey: ['', '', '', ''],
 			sortDirection: [undefined, undefined, undefined, undefined],
@@ -162,6 +168,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			ranges: [r1, r2, r3, r4],
 			activePageIndexTab: [0, 0, 0, 0],
 			itemsPerPageTab: [10, 10, 10, 10],
+			tops: [t1, t2, t3, t4],
 			filteredCrew: [[], [], [], []],
 			viewModes: [v1, v2, v3, v4],
 			gauntlets: [],
@@ -263,6 +270,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 	}
 
+	protected getTops(index: number) {
+		return this.state.tops[index];
+	}
+
+	protected setTops(index: number, newtop: number) {
+		if (this.state.tops[index] != newtop) {
+			let vm = [ ... this.state.ranges ];
+			vm[index] = newtop;
+			this.tiny.setValue('gauntletTops_' + index, newtop, true);
+			this.setState({ ... this.state, tops: vm });
+		}
+	}
 
 	protected getViewMode(index: number) {
 		return this.state.viewModes[index];
@@ -358,10 +377,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return ranks;
 	}
 
-	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
+	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string, top?: number) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
-
+		const ptop = top ?? 10;
 		const pairGroups = [] as PairGroup[];
 
 		for (let pair of pairs) {
@@ -370,7 +389,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let rpairs = pair.replace("G_", "").split("_");			
 			pairGroups.push({
 				pair: rpairs,
-				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= 10)).map(d => d as PlayerCrew).sort((a, b) => a.ranks[rank] - b.ranks[rank])
+				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop)).map(d => d as PlayerCrew).sort((a, b) => a.ranks[rank] - b.ranks[rank])
 			});
 		}
 		pairGroups.sort((a, b) =>{
@@ -1004,7 +1023,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
 
-		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair } = this.state;
+		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops } = this.state;
 
 		if (!gauntlet) return undefined;
 
@@ -1089,7 +1108,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<h4 style={{marginRight:"0.5em"}}><b>Minimum Proficiency Max:&nbsp;</b></h4>
 
 						<Dropdown							
-							style={{textAlign: "right"}}
+							style={{
+								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+							}}
 							direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
 							options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o }})} 
 							value={this.getRangeMax(idx)} 
@@ -1125,6 +1146,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								options={pairs}
 								value={rankByPair[idx]}
 								onChange={(e, { value }) => this.changeRankPair(idx, value as string)}
+								/>
+							</div>
+						</>}
+						{viewModes[idx] === 'pair_cards' && <>
+							<div style={{
+								display: "flex",
+								flexDirection: "column",
+								marginRight: "2em",
+								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+							}}>
+							<h4><b>Show Top Crew</b></h4>
+
+							<Dropdown
+								style={{
+									textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+								}}
+								direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+								options={[1, 2, 3, 4, 5, 10, 15, 20, 50].map(o =>{ return { text: "Top " + o, key: o, value: o } })}
+								value={tops[idx]}
+								onChange={(e, { value }) => this.setTops(idx, value as number)}
 								/>
 							</div>
 						</>}
@@ -1225,7 +1266,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexWrap: "wrap"
 				}}>
 
-					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet.contest_data?.featured_skill).map((pairGroup, pk) => {
+					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
 						return (<div 
 							key={pk}
 							style={{
