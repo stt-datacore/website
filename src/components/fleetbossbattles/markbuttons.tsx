@@ -155,7 +155,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					<ItemDisplay
 						crewSymbol={crew.symbol}
 						targetGroup='fbb'
-						allCrew={context.allCrew}
+						allCrew={context.crew}
 						playerData={context.playerData}
 						setHoverItem={groupsContext.setHoverCrew}
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
