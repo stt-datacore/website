@@ -15,14 +15,15 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, getPlayerPairs, getSkills, navToCrewPage, prepareOne, prepareProfileData } from '../utils/crewutils';
+import { applyCrewBuffs, comparePairs, getPlayerPairs, getSkills, gradeToColor, isImmortal, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+import ItemDisplay from '../components/itemdisplay';
 
-export type GauntletViewMode = 'big' | 'small' | 'table';
+export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 const isWindow = typeof window !== 'undefined';
 
 const SKILLS = {
@@ -76,6 +77,10 @@ const GauntletsPage = () => {
 	);
 
 }
+export interface PairGroup {
+	pair: string[];
+	crew: PlayerCrew[]
+};
 
 export interface GauntletsPageProps {
 }
@@ -327,6 +332,24 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			return a.localeCompare(b);
 		})
 		return ranks;
+	}
+
+	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
+		const pairs = this.discoverPairs(crew, featuredSkill);
+
+		const pairGroups = [] as PairGroup[];
+
+		for (let pair of pairs) {
+			if (pair === '') continue;
+			let rank = pair;
+			let rpairs = pair.replace("G_", "").split("_");
+			pairGroups.push({
+				pair: rpairs,
+				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= 10)).map(d => d as PlayerCrew).sort((a, b) => a.ranks[rank] - b.ranks[rank])
+			});
+		}
+
+		return pairGroups;
 	}
 
 	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string) => {
@@ -759,10 +782,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 	}
 
-	private formatPair(pair: Skill[]): JSX.Element {
+	readonly getSkillUrl = (skill: string | Skill): string => {
+		let skilluse: string | undefined = undefined;
+				
+		if (typeof skill === 'string' && skill.length === 3 && skill.toUpperCase() === skill) {
+			skilluse = rankToSkill(skill);
+		}
+		else if (typeof skill === 'string') {
+			skilluse = skill;
+		}
+		else {
+			skilluse = skill.skill;
+		}
+
+		return `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skilluse}.png`;
+	}
+
+	private formatPair(pair: Skill[], style?: React.CSSProperties): JSX.Element {
 		if (!pair[0].skill) return <></>
 		return (
-			<div>
+			<div style={style}>
 				<div style={{
 					display: "flex",
 					flexDirection: "row"
@@ -951,6 +990,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				key: "table",
 				value:"table",
 				text: "Table"
+			},
+			{
+				key: "pair_cards",
+				value:"pair_cards",
+				text: "Grouped Pairs"
 			}]
 
 		if (gauntlet.unavailable_msg) {
@@ -994,22 +1038,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						display:"flex",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
-						<div style={{
-							display: "flex",
-							flexDirection: "column",
-							marginRight: "2em",
-							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
-						}}>
-						<h4><b>Rank By Pair</b></h4>
+						{viewModes[idx] !== 'pair_cards' && <>
+							<div style={{
+								display: "flex",
+								flexDirection: "column",
+								marginRight: "2em",
+								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+							}}>
+							<h4><b>Rank By Pair</b></h4>
 
-						<Dropdown
-							direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
-							options={pairs}
-							value={rankByPair[idx]}
-							onChange={(e, { value }) => this.changeRankPair(idx, value as string)}
-							/>
-						</div>
-
+							<Dropdown
+								direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+								options={pairs}
+								value={rankByPair[idx]}
+								onChange={(e, { value }) => this.changeRankPair(idx, value as string)}
+								/>
+							</div>
+						</>}
 
 						<div style={{
 							display: "flex",
@@ -1029,7 +1074,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>
 			</div>
 
-			{viewModes[idx] !== 'table' && <div style={{margin:"1em 0", width: "100%"}}>
+			{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>}
 
@@ -1095,7 +1140,61 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				))}
 			</div>}
 			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
-			{viewModes[idx] !== 'table' && <div style={{margin:"1em 0", width: "100%"}}>
+
+			{viewModes[idx] === 'pair_cards' && 
+				<>
+				<div style={{
+					marginTop:"2em",
+					marginBottom:"2em",
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "space-between",
+					flexWrap: "wrap"
+				}}>
+
+					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet.contest_data?.featured_skill).map((pairGroup, pk) => {
+						return (<div 
+							key={pk}
+							style={{
+							display:"flex",
+							flexDirection: "column",
+							justifyContent: "stretch",
+						}}>
+
+							<div
+								className='ui segment'
+								style={{
+								textAlign: "center",
+								display: "flex",
+								flexDirection: "row",
+								fontSize: "18pt",
+								marginTop: "1em",
+								marginBottom: "0.5em",
+								justifyContent: "center",
+								paddingTop: "0.6em",
+								paddingBottom: "0.5em",
+								backgroundColor: pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined,
+							
+							}}>
+								{pairGroup.pair.map((p, ik) => {
+									return (
+										<div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+											<img key={ik} src={this.getSkillUrl(p)} style={{height:"1em", maxWidth: "1em", marginLeft:"0.25em", marginRight:"0.25em"}} /> {p} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
+										</div>
+									)
+								})}
+							</div>
+							{pairGroup.crew.map((crew) => (
+								this.renderPairCard(crew, gauntlet, pairGroup.pair)))}	
+						</div>)
+					})}
+
+					
+				</div>
+				</>
+			}
+
+			{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{margin:"1em 0", width: "100%"}}>
 				<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 			</div>}
 
@@ -1156,6 +1255,123 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			</>)
 	}
 
+	renderPairCard(crew: CrewMember | PlayerCrew, gauntlet: Gauntlet, pair: string[]) {
+		const skills = pair.map(m => rankToSkill(m));
+		const crewpair = [] as Skill[];
+		const prettyTraits = gauntlet.prettyTraits;
+		const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
+		const critColor = gradeToColor(crit);
+		const critString = crit + "%";
+
+		let pstr = "G_" + pair.sort().join("_");
+		let rnk = 0;
+
+		if (pstr in crew.ranks) {
+			rnk = crew.ranks[pstr] as number;
+		}
+
+		for (let skill of skills) {
+			if ("skills" in crew && skill && skill in crew.skills) {
+				let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
+				cp.skill = skill;
+				crewpair.push(cp);
+			}
+			else if (skill && skill in crew.base_skills) {
+				let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
+				cp.skill = skill;
+				crewpair.push(cp);
+			}
+		}
+
+		return (
+		<div className="ui segment"
+			key={crew.symbol}
+			style={{
+				width: "28em",
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "space-between",
+				alignItems: "center",
+				padding: '0.5em',	
+				paddingBottom: 0,
+				margin: 0,
+				marginBottom:"0.5em"
+			}}
+			>
+			<div style={{
+				width: "2em",
+				textAlign: "center",
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				alignItems: "center"
+			}}>
+				<span>{rnk}</span>
+			</div>
+			<div style={{margin: 0, marginRight: "0.25em", width: "68px"}}>
+				<ItemDisplay 
+					playerData={this.context.playerData}
+					crewSymbol={crew.symbol}
+					targetGroup='gauntlets'
+					allCrew={this.context.allCrew}
+					setHoverItem={this.setHoverCrew}
+					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+					rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
+					maxRarity={crew.max_rarity}
+					size={64}
+					/>
+			</div>				
+			<div style={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				alignItems: "center",
+				width: "16em"
+			}}>
+				<div style={{
+					margin: 0, 
+					marginLeft: "0.25em",
+					marginBottom: "0.25em",
+					}}>
+					{this.formatPair(crewpair, { 
+												flexDirection: "row", 
+												display: "flex", 
+												justifyContent: "space-evenly", 
+												fontSize: "8pt" })}	
+				</div>
+				<div style={{
+					margin: 0, 
+					fontSize: "10pt",
+					fontWeight: crit > 25 ? "bold" : undefined,
+					marginLeft: "0.25em",
+					marginRight: "0.25em",
+					marginTop: "0.25em",
+					width: "2em",
+					color: critColor ?? undefined
+					}}>
+					{critString}
+				</div>
+			</div>
+			<div style={{marginRight:"0.25em"}}>
+				{"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
+				("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{color:"lightgreen"}} className='check icon' />))}
+				{"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
+				{!("immortal" in crew) || !(crew.have) && 
+				<span>
+					{crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{height:"16px"}} src='/media/portal.png' />}
+					{!crew.in_portal && <i title={this.whyNoPortal(crew)} className='lock icon' />}
+				</span>}
+			</div>
+		</div>)
+	}
+	whyNoPortal(crew: PlayerCrew | CrewMember) {
+		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
+		else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
+		else if (crew.obtained?.toLowerCase().includes("honor")) return "Unowned (Honor Hall)";
+		else if (crew.obtained?.toLowerCase().includes("boss")) return "Unowned (Fleet Boss Exclusive)";
+		else return "Unowned (Not in Portal)";
+		
+	}
 	render() {
 		const { gauntlets, today, yesterday } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;

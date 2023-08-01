@@ -818,6 +818,8 @@ export function gradeToColor(grade: string | number): string | null {
 		case "A+":
 		case 1:
 		case 2:
+		case 65:
+		case 45:
 			return "lightgreen";
 
 		case "B":
@@ -825,6 +827,7 @@ export function gradeToColor(grade: string | number): string | null {
 		case "B+":
 		case 3:
 		case 4:
+		case 25:
 			return "aquamarine";
 
 		case "C":
