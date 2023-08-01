@@ -276,7 +276,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	protected setTops(index: number, newtop: number) {
 		if (this.state.tops[index] != newtop) {
-			let vm = [ ... this.state.ranges ];
+			let vm = [ ... this.state.tops ];
 			vm[index] = newtop;
 			this.tiny.setValue('gauntletTops_' + index, newtop, true);
 			this.setState({ ... this.state, tops: vm });
@@ -292,6 +292,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let vm = [ ... this.state.viewModes ];
 			vm[index] = viewMode;
 			this.tiny.setValue('viewMode_' + index, viewMode, true);
+			if (viewMode === 'pair_cards') {
+				
+			}
 			this.setState({ ... this.state, viewModes: vm });
 		}
 	}
