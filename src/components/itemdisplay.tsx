@@ -52,7 +52,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 
 		let crew: PlayerCrew | undefined = undefined;
 
-		if (playerData && allCrew && crewSymbol && targetGroup) {
+		if (playerData?.player?.character?.crew?.length && allCrew && crewSymbol && targetGroup) {
 			crew = playerData.player.character.crew.find(crew => crew.symbol === crewSymbol);
 			if (!crew) {
 				crew = allCrew.find(crew => crew.symbol === crewSymbol) as PlayerCrew | undefined;
