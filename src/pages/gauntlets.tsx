@@ -1567,7 +1567,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<ItemDisplay 
 					playerData={this.context.playerData}
 					crewSymbol={crew.symbol}
-					targetGroup='gauntlets'
+					targetGroup='gauntletsHover'
 					allCrew={this.context.allCrew}
 					setHoverItem={this.setHoverCrew}
 					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
@@ -1670,7 +1670,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				}
 				</div>
-				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='gauntletsHover' crew={this.state.hoverCrew ?? undefined} />
 			</>
 		)}
 	}
