@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Travis is used to getting guff from players, but his 900+ ENG base combos well with a 100% hit rate for Mayweather Factions and a trio of big bonus features. You're not likely to use him very often, but in between reprieves from cryo, he'll be contributing to two collections including the huge, 100 threshold Costume Party.
+Travis is used to getting guff from players, but his 1,100+ ENG base combines well with a 100% hit rate for Mayweather Factions and a trio of big bonus features. You're not likely to use him very often, but in between reprieves from cryo, he'll be contributing to three Collections, plus two more Traits which are in the WRG wheelhouse for future additions.  Mayweather could have more Collections than Traits by the time the game finally dies.
