@@ -7,27 +7,26 @@ import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
-
-const FinderContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
-
-type CrewGroupsProps = {
-	solver: Solver;
-	optimizer: Optimizer;
-	solveNode: (nodeIndex: number, traits: string[]) => void;
-	markAsTried: (crewSymbol: string) => void;
-	exportPrefs: ExportPreferences;
-};
+import { CrewMember } from '../../model/crew';
+import { PlayerCrew } from '../../model/player';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { CrewGroupsProps, FinderContext } from './findercontext';
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
+	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const openNodes = solver.nodes.filter(node => node.open);
 
 	return (
-		<FinderContext.Provider value={props}>
-			{openNodes.map(node =>
-				<NodeGroups key={node.index} node={node} />
-			)}
+		<FinderContext.Provider value={ { ...props, hoverCrew, setHoverCrew }}>
+			<div>
+				<CrewHoverStat targetGroup='fbb' crew={hoverCrew ?? undefined} />
+				{openNodes.map(node =>
+					<NodeGroups key={node.index} node={node} />
+				)}
+
+			</div>
 		</FinderContext.Provider>
 	);
 };

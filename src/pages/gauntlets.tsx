@@ -246,7 +246,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	protected setTops(index: number, newtop: number) {
 		if (this.state.tops[index] != newtop) {
-			let vm = [ ... this.state.ranges ];
+			let vm = [ ... this.state.tops ];
 			vm[index] = newtop;
 			this.tiny.setValue('gauntletTops_' + index, newtop, true);
 			this.setState({ ... this.state, tops: vm });
@@ -262,6 +262,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let vm = [ ... this.state.viewModes ];
 			vm[index] = viewMode;
 			this.tiny.setValue('viewMode_' + index, viewMode, true);
+			if (viewMode === 'pair_cards') {
+				
+			}
 			this.setState({ ... this.state, viewModes: vm });
 		}
 	}
@@ -347,7 +350,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return ranks;
 	}
 
-	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string, top?: number) => {
+	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 		const ptop = top ?? 10;
@@ -359,7 +362,32 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let rpairs = pair.replace("G_", "").split("_");			
 			pairGroups.push({
 				pair: rpairs,
-				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop)).map(d => d as PlayerCrew).sort((a, b) => a.ranks[rank] - b.ranks[rank])
+				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
+						.map(d => d as PlayerCrew)
+						.sort((a, b) => {
+								
+							let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+							let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
+
+							if (atrait >= 3) atrait = 3.90;
+							else if (atrait >= 2) atrait = 2.7;
+							else if (atrait >= 1) atrait = 1.5;
+							else atrait = 0.30;
+
+							if (btrait >= 3) btrait = 3.90;
+							else if (btrait >= 2) btrait = 2.7;
+							else if (btrait >= 1) btrait = 1.5;
+							else btrait = 0.30;
+
+							const apairs = getPlayerPairs(a, atrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
+							const bpairs = getPlayerPairs(b, btrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
+
+							if (apairs && bpairs) {
+								let r = comparePairs(apairs[0], bpairs[0]);
+								return r;
+							}	
+							return a.ranks[rank] - b.ranks[rank];						
+						})
 			});
 		}
 		pairGroups.sort((a, b) =>{
@@ -456,11 +484,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let bp = getPlayerPairs(b, btrait);
 
 					if (ap && bp) {
-						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1.5);
-						if (r === 0 && ap.length > 1 && bp.length > 1) {
-							r = comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1.5);
-							if (r === 0 && ap.length > 2 && bp.length > 2) {
-								r = comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1.5);
+						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1);
+						if (ap.length > 1 && bp.length > 1) {
+							r += comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1);
+							if (ap.length > 2 && bp.length > 2) {
+								r += comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1);
 							}
 						}
 					}
@@ -1101,7 +1129,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						display:"flex",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
-						{viewModes[idx] !== 'pair_cards' && <>
+						{/* {viewModes[idx] !== 'pair_cards' && <>
 							<div style={{
 								display: "flex",
 								flexDirection: "column",
@@ -1117,7 +1145,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.changeRankPair(idx, value as string)}
 								/>
 							</div>
-						</>}
+						</>} */}
 						{viewModes[idx] === 'pair_cards' && <>
 							<div style={{
 								display: "flex",
@@ -1235,7 +1263,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexWrap: "wrap"
 				}}>
 
-					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
+					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
 						return (<div 
 							key={pk}
 							style={{

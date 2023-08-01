@@ -311,7 +311,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		}
 	}
 	if (crew.immortal <= 0) {
-		let inroster = playerData?.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+		let inroster = playerData?.player?.character?.crew?.filter(c => c.archetype_id === crew.archetype_id);
 
 		for (let owned of inroster ?? []) {
 			let workitem: PlayerCrew = owned;
@@ -514,6 +514,7 @@ export function rankToSkill(rank: string) {
 }
 
 export function skillToRank(skill: string) {
+	if (!skill) return "";
 	if (skill.includes("command")) return "CMD";
 	else if (skill.includes("security")) return "SEC";
 	else if (skill.includes("diplomacy")) return "DIP";
@@ -558,7 +559,7 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 	
 	if (skills && skills.length) {
 		for (let skillObj of skills) {
-			skillObj.core *= multi;
+			skillObj.core *= (1 + multi);
 		
 			if ("min" in skillObj && !skillObj.range_min) skillObj.range_min = skillObj["min"] as number;
 			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
@@ -566,7 +567,7 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 			skillObj.range_min *= multi;
 			skillObj.range_max *= multi;
 		}
-		if (skills.length > 1) skills.sort((a, b) => (b.range_max + b.range_min) - (a.range_max + a.range_min));
+		if (skills.length > 1) skills.sort((a, b) => ((b.range_max + b.range_min) / 2) - ((a.range_max + a.range_min) / 2));
 
 		let pairs = [] as Skill[][];
 
