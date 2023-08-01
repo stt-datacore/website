@@ -65,7 +65,8 @@ export interface GauntletsPageState {
 	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	gauntlets: Gauntlet[];
 	uniques: Gauntlet[];
-	
+	ranges: number[];
+
 	activePageTabs: (PlayerCrew | CrewMember)[][];
 
 	today?: Gauntlet;
@@ -114,6 +115,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const v3 = this.tiny.getValue<GauntletViewMode>('viewMode_2', 'table') ?? 'table';
 		const v4 = this.tiny.getValue<GauntletViewMode>('viewMode_3', 'table') ?? 'table';
 		
+		const r1 = this.tiny.getValue('gauntletRangeMax_0', 500) ?? 500;
+		const r2 = this.tiny.getValue('gauntletRangeMax_1', 500) ?? 500;
+		const r3 = this.tiny.getValue('gauntletRangeMax_2', 500) ?? 500;
+		const r4 = this.tiny.getValue('gauntletRangeMax_3', 500) ?? 500;
+		
 		this.state = {
 			sortKey: ['', '', '', ''],
 			sortDirection: [undefined, undefined, undefined, undefined],
@@ -123,6 +129,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			discoveredPairs: [[], [], [], []],
 			rankByPair: ['none', 'none', 'none', 'none'],
 			totalPagesTab: [0, 0, 0, 0],
+			ranges: [r1, r2, r3, r4],
 			activePageIndexTab: [0, 0, 0, 0],
 			itemsPerPageTab: [10, 10, 10, 10],
 			filteredCrew: [[], [], [], []],
@@ -209,6 +216,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
             this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
         }
     }
+
+	
+
+	protected getRangeMax(index: number) {
+		return this.state.ranges[index];
+	}
+
+	protected setRangeMax(index: number, max: number) {
+		if (this.state.ranges[index] != max) {
+			let vm = [ ... this.state.ranges ];
+			vm[index] = max;
+			this.tiny.setValue('gauntletRangeMax_' + index, max, true);
+			this.inited = false;
+			this.setState({ ... this.state, ranges: vm });
+		}
+	}
+
 
 	protected getViewMode(index: number) {
 		return this.state.viewModes[index];
@@ -337,8 +361,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return pairGroups;
 	}
 
-	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string) => {
+	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string, range_max?: number) => {
 		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
+		
+		const rmax = range_max ?? 500;
 
 		const { crew: allCrew, buffConfig, maxBuffs } = this.context;
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
@@ -350,7 +376,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const matchedCrew =
 			allCrew.filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
-				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= 500) ||
+				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
@@ -471,10 +497,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		})
 		
 		gauntlets.slice(0, 3).forEach((node, index) => {
-			this.getGauntletCrew(node);
+			let rmax = this.state.ranges[index];		
+			this.getGauntletCrew(node, undefined, rmax);
 		});
 
-		this.getGauntletCrew(uniques[0]);
+		this.getGauntletCrew(uniques[0], undefined, this.state.ranges[3]);
 
 		if (!this.state.gauntlets?.length || !this.inited) {
 
@@ -547,15 +574,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		else if (replaceIndex === 1) newYesterday = replaceGauntlet;
 		else if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
 		else if (replaceIndex === 3) newBrowseGauntlet = replaceGauntlet;
-		
+		let rmax = 500;
+		if (replaceIndex !== undefined) {
+			rmax = this.state.ranges[replaceIndex];
+		}
 		if (!preSorted && newSelGauntlet) {
-			this.getGauntletCrew(newSelGauntlet, replaceRank);
+			this.getGauntletCrew(newSelGauntlet, replaceRank, rmax);
 		}
 		else if (!preSorted && newBrowseGauntlet) {
-			this.getGauntletCrew(newBrowseGauntlet, replaceRank);			
+			this.getGauntletCrew(newBrowseGauntlet, replaceRank, rmax);			
 		}
 		else if (!preSorted && replaceGauntlet) {
-			this.getGauntletCrew(replaceGauntlet, replaceRank);			
+			this.getGauntletCrew(replaceGauntlet, replaceRank, rmax);			
 		}
 		
 		let apidx = this.state.activePageIndexTab;
@@ -1006,9 +1036,37 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				justifyContent: "flex-start",
 				margin: "0.25em 0"
 			}}> 
-				<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
-					{prettyDate}
-				</h3>
+				<div style={{
+					display: "flex",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
+					justifyContent: "space-between"
+				}}>
+					<h3 style={{fontSize:"1.5em", margin: "0.25em 0"}}>
+						{prettyDate}
+					</h3>
+
+					<div style={{
+						display:"flex",
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+					}}>
+						<div style={{
+							display: "flex",
+							flexDirection: "row",
+							marginBottom: "0.25em",
+							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
+						}}>
+						<h4 style={{marginRight:"0.5em"}}><b>Minimum Proficiency Max:&nbsp;</b></h4>
+
+						<Dropdown							
+							style={{textAlign: "right"}}
+							direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
+							options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o }})} 
+							value={this.getRangeMax(idx)} 
+							onChange={(e, { value }) => this.setRangeMax(idx, value as number)} />
+						</div>
+					</div>
+
+				</div>
 				<div style={{
 					display: "flex",
 					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
