@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-For some inexplicable reason, this pacifist variant has the second best SEC base among Odos...you know, the Security Chief?! His DIP base is worth the thaw for events and a trio of features all but ensures he'll be a top name for some event or two down the line. In between, he's primarily a notch toward completing the massive Costumed collection.
+For some inexplicable reason, this pacifist variant has the second best SEC base among Odos...you know, the Security Chief?! His DIP base is worth the thaw for Events and a trio of features all but ensures he'll be a top name for some Event or two down the line. In between, he's primarily a notch toward completing his three current Collections, and if you play the very long game, he has three more Traits which could find a new one attached to them.
