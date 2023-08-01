@@ -336,19 +336,34 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
+		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 
 		const pairGroups = [] as PairGroup[];
 
 		for (let pair of pairs) {
 			if (pair === '') continue;
 			let rank = pair;
-			let rpairs = pair.replace("G_", "").split("_");
+			let rpairs = pair.replace("G_", "").split("_");			
 			pairGroups.push({
 				pair: rpairs,
 				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= 10)).map(d => d as PlayerCrew).sort((a, b) => a.ranks[rank] - b.ranks[rank])
 			});
 		}
-
+		pairGroups.sort((a, b) =>{
+			if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
+				let r = a.pair[0].localeCompare(b.pair[0]);
+				if (!r) {
+					r = a.pair[1].localeCompare(b.pair[1]);
+				}
+				return r;
+			}
+			else if (a.pair.includes(featRank)) {
+				return -1;
+			}
+			else {
+				return 1;
+			}
+		})
 		return pairGroups;
 	}
 
@@ -1263,7 +1278,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const critColor = gradeToColor(crit);
 		const critString = crit + "%";
 
-		let pstr = "G_" + pair.sort().join("_");
+		let pstr = "G_" + pair.join("_");
 		let rnk = 0;
 
 		if (pstr in crew.ranks) {
@@ -1364,6 +1379,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			</div>
 		</div>)
 	}
+
 	whyNoPortal(crew: PlayerCrew | CrewMember) {
 		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
 		else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
