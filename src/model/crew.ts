@@ -110,6 +110,13 @@ export interface Skill {
   skill?: string;
 }
 
+export interface ComputedSkill {
+  core: number;
+  min: number;
+  max: number;
+  skill?: string;
+}
+
 export interface SkillsSummary {
 	key: string;
 	skills: string[];

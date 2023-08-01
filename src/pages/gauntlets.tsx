@@ -15,12 +15,14 @@ import { PlayerContext } from '../context/playercontext';
 import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
-import { CrewMember, Skill } from '../model/crew';
+import { ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, getPlayerPairs, getSkills, gradeToColor, isImmortal, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
+import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataWrapper } from '../context/datawrapper';
@@ -224,6 +226,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
         }
     }
 
+	protected readonly getBuffState = (availModes?: PlayerBuffMode[]): PlayerBuffMode => {
+		let result = this.tiny.getValue<PlayerBuffMode>('buffmode', 'player');
+
+		if (result && availModes?.length && !availModes.includes(result)) {
+			result = availModes ? availModes[0] : 'none';
+		}
+		else if (!result) {
+			result = 'none';
+		}
+		return result;
+	}
+
+	protected readonly setBuffState = (buff: PlayerBuffMode) => {		
+		let test = this.getBuffState();
+		if (test === buff) return;
+		this.tiny.setValue('buffmode', buff, true);
+		this.inited = false;
+		this.forceUpdate();
+	}
 	
 
 	protected getRangeMax(index: number) {
@@ -413,7 +434,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		
 		const rmax = range_max ?? 500;
 
-		const { crew: allCrew, buffConfig, maxBuffs } = this.context;
+		const { crew: allCrew, buffConfig, maxBuffs } = this.context;		
+		const availBuffs = ['none'] as PlayerBuffMode[];
+
+		if (buffConfig && Object.keys(buffConfig).length) {
+			availBuffs.push('player');
+		}
+		if (maxBuffs && Object.keys(maxBuffs).length) {
+			availBuffs.push('max');
+		}
+
+		const buffMode = this.getBuffState(availBuffs);
+
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
@@ -426,24 +458,34 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
-					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
-					
-					if (buffConfig) {
+					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;				
+					if (buffConfig && buffMode === 'player') {
 						applyCrewBuffs(crew, buffConfig);
+					}
+					else if (maxBuffs && buffMode === 'max') {
+						applyCrewBuffs(crew, maxBuffs);
 					}
 
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 					
 					if (c) {
 						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
+						if (buffConfig && buffMode === 'player') {
+							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (maxBuffs && buffMode === 'max') {
+							applyCrewBuffs(crew, maxBuffs);
+						}	
 					}
 					else {
 						let skills = getSkills(crew);
 						for (let s of skills) {
-							crew[s] = {
-								core: 0,
-								min: 0,
-								max: 0
+							if (!(s in crew)) {
+								crew[s] = {
+									core: 0,
+									min: 0,
+									max: 0
+								}
 							}
 						}
 					}
@@ -456,7 +498,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 					
 					crew.pairs = getPlayerPairs(crew);
-
 					return crew;
 				})
 				.sort((a, b) => {
@@ -1021,6 +1062,33 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	renderGauntletBig(gauntlet: Gauntlet | undefined, idx: number) {
 
 		const { activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops } = this.state;
+		const { maxBuffs, buffConfig } = this.context;
+
+		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
+
+		availBuffs.push({
+			key: 'none',
+			value: 'none',
+			text: BuffNames['none']
+		})
+
+		if (buffConfig) {
+			availBuffs.push({
+				key: 'player',
+				value: 'player',
+				text: BuffNames['player']
+			})
+	
+		}
+
+		if (maxBuffs) {
+			availBuffs.push({
+				key: 'max',
+				value: 'max',
+				text: BuffNames['max']
+			})
+	
+		}
 
 		if (!gauntlet) return undefined;
 
@@ -1146,7 +1214,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								/>
 							</div>
 						</>} */}
-						{viewModes[idx] === 'pair_cards' && <>
+						{/* {viewModes[idx] === 'pair_cards' && <>
 							<div style={{
 								display: "flex",
 								flexDirection: "column",
@@ -1165,7 +1233,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 								/>
 							</div>
-						</>}
+						</>} */}
 
 						<div style={{
 							display: "flex",
@@ -1253,56 +1321,94 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
 
 			{viewModes[idx] === 'pair_cards' && 
-				<>
 				<div style={{
-					marginTop:"2em",
-					marginBottom:"2em",
 					display: "flex",
-					flexDirection: "row",
-					justifyContent: "space-between",
-					flexWrap: "wrap"
+					flexDirection: "column",
+					justifyContent: "stretch"
 				}}>
-
-					{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
-						return (<div 
-							key={pk}
-							style={{
-							display:"flex",
+					<div style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "flex-start"
+					}}>
+						<div style={{
+							display: "flex",
 							flexDirection: "column",
-							justifyContent: "stretch",
+							marginRight: "2em",
+							textAlign: "left"
 						}}>
+							<h4><b>Show Top Crew</b></h4>
 
-							<div
-								className='ui segment'
-								style={{
-								textAlign: "center",
-								display: "flex",
-								flexDirection: "row",
-								fontSize: "18pt",
-								marginTop: "1em",
-								marginBottom: "0.5em",
-								justifyContent: "center",
-								paddingTop: "0.6em",
-								paddingBottom: "0.5em",
-								backgroundColor: pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined,
+							<Dropdown
+								
+								options={[1, 2, 3, 4, 5, 10, 15, 20, 50].map(o =>{ return { text: "Top " + o, key: o, value: o } })}
+								value={tops[idx]}
+								onChange={(e, { value }) => this.setTops(idx, value as number)}
+								/>
+						</div>
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							marginRight: "2em",
+							textAlign: "left"
+						}}>
+							<h4><b>Show Buffs</b></h4>
 							
+							<Dropdown								
+								options={availBuffs}
+								value={this.getBuffState(availBuffs.map(b => b.key) as PlayerBuffMode[])}
+								onChange={(e, { value }) => this.setBuffState(value as PlayerBuffMode)}
+								/>
+						</div>
+					</div>
+					<div style={{
+						marginTop:"0em",
+						marginBottom:"2em",
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-between",
+						flexWrap: "wrap"
+					}}>
+						{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
+							return (<div 
+								key={pk}
+								style={{
+								display:"flex",
+								flexDirection: "column",
+								justifyContent: "stretch",
 							}}>
-								{pairGroup.pair.map((p, ik) => {
-									return (
-										<div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
-											<img key={ik} src={this.getSkillUrl(p)} style={{height:"1em", maxWidth: "1em", marginLeft:"0.25em", marginRight:"0.25em"}} /> {p} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
-										</div>
-									)
-								})}
-							</div>
-							{pairGroup.crew.map((crew) => (
-								this.renderPairCard(crew, gauntlet, pairGroup.pair)))}	
-						</div>)
-					})}
 
-					
+								<div
+									className='ui segment'
+									style={{
+									textAlign: "center",
+									display: "flex",
+									flexDirection: "row",
+									fontSize: "18pt",
+									marginTop: "1em",
+									marginBottom: "0.5em",
+									justifyContent: "center",
+									paddingTop: "0.6em",
+									paddingBottom: "0.5em",
+									backgroundColor: pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined,
+								
+								}}>
+									{pairGroup.pair.map((p, ik) => {
+										return (
+											<div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+												<img key={ik} src={this.getSkillUrl(p)} style={{height:"1em", maxWidth: "1em", marginLeft:"0.25em", marginRight:"0.25em"}} /> {p} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
+											</div>
+										)
+									})}
+								</div>
+								{pairGroup.crew.map((crew) => (
+									this.renderPairCard(crew, gauntlet, pairGroup.pair)))}	
+							</div>)
+						})}
+
+						
+					</div>
 				</div>
-				</>
 			}
 
 			{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{margin:"1em 0", width: "100%"}}>
@@ -1373,7 +1479,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
 		const critColor = gradeToColor(crit);
 		const critString = crit + "%";
-
+		const boostMode = this.getBuffState();
 		let pstr = "G_" + pair.join("_");
 		let rnk = 0;
 
@@ -1381,11 +1487,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			rnk = crew.ranks[pstr] as number;
 		}
 
-		for (let skill of skills) {
-			if ("skills" in crew && skill && skill in crew.skills) {
+		for (let skill of skills) {			
+			if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
 				let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
 				cp.skill = skill;
 				crewpair.push(cp);
+			}
+			else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
+				let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
+				cp.skill = skill;
+				crewpair.push({
+					core: cp.core,
+					range_max: cp.max,
+					range_min: cp.min,
+					skill: skill
+				});
 			}
 			else if (skill && skill in crew.base_skills) {
 				let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
@@ -1423,7 +1539,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<ItemDisplay 
 					playerData={this.context.playerData}
 					crewSymbol={crew.symbol}
-					targetGroup='gauntlets'
+					targetGroup='gauntletsHover'
 					allCrew={this.context.crew}
 					setHoverItem={this.setHoverCrew}
 					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
@@ -1526,7 +1642,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				}
 				</div>
-				<CrewHoverStat targetGroup='gauntlets' crew={this.state.hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='gauntletsHover' crew={this.state.hoverCrew ?? undefined} />
 			</>
 		)}
 	}
