@@ -7,6 +7,8 @@ import ItemDisplay from '../itemdisplay';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { MergedContext } from '../../context/mergedcontext';
+import { FinderContext } from './findercontext';
 
 type MarkGroupProps = {
 	node: SolverNode;
@@ -129,6 +131,8 @@ export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, trigger } = props;
 
 	const [showPicker, setShowPicker] = React.useState(false);
+	const context = React.useContext(MergedContext);
+	const groupsContext = React.useContext(FinderContext);
 
 	return (
 		<React.Fragment>
@@ -149,6 +153,11 @@ export const MarkCrew = (props: MarkCrewProps) => {
 			<Grid.Column key={crew.symbol} textAlign='center'>
 				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 					<ItemDisplay
+						crewSymbol={crew.symbol}
+						targetGroup='fbb'
+						allCrew={context.allCrew}
+						playerData={context.playerData}
+						setHoverItem={groupsContext.setHoverCrew}
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 						size={60}
 						maxRarity={crew.max_rarity}
