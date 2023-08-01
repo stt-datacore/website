@@ -19,10 +19,9 @@ import { ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, getPlayerPairs, getSkills, gradeToColor, isImmortal, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank } from '../utils/crewutils';
-import { CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
-import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
+
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataWrapper } from '../context/datawrapper';
