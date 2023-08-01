@@ -27,7 +27,10 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 	const maxBuffs = strippedPlayerData ? calculateMaxBuffs(strippedPlayerData.player?.character?.all_buffs_cap_hash) : (dataContext.all_buffs ?? undefined);
-
+	if (strippedPlayerData?.player?.character?.all_buffs_cap_hash) {
+		console.log(strippedPlayerData.player?.character?.all_buffs_cap_hash);
+		console.log(JSON.stringify(strippedPlayerData.player?.character?.all_buffs_cap_hash));
+	}
 	const context = {
 		strippedPlayerData,
 		setStrippedPlayerData,

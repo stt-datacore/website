@@ -311,7 +311,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		}
 	}
 	if (crew.immortal <= 0) {
-		let inroster = playerData?.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
+		let inroster = playerData?.player?.character?.crew?.filter(c => c.archetype_id === crew.archetype_id);
 
 		for (let owned of inroster ?? []) {
 			let workitem: PlayerCrew = owned;
