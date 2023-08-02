@@ -12,8 +12,6 @@ mega: true
 published: true
 ---
 
-There's no easier comparison for this chicken sandwich enthusiast than the Queen of Timelines herself - First Officer Burnham. In fact, if Burnham were originally a mega crew and not some wriggly "best chance" fishing bait, her numbers might have looked shockingly similar. Kirk is a step down in power, but the make-up of both crews appears pretty similar; sturdy event chances, big CMD base, shipboard instant damage, and even the same skill order. 
+Like many two year old crew at this point in the game without a unique value proposition, Tribble Kirk is down to his Trait set as one of his few remaining attributes. Sadly for this chicken sandwich enjoyer, Kirk has only five Traits, and only one of them hits a Collection (granted one you need just about every crew for to complete it).  
 
-Day one voyage ability looks merely O.K. for Kirk, though it's more of a supplementary attribute for long-time players. The skill set and power metrics settle vaguely into the average range for a newer release and his handful of anti-matter traits will often butt up against several other eligible legendary crew. 
-
-More unique are Kirk's offerings in the arena - triggerless and fast instant damage always earns a thumbs up - and on shuttles. Tribble debuts with a top ten CMD base which automatically catapults him ahead of former #1 Kirk option; the *four year old* Gangster Kirk. Having no equal to his massive featured event tally, Kirk-flavored weekends are likely to remain frequent, making Tribble Kirk a mainstay Faction lock for years to come.
+Tribble Kirk’s Arena ability, a 325% Instant Damage without a Trigger and with a use limit of twice, has been overshadowed by many cards, so perhaps if he appears in a Behold very early on in your playing career, you may want to take him until you can arrange to Retrieve a better option for Arena and Skirmishes.  At least Kirk events appear to be somewhat evergreen, even though he’s enjoyed only two during each of the last two calendar years. Still, you could do worse to invest in a Kirk.
