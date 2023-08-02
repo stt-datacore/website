@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Kanye's Odo-adjacent brother has done well for himself, aside from that whole failed assassination thing. The low-hanging comparison is the admittedly more fun Sinister Picard. Big voyage power to help offset an awful skill order, collection value, niche gauntlet funsies.
+Kanye's Odo-adjacent brother has done well for himself, aside from that whole failed assassination thing. The low-hanging comparison is the admittedly more fun Sinister Picard. Big Voyage power to help offset an awful skill order, Collection value, niche Gauntlet funsies.
 
-A fairly rich trait lineup may garner the good Colonel a few chances to crash shuttles on the weekend, but it's the strong voyage power in concert with plus antimatter traits that will see him the most action. As a top legendary option for both of his huge stat-boosting collections, he's an obvious and immediate candidate for anyone looking to min/max their endgame potential.
+A fairly rich Trait lineup may garner the good Colonel a few chances to crash shuttles on the weekend, but it's the strong Voyage power in concert with plus Antimatter Traits that will see him the most action. As a top Legendary option for both of his huge stat-boosting Collections, he's an obvious and immediate candidate for anyone looking to min/max their endgame potential.  Don’t also forget to look down the barrel at future Collections from up to two more viable Traits.
