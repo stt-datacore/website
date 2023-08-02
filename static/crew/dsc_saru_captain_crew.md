@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-A 2021 release, Captain Saru might have accidentally time traveled from 2018 - or at least his stats did. His pair of collections is the highlight here (by far), though he will catch the occasional event, if not as frequently as his Disco-inflated event count might suggest.
-
-Saru's voyage usability is scheduled to be Execute(d) as this version pairs a bloated skill set with ugly debut power. After a run of good-to-godlike gold variants, this is one Saru you can leave on the shelf.
+A 2021 release, Captain Saru might have accidentally time traveled from 2018 - or at least his stats did. His quartet of Collections is the highlight here (by far), though he will catch the occasional Event, if not as frequently as his Disco-inflated Event count might suggest. Saru's Voyage usability is scheduled to be Execute(d) as this version pairs a bloated skill set with ugly debut power. After a run of good-to-godlike Legendary variants, this is one Saru you can leave on the shelf.
