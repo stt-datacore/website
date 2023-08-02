@@ -10,9 +10,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { Ship } from '../../model/ship';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 import { CrewMember, Skill } from '../../model/crew';
-import { HoverStat } from '../hovering/hoverstat';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { MergedContext } from '../../context/mergedcontext';
+import { HoverContext, IHover } from '../../context/hovercontext';
 
 const POPUP_DELAY = 500;
 const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
@@ -269,20 +268,14 @@ const TableView = (props: ViewProps) => {
 
 const GridView = (props: ViewProps) => {
 	const { layout, voyageData, ship, shipData, assignments } = props;
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	return (
-		<React.Fragment>			
-			
-
+		<React.Fragment>
 			{ship && renderShip()}
 			{layout === 'grid-cards' &&
-				<div>
-					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' crew={hoverCrew ?? undefined} />
-					<Grid columns={6} doubling centered>
-						{renderCards({ setHoverCrew })}
-					</Grid>
-				</div>
+				<Grid columns={6} doubling centered>
+					{renderCards()}
+				</Grid>
 			}
 			{layout === 'grid-icons' &&
 				<Grid doubling centered textAlign='center'>
@@ -328,17 +321,13 @@ const GridView = (props: ViewProps) => {
 		);
 	}
 
-	interface RenderCardProps { 
-		setHoverCrew: (crew: PlayerCrew | CrewMember | undefined | null) => void 
-	}
-	
-	function renderCards(props: RenderCardProps): JSX.Element {
+	function renderCards(): JSX.Element {
 		return (
 			<React.Fragment>
 				{assignments.map((assignment, idx) => {
 					return (
 						<Grid.Column key={idx}>
-							<AssignmentCard setHoverCrew={props.setHoverCrew} assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={false} />
+							<AssignmentCard useHover={true} assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={false} />
 						</Grid.Column>
 					);
 				})}
@@ -487,13 +476,14 @@ type AssignmentCardProps = {
 	assignment: any;
 	showFinder: boolean;
 	showSkills: boolean;
-	setHoverCrew?: (crew: PlayerCrew | CrewMember | null | undefined) => void;
+	useHover?: boolean;
 };
 
 const AssignmentCard = (props: AssignmentCardProps) => {
-	const { setHoverCrew, assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
+	const hoverContext = React.useContext(HoverContext);
+	const { useHover, assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
-	
+
 	const context = React.useContext(MergedContext);
 
 	return (
@@ -508,8 +498,10 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					allCrew={context.allCrew}
 					playerData={context.playerData}
 					targetGroup='voyageLineup'
-					setHoverItem={setHoverCrew}
-					crewSymbol={crew.symbol}					
+					hoverOptions={{
+						setHover: (hover: IHover) => { if (useHover) hoverContext.setHover({...hover, useBoundingClient: true}); }
+					}}
+					crewSymbol={crew.symbol}
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 					size={96}
 					maxRarity={crew.max_rarity}

@@ -14,6 +14,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import { HoverContext } from '../context/hovercontext';
 import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { crewCopy } from '../utils/crewutils';
@@ -25,7 +26,7 @@ const VoyageCalculator = () => {
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
-	
+
 	if (!allShips) {
 		fetchAllShips();
 		return (<><Icon loading name='spinner' /> Loading...</>);
@@ -211,8 +212,8 @@ type VoyageActiveProps = {
 
 const VoyageActive = (props: VoyageActiveProps) => {
 	const { allShips, playerData, allCrew } = React.useContext(VoyageContext);
+	const hoverContext = React.useContext(HoverContext);
 	const { voyageConfig, myCrew } = props;
-	const [hoverItem, setHoverItem] = React.useState<PlayerCrew | CrewMember | undefined | null>();
 
 	if (!allShips) return <></>;
 
@@ -227,11 +228,9 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				dbid={playerData.player.dbid}
 				allCrew={allCrew}
 				playerData={playerData}
-				setHoverItem={setHoverItem}
+				hoverContext={hoverContext}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
-			<CrewHoverStat targetGroup='voyageRewards' crew={hoverItem ?? undefined} />
-			
 		</React.Fragment>
 	)
 };

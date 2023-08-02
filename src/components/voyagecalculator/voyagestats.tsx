@@ -14,7 +14,7 @@ import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model
 import { Ship } from '../../model/ship';
 import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { IHover, IHoverContextData } from '../../context/hovercontext';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
@@ -27,7 +27,7 @@ type VoyageStatsProps = {
 	dbid: string | number;
 	allCrew?: CrewMember[];
 	playerData?: PlayerData;
-	setHoverItem?: (item: PlayerCrew | CrewMember | null | undefined) => void;
+	hoverContext?: IHoverContextData;
 };
 
 type VoyageStatsState = {
@@ -36,7 +36,6 @@ type VoyageStatsState = {
 	currentAm: number;
 	currentDuration?: number;
 	voyageBugDetected: boolean;
-	hoverCrew?: CrewMember | PlayerCrew | undefined;
 };
 
 interface RefillBin {
@@ -59,7 +58,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
 		super(props);
-		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
+		const { estimate, numSims, showPanels, ships, voyageData, hoverContext } = this.props;
 
 		this.state = {
 			estimate: estimate,
@@ -306,7 +305,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						h += 25;
 					}
 				}
-			}	
+			}
 		}
 
 		const dupeHonor = h + honor;
@@ -332,7 +331,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
-					
+
 					{" if all duplicate crew are dismissed)"}</span>
 				)}
 			</span>
@@ -340,7 +339,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewards(rewards): JSX.Element {
-		const { playerItems, roster, setHoverItem } = this.props;
+		const { playerItems, roster, hoverContext } = this.props;
 
 		rewards = rewards.sort((a, b) => {
 			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
@@ -410,7 +409,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										rarity={rarity(entry)}
 										maxRarity={entry.rarity}
 										hideRarity={hideRarity(entry)}
-										setHoverItem={setHoverItem}
+										hoverOptions={{
+											setHover: (hover: IHover) => { if (hoverContext) hoverContext.setHover(hover); }
+										}}
 										targetGroup='voyageRewards'
 										crewSymbol={getCrewSymbol(entry)}
 										allCrew={this.props.allCrew}

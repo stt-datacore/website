@@ -2,6 +2,8 @@ import React from 'react';
 import { Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
+import { HoverContext } from '../../context/hovercontext';
+
 import { MarkCrew } from './markbuttons';
 import { getStyleByRarity } from './fbbutils';
 
@@ -11,9 +13,10 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
-import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
+import { CrewMember } from '../../model/crew';
+
+import { CrewTarget } from '../hovering/crewhoverstat';
 
 type CrewTableProps = {
 	solver: Solver;
@@ -23,9 +26,8 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
+	const hoverContext = React.useContext(HoverContext);
 	const { solver, optimizer } = props;
-	
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -62,9 +64,6 @@ const CrewTable = (props: CrewTableProps) => {
 	tableConfig.push({ width: 1, title: 'Trial' });
 
 	return (
-		<>
-		<CrewHoverStat targetGroup='fbb' crew={hoverCrew ?? undefined} />
-
 		<SearchableTable
 			id={`fbb/${solver.id}/crewtable_`}
 			data={optimizer.crew}
@@ -73,7 +72,6 @@ const CrewTable = (props: CrewTableProps) => {
 			filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType ?? '')}
 			showFilterOptions={true}
 		/>
-		</>
 	);
 
 	function renderTableRow(crew: BossCrew, idx: number): JSX.Element {
@@ -89,7 +87,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget targetGroup='fbb' inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget targetGroup='fbb' inputItem={crew} setDisplayItem={(crew: PlayerCrew | CrewMember | null | undefined) => hoverContext.setHover({ targetGroup: 'fbb', crew })}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
