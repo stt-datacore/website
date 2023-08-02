@@ -153,11 +153,6 @@ export const MarkCrew = (props: MarkCrewProps) => {
 			<Grid.Column key={crew.symbol} textAlign='center'>
 				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 					<ItemDisplay
-						crewSymbol={crew.symbol}
-						targetGroup='fbb'
-						allCrew={context.allCrew}
-						playerData={context.playerData}
-						setHoverItem={groupsContext.setHoverCrew}
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 						size={60}
 						maxRarity={crew.max_rarity}
