@@ -1,21 +1,21 @@
 import React from 'react';
-import { Header, Button, Segment, Table, Rating, Icon } from 'semantic-ui-react';
+import { Header, Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
-import marked, { options } from 'marked';
+import marked from 'marked';
 
 import Layout from '../components/layout';
 import CrewPicker from '../components/crewpicker';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { SearchableTable, ITableConfigRow, initSearchableOptions } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 
 import CONFIG from '../components/CONFIG';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
+import { useStateWithStorage } from '../utils/storage';
 import CABExplanation from '../components/cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
-import { ICrewDemands, ICrewDemandsMeta } from '../utils/equipment';
-import { MarkdownRemark } from '../model/game-elements';
 import { PlayerContext } from '../context/playercontext';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
@@ -32,7 +32,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const playerContext = React.useContext(PlayerContext);
 
-	const isReady = coreData.ready ? coreData.ready(['crew', 'items', 'all_buffs']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 
 	let crewFromUrl = [] as string[];
 	if (props.location) {
@@ -49,8 +49,9 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 				<React.Fragment>
 					<MergedContext.Provider value={{
 						allCrew: coreData.crew,
+						items: coreData.items,
 						playerData: {} as PlayerData,	/* Disable support for playerData until global player finalized */
-						items: coreData.items
+						maxBuffs: playerContext.maxBuffs
 					}}>
 						<Header as='h2'>Behold helper</Header>
 						<CrewSelector crewList={coreData.crew} initSelection={crewFromUrl} />
@@ -67,24 +68,22 @@ type CrewSelectorProps = {
 };
 
 const CrewSelector = (props: CrewSelectorProps) => {
-	const [selectedCrew, setSelectedCrew] = React.useState<string[]>(props.initSelection);
+	const [selectedCrew, setSelectedCrew] = useStateWithStorage<string[]>('behold/crew', props.initSelection);
 	const [options, setOptions] = React.useState<BeholdModalOptions>(DEFAULT_BEHOLD_OPTIONS);
 
 	const crewList = crewCopy<PlayerCrew | CrewMember>(props.crewList)
 		.sort((a, b) => a.name.localeCompare(b.name));
 
-	const filterCrew = (data: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
-		const myFilter = searchFilter ??= '';
-
+	const filterCrew = (data: (PlayerCrew | CrewMember)[], searchFilter: string = ''): (PlayerCrew | CrewMember)[] => {
 		// Filtering
 		const portalFilter = (crew: PlayerCrew | CrewMember) => {
-			if (options.portal.substr(0, 6) === 'portal' && !crew.in_portal) return false;
+			if (options.portal.slice(0, 6) === 'portal' && !crew.in_portal) return false;
 			if (options.portal === 'portal-unique' && (crew.unique_polestar_combos?.length ?? 0) === 0) return false;
 			if (options.portal === 'portal-nonunique' && (crew.unique_polestar_combos?.length ?? 0) > 0) return false;
 			if (options.portal === 'nonportal' && crew.in_portal) return false;
 			return true;
 		};
-		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
+		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(searchFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		data = data.filter(crew =>
 			true
 				&& crew.series
@@ -101,13 +100,30 @@ const CrewSelector = (props: CrewSelectorProps) => {
 
 	return (
 		<React.Fragment>
-			<CrewPicker defaultOptions={DEFAULT_BEHOLD_OPTIONS} filterCrew={filterCrew} pickerModal={BeholdOptionsModal} crewList={crewList} handleSelect={onCrewPick} options={options} setOptions={setOptions} />
-			<CrewDetails selectedCrew={selectedCrew} crewList={crewList} handleDismiss={onCrewDismiss} handleDismissAll={onCrewDismissAll} />
+			<CrewPicker defaultOptions={DEFAULT_BEHOLD_OPTIONS} pickerModal={BeholdOptionsModal}
+				options={options} setOptions={setOptions}
+				crewList={crewList} filterCrew={filterCrew} handleSelect={onCrewPick}
+			/>
+			<CrewDetails selectedCrew={selectedCrew} crewList={crewList}
+				handleDismiss={onCrewDismiss} handleDismissAll={onCrewDismissAll}
+			/>
 			{selectedCrew.length > 0 && <CrewTable selectedCrew={selectedCrew} crewList={crewList} />}
 			{selectedCrew.length > 0 &&
-				<div style={{ marginTop: '2em' }}>
-					<Link to={`/behold?${permalink}`}><Icon name='linkify' /> Permalink</Link>
-				</div>
+				<Message style={{ marginTop: '2em' }}>
+					<Message.Header>Share This Page</Message.Header>
+					<p>Want advice on these crew? You can share a <Link to={`/behold?${permalink}`}>permalink</Link> to this page for easier sharing on Discord or other forums.</p>
+					<Popup
+						content='Copied!'
+						on='click'
+						position='right center'
+						size='tiny'
+						trigger={
+							<Button icon='clipboard' content='Copy permalink to clipboard'
+								onClick={() => navigator.clipboard.writeText(`${process.env.GATSBY_DATACORE_URL}/behold?${permalink}`)}
+							/>
+						}
+					/>
+				</Message>
 			}
 		</React.Fragment>
 	);
@@ -125,7 +141,7 @@ const CrewSelector = (props: CrewSelectorProps) => {
 	}
 
 	function onCrewDismissAll(): void {
-		setSelectedCrew([]);
+		setSelectedCrew([] as string[]);
 	}
 };
 
@@ -137,8 +153,8 @@ type CrewDetailsProps = {
 };
 
 const CrewDetails = (props: CrewDetailsProps) => {
-	const { selectedCrew } = props;	
-	const context = React.useContext(MergedContext);
+	const { allCrew } = React.useContext(MergedContext);
+	const { selectedCrew } = props;
 
 	const data = [] as (CrewMember | PlayerCrew)[];
 	selectedCrew.forEach(symbol => {
@@ -150,57 +166,14 @@ const CrewDetails = (props: CrewDetailsProps) => {
 		data.push(crew);
 	});
 
+	let segmentWidth = '32%';
+	if (data.length === 1) segmentWidth = '96%';
+	else if (data.length === 2) segmentWidth = '48%';
+
 	return (
 		<div style={{ marginTop: '2em' }}>
-			<div style={{ display: "flex", 
-						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
-						flexWrap: "wrap",
-						justifyContent: "center",
-						marginBottom:"2em" }}>
-			{data.map((crew, idx) => (
-				<Segment key={crew.symbol} 
-					style={{ 
-						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '32%', 
-						//width: "100%"
-						margin: "0 0.5em 0 0", 
-						marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : (idx === data.length - 1 ? '1em': undefined)
-						}}
-						>
-					<CrewPresenter
-						forceVertical={true}
-						width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
-						imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
-						selfRender={true}
-						selfPrepare={true}
-						storeName='behold'
-						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
-						crew={crew} />
-					<CommonCrewData 
-						ultraCompact={true}
-						roster={context.allCrew}
-						compact={true}
-						crew={crew}  />
-					{crew.markdownContent && <div style={{ marginTop: '1em' }} dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} />}
-					<div style={{ marginTop: '1em', textAlign: 'right' }}>
-						<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
-							View {crew.name} on Big Book
-						</a>
-					</div>
-					<div style={{ marginTop: '1em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-						<Button compact icon='add user' color='green'
-							content={`Preview ${crew.name} in your roster`}
-							onClick={() => addProspects([crew.symbol])}
-						/>
-						<Button compact icon='ban'
-							content='Dismiss'
-							onClick={() => { props.handleDismiss(idx); }}
-						/>
-					</div>
-				</Segment>
-			))}
-			</div>
 			{selectedCrew.length > 0 &&
-				<React.Fragment>
+				<div style={{ margin: '1em 0', textAlign: 'right' }}>
 					<Button icon='add user' color='green'
 						content='Preview all in your roster'
 						onClick={() => addProspects(selectedCrew)}
@@ -209,8 +182,57 @@ const CrewDetails = (props: CrewDetailsProps) => {
 						content='Dismiss all'
 						onClick={() => props.handleDismissAll()}
 					/>
-				</React.Fragment>
+				</div>
 			}
+			<div style={{
+				display: "flex",
+				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
+				flexWrap: "wrap",
+				justifyContent: "center"
+			}}>
+				{data.map((crew, idx) => (
+					<Segment key={crew.symbol}
+						style={{
+							width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : segmentWidth,
+							margin: "0 0.5em 0 0",
+							marginBottom: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0.5em' : (idx === data.length - 1 ? '1em': undefined)
+						}}
+					>
+						<CrewPresenter
+							forceVertical={data.length >= 3 ? true : false}
+							width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
+							imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
+							selfRender={true}
+							selfPrepare={true}
+							storeName='beholdsPage'
+							hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
+							crew={crew} />
+						<CommonCrewData
+							ultraCompact={true}
+							roster={allCrew}
+							compact={true}
+							crew={crew}  />
+						<div style={{ marginTop: '1em' }}>
+							{crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} style={{ fontSize: '1.1em' }} />}
+							<div style={{ marginTop: '1em', textAlign: 'right' }}>
+								<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
+									View {crew.name} on Big Book
+								</a>
+							</div>
+						</div>
+						<div style={{ marginTop: '1em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+							<Button compact icon='add user' color='green'
+								content={`Preview in your roster`}
+								onClick={() => addProspects([crew.symbol])}
+							/>
+							<Button compact icon='ban'
+								content='Dismiss'
+								onClick={() => { props.handleDismiss(idx); }}
+							/>
+						</div>
+					</Segment>
+				))}
+			</div>
 		</div>
 	);
 
@@ -281,6 +303,7 @@ const CrewTable = (props: CrewTableProps) => {
 				filterRow={(crew, filter, filterType) => crewMatchesSearchFilter(crew, filter, filterType)}
 				showFilterOptions={true}
 			/>
+			<CrewHoverStat targetGroup='beholdsPage' />
 		</div>
 	);
 
@@ -306,7 +329,9 @@ const CrewTable = (props: CrewTableProps) => {
 							gridGap: '1px'
 						}}>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget targetGroup='beholdsPage' inputItem={crew}>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>

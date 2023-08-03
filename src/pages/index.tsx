@@ -34,7 +34,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 
@@ -228,7 +228,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 							<CrewTarget
 								targetGroup='indexPage'
-								
+
 								inputItem={targetCrew ?? crew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
