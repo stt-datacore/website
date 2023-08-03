@@ -45,9 +45,11 @@ const voyageEstimate = (config, progress) => {
  */
 const citeOptimizer = (playerData, allCrew) => {
   return new Promise((resolve, reject) => {
-    if (playerData.citeMode && playerData.citeMode.rarities?.length) {
+    if (playerData.citeMode && (playerData.citeMode.rarities?.length || playerData.citeMode.portal !== undefined)) {
+      console.log(playerData.citeMode)
       playerData = JSON.parse(JSON.stringify(playerData));
-      playerData.player.character.crew = playerData.player.character.crew.filter(crew => playerData.citeMode.rarities.includes(crew.max_rarity));    
+      playerData.player.character.crew = playerData.player.character.crew
+        .filter((crew) => (!playerData.citeMode.rarities?.length || playerData.citeMode.rarities.includes(crew.max_rarity)) && (playerData.citeMode?.portal === undefined || crew.in_portal === playerData.citeMode.portal));    
     }
     Optimizer.assessCrewRoster(playerData, allCrew);
     Optimizer.sortVoyageRankings();

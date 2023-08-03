@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion } from 'semantic-ui-react';
+import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
@@ -16,7 +16,7 @@ import { CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { MergedData, MergedContext } from '../context/mergedcontext';
-import { RarityFilter } from './crewtables/commonoptions';
+import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -281,14 +281,31 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					]}
 				/>
 				<Segment>
-					<h3>Filter By Rarity</h3>
-					<RarityFilter
-						rarityFilter={citeMode?.rarities ?? []}
-						setRarityFilter={(data) => {
-							setCiteData(undefined);
-							setCiteMode({ ... citeMode ?? {}, rarities: data });
-						}}
-						/>
+					<h3>Filters</h3>
+					<div style={{
+						display: "flex",
+						flexDirection: "row"
+					}}>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
+							<RarityFilter
+								rarityFilter={citeMode?.rarities ?? []}
+								setRarityFilter={(data) => {
+									setCiteData(undefined);
+									setCiteMode({ ... citeMode ?? {}, rarities: data });
+								}}
+								/>
+						</div>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
+							<PortalFilter
+								portalFilter={citeMode?.portal}
+								setPortalFilter={(data) => {
+									setCiteData(undefined);
+									setCiteMode({ ... citeMode ?? {}, portal: data });
+								}}
+								/>
+						</div>
+
+					</div>
 				</Segment>
 
 				<Segment>
