@@ -168,8 +168,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 										>
 											<CrewTarget targetGroup='citationTarget'
-												inputItem={crew}
-												setDisplayItem={setCurrentCrew}>
+												inputItem={crew}>
 												<img
 													onClick={(e) => imageClick(e, crew)}
 													width={48}
@@ -309,7 +308,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</>
 					}
 				</Segment>
-				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' crew={this.state.currentCrew ?? undefined} />
+				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' />
 
 			</>
 		);

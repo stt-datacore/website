@@ -410,7 +410,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
-			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='eventTarget' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, myCrew, buffConfig)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={myCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
@@ -432,7 +432,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget targetGroup='eventTarget' inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget targetGroup='eventTarget' inputItem={crew} >
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

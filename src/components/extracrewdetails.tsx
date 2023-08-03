@@ -338,7 +338,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			{this.renderConstellation()}
 			{this.renderOptimalPolestars()}
 			{this.renderVariants()}
-			<CrewHoverStat targetGroup='variants' offset={{ x: 12, y: 12, centerX: true }} crew={me.hoverCrew ?? undefined} />
+			<CrewHoverStat targetGroup='variants' offset={{ x: 12, y: 12, centerX: true }} />
 		</div>;
 	}
 
@@ -484,7 +484,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
 								<CrewTarget 									
 									targetGroup='variants'
-									setDisplayItem={me.setHoverCrew}
+									
 									inputItem={variant}
 									>
 								<ItemDisplay

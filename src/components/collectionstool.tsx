@@ -420,7 +420,7 @@ const CrewTable = (props: CrewTableProps) => {
 				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 			/>
-			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='collectionsTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 		</React.Fragment>
 	);
 
@@ -478,7 +478,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} setDisplayItem={setHoverCrew} targetGroup='collectionsTarget'>
+							<CrewTarget inputItem={crew}  targetGroup='collectionsTarget'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

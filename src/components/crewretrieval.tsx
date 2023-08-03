@@ -1127,7 +1127,7 @@ const CrewTable = (props: CrewTableProps) => {
 			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
-		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} crew={hoverCrew ?? undefined} targetGroup='retrievalGroup' />
+		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='retrievalGroup' />
 
 		</>
 	);
@@ -1150,7 +1150,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} setDisplayItem={setHoverCrew} targetGroup='retrievalGroup'>
+							<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

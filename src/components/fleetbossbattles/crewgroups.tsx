@@ -21,7 +21,7 @@ const CrewGroups = (props: CrewGroupsProps) => {
 	return (
 		<FinderContext.Provider value={ { ...props, hoverCrew, setHoverCrew }}>
 			<div>
-				<CrewHoverStat targetGroup='fbb' crew={hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='fbb' />
 				{openNodes.map(node =>
 					<NodeGroups key={node.index} node={node} />
 				)}

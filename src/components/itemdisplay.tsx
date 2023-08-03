@@ -16,14 +16,13 @@ type ItemDisplayProps = {
 	src: string;
 	crewSymbol?: string;
 	targetGroup?: string;
-	setHoverItem?: (item: PlayerCrew | CrewMember | null | undefined) => void;
 	playerData?: PlayerData;
 	allCrew?: CrewMember[];
 };
 
 class ItemDisplay extends PureComponent<ItemDisplayProps> {
 	render() {
-		const { playerData, allCrew, targetGroup, crewSymbol, setHoverItem: setDisplayItem } = this.props;
+		const { playerData, allCrew, targetGroup, crewSymbol } = this.props;
 
 		let borderWidth = Math.ceil(this.props.size / 34);
 		let starSize = Math.floor(this.props.size / 6);
@@ -60,14 +59,14 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			}
 		}
 		
-		if (crew && crewSymbol && allCrew && targetGroup && setDisplayItem) {
+		if (crew && crewSymbol && allCrew && targetGroup) {
 			return (
 						
 					<div style={divStyle}>
 						<CrewTarget 
 							inputItem={crew} 
 							targetGroup={targetGroup} 
-							setDisplayItem={setDisplayItem}>
+							>
 							<img
 								src={this.props.src}
 								style={{

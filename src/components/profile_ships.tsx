@@ -194,7 +194,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
-										<ShipTarget targetGroup='ships' setDisplayItem={setActiveShip} inputItem={ship} >
+										<ShipTarget inputItem={ship} targetGroup='ships'>
 											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 										</ShipTarget>
 									</div>
@@ -237,7 +237,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<ShipHoverStat targetGroup='ships' displayItem={this.state.activeShip} />
+			<ShipHoverStat targetGroup='ships' />
 			</>);
 	}
 }

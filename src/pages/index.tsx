@@ -228,7 +228,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 							<CrewTarget
 								targetGroup='indexPage'
-								setDisplayItem={this.setActiveCrew}
+								
 								inputItem={targetCrew ?? crew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
@@ -354,7 +354,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 							showPermalink={true}
 							lockable={lockable}
 						/>
-						<CrewHoverStat targetGroup='indexPage' crew={this.state.hoverCrew} />
+						<CrewHoverStat targetGroup='indexPage' />
 					</MergedContext.Provider>
 				</div>
 			</React.Fragment>

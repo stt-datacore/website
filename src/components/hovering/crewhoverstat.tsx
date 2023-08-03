@@ -13,12 +13,11 @@ import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyIm
 const isWindow = typeof window !== 'undefined';
 
 export interface CrewHoverStatProps extends HoverStatProps, CrewPlugins {
-    crew: CrewMember | PlayerCrew | undefined;
     disableBuffs?: boolean;
     openCrew?: (crew: CrewMember | PlayerCrew) => void;
 }
 
-export interface CrewHoverStatState extends HoverStatState {
+export interface CrewHoverStatState extends HoverStatState<PlayerCrew | CrewMember> {
 }
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
@@ -96,7 +95,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         if (key === 'buffmode' || key.startsWith('immomode/') || key === 'immomode') {
             const { targetId } = this.state;
             if (this.current === targetId) {
-                this.props.setDisplayItem(this.prepareDisplayItem(this.props.inputItem ?? undefined));
+                this.tiny.setRapid('displayItem', this.prepareDisplayItem(this.props.inputItem ?? undefined));
             }            
         }
     };
@@ -131,7 +130,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
 }
 
-export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatState> {
+export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverStatProps, CrewHoverStatState> {
     static contextType = MergedContext;
     context!: React.ContextType<typeof MergedContext>;
 
@@ -140,11 +139,11 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
-        };        
-    }    
-    
+        };
+    }        
+
     protected checkBorder = (crew?: PlayerCrew | CrewMember, setState?: boolean) => {
-        crew ??= this.props.crew;
+        crew ??= this.state.displayItem;
         const { boxStyle } = this.state;
 
         if (crew) {
@@ -169,8 +168,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected get immortalMode(): PlayerImmortalMode {
         let value: PlayerImmortalMode;
-        if (this.props.crew) {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, 'owned') ?? 'owned';
+        if (this.state.displayItem) {
+            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, 'owned') ?? 'owned';
         }
         else {
             value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
@@ -181,8 +180,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected set immortalMode(value: PlayerImmortalMode) {
         if (value == this.immortalMode) return;
-        if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.crew.symbol, value, true);
+        if (this.state.displayItem) {
+            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, value, true);
         }
         else {
             this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
@@ -191,8 +190,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
-        if (this.props.crew) {
-            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, ['owned']) ?? ['owned'];
+        if (this.state.displayItem) {
+            value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid/' + this.state.displayItem.symbol, ['owned']) ?? ['owned'];
         }
         else {
             value = this.tiny.getValue<PlayerImmortalMode[]>('immomodevalid', ['owned']) ?? ['owned'];
@@ -203,8 +202,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
 
     protected set validImmortalModes(value: PlayerImmortalMode[]) {        
-        if (this.props.crew) {
-            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.props.crew.symbol, value, false);
+        if (this.state.displayItem) {
+            this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid/' + this.state.displayItem.symbol, value, false);
         }
         else {
             this.tiny.setValue<PlayerImmortalMode[]>('immomodevalid', value, false);
@@ -215,8 +214,8 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
         if (this.checkBorder()) {
             if (isWindow) window.setTimeout(() => this.checkBorder(undefined, true));
         }
-        const { targetGroup, crew: displayItem, openCrew, plugins, pluginData } = this.props;
-        const { mobileWidth, touchToggled } = this.state;
+        const { targetGroup, openCrew, plugins, pluginData } = this.props;
+        const { mobileWidth, displayItem, touchToggled } = this.state;
         const compact = true;    
         
         if (!displayItem) {
@@ -262,6 +261,6 @@ export class CrewHoverStat extends HoverStat<CrewHoverStatProps, CrewHoverStatSt
     }
     
     protected get canActivate(): boolean {
-        return true; // return !!this.props.crew;
+        return true; // return !!this.state.displayItem;
     }
 }

@@ -42,16 +42,6 @@ export interface HoverStatTargetProps<T> {
      * The item to be displayed (or null)
      */
     inputItem: T | null;
-    
-    /**
-     * The function that is used to set the display item to the value of the displayItem property.
-     * 
-     * _When the hover is hit for a particular item, that item will call this function_
-     * _to set the stateful property that is bound to the main hover component._
-     * 
-     * _When the hover over is exited, this function will be called with __null__._
-     */
-    setDisplayItem: React.Dispatch<React.SetStateAction<T | null>> | ((value: T | null) => void);
 
     /**
      * The wrapped content
@@ -67,11 +57,12 @@ export interface HoverStatTargetProps<T> {
 /**
  * Default HoverStatState
  */
-export interface HoverStatState {
+export interface HoverStatState<T> {
     divId: string;
     touchToggled: boolean;
     boxStyle: React.CSSProperties;
     mobileWidth: number;
+    displayItem?: T;
 }
 
 export interface HoverStatTargetState {
@@ -131,14 +122,14 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
             return;
         }
         this.current = "";
-        this.props.setDisplayItem(null);
+        this.tiny.setRapid('displayItem', null);
     };
     
     protected containerEnter = (e) => {
         const displayItem = this.prepareDisplayItem(this.props.inputItem);
 
         this.current = this.state.targetId;
-        this.props.setDisplayItem(displayItem);            
+        this.tiny.setRapid('displayItem', displayItem);
     };
 
     render(): React.ReactNode {
@@ -158,7 +149,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 /**
  * HoverStat abstract hover window class
  */
-export abstract class HoverStat<TProps extends HoverStatProps, TState extends HoverStatState> extends React.Component<TProps, TState> {
+export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends HoverStatState<T>> extends React.Component<TProps, TState> {
 
     private _unmounted: boolean = false;
     private _nodismiss: boolean = false;
@@ -212,7 +203,12 @@ export abstract class HoverStat<TProps extends HoverStatProps, TState extends Ho
 
     protected propertyChanged = (key: string): void => {
         if (key === 'cancelled') return;
-        this.forceUpdate();
+        else if (key === 'displayItem') {
+            this.setState({ ... this.state, displayItem: this.tiny.getRapid('displayItem')});
+        }
+        else {
+            this.forceUpdate();
+        }    
     }
 
     render() {

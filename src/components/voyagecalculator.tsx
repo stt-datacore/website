@@ -230,7 +230,7 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				setHoverItem={setHoverItem}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
-			<CrewHoverStat targetGroup='voyageRewards' crew={hoverItem ?? undefined} />
+			<CrewHoverStat targetGroup='voyageRewards' />
 			
 		</React.Fragment>
 	)

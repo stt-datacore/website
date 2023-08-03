@@ -278,7 +278,7 @@ const GridView = (props: ViewProps) => {
 			{ship && renderShip()}
 			{layout === 'grid-cards' &&
 				<div>
-					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' crew={hoverCrew ?? undefined} />
+					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' />
 					<Grid columns={6} doubling centered>
 						{renderCards({ setHoverCrew })}
 					</Grid>
