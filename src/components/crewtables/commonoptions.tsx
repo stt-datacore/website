@@ -138,3 +138,30 @@ export function descriptionLabel(crew: PlayerCrew, showOwned?: boolean): JSX.Ele
 		</div>
 	);
 }
+
+type CrewPortalFilterProps = {
+	portalFilter?: boolean;
+	setPortalFilter: (portalFilter: boolean | undefined) => void;
+	altTitle?: string;
+};
+
+export const PortalFilter = (props: CrewPortalFilterProps) => {
+	const portalFilterOptions = [
+		{ key: 'true', value: true, text: 'In Portal' },
+		{ key: 'false', value: false, text: 'Not In Portal' },
+	];
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Filter by portal status'} 
+				clearable
+				selection
+				options={portalFilterOptions}
+				value={props.portalFilter}
+				onChange={(e, { value }) => props.setPortalFilter(value === '' ? undefined : value as boolean)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};

@@ -16,6 +16,7 @@ export interface AtlasIcon extends Icon {
 
 export interface CiteMode {
   rarities?: number[],
+  portal?: boolean,
   customSorter?: (left: PlayerCrew, right: PlayerCrew) => number;
 }
 
