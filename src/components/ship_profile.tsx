@@ -94,12 +94,6 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		this.setState({ ... this.state, modalOptions: options });
 	}
 
-	private readonly setHoverItem = (crew: PlayerCrew | CrewMember | undefined) => {
-		if (this.state.hoverItem?.symbol !== crew?.symbol) {
-			this.setState({ ...this.state, hoverItem: crew });
-		}
-	}
-
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		const { crewStations } = this.state;
 
@@ -277,7 +271,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 			</div>
 
-			<CrewHoverStat crew={hoverItem} targetGroup='ship_profile' />
+			<CrewHoverStat targetGroup='ship_profile' />
             <div style={{
                 display: "flex",
 				width: "100%",
@@ -326,7 +320,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 								justifyContent: "center",
 								alignItems: "center"}}>
 							{crewStations[idx] && (
-								<CrewTarget inputItem={crewStations[idx]} setDisplayItem={(crew) => this.setHoverItem(crew ?? undefined)} targetGroup='ship_profile'>
+								<CrewTarget inputItem={crewStations[idx]}  targetGroup='ship_profile'>
 								<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px"}} />
 								</CrewTarget>
 							) ||

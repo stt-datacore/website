@@ -348,7 +348,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
-			console.log('Uploading profile');
+			// console.log('Uploading profile');
 			shareProfile();
 		}
 	}, [profileAutoUpdate, strippedPlayerData]);

@@ -24,8 +24,6 @@ type CrewTableProps = {
 
 const CrewTable = (props: CrewTableProps) => {
 	const { solver, optimizer } = props;
-	
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
@@ -63,7 +61,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	return (
 		<>
-		<CrewHoverStat targetGroup='fbb' crew={hoverCrew ?? undefined} />
+		<CrewHoverStat targetGroup='fbb' />
 
 		<SearchableTable
 			id={`fbb/${solver.id}/crewtable_`}
@@ -89,7 +87,7 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget targetGroup='fbb' inputItem={crew} setDisplayItem={setHoverCrew}>
+							<CrewTarget targetGroup='fbb' inputItem={crew} >
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>

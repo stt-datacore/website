@@ -14,14 +14,13 @@ import { CrewGroupsProps, FinderContext } from './findercontext';
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	const openNodes = solver.nodes.filter(node => node.open);
 
 	return (
-		<FinderContext.Provider value={ { ...props, hoverCrew, setHoverCrew }}>
+		<FinderContext.Provider value={ { ...props }}>
 			<div>
-				<CrewHoverStat targetGroup='fbb' crew={hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='fbb' />
 				{openNodes.map(node =>
 					<NodeGroups key={node.index} node={node} />
 				)}

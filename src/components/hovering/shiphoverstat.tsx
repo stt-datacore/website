@@ -11,11 +11,10 @@ import { MergedContext } from "../../context/mergedcontext";
 const isWindow = typeof window !== 'undefined';
 
 export interface ShipHoverStatProps extends HoverStatProps {
-    displayItem: Ship | undefined | null;
     disableBuffs?: boolean;
 }
 
-export interface ShipHoverStatState extends HoverStatState {
+export interface ShipHoverStatState extends HoverStatState<Ship> {
 }
 
 export interface ShipTargetProps extends HoverStatTargetProps<Ship | undefined> {
@@ -64,7 +63,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
         if (key === 'buff' || key === 'immo') {
             const { targetId } = this.state;
             if (this.current === targetId) {
-                this.props.setDisplayItem(this.prepareDisplayItem(this.props.inputItem ?? undefined));
+                this.tiny.setRapid('displayItem', this.prepareDisplayItem(this.props.inputItem ?? undefined));
             }            
         }
     };
@@ -117,7 +116,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     }
 }
 
-export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatState> {
+export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHoverStatState> {
     static contextType = MergedContext;
     context!: React.ContextType<typeof MergedContext>;
 
@@ -130,7 +129,7 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
     }    
 
     protected checkBorder = (ship?: Ship, setState?: boolean) => {
-        ship ??= this.props.displayItem ?? undefined;
+        ship ??= this.state.displayItem ?? undefined;
         const { boxStyle } = this.state;
 
         if (ship) {
@@ -174,8 +173,8 @@ export class ShipHoverStat extends HoverStat<ShipHoverStatProps, ShipHoverStatSt
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
         
-        const { displayItem: displayItem, targetGroup } = this.props;
-        const { mobileWidth, touchToggled } = this.state;
+        const { targetGroup } = this.props;
+        const { mobileWidth, displayItem, touchToggled } = this.state;
 
         const compact = true;    
 

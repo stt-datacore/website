@@ -63,7 +63,6 @@ export interface FilterProps {
 
 export interface GauntletsPageState {
 
-	hoverCrew: PlayerCrew | CrewMember | null | undefined;
 	gauntlets: Gauntlet[];
 	uniques: Gauntlet[];
 	ranges: number[];
@@ -130,7 +129,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.state = {
 			sortKey: ['', '', '', ''],
 			sortDirection: [undefined, undefined, undefined, undefined],
-			hoverCrew: undefined,
 			itemsPerPage: 10,
 			activePageTabs: [[], [], [], []],
 			discoveredPairs: [[], [], [], []],
@@ -149,10 +147,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			appliedFilters: [JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS)), JSON.parse(JSON.stringify(DEFAULT_FILTER_PROPS))]
 		}
 	}
-
-	public readonly setHoverCrew = (item: CrewMember | PlayerCrew | null | undefined) => {
-		this.setState({ ... this.state, hoverCrew: item });
-	};
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
@@ -948,10 +942,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			// }
 		}
 
-		const setCurrentCrew = (crew) => {
-			this.setState({ ... this.state, hoverCrew: crew });
-		}
-		
 		const prettyTraits = gauntlet.prettyTraits;
 
 		return (<div style={{overflowX: "auto"}}>
@@ -996,7 +986,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										>
 											<CrewTarget targetGroup='gauntletTable'
 												inputItem={crew}
-												setDisplayItem={setCurrentCrew}>
+												>
 												<img
 													onClick={(e) => imageClick(e, crew)}
 													width={48}
@@ -1054,7 +1044,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<CrewHoverStat crew={this.state.hoverCrew ?? undefined} targetGroup='gauntletTable' />
+			<CrewHoverStat targetGroup='gauntletTable' />
 			</div>);
 	}
 
@@ -1540,7 +1530,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					crewSymbol={crew.symbol}
 					targetGroup='gauntletsHover'
 					allCrew={this.context.crew}
-					setHoverItem={this.setHoverCrew}
 					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 					rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
 					maxRarity={crew.max_rarity}
@@ -1641,7 +1630,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<Tab menu={{ attached: false }} panes={tabPanes} />
 				}
 				</div>
-				<CrewHoverStat targetGroup='gauntletsHover' crew={this.state.hoverCrew ?? undefined} />
+				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>
 		)}
 	}

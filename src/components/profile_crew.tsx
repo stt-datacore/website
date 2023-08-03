@@ -568,7 +568,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} setDisplayItem={setCrew} targetGroup={pageId+"targetClass"}>
+							<CrewTarget inputItem={crew} targetGroup={pageId+"targetClass"} >
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
@@ -828,7 +828,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 					
 				</div>
 			))}
-            <CrewHoverStat crew={focusedCrew ?? undefined} targetGroup={pageId+"targetClass"} />
+            <CrewHoverStat targetGroup={pageId+"targetClass"} />
 
             <div style={{ margin: "1em 0" }}>
                 <Form>

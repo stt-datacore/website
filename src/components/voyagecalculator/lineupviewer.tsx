@@ -269,7 +269,6 @@ const TableView = (props: ViewProps) => {
 
 const GridView = (props: ViewProps) => {
 	const { layout, voyageData, ship, shipData, assignments } = props;
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined | null>(undefined);
 
 	return (
 		<React.Fragment>			
@@ -278,9 +277,9 @@ const GridView = (props: ViewProps) => {
 			{ship && renderShip()}
 			{layout === 'grid-cards' &&
 				<div>
-					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' crew={hoverCrew ?? undefined} />
+					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' />
 					<Grid columns={6} doubling centered>
-						{renderCards({ setHoverCrew })}
+						{renderCards()}
 					</Grid>
 				</div>
 			}
@@ -327,18 +326,14 @@ const GridView = (props: ViewProps) => {
 			</Table>
 		);
 	}
-
-	interface RenderCardProps { 
-		setHoverCrew: (crew: PlayerCrew | CrewMember | undefined | null) => void 
-	}
 	
-	function renderCards(props: RenderCardProps): JSX.Element {
+	function renderCards(): JSX.Element {
 		return (
 			<React.Fragment>
 				{assignments.map((assignment, idx) => {
 					return (
 						<Grid.Column key={idx}>
-							<AssignmentCard setHoverCrew={props.setHoverCrew} assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={false} />
+							<AssignmentCard assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={false} />
 						</Grid.Column>
 					);
 				})}
@@ -487,11 +482,10 @@ type AssignmentCardProps = {
 	assignment: any;
 	showFinder: boolean;
 	showSkills: boolean;
-	setHoverCrew?: (crew: PlayerCrew | CrewMember | null | undefined) => void;
 };
 
 const AssignmentCard = (props: AssignmentCardProps) => {
-	const { setHoverCrew, assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
+	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 	
 	const context = React.useContext(MergedContext);
@@ -508,7 +502,6 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					allCrew={context.crew}
 					playerData={context.playerData}
 					targetGroup='voyageLineup'
-					setHoverItem={setHoverCrew}
 					crewSymbol={crew.symbol}					
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 					size={96}

@@ -392,7 +392,7 @@ export class TinyStore {
 
     public setRapid<T>(key: string, value: T) {
         if (!this.rapid.has(key) || this.getRapid(key) !== value) {
-            this.setRapid(key, value);
+            this.rapid.set(key, value);
             this.onPropertyChanged(key);
         }
     }
