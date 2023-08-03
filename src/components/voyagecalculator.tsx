@@ -212,7 +212,6 @@ type VoyageActiveProps = {
 const VoyageActive = (props: VoyageActiveProps) => {
 	const { allShips, playerData, allCrew } = React.useContext(VoyageContext);
 	const { voyageConfig, myCrew } = props;
-	const [hoverItem, setHoverItem] = React.useState<PlayerCrew | CrewMember | undefined | null>();
 
 	if (!allShips) return <></>;
 
@@ -227,7 +226,6 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				dbid={playerData.player.dbid}
 				allCrew={allCrew}
 				playerData={playerData}
-				setHoverItem={setHoverItem}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
 			<CrewHoverStat targetGroup='voyageRewards' />

@@ -94,12 +94,6 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		this.setState({ ... this.state, modalOptions: options });
 	}
 
-	private readonly setHoverItem = (crew: PlayerCrew | CrewMember | undefined) => {
-		if (this.state.hoverItem?.symbol !== crew?.symbol) {
-			this.setState({ ...this.state, hoverItem: crew });
-		}
-	}
-
 	private readonly filterCrew = (crew: (PlayerCrew | CrewMember)[], searchFilter?: string): (PlayerCrew | CrewMember)[] => {
 		const { crewStations } = this.state;
 

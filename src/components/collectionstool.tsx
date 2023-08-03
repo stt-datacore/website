@@ -315,8 +315,6 @@ type CrewTableProps = {
 const CrewTable = (props: CrewTableProps) => {
 	const { allCrew, playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
 
-	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | undefined | null>(undefined);
-
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);

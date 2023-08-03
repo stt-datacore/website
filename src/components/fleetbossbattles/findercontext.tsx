@@ -11,6 +11,4 @@ export interface CrewGroupsProps {
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
 	exportPrefs: ExportPreferences;
-	hoverCrew?: PlayerCrew | CrewMember | undefined | null;
-	setHoverCrew?: (crew: PlayerCrew | CrewMember | undefined | null) => void;
 };

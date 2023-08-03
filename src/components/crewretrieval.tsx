@@ -1100,7 +1100,6 @@ const CrewTable = (props: CrewTableProps) => {
 	const { allCrew, algo, setAlgo } = props;
 	const [activeCrew, setActiveCrew] = React.useState<string | null>(null);
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
-	const [hoverCrew, setHoverCrew] = React.useState<CrewMember | PlayerCrew | null | undefined>(null);
 	const { playerData } = props;
 
 	const dataContext = React.useContext(MergedContext);

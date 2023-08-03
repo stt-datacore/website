@@ -27,7 +27,6 @@ type VoyageStatsProps = {
 	dbid: string | number;
 	allCrew?: CrewMember[];
 	playerData?: PlayerData;
-	setHoverItem?: (item: PlayerCrew | CrewMember | null | undefined) => void;
 };
 
 type VoyageStatsState = {
@@ -340,7 +339,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderRewards(rewards): JSX.Element {
-		const { playerItems, roster, setHoverItem } = this.props;
+		const { playerItems, roster } = this.props;
 
 		rewards = rewards.sort((a, b) => {
 			if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
@@ -410,7 +409,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										rarity={rarity(entry)}
 										maxRarity={entry.rarity}
 										hideRarity={hideRarity(entry)}
-										setHoverItem={setHoverItem}
 										targetGroup='voyageRewards'
 										crewSymbol={getCrewSymbol(entry)}
 										allCrew={this.props.allCrew}

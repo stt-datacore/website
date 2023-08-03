@@ -38,7 +38,6 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
 	const inputRef = React.createRef<Input>();
 	const { pickerModal } = props;

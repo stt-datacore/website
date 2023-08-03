@@ -151,7 +151,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			);
 		}
 
-		console.log(item_data);
+		// console.log(item_data);
 
 		let bonusText = [] as string[];
 		if (item_data.item.bonuses) {

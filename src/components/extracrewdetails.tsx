@@ -77,10 +77,6 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : found[0].short_name;
 	}
 
-	readonly setHoverCrew = (item: PlayerCrew | CrewMember | null | undefined) => {
-		this.setState({ ... this.state, hoverItem: item ?? undefined });
-	}
-
 	get hoverCrew(): CrewMember | PlayerCrew | null | undefined {
 		return this.state.hoverItem;
 	}

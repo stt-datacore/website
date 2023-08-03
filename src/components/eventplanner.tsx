@@ -227,7 +227,6 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
-	const [hoverCrew, setHoverCrew] = React.useState<PlayerCrew | CrewMember | null | undefined>(undefined);
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 	React.useEffect(() => {
