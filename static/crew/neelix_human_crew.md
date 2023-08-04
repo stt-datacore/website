@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Setting aside the spaghetti strand mess of logic that suggests Ethan Phillips is actually played by Neelix and not vice versa, let's lead off with the second most interesting thing about this crew; collections.
+Setting aside the spaghetti strand mess of logic that suggests Ethan Phillips is actually played by Neelix and not vice versa, let's lead off with the second most interesting thing about this crew; Collections. 
 
-Heelix is the Neopolitan ice cream of STT, one of each flavor of collections - small vanity, medium vanity, and large vanity (at least if Ecclesiastes 1:2 is correct). With Original Thinking being stuffed full of so many stat boosts and super rares being easier and cheaper to immortalize than the dozens of legendaries needed, Heelix is worth some behold capital for that reason alone. If any or all of his untapped traits win the Collection Selection Election, it may push him into the top echelon of collection names.
+Notlix has picked up two Vanity Collections, two Stat-Boosting Collections, and has two more Traits in the pocket, which would give him a six-pack of inclusions (not a abdominal six-pack though, sorry Mr. Phillips).
 
-From there he's a big step down save for events. Hologram has been a very popular event trait historically, while the maître d' is the best pound-for-pound DIP option among Neelix variants. You can expect one or two yearly thawpertunities.
+From there he's a big step down save for Events. Hologram has been a very popular Event trait historically, while the maître d' is the best pound-for-pound DIP option among Neelix variants. You can expect one or two yearly thawpertunities.

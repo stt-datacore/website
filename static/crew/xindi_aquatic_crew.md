@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-"Voyages aren't everything", spoke the fool from Quin'lat. The man from Kahless' parable would probably enjoy the Xindi fish, that is if he were still alive. Aquatic's interests lie in the realms of shuttles and collections.
+"Voyages aren't everything", spoke the fool from Quin'lat. The man from Kahless' parable would probably enjoy the Xindi fish, that is if he were still alive. Aquatic's interests lie in the realms of Shuttles and Collections. 
 
-Big base power augments Aquatic's eclectic trait set to ensure that on the rare occasion they do snag a Faction event bonus, they'll have no trouble commanding a seat. Their odd trait combo also makes them the only crew in both the Diplomat and Innovator collections, with a vanity cherry on top. So despite a pretty plus voyage skill set, adjust expectations for Aquatic and enjoy what it offers if you need it.
+Big Base power augments Aquatic's eclectic Trait set to ensure that on the rare occasion they do snag a Faction Event bonus, they'll have no trouble commanding a seat. Their odd Trait combo also makes them the only crew in both the Diplomat and Innovator Collections, two more stat-boosters to boot, and a cherry on top via the Delphic Expanse vanity. So despite a pretty plus Voyage Skill set, adjust expectations for Aquatic and enjoy what it offers if you need it.

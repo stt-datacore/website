@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-If you're in the habit of skimming over base and voyage ranks, Judo Chop Kal'HYAH Bashir may be a hidden gem. A handful of stat-boosting collections, while increasingly common, is great value that doesn't get power creeped quite like numbers in other areas of the game. Sharing company with the esteemed Antaak as the only Klingon Physicians in the game (An unlikely pair, how would they have reacted to each other we wonder?) is just the tip of this oddball iceberg.
+If you're in the habit of skimming over Base and Voyage ranks, Judo Chop Kal'HYAH Bashir may be a hidden gem. A trio of stat-boosting Collections, while increasingly common, is great value that doesn't get power creeped quite like numbers in other areas of the game. Sharing company with the esteemed Antaak as the only Klingon Physicians in the game (An unlikely pair, how would they have reacted to each other we wonder?) is just the tip of this oddball iceberg. 
 
-In fact his voyage prowess is built on that. MED + Klingon, SEC + Physician...uncommon pairings and exploitable niches are often the driving force behind pushing crew into service and in this case elevate numbers for Bashir which aren't eye-catching.
+Unfortunately, Bashir’s time has come and gone on Voyages. He had a strong skill set and eye-catching Anti-matter Traits, but those can only buoy a man so long under the crush of Power Creep. If you do finish this crew, your remaining hope is for him to catch a fourth collection with his only remaining viable Trait.
 
-It's the same story for events where Bashir's more common SEC/CMD pairing qualifies him for the most frequent shuttle seats. Bashir and Physicians at large aren't flush with options for those skill bases, further cementing his all-round usage. Kal'HYAH might have debuted in the long shadow of Dexa, RSK, and Human Saru, but has ended up being one of the best crew released in 2021.
+In Events, Bashir's more common SEC/CMD pairing qualifies him for the most frequent Shuttle seats. Bashir and Physicians at large aren't flush with options for those skill bases, further cementing his all-round usage.
