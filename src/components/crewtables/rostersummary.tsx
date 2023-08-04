@@ -310,12 +310,12 @@ const SkillDepth = (props: SkillDepthProps) => {
 		function getSkillData(skills: string[]): SkillsSummary {
 			const skillScore = (crew: PlayerCrew | CompactCrew) => {
 				if (preferVersatile && crew.base_skills && Object.entries(crew.base_skills).length !== 3) return 0;
-				const scores = [] as Skill[];
+				const scores = [] as ComputedBuff[];
 				skills.forEach(skill => {
-					if (crew.base_skills && crew.base_skills[skill].core > 0) scores.push(crew.base_skills[skill]);
+					if (crew[skill] && crew[skill].core > 0) scores.push(crew[skill]);
 				});
 				if (scores.length < skills.length) return 0;
-				return getSkillScore(scores.map(sk => ({ core: sk.core, min: sk.range_min, max: sk.range_max })));
+				return getSkillScore(scores);
 			};
 			const tallyAllCrewBySkill = () => {
 				return props.allCrew.filter(crew => {

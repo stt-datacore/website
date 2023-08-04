@@ -212,7 +212,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						<div style={{ gridArea: 'description' }}>{item.flavor}</div>
 					</div>
 				</Table.Cell>
-				<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
+				<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type] ?? item.type}</Table.Cell>
 				<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 				<Table.Cell>{item.flavor}</Table.Cell>
 			</Table.Row>
