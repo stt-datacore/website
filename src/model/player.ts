@@ -19,6 +19,8 @@ export interface CiteMode {
   portal?: boolean,
   nameFilter?: string,
   customSorter?: (left: PlayerCrew, right: PlayerCrew) => number;
+  priSkills?: string[];
+  secSkills?: string[];
 }
 
 
