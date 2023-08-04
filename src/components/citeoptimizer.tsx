@@ -295,7 +295,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								}}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
+						{/* <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
 							<PortalFilter
 								portalFilter={citeMode?.portal}
 								setPortalFilter={(data) => {
@@ -303,7 +303,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									setCiteMode({ ... citeMode ?? {}, portal: data });
 								}}
 								/>
-						</div>
+						</div> */}
 
 					</div>
 				</Segment>

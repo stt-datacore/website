@@ -200,7 +200,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 							<CrewTarget
 								targetGroup='indexPage'
-								
+
 								inputItem={targetCrew ?? crew}>
 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
