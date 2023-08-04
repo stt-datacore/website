@@ -17,6 +17,7 @@ type CrewRarityFilterProps = {
 	rarityFilter: number[];
 	setRarityFilter: (rarityFilter: number[]) => void;
 	altTitle?: string;
+	multiple?: boolean;
 };
 
 export const RarityFilter = (props: CrewRarityFilterProps) => {
@@ -33,11 +34,11 @@ export const RarityFilter = (props: CrewRarityFilterProps) => {
 			<Dropdown
 				placeholder={props.altTitle ?? 'Filter by rarity'} 
 				clearable
-				multiple
+				multiple={props.multiple ?? true}
 				selection
 				options={rarityFilterOptions}
-				value={props.rarityFilter}
-				onChange={(e, { value }) => props.setRarityFilter(value as number[])}
+				value={ props.multiple === false ? (props.rarityFilter?.length ? props.rarityFilter[0] : '') : props.rarityFilter}
+				onChange={(e, { value }) => props.setRarityFilter(props.multiple === false ? (value === '' ? [] : [ value as number ]) : value as number[])}
 				closeOnChange
 			/>
 		</Form.Field>
