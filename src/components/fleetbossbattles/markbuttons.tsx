@@ -396,7 +396,7 @@ const SolveButton = (props: SolveButtonProps) => {
 			height: "1.25em"
 		} as React.CSSProperties;
 		const instances = traitData.filter(t => t.trait === trait);
-		//if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
+		if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
 		const needed = instances.length - instances.filter(t => t.consumed).length;
 		return (<div style={spanStyle}>{`${allTraits.trait_names[trait]}`} {renderNeeded(needed)}</div>);
 	}
