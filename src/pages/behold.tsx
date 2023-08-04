@@ -1,7 +1,6 @@
 import React from 'react';
 import { Header, Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
-import * as marked from 'marked';
 
 import Layout from '../components/layout';
 import CrewPicker from '../components/crewpicker';
@@ -23,6 +22,12 @@ import { formatTierLabel, crewCopy } from '../utils/crewutils';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../components/base/optionsmodal_base';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import CommonCrewData from '../components/commoncrewdata';
+
+/**
+ * Marked typescript libs not correct; this workaround allows the linter to pass
+ * @type {(src: string, options?: MarkedOptions): string}
+ */
+import marked from 'marked';
 
 type BeholdsPageProps = {
 	location: any;
@@ -213,7 +218,7 @@ const CrewDetails = (props: CrewDetailsProps) => {
 							compact={true}
 							crew={crew}  />
 						<div style={{ marginTop: '1em' }}>
-							{crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked(crew.markdownContent) }} style={{ fontSize: '1.1em' }} />}
+							{crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} style={{ fontSize: '1.1em' }} />}
 							<div style={{ marginTop: '1em', textAlign: 'right' }}>
 								<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
 									View {crew.name} on Big Book
