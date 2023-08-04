@@ -525,7 +525,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 };
 
 type EventCrewMatrixProps = {
-	crew: any[];
+	crew: PlayerCrew[];
 	bestCombos: any;
 	phaseType: string;
 	handleClick: (skillA: string, skillB: string) => void;
@@ -575,11 +575,16 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		if (best.score > 0) {
 			let bestCrew = crew.find(c => c.id === best.id);
 			let icon = (<></>);
-			if (bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
-			if (bestCrew.prospect) icon = (<Icon name='add user' />);
+			if (bestCrew && bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
+			if (bestCrew && bestCrew.prospect) icon = (<Icon name='add user' />);
 			return (
 				<Table.Cell key={key} textAlign='center' style={{ cursor: 'zoom-in' }} onClick={() => handleClick(skillA, skillB)}>
-					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
+				<CrewTarget inputItem={bestCrew} targetGroup='eventTarget'>
+					<div>
+					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} /><br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
+					</div>
+				</CrewTarget> 
+
 				</Table.Cell>
 			);
 		}
