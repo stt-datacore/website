@@ -81,3 +81,34 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
 
 	return csv;
 }
+
+
+/**
+ * Creates a formatted title (appelation) from the given text.
+ * @param text The text to convert into a title
+ * @returns 
+ */
+export function appelate(text: string) {
+	let curr: string = "";
+	let cpos = 0;
+
+	const match = new RegExp(/[A-Za-z0-9]/);
+
+	for (let ch of text) {
+		if (match.test(ch)) {
+			if (cpos++ === 0) {
+				curr += ch.toUpperCase();
+			}
+			else {
+				curr += ch.toLowerCase();
+			}
+		}
+		else {
+			cpos = 0;
+			curr += ch;
+		}
+	}
+
+	return curr;
+}
+
