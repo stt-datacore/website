@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox } from 'semantic-ui-react';
+import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import Layout from '../components/layout';
 import CONFIG from './CONFIG';
@@ -12,7 +12,7 @@ import marked from 'marked';
 import CrewStat from './crewstat';
 import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
-import { CiteMode, PlayerCrew, PlayerData } from '../model/player';
+import { CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { MergedData, MergedContext } from '../context/mergedcontext';
@@ -34,6 +34,7 @@ export interface VoyageImprovement {
 	voyage: string;
 	crew: PlayerCrew[];
 	maxEV: number;
+	remainingEV: number;
 }
 
 export interface CiteData {
@@ -122,6 +123,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	renderVoyageGroups(data: CiteData) {
 		const voyages = [] as VoyageImprovement[];
+		let currVoy: string = '';
+		
+		const voyageData = JSON.parse(sessionStorage.getItem('tools/voyageData') ?? "{}") as VoyageInfo;
+
+		if (voyageData?.voyage?.length) {
+			let v = voyageData.voyage[0];
+			let sk = [v.skills.primary_skill, v.skills.secondary_skill].map((t) => t.replace("_skill", "")).reduce((prev, curr) => prev + "/" + curr);
+			if (sk) currVoy = appelate(sk);
+		}
+
+		const currentVoyage = currVoy;
 
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
@@ -146,12 +158,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				crew.addedEV = voycrew.addedEV;
 				crew.totalEVContribution = voycrew.totalEVContribution;
 				crew.totalEVRemaining = voycrew.totalEVRemaining;
+				crew.pickerId = voycrew.pickerId;
 
 				for (let voyage of crew.voyagesImproved ?? []) {
 					let vname = appelate(voyage);
 					let currvoy = voyages.find((v) => v.voyage === vname);
 					if (!currvoy){
-						currvoy = { voyage: vname, crew: [], maxEV: 0 };
+						currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
 						voyages.push(currvoy);
 					}
 	
@@ -165,21 +178,34 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		});
 
 		voyages.sort((a, b) => {
-			
+
 			let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
 			let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
 			
 			if (!a.maxEV) a.maxEV = ma;
 			if (!b.maxEV) b.maxEV = mb;
 
+			let ra = Math.min(...a.crew.map(ac => ac.totalEVRemaining ?? 0));
+			let rb = Math.min(...b.crew.map(bc => bc.totalEVRemaining ?? 0));
+
+			if (!a.remainingEV) a.remainingEV = ra;
+			if (!b.remainingEV) b.remainingEV = rb;
+
+			if (a.voyage === currentVoyage) return -1;
+			else if (b.voyage === currentVoyage) return 1;
+
 			let r = mb - ma;
-			
+		
 			if (r) return r;
 			
-			ma = a.crew.map(ac => ac.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
-			mb = b.crew.map(bc => bc.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
+			r = ra - rb;
+
+			if (r) return r;
+
+			ma = a.crew.map(ac => ac.pickerId ?? 0).reduce((prev, curr) => prev + curr);
+			mb = b.crew.map(bc => bc.pickerId ?? 0).reduce((prev, curr) => prev + curr);
 			
-			r = mb - ma;
+			r = ma - mb;
 			
 			if (r) return r;
 			
@@ -212,8 +238,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			<Table striped>
 				{voyages.map((voyage, idx) =>
 					<Table.Row>
-						<Table.Cell>
-							<div style={{
+						<Table.Cell style={{backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined,}}>
+							<div style={{								
 								display: "flex",
 								flexDirection: "column",
 								justifyContent: "center",
@@ -221,8 +247,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								height: "100%",
 								margin: "1em"
 							}}>
-							<h3 style={{marginBottom: 0}}>{voyage.voyage}</h3>
-							<i style={{margin:0}}>(Max EV Improvement: <b>+{Math.round(voyage.maxEV)})</b></i>
+							{voyage.voyage === currentVoyage && <h3 style={{marginBottom:0}}><u>Current Voyage</u></h3>}
+							<h2 style={{marginBottom: 0}}>{voyage.voyage}</h2>
+							<i style={{margin:0}}>(Max Final EV: <b>+{Math.ceil(voyage.maxEV)})</b></i>
+							<i style={{margin:0}}>(Min Remaining EV: <b>+{Math.ceil(voyage.remainingEV)})</b></i>
 							</div>
 						</Table.Cell>
 						<Table.Cell>
@@ -240,8 +268,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.crew}
 										playerData={this.context.playerData}
 										/>
-										<b style={{margin:"0.5em 0 0 0"}}>{crew.name}</b>
-										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.round(crew.totalEVContribution ?? 0)} Total EV</i>
+										<b style={{margin:"0.5em 0 0 0"}}>{crew.name} ({crew.pickerId})</b>
+										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.ceil(crew.totalEVContribution ?? 0)} Total EV</i>
 									</div>
 								))}
 							</Grid>
@@ -394,10 +422,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
-
+		
 		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+		}
+
+		if (workset && citeMode?.nameFilter) {
+			workset.crewToCite = workset.crewToCite.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
+			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
 		}
 
 		const citeData = workset;
@@ -456,6 +489,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								setPortalFilter={(data) => {									
 									setCiteMode({ ... citeMode ?? {}, portal: data });
 								}}
+								/>
+						</div>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
+							<Input
+								label={"Filter By Name"}
+								value={citeMode.nameFilter}
+								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
 								/>
 						</div>
 
