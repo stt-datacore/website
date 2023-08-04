@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Newer players will buy in for some worthwhile shuttle and voyage work while the Agents' Tribbled trait is that bit of something for everyone, thanks to the Tribble Trouble collection which currently requires a handful of unenviable legendary crew to finish.
+Newer players will buy in for some worthwhile Shuttle work while the Agents' Tribbled trait is that bit of something for everyone, thanks to the Tribble Trouble Collection which currently requires a handful of unenviable Legendary crew to finish. 
 
-It's possible to envision value adds in the future from a couple of their other traits, but due to the lack of long-term guarantees outside of their collection, it's best to treat the Agents as early game daily helpers.
+It's possible to envision value adds in the future from a couple of their other Traits, but due to the lack of long-term guarantees outside of their Collections, it's best to treat the Agents as early game daily helpers. Complete them at your leisure, with only two current Collection notches and one Trait still to bear fruit.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-He's one of about fifty crew who can unlock a few science nodes, but realistically has no business being on a roster unless you're a collector escorting him to cryostasis. If he happens to hit on a goofier-than-usual collection out of left field, count your blessings.
+He's one of about fifty crew who can unlock a few SCI nodes, but realistically has no business being on a roster unless you're a Collector escorting him to cryostasis. If he happens to hit on a goofier-than-usual Collection out of left field, count your blessings.

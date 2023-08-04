@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-Tribble Quark's honor of being the second best Ferengi crew is kind of like beating a one-legged man in an ass kicking contest - it doesn't take much. But for a crew who's easy to overlook thanks to blunted base and voyage ranks, Quark is still a worthwhile card.
+Tribble Quark has most of the value you are looking for from a two year old crew at this point; a myriad of Traits that have already and will continue to bear fruit for Collections, Events, and Fleet Boss Battles combo node unlocks. He’s likely to do you no good on Voyages given his power has been eroded by time.
 
-On voyages, he's pretty much as advertised by his score rank. Good traits battle to a stalemate with an increasingly available skill set, making him more of a option because you probably got four stars for free in his mega rather than on his own merits.
-
-Quark's eccentric trait list fares better elsewhere as it's rocket-fueled him to over a dozen events in 2021, the year he debuted, and has him in two collections so far. A strong arena attack boost can and should be replaced by an option with instant damage built-in, but is at least usable if he's one of your favorites and helps round him out as a crew who can contribute.
+Tribble Quark’s Trait set is a little lighter than brothers Martian and Convergence Day, but he has the unicorn Tribbled one, which makes him essential to complete that extremely difficult set of crew for that juicy juicy global stat boost.
