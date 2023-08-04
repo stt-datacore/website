@@ -34,6 +34,7 @@ export interface VoyageImprovement {
 	voyage: string;
 	crew: PlayerCrew[];
 	maxEV: number;
+	remainingEV: number;
 }
 
 export interface CiteData {
@@ -146,12 +147,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				crew.addedEV = voycrew.addedEV;
 				crew.totalEVContribution = voycrew.totalEVContribution;
 				crew.totalEVRemaining = voycrew.totalEVRemaining;
+				crew.pickerId = voycrew.pickerId;
 
 				for (let voyage of crew.voyagesImproved ?? []) {
 					let vname = appelate(voyage);
 					let currvoy = voyages.find((v) => v.voyage === vname);
 					if (!currvoy){
-						currvoy = { voyage: vname, crew: [], maxEV: 0 };
+						currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
 						voyages.push(currvoy);
 					}
 	
@@ -172,14 +174,24 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			if (!a.maxEV) a.maxEV = ma;
 			if (!b.maxEV) b.maxEV = mb;
 
+			let ra = Math.min(...a.crew.map(ac => ac.totalEVRemaining ?? 0));
+			let rb = Math.min(...b.crew.map(bc => bc.totalEVRemaining ?? 0));
+
+			if (!a.remainingEV) a.remainingEV = ra;
+			if (!b.remainingEV) b.remainingEV = rb;
+
 			let r = mb - ma;
-			
+		
 			if (r) return r;
 			
-			ma = a.crew.map(ac => ac.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
-			mb = b.crew.map(bc => bc.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
+			r = ra - rb;
+
+			if (r) return r;
+
+			ma = a.crew.map(ac => ac.pickerId ?? 0).reduce((prev, curr) => prev + curr);
+			mb = b.crew.map(bc => bc.pickerId ?? 0).reduce((prev, curr) => prev + curr);
 			
-			r = mb - ma;
+			r = ma - mb;
 			
 			if (r) return r;
 			
@@ -223,6 +235,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							}}>
 							<h3 style={{marginBottom: 0}}>{voyage.voyage}</h3>
 							<i style={{margin:0}}>(Max EV Improvement: <b>+{Math.round(voyage.maxEV)})</b></i>
+							<i style={{margin:0}}>(Remaining EV: <b>+{Math.round(voyage.remainingEV)})</b></i>
 							</div>
 						</Table.Cell>
 						<Table.Cell>
@@ -240,7 +253,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.allCrew}
 										playerData={this.context.playerData}
 										/>
-										<b style={{margin:"0.5em 0 0 0"}}>{crew.name}</b>
+										<b style={{margin:"0.5em 0 0 0"}}>{crew.name} ({crew.pickerId})</b>
 										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.round(crew.totalEVContribution ?? 0)} Total EV</i>
 									</div>
 								))}
