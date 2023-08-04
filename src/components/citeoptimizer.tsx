@@ -116,8 +116,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
-		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
-		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');		
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
@@ -129,7 +128,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-
+		
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -245,9 +244,18 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
-		const [citeData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
+		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 
 		let compact = true;
+		let workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
+
+		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
+			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+
+		}
+
+		const citeData = workset;
 
 		return (
 			<>
@@ -295,15 +303,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								}}
 								/>
 						</div>
-						{/* <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
 							<PortalFilter
 								portalFilter={citeMode?.portal}
-								setPortalFilter={(data) => {
-									setCiteData(undefined);
+								setPortalFilter={(data) => {									
 									setCiteMode({ ... citeMode ?? {}, portal: data });
 								}}
 								/>
-						</div> */}
+						</div>
 
 					</div>
 				</Segment>

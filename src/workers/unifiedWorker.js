@@ -51,11 +51,10 @@ const citeOptimizer = (playerData, allCrew) => {
     return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;    
   }
   return new Promise((resolve, reject) => {
-    if (playerData.citeMode && (playerData.citeMode.rarities?.length || playerData.citeMode.portal !== undefined)) {
-      console.log(playerData.citeMode)
+    if (playerData.citeMode && playerData.citeMode.rarities?.length) {
       playerData = JSON.parse(JSON.stringify(playerData));
       playerData.player.character.crew = playerData.player.character.crew
-        .filter((crew) => (!playerData.citeMode.rarities?.length || playerData.citeMode.rarities.includes(crew.max_rarity)) && (isImmortal(crew) || (playerData.citeMode?.portal === undefined || crew.in_portal === playerData.citeMode.portal)));
+        .filter((crew) => playerData.citeMode.rarities.includes(crew.max_rarity));
     }
     Optimizer.assessCrewRoster(playerData, allCrew);
     Optimizer.sortVoyageRankings();
