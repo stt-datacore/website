@@ -23,7 +23,7 @@ export function renderNeeded(needed: number, style?: React.CSSProperties) {
 	return (
 	<div style={{
 		display:"flex",
-		margin: "0 0 0 0.5em",
+		margin: "0 0.25em 0 0.5em",
 		width: "1.75em",
 		height: "1.75em",
 		flexDirection: "row",
@@ -375,11 +375,13 @@ const SolveButton = (props: SolveButtonProps) => {
 
 		return (
 			<React.Fragment>
+				<div style={spanStyle}>
 				{traits.sort((a, b) => traitSort(a, b)).map((trait, idx) => (
-					<div style={spanStyle} key={idx}>
-						{trait === '?' ? '?' : getTraitName(trait)}
-					</div>
-				)).reduce((prev, curr, currIdx) => <span style={{display:"flex", flexDirection: "row"}}>{prev}{currIdx > 0  ? <>&nbsp;+&nbsp;</> : ''}{curr}</span>, <></>)}
+					<span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+						{idx !== 0 && <span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>&nbsp;+&nbsp;</span>}{trait === '?' ? '?' : getTraitName(trait)}
+					</span>
+				))}
+				</div>
 			</React.Fragment>
 		);
 	}
@@ -391,10 +393,10 @@ const SolveButton = (props: SolveButtonProps) => {
 			justifyContent: "space-evenly",
 			width: "100%",
 			alignItems: "center",
-			height: "1.5em"
+			height: "1.25em"
 		} as React.CSSProperties;
 		const instances = traitData.filter(t => t.trait === trait);
-		if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
+		//if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
 		const needed = instances.length - instances.filter(t => t.consumed).length;
 		return (<div style={spanStyle}>{`${allTraits.trait_names[trait]}`} {renderNeeded(needed)}</div>);
 	}
