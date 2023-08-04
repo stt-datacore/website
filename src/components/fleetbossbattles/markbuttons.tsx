@@ -18,6 +18,31 @@ type MarkGroupProps = {
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
+
+export function renderNeeded(needed: number, style?: React.CSSProperties) {
+	return (
+	<div style={{
+		display:"flex",
+		margin: "0 0.25em 0 0.5em",
+		width: "1.75em",
+		height: "1.75em",
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
+		background: "blueviolet",
+		color: "white",
+		fontSize: "0.8em",
+		fontWeight: "bold",
+		border: "1px solid lightgray",
+		borderRadius: "4px", 
+		... (style ?? {})
+	}}>
+		{needed}
+	</div>
+	)
+}
+
+
 export const MarkGroup = (props: MarkGroupProps) => {
 	const { node, traits } = props;
 
@@ -334,28 +359,46 @@ const SolveButton = (props: SolveButtonProps) => {
 
 	return (
 		<Button compact={compact} style={getTraitsStyle(rarity)} onClick={() => props.solveNode(node.index, traits)}>
-			{onehand && rarity > 5 && <Icon name='hand paper' />}
+			{onehand && rarity > 5 && <Icon name='hand paper' style={{marginBottom:"0.5em"}} />}
 			{renderTraits()}
 		</Button>
 	);
 
 	function renderTraits(): JSX.Element {
+		const spanStyle = {
+			display: "flex",
+			justifyContent: "space-evenly",
+			flexDirection: "row",
+			flexWrap:"nowrap",
+			alignItems: "center"
+		} as React.CSSProperties;
+
 		return (
 			<React.Fragment>
+				<div style={spanStyle}>
 				{traits.sort((a, b) => traitSort(a, b)).map((trait, idx) => (
-					<span key={idx}>
-						{trait === '?' ? '?' : getTraitName(trait)}
+					<span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+						{idx !== 0 && <span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>&nbsp;+&nbsp;</span>}{trait === '?' ? '?' : getTraitName(trait)}
 					</span>
-				)).reduce((prev, curr, currIdx) => <>{prev} {currIdx > 0  ? ' + ' : ''} {curr}</>, <></>)}
+				))}
+				</div>
 			</React.Fragment>
 		);
 	}
 
-	function getTraitName(trait: string): string {
+	function getTraitName(trait: string): JSX.Element {
+		const spanStyle = {
+			display: "flex",
+			flexDirection: "row",
+			justifyContent: "space-evenly",
+			width: "100%",
+			alignItems: "center",
+			height: "1.25em"
+		} as React.CSSProperties;
 		const instances = traitData.filter(t => t.trait === trait);
-		if (instances.length === 1) return allTraits.trait_names[trait];
+		if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
 		const needed = instances.length - instances.filter(t => t.consumed).length;
-		return `${allTraits.trait_names[trait]} (${needed})`;
+		return (<div style={spanStyle}>{`${allTraits.trait_names[trait]}`} {renderNeeded(needed)}</div>);
 	}
 
 	function getTraitsStyle(rarity: number): RarityStyle {
