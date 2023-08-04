@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
-import marked from 'marked';
+import { marked } from 'marked';
 
 import Layout from '../components/layout';
 import CrewPicker from '../components/crewpicker';
