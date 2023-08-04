@@ -125,7 +125,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
 		
-		const voyageData = JSON.parse(sessionStorage.getItem('tools/voyageData') ?? "{}") as VoyageInfo;
+		const voyageData = this.context.ephemeral;
 
 		if (voyageData?.voyage?.length) {
 			let v = voyageData.voyage[0];
