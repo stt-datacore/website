@@ -1381,7 +1381,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Show Top Crew</b></h4>
 
 							<Dropdown
-
+								title="Filter Crew by Big Book Rank"
 								options={[1, 2, 3, 4, 5, 10, 15, 20, 50].map(o => { return { text: "Top " + o, key: o, value: o } })}
 								value={tops[idx]}
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
@@ -1397,6 +1397,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Show Buffs</b></h4>
 
 							<Dropdown
+								title="Apply Buffs to Stats"
 								options={availBuffs}
 								value={this.getBuffState(availBuffs.map(b => b.key) as PlayerBuffMode[])}
 								onChange={(e, { value }) => this.setBuffState(value as PlayerBuffMode)}
@@ -1413,6 +1414,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Owned Status</b></h4>
 
 							<Dropdown
+								title="Filter Crew by Owned Status"
 								options={filterOptions}
 								value={filterProps[idx].ownedStatus}
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
@@ -1573,6 +1575,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 
+		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
+		const foreColor = theme === 'dark' ? 'white' : 'black';
+
 		return (
 			<div className="ui segment"
 				key={crew.symbol}
@@ -1594,9 +1599,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					display: "flex",
 					flexDirection: "column",
 					justifyContent: "center",
-					alignItems: "center"
+					alignItems: "center",
+					cursor: "pointer"
 				}}>
-					<span>{rnk}</span>
+					<a
+						style={{color: foreColor, textDecoration: "underline"}}
+						target='_blank'
+						href={`https://www.bigbook.app/ratings/gauntlet?search=${encodeURI(crew.name)}`}
+						title={`Big Book Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
+					>{rnk}</a>
 				</div>
 				<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
 					<ItemDisplay
