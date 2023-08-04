@@ -390,7 +390,8 @@ const SolveButton = (props: SolveButtonProps) => {
 			flexDirection: "row",
 			justifyContent: "space-evenly",
 			width: "100%",
-			alignItems: "center"
+			alignItems: "center",
+			height: "1.5em"
 		} as React.CSSProperties;
 		const instances = traitData.filter(t => t.trait === trait);
 		if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
