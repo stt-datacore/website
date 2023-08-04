@@ -33,6 +33,7 @@ type CiteOptimizerProps = {
 export interface VoyageImprovement {
 	voyage: string;
 	crew: PlayerCrew[];
+	maxEV: number;
 }
 
 export interface CiteData {
@@ -124,16 +125,33 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
-				const crew = this.context.playerData.player.character.crew.find((c) => c.name === voycrew.name);
-				if (!crew) continue;
+				const findcrew = this.context.playerData.player.character.crew.find((c) => c.name === voycrew.name);
+				if (!findcrew) continue;
+
+				const crew = JSON.parse(JSON.stringify(findcrew), (key, value) => {
+					if (key.includes("data")) {
+						try {
+							let v = new Date(value);
+							return v;
+						}
+						catch {
+							return value;
+						}
+					}
+					return value;
+				});
 				
 				crew.voyagesImproved = voycrew.voyagesImproved;
+				crew.evPerCitation = voycrew.evPerCitation;
+				crew.addedEV = voycrew.addedEV;
+				crew.totalEVContribution = voycrew.totalEVContribution;
+				crew.totalEVRemaining = voycrew.totalEVRemaining;
 
 				for (let voyage of crew.voyagesImproved ?? []) {
 					let vname = appelate(voyage);
 					let currvoy = voyages.find((v) => v.voyage === vname);
 					if (!currvoy){
-						currvoy = { voyage: vname, crew: [] };
+						currvoy = { voyage: vname, crew: [], maxEV: 0 };
 						voyages.push(currvoy);
 					}
 	
@@ -147,14 +165,36 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		});
 
 		voyages.sort((a, b) => {
-			let r = b.crew.length - a.crew.length;
+			
+			let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
+			let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
+			
+			if (!a.maxEV) a.maxEV = ma;
+			if (!b.maxEV) b.maxEV = mb;
+
+			let r = mb - ma;
+			
+			if (r) return r;
+			
+			ma = a.crew.map(ac => ac.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
+			mb = b.crew.map(bc => bc.totalEVContribution ?? 0).reduce((prev, curr) => prev + curr);
+			
+			r = mb - ma;
+			
+			if (r) return r;
+			
+			r = b.crew.length - a.crew.length;
 			if (!r) r = a.voyage.localeCompare(b.voyage);
+		
 			return r;
 		});
 
 		voyages.forEach((voyage) => {
 			voyage.crew.sort((a, b) => {
-				if (a.pickerId !== undefined && b.pickerId !== undefined) {
+				if (a.totalEVContribution !== undefined && b.totalEVContribution !== undefined) {
+					return b.totalEVContribution - b.totalEVContribution;
+				}
+				else if (a.pickerId !== undefined && b.pickerId !== undefined) {
 					return a.pickerId - b.pickerId;
 				}
 				else {
@@ -181,7 +221,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								height: "100%",
 								margin: "1em"
 							}}>
-							<h3>{voyage.voyage}</h3>
+							<h3 style={{marginBottom: 0}}>{voyage.voyage}</h3>
+							<i style={{margin:0}}>(Max EV Improvement: <b>+{Math.round(voyage.maxEV)})</b></i>
 							</div>
 						</Table.Cell>
 						<Table.Cell>
@@ -199,7 +240,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.allCrew}
 										playerData={this.context.playerData}
 										/>
-										<i style={{margin:"0.5em"}}>{crew.name}</i>
+										<b style={{margin:"0.5em 0 0 0"}}>{crew.name}</b>
+										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.round(crew.totalEVContribution ?? 0)} Total EV</i>
 									</div>
 								))}
 							</Grid>
