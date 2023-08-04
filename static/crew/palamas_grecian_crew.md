@@ -14,8 +14,6 @@ published: true
 
 I've never met a God before.' 'Nor I a work of art, Madam.' 
 
-I may be mixing my episodes, but the pretty-in-pink Lieutenant is one for the art lovers - at least the art lovers who haven't checked her Memory Alpha page in a while.
+I may be mixing my episodes, but the pretty-in-pink Lieutenant is one for the art lovers - at least the art lovers who haven't checked her Memory Alpha page in a while. 
 
-Palamas is certainly a 'screwdriver' crew; one use, but does her job well. While her skill set has some overlap with a number of visible crew (giveaways, megas), her power on voyages still situates her near the top of the heap. And while her anti-matter traits have a lot of competition, she at least has a handful of them to stave off various competition like Boothby in a human seat or Mirror Saru in a Starfleet seat.
-
-Carolyn is otherwise hard-capped in usefulness barring a romantic collection or a re-jigger of anti-matter traits to include words ending in -ology.
+Put plainly and simply, Carolyn has not aged well (from a game utility perspective), since her one use on debut was Voyages and Power Creep has slapped her down hard. Her Trait set includes two esoteric ones unlikely to find a future Collection, the ginormous Romantic, and the ubiquitous Human/Federation/Starfleet.

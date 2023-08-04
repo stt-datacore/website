@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-(Cue Theme Song Here) Riker’s Angel’s (other) Science Specialist. Yes! Eligible for all three cadet missions with a very useful ship ability for those who sport a cloaking vessel. Alongside Sito, Pazlar and Wildman you will have no trouble completing all of the cadet challenges. Outside of that, well she doesn’t fill any additional collections but has quite a high SCI stat for an uncommon.
+(Cue Theme Song Here) Riker’s Angel’s (other) Science Specialist. Yes! Eligible for all three Cadet missions with a very useful Ship ability for those who sport a Cloaking vessel. Alongside Sito, Pazlar and Wildman you will have no trouble completing all of the Cadet Challenges. Jadzia also rewards you with more than her fair share of Collections, reaping three non-Rarity notches from what the game makers have sown, plus up to three more left to sprout.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A "blue moon" voyager, Burnmom's smattering of traits and fairly uncommon skill order will earn her the occasional voyage seat, but pathetic debut metrics means the fuse is running on her shelf life and it's about to blow.
+A former "blue moon" voyager, Burnmom's smattering of Traits and fairly uncommon skill order used to earn her the occasional voyage seat, but her power has waned, as has my interest in that Romulan sect.
 
-Those same traits (and Discovery) have afforded her a few event bonuses over the years and may pan out for a collection or two - until then she remains a total crapshoot and needed more juice in her stats to overcome an uncertain future.
+Those same Traits (and Discovery) have afforded her a few Event bonuses over the years and may pan out for a Collection or four - until then she remains a total crapshoot and needed more juice in her stats to overcome an uncertain future.

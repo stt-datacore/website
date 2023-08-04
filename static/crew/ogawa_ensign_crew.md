@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Another medical professional that doesn’t fill the “Do No Harm” collection. No useful traits, no good ship skill. The med stat is average for a common card but as MED is her main stat there’s nothing she has that other uncommon crew can’t do better. Fill the hole in your common collection and move on.
+Another medical professional that doesn’t fill the “Do No Harm” Collection. No useful Traits, no good ship skill. The med stat is average for a Common card but as MED is her main stat there’s nothing she has that other Uncommon crew can’t do better. Fill the hole in your Common collection and move on, with hopes for one more Collection one day?

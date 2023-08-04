@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-It’s a close call between the top 2* SCI crew but Saru is a worthy contender in that category. He’s a solid choice to run SCI missions and his ship ability is solid for first time arena use. Being an Alien and having a fearless SCI base gets him a good amount of use in the majority of cadet missions. A healthy secondary command score will get him on your voyages but sadly, no additional collection bonuses.
+It’s a close call between the top Uncommon SCI crew but Saru is a worthy contender in that category. He’s a solid choice to run SCI missions and his Ship Ability is solid for first time Arena use. Being an Alien and having a fearless SCI Base gets him a good amount of use in the majority of Cadet Missions. A healthy secondary CMD score will get him on your nascent Voyages and truly his lasting value for all players are the Collections he has caught with his nice Trait set; a four pack of them with a Trait set of just five.
