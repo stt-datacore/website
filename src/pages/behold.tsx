@@ -23,10 +23,6 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../co
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import CommonCrewData from '../components/commoncrewdata';
 
-/**
- * Marked typescript libs not correct; this workaround allows the linter to pass
- * @type {(src: string, options?: MarkedOptions): string}
- */
 import marked from 'marked';
 
 type BeholdsPageProps = {
