@@ -584,7 +584,7 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 }
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
-	let multi = multiplier ?? 1;
+	let multi = multiplier ?? 0;
 	
 	const emptySkill = {
 		skill: undefined,

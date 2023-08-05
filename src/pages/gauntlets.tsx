@@ -90,6 +90,7 @@ export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'fe' | 'por
 export interface FilterProps {
 	ownedStatus?: OwnedStatus;
 	rarity?: number;
+	maxResults?: number;
 }
 
 export interface GauntletsPageState {
@@ -129,6 +130,7 @@ export interface GauntletsPageState {
 
 const DEFAULT_FILTER_PROPS = {
 	ownedStatus: 'any',
+	maxResults: 10
 } as FilterProps;
 
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][]) {
@@ -401,7 +403,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return ranks;
 	}
 
-	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number) => {
+	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number, maxResults?: number) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 		const ptop = top ?? 10;
@@ -488,6 +490,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			})
 
 		}
+		if (maxResults) {
+			pairGroups.forEach((pg) => {
+				pg.crew = pg.crew.slice(0, maxResults);
+			})
+		}
 		pairGroups.sort((a, b) => {
 			if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
 				let r = a.pair[0].localeCompare(b.pair[0]);
@@ -530,6 +537,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (!prettyTraits) {
 			return null
 		}
+		
+		delete gauntlet.matchedCrew;
+		delete gauntlet.maximal;
+		delete gauntlet.minimal;
+		delete gauntlet.pairMax;
+		delete gauntlet.pairMin;
+
 		const matchedCrew =
 			allCrew.filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
@@ -553,6 +567,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 						else if (maxBuffs && buffMode === 'max') {
 							applyCrewBuffs(crew, maxBuffs);
+						}
+						else {
+							for (let skill of Object.keys(crew.base_skills)) {
+								crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };								
+							}
 						}
 						crew.have = true;
 					}
@@ -613,17 +632,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						b.score = getBernardsNumber(b, gauntlet, bp);
 					}
 
-					if (ap && bp) {
-						r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1);
-						if (ap.length > 1 && bp.length > 1) {
-							r += comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1);
-							if (ap.length > 2 && bp.length > 2) {
-								r += comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1);
-							}
-						}
-					}
+					return b.score - a.score;
 
-					return r;
+					// if (ap && bp) {
+					// 	r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1);
+					// 	if (ap.length > 1 && bp.length > 1) {
+					// 		r += comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1);
+					// 		if (ap.length > 2 && bp.length > 2) {
+					// 			r += comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1);
+					// 		}
+					// 	}
+					// }
+
+					// return r;
 				});
 
 		gauntlet.matchedCrew = matchedCrew;
@@ -783,6 +804,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		newOwned[idx] = { ... newOwned[idx], ownedStatus: status };
 		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
 		this.inited = false;
+		this.setState({... this.state, filterProps: newOwned });
+	}
+
+	private readonly setMaxResults = (max: number, idx: number) => {
+		const newOwned = [ ... this.state.filterProps ];
+		newOwned[idx] = { ... newOwned[idx], maxResults: max };
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
 		this.setState({... this.state, filterProps: newOwned });
 	}
 
@@ -1490,7 +1518,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 							/>
 						</div>}
+						{viewModes[idx] === 'pair_cards' && 
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							marginRight: "2em",
+							textAlign: "left"
+						}}>
+							<h4><b>Max Results Per Section</b></h4>
 
+							<Dropdown
+								title="Limit Total Results Per Section"
+								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: !o ? 'No Limit' : "" + o, key: o, value: o } })}
+								value={filterProps[idx].maxResults}
+								onChange={(e, { value }) => this.setMaxResults(value as number, idx)}
+							/>
+						</div>}
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
@@ -1537,7 +1580,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							justifyContent: "space-between",
 							flexWrap: "wrap"
 						}}>
-							{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx]).map((pairGroup, pk) => {
+							{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx], filterProps[idx].maxResults).map((pairGroup, pk) => {
 								return (<div
 									key={pk}
 									style={{
