@@ -434,15 +434,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						const apairs = getPlayerPairs(a, atrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
 						const bpairs = getPlayerPairs(b, btrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
 						
-						const ascore = getBernardsNumber(a, gauntlet, apairs);
-						const bscore = getBernardsNumber(a, gauntlet, apairs);
-
 						if (apairs && bpairs) {
+
+							const ascore = getBernardsNumber(a, gauntlet, apairs);
+							const bscore = getBernardsNumber(a, gauntlet, apairs);
+	
 							updatePairScore(a, { score: ascore, pair: apairs[0] });
 							updatePairScore(b, { score: bscore, pair: bpairs[0] });
 
-							let r = comparePairs(apairs[0], bpairs[0]);
-							return r;
+							return bscore - ascore;
 						}
 						return a.ranks[rank] - b.ranks[rank];
 					})
