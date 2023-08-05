@@ -562,14 +562,20 @@ export interface Player {
     /** Used internally. Not part of source data.  */
     ssId?: string;
 
-    /** Used internally. Not part of source data.  */
+    /** Used internally by gauntlets. Not part of source data.  */
     score?: number;
 
-    /** Used internally. Not part of source data.  */
+    /** Used internally by gauntlets. Not part of source data.  */
     pairScores?: GauntletPairScore[];
 
-    /** Used internally. Not part of source data.  */
+    /** Used internally by gauntlets. Not part of source data.  */
     isOpponent?: boolean;
+
+    /** Used internally by gauntlets. Not part of source data.  */
+    isDebuffed?: boolean;
+
+    /** Used internally by gauntlets. Not part of source data.  */
+    isDisabled?: boolean;
 
     /** Used internally. Not part of source data.  */
     utility?: PlayerUtility
