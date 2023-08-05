@@ -522,7 +522,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
   }
   
   export function getCrewPairScore(crew: PlayerCrew, pair: string) {
-	pair = (pair.startsWith("G_") ? pair.replace("G_", "") : pair).replace("/","_");
+	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/","_");
 	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();	
 	for (let cp of crew.pairScores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
@@ -534,7 +534,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
   }
 
   export function getPairScore(scores: GauntletPairScore[], pair: string) {
-	pair = (pair.startsWith("G_") ? pair.replace("G_", "") : pair).replace("/","_");
+	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/","_");
 	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
 	for (let cp of scores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
