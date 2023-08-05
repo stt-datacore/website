@@ -431,8 +431,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								for(let wpair of pset) {
 									let djoin = wpair.map(s => s.skill).sort().join();
 									if (djoin === pjoin) {
-										if (idx === 0) amatch = wpair;
-										else bmatch = wpair;
+										if (idx === 0) amatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+										else bmatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
 										return;
 									}
 								}
@@ -449,8 +449,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 												skill: srank.find(sr => sr !== p.skill)
 											}
 											]
-											if (idx === 0) amatch = glitch;
-											else bmatch = glitch;
+											if (idx === 0) amatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+											else bmatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
 											return;
 										}
 									}
@@ -1704,7 +1704,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	renderPairCard(crew: CrewMember | PlayerCrew, gauntlet: Gauntlet, pair: string[]) {
-
+		if (pair.includes("ENG") && pair.includes( "MED")) {
+			console.log("It's here");
+		}
 		const skills = pair.map(m => rankToSkill(m));
 		const crewpair = [] as Skill[];
 		const prettyTraits = gauntlet.prettyTraits;
