@@ -1552,7 +1552,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							/>
 						</div>
 					}
-					{idx < 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>Jackpot Crew for {prettyDate}</i></div>}
+					{idx !== 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>Jackpot Crew for {prettyDate}</i></div>}
 
 				</div>
 
@@ -2155,7 +2155,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				panels={[{
 					index: 0, 
 					key: 0,
-					title: "Post, Update or Clear Live Gauntlet Data",
+					title: "Post, Update or Clear Live Gauntlet Data (Click Here)",
 					content: {
 						content: <><Header as='h2'>Live Gauntlet Data</Header>				
 						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
