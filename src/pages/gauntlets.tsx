@@ -654,7 +654,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const matchedCrew =
 			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
-				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) ||
+				(Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) || e.isOpponent) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					let crew = inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
