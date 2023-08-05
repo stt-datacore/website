@@ -18,7 +18,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore } from '../utils/crewutils';
+import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL } from '../utils/crewutils';
 import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
@@ -104,7 +104,7 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
-export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][]) {
+export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
 	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 
 	if (atrait >= 3) atrait = 3.90;
@@ -117,7 +117,7 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 	let cn = 0;
 	let w = 0;
 
-	if (apairs) {
+	if (apairs?.length && ("length" in apairs[0])) {
 		const skills = [apairs[0][0], apairs[0][1], apairs.length > 1 ? apairs[1][1] : { core: 0, range_min: 0, range_max: 0 }];
 
 		for (let skill of skills) {
@@ -129,6 +129,16 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 			}
 		}
 	}	
+	else if (apairs?.length && !("length" in apairs[0])) {
+		for (let skill of apairs as Skill[]) {
+			if (skill.range_max === 0) continue;
+			let dn = (skill.range_max + skill.range_min) / 2;
+			if (dn) {
+				cn += dn;
+				w++;
+			}
+		}
+	}
 
 	//cn /= w;
 
@@ -384,7 +394,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (pair === '') continue;
 			let rank = pair;
 			let rpairs = pair.replace("G_", "").split("_");
-			let px = pairGroups.length;
+			const px = pairGroups.length;
+
+			let srank = rpairs.map(p => rankToSkill(p) as string).sort();
+			let pjoin = srank.join();
+
 			pairGroups.push({
 				pair: rpairs,
 				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
@@ -404,20 +418,54 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						else if (btrait >= 1) btrait = 1.5;
 						else btrait = 0.30;
 
-						const apairs = getPlayerPairs(a, atrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
-						const bpairs = getPlayerPairs(b, btrait)?.filter(x => x.some(y => rpairs.some(z => y && skillToRank(y.skill as string) === z)));
+						let r = 0;
 						
+						let apairs = getPlayerPairs(a, atrait);
+						let bpairs = getPlayerPairs(b, btrait);
+
 						if (apairs && bpairs) {
+							let amatch = [] as Skill[];
+							let bmatch = [] as Skill[];
+							
+							[apairs, bpairs].forEach((pset, idx) => {
+								for(let wpair of pset) {
+									let djoin = wpair.map(s => s.skill).sort().join();
+									if (djoin === pjoin) {
+										if (idx === 0) amatch = wpair;
+										else bmatch = wpair;
+										return;
+									}
+								}
+								pset = pset?.filter(ap => ap.some(p2 => p2.skill && srank.includes(p2.skill)));
 
-							const ascore = getBernardsNumber(a, gauntlet, apairs);
-							const bscore = getBernardsNumber(a, gauntlet, apairs);
+								if (pset?.length) {
+									for (let p of pset[0]) {
+										if (p.skill && srank.includes(p.skill)) {
+											let glitch = [{
+												... p
+											},
+											{ 
+												... JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
+												skill: srank.find(sr => sr !== p.skill)
+											}
+											]
+											if (idx === 0) amatch = glitch;
+											else bmatch = glitch;
+											return;
+										}
+									}
+								}
+							});
+
+							const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch) : getBernardsNumber(a, gauntlet, apairs);
+							const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch) : getBernardsNumber(b, gauntlet, bpairs);
 	
-							updatePairScore(a, { score: ascore, pair: apairs[0] });
-							updatePairScore(b, { score: bscore, pair: bpairs[0] });
+							updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
+							updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
 
-							return bscore - ascore;
+							r = bscore - ascore;
 						}
-						return a.ranks[rank] - b.ranks[rank];
+						return r ? r : a.ranks[rank] - b.ranks[rank];
 					})
 			});
 
@@ -426,7 +474,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			pairGroups[px].crew.forEach((c) => {
 				let tstr = rpairs.map(z => rankToSkill(z));
-				let gp = gauntlet.pairMin?.find(fo => fo.pair.map(foz => foz.skill).sort().join() === tstr.sort().join());
+				let gp = gauntlet.pairMin?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
 				let ps = getCrewPairScore(c, rank);
 				if (!ps) return;
 
@@ -443,7 +491,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 				}
 
-				gp = gauntlet.pairMax?.find(fo => fo.pair.map(foz => foz.skill).sort().join() === tstr.sort().join());
+				gp = gauntlet.pairMax?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
 
 				if (!gp) {
 					gp = {
@@ -1664,8 +1712,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const critColor = gradeToColor(crit);
 		const gmin = getPairScore(gauntlet.pairMin ?? [], pair.join("_"));
 		const gmax = getPairScore(gauntlet.pairMax ?? [], pair.join("_"));
-		const bigNumberColor = dynamicRangeColor("score" in crew ? (crew.score ?? 0) : 0, gmax?.score ?? 0, gmin?.score ?? 0);
-
+		const crewPairScore = getCrewPairScore(crew as PlayerCrew, pair.join("_"));
+		const bigNumberColor = dynamicRangeColor("score" in crew ? (crewPairScore?.score ?? 0) : 0, gmax?.score ?? 0, gmin?.score ?? 0);
 		const critString = crit + "%";
 		const boostMode = this.getBuffState();
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
@@ -1778,7 +1826,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}}>
 					   {"score" in crew && crew.score && 
 					   	<div
-							title={`${Math.round(crew.score).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
+							title={`${Math.round(crewPairScore?.score ?? 0).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
 							style={{
 								margin: "0 0.5em",
 								color: bigNumberColor ?? undefined,
@@ -1789,7 +1837,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								alignItems: "center"							
 								}}>
 							<img style={{margin: "0 0.25em", maxHeight: "1em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/anomally_icon.png`} />
-							{Math.round(crew.score).toLocaleString()}
+							{Math.round(crewPairScore?.score ?? 0).toLocaleString()}
 						</div>} 
 							
 						<div

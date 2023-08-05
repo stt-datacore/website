@@ -583,15 +583,15 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 	else return 0;
 }
 
+export const emptySkill = {
+	skill: undefined,
+	core: 0,
+	range_max: 0,
+	range_min: 0
+} as Skill;
+
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 0;
-	
-	const emptySkill = {
-		skill: undefined,
-		core: 0,
-		range_max: 0,
-		range_min: 0
-	} as Skill;
 	
 	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
 
