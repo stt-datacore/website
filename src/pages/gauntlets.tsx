@@ -211,7 +211,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
-			tops.push(this.tiny.getValue('gauntletTops_' + i, 10) ?? 10);
+			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);
 			fprops.push(this.tiny.getValue('gauntletFilter_' + i, DEFAULT_FILTER_PROPS) ?? DEFAULT_FILTER_PROPS);
 
 			skeys.push('');
@@ -463,7 +463,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 		const ptop = top ?? 10;
 		const pairGroups = [] as PairGroup[];
-		const skis = [gauntlet.contest_data?.primary_skill ?? "", gauntlet.contest_data?.secondary_skill ?? ""].sort().join();
+		const currSkills = [gauntlet.contest_data?.primary_skill ?? "", gauntlet.contest_data?.secondary_skill ?? ""].sort().join();
 
 		for (let pair of pairs) {
 
@@ -485,7 +485,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					.map(d => d as PlayerCrew)
 					.filter((crew2) => {			
 						if (onlyActiveRound) {
-							if (hapres === skis) {
+							if (hapres === currSkills) {
 								return true;
 							}
 							else {
@@ -610,10 +610,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		pairGroups.sort((a, b) => {
 
 			const apair = a.pair.map(z => rankToSkill(z)).sort().join();
-			const bpair = a.pair.map(z => rankToSkill(z)).sort().join();
-
-			if (apair === skis) return -1;
-			else if (bpair === skis) return 1;
+			const bpair = b.pair.map(z => rankToSkill(z)).sort().join();
+			
+			if (apair !== bpair) {
+				if (apair === currSkills) return -1;
+				else if (bpair === currSkills) return 1;
+			}
 
 			if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
 				let r = a.pair[0].localeCompare(b.pair[0]);
