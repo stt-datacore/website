@@ -569,6 +569,9 @@ export interface Player {
     pairScores?: GauntletPairScore[];
 
     /** Used internally. Not part of source data.  */
+    isOpponent?: boolean;
+
+    /** Used internally. Not part of source data.  */
     utility?: PlayerUtility
 
     // used for exports
