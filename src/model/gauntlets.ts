@@ -1,5 +1,5 @@
 import { CrewMember } from "./crew"
-import { PlayerCrew } from "./player"
+import { GauntletPairScore, PlayerCrew } from "./player"
 
 export interface Gauntlet {
     gauntlet_id?: number
@@ -14,6 +14,10 @@ export interface Gauntlet {
     prettyTraits: string[] | undefined;    
 	origRanks?: { [key: string]: number };
     template?: boolean;
+    maximal?: number;
+    minimal?: number;
+    pairMin?: GauntletPairScore[];
+    pairMax?: GauntletPairScore[];
 }
   
 export interface ContestData {
