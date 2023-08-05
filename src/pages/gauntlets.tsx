@@ -1618,6 +1618,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<div style={{marginTop:"1.5em"}}>
 						{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
 					</div>
+					
+					<i>Note: If owned crew are detected, then their current level in your roster is used to compute their rank.</i>
 
 					{viewModes[idx] === 'pair_cards' &&
 						<div style={{
