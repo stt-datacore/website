@@ -600,6 +600,32 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const rmax = range_max ?? 500;
 		const { allCrew, buffConfig, maxBuffs } = this.context;
 		const availBuffs = ['none'] as PlayerBuffMode[];
+		const oppo = [] as PlayerCrew[];
+
+		if (gauntlet.opponents?.length) {
+			for (let op of gauntlet.opponents){
+				let ocrew = op.crew_contest_data.crew[0];
+				let fcrew = this.context.allCrew.find((cf) => cf.symbol === ocrew.archetype_symbol);
+				if (fcrew) {
+					fcrew = JSON.parse(JSON.stringify(fcrew)) as PlayerCrew;
+					for (let skname of Object.keys(fcrew.base_skills)) {
+						let skill = fcrew.base_skills[skname] as Skill;
+						let opposkill = ocrew.skills.find((f) => f.skill === skname);
+						fcrew.skills ??= {};
+						fcrew.skills[skname] = {
+							...skill,
+							range_max: opposkill?.max,
+							range_min: opposkill?.min
+						};
+					}
+
+					fcrew.rarity = ocrew.rarity;
+					fcrew.isOpponent = true;
+
+					oppo.push(fcrew);
+				}
+			}
+		}
 
 		if (buffConfig && Object.keys(buffConfig).length) {
 			availBuffs.push('player');
@@ -626,12 +652,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		delete gauntlet.pairMin;
 
 		const matchedCrew =
-			allCrew.filter(e => e.max_rarity > 3 && (
+			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
 				Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
-					let crew = JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+					let crew = inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+
 					if (buffConfig && buffMode === 'player') {
 						applyCrewBuffs(crew, buffConfig);
 					}
@@ -641,7 +668,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 
-					if (c) {
+					if (!crew.isOpponent && c) {
 						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
 						if (buffConfig && buffMode === 'player') {
 							applyCrewBuffs(crew, buffConfig);
@@ -657,7 +684,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						crew.have = true;
 					}
 					else {
-						crew.have = false;
+						crew.have = !!c;
 						let skills = getSkills(crew);
 						for (let s of skills) {
 							if (!(s in crew)) {
@@ -670,11 +697,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					if (!hasPlayer) crew.rarity = crew.max_rarity;
-					else if (!c) crew.rarity = 0;
-
-					if (!crew.immortal || crew.immortal < 0) {
-						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					if (!crew.isOpponent) {
+						if (!hasPlayer) crew.rarity = crew.max_rarity;
+						else if (!c) crew.rarity = 0;
+						if (!crew.immortal || crew.immortal < 0) {
+							crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+						}
+					}
+					else {
+						crew.immortal = CompletionState.DisplayAsImmortalStatic;
 					}
 					
 					crew.pairs = getPlayerPairs(crew);					
@@ -1844,7 +1875,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					paddingBottom: 0,
 					margin: 0,
 					marginBottom: "0.5em",
-					backgroundColor: inMatch ? 'darkgreen' : undefined
+					backgroundColor: ("isOpponent" in crew && crew.isOpponent) ? 'darkred' : (inMatch ? 'darkgreen' : undefined)
 				}}
 			>
 				<div style={{
