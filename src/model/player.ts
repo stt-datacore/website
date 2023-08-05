@@ -566,6 +566,9 @@ export interface Player {
     score?: number;
 
     /** Used internally. Not part of source data.  */
+    pairScores?: GauntletPairScore[];
+
+    /** Used internally. Not part of source data.  */
     utility?: PlayerUtility
 
     // used for exports
@@ -582,7 +585,10 @@ export interface Player {
     /** Used for exports and internally. Not part of source data.  */
     engineering_skill?: ComputedBuff;
   } 
-
+  export interface GauntletPairScore {
+    score: number;
+    pair: Skill[];
+  }
   export interface PlayerUtilityRanks {
     [key: string]: number[];
   }

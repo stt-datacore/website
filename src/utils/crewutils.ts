@@ -2,7 +2,7 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, Player, PlayerCrew, PlayerData } from '../model/player';
+import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
 import { BaseSkills, ComputedBuff, CrewMember, IntermediateSkillData, Skill } from '../model/crew';
 import { TinyStore } from "./tiny";
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
@@ -504,6 +504,48 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 // 	return avg;
 // }
 
+
+export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) {  
+	let skills = pairScore.pair.map(p => p.skill ?? "").sort();
+	crew.pairScores ??= [];
+	
+	for (let cp of crew.pairScores) {
+	  let skills2 = cp.pair.map(p => p.skill ?? "").sort();
+	  if (skills.join() === skills2.join()) {
+		cp.pair = [ ... pairScore.pair ];
+		cp.score = pairScore.score;
+		return;
+	  }
+	}
+	
+	crew.pairScores.push({ ... pairScore, pair: [ ... pairScore.pair ] });
+  }
+  
+  export function getCrewPairScore(crew: PlayerCrew, pair: string) {
+	pair = pair.replace("G_", "").replace("/","_");
+	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();	
+	for (let cp of crew.pairScores ?? []) {
+		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
+		if (skills2.join() === vp.join()) {
+			return cp;
+		}
+	}
+	return null;
+  }
+
+  export function getPairScore(scores: GauntletPairScore[], pair: string) {
+	pair = pair.replace("G_", "").replace("/","_");
+	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
+	for (let cp of scores ?? []) {
+		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
+		if (skills2.join() === vp.join()) {
+			return cp;
+		}
+	}
+	return null;
+  }
+
+
 export function rankToSkill(rank: string) {
 	if (rank === "CMD") return "command_skill";
 	else if (rank === "SEC") return "security_skill";
@@ -542,7 +584,7 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 }
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
-	let multi = multiplier ?? 1;
+	let multi = multiplier ?? 0;
 	
 	const emptySkill = {
 		skill: undefined,
@@ -564,8 +606,8 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 			if ("min" in skillObj && !skillObj.range_min) skillObj.range_min = skillObj["min"] as number;
 			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
 
-			skillObj.range_min *= multi;
-			skillObj.range_max *= multi;
+			skillObj.range_min *= (1 + multi);
+			skillObj.range_max *= (1 + multi);
 		}
 		if (skills.length > 1) skills.sort((a, b) => ((b.range_max + b.range_min) / 2) - ((a.range_max + a.range_min) / 2));
 
@@ -812,6 +854,31 @@ export function traitNumberToColor(num: number): string | null {
 	}
 	return 'gray';
 }
+
+export function dynamicRangeColor(grade: number, max: number, min: number): string | null {
+	// grade -= min;
+	// max -= min;
+
+	grade = (grade / max) * 100;
+
+	if (grade >= 90) {
+		return "lightgreen";
+	}
+	else if (grade >= 80) {
+		return "aquamarine";
+	}
+	else if (grade >= 70) {
+		return "yellow";
+	}
+	else if (grade >= 60) {
+		return "orange";
+	}
+
+	return "tomato";
+}
+
+
+
 export function gradeToColor(grade: string | number): string | null {
 	switch(grade) {
 		case "A":
