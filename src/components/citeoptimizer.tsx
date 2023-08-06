@@ -124,8 +124,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderVoyageGroups(data: CiteData) {
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
-		const { citeMode } = this.state;
-		
+		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+
 		const voyageData = JSON.parse(sessionStorage.getItem('tools/voyageData') ?? "{}") as VoyageInfo;
 
 		if (voyageData?.voyage?.length) {
@@ -279,7 +279,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.allCrew}
 										playerData={this.context.playerData}
 										/>
-										<b style={{margin:"0.5em 0 0 0"}}>{crew.name} ({crew.pickerId})</b>
+										<b  onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
+											style={{
+											cursor: "pointer", 
+											margin:"0.5em 0 0 0"
+											}}>
+												{crew.name} ({crew.pickerId})
+										</b>
 										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.ceil(crew.totalEVContribution ?? 0)} Total EV</i>
 									</div>
 								))}
@@ -555,12 +561,20 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								}}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
-							<Input
-								label={"Filter By Name"}
+						<div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
+							<Input		
+														
+								label={"Search"}
 								value={citeMode.nameFilter}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
 								/>
+							<i className='delete icon'
+								title={"Clear Search"}
+							   style={{
+									cursor: "pointer", 
+									marginLeft: "0.75em"
+									}} 
+									onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: '' })}  />
 						</div>
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
 							<Dropdown
