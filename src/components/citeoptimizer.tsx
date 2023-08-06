@@ -538,7 +538,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}}>
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
 							<RarityFilter
-								altTitle='Calculate for specific rarity'
+								altTitle='Calculate specific rarity'
 								multiple={false}
 								rarityFilter={citeMode?.rarities ?? []}
 								setRarityFilter={(data) => {
