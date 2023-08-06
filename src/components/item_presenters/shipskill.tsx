@@ -28,7 +28,7 @@ if (isWindow) window.setTimeout(() => {
     }
 });
 
-function toDataURL(url: string | URL, callback: (dataUrl: string) => void) {
+export function toDataURL(url: string | URL, callback: (dataUrl: string) => void) {
     var xhr = new XMLHttpRequest();
     xhr.onload = () => {
         var reader = new FileReader();
