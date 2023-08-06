@@ -593,6 +593,8 @@ export const emptySkill = {
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 0;
 	
+	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
+
 	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {

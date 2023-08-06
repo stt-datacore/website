@@ -346,6 +346,12 @@ export interface Player {
      * Display as immortal, no way to reference.
      * (Same as -2/DisplayAsImmortal but with different wording)
      */
+    DisplayAsImmortalOpponent=-10,
+    
+    /**
+     * Display as immortal, no way to reference.
+     * (Same as -2/DisplayAsImmortal but with different wording)
+     */
     DisplayAsImmortalStatic=-5,
     
     /**
