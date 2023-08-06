@@ -82,7 +82,7 @@ export interface GauntletsPageState {
 	yesterday?: Gauntlet;
 	activePrevGauntlet?: Gauntlet;
 	browsingGauntlet?: Gauntlet;
-	liveGauntlet?: Gauntlet;
+	liveGauntlet?: Gauntlet | null;
 
 	itemsPerPage: number;
 
@@ -630,11 +630,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							range_max: opposkill?.max,
 							range_min: opposkill?.min
 						};
+						fcrew[skname] = {
+							core: skill.core,
+							max: opposkill?.max,
+							min: opposkill?.min
+						};
 					}
 
 					fcrew.rarity = ocrew.rarity;
 					fcrew.isOpponent = true;					
 					fcrew.ssId = op.name;
+					fcrew.immortal = CompletionState.DisplayAsImmortalOpponent;
+					fcrew.have = false;
 					oppo.push(fcrew);
 				}
 			}
@@ -672,11 +679,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				.map((inputCrew) => {
 					let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 
-					if (buffConfig && buffMode === 'player') {
-						applyCrewBuffs(crew, buffConfig);
-					}
-					else if (maxBuffs && buffMode === 'max') {
-						applyCrewBuffs(crew, maxBuffs);
+					if (!inputCrew.isOpponent) {
+						if (buffConfig && buffMode === 'player') {
+							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (maxBuffs && buffMode === 'max') {
+							applyCrewBuffs(crew, maxBuffs);
+						}
 					}
 
 					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
@@ -735,7 +744,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 					else {
-						crew.immortal = CompletionState.DisplayAsImmortalStatic;
+						crew.immortal = CompletionState.DisplayAsImmortalOpponent;
+						crew.have = false;
 					}
 					
 					crew.pairs = getPlayerPairs(crew);					
@@ -1654,7 +1664,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Show Buffs</b></h4>
 
 							<Dropdown
-								title="Apply Buffs to Stats"
+								title={"Apply Buffs to Stats" + (idx === 4 ? " (Note: Opponent stats are not recomputed)" : "")}
 								options={availBuffs}
 								value={this.getBuffState(availBuffs.map(b => b.key) as PlayerBuffMode[])}
 								onChange={(e, { value }) => this.setBuffState(value as PlayerBuffMode)}
@@ -2044,7 +2054,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					{"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
 						("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{ color: "lightgreen" }} className='check icon' />))}
 					{"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
-					{!("immortal" in crew) || !(crew.have) &&
+					{(("isOpponent" in crew) && (crew.isOpponent)) &&
+						<span>
+							<img title={"Opponent (" + crew.ssId + ")"} style={{ height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/warning_icon.png`} />
+						</span>}
+
+					{!("immortal" in crew) || !(crew.have) && !(("isOpponent" in crew) && (crew.isOpponent)) &&
 						<span>
 							{crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{ height: "16px" }} src='/media/portal.png' />}
 							{!crew.in_portal && <i title={this.whyNoPortal(crew)} className='lock icon' />}
@@ -2074,12 +2089,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		try {
 			const root = JSON.parse(gauntletJson) as GauntletRoot;
+
+			if (root.character.gauntlets[0].state?.includes("ENDED")) {
+				this.inited = false;
+				this.tiny.setValue('liveGauntlet', '', false);
+				this.setState({ ... this.state, gauntletJson: '', liveGauntlet: null, activeTabIndex: 0 });	
+				return;
+			}
+
 			this.inited = false;
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
-			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });
+			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });			
 		}
 		catch {
-			this.setState({ ... this.state, gauntletJson: '(**)', liveGauntlet: undefined, activeTabIndex: 0 });
+			this.setState({ ... this.state, gauntletJson: '(**)', liveGauntlet: null, activeTabIndex: 0 });
 		}
 	}
 
@@ -2123,7 +2146,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return (
 			<>
 			<Accordion
-				defaultActiveIndex={this.state.activeTabIndex === 4 ? 0 : -1}
+				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
 					index: 0, 
 					key: 0,
@@ -2149,7 +2172,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<Form>
 						<TextArea
 							placeholder='Paste a gauntlet, here'
-							value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson}
+							id='__zzpp'
+							value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson ?? ''}
 							onChange={(e, { value }) => this.setState({ ... this.state, gauntletJson: value as string })}
 							onPaste={(e: ClipboardEvent) => this.parseGauntlet(e.clipboardData?.getData('text') as string)}
 						/>
