@@ -7,7 +7,8 @@ import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { MergedContext } from "../../context/mergedcontext";
-import { PlayerBuffMode, PlayerImmortalMode, CrewPreparer } from "../item_presenters/crew_preparer";
+import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
+import { toDataURL } from "../item_presenters/shipskill";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -34,7 +35,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
     constructor(props: CrewTargetProps){
         super(props);        
-        this.tiny.subscribe(this.propertyChanged);                
+        this.tiny.subscribe(this.propertyChanged);                   
     }
     
     protected get playerBuffMode(): PlayerBuffMode {
@@ -113,13 +114,20 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
     
     componentDidUpdate(): void {
-        if (this.props.inputItem) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.imageUrlFullBody}`;
-            if (isWindow)  window.setTimeout(() => {
-                for (let i = 0; i < 1; i++) {
-                    let img = new Image();
-                    img.src = url;                    
-                }
+        const di = this.tiny.getRapid<PlayerCrew | undefined>('displayItem', undefined);
+        if (di) {
+            const url = `${process.env.GATSBY_ASSETS_URL}${di.imageUrlFullBody}`;
+            toDataURL(url, () => {});            
+        }
+    }
+
+    componentDidMount(): void {
+        const di = this.props.inputItem;
+        if (di) {
+            const url = `${process.env.GATSBY_ASSETS_URL}${di.imageUrlFullBody}`;
+            window.setTimeout(() => {
+                const img = new Image()
+                img.src = url;
             });
         }
     }

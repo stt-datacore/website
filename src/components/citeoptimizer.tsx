@@ -41,7 +41,7 @@ export interface CiteData {
 	crewToCite: PlayerCrew[];
 	crewToTrain: PlayerCrew[];
 }
-
+interface SymCheck { symbol: string, checked: boolean };
 type CiteOptimizerState = {
 	citePage: number;
 	trainingPage: number;
@@ -52,8 +52,10 @@ type CiteOptimizerState = {
 	touchToggled: boolean;
 	citeMode?: CiteMode;
 	sort?: string;
-	direction?: 'ascending' | 'descending';
+	direction?: 'ascending' | 'descending';	
+	checks?: SymCheck[];
 };
+
 export class StatLabel extends React.Component<StatLabelProps> {
 	render() {
 		const { title, value } = this.props;
@@ -100,6 +102,45 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 	}
 
+	readonly setChecked = (crew: PlayerCrew | string, value?: boolean) => {
+		const fpros = this.state.checks ?? [] as SymCheck[];
+		let fi: SymCheck | null = null;
+
+		if (typeof crew === 'string') {
+			fi = fpros.find(z => z.symbol === crew) ?? null;
+		}
+		else {
+			fi = fpros.find(z => z.symbol === crew.symbol) ?? null;
+		}
+		
+		if (fi) {
+			fi.checked = value ?? false;
+		}
+		else if (value) {
+			fi = {
+				symbol: typeof crew === 'string' ? crew : crew.symbol,
+				checked: value
+			}
+			fpros.push(fi);
+		}
+		
+		this.setState({ ... this.state, checks: fpros });
+	}
+
+	readonly getChecked = (crew: PlayerCrew | string) => {
+		const fpros = this.state.checks ?? [] as SymCheck[];
+		let fi: SymCheck | null = null;
+
+		if (typeof crew === 'string') {
+			fi = fpros.find(z => z.symbol === crew) ?? null;
+		}
+		else {
+			fi = fpros.find(z => z.symbol === crew.symbol) ?? null;
+		}
+
+		return fi?.checked ?? false;
+	}
+
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
 		const { playerData, crew: allCrew } = this.context;
@@ -124,9 +165,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderVoyageGroups(data: CiteData) {
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
-		const { citeMode } = this.state;
-		
+
 		const voyageData = this.context.ephemeral;
+		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 
 		if (voyageData?.voyage?.length) {
 			let v = voyageData.voyage[0];
@@ -139,7 +180,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
 				const findcrew = this.context.playerData.player.character.crew.find((c) => c.name === voycrew.name);
+
 				if (!findcrew) continue;
+
+				if (this.state.checks?.some(c => c.checked) && !this.state.checks?.some(c => c.checked && c.symbol === findcrew?.symbol)) {
+					continue;
+				}
 
 				const crew = JSON.parse(JSON.stringify(findcrew), (key, value) => {
 					if (key.includes("data")) {
@@ -279,7 +325,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.crew}
 										playerData={this.context.playerData}
 										/>
-										<b style={{margin:"0.5em 0 0 0"}}>{crew.name} ({crew.pickerId})</b>
+										<b  onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
+											style={{
+											cursor: "pointer", 
+											margin:"0.5em 0 0 0"
+											}}>
+												{crew.name} ({crew.pickerId})
+										</b>
 										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.ceil(crew.totalEVContribution ?? 0)} Total EV</i>
 									</div>
 								))}
@@ -328,6 +380,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
 						<Table.HeaderCell>In Portal</Table.HeaderCell>
+						<Table.HeaderCell>Compare</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -335,8 +388,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = this.context.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
-							<Table.Row key={idx}
-							>
+							<Table.Row positive={this.getChecked(crew.symbol)}>
+
 								<Table.Cell>{row.pickerId}</Table.Cell>
 								<Table.Cell>
 									<div
@@ -386,6 +439,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								</Table.Cell>
 								<Table.Cell>
 									{crew.in_portal ? "Yes" : "No"}
+								</Table.Cell>
+								<Table.Cell>
+									<Checkbox checked={this.getChecked(crew.symbol)} onChange={(e, { checked }) => this.setChecked(crew.symbol, checked as boolean)} />
 								</Table.Cell>
 							</Table.Row>
 						);
@@ -498,8 +554,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 		
 		const citeData = workset;
-
-		return (
+		const gleason = this.state.checks?.filter(z => z.checked)?.length;
+		
+		return (	
 			<>
 				<Accordion
 					defaultActiveIndex={-1}
@@ -538,7 +595,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}}>
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
 							<RarityFilter
-								altTitle='Calculate for specific rarity'
+								altTitle='Calculate specific rarity'
 								multiple={false}
 								rarityFilter={citeMode?.rarities ?? []}
 								setRarityFilter={(data) => {
@@ -555,12 +612,29 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								}}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
-							<Input
-								label={"Filter By Name"}
+						<div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
+							<Input		
+														
+								label={"Search"}
 								value={citeMode.nameFilter}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
 								/>
+							<i className='delete icon'								
+								title={"Clear Searches and Comparison Marks"} 							    
+								style={{
+									cursor: "pointer", 
+									marginLeft: "0.75em"
+								}} 								
+								onClick={(e) => {
+										setCiteMode({ ... citeMode ?? {}, nameFilter: '' }); 
+										window.setTimeout(() => {
+											this.setState({ ...this.state, checks: undefined }); 
+										});
+										
+									} 
+								} 
+						 	/>
+
 						</div>
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
 							<Dropdown
@@ -599,7 +673,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						 	panes={[
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, true) },
-							{ menuItem: 'Voyage Groups', render: () => this.renderVoyageGroups(citeData) },
+							{ menuItem: 'Voyage Groups' + (gleason ? ' (' + gleason + ')' : '') , render: () => this.renderVoyageGroups(citeData) },
 						]} />
 						</>
 					}
