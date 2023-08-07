@@ -3,7 +3,7 @@ name: Benny Russell
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 17
 in_portal: true
 date: 12/06/2017
