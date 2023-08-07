@@ -2308,7 +2308,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 				}]}
 				/> || <div>
-					Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link>
+					{/* Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link> */}
 					</div>}
 				<div style={{margin: "1em 0"}}>
 					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&

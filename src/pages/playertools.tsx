@@ -29,6 +29,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { EquipmentItem } from '../model/equipment';
 import { DataWrapper } from '../context/datawrapper';
 import { EphemeralData } from '../context/playercontext';
+import { navigate } from 'gatsby';
 
 export interface PlayerTool {
 	title: string;
