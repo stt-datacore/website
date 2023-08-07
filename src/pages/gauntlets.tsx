@@ -864,13 +864,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { crew: allCrew, gauntlets: gauntsin } = this.context;
-		const { liveGauntlet } = this.state;
+		const { crew: allCrew, gauntlets: gauntsin, playerData } = this.context;
 
+		const hasPlayer = !!playerData?.player?.character?.crew?.length;
 		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
 
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
-
+		const liveGauntlet = hasPlayer ? this.state.liveGauntlet : null;
+	
 		if (gauntlets && this.inited) return;
 
 		let uniques = [...gauntlets];
@@ -938,8 +939,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			this.inited = true;
 
+			let actIdx = this.state.activeTabIndex;
+			
+			if (!hasPlayer) {
+				this.tiny.removeValue('liveGauntlet');
+				if (actIdx === 4) actIdx = 0;
+			}
+		
 			this.setState({
 				... this.state,
+				activeTabIndex: actIdx,
 				gauntlets: gaunts,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
