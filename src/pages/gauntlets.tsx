@@ -1382,6 +1382,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
 						return (crew &&
 							<Table.Row key={idx}
+								negative={crew.isOpponent}
 								positive={filter?.ownedStatus === 'maxall' && crew.immortal === CompletionState.DisplayAsImmortalOwned}
 							>
 								<Table.Cell>{rank}</Table.Cell>
