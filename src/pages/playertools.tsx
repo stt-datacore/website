@@ -107,6 +107,11 @@ export const playerTools: PlayerTools = {
 	'charts': {
 		title: 'Charts & Stats',
 		render: () => <ProfileCharts />
+	},
+	'fwdgaunt': {
+		title: "Gauntlets",
+		render: () => <>{navigate("/gauntlets")}</>,
+		noMenu: true
 	}
 };
 

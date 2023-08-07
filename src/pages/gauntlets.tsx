@@ -1639,9 +1639,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
 						justifyContent: "space-between"
 					}}>
-						<h3 style={{ fontSize: "1.5em", margin: "0.25em 0" }}>
-							{prettyDate}
-						</h3>
+						<div>
+							<h3 style={{ fontSize: "1.5em", margin: "0.25em 0" }}>
+								{prettyDate}
+							</h3>
+							{gauntlet?.bracket_id && <sub>Bracket Id: {gauntlet?.bracket_id}</sub>}
+						</div>
 
 						<div style={{
 							display: "flex",
@@ -2236,6 +2239,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	render() {
 		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+
 		if (!gauntlets) return <></>
 
 		const fs = isMobile ? "0.75em" : "1em";
@@ -2259,7 +2264,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		]
 
-		if (liveGauntlet){
+		if (liveGauntlet && hasPlayer){
 			tabPanes.push({
 					menuItem: isMobile ? "Live" : "Live Gauntlet",
 					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>
@@ -2272,7 +2277,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return (
 			<>
-			<Accordion
+			{hasPlayer && <Accordion
 				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
 					index: 0, 
@@ -2330,7 +2335,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</Form></>
 					}
 				}]}
-				/>
+				/> || <div>
+					Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link>
+					</div>}
 				<div style={{margin: "1em 0"}}>
 					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setState({ ... this.state, activeTabIndex: props.activeIndex as number })} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
