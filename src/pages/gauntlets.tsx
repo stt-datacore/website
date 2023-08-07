@@ -892,9 +892,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { allCrew, gauntlets: gauntsin } = this.context;
-		const { liveGauntlet } = this.state;
+		const { allCrew, gauntlets: gauntsin, playerData } = this.context;
 
+		const hasPlayer = !!playerData?.player?.character?.crew?.length;
+		const liveGauntlet = hasPlayer ? this.state.liveGauntlet : null;
+		
 		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
 
 		if (!(allCrew?.length) || !(gauntlets?.length)) return;
