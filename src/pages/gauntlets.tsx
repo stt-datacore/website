@@ -88,7 +88,7 @@ export interface PairGroup {
 export interface GauntletsPageProps {
 }
 
-export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'maxall' | 'nofe' | 'nofemax' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
+export type OwnedStatus = 'any' | 'maxall' | 'owned' | 'unfrozen' | 'unowned' | 'ownedmax' | 'nofe' | 'nofemax' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
 
 export interface FilterProps {
 	ownedStatus?: OwnedStatus;
@@ -781,8 +781,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'maxall') {
-						if (isImmortal(crew)) return crew;
+					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
+						if (isImmortal(crew) || !crew.have) return crew;
 
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
@@ -984,6 +984,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (filter.ownedStatus) {
 				switch(filter.ownedStatus) {
 					case 'any':
+					case 'maxall':
 						return true;
 					case 'fe':
 						if (!hasPlayer) return true;
@@ -992,7 +993,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					case 'nofemax':
 						if (!hasPlayer) return true;
 						return !!crew.have && (crew.level !== 100 || crew.equipment?.length !== 4);						
-					case 'maxall':
+					case 'ownedmax':
 						if (!hasPlayer) return true;
 					 	return !!crew.have;						
 					case 'unfrozen':
@@ -1383,7 +1384,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						return (crew &&
 							<Table.Row key={idx}
 								negative={crew.isOpponent}
-								positive={filter?.ownedStatus === 'maxall' && crew.immortal === CompletionState.DisplayAsImmortalOwned}
+								positive={(filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned}
 							>
 								<Table.Cell>{rank}</Table.Cell>
 								<Table.Cell>
@@ -1472,8 +1473,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
+			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
 			{ key: 'owned', value: 'owned', text: 'Owned Crew' },
-			{ key: 'maxall', value: 'maxall', text: 'All Owned Crew as Maxed' },
+			{ key: 'ownedmax', value: 'ownedmax', text: 'All Owned Crew as Maxed' },
 			{ key: 'fe', value: 'fe', text: 'Owned, Fully Equipped Crew' },
 			{ key: 'nofe', value: 'nofe', text: 'Owned, Not Fully Equipped Crew' },
 			{ key: 'nofemax', value: 'nofemax', text: 'Owned, Not Fully Equipped Crew as Maxed' },
