@@ -1344,6 +1344,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
 		const filter = filterProps[idx];
+		const pageIdx = idx;
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
 
@@ -1383,10 +1384,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						const crew = row;
 						const pairs = crew.pairs ?? getPlayerPairs(crew);
 						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
+						const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+
 						return (crew &&
 							<Table.Row key={idx}
 								negative={crew.isOpponent}
-								positive={(filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned}
+								positive={
+									
+									(pageIdx !== 4 && (filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned)
+									|| (pageIdx === 4 && inMatch)
+								}
 							>
 								<Table.Cell>{rank}</Table.Cell>
 								<Table.Cell>
@@ -1679,7 +1686,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>
 					
 				<div style={{margin: "0.75em 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> If owned crew are detected, then their current level in your roster is used to compute their rank.</i>
+					<i><b>Note:</b> If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.</i>
 				</div>
 
 				<div style={{
@@ -1757,7 +1764,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
 						</div>
-						{idx === 4 && <div style={{
+						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+							display: "flex",
+							flexDirection: "row",
+							marginRight: "2em",
+							textAlign: "left"
+						}}>
+
+							<Checkbox
+								title="Highlight Active Round Only"
+								options={filterOptions}
+								checked={this.getActiveRound()}
+								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
+							/>
+
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+						</div>}
+						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "row",
 							marginRight: "2em",
@@ -1775,7 +1798,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</div>}
 					</div>
 
-					
+				{idx === 4 &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.</i>
+				</div>}
+				{idx !== 4 && viewModes[idx] === 'table' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Unleveled, owned crew that are shown maxed are highlighted in green.</i>
+				</div>
+				}
+				{viewModes[idx] === 'pair_cards' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.</i>
+				</div>
+				}
+	
 				{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{ margin: "1em 0", width: "100%" }}>
 					<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 				</div>}
@@ -2169,7 +2206,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				this.setState({ ... this.state, gauntletJson: '', liveGauntlet: null, activeTabIndex: 0 });	
 				return;
 			}
-
+			
+			let dts = root.character.gauntlets[0].bracket_id?.split("_");
+			if (dts) {
+				root.character.gauntlets[0].date = dts[0];
+			}
 			this.inited = false;
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
 			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });			
