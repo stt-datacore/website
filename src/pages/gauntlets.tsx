@@ -88,7 +88,7 @@ export interface PairGroup {
 export interface GauntletsPageProps {
 }
 
-export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'nofe' | 'nofemax' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
+export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'maxall' | 'nofe' | 'nofemax' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
 
 export interface FilterProps {
 	ownedStatus?: OwnedStatus;
@@ -781,7 +781,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (filter?.ownedStatus === 'nofemax') {
+					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'maxall') {
+						if (isImmortal(crew)) return crew;
+
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
@@ -790,6 +792,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						crew.level = 100;
 						crew.equipment = [0,1,2,3];
 						crew.immortal = CompletionState.DisplayAsImmortalOwned;
+						crew.skills ??= {};
 						for (let skill of Object.keys(crew.base_skills)) {
 							crew.skills[skill] = { ... crew.base_skills[skill] };
 						}
@@ -989,6 +992,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					case 'nofemax':
 						if (!hasPlayer) return true;
 						return !!crew.have && (crew.level !== 100 || crew.equipment?.length !== 4);						
+					case 'maxall':
+						if (!hasPlayer) return true;
+					 	return !!crew.have;						
 					case 'unfrozen':
 						if (!hasPlayer) return true;
 						return !!crew.have && crew.immortal <= 0;						
@@ -1333,8 +1339,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
 		if (!data) return <></>;
 
-		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey } = this.state;
-
+		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
+		const filter = filterProps[idx];
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
 
@@ -1376,6 +1382,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
 						return (crew &&
 							<Table.Row key={idx}
+								positive={filter?.ownedStatus === 'maxall' && crew.immortal === CompletionState.DisplayAsImmortalOwned}
 							>
 								<Table.Cell>{rank}</Table.Cell>
 								<Table.Cell>
@@ -1465,6 +1472,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'owned', value: 'owned', text: 'Owned Crew' },
+			{ key: 'maxall', value: 'maxall', text: 'All Owned Crew as Maxed' },
 			{ key: 'fe', value: 'fe', text: 'Owned, Fully Equipped Crew' },
 			{ key: 'nofe', value: 'nofe', text: 'Owned, Not Fully Equipped Crew' },
 			{ key: 'nofemax', value: 'nofemax', text: 'Owned, Not Fully Equipped Crew as Maxed' },
