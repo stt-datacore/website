@@ -106,6 +106,7 @@ export interface GauntletsPageState {
 
 	activeTabIndex?: number;
 	onlyActiveRound?: boolean;
+	hideOpponents?: boolean;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -222,19 +223,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageIndexTab: [...ptab],
 			itemsPerPageTab: ipage,
 			tops: tops,
-			filteredCrew: [[], [], [], []],
+			filteredCrew: [[], [], [], [], []],
 			viewModes: vmodes,
 			gauntlets: [],
 			browsingGauntlet: undefined,
 			uniques: [],
 			filterProps: fprops,			
-			activeTabIndex: lg ? 4 : 0
+			activeTabIndex: lg ? 4 : 0,
+			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false)
 		}
 	}
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
-		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew];
+		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew, this.state.browsingGauntlet?.matchedCrew, this.state.liveGauntlet?.matchedCrew];
 
 		if (this.inited && tabs[index]) {
 			let crew = tabs[index] ?? [] as PlayerCrew[];
@@ -359,6 +361,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	protected getActiveRound() {
 		return !!this.state.onlyActiveRound;
 	}
+	protected setHideOpponents(value: boolean) {
+		this.tiny.setValue('hideOpponents', value);
+		this.inited = false;
+		this.setState({...this.state, hideOpponents: value });
+	}
+
+	protected getHideOpponents() {
+		return !!this.state.hideOpponents;
+	}
 
 	protected getViewMode(index: number) {
 		return this.state.viewModes[index];
@@ -430,7 +441,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number, maxResults?: number) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
-		const { onlyActiveRound } = this.state;
+		const { onlyActiveRound, hideOpponents } = this.state;
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 		const ptop = top ?? 10;
 		const pairGroups = [] as PairGroup[];
@@ -454,7 +465,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pair: rpairs,
 				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
 					.map(d => d as PlayerCrew)
-					.filter((crew2) => {			
+					.filter((crew2) => {		
+						if (hideOpponents && crew2.isOpponent) return false;
+
 						if (onlyActiveRound) {
 							if (hapres === currSkills) {
 								return true;
@@ -615,7 +628,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
 
-		if (gauntlet.opponents?.length) {
+		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
 				const nfcrew = this.context.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
@@ -754,8 +767,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
 					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
-						if (isImmortal(crew) || !crew.have) return crew;
-
+						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
+						if (crew.symbol ==='black_admiral_crew') {
+							console.log("What is this.");
+						}
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
@@ -1314,6 +1329,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
 		const filter = filterProps[idx];
+		const pageIdx = idx;
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
 
@@ -1353,10 +1369,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						const crew = row;
 						const pairs = crew.pairs ?? getPlayerPairs(crew);
 						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
+						const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+
 						return (crew &&
 							<Table.Row key={idx}
 								negative={crew.isOpponent}
-								positive={(filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned}
+								positive={
+									
+									(pageIdx !== 4 && (filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned)
+									|| (pageIdx === 4 && inMatch)
+								}
 							>
 								<Table.Cell>{rank}</Table.Cell>
 								<Table.Cell>
@@ -1589,9 +1611,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : "row",
 						justifyContent: "space-between"
 					}}>
-						<h3 style={{ fontSize: "1.5em", margin: "0.25em 0" }}>
-							{prettyDate}
-						</h3>
+						<div>
+							<h3 style={{ fontSize: "1.5em", margin: "0.25em 0" }}>
+								{prettyDate}
+							</h3>
+							{gauntlet?.bracket_id && <sub>Bracket Id: {gauntlet?.bracket_id}</sub>}
+						</div>
 
 						<div style={{
 							display: "flex",
@@ -1649,7 +1674,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>
 					
 				<div style={{margin: "0.75em 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> If owned crew are detected, then their current level in your roster is used to compute their rank.</i>
+					<i><b>Note:</b> If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.</i>
 				</div>
 
 				<div style={{
@@ -1727,7 +1752,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
 						</div>
-						{idx === 4 && <div style={{
+						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "row",
 							marginRight: "2em",
@@ -1743,9 +1768,39 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
 						</div>}
+						{idx === 4 && <div style={{
+							display: "flex",
+							flexDirection: "row",
+							marginRight: "2em",
+							textAlign: "left"
+						}}>
+
+							<Checkbox
+								title="Hide Opponents"
+								options={filterOptions}
+								checked={this.getHideOpponents()}
+								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
+							/>
+
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Hide Opponents</b></h4>
+						</div>}
 					</div>
 
-					
+				{idx === 4 &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.</i>
+				</div>}
+				{idx !== 4 && viewModes[idx] === 'table' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Unleveled, owned crew that are shown maxed are highlighted in green.</i>
+				</div>
+				}
+				{viewModes[idx] === 'pair_cards' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
+				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
+					<i><b>Note:</b> Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.</i>
+				</div>
+				}
+	
 				{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{ margin: "1em 0", width: "100%" }}>
 					<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 				</div>}
@@ -2139,7 +2194,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				this.setState({ ... this.state, gauntletJson: '', liveGauntlet: null, activeTabIndex: 0 });	
 				return;
 			}
-
+			
+			let dts = root.character.gauntlets[0].bracket_id?.split("_");
+			if (dts) {
+				root.character.gauntlets[0].date = dts[0];
+			}
 			this.inited = false;
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
 			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });			
@@ -2152,6 +2211,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	render() {
 		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+
 		if (!gauntlets) return <></>
 
 		const fs = isMobile ? "0.75em" : "1em";
@@ -2175,7 +2236,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		]
 
-		if (liveGauntlet){
+		if (liveGauntlet && hasPlayer){
 			tabPanes.push({
 					menuItem: isMobile ? "Live" : "Live Gauntlet",
 					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>
@@ -2188,7 +2249,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return (
 			<>
-			<Accordion
+			{hasPlayer && <Accordion
 				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
 					index: 0, 
@@ -2246,7 +2307,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</Form></>
 					}
 				}]}
-				/>
+				/> || <div>
+					Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link>
+					</div>}
 				<div style={{margin: "1em 0"}}>
 					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setState({ ... this.state, activeTabIndex: props.activeIndex as number })} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
