@@ -88,7 +88,7 @@ export interface PairGroup {
 export interface GauntletsPageProps {
 }
 
-export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
+export type OwnedStatus = 'any' | 'owned' | 'unfrozen' | 'unowned' | 'nofe' | 'nofemax' | 'fe' | 'portal' | 'gauntlet' | 'nonportal';
 
 export interface FilterProps {
 	ownedStatus?: OwnedStatus;
@@ -780,6 +780,29 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					return crew;
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
+				.map((crew) => { 
+					if (filter?.ownedStatus === 'nofemax') {
+						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
+						if (!fcrew) return crew;
+
+						crew.base_skills = JSON.parse(JSON.stringify(fcrew.base_skills));
+						crew.rarity = crew.max_rarity;
+						crew.level = 100;
+						crew.equipment = [0,1,2,3];
+						crew.immortal = CompletionState.DisplayAsImmortalOwned;
+						for (let skill of Object.keys(crew.base_skills)) {
+							crew.skills[skill] = { ... crew.base_skills[skill] };
+						}
+						if (buffMode === 'player' && buffConfig) {
+							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (buffMode === 'max' && maxBuffs) {
+							applyCrewBuffs(crew, maxBuffs);
+						}
+						crew.pairs = getPlayerPairs(crew);
+					}
+					return crew;
+				})
 				.sort((a, b) => {
 
 					if (rankByPair) {
@@ -962,6 +985,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					case 'fe':
 						if (!hasPlayer) return true;
 						return !!crew.have && crew.level === 100 && crew.equipment?.length === 4;
+					case 'nofe':
+					case 'nofemax':
+						if (!hasPlayer) return true;
+						return !!crew.have && (crew.level !== 100 || crew.equipment?.length !== 4);						
 					case 'unfrozen':
 						if (!hasPlayer) return true;
 						return !!crew.have && crew.immortal <= 0;						
@@ -1439,6 +1466,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'owned', value: 'owned', text: 'Owned Crew' },
 			{ key: 'fe', value: 'fe', text: 'Owned, Fully Equipped Crew' },
+			{ key: 'nofe', value: 'nofe', text: 'Owned, Not Fully Equipped Crew' },
+			{ key: 'nofemax', value: 'nofemax', text: 'Owned, Not Fully Equipped Crew as Maxed' },
 			{ key: 'unfrozen', value: 'unfrozen', text: 'Owned, Unfrozen Crew' },
 			{ key: 'unowned', value: 'unowned', text: 'Unowned Crew' },
 			{ key: 'portal', value: 'portal', text: 'Unowned, Portal-Available Crew' },
@@ -1450,7 +1479,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'portal', value: 'portal', text: 'Portal-Available Crew' },
 			{ key: 'gauntlet', value: 'gauntlet', text: 'Gauntlet Exclusive Crew' },
 			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
-		]
+		];
 
 		availBuffs.push({
 			key: 'none',
@@ -1931,9 +1960,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const bigNumberColor = dynamicRangeColor("score" in crew ? (crewPairScore?.score ?? 0) : 0, gmax?.score ?? 0, gmin?.score ?? 0);
 		const critString = crit + "%";
 		const boostMode = this.getBuffState();
+		const powerColor = ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalOwned) ? 'lightgreen' : undefined;
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
-
+		
 		const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
 		const isRound = !this.state.onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
 		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
@@ -2034,6 +2064,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							flexDirection: "row",
 							display: "flex",
 							justifyContent: "space-evenly",
+							textDecoration: powerColor ? 'underline' : undefined,
+							color: powerColor,
 							fontSize: "8pt"
 						}, isRound && ("isDebuffed" in crew && crew.isDebuffed), 
 					  	   isRound && ("isDisabled" in crew && crew.isDisabled))}
