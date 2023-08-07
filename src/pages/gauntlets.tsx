@@ -135,6 +135,7 @@ export interface GauntletsPageState {
 
 	activeTabIndex?: number;
 	onlyActiveRound?: boolean;
+	hideOpponents?: boolean;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -251,13 +252,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activePageIndexTab: [...ptab],
 			itemsPerPageTab: ipage,
 			tops: tops,
-			filteredCrew: [[], [], [], []],
+			filteredCrew: [[], [], [], [], []],
 			viewModes: vmodes,
 			gauntlets: [],
 			browsingGauntlet: undefined,
 			uniques: [],
 			filterProps: fprops,			
-			activeTabIndex: lg ? 4 : 0
+			activeTabIndex: lg ? 4 : 0,
+			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false)
 		}
 	}
 
@@ -388,6 +390,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	protected getActiveRound() {
 		return !!this.state.onlyActiveRound;
 	}
+	protected setHideOpponents(value: boolean) {
+		this.tiny.setValue('hideOpponents', value);
+		this.inited = false;
+		this.setState({...this.state, hideOpponents: value });
+	}
+
+	protected getHideOpponents() {
+		return !!this.state.hideOpponents;
+	}
 
 	protected getViewMode(index: number) {
 		return this.state.viewModes[index];
@@ -459,7 +470,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number, maxResults?: number) => {
 		const pairs = this.discoverPairs(crew, featuredSkill);
-		const { onlyActiveRound } = this.state;
+		const { onlyActiveRound, hideOpponents } = this.state;
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
 		const ptop = top ?? 10;
 		const pairGroups = [] as PairGroup[];
@@ -483,7 +494,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				pair: rpairs,
 				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
 					.map(d => d as PlayerCrew)
-					.filter((crew2) => {			
+					.filter((crew2) => {		
+						if (hideOpponents && crew2.isOpponent) return false;
+
 						if (onlyActiveRound) {
 							if (hapres === currSkills) {
 								return true;
@@ -643,7 +656,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
 
-		if (gauntlet.opponents?.length) {
+		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
 				const nfcrew = this.context.allCrew.find((cf) => cf.symbol === ocrew.archetype_symbol);
@@ -1780,7 +1793,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
 						</div>}
-						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+						{idx === 4 && <div style={{
 							display: "flex",
 							flexDirection: "row",
 							marginRight: "2em",
@@ -1788,13 +1801,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}}>
 
 							<Checkbox
-								title="Highlight Active Round Only"
+								title="Hide Opponents"
 								options={filterOptions}
-								checked={this.getActiveRound()}
-								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
+								checked={this.getHideOpponents()}
+								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
 							/>
 
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Hide Opponents</b></h4>
 						</div>}
 					</div>
 
