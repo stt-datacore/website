@@ -263,7 +263,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
-		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew];
+		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew, this.state.browsingGauntlet?.matchedCrew, this.state.liveGauntlet?.matchedCrew];
 
 		if (this.inited && tabs[index]) {
 			let crew = tabs[index] ?? [] as PlayerCrew[];
@@ -782,8 +782,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
 					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
-						if (isImmortal(crew) || !crew.have) return crew;
-
+						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
+						if (crew.symbol ==='black_admiral_crew') {
+							console.log("What is this.");
+						}
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
