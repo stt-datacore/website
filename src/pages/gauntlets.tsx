@@ -772,24 +772,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					if (gauntlet.contest_data?.selected_crew?.length) {
-						let selcrew = gauntlet.contest_data.selected_crew.find((sel) => sel.archetype_symbol === crew.symbol);
-						if (selcrew) {
-							if (selcrew.disabled) {
-								crew.isDisabled = true;
-							}
-							else {
-								for (let selskill of selcrew.skills) {								
-									let sk = selskill.skill;
-									crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
-									crew.skills[sk].range_max = selskill.max;
-									crew.skills[sk].range_min = selskill.min;
+					
+					if (!crew.isOpponent) {
+						if (gauntlet.contest_data?.selected_crew?.length) {
+							let selcrew = gauntlet.contest_data.selected_crew.find((sel) => sel.archetype_symbol === crew.symbol);
+							if (selcrew) {
+								if (selcrew.disabled) {
+									crew.isDisabled = true;
+								}
+								else {
+									for (let selskill of selcrew.skills) {								
+										let sk = selskill.skill;
+										crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
+										crew.skills[sk].range_max = selskill.max;
+										crew.skills[sk].range_min = selskill.min;
+									}
 								}
 							}
 						}
-					}
-
-					if (!crew.isOpponent) {
+				
 						if (!hasPlayer) crew.rarity = crew.max_rarity;
 						else if (!c) crew.rarity = 0;
 						if (!crew.immortal || crew.immortal < 0) {
