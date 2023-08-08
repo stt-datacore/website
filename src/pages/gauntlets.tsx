@@ -1894,7 +1894,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
 							/>
 
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Hide Opponents</b></h4>
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
 						</div>}
 					</div>
 
