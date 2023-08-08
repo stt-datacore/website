@@ -3,8 +3,8 @@ name: Bridge Officer Number One
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
-events: 24
+bigbook_tier: 7
+events: 25
 in_portal: true
 date: 30/01/2019
 obtained: Event
