@@ -1999,8 +1999,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									key={"pairGroup_" + pk}
 									style={{
 										display: "flex",
+										width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100%-2em) !important" : undefined,
 										flexDirection: "column",
-										justifyContent: "stretch",
+										justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "center" : "stretch",
 									}}>
 
 									<div
@@ -2015,7 +2016,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 											justifyContent: "center",
 											paddingTop: "0.6em",
 											paddingBottom: "0.5em",
-											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : undefined,
 											backgroundColor: 
 												currContest === pairGroup.pair.map(e => rankToSkill(e)).sort().join() ? 'royalblue' : (pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined),
 
@@ -2159,7 +2159,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 				key={crew.symbol + pstr + ("ssId" in crew ? crew.ssId : "")}
 				style={{
-					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "28em",
+					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100vw-1em)" : "28em",
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "space-between",
@@ -2204,7 +2204,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexDirection: "column",
 					justifyContent: "center",
 					alignItems: "center",
-					width: "16em"
+					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
 				}}>
 					<div style={{
 						margin: 0,
@@ -2230,7 +2230,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						marginLeft: "0.25em",
 						marginRight: "0.25em",
 						marginTop: "0.25em",
-						width: "15em",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
 						cursor: "default"
 						
 					}}>
