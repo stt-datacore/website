@@ -167,7 +167,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
-
+		
 		const vmodes = [] as GauntletViewMode[];
 		const rmax = [] as number[];
 		const tops = [] as number[];
@@ -208,6 +208,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 
+		const activeTabIndex = this.tiny.getValue<number>("activeTabIndex", lg ? 4 : 0);
+
 		this.state = {
 			onlyActiveRound: this.tiny.getValue<boolean>('activeRound', false),
 			liveGauntlet: lg,
@@ -229,7 +231,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			browsingGauntlet: undefined,
 			uniques: [],
 			filterProps: fprops,			
-			activeTabIndex: lg ? 4 : 0,
+			activeTabIndex: activeTabIndex,
 			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false)
 		}
 	}
@@ -361,6 +363,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	protected getActiveRound() {
 		return !!this.state.onlyActiveRound;
 	}
+
 	protected setHideOpponents(value: boolean) {
 		this.tiny.setValue('hideOpponents', value);
 		this.inited = false;
@@ -398,6 +401,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	readonly onImmoToggle = (crew: PlayerCrew, state: PlayerImmortalMode) => {
 
+	}
+
+	protected setActiveTabIndex = (value?: number) => {
+		this.tiny.setValue('activeTabIndex', value);
+		this.setState({...this.state, activeTabIndex: value });
+	}
+
+	protected getActiveTabIndex = () => {
+		return this.state.activeTabIndex;
 	}
 
 	componentDidMount() {
@@ -732,24 +744,27 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					if (gauntlet.contest_data?.selected_crew?.length) {
-						let selcrew = gauntlet.contest_data.selected_crew.find((sel) => sel.archetype_symbol === crew.symbol);
-						if (selcrew) {
-							if (selcrew.disabled) {
-								crew.isDisabled = true;
-							}
-							else {
-								for (let selskill of selcrew.skills) {								
-									let sk = selskill.skill;
-									crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
-									crew.skills[sk].range_max = selskill.max;
-									crew.skills[sk].range_min = selskill.min;
+					
+					if (!crew.isOpponent) {
+						if (gauntlet.contest_data?.selected_crew?.length) {
+							let selcrew = gauntlet.contest_data.selected_crew.find((sel) => sel.archetype_symbol === crew.symbol);
+							if (selcrew) {
+								if (selcrew.disabled) {
+									crew.isDisabled = true;
+								}
+								else {
+									for (let selskill of selcrew.skills) {								
+										let sk = selskill.skill;
+										crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
+										crew.skills[sk].range_max = selskill.max;
+										crew.skills[sk].range_min = selskill.min;
+										crew[sk].range_max = selskill.max;
+										crew[sk].range_min = selskill.min;
+									}
 								}
 							}
 						}
-					}
-
-					if (!crew.isOpponent) {
+				
 						if (!hasPlayer) crew.rarity = crew.max_rarity;
 						else if (!c) crew.rarity = 0;
 						if (!crew.immortal || crew.immortal < 0) {
@@ -766,11 +781,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
+					if (!crew.isDebuffed && filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
-						if (crew.symbol ==='black_admiral_crew') {
-							console.log("What is this.");
-						}
+						// if (crew.symbol ==='black_admiral_crew') {
+						// 	console.log("What is this.");
+						// }
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
@@ -1473,6 +1488,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
 		const featuredCrew = this.context.crew.find((crew) => crew.symbol === gauntlet?.jackpot_crew);
+		let jp = [] as CrewMember[];
+		
+		if (idx === 3) {
+			jp = this.context.crew.filter((crew) => {
+				return (crew.obtained.toLowerCase().includes("gauntlet"));
+			})
+			.sort((a, b) => {
+				return a.date_added.getTime() - b.date_added.getTime();
+			});
+		}
+
+		const jackpots = jp;
 
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
@@ -1520,6 +1547,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		if (!gauntlet) return undefined;
+
+		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 
 		const pairs = this.discoverPairs(gauntlet.matchedCrew ?? [])
 			.map((pair) => {
@@ -1607,6 +1636,60 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 					{idx !== 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>Jackpot Crew for {prettyDate}</i></div>}
 
+					{!!jackpots?.length && idx === 3 &&
+
+						<Accordion
+							style={{margin: "1em 0em"}}
+							defaultActiveIndex={-1}
+							panels={[{
+								index: 0, 
+								key: 0,
+								title: "Browse Gauntlet Exclusive Crew (Click Here)",
+								content: {
+									content: <>
+									<div style={{
+										display: "flex",
+										flexDirection:"row",			
+										flexWrap: "wrap",							
+										justifyContent: "space-between",										
+									}}>
+										{jackpots.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
+										.map((jcrew) => {
+											const crit = 0; // ((prettyTraits?.filter(t => jcrew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
+
+											return (
+												<div style={{
+													margin: "1em",
+													padding: 0,
+													width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
+													display: "flex",
+													flexDirection:"column",
+													justifyContent:"flex-start",
+													alignItems: "center",
+													textAlign: "center"
+												}}
+												>
+													<ItemDisplay
+														key={"jackpot" + jcrew.symbol}
+														size={64}
+														maxRarity={jcrew.max_rarity}
+														rarity={jcrew.max_rarity}
+														src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
+														allCrew={this.context.crew}
+														playerData={this.context.playerData}
+														targetGroup='gauntletsHover'
+														crewSymbol={jcrew?.symbol}
+													/>
+													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.5em 0 0 0"}}>{jcrew.name}</i>
+													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.25em 0 0 0"}}>({moment(jcrew.date_added).format("D MMM YYYY")})</i>
+												</div>
+											)
+										})}
+									</div>
+									</>
+								}
+							}]}
+						/>}
 				</div>
 
 				<div style={{
@@ -1791,7 +1874,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
 							/>
 
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Hide Opponents</b></h4>
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
 						</div>}
 					</div>
 
@@ -1883,6 +1966,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 					{viewModes[idx] === 'pair_cards' &&
 						<div style={{
+							margin: 0,
 							marginTop: "0em",
 							marginBottom: "2em",
 							display: "flex",
@@ -1896,8 +1980,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									key={"pairGroup_" + pk}
 									style={{
 										display: "flex",
+										width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100%-2em) !important" : undefined,
 										flexDirection: "column",
-										justifyContent: "stretch",
+										justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "center" : "stretch",
 									}}>
 
 									<div
@@ -2055,7 +2140,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 				key={crew.symbol + pstr + ("ssId" in crew ? crew.ssId : "")}
 				style={{
-					width: "28em",
+					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100vw-1em)" : "28em",
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "space-between",
@@ -2100,7 +2185,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexDirection: "column",
 					justifyContent: "center",
 					alignItems: "center",
-					width: "16em"
+					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
 				}}>
 					<div style={{
 						margin: 0,
@@ -2126,7 +2211,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						marginLeft: "0.25em",
 						marginRight: "0.25em",
 						marginTop: "0.25em",
-						width: "15em",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
 						cursor: "default"
 						
 					}}>
@@ -2187,6 +2272,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly clearGauntlet = () => {
 		this.tiny.setValue('liveGauntlet', undefined);
 		this.inited = false;
+		this.tiny.setValue('activeTabIndex', 0);
 		this.setState({ ... this.state, gauntletJson: '', liveGauntlet: undefined, activeTabIndex: 0 });
 	}
 
@@ -2200,6 +2286,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (root.character.gauntlets[0].state?.includes("ENDED")) {
 				this.inited = false;
 				this.tiny.setValue('liveGauntlet', '', false);
+				this.tiny.setValue('activeTabIndex', 0);
 				this.setState({ ... this.state, gauntletJson: '', liveGauntlet: null, activeTabIndex: 0 });	
 				return;
 			}
@@ -2210,9 +2297,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 			this.inited = false;
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
+			this.tiny.setValue('activeTabIndex', 4);
 			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });			
 		}
 		catch {
+			this.tiny.setValue('activeTabIndex', 0);
 			this.setState({ ... this.state, gauntletJson: '(**)', liveGauntlet: null, activeTabIndex: 0 });
 		}
 	}
@@ -2321,8 +2410,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>}
 				<div style={{margin: "1em 0"}}>
 					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
-						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setState({ ... this.state, activeTabIndex: props.activeIndex as number })} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
-						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setState({ ... this.state, activeTabIndex: props.activeIndex as number })}  menu={{ attached: false }} panes={tabPanes} />
+						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
+						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)}  menu={{ attached: false }} panes={tabPanes} />
 					}
 				</div>
 				<CrewHoverStat targetGroup='gauntletsHover' />

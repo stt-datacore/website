@@ -3,8 +3,8 @@ name: Huntress Z'ymira
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 6
-events: 10
+bigbook_tier: 4
+events: 11
 in_portal: true
 date: 29/12/2022
 obtained: Pack

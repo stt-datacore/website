@@ -19,6 +19,7 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
 import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -46,7 +47,7 @@ type CiteOptimizerState = {
 	citePage: number;
 	trainingPage: number;
 	paginationRows: number;
-	citeData: CiteData | undefined;
+	citeData: CiteData | undefined | null;
 	currentCrew: CrewMember | null | undefined;
 	touchCrew: CrewMember | null | undefined;
 	touchToggled: boolean;
@@ -346,7 +347,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	}
 
-	renderTable(data?: PlayerCrew[], training = true) {
+	renderTable(data?: PlayerCrew[], tabName?: string, training = true) {
 		if (!data) return <></>;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
@@ -356,7 +357,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
-
+		tabName ??= "";
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
 			// if (matchMedia('(hover: hover)').matches) {
@@ -388,7 +389,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = this.context.playerData.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
-							<Table.Row positive={this.getChecked(crew.symbol)}>
+							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
 
 								<Table.Cell>{row.pickerId}</Table.Cell>
 								<Table.Cell>
@@ -554,7 +555,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 		
 		const citeData = workset;
-		const gleason = this.state.checks?.filter(z => z.checked)?.length;
+		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		
 		return (	
 			<>
@@ -591,7 +592,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					<h3>Filters</h3>
 					<div style={{
 						display: "flex",
-						flexDirection: "row"
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
 							<RarityFilter
@@ -599,8 +600,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								multiple={false}
 								rarityFilter={citeMode?.rarities ?? []}
 								setRarityFilter={(data) => {
-									setCiteData(undefined);
-									setCiteMode({ ... citeMode ?? {}, rarities: data });
+									this.setState({ ...this.state, citeMode: { ... citeMode ?? {}, rarities: data }, citeData: null });
 								}}
 								/>
 						</div>
@@ -671,9 +671,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<>
 						<Tab
 						 	panes={[
-							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, false) },
-							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, true) },
-							{ menuItem: 'Voyage Groups' + (gleason ? ' (' + gleason + ')' : '') , render: () => this.renderVoyageGroups(citeData) },
+							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
+							{ menuItem: 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData) },
 						]} />
 						</>
 					}
