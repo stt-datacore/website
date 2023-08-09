@@ -786,6 +786,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
 										crew.skills[sk].range_max = selskill.max;
 										crew.skills[sk].range_min = selskill.min;
+										crew[sk].range_max = selskill.max;
+										crew[sk].range_min = selskill.min;
 									}
 								}
 							}
@@ -807,11 +809,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
+					if (!crew.isDebuffed && filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
-						if (crew.symbol ==='black_admiral_crew') {
-							console.log("What is this.");
-						}
+						// if (crew.symbol ==='black_admiral_crew') {
+						// 	console.log("What is this.");
+						// }
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
