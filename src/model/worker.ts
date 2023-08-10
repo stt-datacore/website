@@ -39,7 +39,7 @@ export interface CalculatorProps {
 
 export interface AllData extends CalculatorProps {
     allShips?: Ship[];
-    playerShips?: Ship[];    
+    playerShips?: Ship[];
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
@@ -50,6 +50,7 @@ export interface VoyageConsideration {
     score: number;
     traited: boolean;
     bestIndex: number;
+    archetype_id: number;
 }
 
 export interface Calculation {
@@ -58,7 +59,8 @@ export interface Calculation {
     name: string;
     calcState: number;
     result?: CalcResult;
-    compared?: string;
+    trackState?: number;
+    confidenceState?: number;
 }
 
 export interface CalcResult {
@@ -66,7 +68,6 @@ export interface CalcResult {
     entries: CalcResultEntry[];
     aggregates: Aggregates;
     startAM: number;
-    confidence: number;
 }
 
 export interface Estimate {

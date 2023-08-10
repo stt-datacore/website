@@ -9,12 +9,14 @@ import Recommender from '../components/voyagecalculator/recommender';
 import CIVASMessage from '../components/voyagecalculator/civas';
 import { VoyageStats } from '../components/voyagecalculator/voyagestats';
 
+import { ActiveVoyageTracker } from '../components/voyagehistory/activevoyage';
+import { getRuntime } from '../components/voyagehistory/utils';
+
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
-import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
+import { PlayerCrew, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
 import { MergedData, MergedContext } from '../context/mergedcontext';
-import { CrewMember } from '../model/crew';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { crewCopy } from '../utils/crewutils';
 
@@ -25,7 +27,7 @@ const VoyageCalculator = () => {
 
 	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
-	
+
 	if (!allShips) {
 		fetchAllShips();
 		return (<><Icon loading name='spinner' /> Loading...</>);
@@ -126,7 +128,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 	const { myCrew } = props;
 
 	const [voyageData, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
-	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase | undefined>(undefined);
+	const [voyageConfig, setVoyageConfig] = React.useState<Voyage | VoyageBase | undefined>(undefined);
 	const [showInput, setShowInput] = React.useState(true);
 
 	if (!voyageConfig) {
@@ -150,39 +152,46 @@ const VoyageMain = (props: VoyageMainProps) => {
 
 	return (
 		<React.Fragment>
-			{voyageConfig.state && (<VoyageActiveCard voyageConfig={voyageConfig} showInput={showInput} setShowInput={setShowInput} />)}
+			{voyageConfig.state && (<VoyageActiveCard voyageConfig={voyageConfig as Voyage} showInput={showInput} setShowInput={setShowInput} />)}
 			{!showInput && (<VoyageActive voyageConfig={voyageConfig} myCrew={myCrew} />)}
 			{showInput && (<VoyageInput voyageConfig={voyageConfig} myCrew={myCrew} />)}
 		</React.Fragment>
 	);
 };
 
-const VoyageActiveCard = (props: any) => {
+type VoyageActiveCardProps = {
+	voyageConfig: Voyage;
+	showInput: boolean;
+	setShowInput: (showInput: boolean) => void;
+};
+
+const VoyageActiveCard = (props: VoyageActiveCardProps) => {
 	const { allShips } = React.useContext(VoyageContext);
 	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
-	if (!ship) return <></>
+	if (!ship) return <></>;
 	const msgTypes = {
 		started: 'has been running for',
 		failed: 'failed at',
 		recalled: 'ran for',
 		completed: 'ran for'
 	};
-	const voyageDuration = formatTime(voyageConfig.state == 'started' ? voyageConfig.voyage_duration/3600 : voyageConfig.log_index/180);
+	const voyageDuration = formatTime(getRuntime(voyageConfig));
 
 	return (
 		<Card fluid>
 			<Card.Content>
 				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
-				<Card.Header>{voyageConfig.ship_name}{ship.name !== voyageConfig.ship_name ? ` (${ship.name})` : ''}</Card.Header>
+				<Card.Header>{voyageConfig.ship_name ? `${voyageConfig.ship_name} (${ship.name})` : `${ship.name}`}</Card.Header>
 				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', rowGap: '1em' }}>
 					<div>
 						<p>
 							Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
 						</p>
 						<p style={{ marginTop: '.5em' }}>
-							Your voyage {msgTypes[voyageConfig.state]} <span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span>.
+							Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>.
+							<ActiveVoyageTracker voyageConfig={voyageConfig} shipSymbol={ship.symbol} />
 						</p>
 					</div>
 					<div>
@@ -229,7 +238,6 @@ const VoyageActive = (props: VoyageActiveProps) => {
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
 			<CrewHoverStat targetGroup='voyageRewards' />
-			
 		</React.Fragment>
 	)
 };
