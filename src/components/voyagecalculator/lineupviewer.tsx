@@ -8,9 +8,8 @@ import ItemDisplay from '../itemdisplay';
 
 import { useStateWithStorage } from '../../utils/storage';
 import { Ship } from '../../model/ship';
-import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
+import { PlayerCrew, Voyage, VoyageCrewSlot, LineupVoyage } from '../../model/player';
 import { CrewMember, Skill } from '../../model/crew';
-import { HoverStat } from '../hovering/hoverstat';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { MergedContext } from '../../context/mergedcontext';
 
@@ -18,49 +17,44 @@ const POPUP_DELAY = 500;
 const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
-	voyageData: Voyage;
-	ship: Ship;
-	roster: PlayerCrew[];
+	voyageData: Voyage | LineupVoyage;
+	ship?: Ship;
+	roster?: PlayerCrew[];
 	dbid: string;
 };
 
 const LineupViewer = (props: LineupViewerProps) => {
 	const { voyageData, ship, roster, dbid } = props;
 
-	const getBestRank = (crew: PlayerCrew, seatSkill: string) => {
+	const getBestRank = (crew: PlayerCrew | CrewMember, seatSkill: string) => {
 		const best = {
 			skill: 'None',
 			rank: 1000
 		};
-		Object.keys(crew.skills).forEach(crewSkill => {
-			let skr = skillRankings.find(sr => sr.skill === crewSkill);
+		if ('skills' in crew) {
+			Object.keys(crew.skills).forEach(crewSkill => {
+				const skr = skillRankings.find(sr => sr.skill === crewSkill);
+				if (skr) {
+					const rank = skr.roster.filter(c => Object.keys(c.skills)
+						.includes(seatSkill) && !usedCrew.includes(c.id))
+						.map(c => c.id).indexOf(crew.id) + 1;
 
-			// null check not necessary from code perspective but VS Code
-			// is still linting:
-
-			// const rank = skr?.roster.filter(c => Object.keys(c.skills)
-			// 	.includes(seatSkill) && !usedCrew.includes(c.id))
-			// 	.map(c => c.id).indexOf(crew.id) + 1;
-
-			// proposed fix:
-			const rank = (skr?.roster?.filter(c => Object.keys(c.skills)
-				.includes(seatSkill) && !usedCrew.includes(c.id))
-				?.map(c => c.id)?.indexOf(crew.id) ?? -1) + 1;
-
-			// Prefer seat skill if no scrolling is necessary
-			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
-			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
-			if ((rank < best.rank && !stayWithSeat) || switchToSeat) {
-				best.skill = crewSkill;
-				best.rank = rank;
-			}
-		});
+					// Prefer seat skill if no scrolling is necessary
+					const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
+					const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
+					if ((rank < best.rank && !stayWithSeat) || switchToSeat) {
+						best.skill = crewSkill;
+						best.rank = rank;
+					}
+				}
+			});
+		}
 		return best;
 	};
 
 	const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
 		skill,
-		roster: roster.filter(c => Object.keys(c.skills).includes(skill))
+		roster: (roster ?? []).filter(c => Object.keys(c.skills).includes(skill))
 			.filter(c => c.skills[skill].core > 0)
 			.sort((c1, c2) => {
 				// Sort by skill voyage score descending
@@ -97,7 +91,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 				`${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		usedCrew.push(crew.id);
 		return {
-			crew, name, trait, skill, bestRank
+			crew, name, trait, bestRank
 		};
 	});
 
@@ -120,8 +114,8 @@ const LineupViewer = (props: LineupViewerProps) => {
 };
 
 type ViewPickerProps = {
-	voyageData: Voyage;
-	ship: Ship;
+	voyageData: Voyage | LineupVoyage;
+	ship?: Ship;
 	shipData: {direction: string, index: number, shipBonus: number, crewBonus: number };
 	assignments: any[];
 	dbid: string;
@@ -155,8 +149,8 @@ const ViewPicker = (props: ViewPickerProps) => {
 
 type ViewProps = {
 	layout: string;
-	voyageData: any;
-	ship: Ship;
+	voyageData: Voyage | LineupVoyage;
+	ship?: Ship;
 	shipData: any;
 	assignments: any[];
 };
@@ -169,7 +163,7 @@ const TableView = (props: ViewProps) => {
 	return (
 		<Grid columns={2} stackable>
 			<Grid.Column>
-				{ship && renderShip()}
+				{renderShip()}
 				<React.Fragment>
 					{[0, 2, 4, 6, 8, 10].map(index => renderSkillAssignments(index))}
 				</React.Fragment>
@@ -181,6 +175,7 @@ const TableView = (props: ViewProps) => {
 	);
 
 	function renderShip(): JSX.Element {
+		if (!ship) return (<></>);
 		return (
 			<Table celled selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
 				<Table.Body>
@@ -271,10 +266,8 @@ const GridView = (props: ViewProps) => {
 	const { layout, voyageData, ship, shipData, assignments } = props;
 
 	return (
-		<React.Fragment>			
-			
-
-			{ship && renderShip()}
+		<React.Fragment>
+			{renderShip()}
 			{layout === 'grid-cards' &&
 				<div>
 					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' />
@@ -295,6 +288,7 @@ const GridView = (props: ViewProps) => {
 	);
 
 	function renderShip(): JSX.Element {
+		if (!ship) return (<></>);
 		return (
 			<Table celled selectable striped unstackable collapsing compact='very' style={{ margin: '0 auto 2em' }}>
 				<Table.Body>
@@ -326,7 +320,7 @@ const GridView = (props: ViewProps) => {
 			</Table>
 		);
 	}
-	
+
 	function renderCards(): JSX.Element {
 		return (
 			<React.Fragment>
@@ -487,7 +481,7 @@ type AssignmentCardProps = {
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
-	
+
 	const context = React.useContext(MergedContext);
 
 	return (
@@ -502,7 +496,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					allCrew={context.crew}
 					playerData={context.playerData}
 					targetGroup='voyageLineup'
-					crewSymbol={crew.symbol}					
+					crewSymbol={crew.symbol}
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 					size={96}
 					maxRarity={crew.max_rarity}
@@ -527,13 +521,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					<div>{renderSkills()}</div>
 				}
 			</div>
-			<Label attached='bottom'>
+			<Label attached='bottom' style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
 				{name}
 			</Label>
 		</Card>
 	);
 
 	function renderSkills(): JSX.Element {
+		if (!('skills' in crew)) return (<></>);
 		return (
 			<React.Fragment>
 				{Object.keys(crew.skills).map(skill =>

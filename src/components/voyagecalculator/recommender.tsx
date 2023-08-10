@@ -1,26 +1,23 @@
-
 import React from 'react';
-
 import { Icon, Form, Button, Dropdown, Message, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
 
 import { CALCULATORS, CalculatorState } from './calchelpers';
 import CIVASMessage from './civas';
 import { VoyageStats } from './voyagestats';
 
+import { IVoyageHistory } from '../voyagehistory/model';
+import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
+
 import { guessCurrentEvent, getEventData } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
-import { GameEvent, PlayerCrew, Voyage, VoyageBase } from '../../model/player';
-import * as CalcHelpers from './calchelpers';
-import { Skill } from '../../model/crew';
-import { AllData, CalcConfig, CalcResult, Calculation, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
-import { InitialOptions } from '../../model/game-elements';
+import { GameEvent, PlayerCrew, Voyage } from '../../model/player';
+import { AllData, CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { Helper } from './Helper';
 
 export const RecommenderContext = React.createContext<AllData>({} as AllData);
@@ -45,6 +42,8 @@ export const Recommender = (props: RecommenderProps) => {
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState<Helper[]>([]);
 	const [results, setResults] = React.useState<Calculation[]>([]);
+	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(playerData.player.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true } );
+	const [trackerId, setTrackerId] = React.useState(0);
 
 	React.useEffect(() => {
 		const consideredShips = [] as VoyageConsideration[];
@@ -54,12 +53,13 @@ export const Recommender = (props: RecommenderProps) => {
 				ship: ship,
 				score: ship.antimatter + (traited ? 150 : 0),
 				traited: traited,
-				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0)
+				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0),
+				archetype_id: ship.archetype_id
 			} as VoyageConsideration;
 			consideredShips.push(entry);
 		});
 		consideredShips.sort((a, b) => {
-			if (a.score === b.score) return a.bestIndex - b.bestIndex;
+			if (a.score === b.score) return a.archetype_id - b.archetype_id; //a.bestIndex - b.bestIndex;
 			return b.score - a.score;
 		});
 		setBestShip(consideredShips[0]);
@@ -162,6 +162,8 @@ export const Recommender = (props: RecommenderProps) => {
 		if (results.length === 0)
 			return (<></>);
 
+		const analyses = [] as string[];
+
 		// In-game voyage crew picker ignores frozen crew and crew active on shuttles
 		const availableRoster = myCrew.filter(c => c.immortal <= 0 && c.active_status !== 2);
 
@@ -177,8 +179,8 @@ export const Recommender = (props: RecommenderProps) => {
 			}
 		};
 		results.forEach(result => {
-			if (result.calcState === CalculatorState.Done) {
-				const values = flattenEstimate(result.result?.estimate);
+			if (result.calcState === CalculatorState.Done && result.result) {
+				const values = flattenEstimate(result.result.estimate);
 				Object.keys(bestValues).forEach((valueKey) => {
 					if (valueKey === 'dilemma') {
 						if (values.dilemma.hour > bestValues.dilemma.hour
@@ -193,29 +195,31 @@ export const Recommender = (props: RecommenderProps) => {
 			}
 		});
 		results.forEach(result => {
-			let compared = '';
-			if (result.calcState === CalculatorState.Done) {
-				const recommended = getRecommendedList(result.result?.estimate, bestValues);
+			let analysis = '';
+			if (result.calcState === CalculatorState.Done && result.result) {
+				const recommended = getRecommendedList(result.result.estimate, bestValues);
 				if (results.length === 1)
-					compared = 'Recommended for all criteria';
+					analysis = 'Recommended for all criteria';
 				else {
 					if (recommended.length > 0)
-						compared = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
+						analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
 					else
-						compared = ' Proposed alternative';
+						analysis = ' Proposed alternative';
 				}
-				result.compared = compared;
 			}
+			analyses.push(analysis);
 		});
 
-		const showPopup = (result) => <Popup position='top center' content={<p>{result.compared}</p>} trigger={<p>{result.name}</p>} />
 		const panes = results.map((result, resultIndex) => ({
-			menuItem: { key: result.id, content: result.result ? showPopup(result) : result.name },
+			menuItem: { key: result.id, content: renderMenuItem(result.name, analyses[resultIndex]) },
 			render: () => (
-				<VoyageResultPane result={result.result} resultIndex={resultIndex} resultCompared={result.compared ?? ""}
+				<VoyageResultPane result={result.result} resultIndex={resultIndex}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
-					estimateResult={estimateResult} dismissResult={dismissResult}
+					analysis={analyses[resultIndex]}
+					trackState={result.trackState ?? 0} trackResult={trackResult}
+					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
+					dismissResult={dismissResult}
 					roster={availableRoster}
 				/>
 			)
@@ -227,6 +231,20 @@ export const Recommender = (props: RecommenderProps) => {
 				<Tab menu={{ pointing: true }} panes={panes} />
 			</React.Fragment>
 		);
+
+		function renderMenuItem(name: string, analysis: string): JSX.Element {
+			if (analysis !== '') {
+				return (
+					<Popup position='top center'
+						content={<p>{analysis}</p>}
+						trigger={<p>{name}</p>}
+					/>
+				);
+			}
+			else {
+				return <p>{name}</p>;
+			}
+		}
 	}
 
 	function scrollToAnchor(): void {
@@ -237,7 +255,6 @@ export const Recommender = (props: RecommenderProps) => {
 	}
 
 	function startCalculation(): void {
-
 		if (!voyageConfig || !bestShip || !consideredCrew || !calcOptions) return;
 
 		const helperConfig = {
@@ -275,7 +292,7 @@ export const Recommender = (props: RecommenderProps) => {
 							result.calcState = CalculatorState.Done;
 							sendTelemetry(requestId, reqResult);
 						}
-						result.result = {...reqResult, confidence: 0};
+						result.result = reqResult;
 					}
 					return [...prevResults];
 				});
@@ -287,7 +304,7 @@ export const Recommender = (props: RecommenderProps) => {
 					requestId,
 					name: formatTime(reqResult.estimate.refills[0].result),
 					calcState: CalculatorState.Done,
-					result: {...reqResult, confidence: 0}
+					result: reqResult
 				}]);
 			}
 		});
@@ -303,7 +320,6 @@ export const Recommender = (props: RecommenderProps) => {
 				if (result && result.result) {
 					result.name = formatTime(result.result.estimate.refills[0].result);
 					result.calcState = CalculatorState.Done;
-					result.result.confidence = 0;
 				}
 				else {
 					const index = prevResults.findIndex(prev => prev.id === requestId);
@@ -314,7 +330,7 @@ export const Recommender = (props: RecommenderProps) => {
 		}
 	}
 
-	function flattenEstimate(estimate: any): any {
+	function flattenEstimate(estimate: Estimate): any {
 		const extent = estimate.refills[0];
 		return {
 			estimate: extent.result,
@@ -328,7 +344,7 @@ export const Recommender = (props: RecommenderProps) => {
 		};
 	}
 
-	function getRecommendedList(estimate: any, bestValues: any): string[] {
+	function getRecommendedList(estimate: Estimate, bestValues: any): string[] {
 		const recommended = [] as string[];
 		const values = flattenEstimate(estimate);
 		Object.keys(bestValues).forEach((method) => {
@@ -367,6 +383,23 @@ export const Recommender = (props: RecommenderProps) => {
 		return sortName+sortValue;
 	}
 
+	function trackResult(resultIndex: number, voyageConfig: Voyage, shipSymbol: string, estimate: Estimate): void {
+		// Remove previous tracked voyage and associated crew assignments
+		//	(in case user tracks a different recommendation from same request)
+		if (trackerId > 0) removeVoyageFromHistory(history, trackerId);
+
+		const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, estimate);
+		addCrewToHistory(history, newTrackerId, voyageConfig);
+		setHistory({...history});
+		setTrackerId(newTrackerId);
+		setResults(prevResults => {
+			prevResults.forEach((result, idx) => {
+				result.trackState = idx === resultIndex ? 1 : 0;
+			});
+			return [...prevResults];
+		});
+	}
+
 	function estimateResult(resultIndex: number, voyageConfig: Voyage, numSims: number): void {
 		const config = {
 			startAm: voyageConfig.max_hp,
@@ -386,10 +419,8 @@ export const Recommender = (props: RecommenderProps) => {
 				setResults(prevResults => {
 					const result = prevResults[resultIndex];
 					result.name = formatTime(estimate.refills[0].result);
-					if (result.result) {
-						result.result.estimate = estimate;
-						result.result.confidence = 2;
-					}
+					if (result.result) result.result.estimate = estimate;
+					result.confidenceState = 2;
 					return [...prevResults];
 				});
 			}
@@ -398,7 +429,7 @@ export const Recommender = (props: RecommenderProps) => {
 		setResults(prevResults => {
 			const result = prevResults[resultIndex];
 			result.name = 'Calculating...';
-			if (result.result) result.result.confidence = 1;
+			result.confidenceState = 1;
 			return [...prevResults];
 		});
 	}
@@ -615,19 +646,29 @@ type VoyageResultPaneProps = {
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
-	estimateResult: (resultIndex: number, voyageConfig: any, numSums: number) => void;
+	analysis: string;
+	trackState: number;
+	confidenceState: number;
+	trackResult: (resultIndex: number, voyageConfig: Voyage, shipSymbol: string, estimate: Estimate) => void;
+	estimateResult: (resultIndex: number, voyageConfig: Voyage, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
 	roster: PlayerCrew[];
-	resultCompared: string;
 };
 
 const VoyageResultPane = (props: VoyageResultPaneProps) => {
 	const { playerData } = React.useContext(RecommenderContext);
-	const { result, resultIndex, resultCompared, requests, requestId, calcState, abortCalculation, estimateResult, dismissResult, roster } = props;
+	const {
+		result, resultIndex,
+		requests, requestId,
+		calcState, abortCalculation,
+		analysis,
+		trackState, trackResult,
+		confidenceState, estimateResult,
+		dismissResult,
+		roster
+	} = props;
 
 	const request = requests.find(r => r.id === requestId);
-	console.log("Voyage Request")
-	console.log(request);
 	if (!request) return (<></>);
 
 	if (!result) {
@@ -641,7 +682,8 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 		);
 	}
 
-	const confidence = ['outline', 'half', 'end'];
+	const iconTrack = ['flag outline', 'flag'] as SemanticICONS[];
+	const iconConfidence = ['hourglass outline', 'hourglass half', 'hourglass end'] as SemanticICONS[];
 
 	// resultToVoyageData
 	let data = {...request.voyageConfig};
@@ -685,15 +727,25 @@ const VoyageResultPane = (props: VoyageResultPaneProps) => {
 							Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
 							(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
 								{formatTime(result.estimate.refills[0].moonshotResult)})
-							{resultCompared && (<div style={{ marginTop: '1em' }}>{resultCompared}</div>)}
+							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
 						<div>
 							<Button.Group>
+								{!request.voyageConfig.state &&
+									<Popup position='top center'
+										content={<>Track this recommendation</>}
+										trigger={
+											<Button icon onClick={() => trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
+												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
+											</Button>
+										}
+									/>
+								}
 								<Popup position='top center'
 									content={<>Get more confident estimate</>}
 									trigger={
-										<Button icon onClick={() => { if (result.confidence !== 1) estimateResult(resultIndex, data, 30000); }}>
-											<Icon name={`hourglass ${confidence[result.confidence]}` as SemanticICONS} color={result.confidence === 2 ? 'green' : undefined} />
+										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, data, 30000); }}>
+											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>
