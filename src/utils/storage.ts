@@ -14,14 +14,6 @@ interface StorageOptions {
 	compress?: boolean;
 };
 
-const StorageDefaultOptions: StorageOptions = {
-	rememberForever: false,
-	useDefault: false,
-	useAndStoreDefault: false,
-	onInitialize: undefined,
-	compress: false
-};
-
 /**
  * Create a React state based on localStorage or sessionStorage
  * @param itemKey The item's storage key
@@ -30,54 +22,57 @@ const StorageDefaultOptions: StorageOptions = {
  * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} stateful value and setter method
  */
 export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?: StorageOptions): [T, React.Dispatch<React.SetStateAction<T>>] {
-	if (!options) options = StorageDefaultOptions;
+	const [initialized, setInitialized] = React.useState(false);
 
 	// Set initial value in state
-	let updateWithLocalValue = false;
 	const [value, setValue] = React.useState<T>(() => {
 		// Use default value if requested
 		if (options?.useAndStoreDefault) {
-			storeItem(itemKey, itemDefault, options?.rememberForever ?? false, options?.compress);
+			storeItem(itemKey, itemDefault, options?.rememberForever, options?.compress);
 			return itemDefault;
 		}
 		if (options?.useDefault) return itemDefault;
 		if (options?.rememberForever) {
 			// Always use session value if set, even if set to remember forever
-			let sessionValue = getStoredItem(itemKey, undefined);
-			if (sessionValue != undefined) {
+			const sessionValue = getStoredItem(itemKey, undefined);
+			if (sessionValue !== undefined) {
 				return sessionValue;
 			}
 			// Otherwise use default value with the intent to update from local storage when ready
 			else {
-				updateWithLocalValue = true;
 				return itemDefault;
 			}
 		}
 		return getStoredItem(itemKey, itemDefault);
 	});
 
-	// On component mount, update from local storage if necessary,
-	//	then send message that value is done initializing and what the initial value will be
+	// On component mount, update from local storage if necessary
 	React.useEffect(() => {
-		if (updateWithLocalValue)  {
+		const sessionValue = getStoredItem(itemKey, undefined);
+		if (options?.rememberForever && sessionValue === undefined)  {
 			getStoredItemPromise(itemKey, itemDefault).then((storedValue) => {
 				setValue(storedValue as T);
-				if (options?.onInitialize) options.onInitialize(itemKey, storedValue);
+				setInitialized(true);
 			});
 		}
-		else if (options?.onInitialize) {
-			options?.onInitialize(itemKey, value);
+		else {
+			setInitialized(true);
 		}
 	}, []);
+
+	// Send message that value is done initializing and what the value is
+	React.useEffect(() => {
+		if (initialized && options?.onInitialize) options.onInitialize(itemKey, value);
+	}, [initialized]);
 
 	// Update stored value when value changed in state
 	React.useEffect(() => {
 		// Remove from store (or ignore) if new value is undefined or default
-		if (value === undefined || value == itemDefault) {
-			removeStoredItem(itemKey);
+		if (value === undefined || value === itemDefault) {
+			if (initialized) removeStoredItem(itemKey);
 		}
 		else {
-			storeItem(itemKey, value, options?.rememberForever ?? false, options?.compress);
+			storeItem(itemKey, value, options?.rememberForever, options?.compress);
 		}
 	}, [value]);
 
@@ -85,16 +80,16 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 };
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
-const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean, compress?: boolean) => {
+const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean = false, compress: boolean = false) => {
 	if (windowGlobal && windowGlobal.sessionStorage) {
 		if (compress) {
 			windowGlobal.sessionStorage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
 		}
 		else {
 			windowGlobal.sessionStorage.setItem(itemKey, JSON.stringify(itemValue));
-		}		
+		}
 	}
-		
+
 	if (useLocalStorage) {
 		if (compress) {
 			localForage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
@@ -109,42 +104,41 @@ const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean, co
 		localForage.removeItem(itemKey + COMPRESSION_SUFFIX);
 	}
 };
+
 export const getStoredItem = (itemKey: string, itemDefault: any) => {
-	if (!(windowGlobal && windowGlobal.sessionStorage)) return itemDefault;
-
-	let sessionValue = windowGlobal.sessionStorage.getItem(itemKey);
-
-	if (!sessionValue) {
-		sessionValue = windowGlobal.sessionStorage.getItem(itemKey + COMPRESSION_SUFFIX);
+	if (windowGlobal && windowGlobal.sessionStorage) {
+		let sessionValue = windowGlobal.sessionStorage.getItem(itemKey);
+		if (!sessionValue) {
+			sessionValue = windowGlobal.sessionStorage.getItem(itemKey + COMPRESSION_SUFFIX);
+			if (sessionValue) {
+				sessionValue = lz.decompressFromBase64(sessionValue);
+			}
+		}
 		if (sessionValue) {
-			sessionValue = lz.decompressFromBase64(sessionValue);
+			return JSON.parse(sessionValue);
 		}
 	}
-
-	if (sessionValue) {
-		return JSON.parse(sessionValue);
-	}
-
 	return itemDefault;
 };
 
 const getStoredItemPromise = (itemKey: string, itemDefault: any) => {
 	return new Promise(async (resolve, reject) => {
 		let localValue = await localForage.getItem<string>(itemKey);
-
 		if (!localValue) {
 			localValue = await localForage.getItem<string>(itemKey + COMPRESSION_SUFFIX);
 			if (localValue) {
 				localValue = lz.decompressFromBase64(localValue);
 			}
-			else {
-				resolve(itemDefault);
-			}			
 		}
-
-		resolve(JSON.parse(localValue as string));
+		if (localValue) {
+			resolve(JSON.parse(localValue as string));
+		}
+		else {
+			resolve(itemDefault);
+		}
 	});
 };
+
 const removeStoredItem = (itemKey: string) => {
 	if (windowGlobal && windowGlobal.sessionStorage)
 		windowGlobal.sessionStorage.removeItem(itemKey);

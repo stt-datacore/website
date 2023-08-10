@@ -1431,7 +1431,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 		const formattedCollections = crew.collections.map((c, idx) => (
 			<span key={idx}>{c}{idx < crew.collections.length-1 ? ',' : ''}</span>
-		)).reduce((prev, curr) => <>{prev}, {curr}</>);
+		)).reduce((prev, curr) => <>{prev} {curr}</>);
 
 		return (
 			<div>
