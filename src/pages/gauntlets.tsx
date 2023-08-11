@@ -15,7 +15,7 @@ import { PlayerContext } from '../context/playercontext';
 import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
-import { ComputedSkill, CrewMember, Skill } from '../model/crew';
+import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL } from '../utils/crewutils';
@@ -753,13 +753,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									crew.isDisabled = true;
 								}
 								else {
+									let oskill = crew.skills;
+									crew.skills = {};
+
+									delete crew.command_skill;
+									delete crew.diplomacy_skill;
+									delete crew.engineering_skill;
+									delete crew.security_skill;
+									delete crew.science_skill;
+									delete crew.medicine_skill;
+
 									for (let selskill of selcrew.skills) {								
 										let sk = selskill.skill;
-										crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
-										crew.skills[sk].range_max = selskill.max;
-										crew.skills[sk].range_min = selskill.min;
-										crew[sk].range_max = selskill.max;
-										crew[sk].range_min = selskill.min;
+										crew.isDebuffed = (oskill[sk].range_max > selskill.max);
+										crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
+										crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedBuff;
 									}
 								}
 							}
@@ -781,11 +789,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (!crew.isDebuffed && filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
-						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
-						// if (crew.symbol ==='black_admiral_crew') {
-						// 	console.log("What is this.");
-						// }
+					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
+						if ((crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
@@ -907,11 +912,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 
-		uniques = pass2.sort((a, b) => {
+		uniques = [{
+			gauntlet_id: 0,
+			state: "POWER",
+			jackpot_crew: "",
+			seconds_to_join: 0,
+			contest_data: {
+				primary_skill: "",
+				secondary_skill: "",
+				featured_skill: "",
+				traits: [] as string[]
+			},
+			date: (new Date()).toISOString()
+		}] as Gauntlet[];
+
+		uniques = uniques.concat(pass2.sort((a, b) => {
 			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[a.contest_data?.featured_skill ?? ""]}`;
 			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[b.contest_data?.featured_skill ?? ""]}`;
 			return astr.localeCompare(bstr);
-		}) as Gauntlet[]
+		}) as Gauntlet[]);
 
 		uniques.forEach((unique, idx) => {
 			unique.date = "gt_" + idx;
@@ -980,6 +999,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	private changeGauntlet = (date: string, unique?: boolean) => {
 		if (unique) {
+			if (date === '') date = "gt_0";
 			const g = this.state.uniques?.find((g) => g.date === date);
 			this.updatePaging(false, undefined, g, 3);
 		}
@@ -1480,14 +1500,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		</div>);
 	}	
 
-	renderGauntlet(gauntlet: Gauntlet | undefined, idx: number) {
+	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
 
 		const { onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context;
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
-		const featuredCrew = this.context.crew.find((crew) => crew.symbol === gauntlet?.jackpot_crew);
+
+		if (!gauntletIn) {
+			if (this.state.uniques?.length) gauntletIn = this.state.uniques[0];
+		}
+
+		const featuredCrew = this.context.crew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
 		let jp = [] as CrewMember[];
 		
 		if (idx === 3) {
@@ -1546,9 +1571,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		}
 
-		if (!gauntlet) return undefined;
+		if (!gauntletIn) return <></>;
 
-		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
+		const gauntlet = gauntletIn;
+
+		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 
 		const pairs = this.discoverPairs(gauntlet.matchedCrew ?? [])
 			.map((pair) => {
@@ -1562,7 +1589,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 			});
 
-		const prettyDate = !gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "";
+		const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "");
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
@@ -1740,7 +1767,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						justifyContent: "space-between"
 					}}>
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
-							{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
+
+							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + SKILLS[gauntlet.contest_data?.featured_skill ?? ""])}
+							{gauntlet.state === "POWER" && "Raw Power Scores"}
+							
 						</h2>
 
 						<div style={{
@@ -2038,7 +2068,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const gauntOpts = (browsing ? uniques : gauntlets).map((g, idx) => {
 			let text = "";
 
-			if (browsing) {
+			if (g.state === "POWER") {
+				text = 'Raw Power Scores'
+			}
+			else if (browsing) {
 				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]}`;
 			}
 			else {
