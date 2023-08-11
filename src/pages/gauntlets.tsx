@@ -781,13 +781,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									crew.isDisabled = true;
 								}
 								else {
+									let oskill = crew.skills;
+									crew.skills = {};
+
+									delete crew.command_skill;
+									delete crew.diplomacy_skill;
+									delete crew.engineering_skill;
+									delete crew.security_skill;
+									delete crew.science_skill;
+									delete crew.medicine_skill;
+
 									for (let selskill of selcrew.skills) {								
 										let sk = selskill.skill;
-										crew.isDebuffed = (crew.skills[sk].range_max > selskill.max);
+										crew.isDebuffed = (oskill[sk].range_max > selskill.max);
+										crew.skills[sk] ??= { core: 0, range_max: 0, range_min: 0 };
 										crew.skills[sk].range_max = selskill.max;
 										crew.skills[sk].range_min = selskill.min;
-										crew[sk].range_max = selskill.max;
-										crew[sk].range_min = selskill.min;
+										crew[sk] ??= { core: 0, range_max: 0, range_min: 0 };
+										crew[sk].max = selskill.max;
+										crew[sk].min = selskill.min;
 									}
 								}
 							}
