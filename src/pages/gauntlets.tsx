@@ -229,8 +229,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (liveJson) {
 			try {
-				let lgr = JSON.parse(liveJson) as GauntletRoot;
-				lg = lgr.character.gauntlets[0];
+				let lgr = JSON.parse(liveJson) as GauntletRoot | Gauntlet;
+				if ("state" in lgr) {
+					lg = lgr;
+				}
+				else {
+					lg = lgr.character.gauntlets[0];
+				}
+				
 			}
 			catch {
 
@@ -2336,9 +2342,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (!gauntletJson || gauntletJson === '') return;
 
 		try {
-			const root = JSON.parse(gauntletJson) as GauntletRoot;
+			const root = JSON.parse(gauntletJson) as GauntletRoot | Gauntlet;
 
-			if (root.character.gauntlets[0].state?.includes("ENDED")) {
+			const gauntlet = "state" in root ? root : root.character.gauntlets[0];
+
+			if (gauntlet.state?.includes("ENDED")) {
 				this.inited = false;
 				this.tiny.setValue('liveGauntlet', '', false);
 				this.tiny.setValue('activeTabIndex', 0);
@@ -2346,14 +2354,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				return;
 			}
 			
-			let dts = root.character.gauntlets[0].bracket_id?.split("_");
-			if (dts) {
-				root.character.gauntlets[0].date = dts[0];
+			const dts = gauntlet.bracket_id?.split("_");
+
+			if (dts !== undefined) {
+				gauntlet.date = dts[0];
 			}
+
+			if (!gauntlet.date && gauntlet.seconds_to_join) {
+				let d = new Date((Date.now() + (1000 * gauntlet.seconds_to_join)));
+				d = new Date(d.getTime() - (1 * 24 * 60 * 60 * 1000));
+				gauntlet.date = d.toISOString();
+			}
+
 			this.inited = false;
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
 			this.tiny.setValue('activeTabIndex', 4);
-			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: root.character.gauntlets[0], activeTabIndex: 4 });			
+			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: gauntlet, activeTabIndex: 4 });			
 		}
 		catch {
 			this.tiny.setValue('activeTabIndex', 0);
