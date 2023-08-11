@@ -13,7 +13,7 @@ export interface Gauntlet {
     unavailable_desc_msg?: string,
     matchedCrew?: (PlayerCrew | CrewMember)[];
     prettyTraits: string[] | undefined;    
-	origRanks?: { [key: string]: number };
+	  origRanks?: { [key: string]: number };
     template?: boolean;
     maximal?: number;
     minimal?: number;

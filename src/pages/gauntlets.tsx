@@ -937,11 +937,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 
-		uniques = pass2.sort((a, b) => {
+		uniques = [{
+			gauntlet_id: 0,
+			state: "POWER",
+			jackpot_crew: "",
+			seconds_to_join: 0,
+			contest_data: {
+				primary_skill: "",
+				secondary_skill: "",
+				featured_skill: "",
+				traits: [] as string[]
+			},
+			date: (new Date()).toISOString()
+		}] as Gauntlet[];
+
+		uniques = uniques.concat(pass2.sort((a, b) => {
 			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[a.contest_data?.featured_skill ?? ""]}`;
 			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[b.contest_data?.featured_skill ?? ""]}`;
 			return astr.localeCompare(bstr);
-		}) as Gauntlet[]
+		}) as Gauntlet[]);
 
 		uniques.forEach((unique, idx) => {
 			unique.date = "gt_" + idx;
@@ -1002,6 +1016,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	private changeGauntlet = (date: string, unique?: boolean) => {
 		if (unique) {
+			if (date === '') date = "gt_0";
 			const g = this.state.uniques?.find((g) => g.date === date);
 			this.updatePaging(false, undefined, g, 3);
 		}
@@ -1502,14 +1517,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		</div>);
 	}	
 
-	renderGauntlet(gauntlet: Gauntlet | undefined, idx: number) {
+	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
 
 		const { onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context;
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
-		const featuredCrew = this.context.allCrew.find((crew) => crew.symbol === gauntlet?.jackpot_crew);
+
+		if (!gauntletIn) {
+			if (this.state.uniques?.length) gauntletIn = this.state.uniques[0];
+		}
+
+		const featuredCrew = this.context.allCrew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
 		let jp = [] as CrewMember[];
 		
 		if (idx === 3) {
@@ -1568,9 +1588,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		}
 
-		if (!gauntlet) return undefined;
+		if (!gauntletIn) return <></>;
 
-		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
+		const gauntlet = gauntletIn;
+
+		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 
 		const pairs = this.discoverPairs(gauntlet.matchedCrew ?? [])
 			.map((pair) => {
@@ -1584,7 +1606,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 			});
 
-		const prettyDate = !gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "";
+		const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "");
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
@@ -1762,7 +1784,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						justifyContent: "space-between"
 					}}>
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
-							{gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/{SKILLS[gauntlet.contest_data?.featured_skill ?? ""]}
+
+							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + SKILLS[gauntlet.contest_data?.featured_skill ?? ""])}
+							{gauntlet.state === "POWER" && "Raw Power Scores"}
+							
 						</h2>
 
 						<div style={{
@@ -2060,7 +2085,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const gauntOpts = (browsing ? uniques : gauntlets).map((g, idx) => {
 			let text = "";
 
-			if (browsing) {
+			if (g.state === "POWER") {
+				text = 'Raw Power Scores'
+			}
+			else if (browsing) {
 				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]}`;
 			}
 			else {
