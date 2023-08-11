@@ -809,11 +809,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				})
 				.filter((crew) => !filter || this.crewInFilter(crew, filter))
 				.map((crew) => { 
-					if (!crew.isDebuffed && filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
-						if (isImmortal(crew) || (crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
-						// if (crew.symbol ==='black_admiral_crew') {
-						// 	console.log("What is this.");
-						// }
+					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
+						if ((crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
 						let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 						if (!fcrew) return crew;
 
