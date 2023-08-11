@@ -12,7 +12,7 @@ import { PlayerContext } from '../context/playercontext';
 import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
-import { ComputedSkill, CrewMember, Skill } from '../model/crew';
+import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL } from '../utils/crewutils';
@@ -794,12 +794,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									for (let selskill of selcrew.skills) {								
 										let sk = selskill.skill;
 										crew.isDebuffed = (oskill[sk].range_max > selskill.max);
-										crew.skills[sk] ??= { core: 0, range_max: 0, range_min: 0 };
-										crew.skills[sk].range_max = selskill.max;
-										crew.skills[sk].range_min = selskill.min;
-										crew[sk] ??= { core: 0, range_max: 0, range_min: 0 };
-										crew[sk].max = selskill.max;
-										crew[sk].min = selskill.min;
+										crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
+										crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedBuff;
 									}
 								}
 							}
