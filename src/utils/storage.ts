@@ -7,10 +7,20 @@ const COMPRESSION_SUFFIX = "___Lz";
 const windowGlobal = typeof window !== 'undefined' && window;
 
 interface StorageOptions {
-	rememberForever?: boolean;	// We always store in session; we can also store in local storage if told to remember forever
-	useDefault?: boolean;	// Set to true to use default value as initial value instead of any stored value
-	useAndStoreDefault?: boolean;	// Set to true to use default and store it immediately to avoid render loops
-	onInitialize?: (itemKey: string, itemValue: any) => void;	// Callback after value is initialized
+	
+	/** We always store in session; we can also store in local storage if told to remember forever */
+	rememberForever?: boolean;	
+	
+	/** Set to true to use default value as initial value instead of any stored value */
+	useDefault?: boolean;
+	
+	/** Set to true to use default and store it immediately to avoid render loops */
+	useAndStoreDefault?: boolean;
+	
+	/** Callback after value is initialized */
+	onInitialize?: (itemKey: string, itemValue: any) => void;
+
+	/** True to compress */
 	compress?: boolean;
 };
 
