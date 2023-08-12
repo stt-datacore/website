@@ -1966,7 +1966,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<i><b>Note:</b> Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.</i>
 				</div>}
 
-				{loading && <div style={{height:"50vh", display: "flex", flexDirection: "row", justifyContent: "center", alignItems:"center"}}><div className='ui medium centered text active inline loader'>Loading data...</div></div>}
+				{loading && <div style={{height:"50vh", display: "flex", flexDirection: "row", justifyContent: "center", alignItems:"center"}}><div className='ui medium centered text active inline loader'>Calculating ...</div></div>}
 				
 				{(!loading) && (<div>
 
