@@ -254,23 +254,22 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		}
 		const haveCount = this.haveCount(item_data.item.symbol);
 		return (
-			<Layout title={item_data.item.name}>
-
-				<Message icon warning>
-					<Icon name="exclamation triangle" />
-					<Message.Content>
-						<Message.Header>Work in progress!</Message.Header>
-							This section is under development and not fully functional yet.
-						</Message.Content>
-					</Message>
+				<div>
 
 					<CrewHoverStat targetGroup='item_info' />
 					
 					<div style={{
+						paddingTop:"2em",
+						marginBottom: "1em",
 						display:"flex",
+						alignItems:"center",
+						justifyContent:"center",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<ItemDisplay
+							style={{
+								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
+							}}
 							src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`}
 							size={128}
 							rarity={item_data?.item.rarity ?? 0}
@@ -293,7 +292,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
 						<Header as="h3">Craft it for <img title={"Chronotons"} style={{width: "1.5em", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
-						<Grid columns={3} padded>
+						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
 								return <Grid.Column key={idx}>
@@ -326,12 +325,14 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								</Grid.Column>
 								})}
 						</Grid>
+						<br />
+
 					</div>
 				)}
 
 				{!!(item_data.item.item_sources.length > 0) && (
 					<div>
-						<Header as="h3">Item sources</Header>
+						<Header as="h3">Item sources:</Header>
 						<ItemSources item_sources={item_data.item.item_sources} />
 						<br />
 					</div>
@@ -340,7 +341,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.crew_levels.length > 0 && (
 					<div>
 						<Header as="h3">Equippable by this crew:</Header>
-						<Grid columns={3} padded>
+						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3}  padded>
 							{item_data.crew_levels.map((entry, idx) => (
 								<Grid.Column key={idx}>
 									<Header
@@ -365,12 +366,13 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								</Grid.Column>
 							))}
 						</Grid>
+						<br />
 					</div>
 				)}
 
 				{item_data.builds.length > 0 && (
 					<div>
-						<Header as="h3">Is used to build these</Header>
+						<Header as="h3">Is used to build these:</Header>
 						<ProfileItems data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
 						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
@@ -398,7 +400,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</Grid> */}
 					</div>
 				)}
-			</Layout>
+				</div>
 		);
 	}
 }
