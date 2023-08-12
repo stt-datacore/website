@@ -9,6 +9,7 @@ import CONFIG from '../components/CONFIG';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { calculateRosterDemands } from '../utils/equipment';
 
 type ProfileItemsProps = {
 	data?: EquipmentCommon[] | EquipmentItem[];
@@ -19,7 +20,7 @@ type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: any[];
+	data: EquipmentItem[] | EquipmentCommon[];
 	pagination_rows: number;
 	pagination_page: number;
 };
@@ -94,6 +95,16 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
+		const demandos = calculateRosterDemands(this.context.playerData.player.character.crew, data as EquipmentItem[]);
+		for (let item of data) {
+			const dfind = demandos?.demands?.find(f => f.symbol === item.symbol);
+			if (dfind) {
+				item.needed = dfind.count;
+			}
+			else {
+				item.needed = 0;
+			}
+		}
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
@@ -116,6 +127,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('quantity')}
 						>
 							Quantity
+						</Table.HeaderCell>
+						<Table.HeaderCell
+							width={1}
+							sorted={column === 'needed' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('needed')}
+						>
+							Needed
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
@@ -169,6 +187,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								</div>
 							</Table.Cell>
 							<Table.Cell>{item.quantity}</Table.Cell>
+							<Table.Cell>{item.needed ?? "0"}</Table.Cell>
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 						</Table.Row>

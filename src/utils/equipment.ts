@@ -122,3 +122,44 @@ function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
 
 	return costCalc.sort()[0];
 }
+
+function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
+	
+	let intersect = a.demands.filter(a1 => !!b.demands.find(b1 => b1.symbol === a1.symbol));
+	let aonly = a.demands.filter(a1 => !b.demands.find(b1 => b1.symbol === a1.symbol));	
+	let bonly = b.demands.filter(b1 => !a.demands.find(a1 => a1.symbol === b1.symbol));
+	
+	aonly ??= [];
+	bonly ??= [];
+	intersect ??= [];
+	if (intersect.length) {
+		intersect = JSON.parse(JSON.stringify(intersect));
+		for (let item of intersect) {
+			let bitem = b.demands.find(b2 => b2.symbol === item.symbol);
+			if (bitem) {
+				item.count += bitem.count;
+			}
+		}
+	}
+	
+	return {
+		craftCost: a.craftCost + b.craftCost,
+		demands: aonly.concat(bonly).concat(intersect),
+		factionOnlyTotal: a.factionOnlyTotal + b.factionOnlyTotal,
+		totalChronCost: a.totalChronCost + b.totalChronCost		
+	};
+}
+
+export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[]): ICrewDemands | undefined {
+	let result: ICrewDemands | undefined = undefined;
+	for (let member of crew) {
+		let demands = calculateCrewDemands(member, items);
+		if (result) {
+			result = mergeDemands(result, demands);
+		}
+		else {
+			result = demands;
+		}
+	}
+	return result;
+}
