@@ -66,9 +66,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
 						if (fitem) {
 							item.needed = fitem.count;
+							item.factionOnly = fitem.factionOnly;
 						}
 						else {
 							item.needed = 0;
+							item.factionOnly = false;
 						}
 					}
 				}
@@ -118,6 +120,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (
+			<>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -157,6 +160,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Rarity
 						</Table.HeaderCell>
+						{!hideOwnedInfo &&
+						<Table.HeaderCell
+							width={1}
+							sorted={column === 'factionOnly' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('factionOnly')}
+						>
+							Faction Only
+						</Table.HeaderCell>}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -198,6 +209,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 0}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
+							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
 						</Table.Row>
 					))}
 				</Table.Body>
@@ -224,6 +236,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
+			<br />
+			</>
 		);
 	}
 }
