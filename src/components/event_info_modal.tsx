@@ -7,6 +7,7 @@ import RankedRewardsTab from './event_info_tabs/ranked_rewards';
 import LeaderboardTab from './event_info_tabs/leaderboard';
 import { GameEvent } from '../model/player';
 import { EventData } from '../utils/events';
+import { CrewHoverStat } from './hovering/crewhoverstat';
 
 type EventInfoModalProps = {
 	instanceId: number,

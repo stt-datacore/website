@@ -4,9 +4,12 @@ import { Table, Image, Label } from 'semantic-ui-react';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
+import ItemDisplay from '../itemdisplay';
+import { MergedContext } from '../../context/mergedcontext';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
+	const context = React.useContext(MergedContext);
 
 	return (
 		<Table celled striped compact='very'>
@@ -17,22 +20,36 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 						<Table.Cell>
 							{row.rewards.map(reward => (
 								reward && reward.icon &&
-								<Label key={`reward_${reward.id}`} color="black">
-									<Image
+								<Label
+									key={`reward_${reward.id}`} color="black" title={reward.full_name}>
+									<div 									style={{
+										display: "flex",
+										flexDirection: "row",
+										justifyContent:"center",
+										alignItems: "center"
+									}}>
+									<ItemDisplay
 										src={getIconPath(reward.icon)}
-										size="small"
-										inline
-										spaced="right"
-										bordered
+										size={48}
+										rarity={reward.rarity}
+										maxRarity={reward.rarity}		
+										allCrew={context.allCrew}
+										playerData={context.playerData}
+										crewSymbol={reward.symbol}
+										targetGroup='event_info'
 										style={{
-											borderColor: getRarityColor(reward.rarity),
-											maxWidth: '27px',
-											maxHeight: '27px'
+											marginRight: "1em"
 										}}
-										alt={reward.full_name}
+										// style={{
+										// 	borderColor: getRarityColor(reward.rarity),
+										// 	maxWidth: '27px',
+										// 	maxHeight: '27px'
+										// }}
+										
 									/>
 									{reward.full_name}
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
+									</div>
 								</Label>
 							))}
 						</Table.Cell>
