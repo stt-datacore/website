@@ -12,6 +12,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   bonuses?: EquipmentBonuses
   quantity?: number;
   needed?: number;
+  factionOnly?: boolean;
 }
 
 export interface EquipmentItem extends EquipmentCommon {
@@ -24,12 +25,13 @@ export interface EquipmentItem extends EquipmentCommon {
   imageUrl: string
   bonuses?: EquipmentBonuses
   quantity?: number;
+  needed?: number;
+  factionOnly?: boolean;
 
   item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe
 
   empty?: boolean;
-  needed?: number;
 }
 
 export interface EquipmentItemSource {

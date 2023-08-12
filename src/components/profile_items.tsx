@@ -14,6 +14,7 @@ import { calculateRosterDemands } from '../utils/equipment';
 type ProfileItemsProps = {
 	data?: EquipmentCommon[] | EquipmentItem[];
 	navigate?: (symbol: string) => void;
+	hideOwnedInfo?: boolean;
 };
 
 type ProfileItemsState = {
@@ -56,6 +57,23 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			.then(response => response.json())
 			.then(items => {
 				let data = mergeItems(this.context.playerData.player.character.items, items);
+				const { playerData } = this.context;
+				let { hideOwnedInfo } = this.props;
+
+				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
+					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
+					for (let item of data) {
+						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+						if (fitem) {
+							item.needed = fitem.count;
+							item.factionOnly = fitem.factionOnly;
+						}
+						else {
+							item.needed = 0;
+							item.factionOnly = false;
+						}
+					}
+				}
 				this.setState({ data });
 			});
 	}
@@ -95,22 +113,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
-		const demandos = calculateRosterDemands(this.context.playerData.player.character.crew, data as EquipmentItem[]);
-		for (let item of data) {
-			const dfind = demandos?.demands?.find(f => f.symbol === item.symbol);
-			if (dfind) {
-				item.needed = dfind.count;
-			}
-			else {
-				item.needed = 0;
-			}
-		}
+		let { hideOwnedInfo } = this.props;		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (
+			<>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -121,13 +131,21 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Item
 						</Table.HeaderCell>
-						<Table.HeaderCell
+						{!hideOwnedInfo && <Table.HeaderCell
 							width={1}
 							sorted={column === 'quantity' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('quantity')}
 						>
 							Quantity
-						</Table.HeaderCell>
+						</Table.HeaderCell>}
+						{!hideOwnedInfo &&
+						<Table.HeaderCell
+							width={1}
+							sorted={column === 'needed' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('needed')}
+						>
+							Needed
+						</Table.HeaderCell>}
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'needed' ? direction ?? undefined : undefined}
@@ -149,6 +167,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Rarity
 						</Table.HeaderCell>
+						{!hideOwnedInfo &&
+						<Table.HeaderCell
+							width={1}
+							sorted={column === 'factionOnly' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('factionOnly')}
+						>
+							Faction Only
+						</Table.HeaderCell>}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -186,10 +212,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									<div style={{ gridArea: 'description' }}>{item.flavor}</div>
 								</div>
 							</Table.Cell>
-							<Table.Cell>{item.quantity}</Table.Cell>
-							<Table.Cell>{item.needed ?? "0"}</Table.Cell>
+							{!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
+							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 0}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
+							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
 						</Table.Row>
 					))}
 				</Table.Body>
@@ -216,6 +243,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
+			<br />
+			</>
 		);
 	}
 }
