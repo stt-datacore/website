@@ -138,8 +138,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						{!hideOwnedInfo &&
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'quantity' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('quantity')}
+							sorted={column === 'needed' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('needed')}
 						>
 							Needed
 						</Table.HeaderCell>}
