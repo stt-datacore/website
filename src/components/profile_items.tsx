@@ -57,6 +57,21 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			.then(response => response.json())
 			.then(items => {
 				let data = mergeItems(this.context.playerData.player.character.items, items);
+				const { playerData } = this.context;
+				let { hideOwnedInfo } = this.props;
+
+				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
+					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
+					for (let item of data) {
+						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+						if (fitem) {
+							item.needed = fitem.count;
+						}
+						else {
+							item.needed = 0;
+						}
+					}
+				}
 				this.setState({ data });
 			});
 	}
@@ -96,22 +111,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
-		const { playerData } = this.context;
-		let { hideOwnedInfo } = this.props;
-
-		if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
-			const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
-			for (let item of data) {
-				const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
-				if (fitem) {
-					item.needed = fitem.count;
-				}
-				else {
-					item.needed = 0;
-				}
-			}
-		}
-		
+		let { hideOwnedInfo } = this.props;		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
