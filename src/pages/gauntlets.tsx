@@ -454,7 +454,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	protected setActiveTabIndex = (value?: number) => {
 		this.tiny.setValue('activeTabIndex', value);
-		this.setState({...this.state, activeTabIndex: value });
+		this.setState({ ...this.state, loading: true });
+		window.setTimeout(() => {
+			this.setState({...this.state, activeTabIndex: value, loading: false });
+		});
+		
 	}
 
 	protected getActiveTabIndex = () => {
