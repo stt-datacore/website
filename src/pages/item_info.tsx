@@ -286,7 +286,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
 								}} as="h2">{item_data.item.name}</Header>
 							{!!bonusText?.length && this.renderBonuses(bonuses)}
-							{!!haveCount && <div style={{margin: 0, marginLeft: "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
+							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
 						</div>
 					
 					</div>

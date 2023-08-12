@@ -269,8 +269,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	render() {
-		return (
-			<Layout title='Items'>
+		return (<>
 				<Header as="h2">Items</Header>
 
 				{!this.state.items && (
@@ -292,8 +291,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						config={tableConfig}
 					/>
 				)}
-			</Layout>
-		);
+			</>);
 	}
 }
 
