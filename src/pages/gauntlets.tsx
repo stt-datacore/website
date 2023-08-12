@@ -392,7 +392,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let vm = [... this.state.tops];
 			vm[index] = newtop;
 			this.tiny.setValue('gauntletTops_' + index, newtop, true);
-			this.setState({ ... this.state, tops: vm });
+			this.setState({ ... this.state, loading: true });
+			window.setTimeout(() => {
+				this.setState({ ... this.state, tops: vm, loading: false });
+			});			
 		}
 	}
 
@@ -428,9 +431,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			vm[index] = viewMode;
 			this.tiny.setValue('viewMode_' + index, viewMode, true);
 			if (viewMode === 'pair_cards') {
-
+				this.setState({ ... this.state, loading: true });
 			}
-			this.setState({ ... this.state, viewModes: vm });
+			window.setTimeout(() => {
+				this.setState({ ... this.state, viewModes: vm, loading: false });
+			});			
 		}
 	}
 
@@ -1098,14 +1103,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		newOwned[idx] = { ... newOwned[idx], ownedStatus: status };
 		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
 		this.inited = false;
-		this.setState({... this.state, filterProps: newOwned });
+		this.setState({ ...this.state, loading: true });
+		window.setTimeout(() => {
+			this.setState({... this.state, filterProps: newOwned });
+		});	
 	}
 
 	private readonly setMaxResults = (max: number, idx: number) => {
 		const newOwned = [ ... this.state.filterProps ];
 		newOwned[idx] = { ... newOwned[idx], maxResults: max };
 		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
-		this.setState({... this.state, filterProps: newOwned });
+		this.setState({... this.state, loading: true });
+		window.setTimeout(() => {
+			this.setState({... this.state, filterProps: newOwned, loading: false });
+		});	
 	}
 
 	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string) => {
@@ -1858,7 +1869,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							alignSelf: "left",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 							<h4><b>Show Top Crew</b></h4>
@@ -1874,7 +1886,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 							<h4><b>Max Results Per Section</b></h4>
@@ -1889,7 +1901,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 							<h4><b>Show Buffs</b></h4>
@@ -1906,7 +1918,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 							<h4><b>Owned Status</b></h4>
@@ -1921,7 +1933,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "row",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 
@@ -1937,7 +1949,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{idx === 4 && <div style={{
 							display: "flex",
 							flexDirection: "row",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
 
