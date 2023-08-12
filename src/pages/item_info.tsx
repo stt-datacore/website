@@ -290,7 +290,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</div>
 					
 					</div>
-
+					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
 				<br />
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
