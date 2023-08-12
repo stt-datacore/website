@@ -15,6 +15,7 @@ import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
+import ItemDisplay from '../components/itemdisplay';
 
 export interface ItemsPageProps {}
 
@@ -239,7 +240,11 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`} />
+							<ItemDisplay
+								rarity={item.rarity}
+								maxRarity={item.rarity}
+								size={48} 
+								src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<Link to={`/item_info?symbol=${item.symbol}`}>

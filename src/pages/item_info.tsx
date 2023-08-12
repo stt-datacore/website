@@ -18,6 +18,7 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
+import ProfileItems from '../components/profile_items';
 
 interface ItemInfoPageProps {};
 
@@ -84,7 +85,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 	constructor(props: ItemInfoComponentProps) {
 		super(props);
-
+		window.addEventListener('popstate', (e) => {
+			this.inited = false;
+			this.initData();
+		});
 		this.state = {
 			errorMessage: undefined,
 			item_data: undefined
@@ -248,6 +252,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_data.item.type === 14) {
 			console.log(item_data);
 		}
+		const haveCount = this.haveCount(item_data.item.symbol);
 		return (
 			<Layout title={item_data.item.name}>
 
@@ -278,6 +283,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							}}>
 							<Header style={{margin: 0, marginLeft: "0.5em"}} as="h2">{item_data.item.name}</Header>
 							{!!bonusText?.length && this.renderBonuses(bonuses)}
+							{!!haveCount && <div style={{margin: 0, marginLeft: "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
 						</div>
 					
 					</div>
@@ -365,7 +371,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these</Header>
-						<Grid columns={3} padded>
+						<ProfileItems data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>
 									<Header
@@ -388,7 +395,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									/>
 								</Grid.Column>
 							))}
-						</Grid>
+						</Grid> */}
 					</div>
 				)}
 			</Layout>

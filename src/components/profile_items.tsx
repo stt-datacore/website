@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 
 import { mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import ItemDisplay from './itemdisplay';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 
 type ProfileItemsProps = {
+	data?: EquipmentCommon[] | EquipmentItem[];
+	navigate?: (symbol: string) => void;
 };
 
 type ProfileItemsState = {
@@ -40,11 +44,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: []
+			data: props.data ?? []
 		};
 	}
 
 	componentDidMount() {
+		if (this.state.data.length) return;
+
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
@@ -73,6 +79,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			pagination_page: 1,
 			data: sorted.result
 		});
+	}
+
+	private handleNavigate = (symbol: string) => {
+		if (this.props.navigate) {
+			this.props.navigate(symbol);
+		}
+		else {
+			navigate("/item_info?symbol=" + symbol);
+		}
 	}
 
 	render() {
@@ -131,10 +146,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									}}
 								>
 									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`} />
+									<ItemDisplay
+										rarity={item.rarity}
+										maxRarity={item.rarity}
+										size={48} 
+										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`} />
+										
 									</div>
-									<div style={{ gridArea: 'stats' }}>
-										<Link to={`/item_info?symbol=${item.symbol}`}>
+									<div style={{ gridArea: 'stats', cursor: "pointer" }}>
+										<a onClick={(e) => this.handleNavigate(item.symbol)}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 												{item.rarity > 0 && (
 													<span>
@@ -143,7 +163,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												)}
 												{item.name}
 											</span>
-										</Link>
+										</a>
 									</div>
 									<div style={{ gridArea: 'description' }}>{item.flavor}</div>
 								</div>
