@@ -377,7 +377,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these:</Header>
-						<ProfileItems hideNeeded={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<ProfileItems hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
 						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>
