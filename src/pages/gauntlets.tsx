@@ -1835,14 +1835,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 					<div style={{
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 						justifyContent: "flex-start"
 					}}>
 						{viewModes[idx] === 'pair_cards' && 
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 							<h4><b>Show Top Crew</b></h4>
@@ -1858,7 +1858,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 							<h4><b>Max Results Per Section</b></h4>
@@ -1873,7 +1873,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 							<h4><b>Show Buffs</b></h4>
@@ -1890,7 +1890,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 							<h4><b>Owned Status</b></h4>
@@ -1905,7 +1905,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "row",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 
@@ -1921,7 +1921,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{idx === 4 && <div style={{
 							display: "flex",
 							flexDirection: "row",
-							marginRight: "2em",
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 0 0 2em",
 							textAlign: "left"
 						}}>
 
@@ -2028,7 +2028,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							marginTop: "0em",
 							marginBottom: "2em",
 							display: "flex",
-							flexDirection: "row",
+							flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 							justifyContent: "space-between",
 							flexWrap: "wrap"
 						}}>
@@ -2037,8 +2037,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								return (<div
 									key={"pairGroup_" + pk}
 									style={{
-										display: "flex",
-										width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100%-2em) !important" : undefined,
+										padding: 0,
+										margin: 0,
+										display: "flex",										
+										width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : undefined,
 										flexDirection: "column",
 										justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "center" : "stretch",
 									}}>
@@ -2201,7 +2203,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 				key={crew.symbol + pstr + ("ssId" in crew ? crew.ssId : "")}
 				style={{
-					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "calc(100vw-1em)" : "28em",
+					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "28em",
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "space-between",
