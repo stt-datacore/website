@@ -22,7 +22,7 @@ export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
 	return (
-		<DataWrapper demands={['all_buffs', 'crew', 'items']} header=''>
+		<DataWrapper demands={['all_buffs', 'crew', 'items']}>
 			<ItemsComponent  />
 		</DataWrapper>
 	);

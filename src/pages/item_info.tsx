@@ -56,7 +56,7 @@ const ItemInfoPage = () => {
 	}
 
 	return (
-		<DataWrapper pageTitle='Items' header='' demands={['crew', 'items', 'all_buffs']}>
+		<DataWrapper pageTitle='Items' demands={['crew', 'items', 'all_buffs']}>
 			<ItemInfoComponent isReady={true} setHeader={setHeader} />
 		</DataWrapper>
 	);

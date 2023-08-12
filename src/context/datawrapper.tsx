@@ -13,7 +13,7 @@ import { Schematics, Ship } from "../model/ship";
 export interface DataWrapperProps {
 	narrowLayout?: boolean;
 	notReadyMessage?: string;
-	header: string;
+	header?: string;
 	children: JSX.Element;
 
     /**

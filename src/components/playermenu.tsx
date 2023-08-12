@@ -15,7 +15,7 @@ const PlayerMenu = () => {
 	if (coreData.crew?.length === 0 || coreData.items?.length === 0) return (<></>);
 
 	return (
-		<div style={{ margin: '2em 0' }}>
+		<div style={{ margin: '2em 0 0.5em 0' }}>
 			{!playerData.loaded && <PlayerInputForm setValidInput={playerData.setInput} />
 			|| 
 			<div>
