@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Input, Checkbox } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { mergeItems } from '../utils/itemutils';
@@ -15,13 +15,16 @@ type ProfileItemsProps = {
 	data?: EquipmentCommon[] | EquipmentItem[];
 	navigate?: (symbol: string) => void;
 	hideOwnedInfo?: boolean;
+	hideSearch?: boolean;
 };
 
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: any[];
+	data: (EquipmentCommon | EquipmentItem)[];
+	filteredData?: (EquipmentCommon | EquipmentItem)[];
+	filterText?: string;
 	pagination_rows: number;
 	pagination_page: number;
 };
@@ -78,11 +81,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			});
 	}
 
-	_onChangePage(activePage) {
+	private _onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
 
-	_handleSort(clickedColumn) {
+
+	private _handleSort(clickedColumn) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
 
@@ -100,7 +104,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 	}
 
-	private handleNavigate = (symbol: string) => {
+	private _handleNavigate = (symbol: string) => {
 		if (this.props.navigate) {
 			this.props.navigate(symbol);
 		}
@@ -109,18 +113,58 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}
 	}
 
+	private _handleFilter = (text: string | undefined) => {
+		this.setState({ ...this.state, filterText: text ?? '' });
+	}
+
 	render() {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
+		const filterText = this.state.filterText?.toLocaleLowerCase();
 
-		let { hideOwnedInfo } = this.props;		
+		const { hideOwnedInfo, hideSearch } = this.props;		
+
+		if (filterText && filterText !== '') {
+			data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
+				f.short_name?.toLowerCase().includes(filterText) ||
+				f.flavor?.toLowerCase().includes(filterText) ||
+				CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+				CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
+				);
+		}
+
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (
-			<>
+			<div style={{margin:0,padding:0}}>
+			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+				{!hideSearch && <div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginLeft: "0.25em"}}>
+					<Input		
+						style={{width:"22em"}}
+						label={"Search Items"}
+						value={filterText}
+						onChange={(e, { value }) => this._handleFilter(value as string)}
+						/>
+					<i className='delete icon'								
+						title={"Clear Searches and Comparison Marks"} 							    
+						style={{
+							cursor: "pointer", 
+							marginLeft: "0.75em"
+						}} 								
+						onClick={(e) => {
+								this._handleFilter(undefined); 
+							} 
+						} 
+					/>
+
+				</div>}
+				{/* {!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
+					<Checkbox /><span style={{marginLeft:"0.5em"}}>Show Unowned Needed Items</span>
+				</div>} */}
+			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -191,7 +235,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										
 									</div>
 									<div style={{ gridArea: 'stats', cursor: "pointer" }}>
-										<a onClick={(e) => this.handleNavigate(item.symbol)}>
+										<a onClick={(e) => this._handleNavigate(item.symbol)}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 												{item.rarity > 0 && (
 													<span>
@@ -237,7 +281,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				</Table.Footer>
 			</Table>
 			<br />
-			</>
+			</div>
 		);
 	}
 }
