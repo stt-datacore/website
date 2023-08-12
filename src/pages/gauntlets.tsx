@@ -14,7 +14,7 @@ import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
-import { Gauntlet, GauntletRoot } from '../model/gauntlets';
+import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL } from '../utils/crewutils';
 import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
@@ -720,7 +720,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 					fcrew.rarity = ocrew.rarity;
 					fcrew.isOpponent = true;					
-					fcrew.ssId = op.name;
+					fcrew.ssId = op.player_id.toString();
 					fcrew.immortal = CompletionState.DisplayAsImmortalOpponent;
 					fcrew.have = false;
 					oppo.push(fcrew);
@@ -2201,7 +2201,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
 		const isRound = !this.state.onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
 		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+		const isOpponent = "isOpponent" in crew && crew.isOpponent;
+		let tempicon = "";
+		if (inMatch) {
+			tempicon = this.context.playerData.player.character.crew_avatar.portrait.file;
+		}
+		const myIcon = tempicon;
+		let tempoppo: Opponent | undefined = undefined;
+		if (isOpponent) {
+			tempoppo = gauntlet.opponents?.find(o => o.player_id === Number.parseInt(crew?.ssId ?? "0"));	
+			if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
+				tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
+			}		
+		}
 		
+		const opponent = tempoppo;
+
 		let pstr = "G_" + pair.join("_");
 		let rnk = 0;
 
@@ -2233,131 +2248,192 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		return (
-			<div className="ui segment"
+			<div 
+				className="ui segment" 
+				key={crew.symbol + pstr + (opponent?.name ?? "")}
 				title={crew.name 
 					+ (("isDisabled" in crew && crew.isDisabled) ? " (Disabled)" : "") 
 					+ (("isDebuffed" in crew && crew.isDebuffed) ? " (Reduced Power)" : "")
-					+ (("ssId" in crew && crew.ssId) ? ` (Opponent: ${crew.ssId})` : "")
-				
+					+ ((opponent?.name) ? ` (Opponent: ${opponent.name})` : "")
 				}
-				key={crew.symbol + pstr + ("ssId" in crew ? crew.ssId : "")}
 				style={{
+					display: "flex",
+					flexDirection:"column",
 					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "28em",
+					padding: 0,
+					margin: 0,
+					marginBottom: "0.5em",
+				}}>
+				
+				{(inMatch || isOpponent) && 
+				<div style={{
+					flexGrow: 1,
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "space-between",
 					alignItems: "center",
-					padding: '0.5em',
-					paddingBottom: 0,
 					margin: 0,
-					marginBottom: "0.5em",
-					backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "#003300" : (("isOpponent" in crew && !!crew.isOpponent) ? 'darkred' : (inMatch ? 'darkgreen' : undefined))) : undefined
-				}}
-			>
-				<div style={{
-					width: "2em",
-					textAlign: "center",
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					alignItems: "center",
-					cursor: "pointer"
+					padding: "2px 4px",
+					backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "#003300" : (isOpponent ? 'darkred' : (inMatch ? 'darkgreen' : undefined))) : undefined	
 				}}>
-					<a
-						style={{color: foreColor, textDecoration: "underline"}}
-						target='_blank'
-						href={`https://www.bigbook.app/ratings/gauntlet?search=${encodeURI(crew.name)}`}
-						title={`Big Book Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
-					>{rnk}</a>
-				</div>
-				<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
-					<ItemDisplay
-						playerData={this.context.playerData}
-						crewSymbol={crew.symbol}
-						targetGroup='gauntletsHover'
-						allCrew={this.context.allCrew}
-						src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-						rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
-						maxRarity={crew.max_rarity}
-						size={64}
-					/>
-				</div>
-				<div style={{
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					alignItems: "center",
-					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
-				}}>
-					<div style={{
+					{isOpponent && 
+						<>
+							<span>
+								{opponent?.rank}
+							</span>
+							<div style={{
+								flexGrow: 1,								
+								justifyContent:"center", 
+								display:"flex",
+								flexDirection:"row", 
+								alignItems:"center"}}>
+									{opponent?.name}
+									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
+							</div>
+							<span>
+								[{opponent?.level}]
+							</span>
+						</>}
+
+					{inMatch && 
+						<>
+							<span>
+								{gauntlet?.rank}
+							</span>
+							<div style={{
+								flexGrow: 1,								
+								justifyContent:"center", 
+								display:"flex",
+								flexDirection:"row", 
+								alignItems:"center"}}>
+									{this.context.playerData.player.display_name}
+									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
+							</div>
+							<span>
+								[{this.context.playerData.player.character.level}]
+							</span>
+						</>}
+
+				</div>}
+				<div 
+					style={{
+						flexGrow: 1,
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-between",
+						alignItems: "center",
+						width: "100%",
+						padding: '0.5em',
+						paddingBottom: 0,
 						margin: 0,
-						marginLeft: "0.25em",
-						marginBottom: "0.25em",
+						// backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "transparent" : (isOpponent ? '#990000' : (inMatch ? '#008800' : undefined))) : undefined,
+						}}
+				>
+					<div style={{
+						width: "2em",
+						textAlign: "center",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						cursor: "pointer"
 					}}>
-						{this.formatPair(crewpair, {
-							flexDirection: "row",
-							display: "flex",
-							justifyContent: "space-evenly",
-							textDecoration: powerColor ? 'underline' : undefined,
-							color: powerColor,
-							fontSize: "8pt"
-						}, isRound && ("isDebuffed" in crew && crew.isDebuffed), 
-					  	   isRound && ("isDisabled" in crew && crew.isDisabled))}
+						<a
+							style={{color: foreColor, textDecoration: "underline"}}
+							target='_blank'
+							href={`https://www.bigbook.app/ratings/gauntlet?search=${encodeURI(crew.name)}`}
+							title={`Big Book Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
+						>{rnk}</a>
+					</div>
+					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
+						<ItemDisplay
+							playerData={this.context.playerData}
+							crewSymbol={crew.symbol}
+							targetGroup='gauntletsHover'
+							allCrew={this.context.allCrew}
+							src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+							rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
+							maxRarity={crew.max_rarity}
+							size={64}
+						/>
 					</div>
 					<div style={{
 						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-evenly",
-						margin: 0,
-						fontSize: "10pt",
-						marginLeft: "0.25em",
-						marginRight: "0.25em",
-						marginTop: "0.25em",
-						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
-						cursor: "default"
-						
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
 					}}>
-					   {"score" in crew && crew.score && 
-					   	<div
-							title={`${Math.round(crewPairScore?.score ?? 0).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
-							style={{
-								margin: "0 0.5em",
-								color: bigNumberColor ?? undefined,
+						<div style={{
+							margin: 0,
+							marginLeft: "0.25em",
+							marginBottom: "0.25em",
+						}}>
+							{this.formatPair(crewpair, {
+								flexDirection: "row",
 								display: "flex",
-								flexDirection:"row",
-								justifyContent: "center",
-								width: "4em",
-								alignItems: "center"							
-								}}>
-							<img style={{margin: "0 0.25em", maxHeight: "1em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/anomally_icon.png`} />
-							{Math.round(crewPairScore?.score ?? 0).toLocaleString()}
-						</div>} 
+								justifyContent: "space-evenly",
+								textDecoration: powerColor ? 'underline' : undefined,
+								color: powerColor,
+								fontSize: "8pt"
+							}, isRound && ("isDebuffed" in crew && crew.isDebuffed), 
+							isRound && ("isDisabled" in crew && crew.isDisabled))}
+						</div>
+						<div style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-evenly",
+							margin: 0,
+							fontSize: "10pt",
+							marginLeft: "0.25em",
+							marginRight: "0.25em",
+							marginTop: "0.25em",
+							width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
+							cursor: "default"
 							
-						<div
-							title={`${crit}% Crit Chance`}
-							style={{
-								fontWeight: crit > 25 ? "bold" : undefined,
-								margin: "0 0.5em",
-								color: critColor ?? undefined
-								}}>
-							{critString}
+						}}>
+						{"score" in crew && crew.score && 
+							<div
+								title={`${Math.round(crewPairScore?.score ?? 0).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
+								style={{
+									margin: "0 0.5em",
+									color: bigNumberColor ?? undefined,
+									display: "flex",
+									flexDirection:"row",
+									justifyContent: "center",
+									width: "4em",
+									alignItems: "center"							
+									}}>
+								<img style={{margin: "0 0.25em", maxHeight: "1em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/anomally_icon.png`} />
+								{Math.round(crewPairScore?.score ?? 0).toLocaleString()}
+							</div>} 
+								
+							<div
+								title={`${crit}% Crit Chance`}
+								style={{
+									fontWeight: crit > 25 ? "bold" : undefined,
+									margin: "0 0.5em",
+									color: critColor ?? undefined
+									}}>
+								{critString}
+							</div>
 						</div>
 					</div>
-				</div>
-				<div style={{ marginRight: "0.25em" }}>
-					{"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
-						("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{ color: "lightgreen" }} className='check icon' />))}
-					{"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
-					{(("isOpponent" in crew) && (crew.isOpponent)) &&
-						<span>
-							<img title={"Opponent (" + crew.ssId + ")"} style={{ height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/warning_icon.png`} />
-						</span>}
+					<div style={{ marginRight: "0.25em" }}>
+						{"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
+							("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{ color: "lightgreen" }} className='check icon' />))}
+						{"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
+						{(isOpponent) &&
+							<span>
+								<img title={"Opponent (" + opponent?.name + ")"} style={{ height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/warning_icon.png`} />
+							</span>}
 
-					{!("immortal" in crew) || !(crew.have) && !(("isOpponent" in crew) && (crew.isOpponent)) &&
-						<span>
-							{crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{ height: "16px" }} src='/media/portal.png' />}
-							{!crew.in_portal && <i title={this.whyNoPortal(crew)} className='lock icon' />}
-						</span>}
+						{!("immortal" in crew) || !(crew.have) && !(isOpponent) &&
+							<span>
+								{crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{ height: "16px" }} src='/media/portal.png' />}
+								{!crew.in_portal && <i title={this.whyNoPortal(crew)} className='lock icon' />}
+							</span>}
+					</div>
 				</div>
 			</div>)
 	}
