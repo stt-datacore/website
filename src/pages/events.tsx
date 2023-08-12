@@ -5,6 +5,13 @@ import Layout from '../components/layout';
 import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
 import { EventLeaderboard } from '../model/events';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { PlayerData } from '../model/player';
+import { prepareProfileData } from '../utils/crewutils';
+import { BuffStatTable } from '../utils/voyageutils';
+import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -15,7 +22,51 @@ type EventInstance = {
 	instance_id: number,
 }
 
-function EventsPage() {
+
+const EventsPage = () => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const playerContext = React.useContext(PlayerContext);
+	const { strippedPlayerData, buffConfig } = playerContext;
+	let playerData: PlayerData | undefined = undefined;
+
+	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
+		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
+		if (playerData) prepareProfileData("EVENTS", coreData.crew, playerData, new Date());
+	}
+
+	let maxBuffs: BuffStatTable | undefined;
+
+	maxBuffs = playerContext.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
+		maxBuffs = coreData.all_buffs;
+	}
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<MergedContext.Provider value={{
+						allCrew: coreData.crew,
+						playerData: playerData ?? {} as PlayerData,
+						buffConfig: buffConfig,
+						maxBuffs: maxBuffs,
+						gauntlets: coreData.gauntlets
+					}}>
+						<EventsPageComponent />
+					</MergedContext.Provider>
+				</React.Fragment>
+			}
+
+		</Layout>
+	);
+
+}
+
+function EventsPageComponent() {
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
 	const [leaderboardData, setLeaderboardData] = React.useState<{ [key: string]: EventLeaderboard } | null>(null);
 	const [loadingError, setLoadingError] = React.useState<any>(null);
@@ -48,6 +99,8 @@ function EventsPage() {
 			<></>
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
+				<CrewHoverStat targetGroup='event_info' useBoundingClient={true}  />
+
 				{loadingError && (
 					<Message negative>
 						<Message.Header>Unable to load event information</Message.Header>

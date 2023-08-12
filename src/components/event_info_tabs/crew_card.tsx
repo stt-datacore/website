@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, Image } from 'semantic-ui-react';
 import { getRarityColor } from '../../utils/assets';
 import { PlayerCrew } from '../../model/player';
+import { MergedContext } from '../../context/mergedcontext';
+import { CrewTarget } from '../hovering/crewhoverstat';
 
 function getRarityStars(rarity: number) {
 	const retVal = [] as string[];
@@ -11,19 +13,41 @@ function getRarityStars(rarity: number) {
 	return retVal.join('');
 }
 
-function CrewCard({crew}) {
+export interface CrewCardBrief {
+    key: string;
+    symbol: string;
+    name: string;
+    image: string;
+    rarity: number;
+    skills: { key: string, imageUrl: string }[];
+    traits: string[];
+}
+
+export interface CrewCardProps {
+    crew: CrewCardBrief;
+    sysCrew?: PlayerCrew;
+}
+
+function CrewCard(props: CrewCardProps) {
+    const context = React.useContext(MergedContext);
+    const { crew } = props;
+
+    const sysCrew = props.sysCrew ?? context.allCrew?.find(f => f.symbol === crew.symbol);
+    
     return (
         <Card>
             <Card.Content>
-                <Image
-                    floated="left"
-                    size="tiny"
-                    src={crew.image}
-                    bordered
-                    style={{
-                        borderColor: `${getRarityColor(crew.rarity)}`
-                    }}
-                />
+                <CrewTarget targetGroup='event_info' inputItem={sysCrew}>
+                    <Image
+                        floated="left"
+                        size="tiny"
+                        src={crew.image}
+                        bordered
+                        style={{
+                            borderColor: `${getRarityColor(crew.rarity)}`
+                        }}
+                    />
+                </CrewTarget>
                 <Card.Header>{crew.name}</Card.Header>
                 <Card.Meta>
                     <p>{getRarityStars(crew.rarity)}</p>

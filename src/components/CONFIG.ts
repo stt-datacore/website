@@ -183,7 +183,7 @@ export default class CONFIG {
 	};
 
 
-	static readonly STATS_CONFIG: { [index: number]: any } = {
+	static readonly STATS_CONFIG: { [index: number]: { symbol: string, skill: string, stat: string } } = {
 		2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
 		3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },
 		4: { symbol: 'engineering_skill_range_max', skill: 'engineering_skill', stat: 'range_max' },

@@ -4,8 +4,10 @@ import { Header, Card, Label, Image } from 'semantic-ui-react';
 import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { EventData, getEventData } from '../../utils/events';
-import CrewCard from './crew_card';
+import CrewCard, { CrewCardBrief } from './crew_card';
 import { CompactCrew, PlayerCrew } from '../../model/player';
+import { MergedContext } from '../../context/mergedcontext';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -43,6 +45,10 @@ function sortCrew(crewArray: PlayerCrew[]) {
 
 function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 	const { eventData } = props;
+	const context = React.useContext(MergedContext);
+
+	const { allCrew, items, playerData } = context;
+
 	const { crewJson } = useStaticQuery(graphql`
 		query {
 			crewJson: allCrewJson {
@@ -80,7 +86,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 			}
 		}
 	`);
-	const crewData = crewJson.edges.map(edge => edge.node) as PlayerCrew[];
+	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
 		crewMap[crew.symbol] = crew;
@@ -102,6 +108,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 		const crew = crewMap[symbol];
 		return {
 			key: `crew_${crew.symbol}`,
+			symbol: crew.symbol,
 			name: crew.name,
 			image: getIconPath({file: crew.imageUrlPortrait}),
 			rarity: crew.max_rarity,
@@ -113,7 +120,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 					imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
 				})),
 			traits: crew.traits_named,
-		};
+		} as CrewCardBrief;
 	});
 	const bonusCrew = crewData.filter(crew => bonus?.includes(crew.symbol) && !featured?.includes(crew.symbol));
 
@@ -132,7 +139,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 			<Header as="h3">Featured Crew</Header>
 			<Card.Group>
 				{featuredCrewData?.map(crew => (
-					<CrewCard key={crew.key} crew={crew} />
+					<CrewCard key={crew.key} crew={crew} sysCrew={crewMap[crew.symbol]} />
 				))}
 			</Card.Group>
 			<Header as="h3">Bonus Crew</Header>
@@ -141,17 +148,19 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 			)}
 			{sortCrew(bonusCrew).map(crew => (
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
+					<CrewTarget targetGroup='event_info' inputItem={crewMap[crew.symbol]}>
 					<Image
-						src={getIconPath({ file: crew.imageUrlPortrait })}
-						size="massive"
+						src={getIconPath({ file: crew.imageUrlPortrait })}						
 						inline
 						spaced="right"
 						bordered
 						style={{
+							height: "48px",
 							borderColor: getRarityColor(crew.max_rarity)
 						}}
 						alt={crew.name}
 					/>
+					</CrewTarget>
 					{crew.name}
 				</Label>
 			))}
