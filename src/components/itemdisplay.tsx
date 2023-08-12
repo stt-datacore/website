@@ -43,11 +43,34 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			}
 		}
 
-		let divStyle = this.props.style || {};
-		divStyle.position = 'relative';
-		divStyle.display = 'inline-block';
-		divStyle.width = this.props.size + 'px';
-		divStyle.height = this.props.size + 'px';
+		const divStyle = { 
+			... (this.props.style ?? {}), 
+			position: 'relative',
+			display: 'flex',
+			flexDirection: "column",
+			justifyContent: "center",
+			alignItems: "center",
+			width: this.props.size + 'px',
+			height: this.props.size + 'px',
+		};
+
+		const imgStyle = {
+			borderStyle: 'solid',
+			borderRadius: borderRadius + 'px',
+			borderWidth: borderWidth + 'px',
+			borderColor: borderColor,
+			width: this.props.size - 2 * borderWidth + 'px',
+			height: this.props.size - 2 * borderWidth + 'px'
+		} as React.CSSProperties;
+
+		const starStyle = {
+			position: 'absolute',
+			width: this.props.size + 'px',
+			bottom: bottomStar + 'px',
+			left: '50%',
+			transform: 'translate(-50%, 0)',
+			textAlign: 'center'									
+		} as React.CSSProperties;
 
 		let crew: PlayerCrew | undefined = undefined;
 
@@ -60,8 +83,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		}
 		
 		if (crew && crewSymbol && allCrew && targetGroup) {
-			return (
-						
+			return (						
 					<div style={divStyle}>
 						<CrewTarget 
 							inputItem={crew} 
@@ -69,57 +91,28 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 							>
 							<img
 								src={this.props.src}
-								style={{
-									borderStyle: 'solid',
-									borderRadius: borderRadius + 'px',
-									borderWidth: borderWidth + 'px',
-									borderColor: borderColor,
-									width: this.props.size - 2 * borderWidth + 'px',
-									height: this.props.size - 2 * borderWidth + 'px'
-								}}
+								style={imgStyle}
 							/>
 						</CrewTarget>
 						{!this.props.hideRarity && (
 							<div
-								style={{
-									position: 'absolute',
-									width: this.props.size + 'px',
-									bottom: bottomStar + 'px',
-									left: '50%',
-									transform: 'translate(-50%, 0)',
-									textAlign: 'center'
-								}}>
+								style={starStyle}>
 								{rarity}
 							</div>
 						)}
 					</div>
 			);
-	
 		}
 		else {
 			return (
 				<div style={divStyle}>
 					<img
 						src={this.props.src}
-						style={{
-							borderStyle: 'solid',
-							borderRadius: borderRadius + 'px',
-							borderWidth: borderWidth + 'px',
-							borderColor: borderColor,
-							width: this.props.size - 2 * borderWidth + 'px',
-							height: this.props.size - 2 * borderWidth + 'px'
-						}}
+						style={imgStyle}
 					/>
 					{!this.props.hideRarity && (
 						<div
-							style={{
-								position: 'absolute',
-								width: this.props.size + 'px',
-								bottom: bottomStar + 'px',
-								left: '50%',
-								transform: 'translate(-50%, 0)',
-								textAlign: 'center'
-							}}>
+							style={starStyle}>
 							{rarity}
 						</div>
 					)}
