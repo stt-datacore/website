@@ -17,6 +17,7 @@ import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
+import { prepareProfileData } from '../utils/crewutils';
 
 interface ItemInfoPageProps {};
 
@@ -30,18 +31,25 @@ interface ItemInfoComponentState {
 	items?: EquipmentItem[];
 };
 
-const ItemInfoPage = (props: ItemInfoPageProps) => {
+
+const ItemInfoPage = () => {
 	const coreData = React.useContext(DataContext);
 	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
-	
+	let playerData: PlayerData | undefined = undefined;
+
+	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
+		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
+		if (playerData) prepareProfileData("ITEM_INFO", coreData.crew, playerData, new Date());
+	}
+
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext.maxBuffs;
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
 		maxBuffs = coreData.all_buffs;
-	} 
+	}
 
 	return (
 		<Layout>
@@ -52,7 +60,7 @@ const ItemInfoPage = (props: ItemInfoPageProps) => {
 				<React.Fragment>
 					<MergedContext.Provider value={{
 						allCrew: coreData.crew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
+						playerData: playerData ?? {} as PlayerData,
 						buffConfig: buffConfig,
 						maxBuffs: maxBuffs,
 						items: coreData.items
@@ -61,10 +69,11 @@ const ItemInfoPage = (props: ItemInfoPageProps) => {
 					</MergedContext.Provider>
 				</React.Fragment>
 			}
+
 		</Layout>
 	);
-};
 
+}
 
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
@@ -175,7 +184,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	
 	private haveCount(symbol: string) {
 		const { playerData } = this.context;
-		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
+		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? null;
 	}
 
 	render() {
@@ -185,7 +194,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
 				<Layout title='Item information'>
-					<Header as="h4">Item information</Header>
+					<Header as="h3">Item information</Header>
 					{errorMessage && (
 						<Message negative>
 							<Message.Header>Unable to load item information</Message.Header>
@@ -277,7 +286,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
-						<Header as="h4">Craft it for &nbsp; <img title={"Chronotons"} style={{width: "20px", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
+						<Header as="h3">Craft it for <img title={"Chronotons"} style={{width: "1.5em", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
 						<Grid columns={3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
@@ -288,6 +297,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												style={{ display: 'flex', cursor: 'zoom-in' }}
 												icon={
 													<ItemDisplay
+														style={{ marginRight: "0.5em"}}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 														size={48}
 														maxRarity={entry.equipment.rarity}
@@ -295,11 +305,11 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													/>
 												}
 												content={entry.equipment.name}
-												subheader={`Need ${entry.count} ${playerData ? "(Have " + this.haveCount(entry.equipment.symbol) + ")" : ""} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+												subheader={`Need ${entry.count} ${playerData?.player ? "(Have " + this.haveCount(entry.equipment.symbol) + ")" : ""} ${entry.factionOnly ? ' (Faction Only)' : ''}`}
 											/>
 										}
 										header={
-											<a onClick={(e) => this.changeComponent(entry.symbol)}>
+											<a style={{cursor: "pointer"}} onClick={(e) => this.changeComponent(entry.symbol)}>
 												{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
 											</a>
 										}
@@ -315,7 +325,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{!!(item_data.item.item_sources.length > 0) && (
 					<div>
-						<Header as="h4">Item sources</Header>
+						<Header as="h3">Item sources</Header>
 						<ItemSources item_sources={item_data.item.item_sources} />
 						<br />
 					</div>
@@ -323,7 +333,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{item_data.crew_levels.length > 0 && (
 					<div>
-						<Header as="h4">Equippable by this crew:</Header>
+						<Header as="h3">Equippable by this crew:</Header>
 						<Grid columns={3} padded>
 							{item_data.crew_levels.map((entry, idx) => (
 								<Grid.Column key={idx}>
@@ -339,7 +349,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 												size={60}
 												maxRarity={entry.crew.max_rarity}
-												rarity={entry.crew.max_rarity}
+												rarity={entry.crew.rarity ?? entry.crew.max_rarity ?? 0}
 											/>
 											</div>
 										}
@@ -354,7 +364,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{item_data.builds.length > 0 && (
 					<div>
-						<Header as="h4">Is used to build these</Header>
+						<Header as="h3">Is used to build these</Header>
 						<Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>
