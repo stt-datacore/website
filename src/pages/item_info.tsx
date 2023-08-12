@@ -172,9 +172,15 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			}))}
 		</div>)
 	}
+	
+	private haveCount(symbol: string) {
+		const { playerData } = this.context;
+		return playerData?.player?.character?.items?.filter(f => f.symbol === symbol)?.length ?? 0;
+	}
 
 	render() {
-		const { errorMessage, item_data, items } = this.state;
+		const { errorMessage, item_data } = this.state;
+		const { items, playerData } = this.context;
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
@@ -246,8 +252,6 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 					<CrewHoverStat targetGroup='item_info' />
 					
-					
-					
 					<div style={{
 						display:"flex",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
@@ -271,7 +275,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				<br />
 
-				{item_data.item.recipe && item_data.item.recipe.list?.length && (
+				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
 						<Header as="h4">Craft it for &nbsp; <img title={"Chronotons"} style={{width: "20px", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
 						<Grid columns={3} padded>
@@ -291,7 +295,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													/>
 												}
 												content={entry.equipment.name}
-												subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
+												subheader={`Need ${entry.count} ${playerData ? "(Have " + this.haveCount(entry.equipment.symbol) + ")" : ""} ${entry.factionOnly ? ' (FACTION)' : ''}`}
 											/>
 										}
 										header={
