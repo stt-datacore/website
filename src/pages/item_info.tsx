@@ -188,7 +188,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	
 	private haveCount(symbol: string) {
 		const { playerData } = this.context;
-		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? null;
+		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
 	}
 
 	render() {
