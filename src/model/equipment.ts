@@ -11,6 +11,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   imageUrl: string
   bonuses?: EquipmentBonuses
   quantity?: number;
+  needed?: number;
 }
 
 export interface EquipmentItem extends EquipmentCommon {
@@ -23,6 +24,7 @@ export interface EquipmentItem extends EquipmentCommon {
   imageUrl: string
   bonuses?: EquipmentBonuses
   quantity?: number;
+  needed?: number;
 
   item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe

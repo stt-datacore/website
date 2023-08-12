@@ -9,10 +9,12 @@ import CONFIG from '../components/CONFIG';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { calculateRosterDemands } from '../utils/equipment';
 
 type ProfileItemsProps = {
 	data?: EquipmentCommon[] | EquipmentItem[];
 	navigate?: (symbol: string) => void;
+	hideNeeded?: boolean;
 };
 
 type ProfileItemsState = {
@@ -94,6 +96,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 
+		const { playerData } = this.context;
+		let { hideNeeded } = this.props;
+
+		if (!hideNeeded && !!playerData?.player?.character?.crew?.length && !!data?.length){
+			const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
+			for (let item of data) {
+				const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+				if (fitem) {
+					item.needed = fitem.count;
+				}
+				else {
+					item.needed = 0;
+				}
+			}
+		}
+		
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		// Pagination
@@ -110,13 +128,21 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Item
 						</Table.HeaderCell>
-						<Table.HeaderCell
+						{!hideNeeded && <Table.HeaderCell
 							width={1}
 							sorted={column === 'quantity' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('quantity')}
 						>
 							Quantity
-						</Table.HeaderCell>
+						</Table.HeaderCell>}
+						{!hideNeeded &&
+						<Table.HeaderCell
+							width={1}
+							sorted={column === 'quantity' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('quantity')}
+						>
+							Needed
+						</Table.HeaderCell>}
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'type' ? direction ?? undefined : undefined}
@@ -168,7 +194,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									<div style={{ gridArea: 'description' }}>{item.flavor}</div>
 								</div>
 							</Table.Cell>
-							<Table.Cell>{item.quantity}</Table.Cell>
+							{!hideNeeded && <Table.Cell>{item.quantity}</Table.Cell>}
+							{!hideNeeded && <Table.Cell>{item.needed ?? 0}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 						</Table.Row>
