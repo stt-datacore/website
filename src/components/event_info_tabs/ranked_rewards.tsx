@@ -46,8 +46,9 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 										maxRarity={reward.rarity ?? 0}		
 										allCrew={context.allCrew}
 										playerData={context.playerData}
-										crewSymbol={reward.symbol}
-										targetGroup='event_info'
+										allItems={context.items}
+										itemSymbol={reward.symbol}
+										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
 										style={{
 											marginRight: "1em"
 										}}

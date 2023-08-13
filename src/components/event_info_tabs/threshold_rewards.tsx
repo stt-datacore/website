@@ -34,9 +34,10 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 										rarity={reward.rarity}
 										maxRarity={reward.rarity}		
 										allCrew={context.allCrew}
+										allItems={context.items}
 										playerData={context.playerData}
-										crewSymbol={reward.symbol}
-										targetGroup='event_info'
+										itemSymbol={reward.symbol}
+										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
 										style={{
 											marginRight: "1em"
 										}}
