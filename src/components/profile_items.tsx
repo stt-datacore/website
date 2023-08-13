@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Input, Checkbox } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { mergeItems } from '../utils/itemutils';
+import { exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
@@ -10,20 +10,41 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
+import { TinyStore } from '../utils/tiny';
+import { downloadData } from '../utils/crewutils';
+import { ItemHoverStat } from './hovering/itemhoverstat';
+import { CrewHoverStat } from './hovering/crewhoverstat';
 
 type ProfileItemsProps = {
+	/** List of equipment items */
 	data?: EquipmentCommon[] | EquipmentItem[];
+	
+	/** Optional alternative navigation method */
 	navigate?: (symbol: string) => void;
+	
+	/** Hide features for owned items */
 	hideOwnedInfo?: boolean;
+
+	/** Hide search bar */
+	hideSearch?: boolean;
+	
+	/** Add needed but unowned items to list */
+	addNeeded?: boolean;
+
+	pageName?: string;
 };
 
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
-	data: EquipmentItem[] | EquipmentCommon[];
+	data?: (EquipmentCommon | EquipmentItem)[];
+	filteredData?: (EquipmentCommon | EquipmentItem)[];
+	filterText?: string;
 	pagination_rows: number;
 	pagination_page: number;
+	
+	/** Add needed but unowned items to list */
+	addNeeded?: boolean;
 };
 
 const pagingOptions = [
@@ -36,22 +57,31 @@ const pagingOptions = [
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
+	readonly tiny: TinyStore; 
 
 	constructor(props: ProfileItemsProps) {
 		super(props);
+		this.tiny = TinyStore.getStore((props.pageName ? props.pageName + "_": "") + 'profile_items');
 
 		this.state = {
 			column: null,
 			direction: null,
-			searchFilter: '',
+			filterText: this.tiny.getValue('filterText', '') ?? '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: props.data ?? []
+			data: props.data,
+			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
 		};
 	}
 
 	componentDidMount() {
-		if (this.state.data.length) return;
+		this.initData();
+	}
+	componentDidUpdate() {
+		this.initData();
+	}
+	initData() {
+		if (this.state.data?.length && this.state.data?.length > 0) return;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -61,16 +91,52 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				let { hideOwnedInfo } = this.props;
 
 				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
-					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
+					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[], true);
 					for (let item of data) {
-						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
-						if (fitem) {
-							item.needed = fitem.count;
-							item.factionOnly = fitem.factionOnly;
+						if (item.type === 8) {
+							let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
+							if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
+								item.needed = scheme.schematic_gain_cost_next_level;
+								item.factionOnly = false;
+							}
+							else {
+								item.needed = 0;
+								item.factionOnly = false;
+								if ("demandCrew" in item) delete item.demandCrew;
+							}
 						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
+						else if (item.type === 2 || item.type === 3) {
+							const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+							if (fitem) {
+								item.needed = fitem.count;
+								item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
+								item.demandCrew ??= []
+								for (let sym of fitem.crewSymbols) {
+									if (sym && !item.demandCrew.find(f => f === sym)) {
+										item.demandCrew.push(sym);
+									}
+								}
+							}
+							else {
+								item.needed = 0;
+								item.factionOnly = false;
+								item.demandCrew = [];
+							}
+						}
+					}
+					if (demandos?.demands.length && this.state.addNeeded === true) {
+						for (let item of demandos.demands) {
+							if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
+								item.equipment = this.context.items.find(f => f.symbol === item.symbol);
+								if (item.equipment){
+									let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
+									eq.needed = item.count;
+									eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
+									eq.quantity = 0;
+									eq.demandCrew = [ ... item.crewSymbols ];
+									data.push(eq);
+								}
+							}
 						}
 					}
 				}
@@ -78,14 +144,16 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			});
 	}
 
-	_onChangePage(activePage) {
+	private _onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
 
-	_handleSort(clickedColumn) {
+
+	private _handleSort(clickedColumn) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
-
+		if (!data) return;
+		
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
 			direction: clickedColumn === column ? direction : (clickedColumn === 'quantity' ? 'ascending' : null)
@@ -100,7 +168,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 	}
 
-	private handleNavigate = (symbol: string) => {
+	private _handleNavigate = (symbol: string) => {
 		if (this.props.navigate) {
 			this.props.navigate(symbol);
 		}
@@ -109,19 +177,68 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}
 	}
 
+	private _handleFilter = (text: string | undefined) => {
+		this.tiny.setValue('filterText', text ?? '');
+		this.setState({ ...this.state, filterText: text ?? '' });
+	}
+
+	private _handleAddNeeded = (value: boolean | undefined) => {
+		if (this.state.addNeeded === value) return;		
+		this.tiny.setValue('addNeeded', value ?? false);
+		this.setState({ ...this.state, data: undefined, addNeeded: value ?? false });
+	}
+
 	render() {
-		const { column, direction, pagination_rows, pagination_page } = this.state;
+		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
+		const filterText = this.state.filterText?.toLocaleLowerCase();
 
-		let { hideOwnedInfo } = this.props;		
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
+		const { hideOwnedInfo, hideSearch } = this.props;		
+		let totalPages = 0;
+		if (data !== undefined) {
+			if (filterText && filterText !== '') {
+				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
+					f.short_name?.toLowerCase().includes(filterText) ||
+					f.flavor?.toLowerCase().includes(filterText) ||
+					CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+					CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
+					);
+			}
 
-		// Pagination
-		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+			totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
+			// Pagination
+			data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+		}		
 		return (
-			<>
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
+			<div style={{margin:0,padding:0}}>
+			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+				{!hideSearch && <div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginLeft: "0.25em"}}>
+					<Input		
+						style={{width:"22em"}}
+						label={"Search Items"}
+						value={filterText}
+						onChange={(e, { value }) => this._handleFilter(value as string)}
+						/>
+					<i className='delete icon'								
+						title={"Clear Searches and Comparison Marks"} 							    
+						style={{
+							cursor: "pointer", 
+							marginLeft: "0.75em"
+						}} 								
+						onClick={(e) => {
+								this._handleFilter(undefined); 
+							} 
+						} 
+					/>
+
+				</div>}
+				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
+					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
+				</div>}
+			</div>
+			{!data &&<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
+			{data && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
@@ -182,6 +299,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						<Table.Row key={idx}>
 							<Table.Cell>
 								<div
+									title={item.name + (!hideOwnedInfo ? (!item.quantity ? ' (Unowned)' : ` (${item.quantity})`) : "")}
 									style={{
 										display: 'grid',
 										gridTemplateColumns: '60px auto',
@@ -191,6 +309,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								>
 									<div style={{ gridArea: 'icon' }}>
 									<ItemDisplay
+										targetGroup='profile_items'
+										style={{
+											opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
+										}}
+										playerData={this.context.playerData}
+										itemSymbol={item.symbol}
+										allItems={this.state.data}
 										rarity={item.rarity}
 										maxRarity={item.rarity}
 										size={48} 
@@ -198,7 +323,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										
 									</div>
 									<div style={{ gridArea: 'stats', cursor: "pointer" }}>
-										<a onClick={(e) => this.handleNavigate(item.symbol)}>
+										<a onClick={(e) => this._handleNavigate(item.symbol)}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 												{item.rarity > 0 && (
 													<span>
@@ -213,7 +338,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								</div>
 							</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
-							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 0}</Table.Cell>}
+							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 'N/A'}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
@@ -242,10 +367,46 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
-			</Table>
+			</Table>}
+			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} crewTargetGroup='profile_items_crew' />
+			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
 			<br />
-			</>
+				{!hideOwnedInfo && 
+					<div style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent:"flex-start"
+					}}>
+					<div 
+						className='ui button' 
+						onClick={(e) => { if (this.state.data) this._exportItems(this.state.data)}}
+						style={{display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
+						>
+						<span style={{margin: '0 2em 0 0'}}>Export to CSV</span><i className='download icon' />
+					</div>
+					<div 
+						className='ui button' 
+						onClick={(e) => { if (this.state.data) this._exportItems(this.state.data, true)}}
+						style={{marginRight:"2em",display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
+						>
+						<span style={{margin: '0 2em 0 0'}}>Copy to Clipboard</span><i className='clipboard icon' />
+					</div>
+				</div>}
+			<br />
+			<br />
+			</div>
 		);
+	}
+	
+	_exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
+		const { playerData } = this.context;
+
+		let text = exportItemsAlt(data);
+		if (clipboard){
+			navigator.clipboard.writeText(text);			
+			return;
+		}
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 	}
 }
 

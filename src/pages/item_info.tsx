@@ -5,6 +5,7 @@ import { Link, navigate } from 'gatsby';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
+import { Demand, PlayerCrew, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
@@ -17,9 +18,16 @@ import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
-import { PlayerData } from '../model/player';
+import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import Layout from '../components/layout';
-import { DataWrapper } from '../context/datawrapper';
+
+
+export interface EquipmentItemData {
+	item: EquipmentItem;
+	crew_levels: { crew: PlayerCrew, level: number }[];
+	builds: EquipmentItem[];
+}
 
 interface ItemInfoPageProps {};
 
@@ -29,15 +37,14 @@ interface ItemInfoComponentProps {
 };
 
 interface ItemInfoComponentState {
-	item_data?: any;
+	item_data?: EquipmentItemData;
 	errorMessage?: string;
 	items?: EquipmentItem[];
 };
 
-
 const ItemInfoPage = () => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	const [header, setHeader] = React.useState<string>("");
@@ -56,9 +63,26 @@ const ItemInfoPage = () => {
 	}
 
 	return (
-		<DataWrapper pageTitle='Items' demands={['crew', 'items', 'all_buffs']}>
-			<ItemInfoComponent isReady={true} setHeader={setHeader} />
-		</DataWrapper>
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<MergedContext.Provider value={{
+						crew: coreData.crew,
+						playerData: playerData ?? {} as PlayerData,
+						buffConfig: buffConfig,
+						maxBuffs: maxBuffs,
+						items: coreData.items,
+						ships: coreData.ships
+					}}>
+						<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
+					</MergedContext.Provider>
+				</React.Fragment>
+			}
+
+		</Layout>
 	);
 
 }
@@ -92,7 +116,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 	
 	private changeComponent(symbol: string) {
-		navigate("/item_info?symbol="+symbol, { replace: true });
+		navigate("/item_info?symbol="+symbol, { replace: false });
 		this.inited = false;
 		this.initData(symbol);
 	}
@@ -107,12 +131,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_symbol){
 			let item = items?.find(entry => entry.symbol === item_symbol);
 
-			let crew_levels = [] as { crew: CrewMember, level: number }[];
+			let crew_levels = [] as { crew: PlayerCrew, level: number }[];
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
 						crew_levels.push({
-							crew: crew,
+							crew: crew as PlayerCrew,
 							level: es.level
 						});
 					}
@@ -226,6 +250,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				let recipeEquipment = items?.find(item => item.symbol === iter.symbol);
 				if (recipeEquipment) {
 					demands.push({
+						crewSymbols: [],
 						count: iter.count,
 						symbol: iter.symbol,
 						equipment: recipeEquipment,
@@ -238,12 +263,18 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_data.item.type === 14) {
 			console.log(item_data);
 		}
+		
+		
 		const haveCount = this.haveCount(item_data.item.symbol);
+		const ship = item_data.item.type === 8 ? this.context.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+
 		return (
 				<div>
 
 					<CrewHoverStat targetGroup='item_info' />
-					
+					<ShipHoverStat targetGroup='item_info_ships' />
+					<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
+
 					<div style={{
 						paddingTop:"2em",
 						marginBottom: "1em",
@@ -253,6 +284,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<ItemDisplay
+							targetGroup='item_info_items'
+							playerData={playerData}
+							allItems={items}
+							itemSymbol={item_data.item.symbol}
 							style={{
 								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
 							}}
@@ -276,8 +311,26 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</div>
 					
 					</div>
-
+					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
 				<br />
+
+				{item_data.item.type === 8 && !!ship &&
+					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
+							<Link to={`/playertools?tool=ship&ship=${ship.symbol}`}>
+								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+								<ItemDisplay 
+									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+									size={128}
+									rarity={ship.rarity}
+									maxRarity={ship.rarity}
+									/>
+									{ship.name}
+								</div>
+							</Link>
+						</ShipTarget>
+						
+					</div>}
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
@@ -292,6 +345,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												style={{ display: 'flex', cursor: 'zoom-in' }}
 												icon={
 													<ItemDisplay
+														playerData={playerData}
+														itemSymbol={entry.equipment.symbol}
+														allItems={this.context.items}
+														targetGroup='item_info_items'
 														style={{ marginRight: "0.5em"}}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 														size={48}
@@ -342,7 +399,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												targetGroup='item_info'
 												allCrew={this.context.crew}
 												playerData={this.context.playerData}						
-												crewSymbol={entry.crew.symbol}											
+												itemSymbol={entry.crew.symbol}											
 												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 												size={60}
 												maxRarity={entry.crew.max_rarity}
@@ -363,7 +420,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these:</Header>
-						<ProfileItems hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<ProfileItems pageName='item_info' hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
 						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>
