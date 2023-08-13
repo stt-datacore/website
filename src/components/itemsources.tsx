@@ -1,9 +1,13 @@
 import React, { PureComponent } from 'react';
 
 import MissionCost from './missioncost';
+import { EquipmentItemSource } from '../model/equipment';
+import { Link } from 'gatsby';
 
 type ItemSourcesProps = {
-	item_sources: any;
+	item_sources: EquipmentItemSource[];
+	brief?: boolean;
+	refItem?: string;
 };
 
 class ItemSources extends PureComponent<ItemSourcesProps> {
@@ -11,25 +15,29 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 		let disputeMissions = this.props.item_sources.filter(e => e.type === 0);
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
-		
+		const { brief, refItem } = this.props;
+
 		let res = [] as JSX.Element[];
 		if (disputeMissions.length > 0) {
 			res.push(
 				<p key={'disputeMissions'}>
 					<b>Missions: </b>
 					{disputeMissions
+						.slice(0, brief ? 1 : undefined)
 						.map((entry, idx) => (
 							<MissionCost
 								key={idx}
 								mission_symbol={entry.mission_symbol}
-								cost={entry.cost}
+								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
 								name={entry.name}
 								chance_grade={entry.chance_grade}
-								mastery={entry.mastery}
+								mastery={entry.mastery ?? 0}
 							/>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
+					{refItem && brief && disputeMissions.length > 1 && <>, <Link to={`/item_info?symbol=${refItem}`}>and {disputeMissions.length - 1} more ...</Link></>}	
+					{!refItem && brief && disputeMissions.length > 1 && <>, and {disputeMissions.length - 1} more ...</>}
 				</p>
 			);
 		}
@@ -39,18 +47,21 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 				<p key={'shipBattles'}>
 					<b>Ship battles: </b>
 					{shipBattles
+						.slice(0, brief ? 1 : undefined)
 						.map((entry, idx) => (
 							<MissionCost
 								key={idx}
 								mission_symbol={entry.mission_symbol}
-								cost={entry.cost}
+								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
 								name={entry.name}
 								chance_grade={entry.chance_grade}
-								mastery={entry.mastery}
+								mastery={entry.mastery ?? 0}
 							/>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
+					{refItem && brief && shipBattles.length > 1 && <>, <Link to={`/item_info?symbol=${refItem}`}>and {shipBattles.length - 1} more ...</Link></>}	
+					{!refItem && brief && shipBattles.length > 1 && <>, and {shipBattles.length - 1} more ...</>}
 				</p>
 			);
 		}

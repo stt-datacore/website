@@ -170,7 +170,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     {!!(item.item_sources.length > 0) && (
                             <div style={{fontSize: "8pt"}}>
                                 <Header as="h3">Item sources:</Header>
-                                <ItemSources item_sources={item.item_sources} />
+                                <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />
                             </div>
                         )}
