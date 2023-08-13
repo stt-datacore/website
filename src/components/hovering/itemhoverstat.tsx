@@ -68,7 +68,9 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
                 dataOut.demandCrew = [ ... dataIn.demandCrew ];
             }
         }
-
+        if (dataIn?.needed && dataOut){
+            dataOut.needed = dataIn.needed;
+        }
         return dataOut;
     }
     

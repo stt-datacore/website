@@ -126,8 +126,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            
+                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
+                            {item.quantity && item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
+                            {item.quantity && !item.needed && <div>{item.quantity} Owned</div>}
+                            {!item.quantity && item.needed && <div>{item.needed} Needed</div>}                        
                         </div>
                     </div>
                 </div>
