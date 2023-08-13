@@ -6,6 +6,7 @@ import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
+import { Mission } from '../model/missions';
 
 export type ValidDemands =
 	'battle_stations' |
@@ -19,6 +20,7 @@ export type ValidDemands =
 	'episodes' |
 	'factions' |
 	'gauntlets' |
+	'missions' |
 	'quests' |
 	'misc_stats' |
 	'skill_bufs' |
@@ -39,6 +41,7 @@ export interface DefaultCore extends ContextCommon {
 	battle_stations: BattleStations[],
 	ships: Ship[],
 	items: EquipmentItem[],
+	missions: Mission[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
@@ -53,7 +56,8 @@ const defaultData = {
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
 	all_buffs: {} as BuffStatTable,
-	gauntlets: [] as Gauntlet[]
+	gauntlets: [] as Gauntlet[],
+	missions: [] as Mission[]
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -81,7 +85,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['battle_stations', 'crew', 'ship_schematics', 'items', 'keystones', 'collections', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
+		const valid = ['battle_stations', 'crew', 'ship_schematics', 'items', 'keystones', 'collections', 'missions', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
 		const unsatisfied = [] as string[];
 		demands ??= [];
 
