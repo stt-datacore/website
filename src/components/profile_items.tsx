@@ -66,14 +66,27 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
 					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[]);
 					for (let item of data) {
-						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
-						if (fitem) {
-							item.needed = fitem.count;
-							item.factionOnly = fitem.factionOnly;
+						if (item.type === 8) {
+							let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
+							if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
+								item.needed = scheme.schematic_gain_cost_next_level;
+								item.factionOnly = false;
+							}
+							else {
+								item.needed = 0;
+								item.factionOnly = false;
+							}
 						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
+						else if (item.type === 2 || item.type === 3) {
+							const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+							if (fitem) {
+								item.needed = fitem.count;
+								item.factionOnly = fitem.factionOnly;
+							}
+							else {
+								item.needed = 0;
+								item.factionOnly = false;
+							}
 						}
 					}
 				}
@@ -250,7 +263,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								</div>
 							</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
-							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 0}</Table.Cell>}
+							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 'N/A'}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}

@@ -6,7 +6,7 @@ import Layout from '../components/layout';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
-import { Demand, PlayerData } from '../model/player';
+import { Demand, PlayerCrew, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
@@ -19,6 +19,14 @@ import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
+import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
+
+
+export interface EquipmentItemData {
+	item: EquipmentItem;
+	crew_levels: { crew: PlayerCrew, level: number }[];
+	builds: EquipmentItem[];
+}
 
 interface ItemInfoPageProps {};
 
@@ -27,15 +35,14 @@ interface ItemInfoComponentProps {
 };
 
 interface ItemInfoComponentState {
-	item_data?: any;
+	item_data?: EquipmentItemData;
 	errorMessage?: string;
 	items?: EquipmentItem[];
 };
 
-
 const ItemInfoPage = () => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
@@ -64,7 +71,8 @@ const ItemInfoPage = () => {
 						playerData: playerData ?? {} as PlayerData,
 						buffConfig: buffConfig,
 						maxBuffs: maxBuffs,
-						items: coreData.items
+						items: coreData.items,
+						allShips: coreData.ships
 					}}>
 						<ItemInfoComponent isReady={isReady} />
 					</MergedContext.Provider>
@@ -122,12 +130,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_symbol){
 			let item = items?.find(entry => entry.symbol === item_symbol);
 
-			let crew_levels = [] as { crew: CrewMember, level: number }[];
+			let crew_levels = [] as { crew: PlayerCrew, level: number }[];
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
 						crew_levels.push({
-							crew: crew,
+							crew: crew as PlayerCrew,
 							level: es.level
 						});
 					}
@@ -252,12 +260,17 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_data.item.type === 14) {
 			console.log(item_data);
 		}
+		
+		
 		const haveCount = this.haveCount(item_data.item.symbol);
+		const ship = item_data.item.type === 8 ? this.context.allShips?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+
 		return (
 				<div>
 
 					<CrewHoverStat targetGroup='item_info' />
-					
+					<ShipHoverStat targetGroup='item_info_ships' />
+
 					<div style={{
 						paddingTop:"2em",
 						marginBottom: "1em",
@@ -292,6 +305,24 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					</div>
 					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
 				<br />
+
+				{item_data.item.type === 8 && !!ship &&
+					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
+							<Link to={`/playertools?tool=ship&ship=${ship.symbol}`}>
+								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+								<ItemDisplay 
+									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+									size={128}
+									rarity={ship.rarity}
+									maxRarity={ship.rarity}
+									/>
+									{ship.name}
+								</div>
+							</Link>
+						</ShipTarget>
+						
+					</div>}
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
