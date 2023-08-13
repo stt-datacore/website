@@ -223,7 +223,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 				</div>}
 				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
-					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em"}}>Show Unowned Needed Items</span>
+					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
 			{!data &&<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}

@@ -77,16 +77,14 @@ export function exportItems(items: EquipmentCommon[]): string {
 	return simplejson2csv(items, exportItemFields());
 }
 
+// Alternative, simplified export, below.
+// Inspired by Bernard
 
 export function exportItemFieldsAlt(): ExportField[] {
 	return [
 		{
 			label: 'Name',
 			value: (row: EquipmentItem) => row.name
-		},
-		{
-			label: 'Rarity',
-			value: (row: EquipmentItem) => row.rarity
 		},
 		{
 			label: 'Quantity',
@@ -101,24 +99,12 @@ export function exportItemFieldsAlt(): ExportField[] {
 			value: (row: EquipmentItem) => CONFIG.REWARDS_ITEM_TYPE[row.type]
 		},
 		{
-			label: 'Flavor',
-			value: (row: EquipmentItem) => row.flavor ?? ""
-		},
-		{
-			label: 'Symbol',
-			value: (row: EquipmentItem) => row.symbol
+			label: 'Rarity',
+			value: (row: EquipmentItem) => CONFIG.RARITIES[row.rarity].name
 		},
 		{
 			label: 'Faction Only',
 			value: (row: EquipmentItem) => row.factionOnly === undefined ? '' : (row.factionOnly ? 'Yes' : 'No')
-		},
-		{
-			label: 'Bonuses',
-			value: (row: EquipmentItem) => (row.bonuses ? JSON.stringify(row.bonuses) : '')
-		},
-		{
-			label: 'Image',
-			value: (row: EquipmentItem) => row.imageUrl
 		}
 	];
 }
