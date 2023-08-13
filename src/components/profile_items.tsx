@@ -105,7 +105,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
 							if (fitem) {
 								item.needed = fitem.count;
-								item.factionOnly = fitem.factionOnly;
+								item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
 							}
 							else {
 								item.needed = 0;
@@ -120,7 +120,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								if (item.equipment){
 									let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
 									eq.needed = item.count;
-									eq.factionOnly = item.factionOnly;
+									eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
 									eq.quantity = 0;
 									data.push(eq);
 								}
