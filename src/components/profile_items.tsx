@@ -91,7 +91,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				let { hideOwnedInfo } = this.props;
 
 				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
-					const demandos = calculateRosterDemands(playerData.player.character.crew, data as EquipmentItem[], true);
+					const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
 					for (let item of data) {
 						if (item.type === 8) {
 							let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
