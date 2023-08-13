@@ -1716,7 +1716,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								allCrew={this.context.allCrew}
 								playerData={this.context.playerData}
 								targetGroup='gauntletsHover'
-								crewSymbol={featuredCrew?.symbol}
+								itemSymbol={featuredCrew?.symbol}
 							/>
 						</div>
 					}
@@ -1764,7 +1764,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 														allCrew={this.context.allCrew}
 														playerData={this.context.playerData}
 														targetGroup='gauntletsHover'
-														crewSymbol={jcrew?.symbol}
+														itemSymbol={jcrew?.symbol}
 													/>
 													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.5em 0 0 0"}}>{jcrew.name}</i>
 													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.25em 0 0 0"}}>({moment(jcrew.date_added).format("D MMM YYYY")})</i>
@@ -2295,7 +2295,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							</span>
 						</>}
 
-					{inMatch && 
+					{inMatch && !isOpponent &&
 						<>
 							<span>
 								{gauntlet?.rank}
@@ -2348,7 +2348,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
 						<ItemDisplay
 							playerData={this.context.playerData}
-							crewSymbol={crew.symbol}
+							itemSymbol={crew.symbol}
 							targetGroup='gauntletsHover'
 							allCrew={this.context.allCrew}
 							src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
