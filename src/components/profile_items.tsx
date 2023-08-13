@@ -353,12 +353,26 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			</Table>}
 			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
 			<br />
-				{!hideOwnedInfo && <div 
-					className='ui button' 
-					onClick={(e) => { if (this.state.data) this._exportItems(this.state.data)}}
-					style={{display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
-					>
-					<span style={{margin: '0 2em 0 0'}}>Export to CSV</span><i className='download icon' />
+				{!hideOwnedInfo && 
+					<div style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent:"flex-start"
+					}}>
+					<div 
+						className='ui button' 
+						onClick={(e) => { if (this.state.data) this._exportItems(this.state.data)}}
+						style={{display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
+						>
+						<span style={{margin: '0 2em 0 0'}}>Export to CSV</span><i className='download icon' />
+					</div>
+					<div 
+						className='ui button' 
+						onClick={(e) => { if (this.state.data) this._exportItems(this.state.data, true)}}
+						style={{marginRight:"2em",display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
+						>
+						<span style={{margin: '0 2em 0 0'}}>Copy to Clipboard</span><i className='clipboard icon' />
+					</div>
 				</div>}
 			<br />
 			<br />
@@ -366,10 +380,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		);
 	}
 	
-	_exportItems(data: (EquipmentCommon | EquipmentItem)[]) {
+	_exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
 		const { playerData } = this.context;
 
 		let text = exportItemsAlt(data);
+		if (clipboard){
+			navigator.clipboard.writeText(text);			
+			return;
+		}
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 	}
 }
