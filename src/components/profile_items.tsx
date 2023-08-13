@@ -262,14 +262,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('needed')}
 						>
 							Needed
-						</Table.HeaderCell>}
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'needed' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('needed')}
-						>
-							Needed
-						</Table.HeaderCell>
+						</Table.HeaderCell>}						
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'type' ? direction ?? undefined : undefined}
