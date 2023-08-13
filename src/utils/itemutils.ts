@@ -1,3 +1,4 @@
+import CONFIG from '../components/CONFIG';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { PlayerEquipmentItem } from '../model/player';
 import { simplejson2csv, ExportField } from './misc';
@@ -72,6 +73,61 @@ export function exportItemFields(): ExportField[] {
 	];
 }
 
-export function exportItems(items): string {
+export function exportItems(items: EquipmentCommon[]): string {
 	return simplejson2csv(items, exportItemFields());
 }
+
+
+export function exportItemFieldsAlt(): ExportField[] {
+	return [
+		{
+			label: 'Name',
+			value: (row: EquipmentItem) => row.name
+		},
+		{
+			label: 'Rarity',
+			value: (row: EquipmentItem) => row.rarity
+		},
+		{
+			label: 'Quantity',
+			value: (row: EquipmentItem) => row.quantity ?? ""
+		},
+		{
+			label: 'Needed',
+			value: (row: EquipmentItem) => row.needed ?? ""
+		},
+		{
+			label: 'Type',
+			value: (row: EquipmentItem) => CONFIG.REWARDS_ITEM_TYPE[row.type]
+		},
+		{
+			label: 'Flavor',
+			value: (row: EquipmentItem) => row.flavor ?? ""
+		},
+		{
+			label: 'Symbol',
+			value: (row: EquipmentItem) => row.symbol
+		},
+		{
+			label: 'Faction Only',
+			value: (row: EquipmentItem) => row.factionOnly === undefined ? '' : (row.factionOnly ? 'Yes' : 'No')
+		},
+		{
+			label: 'Bonuses',
+			value: (row: EquipmentItem) => (row.bonuses ? JSON.stringify(row.bonuses) : '')
+		},
+		{
+			label: 'Image',
+			value: (row: EquipmentItem) => row.imageUrl
+		}
+	];
+}
+
+export function exportItemsAlt(items: EquipmentCommon[]): string {
+	return simplejson2csv(items, exportItemFieldsAlt());
+}
+
+
+
+
+

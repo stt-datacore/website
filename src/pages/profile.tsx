@@ -20,7 +20,7 @@ import { demandsPerSlot, IDemand } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
-import { EquipmentCommon } from '../model/equipment';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import Announcement from '../components/announcement';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
@@ -437,7 +437,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [];
+				let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [] as EquipmentCommon[];
 				let text = exportItems(data);
 				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 			});

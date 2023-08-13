@@ -115,7 +115,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 	
 	private changeComponent(symbol: string) {
-		navigate("/item_info?symbol="+symbol, { replace: true });
+		navigate("/item_info?symbol="+symbol, { replace: false });
 		this.inited = false;
 		this.initData(symbol);
 	}

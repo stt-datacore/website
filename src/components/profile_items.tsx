@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown, Input, Checkbox } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { mergeItems } from '../utils/itemutils';
+import { exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
@@ -11,6 +11,7 @@ import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
+import { downloadData } from '../utils/crewutils';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -280,6 +281,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						<Table.Row key={idx}>
 							<Table.Cell>
 								<div
+									title={item.name + (!hideOwnedInfo ? (!item.quantity ? ' (Unowned)' : ` (${item.quantity})`) : "")}
 									style={{
 										display: 'grid',
 										gridTemplateColumns: '60px auto',
@@ -289,6 +291,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								>
 									<div style={{ gridArea: 'icon' }}>
 									<ItemDisplay
+										style={{
+											opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
+										}}
 										rarity={item.rarity}
 										maxRarity={item.rarity}
 										size={48} 
@@ -342,8 +347,24 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				</Table.Footer>
 			</Table>}
 			<br />
+				{!hideOwnedInfo && <div 
+					className='ui button' 
+					onClick={(e) => { if (this.state.data) this._exportItems(this.state.data)}}
+					style={{display:'inline', flexDirection:'row', justifyContent:'space-evenly', cursor: 'pointer'}}
+					>
+					<span style={{margin: '0 2em 0 0'}}>Export to CSV</span><i className='download icon' />
+				</div>}
+			<br />
+			<br />
 			</div>
 		);
+	}
+	
+	_exportItems(data: (EquipmentCommon | EquipmentItem)[]) {
+		const { playerData } = this.context;
+
+		let text = exportItemsAlt(data);
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 	}
 }
 
