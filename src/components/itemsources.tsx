@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import MissionCost from './missioncost';
 import { EquipmentItemSource } from '../model/equipment';
 import { Link } from 'gatsby';
+import CONFIG from './CONFIG';
 
 type ItemSourcesProps = {
 	item_sources: EquipmentItemSource[];
@@ -15,6 +16,7 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 		let disputeMissions = this.props.item_sources.filter(e => e.type === 0);
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
+		let cadets = this.props.item_sources.filter(e => e.type === 4);
 		const { brief, refItem } = this.props;
 
 		let res = [] as JSX.Element[];
@@ -71,6 +73,15 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 				<p key={'factions'}>
 					<b>Faction missions: </b>
 					{factions.map((entry, idx) => `${entry.name} (${entry.chance_grade}/5)`).join(', ')}
+				</p>
+			);
+		}
+
+		if (cadets.length > 0) {
+			res.push(
+				<p key={'cadets'}>
+					<b>Cadet challenges: </b>
+					{cadets.map((entry, idx) => `${entry.cadet_mission}: ${entry.name} (${entry.mastery !== undefined ? CONFIG.MASTERY_LEVELS[entry.mastery].name : ""})`).join(', ')}
 				</p>
 			);
 		}
