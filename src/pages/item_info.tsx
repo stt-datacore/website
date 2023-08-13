@@ -60,19 +60,23 @@ const ItemInfoPage = () => {
 							let x = 0;
 							for (let ml of quest.mastery_levels) {
 								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+									mx = (1/mx) * 1.80;
 									let qitem = {
 										type: 4,
 										mastery: x,											
 										name: quest.name,
 										energy_quotient: 1,
-										chance_grade: 1,						
+										chance_grade: 5 * mx,						
 										mission_symbol: quest.symbol,
 										cost: 1,
-										avg_cost: 1,
+										avg_cost: 1/mx,
 										cadet_mission: ep.episode_title,
 										cadet_symbol: ep.symbol
 									} as EquipmentItemSource;
-									item.item_sources.push(qitem);
+									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+										item.item_sources.push(qitem);
+									}									
 								}
 								x++;
 							}

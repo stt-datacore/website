@@ -76,15 +76,32 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 				</p>
 			);
 		}
-
 		if (cadets.length > 0) {
+			cadets.sort((a, b) => (a.avg_cost ?? 0) - (b.avg_cost ?? 0));
 			res.push(
-				<p key={'cadets'}>
+				<p key={'disputeMissions'}>
 					<b>Cadet challenges: </b>
-					{cadets.map((entry, idx) => `${entry.cadet_mission}: ${entry.name} (${entry.mastery !== undefined ? CONFIG.MASTERY_LEVELS[entry.mastery].name : ""})`).join(', ')}
+					{cadets
+						.slice(0, brief ? 1 : undefined)
+						.map((entry, idx) => (
+							<MissionCost
+								cadet={true}
+								key={idx}
+								mission_symbol={entry.mission_symbol}
+								cost={entry.cost ?? 0}
+								avg_cost={entry.avg_cost}
+								name={`${entry.cadet_mission}: ${entry.name}`}
+								chance_grade={entry.chance_grade}
+								mastery={entry.mastery ?? 0}
+							/>
+						))
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
+					{refItem && brief && cadets.length > 1 && <>, <Link to={`/item_info?symbol=${refItem}`}>and {cadets.length - 1} more ...</Link></>}	
+					{!refItem && brief && cadets.length > 1 && <>, and {cadets.length - 1} more ...</>}
 				</p>
 			);
 		}
+		
 
 		return res;
 	}
