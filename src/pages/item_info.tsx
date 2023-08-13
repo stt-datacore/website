@@ -43,12 +43,12 @@ interface ItemInfoComponentState {
 
 const ItemInfoPage = () => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics', 'episodes']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics', 'cadet']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
 	
-	const cadetforitem = isReady ? coreData?.episodes?.filter(f => f.cadet) : undefined;
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
 	if (isReady && cadetforitem?.length) {
 		for(const item of coreData.items) {					

@@ -20,11 +20,12 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewMember } from '../model/crew';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 const DEFAULT_MOBILE_WIDTH = 768;
 
 
@@ -69,8 +70,45 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
 
-	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones']) : false;
+	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones', 'cadet']) : false;
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
+	if (isReady && cadetforitem?.length) {
+		for(const item of coreData.items) {					
+			for (let ep of cadetforitem) {
+				let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
+				if (quests?.length) {
+					for (let quest of quests) {
+						if (quest.mastery_levels?.length) {
+							let x = 0;
+							for (let ml of quest.mastery_levels) {
+								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+									mx = (1/mx) * 1.80;
+									let qitem = {
+										type: 4,
+										mastery: x,											
+										name: quest.name,
+										energy_quotient: 1,
+										chance_grade: 5 * mx,						
+										mission_symbol: quest.symbol,
+										cost: 1,
+										avg_cost: 1/mx,
+										cadet_mission: ep.episode_title,
+										cadet_symbol: ep.symbol
+									} as EquipmentItemSource;
+									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+										item.item_sources.push(qitem);
+									}									
+								}
+								x++;
+							}
+						}
+					}
+				}					
+			}
+		}
+	}
 	let pd = {} as PlayerData;
 
 	if (strippedPlayerData) {
@@ -238,6 +276,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim() || siteMetadata.defaultDescription} />
 					<meta property='og:url' content={`${siteMetadata.baseUrl}${location.pathname}`} />
 				</Helmet>
+				<ItemHoverStat targetGroup='crew_page_items' useBoundingClient={true} />
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
 					items={this.context.items ?? []}

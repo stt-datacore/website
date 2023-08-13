@@ -24,6 +24,7 @@ export type ValidDemands =
 	'quests' |
 	'misc_stats' |
 	'skill_bufs' |
+	'cadet' |
 	'all_buffs';
 
 export interface DataProviderProperties {
@@ -43,6 +44,7 @@ export interface DefaultCore extends ContextCommon {
 	items: EquipmentItem[],
 	missions: Mission[],
 	episodes: Mission[],
+	cadet: Mission[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
@@ -59,7 +61,8 @@ const defaultData = {
 	all_buffs: {} as BuffStatTable,
 	gauntlets: [] as Gauntlet[],
 	missions: [] as Mission[],
-	episodes: [] as Mission[]
+	episodes: [] as Mission[],
+	cadet: [] as Mission[]
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
@@ -87,7 +90,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (readying.length > 0) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['battle_stations', 'crew', 'ship_schematics', 'items', 'keystones', 'collections', 'missions', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
+		const valid = ['battle_stations', 'crew', 'cadet', 'ship_schematics', 'items', 'keystones', 'collections', 'missions', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
 		const unsatisfied = [] as string[];
 		demands ??= [];
 

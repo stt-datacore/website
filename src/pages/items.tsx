@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 import CONFIG from '../components/CONFIG';
 import { Filter } from '../model/game-elements';
 import { Archetype17 } from '../model/archetype';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { DataContext } from '../context/datacontext';
@@ -16,17 +16,55 @@ import { MergedContext } from '../context/mergedcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'cadet']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	
 	let maxBuffs: BuffStatTable | undefined;
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
+	if (isReady && cadetforitem?.length) {
+		for(const item of coreData.items) {					
+			for (let ep of cadetforitem) {
+				let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
+				if (quests?.length) {
+					for (let quest of quests) {
+						if (quest.mastery_levels?.length) {
+							let x = 0;
+							for (let ml of quest.mastery_levels) {
+								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+									mx = (1/mx) * 1.80;
+									let qitem = {
+										type: 4,
+										mastery: x,											
+										name: quest.name,
+										energy_quotient: 1,
+										chance_grade: 5 * mx,						
+										mission_symbol: quest.symbol,
+										cost: 1,
+										avg_cost: 1/mx,
+										cadet_mission: ep.episode_title,
+										cadet_symbol: ep.symbol
+									} as EquipmentItemSource;
+									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+										item.item_sources.push(qitem);
+									}									
+								}
+								x++;
+							}
+						}
+					}
+				}					
+			}
+		}
+	}
 	maxBuffs = playerContext.maxBuffs;
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
 		maxBuffs = coreData.all_buffs;
@@ -228,6 +266,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	renderTableRow(item: any): JSX.Element {
+		const { playerData } = this.context;
+
 		return (
 			<Table.Row key={item.symbol}>
 				<Table.Cell>
@@ -241,6 +281,10 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<ItemDisplay
+								playerData={playerData}
+								itemSymbol={item.symbol}
+								allItems={this.context.items}
+								targetGroup='items_page'
 								rarity={item.rarity}
 								maxRarity={item.rarity}
 								size={48} 
@@ -278,6 +322,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					</div>
 				)}
 				{this.state.items && (
+					<>
+					<ItemHoverStat targetGroup='items_page' />
 					<SearchableTable
 						id="items"
 						data={this.state.items}
@@ -290,6 +336,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						filterRow={(crew, filter) => this._filterItem(crew, filter)}
 						config={tableConfig}
 					/>
+					</>
 				)}
 			</>);
 	}

@@ -15,6 +15,8 @@ import { Ship } from '../../model/ship';
 import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { MergedContext } from '../../context/mergedcontext';
+import { EquipmentCommon } from '../../model/equipment';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
@@ -26,6 +28,7 @@ type VoyageStatsProps = {
 	playerItems?: PlayerEquipmentItem[];
 	dbid: string | number;
 	allCrew?: CrewMember[];
+	allItems?: EquipmentCommon[];
 	playerData?: PlayerData;
 };
 
@@ -47,7 +50,6 @@ interface Bins {
 }
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
-
 	worker: Worker;
 	ship?: Ship;
 	config: VoyageStatsConfig;
@@ -357,7 +359,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		const hideRarity = entry => entry.type == 3;
 		const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
-		const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : undefined;
+		const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : entry.symbol;
 		const assetURL = file => {
 			let url = file === 'energy_icon'
 				? 'atlas/energy_icon.png'
@@ -409,9 +411,10 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										rarity={rarity(entry)}
 										maxRarity={entry.rarity}
 										hideRarity={hideRarity(entry)}
-										targetGroup='voyageRewards'
+										targetGroup={entry.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
 										itemSymbol={getCrewSymbol(entry)}
 										allCrew={this.props.allCrew}
+										allItems={this.props.allItems}
 										playerData={this.props.playerData}
 									/>
 								}

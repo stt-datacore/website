@@ -361,7 +361,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>}
-			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} crewTargetGroup='profile_items_crew' />
+			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
 			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
 			<br />
 				{!hideOwnedInfo && 
