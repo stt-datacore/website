@@ -79,11 +79,15 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 	return equipment.recipe.craftCost;
 }
 
-export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[]): ICrewDemands {
+export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean): ICrewDemands {
 	let craftCost = 0;
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
+		if (fromCurrLvl && "level" in crew) {
+			if (es.level < crew.level) return;
+			else if (es.level === crew.level && crew.equipment_slots[crew.level] !== undefined && crew.equipment_slots[crew.level].imageUrl) return;
+		}
 		craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 	});
 
@@ -159,16 +163,16 @@ function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 	};
 }
 
-export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[]): ICrewDemands | undefined {
+export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[], fromCurrLvl: boolean): ICrewDemands | undefined {
 	let result: ICrewDemands | undefined = undefined;
 	for (let member of crew) {
-		let demands = calculateCrewDemands(member, items);
+		let demands = calculateCrewDemands(member, items, fromCurrLvl);
 		if (result) {
 			result = mergeDemands(result, demands);
 		}
 		else {
 			result = demands;
 		}
-	}
+	}	
 	return result;
 }
