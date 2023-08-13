@@ -410,7 +410,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 										maxRarity={entry.rarity}
 										hideRarity={hideRarity(entry)}
 										targetGroup='voyageRewards'
-										crewSymbol={getCrewSymbol(entry)}
+										itemSymbol={getCrewSymbol(entry)}
 										allCrew={this.props.allCrew}
 										playerData={this.props.playerData}
 									/>

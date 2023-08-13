@@ -20,6 +20,7 @@ import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 
 export interface EquipmentItemData {
@@ -270,6 +271,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 					<CrewHoverStat targetGroup='item_info' />
 					<ShipHoverStat targetGroup='item_info_ships' />
+					<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
 
 					<div style={{
 						paddingTop:"2em",
@@ -280,6 +282,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<ItemDisplay
+							targetGroup='item_info_items'
+							playerData={playerData}
+							allItems={items}
+							itemSymbol={item_data.item.symbol}
 							style={{
 								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
 							}}
@@ -337,6 +343,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												style={{ display: 'flex', cursor: 'zoom-in' }}
 												icon={
 													<ItemDisplay
+														playerData={playerData}
+														itemSymbol={entry.equipment.symbol}
+														allItems={this.context.items}
+														targetGroup='item_info_items'
 														style={{ marginRight: "0.5em"}}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 														size={48}
@@ -387,7 +397,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 												targetGroup='item_info'
 												allCrew={this.context.allCrew}
 												playerData={this.context.playerData}						
-												crewSymbol={entry.crew.symbol}											
+												itemSymbol={entry.crew.symbol}											
 												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 												size={60}
 												maxRarity={entry.crew.max_rarity}

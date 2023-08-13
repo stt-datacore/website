@@ -502,7 +502,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					allCrew={context.allCrew}
 					playerData={context.playerData}
 					targetGroup='voyageLineup'
-					crewSymbol={crew.symbol}					
+					itemSymbol={crew.symbol}					
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 					size={96}
 					maxRarity={crew.max_rarity}

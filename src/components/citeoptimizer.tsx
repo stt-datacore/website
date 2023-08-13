@@ -322,7 +322,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										rarity={crew.rarity}
 										maxRarity={crew.max_rarity}
 										targetGroup='citationTarget'
-										crewSymbol={crew.symbol}
+										itemSymbol={crew.symbol}
 										allCrew={this.context.allCrew}
 										playerData={this.context.playerData}
 										/>

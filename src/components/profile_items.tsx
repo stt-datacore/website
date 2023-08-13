@@ -12,6 +12,7 @@ import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
 import { downloadData } from '../utils/crewutils';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -291,9 +292,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								>
 									<div style={{ gridArea: 'icon' }}>
 									<ItemDisplay
+										targetGroup='profile_items'
 										style={{
 											opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
 										}}
+										playerData={this.context.playerData}
+										itemSymbol={item.symbol}
+										allItems={this.context.items}
 										rarity={item.rarity}
 										maxRarity={item.rarity}
 										size={48} 
@@ -346,6 +351,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>}
+			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
 			<br />
 				{!hideOwnedInfo && <div 
 					className='ui button' 
