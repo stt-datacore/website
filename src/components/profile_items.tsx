@@ -34,7 +34,7 @@ type ProfileItemsProps = {
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
-	data: (EquipmentCommon | EquipmentItem)[];
+	data?: (EquipmentCommon | EquipmentItem)[];
 	filteredData?: (EquipmentCommon | EquipmentItem)[];
 	filterText?: string;
 	pagination_rows: number;
@@ -66,7 +66,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			filterText: this.tiny.getValue('filterText', '') ?? '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: props.data ?? [],
+			data: props.data,
 			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
 		};
 	}
@@ -78,7 +78,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.initData();
 	}
 	initData() {
-		if (this.state.data.length > 0) return;
+		if (this.state.data?.length && this.state.data?.length > 0) return;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -140,7 +140,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	private _handleSort(clickedColumn) {
 		const { column, direction } = this.state;
 		let { data } = this.state;
-
+		if (!data) return;
+		
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
 			direction: clickedColumn === column ? direction : (clickedColumn === 'quantity' ? 'ascending' : null)
@@ -172,7 +173,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
 		this.tiny.setValue('addNeeded', value ?? false);
-		this.setState({ ...this.state, data: [], addNeeded: value ?? false });
+		this.setState({ ...this.state, data: undefined, addNeeded: value ?? false });
 	}
 
 	render() {
@@ -181,25 +182,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const filterText = this.state.filterText?.toLocaleLowerCase();
 
 		const { hideOwnedInfo, hideSearch } = this.props;		
+		let totalPages = 0;
+		if (data !== undefined) {
+			if (filterText && filterText !== '') {
+				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
+					f.short_name?.toLowerCase().includes(filterText) ||
+					f.flavor?.toLowerCase().includes(filterText) ||
+					CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+					CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
+					);
+			}
 
-		if (filterText && filterText !== '') {
-			data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
-				f.short_name?.toLowerCase().includes(filterText) ||
-				f.flavor?.toLowerCase().includes(filterText) ||
-				CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
-				CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
-				);
-		}
+			totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
-
-		// Pagination
-		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-		if (!data?.length) {
-			return (
-					<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>
-			)
-		}
+			// Pagination
+			data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+		}		
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -227,7 +225,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em"}}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
+			{!data &&<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
+			{data && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
@@ -341,7 +340,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
-			</Table>
+			</Table>}
 			<br />
 			</div>
 		);
