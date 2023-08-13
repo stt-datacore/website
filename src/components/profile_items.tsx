@@ -27,6 +27,8 @@ type ProfileItemsProps = {
 	
 	/** Add needed but unowned items to list */
 	addNeeded?: boolean;
+
+	pageName?: string;
 };
 
 type ProfileItemsState = {
@@ -52,10 +54,11 @@ const pagingOptions = [
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
-	readonly tiny = TinyStore.getStore('profile_items');
+	readonly tiny: TinyStore; 
 
 	constructor(props: ProfileItemsProps) {
 		super(props);
+		this.tiny = TinyStore.getStore((props.pageName ? props.pageName + "_": "") + 'profile_items');
 
 		this.state = {
 			column: null,
