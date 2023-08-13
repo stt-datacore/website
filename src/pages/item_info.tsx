@@ -249,6 +249,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				let recipeEquipment = items?.find(item => item.symbol === iter.symbol);
 				if (recipeEquipment) {
 					demands.push({
+						crewSymbols: [],
 						count: iter.count,
 						symbol: iter.symbol,
 						equipment: recipeEquipment,

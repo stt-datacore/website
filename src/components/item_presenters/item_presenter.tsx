@@ -1,31 +1,21 @@
 import React, { Component } from "react";
 import { CompletionState } from "../../model/player";
 import { Header, Rating } from "semantic-ui-react";
-import { printImmoText } from "../../utils/crewutils";
+import { isImmortal, printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { EquipmentItem } from "../../model/equipment";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
+import { MergedContext } from "../../context/mergedcontext";
+import { navigate } from "gatsby";
+import { PresenterProps } from "./ship_presenter";
 
-export interface PresenterProps {
-    hover: boolean;
-    storeName: string;
-    disableBuffs?: boolean;
-    mobileWidth?: number;
-    forceVertical?: boolean;
-    verticalLayout?: 0 | 1 | 2;
-    close?: () => void;
-    touched?: boolean;
-    width?: string;
-    imageWidth?: string;
-    showIcon?: boolean;
-    tabs?: boolean;
-}
 
 export interface ItemPresenterProps extends PresenterProps {
     item: EquipmentItem;
     openItem?: (item: EquipmentItem) => void;
+    crewTargetGroup?: string;
 }
 
 export interface ItemPresenterState {
@@ -33,6 +23,8 @@ export interface ItemPresenterState {
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
+    static contextType = MergedContext;
+    context!: React.ContextType<typeof MergedContext>;
 
     tiny: TinyStore;
 
@@ -48,8 +40,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
+        const { playerData } = this.context;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
+        const roster = playerData?.player?.character?.crew;
 
         if (!item) {
             return <></>
@@ -75,6 +69,39 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                 this.props.openItem(item);
             }
         }
+        
+        let mt = true;
+        const dcrew = item.demandCrew?.map(sym => {
+            const crew = roster.find(f => f.symbol === sym && !isImmortal(f));
+            if (crew) mt = false;
+            return (<>
+                {crew && <div 
+                    onClick={(e) => navigate("/crew/"+crew.symbol)}
+                    style={{
+                        cursor: "pointer", 
+                        textAlign:"center",
+                        display:"flex", 
+                        width:"96px", 
+                        margin: "1em", 
+                        flexDirection: "column", 
+                        justifyContent: "center", 
+                        alignItems: "center"}}>
+                        <ItemDisplay
+                            targetGroup={this.props.crewTargetGroup}
+                            playerData={playerData}
+                            allCrew={this.context.allCrew}
+                            itemSymbol={sym}
+                            rarity={crew.rarity}
+                            maxRarity={crew.max_rarity}
+                            size={64}
+                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                        />
+                        <i>{crew?.name}</i>
+                    </div> || <></>}
+            </>)
+        });
+
+        const empty = mt;
  
         return item ? (<div style={{ 
                         fontSize: "12pt", 
@@ -141,12 +168,28 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
                     <div>
                     {!!(item.item_sources.length > 0) && (
-                            <div>
+                            <div style={{fontSize: "8pt"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources item_sources={item.item_sources} />
                                 <br />
                             </div>
                         )}
+                    </div>
+                    <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
+                    {!empty && (<>
+                        <Header as="h3">Current Roster Demands:</Header>
+                            <div style={{
+                                display: "flex", 
+                                flexDirection: "row", 
+                                justifyContent: "flex-start", 
+                                alignItems: "flex-start", 
+                                maxHeight: "450px",
+                                overflow: "auto",
+                                flexWrap: "wrap"}}>
+
+                                {dcrew}                                
+                            </div>
+                            </>)}
                     </div>
                 </div>
             </div>) : <></>

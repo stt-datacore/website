@@ -21,7 +21,7 @@ type ItemDisplayProps = {
 	targetGroup?: string;
 	playerData?: PlayerData;
 	allCrew?: CrewMember[];
-	allItems?: EquipmentCommon[];	
+	allItems?: EquipmentCommon[];		
 };
 
 class ItemDisplay extends PureComponent<ItemDisplayProps> {
@@ -99,7 +99,9 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			else if (pitem) {
 				item = pitem as EquipmentItem;
 			}
-			
+			if (item && citem) {
+				item.demandCrew = citem.demandCrew;
+			}
 		}
 
 		if (crew && itemSymbol && allCrew && targetGroup) {
@@ -126,7 +128,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		else if (item && itemSymbol && allItems && targetGroup) {
 			return (						
 					<div style={divStyle}>
-						<ItemTarget							
+						<ItemTarget														
 							inputItem={item} 
 							targetGroup={targetGroup} 
 							>

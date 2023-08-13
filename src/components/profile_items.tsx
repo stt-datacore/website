@@ -13,6 +13,7 @@ import { calculateRosterDemands } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
 import { downloadData } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
+import { CrewHoverStat } from './hovering/crewhoverstat';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -101,6 +102,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							else {
 								item.needed = 0;
 								item.factionOnly = false;
+								if ("demandCrew" in item) delete item.demandCrew;
 							}
 						}
 						else if (item.type === 2 || item.type === 3) {
@@ -108,10 +110,17 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							if (fitem) {
 								item.needed = fitem.count;
 								item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
+								item.demandCrew ??= []
+								for (let sym of fitem.crewSymbols) {
+									if (sym && !item.demandCrew.find(f => f === sym)) {
+										item.demandCrew.push(sym);
+									}
+								}
 							}
 							else {
 								item.needed = 0;
 								item.factionOnly = false;
+								item.demandCrew = [];
 							}
 						}
 					}
@@ -124,6 +133,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									eq.needed = item.count;
 									eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
 									eq.quantity = 0;
+									eq.demandCrew = [ ... item.crewSymbols ];
 									data.push(eq);
 								}
 							}
@@ -298,7 +308,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										}}
 										playerData={this.context.playerData}
 										itemSymbol={item.symbol}
-										allItems={this.context.items}
+										allItems={this.state.data}
 										rarity={item.rarity}
 										maxRarity={item.rarity}
 										size={48} 
@@ -351,7 +361,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>}
-			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
+			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} crewTargetGroup='profile_items_crew' />
+			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
 			<br />
 				{!hideOwnedInfo && 
 					<div style={{

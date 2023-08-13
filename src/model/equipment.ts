@@ -1,5 +1,5 @@
 import { Icon } from "./game-elements"
-import { PlayerEquipmentItem } from "./player"
+import { PlayerCrew, PlayerEquipmentItem } from "./player"
 
 export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
@@ -13,6 +13,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   quantity?: number;
   needed?: number;
   factionOnly?: boolean;
+  demandCrew?: string[];
 }
 
 export interface EquipmentItem extends EquipmentCommon {
@@ -32,6 +33,7 @@ export interface EquipmentItem extends EquipmentCommon {
   recipe?: EquipmentRecipe
 
   empty?: boolean;
+
 }
 
 export interface EquipmentItemSource {

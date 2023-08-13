@@ -8,6 +8,7 @@ export interface IDemand {
 	equipment?: EquipmentItem;
 	factionOnly: boolean;
 	have: number;
+	crewSymbols: string[];	
 }
 
 export interface ICrewDemandsMeta {
@@ -28,7 +29,7 @@ export interface DemandCounts {
 	count: number;
 }
 
-export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[]): number {
+export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
 	if (!equipment) return 0;
 	if (!equipment.recipe) {
@@ -39,6 +40,7 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 			dupeChecker.add(equipment.symbol);
 
 			demands.push({
+				crewSymbols: [crewSymbol],
 				count: 1,
 				symbol: equipment.symbol,
 				equipment: equipment,
@@ -65,6 +67,7 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 		dupeChecker.add(iter.symbol);
 
 		demands.push({
+			crewSymbols: [crewSymbol],
 			count: iter.count,
 			symbol: iter.symbol,
 			equipment: recipeEquipment,
@@ -81,7 +84,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
-		craftCost += demandsPerSlot(es, items, dupeChecker, demands);
+		craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 	});
 
 	const reducer = (accumulator: number, currentValue: IDemand) => accumulator + currentValue.count;
@@ -137,7 +140,13 @@ function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 		for (let item of intersect) {
 			let bitem = b.demands.find(b2 => b2.symbol === item.symbol);
 			if (bitem) {
-				item.count += bitem.count;
+				item.count += bitem.count;		
+				item.crewSymbols ??= [];
+				for (let sym of bitem.crewSymbols ?? []) {
+					if (!item.crewSymbols.includes(sym)) {
+						item.crewSymbols.push(sym);
+					}
+				}
 			}
 		}
 	}

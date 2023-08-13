@@ -14,6 +14,7 @@ const isWindow = typeof window !== 'undefined';
 export interface ItemHoverStatProps extends HoverStatProps {
     disableBuffs?: boolean;
     navigate?: (symbol: string) => void;
+    crewTargetGroup?: string;
 }
 
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
@@ -51,17 +52,24 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
     protected prepareDisplayItem(dataIn: EquipmentItem | undefined): EquipmentItem | undefined {
         const { playerData, items } = this.context;
         
+        let dataOut: EquipmentItem | undefined = dataIn;
+
         if (playerData?.player?.character?.items?.length && dataIn) {
             const fi = playerData?.player?.character?.items?.find(f => f.symbol === dataIn?.symbol);
             const ci = items?.find(f => f.symbol === dataIn.symbol);
             if (fi && ci) {                
-                return { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
+                dataOut = { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
             }
             else if (ci) {
-                return ci;
+                dataOut = ci;
+            }
+
+            if (dataIn && dataOut && !dataOut?.demandCrew?.length && !!dataIn?.demandCrew?.length) {
+                dataOut.demandCrew = [ ... dataIn.demandCrew ];
             }
         }
-        return dataIn;
+
+        return dataOut;
     }
     
     componentDidUpdate(): void {
@@ -114,7 +122,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
         
-        const { targetGroup } = this.props;
+        const { crewTargetGroup, targetGroup } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
         const compact = true;    
@@ -143,6 +151,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         }
 
         return displayItem ? (<ItemPresenter 
+            crewTargetGroup={crewTargetGroup}
             mobileWidth={mobileWidth}
             close={() => onClose()} 
             openItem={(item) => navClick()} 
