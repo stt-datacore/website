@@ -26,7 +26,7 @@ type EventInstance = {
 
 const EventsPage = () => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items','cadet']) : false;
 	const playerContext = React.useContext(PlayerContext);
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
@@ -51,7 +51,7 @@ const EventsPage = () => {
 			{isReady &&
 				<React.Fragment>
 					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
+						crew: coreData.crew,
 						playerData: playerData ?? {} as PlayerData,
 						buffConfig: buffConfig,
 						items: coreData.items,
