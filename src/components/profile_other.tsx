@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
 import { MergedData, MergedContext } from '../context/mergedcontext';
-import { AcceptedMission, Mission } from '../model/player';
+import { AcceptedMission, CadetMission } from '../model/player';
 
 type ProfileOtherProps = {
 };

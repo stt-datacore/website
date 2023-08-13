@@ -280,7 +280,7 @@ export interface Player {
   export interface CadetSchedule {
     day: number
     schedule: Schedule[]
-    missions: Mission[]
+    missions: CadetMission[]
     current: number
     ends_in: number
     next: number
@@ -291,8 +291,8 @@ export interface Player {
     day: number
     mission: number
   }
-
-  export interface Mission {
+  
+  export interface CadetMission {
     id: number
     title: string
     speaker: string
@@ -911,6 +911,8 @@ export interface Player {
     name?: string
     full_name?: string
     flavor?: string
+    bonuses?: Bonuses
+    ship?: Ship
   }
 
   export interface PotentialRewardDetails {
