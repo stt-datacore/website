@@ -48,7 +48,7 @@ const ItemInfoPage = () => {
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
 	
-	const cadetforitem = coreData.episodes.filter(f => f.cadet);
+	const cadetforitem = isReady ? coreData?.episodes?.filter(f => f.cadet) : undefined;
 
 	if (isReady && cadetforitem?.length) {
 		for(const item of coreData.items) {					
