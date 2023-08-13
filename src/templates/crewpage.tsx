@@ -18,6 +18,7 @@ import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
 import { DataWrapper } from '../context/datawrapper';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';
@@ -61,10 +62,11 @@ const StaticCrewPage = (props: StaticCrewPageProps) => {
 	const coreData = React.useContext(DataContext);
 	const { playerData: pd, buffConfig, maxBuffs } = React.useContext(PlayerContext);
 
-	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones']) : false;
+	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones', 'cadet']) : false;
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
 	return (
-		<DataWrapper header={''} demands={['items', 'crew', 'keystones']} narrowLayout={true}>
+		<DataWrapper header={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
 			<StaticCrewComponent props={props} />
 		</DataWrapper> 
 	);
@@ -209,6 +211,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim() || siteMetadata.defaultDescription} />
 					<meta property='og:url' content={`${siteMetadata.baseUrl}${location.pathname}`} />
 				</Helmet>
+				<ItemHoverStat targetGroup='crew_page_items' useBoundingClient={true} />
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
 					items={this.context.items ?? []}

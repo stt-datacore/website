@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 import CONFIG from '../components/CONFIG';
 import { Filter } from '../model/game-elements';
 import { Archetype17 } from '../model/archetype';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { DataContext } from '../context/datacontext';
@@ -17,12 +17,13 @@ import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
 import { DataWrapper } from '../context/datawrapper';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
 	return (
-		<DataWrapper demands={['all_buffs', 'crew', 'items']}>
+		<DataWrapper demands={['all_buffs', 'crew', 'items', 'cadet']}>
 			<ItemsComponent  />
 		</DataWrapper>
 	);
@@ -184,6 +185,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	renderTableRow(item: any): JSX.Element {
+		const { playerData } = this.context;
+
 		return (
 			<Table.Row key={item.symbol}>
 				<Table.Cell>
@@ -197,6 +200,10 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<ItemDisplay
+								playerData={playerData}
+								itemSymbol={item.symbol}
+								allItems={this.context.items}
+								targetGroup='items_page'
 								rarity={item.rarity}
 								maxRarity={item.rarity}
 								size={48} 
@@ -234,6 +241,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					</div>
 				)}
 				{this.state.items && (
+					<>
+					<ItemHoverStat targetGroup='items_page' />
 					<SearchableTable
 						id="items"
 						data={this.state.items}
@@ -246,6 +255,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 						filterRow={(crew, filter) => this._filterItem(crew, filter)}
 						config={tableConfig}
 					/>
+					</>
 				)}
 			</>);
 	}

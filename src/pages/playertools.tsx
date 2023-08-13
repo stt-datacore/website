@@ -116,7 +116,7 @@ const PlayerToolsPage = (props: any) => {
 
 
 	return (
-		<DataWrapper header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs']}>
+		<DataWrapper header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']}>
 				<PlayerToolsComponent location={props.location} />
 		</DataWrapper>
 	);

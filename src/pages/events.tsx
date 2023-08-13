@@ -12,6 +12,7 @@ import { PlayerData } from '../model/player';
 import { prepareProfileData } from '../utils/crewutils';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -53,6 +54,7 @@ const EventsPage = () => {
 						allCrew: coreData.crew,
 						playerData: playerData ?? {} as PlayerData,
 						buffConfig: buffConfig,
+						items: coreData.items,
 						maxBuffs: maxBuffs,
 						gauntlets: coreData.gauntlets
 					}}>
@@ -100,6 +102,7 @@ function EventsPageComponent() {
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
 				<CrewHoverStat targetGroup='event_info' useBoundingClient={true}  />
+				<ItemHoverStat targetGroup='event_info_items' useBoundingClient={true} />
 
 				{loadingError && (
 					<Message negative>

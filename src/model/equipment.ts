@@ -46,6 +46,8 @@ export interface EquipmentItemSource {
   mission_symbol?: string
   cost?: number
   avg_cost?: number
+  cadet_mission?: string;
+  cadet_symbol?: string;
 }
 
 export interface EquipmentRecipe {

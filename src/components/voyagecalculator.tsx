@@ -20,12 +20,13 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { crewCopy } from '../utils/crewutils';
 import { EphemeralData, PlayerContext } from '../context/playercontext';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
 const VoyageCalculator = () => {
 	const mergedData = React.useContext(MergedContext);
-	const { ships, ephemeral, playerData, crew: allCrew } = mergedData;
+	const { ships, ephemeral, playerData, crew: allCrew, items } = mergedData;
 	const activeCrew = ephemeral?.activeCrew;
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	
@@ -76,7 +77,7 @@ const VoyageCalculator = () => {
 
 	const allData = {
 		... mergedData,
-		crew: allCrew, ships: allShips, playerData
+		crew: allCrew, ships: allShips, playerData, items
 	} as MergedData;
 
 	return (
@@ -220,7 +221,7 @@ type VoyageActiveProps = {
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { ships: allShips, playerData, crew: allCrew } = React.useContext(VoyageContext);
+	const { ships: allShips, playerData, crew: allCrew, items } = React.useContext(VoyageContext);
 	const { voyageConfig, myCrew } = props;
 
 	if (!allShips) return <></>;
@@ -235,10 +236,13 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				roster={myCrew}
 				dbid={playerData.player.dbid}
 				allCrew={allCrew}
+				allItems={items}
 				playerData={playerData}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
-			<CrewHoverStat targetGroup='voyageRewards' />
+			<CrewHoverStat targetGroup='voyageRewards_crew' />
+			<ItemHoverStat targetGroup='voyageRewards_item' />
+			
 		</React.Fragment>
 	)
 };

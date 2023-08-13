@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import MissionCost from './missioncost';
 import { EquipmentItemSource } from '../model/equipment';
 import { Link } from 'gatsby';
+import CONFIG from './CONFIG';
 
 type ItemSourcesProps = {
 	item_sources: EquipmentItemSource[];
@@ -15,6 +16,7 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 		let disputeMissions = this.props.item_sources.filter(e => e.type === 0);
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
+		let cadets = this.props.item_sources.filter(e => e.type === 4);
 		const { brief, refItem } = this.props;
 
 		let res = [] as JSX.Element[];
@@ -74,6 +76,32 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 				</p>
 			);
 		}
+		if (cadets.length > 0) {
+			cadets.sort((a, b) => (a.avg_cost ?? 0) - (b.avg_cost ?? 0));
+			res.push(
+				<p key={'disputeMissions'}>
+					<b>Cadet challenges: </b>
+					{cadets
+						.slice(0, brief ? 1 : undefined)
+						.map((entry, idx) => (
+							<MissionCost
+								cadet={true}
+								key={idx}
+								mission_symbol={entry.mission_symbol}
+								cost={entry.cost ?? 0}
+								avg_cost={entry.avg_cost}
+								name={`${entry.cadet_mission}: ${entry.name}`}
+								chance_grade={entry.chance_grade}
+								mastery={entry.mastery ?? 0}
+							/>
+						))
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
+					{refItem && brief && cadets.length > 1 && <>, <Link to={`/item_info?symbol=${refItem}`}>and {cadets.length - 1} more ...</Link></>}	
+					{!refItem && brief && cadets.length > 1 && <>, and {cadets.length - 1} more ...</>}
+				</p>
+			);
+		}
+		
 
 		return res;
 	}
