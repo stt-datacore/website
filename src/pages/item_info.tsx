@@ -48,6 +48,26 @@ const ItemInfoPage = () => {
 	const { strippedPlayerData, buffConfig } = playerContext;
 	let playerData: PlayerData | undefined = undefined;
 
+	// if (isReady) {
+	// 	for(let item of coreData.items) {
+	// 		let cadetforitem = coreData.episodes.filter(f => f.cadet && f.quests?.some(q => q.challenges?.some(qch => qch.critical?.standard_loot?.some(loot => loot.potential_rewards?.some(pr => pr.symbol === item.symbol)))))
+	// 		if (cadetforitem?.length) {
+	// 			for (let ep of cadetforitem) {
+
+	// 				item.item_sources.push({
+	// 					type: 4,
+	// 					name: ep.episode_title ?? "",
+	// 					energy_quotient: 1,
+	// 					chance_grade: 1,						
+	// 					mission_symbol: ep.symbol,
+	// 					cost: 1,
+	// 					avg_cost: 1
+	// 				});
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
 		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
 		if (playerData) prepareProfileData("ITEM_INFO", coreData.crew, playerData, new Date());

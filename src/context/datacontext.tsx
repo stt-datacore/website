@@ -42,6 +42,7 @@ export interface DefaultCore extends ContextCommon {
 	ships: Ship[],
 	items: EquipmentItem[],
 	missions: Mission[],
+	episodes: Mission[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
@@ -57,7 +58,8 @@ const defaultData = {
 	keystones: [] as KeystoneBase[],
 	all_buffs: {} as BuffStatTable,
 	gauntlets: [] as Gauntlet[],
-	missions: [] as Mission[]
+	missions: [] as Mission[],
+	episodes: [] as Mission[]
 };
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
