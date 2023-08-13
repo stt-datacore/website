@@ -10,23 +10,36 @@ import { MergedData, MergedContext } from '../context/mergedcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
+import { TinyStore } from '../utils/tiny';
 
 type ProfileItemsProps = {
+	/** List of equipment items */
 	data?: EquipmentCommon[] | EquipmentItem[];
+	
+	/** Optional alternative navigation method */
 	navigate?: (symbol: string) => void;
+	
+	/** Hide features for owned items */
 	hideOwnedInfo?: boolean;
+
+	/** Hide search bar */
 	hideSearch?: boolean;
+	
+	/** Add needed but unowned items to list */
+	addNeeded?: boolean;
 };
 
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
 	data: (EquipmentCommon | EquipmentItem)[];
 	filteredData?: (EquipmentCommon | EquipmentItem)[];
 	filterText?: string;
 	pagination_rows: number;
 	pagination_page: number;
+	
+	/** Add needed but unowned items to list */
+	addNeeded?: boolean;
 };
 
 const pagingOptions = [
@@ -39,6 +52,7 @@ const pagingOptions = [
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
+	readonly tiny = TinyStore.getStore('profile_items');
 
 	constructor(props: ProfileItemsProps) {
 		super(props);
@@ -46,15 +60,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.state = {
 			column: null,
 			direction: null,
-			searchFilter: '',
+			filterText: this.tiny.getValue('filterText', '') ?? '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: props.data ?? []
+			data: props.data ?? [],
+			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
 		};
 	}
 
 	componentDidMount() {
-		if (this.state.data.length) return;
+		this.initData();
+	}
+	componentDidUpdate() {
+		this.initData();
+	}
+	initData() {
+		if (this.state.data.length > 0) return;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -86,6 +107,20 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							else {
 								item.needed = 0;
 								item.factionOnly = false;
+							}
+						}
+					}
+					if (demandos?.demands.length && this.state.addNeeded === true) {
+						for (let item of demandos.demands) {
+							if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
+								item.equipment = this.context.items.find(f => f.symbol === item.symbol);
+								if (item.equipment){
+									let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
+									eq.needed = item.count;
+									eq.factionOnly = item.factionOnly;
+									eq.quantity = 0;
+									data.push(eq);
+								}
 							}
 						}
 					}
@@ -127,11 +162,18 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private _handleFilter = (text: string | undefined) => {
+		this.tiny.setValue('filterText', text ?? '');
 		this.setState({ ...this.state, filterText: text ?? '' });
 	}
 
+	private _handleAddNeeded = (value: boolean | undefined) => {
+		if (this.state.addNeeded === value) return;		
+		this.tiny.setValue('addNeeded', value ?? false);
+		this.setState({ ...this.state, data: [], addNeeded: value ?? false });
+	}
+
 	render() {
-		const { column, direction, pagination_rows, pagination_page } = this.state;
+		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
 		const filterText = this.state.filterText?.toLocaleLowerCase();
 
@@ -150,7 +192,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-
+		if (!data?.length) {
+			return (
+					<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>
+			)
+		}
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -174,9 +220,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					/>
 
 				</div>}
-				{/* {!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
-					<Checkbox /><span style={{marginLeft:"0.5em"}}>Show Unowned Needed Items</span>
-				</div>} */}
+				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
+					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em"}}>Show Unowned Needed Items</span>
+				</div>}
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
