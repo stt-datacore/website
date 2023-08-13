@@ -72,7 +72,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         
         let mt = true;
         const dcrew = item.demandCrew?.map(sym => {
-            const crew = roster.find(f => f.symbol === sym && !isImmortal(f));
+            const crew = roster.find(f => f.symbol === sym && !(f.level === 100 && f.equipment?.length === 4));
             if (crew) mt = false;
             return (<>
                 {crew && <div 
