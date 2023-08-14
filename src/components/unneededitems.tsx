@@ -183,7 +183,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p>{item.name}</p>
+									<p>{item.name}<br /><i>({item.quantity} Owned)</i></p>
+									
 									</div>
 								</Grid.Column>
 							))}
@@ -214,7 +215,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
 									</div>
 								</Grid.Column>
 							))}
@@ -245,7 +246,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>									
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
 									</div>
 								</Grid.Column>
 							))}
