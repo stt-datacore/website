@@ -135,6 +135,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 								}
 								else if (demand === 'crew') {
 									(result as CrewMember[]).forEach((item) => {
+										item.action.cycle_time = item.action.cooldown + item.action.duration;
 										if (typeof item.date_added === 'string') {
 											item.date_added = new Date(item.date_added);
 										}

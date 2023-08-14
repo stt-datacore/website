@@ -477,6 +477,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
 			{ width: 1, column: 'action.penalty.type', title: 'Handicap', tiebreakers: ['action.penalty.amount'] },
 			{ width: 1, column: 'action.initial_cooldown', title: 'Initialize' },
+			{ width: 1, column: 'action.cycle_time', title: 'Cycle Time' },
 			{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
 			{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
 			{ width: 1, column: 'action.limit', title: 'Uses' },
