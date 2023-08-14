@@ -72,7 +72,12 @@ class ItemSources extends PureComponent<ItemSourcesProps> {
 			res.push(
 				<p key={'factions'}>
 					<b>Faction missions: </b>
-					{factions.map((entry, idx) => `${entry.name} (${entry.chance_grade}/5)`).join(', ')}
+					{factions
+						.slice(0, brief ? 1 : undefined)
+						.map((entry, idx) => `${entry.name} (${entry.chance_grade}/5)`).join(', ')}
+					{refItem && brief && factions.length > 1 && <>, <Link to={`/item_info?symbol=${refItem}`}>and {shipBattles.length - 1} more ...</Link></>}	
+					{!refItem && brief && factions.length > 1 && <>, and {factions.length - 1} more ...</>}
+
 				</p>
 			);
 		}

@@ -135,13 +135,14 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             this.deactivate();
         } 
         
-        const navClick = () => {
-            if (!displayItem) return;
+        const navClick = (altItem?: EquipmentItem) => {
+            altItem ??= displayItem;
+            if (!altItem) return;
             if (this.props.navigate) {
-                this.props.navigate(displayItem.symbol);                
+                this.props.navigate(altItem.symbol);                
             }
             else {
-                navigate('/item_info?symbol=' + displayItem.symbol, { replace: false });            
+                navigate('/item_info?symbol=' + altItem.symbol, { replace: false });            
             }
             this.deactivate();
             
@@ -156,7 +157,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             crewTargetGroup={crewTargetGroup}
             mobileWidth={mobileWidth}
             close={() => onClose()} 
-            openItem={(item) => navClick()} 
+            openItem={(item) => navClick(item)} 
             hover={true} 
             storeName={targetGroup} 
             touched={touchToggled}
