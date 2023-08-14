@@ -7,6 +7,7 @@ import { mergeShips } from '../utils/shiputils';
 import { PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
 import { MergedData, MergedContext } from '../context/mergedcontext';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 
 type UnneededItemsProps = {
@@ -135,8 +136,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData } = this.context;
-
+		const { playerData, items } = this.context;
+		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items) : undefined;
 		let itemCount = playerData.player.character.items.length;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
@@ -162,16 +163,29 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 					<React.Fragment>
 						<Header as='h4'>Ship Schematics ({this.state.fuelschematics.length})</Header>
 						<p>The following ship schematics are safe to discard as they are used to upgrade <b>ships you have already maxed</b>.</p>
+						<ItemHoverStat targetGroup='unneeded_items' />
 						<Grid columns={5} centered padded>
 							{this.state.fuelschematics.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p>{item.name}</p>
+									<p>{item.name}<br /><i>({item.quantity} Owned)</i></p>
+									
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -185,13 +199,24 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Grid columns={5} centered padded>
 							{this.state.fuelspecific.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -205,13 +230,24 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Grid columns={5} centered padded>
 							{this.state.fuelgeneric.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
-									/>
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									/>									
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>

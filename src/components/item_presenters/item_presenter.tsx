@@ -40,7 +40,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
-        const { playerData } = this.context;
+        const { playerData, items } = this.context;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
         const roster = playerData?.player?.character?.crew;
@@ -63,10 +63,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
         var me = this;
         
-        const navClick = (e) => {
-            if (!item) return;
+        const navClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, altItem?: EquipmentItem) => {
+            altItem ??= item;
+            if (!altItem) return;
             if (this.props.openItem) {
-                this.props.openItem(item);
+                this.props.openItem(altItem);
             }
         }
         
@@ -127,9 +128,9 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
-                            {item.quantity && item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
-                            {item.quantity && !item.needed && <div>{item.quantity} Owned</div>}
-                            {!item.quantity && item.needed && <div>{item.needed} Needed</div>}                        
+                            {!!item.quantity && !!item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
+                            {!!item.quantity && !item.needed && <div>{item.quantity} Owned</div>}
+                            {!item.quantity && !!item.needed && <div>{item.needed} Needed</div>}                                                    
                         </div>
                     </div>
                 </div>
@@ -138,13 +139,14 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         display: "flex",
                         flexDirection: "column",
                         minHeight: "8em",
-                        justifyContent: "space-between",
-                        width: window.innerWidth < mobileWidth ? "15m" : "32em",
+                        justifyContent: "space-between",                        
+                        maxWidth: window.innerWidth < mobileWidth ? "15m" : "32em",
+                        minWidth: "15m",
                     }}
                 >
                     <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
-                            <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={item.name}>
+                            <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={item.name}>
                                 {item.name}
                             </a>
                         </h3>
@@ -170,13 +172,59 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
                     <div>
                     {!!(item.item_sources.length > 0) && (
-                            <div style={{fontSize: "8pt"}}>
+                            <div style={{fontSize: "8pt",marginRight: "1em"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />
                             </div>
                         )}
                     </div>
+
+                    <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
+                    {!!(item.recipe?.list?.length) && (
+                            <div style={{fontSize: "8pt"}}>
+                                <Header as="h3">Recipe:</Header>
+                                <div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "top",
+                                    textAlign: "center",
+                                    justifyContent: "flex-start",
+                                    flexWrap: "wrap",
+                                    overflow: "auto",
+                                    maxHeight: "320px"
+                                }}>
+                                {item.recipe.list.map((ing, idx) => {
+                                    const ingitem = items?.find(f=>f.symbol === ing.symbol);
+                                    if (!ingitem) return <></>
+                                    return (
+                                    <div key={"recipe_component_hover_"+ing.symbol+item.symbol+idx}
+                                        style={{
+                                            width:"96px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            justifyContent: "flex-start",
+                                            textAlign: "center",
+                                            margin: "1em",
+                                            padding: 0                                 
+                                        }}>
+                                        <a onClick={(e) => navClick(e, ingitem)} style={{cursor: "pointer"}} title={ingitem.name}>
+                                        <ItemDisplay 
+                                            src={`${process.env.GATSBY_ASSETS_URL}${ingitem.imageUrl}`}
+                                            rarity={ingitem.rarity}
+                                            maxRarity={ingitem.rarity}
+                                            size={48}
+                                            />
+                                            </a>
+                                        <i>{ingitem.name}&nbsp;({ing.count})</i>
+                                    </div>)
+                                })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
                     {!empty && (<>
                         <Header as="h3">Current Roster Demands:</Header>
@@ -185,7 +233,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 flexDirection: "row", 
                                 justifyContent: "flex-start", 
                                 alignItems: "flex-start", 
-                                maxHeight: "450px",
+                                maxHeight: "320px",
                                 overflow: "auto",
                                 flexWrap: "wrap"}}>
 

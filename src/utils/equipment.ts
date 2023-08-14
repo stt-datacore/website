@@ -35,7 +35,13 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 	if (!equipment.recipe) {
 		if (dupeChecker.has(equipment.symbol)) {
 			let demand = demands.find(d => d.symbol === equipment?.symbol);
-			if (demand) demand.count++;
+			if (demand) {
+				demand.count++;
+				demand.crewSymbols ??= [];				
+				if (!demand.crewSymbols.includes(crewSymbol)) {
+					demand.crewSymbols.push(crewSymbol);
+				}
+			}
 		} else {
 			dupeChecker.add(equipment.symbol);
 
@@ -56,7 +62,13 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 		let recipeEquipment = items.find(item => item.symbol === iter.symbol);
 		if (dupeChecker.has(iter.symbol)) {
 			let demand = demands.find(d => d.symbol === iter.symbol)
-			if (demand) demand.count += iter.count;
+			if (demand) {
+				demand.count += iter.count;
+				demand.crewSymbols ??= [];				
+				if (!demand.crewSymbols.includes(crewSymbol)) {
+					demand.crewSymbols.push(crewSymbol);
+				}
+			}
 			continue;
 		}
 
@@ -83,10 +95,17 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === eqsym);
 	if (!equipment) return 0;
+
 	if (!equipment.recipe) {
 		if (dupeChecker.has(equipment.symbol)) {
 			let demand = demands.find(d => d.symbol === equipment?.symbol);
-			if (demand) demand.count++;
+			if (demand) {
+				demand.count++;
+				demand.crewSymbols ??= [];				
+				if (!demand.crewSymbols.includes(crewSymbol)) {
+					demand.crewSymbols.push(crewSymbol);
+				}
+			}
 		} else {
 			dupeChecker.add(equipment.symbol);
 
@@ -103,12 +122,38 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 		return 0;
 	}
 
+
+	const currItem = demands.find(f => f.symbol === eqsym);
+
+	if (currItem) {
+		if (!currItem.crewSymbols.includes(crewSymbol)) {
+			currItem.crewSymbols.push(crewSymbol);
+			currItem.count++;
+		}
+	}
+	else {		
+		demands.push({
+			crewSymbols: [crewSymbol],
+				count: 1,
+				symbol: equipment.symbol,
+				equipment: equipment,
+				factionOnly: equipment.factionOnly ?? false,
+				have: 0
+		})
+	}
+
 	for (let iter of equipment.recipe.list) {
 		let recipeEquipment = items.find(item => item.symbol === iter.symbol);
 
 		if (dupeChecker.has(iter.symbol)) {
 			let demand = demands.find(d => d.symbol === iter.symbol)
-			if (demand) demand.count += iter.count;				
+			if (demand) {
+				demand.count += iter.count;				
+				demand.crewSymbols ??= [];				
+				if (!demand.crewSymbols.includes(crewSymbol)) {
+					demand.crewSymbols.push(crewSymbol);
+				}
+			}
 			continue;
 		}
 
