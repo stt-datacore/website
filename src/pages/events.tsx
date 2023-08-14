@@ -23,7 +23,7 @@ type EventInstance = {
 	instance_id: number,
 }
 
-
+ 
 const EventsPage = () => {
 	const coreData = React.useContext(DataContext);
 	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
