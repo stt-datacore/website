@@ -111,7 +111,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						return prev;
 					});
 
-					fetch(`/structured/${demand}.json`)
+					fetch(`/structured/${demand}${demand === 'cadet' ? '.txt' : '.json'}`)
 						.then(response => response.json())
 						.then(result => {
 							setData(prev => {
