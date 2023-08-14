@@ -90,7 +90,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         <ItemDisplay
                             targetGroup={this.props.crewTargetGroup}
                             playerData={playerData}
-                            allCrew={this.context.allCrew}
+                            allCrew={this.context.crew}
                             itemSymbol={sym}
                             rarity={crew.rarity}
                             maxRarity={crew.max_rarity}
