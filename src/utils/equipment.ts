@@ -128,6 +128,7 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 	if (currItem) {
 		if (!currItem.crewSymbols.includes(crewSymbol)) {
 			currItem.crewSymbols.push(crewSymbol);
+			currItem.count++;
 		}
 	}
 	else {		
@@ -136,7 +137,7 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 				count: 1,
 				symbol: equipment.symbol,
 				equipment: equipment,
-				factionOnly: false,
+				factionOnly: equipment.factionOnly ?? false,
 				have: 0
 		})
 	}
