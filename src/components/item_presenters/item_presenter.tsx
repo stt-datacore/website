@@ -172,7 +172,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
                     <div>
                     {!!(item.item_sources.length > 0) && (
-                            <div style={{fontSize: "8pt"}}>
+                            <div style={{fontSize: "8pt",marginRight: "1em"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />
@@ -233,7 +233,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 flexDirection: "row", 
                                 justifyContent: "flex-start", 
                                 alignItems: "flex-start", 
-                                maxHeight: "450px",
+                                maxHeight: "320px",
                                 overflow: "auto",
                                 flexWrap: "wrap"}}>
 
