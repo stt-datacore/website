@@ -186,6 +186,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 	renderTableRow(item: any): JSX.Element {
 		const { playerData } = this.context;
+		const { items } = this.state;
 
 		return (
 			<Table.Row key={item.symbol}>
@@ -202,7 +203,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 							<ItemDisplay
 								playerData={playerData}
 								itemSymbol={item.symbol}
-								allItems={this.context.items}
+								allItems={items}
+								allCrew={this.context.crew}
 								targetGroup='items_page'
 								rarity={item.rarity}
 								maxRarity={item.rarity}

@@ -21,6 +21,7 @@ import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import Layout from '../components/layout';
+import { DataWrapper } from '../context/datawrapper';
 
 
 export interface EquipmentItemData {
@@ -43,85 +44,15 @@ interface ItemInfoComponentState {
 };
 
 const ItemInfoPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics', 'cadet']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	const [header, setHeader] = React.useState<string>("");
-	let playerData: PlayerData | undefined = undefined;
 	
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
-
-	if (isReady && cadetforitem?.length) {
-		for(const item of coreData.items) {					
-			for (let ep of cadetforitem) {
-				let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
-				if (quests?.length) {
-					for (let quest of quests) {
-						if (quest.mastery_levels?.length) {
-							let x = 0;
-							for (let ml of quest.mastery_levels) {
-								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
-									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
-									mx = (1/mx) * 1.80;
-									let qitem = {
-										type: 4,
-										mastery: x,											
-										name: quest.name,
-										energy_quotient: 1,
-										chance_grade: 5 * mx,						
-										mission_symbol: quest.symbol,
-										cost: 1,
-										avg_cost: 1/mx,
-										cadet_mission: ep.episode_title,
-										cadet_symbol: ep.symbol
-									} as EquipmentItemSource;
-									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
-										item.item_sources.push(qitem);
-									}									
-								}
-								x++;
-							}
-						}
-					}
-				}					
-			}
-		}
-	}
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("ITEM_INFO", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
+	const isReady = true;
+	const [header, setHeader] = React.useState<string | undefined>('');
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						crew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items,
-						ships: coreData.ships
-					}}>
-						<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
+		<DataWrapper demands={['all_buffs', 'crew', 'items', 'cadet']}>
+			<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
+		</DataWrapper>
 
-		</Layout>
 	);
 
 }

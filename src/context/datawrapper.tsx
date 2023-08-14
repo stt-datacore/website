@@ -49,9 +49,10 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	const { narrowLayout, data, notReadyMessage, children, header, pageId, pageTitle, clone } = props;
 	const { buffConfig } = playerContext;
     
-    const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs'];
+    const demands = props.demands ?? ['crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'];
 	if (!demands.includes('crew')) demands.push('crew');
 	if (!demands.includes('items')) demands.push('items');
+	if (!demands.includes('cadet')) demands.push('cadet');
     
     const isReady = coreData.ready ? coreData.ready(demands) : false;
 	const { playerData, playerShips } = playerContext;
@@ -62,8 +63,9 @@ export const DataWrapper = <T extends DataWrapperProps>(props: T) => {
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady && demands.includes("all_buffs")) {
 		maxBuffs = coreData.all_buffs;
 	} 
-
 	
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
+
 	if (isReady && cadetforitem?.length) {
 		for(const item of coreData.items) {					
 			for (let ep of cadetforitem) {
