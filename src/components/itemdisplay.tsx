@@ -32,7 +32,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		let starSize = Math.floor(this.props.size / 6);
 		let bottomStar = Math.floor(this.props.size / 23);
 		let borderRadius = Math.floor(this.props.size / 7);
-		let borderColor = CONFIG.RARITIES[this.props.maxRarity].color;
+		let borderColor = CONFIG.RARITIES[this.props.maxRarity ?? 0].color;
 
 		let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
 		let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;

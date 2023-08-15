@@ -14,6 +14,7 @@ import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { MergedContext } from '../context/mergedcontext';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 const CollectionsTool = () => {
 
@@ -419,6 +420,7 @@ const CrewTable = (props: CrewTableProps) => {
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
 			/>
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
+			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);
 
@@ -522,6 +524,8 @@ const CrewTable = (props: CrewTableProps) => {
 
 const RewardsGrid = (props: any) => {
 	const { rewards } = props;
+	const context = React.useContext(MergedContext);
+	const { playerData, items, allCrew } = context;
 
 	if (rewards.length == 0) return (<></>);
 
@@ -545,6 +549,11 @@ const RewardsGrid = (props: any) => {
 				return (
 					<Grid.Column key={idx}>
 						<ItemDisplay
+							targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
+							itemSymbol={reward.symbol}
+							allCrew={allCrew}
+							allItems={items}
+							playerData={playerData}
 							src={`${process.env.GATSBY_ASSETS_URL}${img}`}
 							size={32}
 							maxRarity={reward.rarity}
