@@ -2183,9 +2183,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		let tempicon = "";
 		if (inMatch) {
 			tempicon = this.context.playerData.player.character.crew_avatar.portrait.file;
-			// TODO: RCA
-			// work around an extremely bizarre bug will track down at a later date.
-			if (tempicon.startsWith("rew_")) tempicon = tempicon = "c" + tempicon.replace(".png.png", ".png");
 		}
 		const myIcon = tempicon;
 		let tempoppo: Opponent | undefined = undefined;

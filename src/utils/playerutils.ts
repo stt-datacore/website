@@ -2,6 +2,9 @@ import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMissi
 
 // Remove any unnecessary fields from the player data
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
+    // prevent this method from being called on previous-stripped player data.
+    if (p.stripped) return;
+
     delete p.item_archetype_cache;
     delete p.archetype_cache;
     delete p.version;
