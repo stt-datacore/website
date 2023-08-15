@@ -21,6 +21,7 @@ import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import { populateItemCadetSources } from '../utils/itemutils';
 
 
 export interface EquipmentItemData {
@@ -51,40 +52,7 @@ const ItemInfoPage = () => {
 	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
 	if (isReady && cadetforitem?.length) {
-		for(const item of coreData.items) {					
-			for (let ep of cadetforitem) {
-				let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
-				if (quests?.length) {
-					for (let quest of quests) {
-						if (quest.mastery_levels?.length) {
-							let x = 0;
-							for (let ml of quest.mastery_levels) {
-								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
-									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
-									mx = (1/mx) * 1.80;
-									let qitem = {
-										type: 4,
-										mastery: x,											
-										name: quest.name,
-										energy_quotient: 1,
-										chance_grade: 5 * mx,						
-										mission_symbol: quest.symbol,
-										cost: 1,
-										avg_cost: 1/mx,
-										cadet_mission: ep.episode_title,
-										cadet_symbol: ep.symbol
-									} as EquipmentItemSource;
-									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
-										item.item_sources.push(qitem);
-									}									
-								}
-								x++;
-							}
-						}
-					}
-				}					
-			}
-		}
+		populateItemCadetSources(coreData.items, cadetforitem);
 	}
 
 	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
