@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-There's a minimum level of value for crew with a collection. This is it. Feel free to tinker around with his unique arena ability if you'd like, otherwise freeze and forget.
+There's a minimum level of value for crew with a few Collections. This is it. Feel free to tinker around with his unique Arena ability if you'd like, otherwise freeze and forget, and hope Explorer finds its way to being a Collection one day (it’s literally Star Trek Timelines, WRG… why is Explorer NOT a Collection?!).

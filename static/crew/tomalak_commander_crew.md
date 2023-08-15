@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Tomalak is pure collection fodder, but he hits on multiple. He may already be 1/4 on your roster as he's a campaign reward from episode 7. A gauntlet pair (new player only) and Romulan events would be worth considering if his numbers were a bit stronger.
+Tomalak has early value as a Gauntlet option and you can pick him up from Episode 7 if you are so inclined. Once you replace him on your Gauntlet team, enjoy his updated art and wait for him to go four for four on his Trait list in terms of Collections one day.
