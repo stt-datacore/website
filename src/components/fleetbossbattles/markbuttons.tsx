@@ -1,6 +1,7 @@
 import React from 'react';
 import { Header, Icon, Button, Popup, Modal, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
+import { ListedTraits } from './listedtraits';
 import { getStyleByRarity } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
@@ -17,31 +18,6 @@ type MarkGroupProps = {
 	optimizer: Optimizer;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
-
-
-export function renderNeeded(needed: number, style?: React.CSSProperties) {
-	return (
-	<div style={{
-		display:"flex",
-		margin: "0 0.25em 0 0.5em",
-		width: "1.75em",
-		height: "1.75em",
-		flexDirection: "row",
-		justifyContent: "center",
-		alignItems: "center",
-		background: "blueviolet",
-		color: "white",
-		fontSize: "0.8em",
-		fontWeight: "bold",
-		border: "1px solid lightgray",
-		borderRadius: "4px", 
-		... (style ?? {})
-	}}>
-		{needed}
-	</div>
-	)
-}
-
 
 export const MarkGroup = (props: MarkGroupProps) => {
 	const { node, traits } = props;
@@ -86,7 +62,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 						)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					</Header>
 					{solveOptions.map(option => (
-						<div key={option.key} style={{ paddingBottom: '.5em' }}>
+						<div key={option.key} style={{ marginBottom: '.5em' }}>
 							<SolveButton node={node}
 								traits={option.value ?? []} rarity={option.rarity} onehand={true}
 								traitData={props.solver.traits} solveNode={handleSolveClick}
@@ -311,7 +287,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 							</Header>
 							<p>Node {node.index+1}</p>
 							{node.solveOptions?.map(option => (
-								<div key={option.key} style={{ paddingBottom: '.5em' }}>
+								<div key={option.key} style={{ marginBottom: '.5em' }}>
 									<SolveButton node={node}
 										traits={option.value ?? []} rarity={option.rarity} onehand={true}
 										traitData={props.solver.traits} solveNode={handleSolveClick}
@@ -351,55 +327,19 @@ type SolveButtonProps = {
 const SolveButton = (props: SolveButtonProps) => {
 	const { node, traits, rarity, onehand, traitData, compact } = props;
 
-	const traitSort = (a: string, b: string) => {
-		if (a === '?') return 1;
-		if (b === '?') return -1;
-		return allTraits.trait_names[a].localeCompare(allTraits.trait_names[b]);
-	};
-
 	return (
 		<Button compact={compact} style={getTraitsStyle(rarity)} onClick={() => props.solveNode(node.index, traits)}>
-			{onehand && rarity > 5 && <Icon name='hand paper' style={{marginBottom:"0.5em"}} />}
-			{renderTraits()}
+			<div style={{
+				display: 'flex',
+				flexDirection: 'row',
+				flexWrap: 'nowrap',
+				gap: '.5em'
+			}}>
+				{onehand && rarity > 5 && <Icon name='hand paper' />}
+				<ListedTraits traits={traits} traitData={traitData} />
+			</div>
 		</Button>
 	);
-
-	function renderTraits(): JSX.Element {
-		const spanStyle = {
-			display: "flex",
-			justifyContent: "space-evenly",
-			flexDirection: "row",
-			flexWrap:"nowrap",
-			alignItems: "center"
-		} as React.CSSProperties;
-
-		return (
-			<React.Fragment>
-				<div style={spanStyle}>
-				{traits.sort((a, b) => traitSort(a, b)).map((trait, idx) => (
-					<span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
-						{idx !== 0 && <span style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>&nbsp;+&nbsp;</span>}{trait === '?' ? '?' : getTraitName(trait)}
-					</span>
-				))}
-				</div>
-			</React.Fragment>
-		);
-	}
-
-	function getTraitName(trait: string): JSX.Element {
-		const spanStyle = {
-			display: "flex",
-			flexDirection: "row",
-			justifyContent: "space-evenly",
-			width: "100%",
-			alignItems: "center",
-			height: "1.25em"
-		} as React.CSSProperties;
-		const instances = traitData.filter(t => t.trait === trait);
-		if (instances.length === 1) return (<div style={spanStyle}>{allTraits.trait_names[trait]}</div>);
-		const needed = instances.length - instances.filter(t => t.consumed).length;
-		return (<div style={spanStyle}>{`${allTraits.trait_names[trait]}`} {renderNeeded(needed)}</div>);
-	}
 
 	function getTraitsStyle(rarity: number): RarityStyle {
 		// Traits include alpha rule exception

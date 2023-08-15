@@ -225,14 +225,17 @@ const ChainSolver = (props: ChainSolverProps) => {
 							alphaCompliant--;
 						}
 					}
-					const comboCount = allComboCounts.find(cc =>
-						cc.index === node.index
-							&& cc.combo.length === combo.length
-							&& cc.combo.every(trait => combo.includes(trait))
-					);
-					if (comboCount && comboCount.portals > 5) {
-						crew.onehand_rule.exceptions.push({ index: node.index, combo });
-						oneHandCompliant--;
+					// One hand rule only applies to ultra and some nodes on nightmare
+					if (chain.difficultyId === 6 || (chain.difficultyId === 5 && node.index > 0)) {
+						const comboCount = allComboCounts.find(cc =>
+							cc.index === node.index
+								&& cc.combo.length === combo.length
+								&& cc.combo.every(trait => combo.includes(trait))
+						);
+						if (comboCount && comboCount.portals > 5) {
+							crew.onehand_rule.exceptions.push({ index: node.index, combo });
+							oneHandCompliant--;
+						}
 					}
 				});
 				if (alphaCompliant === 0) crew.alpha_rule.compliant--;

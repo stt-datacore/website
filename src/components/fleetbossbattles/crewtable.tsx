@@ -3,6 +3,7 @@ import { Table, Rating, Label, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { MarkCrew } from './markbuttons';
+import { ListedTraits } from './listedtraits';
 import { getStyleByRarity } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
@@ -12,8 +13,6 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
-import { CrewMember } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
 
 type CrewTableProps = {
 	solver: Solver;
@@ -165,12 +164,6 @@ const CrewTable = (props: CrewTableProps) => {
 			}
 			return getStyleByRarity(traitRarity[trait]);
 		};
-		const traitNameInstance = (trait: string) => {
-			const instances = solver.traits.filter(t => t.trait === trait);
-			if (instances.length === 1) return allTraits.trait_names[trait];
-			const needed = instances.length - instances.filter(t => t.consumed).length;
-			return `${allTraits.trait_names[trait]} (${needed})`;
-		};
 
 		const nodeMatches = crew.node_matches[`node-${index}`];
 		if (!nodeMatches) return (<></>);
@@ -179,7 +172,7 @@ const CrewTable = (props: CrewTableProps) => {
 			<React.Fragment>
 				{nodeMatches.traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
 					<Label key={idx} style={colorize(trait)}>
-						{traitNameInstance(trait)}
+						<ListedTraits traits={[trait]} traitData={solver.traits} />
 					</Label>
 				)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 			</React.Fragment>
