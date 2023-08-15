@@ -205,7 +205,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		const { hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
-		if (data !== undefined) {
+		if (data?.length) {
 			if (filterText && filterText !== '') {
 				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
 					f.short_name?.toLowerCase().includes(filterText) ||
