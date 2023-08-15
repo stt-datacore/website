@@ -18,6 +18,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
 import { DataWrapper } from '../context/datawrapper';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import { populateItemCadetSources } from '../utils/itemutils';
 
 export interface ItemsPageProps {}
 

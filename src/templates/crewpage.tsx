@@ -19,7 +19,6 @@ import { PlayerContext } from '../context/playercontext';
 import { MergedContext } from '../context/mergedcontext';
 import { DataWrapper } from '../context/datawrapper';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';
 export interface CrewPageOptions {
