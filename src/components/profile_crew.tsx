@@ -433,6 +433,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'mortal', value: 'mortal', text: 'Only show non-immortals' },
 		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
 		{ key: 'impact', value: 'impact', text: 'Only show crew needing 1 fuse' },
+		{ key: 'threshold', value: 'threshold', text: 'Only show crew needing 2 fuses' },
 		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
 		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' },
 		{ key: 'faves', value: 'faves', text: 'Only show favorite crew' },
@@ -514,6 +515,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (rosterFilter === 'freezable' && (crew.immortal !== -1 || !isImmortal(crew))) return false;
 		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
+		if (rosterFilter === 'threshold' && crew.max_rarity - crew.rarity !== 2) return false;
 		if (rosterFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1 && crew.immortal <= 1) return false;
@@ -849,7 +851,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                         />
                         {usableFilter !== "frozen" && (
                             <Form.Field
-								style={{width:"17em"}}							
+								style={{width:"18em"}}							
                                 placeholder="Roster maintenance"
                                 control={Dropdown}
                                 clearable
