@@ -249,7 +249,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		this.state = {
 			loading: true,
-			onlyActiveRound: this.tiny.getValue<boolean>('activeRound', false),
+			onlyActiveRound: this.tiny.getValue<boolean>('activeRound', true),
 			liveGauntlet: lg,
 			gauntletJson: '',
 			sortKey: skeys,
@@ -400,7 +400,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	protected setActiveRound(value: boolean) {
-		this.tiny.setValue('activeRound', value);
+		this.tiny.setValue('activeRound', value, true);
 		this.setState({...this.state, onlyActiveRound: value });
 	}
 
@@ -409,7 +409,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	protected setHideOpponents(value: boolean) {
-		this.tiny.setValue('hideOpponents', value);
+		this.tiny.setValue('hideOpponents', value, true);
 		this.setState({ ...this.state, loading: true });		
 		this.inited = false;
 		window.setTimeout(() => {
@@ -453,7 +453,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	protected setActiveTabIndex = (value?: number) => {
-		this.tiny.setValue('activeTabIndex', value);
+		this.tiny.setValue('activeTabIndex', value, true);
 		this.setState({ ...this.state, loading: true });
 		window.setTimeout(() => {
 			this.setState({...this.state, activeTabIndex: value, loading: false });
