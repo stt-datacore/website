@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The only rare crew in the top 15 ENG ranks who can cover both sets of weekend missions may save you some precious leveling resources if you can fish her out of packs early on in your Timelines journey. Healthy top end secondary and tertiary proficiencies even allow her to handle some nodes that you wouldn't think just by looking at her bases.
+The only Rare crew in the top 15 ENG ranks who can cover both sets of Weekend Missions may save you some precious leveling resources if you can fish her out of Packs early on in your Timelines journey. Healthy top end Secondary and Tertiary Proficiencies even allow her to handle some Nodes that you wouldn't think just by looking at her Bases. 
 
-Besides her venerable cadet reputation, Torres sports some fast arena damage (position triggered) and a few spots in tough collections, making her a name to know beyond just the early game.
+Besides her venerable Cadet reputation, Torres sports some fast Arena Instant Damage (Position Triggered) and two spots in tough Collections, making her a name to know beyond just the early game, and look for perhaps up to two more Collections to hit in the future.

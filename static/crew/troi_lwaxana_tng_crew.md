@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Whilst she is only has #18 DIP base skill her proficiency bonus easily pushes her up to a #7 average. A good example of a weekend worker whose traits will help with some tricky nodes during cadet challenges. Her ship ability isn’t too shabby either with +5 accuracy and a +10000 critical bonus. She’s not the best Diplomat in the early game but that doesn’t mean she’s without use.
+Lwaxana Troi’s Rare variant’s true value comes from Cadet Missions on the weekend to help you Warp them once you move past early game status. Ancillary value includes some fringe Ship Battle use with some of your first big chunks of Crit Bonus as well as a slot in one Collection outside of her Rarity one. Will Ambassador and Telepath Traits ever pay off with Collections due to overlap with Diplomats and Vulcans? One might think WRG might run out of Traits one day and turn to those.
