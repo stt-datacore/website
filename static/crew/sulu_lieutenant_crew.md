@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-An extremely Faction-lite card to build, Sulu is a perfunctory midgame leveling “project” for players looking to make the mountainous trudge through the Resourceful collection. Somehow one of the traitiest Sulu variants, the Leftenant has a reasonable collection ceiling, but is functionally useless if you’re not playing “Nightmare Mode”.
+An extremely Faction-lite card to build, Sulu is a perfunctory midgame leveling “project” for players looking to finish the Common Collection.
+
+Somehow one of the Traitiest Sulu variants, the Leftenant has a reasonable Collection ceiling, with up to two more left to pay off, but is functionally useless if you’re not playing “Nightmare Mode”.

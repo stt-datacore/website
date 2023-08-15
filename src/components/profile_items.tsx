@@ -80,68 +80,78 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	componentDidUpdate() {
 		this.initData();
 	}
+
 	initData() {
 		if (this.state.data?.length && this.state.data?.length > 0) return;
+		const { playerData, items } = this.context;
+		
+		if (!items) return;
+		window.setTimeout(() => {		
+			let data = mergeItems(this.context.playerData.player.character.items, items);
 
-		fetch('/structured/items.json')
-			.then(response => response.json())
-			.then(items => {
-				let data = mergeItems(this.context.playerData.player.character.items, items);
-				const { playerData } = this.context;
-				let { hideOwnedInfo } = this.props;
+			let { hideOwnedInfo } = this.props;
 
-				if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
-					const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
-					for (let item of data) {
-						if (item.type === 8) {
-							let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
-							if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
-								item.needed = scheme.schematic_gain_cost_next_level;
-								item.factionOnly = false;
-							}
-							else {
-								item.needed = 0;
-								item.factionOnly = false;
-								if ("demandCrew" in item) delete item.demandCrew;
-							}
+			if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
+				const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
+				for (let item of data) {
+					if (item.type === 8) {
+						let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
+						if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
+							item.needed = scheme.schematic_gain_cost_next_level;
+							item.factionOnly = false;
 						}
-						else if (item.type === 2 || item.type === 3) {
-							const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
-							if (fitem) {
-								item.needed = fitem.count;
-								item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-								item.demandCrew ??= []
-								for (let sym of fitem.crewSymbols) {
-									if (sym && !item.demandCrew.find(f => f === sym)) {
-										item.demandCrew.push(sym);
-									}
-								}
-							}
-							else {
-								item.needed = 0;
-								item.factionOnly = false;
-								item.demandCrew = [];
-							}
+						else {
+							item.needed = 0;
+							item.factionOnly = false;
+							if ("demandCrew" in item) delete item.demandCrew;
 						}
 					}
-					if (demandos?.demands.length && this.state.addNeeded === true) {
-						for (let item of demandos.demands) {
-							if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
-								item.equipment = this.context.items.find(f => f.symbol === item.symbol);
-								if (item.equipment){
-									let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
-									eq.needed = item.count;
-									eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-									eq.quantity = 0;
-									eq.demandCrew = [ ... item.crewSymbols ];
-									data.push(eq);
+					else if (item.type === 2 || item.type === 3) {
+						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+						if (fitem) {
+							item.needed = fitem.count;
+							item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
+							item.demandCrew ??= []
+							for (let sym of fitem.crewSymbols) {
+								if (sym && !item.demandCrew.find(f => f === sym)) {
+									item.demandCrew.push(sym);
 								}
+							}
+						}
+						else {
+							item.needed = 0;
+							item.factionOnly = false;
+							item.demandCrew = [];
+						}
+					}
+				}
+				if (demandos?.demands.length && this.state.addNeeded === true) {
+					for (let item of demandos.demands) {
+						if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
+							item.equipment = this.context.items.find(f => f.symbol === item.symbol);
+							if (item.equipment){
+								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
+								eq.needed = item.count;
+								eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
+								eq.quantity = 0;
+								eq.demandCrew = [ ... item.crewSymbols ];
+								data.push(eq);
 							}
 						}
 					}
 				}
-				this.setState({ data });
+			}
+			window.setTimeout(() => {
+				if (this.state.addNeeded) {
+					data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+					this.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+				}
+				else {
+					this.setState({ ... this.state, data });	
+				}
 			});
+		});
+
 	}
 
 	private _onChangePage(activePage) {
@@ -185,7 +195,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
 		this.tiny.setValue('addNeeded', value ?? false);
-		this.setState({ ...this.state, data: undefined, addNeeded: value ?? false });
+		this.setState({ ... this.state, data: [], addNeeded: value ?? false });
 	}
 
 	render() {
@@ -195,7 +205,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		const { hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
-		if (data !== undefined) {
+		if (data?.length) {
 			if (filterText && filterText !== '') {
 				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
 					f.short_name?.toLowerCase().includes(filterText) ||
@@ -237,8 +247,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			{!data &&<div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
-			{data && <Table sortable celled selectable striped collapsing unstackable compact="very">
+			{!(data?.length) && <div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
+			{!!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
@@ -364,7 +374,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
 			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
 			<br />
-				{!hideOwnedInfo && 
+				{!hideOwnedInfo && !!(data?.length) &&
 					<div style={{
 						display: "flex",
 						flexDirection: "row",

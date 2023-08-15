@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A very average CMD card which might find some use helping out Sito, Seska and Dax in weekday challenges but nothing amazing about the card. Keep her for the Veteran collection but don’t expect her to have any longevity.
+Kira is a very average CMD card which might find some use helping out Sito, Seska and Dax in Weekday Cadet Challenges, but her enduring value will be possibly going three for three on her Traits for Collection notches.

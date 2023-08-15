@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A very average engineer who doesn’t offer anything unique other than his Jury Rigger bonus. He won’t be making any voyages but he will have some use getting difficult nodes unlocked.
+Four Traits including Jury Rigger, a single ENG Skill, and not much else. Use him for a few Nodes and Cadet Missions in the early game, then relegate him to cryostasis.

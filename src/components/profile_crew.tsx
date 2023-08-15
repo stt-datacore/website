@@ -302,7 +302,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	}, [selectedShip]);
 
 	React.useEffect(() => {
-		if (usableFilter === 'frozen') setRosterFilter('');
+		if (usableFilter === 'frozen' || usableFilter === 'frozen_dupes') setRosterFilter('');
 	}, [usableFilter]);
 
 	React.useEffect(() => {
@@ -424,6 +424,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' },
 		{ key: 'frozen', value: 'frozen', text: 'Only show frozen crew' },
+		{ key: 'frozen_dupes', value: 'frozen_dupes', text: 'Only show frozen duplicate crew' },
 		{ key: 'idle', value: 'idle', text: 'Only show idle crew', tool: 'true' }
 	];
 
@@ -433,6 +434,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		{ key: 'mortal', value: 'mortal', text: 'Only show non-immortals' },
 		{ key: 'priority', value: 'priority', text: 'Only show fully-fused non-immortals' },
 		{ key: 'impact', value: 'impact', text: 'Only show crew needing 1 fuse' },
+		{ key: 'threshold', value: 'threshold', text: 'Only show crew needing 2 fuses' },
 		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
 		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' },
 		{ key: 'faves', value: 'faves', text: 'Only show favorite crew' },
@@ -477,6 +479,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 			{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
 			{ width: 1, column: 'action.penalty.type', title: 'Handicap', tiebreakers: ['action.penalty.amount'] },
 			{ width: 1, column: 'action.initial_cooldown', title: 'Initialize' },
+			{ width: 1, column: 'action.cycle_time', title: 'Cycle Time' },
 			{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
 			{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
 			{ width: 1, column: 'action.limit', title: 'Uses' },
@@ -509,10 +512,12 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 		if (usableFilter === 'idle' && (crew.immortal > 0 || crew.active_status > 0)) return false;
 		if (usableFilter === 'thawed' && crew.immortal > 0) return false;
 		if (usableFilter === 'frozen' && crew.immortal <= 0) return false;
+		if (usableFilter === 'frozen_dupes' && crew.immortal <= 1) return false;
 		if (rosterFilter === 'faves' && !crew.favorite) return false;
 		if (rosterFilter === 'freezable' && (crew.immortal !== -1 || !isImmortal(crew))) return false;
 		if (rosterFilter === 'mortal' && isImmortal(crew)) return false;
 		if (rosterFilter === 'priority' && (isImmortal(crew) || crew.max_rarity !== crew.rarity)) return false;
+		if (rosterFilter === 'threshold' && crew.max_rarity - crew.rarity !== 2) return false;
 		if (rosterFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (rosterFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
 		if (rosterFilter === 'dupes' && props.crew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
@@ -846,9 +851,9 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                             value={usableFilter}
                             onChange={(e, { value }) => setUsableFilter(value)}
                         />
-                        {usableFilter !== "frozen" && (
+                        {usableFilter !== "frozen" && usableFilter !== "frozen_dupes" && (
                             <Form.Field
-								style={{width:"17em"}}							
+								style={{width:"18em"}}							
                                 placeholder="Roster maintenance"
                                 control={Dropdown}
                                 clearable

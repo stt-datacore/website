@@ -297,7 +297,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	crew.have = false;
 	crew.equipment = [0, 1, 2, 3];
 	crew.favorite = false;
-
+	crew.action.cycle_time = crew.action.cooldown + crew.action.duration;
+	
 	if (playerData?.player?.character) {
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew.immortal = CompletionState.Frozen;

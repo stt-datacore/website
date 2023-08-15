@@ -101,6 +101,9 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.initial_cooldown >= 0 && <><b>{crew.action.initial_cooldown}</b>s</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
+				{crew.action.cooldown >= 0 && <><b>{crew.action.cycle_time}</b>s</>}
+			</Table.Cell>
+			<Table.Cell textAlign='center'>
 				{crew.action.cooldown >= 0 && <><b>{crew.action.cooldown}</b>s</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>

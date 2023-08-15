@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A Jack of most trades, this Sisko tops no power charts, but contributes in almost every area. His trait tendrils run throughout the card, boosting his voyage credentials via a six-pack of anti-matter traits and his non-HFS traits have all had at least one event bonus previously.
+A Jack of most trades, this Sisko tops no power charts, but contributes a little bit everywhere. His Trait tendrils run throughout the card, boosting his sagging Voyage credentials two years after debut via a six-pack of Anti-matter Traits and his non-HFS Traits have all had at least one Event bonus previously. 
 
-Bankable event work looks extra appealing with his variant-best bases, even if his skills aren't those you'll most often see on Sisko event shuttles (it only takes one seat). Debuting with two of his four 'eligible' traits ticking a collection box, it seems only a matter of time before the others join them and make him a juicy collection/event pairing who will ride out the waves of waning voyage power to deliver long term value.
+Bankable Event work looks extra appealing with his variant-best Bases, even if his Skills aren't those you'll most often see on Sisko Event Shuttles (it only takes one seat). Debuting with two of his four viable Traits ticking a Collection box, it seems only a matter of time before the others join them and make him a juicy Collection/Event pairing who will ride out the waves of waning Voyage power to deliver long term value.

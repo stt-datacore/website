@@ -71,6 +71,10 @@ export interface ShipAction {
   cooldown: number;
   initial_cooldown: number;
   duration: number;
+  
+  /** Used internally. Not part of source data. */
+  cycle_time?: number;
+
   bonus_type: number;
   crew: number;
   crew_archetype_id: number;
