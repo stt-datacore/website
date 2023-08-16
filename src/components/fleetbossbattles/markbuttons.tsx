@@ -185,6 +185,36 @@ export const MarkCrew = (props: MarkCrewProps) => {
                                                 })</i>}
 
 								{!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
+								<p style={{fontSize:"0.75em"}}>
+									{crew.ship_battle.crit_bonus && (
+										<span>
+											<b>CB:</b> +
+											{crew.ship_battle.crit_bonus}
+											{` `}
+										</span>
+									)}
+									{crew.ship_battle.crit_chance && (
+										<span>
+											<b>CR:</b> +
+											{crew.ship_battle.crit_chance}
+											{` `}
+										</span>
+									)}<br/>
+									{crew.ship_battle.accuracy &&
+										<span>
+										<b>AC:</b> +
+										{crew.ship_battle.accuracy}
+										{` `}
+										</span>
+									}
+									{crew.ship_battle.evasion &&
+										<span>
+										<b>EV:</b> +
+										{crew.ship_battle.evasion}
+										{` `}
+										</span>
+									}
+								</p>
 							</div>}
 						</span>
 					</span>
