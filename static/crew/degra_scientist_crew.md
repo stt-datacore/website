@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Degra is perhaps best known for his early activating arena damage, but it hits like a wet noodle unless paired with Locutus and actives solo on defense, making him a zero there. With crew retrieval allowing you to craft the perfect ship lineup, Degra is more of a curiosity these days and an intriguing future option if WRG ever gets funky with arena crew.
+Degra is perhaps best known for his early Activating Arena Instant Damage, but it hits like a wet noodle unless paired with Locutus and activates solo on defense, making him a zero there. With Crew Retrieval allowing you to craft the perfect Ship lineup, Degra is more of a curiosity these days and an intriguing future option if WRG ever gets funky with Arena crew. 
 
-The most universal value offered by this card is on the collection page. Drawing about as much value as one can from only four traits, he's worthwhile for veteran to immortalize at some point and further pays off the investment with spotty, mega-based event work to highlight otherwise unused bases. Degra is a high utility, low power option best left to endgame rosters.
+The most universal value offered by this card is on the Collection page. Drawing about as much value as one can from only four Traits, he's worthwhile for elderly players to Immortalize at some point and further pays off the investment with spotty, Mega Event-based weekend work to highlight otherwise unused Bases. Degra is a high utility, low power option best left to endgame rosters.
