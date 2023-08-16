@@ -164,6 +164,7 @@ export interface FilterPreferences {
 	nonoptimal: string;
 	noncoverage: string;
 	usable: string;
+	shipAbility: string;
 }
 
 export type ShowHideValue = 'show' | 'hide';

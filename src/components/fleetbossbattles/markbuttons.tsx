@@ -10,6 +10,9 @@ import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
 import { MergedContext } from '../../context/mergedcontext';
 import { FinderContext } from './findercontext';
+import { ShipSkill, getActionColor, getActionIcon, getShipBonusIcon } from '../item_presenters/shipskill';
+import { getShipBonus } from '../../utils/crewutils';
+import CONFIG from '../CONFIG';
 
 type MarkGroupProps = {
 	node: SolverNode;
@@ -165,7 +168,24 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
 						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
-							{crew.name}
+							{crew.name}<br />
+							{props.optimizer.filtered.settings.shipAbility === 'show' &&
+							<div style={{display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
+								<div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
+									<span>+ {crew.action.bonus_amount}</span>								
+								</div>
+
+								{crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
+									{getShipBonus(crew.action)}
+								</div>}
+								{!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
+                                                    CONFIG.CREW_SHIP_BATTLE_TRIGGER[
+                                                        crew.action.ability.condition
+                                                    ]
+                                                })</i>}
+
+								{!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
+							</div>}
 						</span>
 					</span>
 				</div>
