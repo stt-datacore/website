@@ -216,7 +216,7 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
-export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable) {
+export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
 	const getMultiplier = (skill: string, stat: string) => {
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 	};
@@ -224,15 +224,27 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 	for (let skill in CONFIG.SKILLS) {
 		crew[skill] = { core: 0, min: 0, max: 0 };
 	}
-
+	let bs = {} as BaseSkills;
 	// Apply buffs
 	for (let skill in crew.base_skills) {
-		crew[skill] = {
-			core: Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core')),
-			min: Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min')),
-			max: Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'))
+		let core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+		let min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+		let max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+
+		if (nowrite !== true) {
+			crew[skill] = {
+				core: core,
+				min: min,
+				max: max
+			};	
+		}
+		bs[skill] = {
+			core: core,
+			range_min: min,
+			range_max: max
 		};
 	}
+	return bs;
 }
 
 
@@ -350,14 +362,16 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				for (let skill in CONFIG.SKILLS) {
 					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
 				}
+				
+				// Override computed buffs because of mismatch with game data
 				for (let skill in workitem.skills) {
 					crew[skill] = {
 						core: workitem.skills[skill].core,
 						min: workitem.skills[skill].range_min,
 						max: workitem.skills[skill].range_max
-					} as ComputedBuff;
+					} as ComputedBuff;					
 				}			
-				crew.skills = workitem.skills;	
+				crew.skills = workitem.skills;					
 			}
 			// Otherwise apply buffs to base_skills
 			else if (buffConfig) {
