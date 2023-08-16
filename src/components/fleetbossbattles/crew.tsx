@@ -18,7 +18,8 @@ const filterDefaults = {
 	onehand: 'flag',
 	nonoptimal: 'hide',
 	noncoverage: 'show',
-	usable: ''
+	usable: '',
+	shipAbility: 'hide'
 };
 
 type ChainCrewProps = {
@@ -128,6 +129,12 @@ const ChainCrew = (props: ChainCrewProps) => {
 							checked={filterPrefs.noncoverage === 'hide'}
 							onChange={(e, data) => setFilterPrefs({...filterPrefs, noncoverage: data.checked ? 'hide' : 'show'})}
 						/>
+						{view === 'crewgroups' && <Form.Field
+							control={Checkbox}
+							label='Show ship ability'
+							checked={filterPrefs.shipAbility === 'show'}
+							onChange={(e, data) => setFilterPrefs({...filterPrefs, shipAbility: data.checked ? 'show' : 'hide'})}
+						/>}
 					</Form.Group>
 				</Form.Group>
 			</Form>
