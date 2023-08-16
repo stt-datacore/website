@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Icon, Button, Popup, Modal, Grid, SemanticWIDTHS } from 'semantic-ui-react';
+import { Header, Icon, Button, Popup, Modal, Grid, Label, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { ListedTraits } from './listedtraits';
 import { getStyleByRarity } from './fbbutils';
@@ -78,6 +78,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					</div>
 				</Modal.Content>
 				<Modal.Actions>
+					<ColorsLegendPopup />
 					<Button onClick={() => setModalIsOpen(false)}>
 						Close
 					</Button>
@@ -243,6 +244,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 				{renderOptions()}
 			</Modal.Content>
 			<Modal.Actions>
+				<ColorsLegendPopup />
 				<Button icon='x' color='red' content='Mark as tried' onClick={() => handleTriedClick()} />
 				<Button onClick={() => setModalIsOpen(false)}>
 					Close
@@ -364,3 +366,43 @@ const getUpdatedSolve = (node: SolverNode, traits: string[]) => {
 	}
 	return traits;
 };
+
+const ColorsLegendPopup = () => {
+	return (
+		<Popup
+			content={renderContent()}
+			trigger={
+				<span>
+					Colors
+					<Icon name='question' />
+				</span>
+			}
+		/>
+	);
+
+	function renderContent(): JSX.Element {
+		return (
+			<React.Fragment>
+				<p>Colors help visualize the rarity of each possible solution for this node:</p>
+				<div style={{
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center'
+				}}>
+					{[6, 5, 4, 3, 2].map(rarity => renderLabel(rarity))}
+				</div>
+			</React.Fragment>
+		);
+	}
+
+	function renderLabel(rarity: number): JSX.Element {
+		const rarityStyle = getStyleByRarity(rarity);
+		const rarityNumber = rarity > 5 ? '6+' : rarity;
+		return (
+			<Label key={rarity} style={{...rarityStyle, marginBottom: '.5em', textAlign: 'center'}}>
+				{rarityNumber} in-portal crew share this solution.
+			</Label>
+		);
+	}
+};
+

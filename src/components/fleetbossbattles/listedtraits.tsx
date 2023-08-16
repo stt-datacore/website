@@ -43,7 +43,7 @@ const NamedTrait = (props: NamedTraitProps) => {
 	return (
 		<div style={{
 			display: 'flex',
-			gap: '.2em',
+			gap: '.3em',
 			flexDirection: 'row',
 			flexWrap: 'nowrap',
 			alignItems: 'center'
@@ -54,9 +54,18 @@ const NamedTrait = (props: NamedTraitProps) => {
 	);
 
 	function renderNeeded(): JSX.Element {
-		const unicodes = ['\u{24FF}', '\u{2776}', '\u{2777}', '\u{2778}', '\u{2779}', '\u{277A}'];
 		return (
-			<span>{needed < unicodes.length ? unicodes[needed]: needed}</span>
+			<div style={{
+				background: 'white',
+				color: 'black',
+				margin: '-.4em 0',
+				border: '1px solid black',
+				borderRadius: '4px'
+			}}>
+				<div style={{ margin: '.3em' }}>
+					{needed}
+				</div>
+			</div>
 		);
 	}
 };
