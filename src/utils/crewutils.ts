@@ -227,9 +227,13 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 	let bs = {} as BaseSkills;
 	// Apply buffs
 	for (let skill in crew.base_skills) {
-		let core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
-		let min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
-		let max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+		let core = 0;
+		let min = 0;
+		let max = 0;
+
+		core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+		min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+		max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
 
 		if (nowrite !== true) {
 			crew[skill] = {
@@ -446,6 +450,30 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			else {
 				unOwnedCrew.push(newcrew);
 			}
+						
+			// for (let skill of Object.keys(newcrew.base_skills)) {
+				
+			// 	let sktest: BaseSkills | undefined = undefined;
+
+			// 	if (buffConfig) {
+			// 		sktest = applyCrewBuffs(newcrew, buffConfig, true);					
+			// 	}
+
+			// 	if (sktest && skill in sktest) {
+			// 		if ("skills" in newcrew) {
+			// 			if (sktest[skill].core !== newcrew.skills[skill].core) {
+			// 				console.log(newcrew.name);
+			// 				console.log("Calculated stats for " + skill);
+			// 				console.log(sktest[skill]);
+			// 				console.log("Game stats for " + skill);
+			// 				console.log(newcrew.skills[skill]);
+			// 			}
+			// 			else {
+			// 				console.log("Skills Match for " + newcrew.name)
+			// 			}
+			// 		}					
+			// 	}
+			// }
 		}
 	}
 	
