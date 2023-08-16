@@ -221,7 +221,7 @@ const TableView = (props: ViewProps) => {
 								<Table.Cell width={5}>{name}</Table.Cell>
 								<Table.Cell width={8}>
 									<Popup mouseEnterDelay={POPUP_DELAY} trigger={
-										<div style={{ cursor: 'help' }}>
+										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 											{!compact &&
 												<span style={{ paddingRight: '.3em' }}>
 													<ItemDisplay
@@ -233,7 +233,7 @@ const TableView = (props: ViewProps) => {
 													/>
 												</span>
 											}
-											<span style={{ fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
+											<span style={{ marginLeft: "0.25em", fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
 										</div>
 									}>
 										<Popup.Content>
@@ -575,13 +575,13 @@ const CrewFinder = (props: CrewFinderProps) => {
 	if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
-			trigger: <Icon name='snowflake' />
+			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='snowflake' /></div>
 		};
 	}
 	else if (crew.active_status === 2) {
 		popup = {
 			content: 'On shuttle',
-			trigger: <Icon name='space shuttle' />
+			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='space shuttle' /></div>
 		};
 	}
 	return (
