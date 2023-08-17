@@ -1656,7 +1656,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
-			text: "Grouped Pairs"
+			text: "Pair Groups"
 		},
 		{
 			key: "table",
