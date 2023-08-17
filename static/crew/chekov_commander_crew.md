@@ -12,4 +12,6 @@ mega: false
 published: true
 ---
 
-The family of Chekovs often get shafted on traits (as in, you should throw them down the turbolift shaft), so for most of his variants to pick up an unexpected Resourceful collection is a huge boon. Wretched in every conceivable area save for one or two variant events per year, the only path to improvement that seems within the realm of possibility for Finger Gun Cheekoof would be the rather large Tactician collection.
+The family of Chekovs often get shafted on Traits (as in, you should throw them down the turbolift shaft), so for most of his variants to pick up an unexpected Resourceful Collection is a huge boon. If you’re lucky, he’ll also pick up Tactician one day.
+
+This particular variant also is noteworthy for having an Attack Boost coupled with a 15% Hull Repair Ability for Fleet Boss Battles, but don’t waste your time using Citations on him because you can Retrieve better options.
