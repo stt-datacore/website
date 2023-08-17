@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Name dropping Martok and a fiver might get you a delicious chicken sandwich, but unbeknownst to most is that Martok has hit on at least one variant event bonus in five of six calendar years. With a half dozen other eventable traits, he a lesser known name who could end up driving your shuttles more often than you'd expect.
+Name dropping Martok and a fiver might get you a delicious chicken sandwich, but unbeknownst to most is that Martok has hit on at least one variant Event bonus in five of six calendar years. With a half dozen other Event-able Traits, he is a lesser-known name who could end up driving your Shuttles more often than you'd expect. 
 
-With now poor voyage power and a dire skill set, the only other point of interest is his set of collections. Filling so many spots at once while still offering occasional event work, Chancellor Martok is a fine name to behold or even toss a few stars on to earn some long term, if narrow, return on investment.
+Chancellor Martok offers nothing in terms of Voyages, Gauntlet, or Arena, but there is little more you can ask for from a four year old crew than a thicc Trait list. Keep one eye on his Collection total as it is sure to grow in time to a maximum of seven, which is a 100% coverage of his Traits.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-One of many event/collection super rares you'll gather and freeze en route to a well-rounded roster. Most impressive is probably his handful of big bonus features across several different events. That will almost always elicit a thaw and a splash of collection value never hurts to justify their crew slot as you gather stars, especially as Odo offers zero daily use.
+One of many Event/Collection Super Rares you'll gather and freeze en route to a well-rounded roster. Most impressive is probably his handful of big bonus features across several different Events. That will almost always elicit a thaw and a splash of Collection value never hurts to justify their Crew Slot as you gather stars, especially as Odo offers zero daily use.

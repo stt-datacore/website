@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-You'd run out of fingers trying to count what FO Riker is not, but if you're a glass half full of whiskey, bitters, and sugar kinda guy or gal then note that Riker has been strongly eventable on his own and has the right skill order for pilot-y things when his number does get called. 
-
-The chair-humping line of Riker Units also have a whole lot of maverick gamblers in their lineage; neither of which have popped yet for events or collection, but have a strong likelihood to do so in the future.
+First Officer Riker’s Arena Ability is called “Can't Get Any Worse” and that pretty much describes this decrepit Legendary variant of Bill. At least he’s picked up a Collection and could get one more with Marksman, but he won’t do much else for you outside Riker Events.
