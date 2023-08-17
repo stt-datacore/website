@@ -1560,6 +1560,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				return a.date_added.getTime() - b.date_added.getTime();
 			});
 		}
+		else if (idx === 4 && gauntletIn) {
+			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.playerData.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
+			if (pc) jp = pc;
+		}
 
 		const jackpots = jp;
 
@@ -1630,7 +1634,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
-			text: "Grouped Pairs"
+			text: "Pair Groups"
 		},
 		{
 			key: "table",
@@ -1701,7 +1705,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					{idx !== 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>Jackpot Crew for {prettyDate}</i></div>}
 
 					{!!jackpots?.length && idx === 3 &&
-
 						<Accordion
 							style={{margin: "1em 0em"}}
 							defaultActiveIndex={-1}
@@ -1754,6 +1757,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 							}]}
 						/>}
+
+
 				</div>
 
 				<div style={{
@@ -1771,7 +1776,60 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h3 style={{ fontSize: "1.5em", margin: "0.25em 0" }}>
 								{prettyDate}
 							</h3>
-							{gauntlet?.bracket_id && <sub>Bracket Id: {gauntlet?.bracket_id}</sub>}
+							{!!jackpots?.length && idx === 4 &&
+								<Accordion
+									style={{margin: "1em 0em"}}
+									defaultActiveIndex={-1}
+									panels={[{
+										index: 0, 
+										key: 0,
+										title: `Bracket Id: ${gauntlet.bracket_id}`,
+										content: {
+											content: <>
+											<div style={{
+												display: "flex",
+												flexDirection:"row",			
+												flexWrap: "wrap",							
+												justifyContent: "space-between",										
+											}}>
+												{jackpots.sort((a, b) => a.name.localeCompare(b.name))
+												.map((jcrew) => {
+													const crit = ((prettyTraits?.filter(t => jcrew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
+
+													return (
+														<div style={{
+															margin: "1em",
+															padding: 0,
+															width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
+															display: "flex",
+															flexDirection:"column",
+															justifyContent:"flex-start",
+															alignItems: "center",
+															textAlign: "center"
+														}}
+														>
+															<ItemDisplay
+																key={"jackpot" + jcrew.symbol}
+																size={64}
+																maxRarity={jcrew.max_rarity}
+																rarity={jcrew.max_rarity}
+																src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
+																allCrew={this.context.allCrew}
+																playerData={this.context.playerData}
+																targetGroup='gauntletsHover'
+																itemSymbol={jcrew?.symbol}
+															/>
+															<i style={{ color: undefined, margin:"0.5em 0 0 0"}}>{jcrew.name}</i>
+															<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.5em 0 0 0"}}>{crit}%</i>
+														</div>
+													)
+												})}
+											</div>
+											</>
+										}
+									}]}
+								/>}
+
 						</div>
 
 						<div style={{
@@ -2243,7 +2301,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					marginBottom: "0.5em",
 				}}>
 				
-				{(inMatch || isOpponent) && 
+				{((inMatch || isOpponent) && isRound) && 
 				<div style={{
 					flexGrow: 1,
 					display: "flex",

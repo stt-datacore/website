@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Pound for pound, super rare Ferengi seem to be mopping the floor with their legendary older brothers. This derpy looking Rom is no exception. Debuting just inside the top twenty for base and voyage along with a passable attack boost for fresh rosters, he'll have a respectable run of daily use for some time after his release.
-
-Once that fades, his backup is several collection barrels that you can fire off at once. Those traits have also secured Rom some event chances one mega at a time with room for more. He may be Quark's idiot brother, but we'd all be idiots for passing on the proven value that Rom offers.
+Brother Rom has most of what you want from a Super Rare crew: occasional Events, a decent Base for those events, and a handful of Collections. This variant comes packed with a strong DIP Base for Event Shuttles, three Collections and room for one more if Bartender even hits, and a really really deep collar on his jacket.
