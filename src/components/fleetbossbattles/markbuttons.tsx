@@ -10,7 +10,7 @@ import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
 import { MergedContext } from '../../context/mergedcontext';
 import { FinderContext } from './findercontext';
-import { ShipSkill, getActionColor, getActionIcon, getShipBonusIcon } from '../item_presenters/shipskill';
+import { ShipSkill, TinyShipSkill, getActionColor, getActionIcon, getShipBonusIcon } from '../item_presenters/shipskill';
 import { getShipBonus } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 
@@ -170,52 +170,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
 							{crew.name}<br />
 							{props.optimizer.filtered.settings.shipAbility === 'show' &&
-							<div style={{display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
-								<div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
-									<span>+ {crew.action.bonus_amount}</span>								
-								</div>
-
-								{crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
-									{getShipBonus(crew.action)}
-								</div>}
-								{!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
-                                                    CONFIG.CREW_SHIP_BATTLE_TRIGGER[
-                                                        crew.action.ability.condition
-                                                    ]
-                                                })</i>}
-
-								{!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
-								<p style={{fontSize:"0.75em"}}>
-									{crew.ship_battle.crit_bonus && (
-										<span>
-											<b>CB:</b> +
-											{crew.ship_battle.crit_bonus}
-											{` `}
-										</span>
-									)}
-									{crew.ship_battle.crit_chance && (
-										<span>
-											<b>CR:</b> +
-											{crew.ship_battle.crit_chance}
-											{` `}
-										</span>
-									)}<br/>
-									{crew.ship_battle.accuracy &&
-										<span>
-										<b>AC:</b> +
-										{crew.ship_battle.accuracy}
-										{` `}
-										</span>
-									}
-									{crew.ship_battle.evasion &&
-										<span>
-										<b>EV:</b> +
-										{crew.ship_battle.evasion}
-										{` `}
-										</span>
-									}
-								</p>
-							</div>}
+							<TinyShipSkill crew={crew} />}
 						</span>
 					</span>
 				</div>

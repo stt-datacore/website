@@ -406,3 +406,61 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
         );
     }
 }
+
+export interface TinyShipSkillProps {
+    crew: PlayerCrew | CrewMember;
+
+}
+
+export const TinyShipSkill = (props: TinyShipSkillProps) => {
+    const { crew } = props;
+
+    return (
+            <div style={{display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
+                <div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
+                    <span>+ {crew.action.bonus_amount}</span>								
+                </div>
+
+                {crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
+                    {getShipBonus(crew.action)}
+                </div>}
+                {!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
+                                    CONFIG.CREW_SHIP_BATTLE_TRIGGER[
+                                        crew.action.ability.condition
+                                    ]
+                                })</i>}
+
+                {!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
+                <p style={{fontSize:"0.75em"}}>
+                    {crew.ship_battle.crit_bonus && (
+                        <span>
+                            <b>CB:</b> +
+                            {crew.ship_battle.crit_bonus}
+                            {` `}
+                        </span>
+                    )}
+                    {crew.ship_battle.crit_chance && (
+                        <span>
+                            <b>CR:</b> +
+                            {crew.ship_battle.crit_chance}
+                            {` `}
+                        </span>
+                    )}<br/>
+                    {crew.ship_battle.accuracy &&
+                        <span>
+                        <b>AC:</b> +
+                        {crew.ship_battle.accuracy}
+                        {` `}
+                        </span>
+                    }
+                    {crew.ship_battle.evasion &&
+                        <span>
+                        <b>EV:</b> +
+                        {crew.ship_battle.evasion}
+                        {` `}
+                        </span>
+                    }
+                </p>
+            </div>
+    )
+}
