@@ -2265,7 +2265,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					marginBottom: "0.5em",
 				}}>
 				
-				{(inMatch || isOpponent) && 
+				{((inMatch || isOpponent) && isRound) && 
 				<div style={{
 					flexGrow: 1,
 					display: "flex",
