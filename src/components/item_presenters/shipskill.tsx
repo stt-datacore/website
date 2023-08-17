@@ -409,20 +409,20 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
 
 export interface TinyShipSkillProps {
     crew: PlayerCrew | CrewMember;
-
+    style?: React.CSSProperties;
 }
 
 export const TinyShipSkill = (props: TinyShipSkillProps) => {
     const { crew } = props;
 
     return (
-            <div style={{display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
+            <div style={{ ...(props.style ?? {}), display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
                 <div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
                     <span>+ {crew.action.bonus_amount}</span>								
                 </div>
 
                 {crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
-                    {getShipBonus(crew.action)}
+                    {getShipBonus(crew.action)} {!!crew.action.limit && <i style={{fontSize:"0.8em"}}> ({crew.action.limit}x)</i>}
                 </div>}
                 {!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[

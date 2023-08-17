@@ -13,6 +13,7 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { TinyShipSkill } from '../item_presenters/shipskill';
 
 type CrewTableProps = {
 	solver: Solver;
@@ -26,9 +27,14 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true }
 	];
+	
+	if (props.optimizer.filtered.settings.shipAbility === 'show') {
+		tableConfig.push({ width: 3, title: 'Ship Ability' });
+	}
+
+	tableConfig.push({ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] });
+	tableConfig.push({ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true });
 
 	const openNodes = solver.nodes.filter(node => node.open);
 	openNodes.forEach(node => {
@@ -96,6 +102,11 @@ const CrewTable = (props: CrewTableProps) => {
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>
 				</Table.Cell>
+				{props.optimizer.filtered.settings.shipAbility === 'show' && 
+				<Table.Cell>
+					<TinyShipSkill style={{textAlign: "center"}} crew={crew} />
+				</Table.Cell>
+				}
 				<Table.Cell>
 					<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
