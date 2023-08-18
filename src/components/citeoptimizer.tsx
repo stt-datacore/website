@@ -511,11 +511,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		let pri: string[] = [];
 		let sec: string[] = [];
+		let seat: string[] = [];
 		
 		if (workset) {
 			let ac = workset.crewToCite.concat(workset.crewToTrain);
 			pri = this.findSkills(ac);
 			sec = this.findSkills(ac, true);
+			seat = ["command", "diplomacy", "science", "engineering", "security", "medicine"].sort();
 		}
 
 		const priSkills = pri.map((sk) =>{
@@ -534,14 +536,46 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		})
 
-		if (workset && citeMode.priSkills?.length) {
+		const seatSkills = seat.map((sk) =>{
+			return {
+				key: sk,
+				value: sk,
+				text: appelate(sk)
+			}
+		})
+
+		if (workset && citeMode?.priSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 		}
 		
-		if (workset && citeMode.secSkills?.length) {
+		if (workset && citeMode?.secSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
+		}
+		
+		if (workset && citeMode?.seatSkills?.length) {
+			const { playerData } = this.context;
+
+			workset.crewToCite = workset.crewToCite
+				.map(crew => {
+					let fc = playerData?.player?.character?.crew?.find(fc => fc.name === crew.name);
+					if (fc) {
+						crew.base_skills = fc.base_skills;
+					}
+					return crew;
+				})
+				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
+
+			workset.crewToTrain = workset.crewToTrain
+				.map(crew => {
+					let fc = playerData?.player?.character?.crew?.find(fc => fc.name === crew.name);
+					if (fc) {
+						crew.base_skills = fc.base_skills;
+					}
+					return crew;
+				})
+				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
 		}
 
 		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
@@ -654,6 +688,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								placeholder={"Filter by secondary skill"}
 								value={citeMode.secSkills}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
+								/>
+						</div>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+							<Dropdown
+								options={seatSkills}
+								multiple
+								clearable
+								placeholder={"Filter by voyage seating"}
+								value={citeMode.seatSkills}
+								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, seatSkills: value as string[] })}
 								/>
 						</div>
 

@@ -21,6 +21,7 @@ export interface CiteMode {
   customSorter?: (left: PlayerCrew, right: PlayerCrew) => number;
   priSkills?: string[];
   secSkills?: string[];
+  seatSkills?: string[];
 }
 
 
