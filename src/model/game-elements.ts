@@ -98,9 +98,9 @@ export interface ConstellationMap {
 export interface Collection {
   id: number;
   name: string;
-  crew: string[];
-  description: string;
-  image: string;
+  crew?: string[];
+  description?: string;
+  image?: string;
 }
 
 export const rarityLabels = [

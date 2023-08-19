@@ -101,6 +101,33 @@ export class StatLabel extends React.Component<StatLabelProps> {
     }
 }
 
+
+export interface CollectionDisplayProps {
+    crew: PlayerCrew | CrewMember;
+    style?: React.CSSProperties;
+}
+
+export const CollectionDisplay = (props: CollectionDisplayProps) => {
+    const tinyCol = TinyStore.getStore('collections');    
+    const dispClick = (e, col: string) => {
+        tinyCol.setValue('selectedCollection', col);
+        navigate("/playertools/?tool=collections");
+    }
+
+    const { crew, style } = props;
+    if (!crew.collections?.length) return <></>;
+    return (<div style={{
+        ... (style ?? {}),  
+        cursor: "pointer"      
+    }}>
+        {crew.collections?.map((col, idx) => (
+            <a onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
+                {col}
+            </a>))?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
+    </div>)
+}
+
+
 export interface HoverSelectorConfig<T> {
     key: T;
     value: T;
@@ -122,6 +149,7 @@ export interface ImmortalSelectorProps {
     style?: React.CSSProperties | undefined;
     available: HoverSelectorConfig<PlayerImmortalMode>[];
 }
+
 
 function drawBuff(
     key: string | number,
@@ -210,7 +238,7 @@ function drawImmo(
                         marginRight: "0.5em",
                     }}
                 />
-                {ImmortalNames[data]}
+                {!immoed && "Shown "}{ImmortalNames[data]}
             </div>
         );
     } else if (data === "frozen") {
@@ -907,6 +935,9 @@ export class CrewPresenter extends React.Component<
                         }}
                     >
                         {crew.traits_named.join(", ")}
+                    </div>
+                    <div>
+                        <CollectionDisplay crew={crew} style={{fontSize: "0.8em", fontStyle: "italic"}} />
                     </div>
                     <div>
                         {(!pluginData ||
