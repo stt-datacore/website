@@ -163,7 +163,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
 	] };
 
-	renderVoyageGroups(data: CiteData) {
+	renderVoyageGroups(data: CiteData, confine?: string[]) {
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
 
@@ -209,8 +209,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				crew.pickerId = voycrew.pickerId;
 
 				for (let voyage of crew.voyagesImproved ?? []) {
+					if (!!(confine?.length) && !confine.includes(voyage)) continue;
+
 					let vname = appelate(voyage);
 					let currvoy = voyages.find((v) => v.voyage === vname);
+
 					if (!currvoy){
 						currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
 						voyages.push(currvoy);
@@ -326,14 +329,24 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										allCrew={this.context.crew}
 										playerData={this.context.playerData}
 										/>
-										<b  onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
+										<b onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
 											style={{
 											cursor: "pointer", 
-											margin:"0.5em 0 0 0"
-											}}>
+											margin:"0.5em 0 0 0",
+											textDecoration: "underline"
+											}}
+											title={"Click to see only this crew member"}
+											>
 												{crew.name} ({crew.pickerId})
 										</b>
-										<i style={{margin:"0"}}>{crew.voyagesImproved?.length} Voyages Improved, {Math.ceil(crew.totalEVContribution ?? 0)} Total EV</i>
+										<i style={{margin:"0"}} >
+											<span 
+											title={"Click to see only voyages involving this crew member"}
+											style={{cursor: "pointer", margin:"0", textDecoration: "underline"}}
+											 onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
+											>{crew.voyagesImproved?.length} Voyages Improved, </span>
+											{Math.ceil(crew.totalEVContribution ?? 0)} Total EV
+										</i>
 									</div>
 								))}
 							</Grid>
@@ -511,11 +524,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		let pri: string[] = [];
 		let sec: string[] = [];
-		
+		let seat: string[] = [];
+		const confine = [] as string[];
+
 		if (workset) {
 			let ac = workset.crewToCite.concat(workset.crewToTrain);
 			pri = this.findSkills(ac);
 			sec = this.findSkills(ac, true);
+			seat = ["command", "diplomacy", "science", "engineering", "security", "medicine"].sort();
 		}
 
 		const priSkills = pri.map((sk) =>{
@@ -534,14 +550,46 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 		})
 
-		if (workset && citeMode.priSkills?.length) {
+		const seatSkills = seat.map((sk) =>{
+			return {
+				key: sk,
+				value: sk,
+				text: appelate(sk)
+			}
+		})
+
+		if (workset && citeMode?.priSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 		}
 		
-		if (workset && citeMode.secSkills?.length) {
+		if (workset && citeMode?.secSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
+		}
+		
+		if (workset && citeMode?.seatSkills?.length) {
+			const { playerData } = this.context;
+
+			workset.crewToCite = workset.crewToCite
+				.map(crew => {
+					let fc = playerData?.player?.character?.crew?.find(fc => fc.name === crew.name);
+					if (fc) {
+						crew.base_skills = fc.base_skills;
+					}
+					return crew;
+				})
+				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
+
+			workset.crewToTrain = workset.crewToTrain
+				.map(crew => {
+					let fc = playerData?.player?.character?.crew?.find(fc => fc.name === crew.name);
+					if (fc) {
+						crew.base_skills = fc.base_skills;
+					}
+					return crew;
+				})
+				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
 		}
 
 		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
@@ -550,8 +598,26 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 
 		if (workset && citeMode?.nameFilter) {
-			workset.crewToCite = workset.crewToCite.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
-			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
+			if (citeMode.nameFilter.startsWith("voyage:")) {
+				const voyscan = citeMode.nameFilter.slice(7).toLowerCase();
+				const voycrew = workset.crewToCite.concat(workset.crewToTrain).find(d => d.name.toLowerCase() === voyscan);
+
+				if (voycrew) {
+					workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(p => voycrew.voyagesImproved?.includes(p)));
+					workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(p => voycrew.voyagesImproved?.includes(p)));
+					for (let vn of voycrew.voyagesImproved ?? []) {
+						confine.push(vn);
+					}
+				}
+				else {
+					workset.crewToCite = workset.crewToCite.filter((crew) => crew.name.toLowerCase().includes(voyscan));
+					workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(voyscan));
+				}
+			}
+			else {
+				workset.crewToCite = workset.crewToCite.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
+				workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
+			}
 		}
 		
 		const citeData = workset;
@@ -656,6 +722,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
 								/>
 						</div>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+							<Dropdown
+								options={seatSkills}
+								multiple
+								clearable
+								placeholder={"Filter by voyage seating"}
+								value={citeMode.seatSkills}
+								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, seatSkills: value as string[] })}
+								/>
+						</div>
 
 					</div>
 				</Segment>
@@ -673,7 +749,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						 	panes={[
 							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
 							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
-							{ menuItem: 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData) },
+							{ menuItem: 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
 						</>
 					}
