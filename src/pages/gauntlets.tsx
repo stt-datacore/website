@@ -1593,7 +1593,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
 			{ key: 'owned', value: 'owned', text: 'Owned Crew' },
-			{ key: 'ownedmax', value: 'ownedmax', text: 'All Owned Crew as Maxed' },
+			{ key: 'ownedmax', value: 'ownedmax', text: 'Owned Crew as Maxed' },
 			{ key: 'fe', value: 'fe', text: 'Owned, Fully Equipped Crew' },
 			{ key: 'nofe', value: 'nofe', text: 'Owned, Not Fully Equipped Crew' },
 			{ key: 'nofemax', value: 'nofemax', text: 'Owned, Not Fully Equipped Crew as Maxed' },
