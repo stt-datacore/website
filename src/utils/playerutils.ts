@@ -81,14 +81,16 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         p.player.character.crew_avatar &&
         p.player.character.crew_avatar.symbol
     ) {
-        p.player.character.crew_avatar = {
-            ... p.player.character.crew_avatar,
-            portrait: {
-                file: p.player.character.crew_avatar.portrait.file
-                .slice(1)
-                .replace("/", "_") + ".png",
-            }
-        };
+        if (p.player.character.crew_avatar.portrait.file.startsWith("/")) {
+            p.player.character.crew_avatar = {
+                ... p.player.character.crew_avatar,
+                portrait: {
+                    file: p.player.character.crew_avatar.portrait.file
+                    .slice(1)
+                    .replace("/", "_") + ".png",
+                }
+            };
+        }
     }
 
     p.player.character.accepted_missions =
