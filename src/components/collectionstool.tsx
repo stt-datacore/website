@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -15,9 +15,9 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { MergedContext } from '../context/mergedcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
+import { TinyStore } from '../utils/tiny';
 
 const CollectionsTool = () => {
-
 	const { playerData, allCrew: crew } = React.useContext(MergedContext);
 	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
@@ -84,7 +84,7 @@ const CollectionsTool = () => {
 		collection.totalRewards = (collection.milestone.buffs?.length ?? 0) + (collection.milestone.rewards?.length ?? 0);
 		collection.owned = 0;
 
-		ac.crew.forEach(acs => {
+		ac.crew?.forEach(acs => {
 			let cc = collectionCrew.find(crew => crew.symbol === acs);
 			if (!cc) return;
 			if (!cc.collectionIds) cc.collectionIds = [] as number[];
@@ -131,7 +131,7 @@ const CollectionsTool = () => {
 };
 
 type CollectionsUIProps = {
-	playerCollections: any[];
+	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
 	allCrew: PlayerCrew[];
 	playerData: PlayerData;
@@ -139,12 +139,37 @@ type CollectionsUIProps = {
 
 const CollectionsUI = (props: CollectionsUIProps) => {
 	const { allCrew, playerCollections, collectionCrew } = props;
+	const tinyCol = TinyStore.getStore('collections');   
 
-	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', [] as number[]);
+	const offsel = tinyCol.getValue<string | undefined>("selectedCollection");
+	const selColId = playerCollections.find(f => f.name === offsel)?.id;
 
+	tinyCol.removeValue("selectedCollection");
+
+	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', selColId !== undefined ? [selColId] : [] as number[]);
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
+
+
+	if (selColId !== undefined && !collectionsFilter?.includes(selColId)) {
+		
+		if (playerCollections?.some(c => c.id === selColId && !!c.milestone?.goal && !!c.needed)) {
+			setCollectionsFilter([...collectionsFilter, selColId]);
+			window.setTimeout(() => {
+				crewAnchor?.current?.scrollIntoView({
+					behavior: 'smooth',
+				});	
+			});			
+		}
+		// else {
+		// 	window.setTimeout(() => {
+		// 		navigate("/collections#" + encodeURIComponent(offsel ?? ""));
+		// 	});			
+		// }
+	}
+
 	console.log("Collections")
 	console.log(playerCollections);
+
 	return (
 		<React.Fragment>
 			<ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
@@ -164,7 +189,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 };
 
 type ProgressTableProps = {
-	playerCollections: any[];
+	playerCollections: PlayerCollection[];
 	filterCrewByCollection: (collectionId: number) => void;
 };
 
@@ -306,7 +331,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 
 type CrewTableProps = {
 	allCrew: (CrewMember | PlayerCrew)[];
-	playerCollections: any[];
+	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
 	collectionsFilter: number[];
 	setCollectionsFilter: (collectionIds: number[]) => void;
@@ -327,7 +352,7 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 3, column: 'immortalRewards.length', title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>, reverse: true }
 	];
 
-	const collectionsOptions = playerCollections.filter(collection => collection.milestone.goal > 0).sort((a, b) => a.name.localeCompare(b.name)).map(collection => {
+	const collectionsOptions = playerCollections.filter(collection => collection.milestone.goal != 'n/a' && collection.milestone.goal > 0).sort((a, b) => a.name.localeCompare(b.name)).map(collection => {
 		return {
 			key: collection.id,
 			value: collection.id,
@@ -456,7 +481,8 @@ const CrewTable = (props: CrewTableProps) => {
 
 	function renderCrewRow(crew: PlayerCrew, idx: number): JSX.Element {
 		const unmaxed = crew.unmaxedIds?.map(id => { return playerCollections.find(pc => pc.id === id) });
-		const tabledProgress = unmaxed?.sort((a, b) => a.needed - b.needed).map(collection => {
+		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
+			if (!collection) return <></>
 			return (
 				<tr key={collection.id}>
 					<td style={{ whiteSpace: 'nowrap', fontSize: '.95em' }}>{collection.name}</td>

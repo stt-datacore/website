@@ -54,13 +54,12 @@ class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPag
 								<Item.Header><div className='text'>{collection.name}</div><hr/></Item.Header>
 								<Item.Meta>
 									<div style={{color:foreColor}}>
-										<span dangerouslySetInnerHTML={{ __html: collection.description }} />
+										<span dangerouslySetInnerHTML={{ __html: collection.description ?? "" }} />
 									</div>
 								</Item.Meta>
 								<Item.Description>
 									<b>Crew: </b>
-									{collection.crew
-										.map(crew => (
+									{collection.crew?.map(crew => (
 											<Link key={crew} to={`/crew/${crew}/`}>
 												{allcrew?.find(c => c.symbol === crew)?.name}
 											</Link>

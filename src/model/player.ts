@@ -6,7 +6,7 @@ import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon } from "./equipment";
-import { Icon } from "./game-elements"
+import { Collection, Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
 import { Archetype17, ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
@@ -1119,7 +1119,7 @@ export interface Player {
     max: number
   }
   
-  export interface CryoCollection {
+  export interface CryoCollection extends Collection {
     id: number
     type_id?: number
     name: string
