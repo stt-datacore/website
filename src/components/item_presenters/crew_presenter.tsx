@@ -210,7 +210,7 @@ function drawImmo(
                         marginRight: "0.5em",
                     }}
                 />
-                {ImmortalNames[data]}
+                {!immoed && "Shown "}{ImmortalNames[data]}
             </div>
         );
     } else if (data === "frozen") {
