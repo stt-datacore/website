@@ -10,6 +10,7 @@ import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import { navigate } from 'gatsby';
+import { RarityFilter } from './crewtables/commonoptions';
 
 type ProfileShipsProps = {
 };
@@ -23,6 +24,7 @@ type ProfileShipsState = {
 	pagination_rows: number;
 	pagination_page: number;
 	activeShip?: Ship | null;
+	rarityFilter?: number[];
 };
 
 const pagingOptions = [
@@ -79,33 +81,66 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
-			direction: clickedColumn === column ? direction : (clickedColumn === 'name' ? null : 'ascending')
+			direction: clickedColumn === column ? direction : (direction === 'descending' ? 'ascending' : 'descending')
 		};
+		
+		let sorted = {} as IResultSortDataBy;
 
 		if(sortConfig.field === 'max_level') {
-			sortConfig.secondary = {
-				field: 'level',
-				direction: 'descending' //sortConfig.direction
-			};
-		}
+			sortConfig.direction = clickedColumn !== column ? direction : (direction === 'descending' ? 'ascending' : 'descending');
+			const newdata = [...data];
+			newdata.sort((a, b) => {
+				let r = 0;
+				r = (a.max_level ?? 0) - (b.max_level ?? 0);
+				if (r) {
+					return sortConfig.direction === 'descending' ? -r : r;
+				}		
+				r = (a.level ?? 0) - (b.level ?? 0);
 
-		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+				if (this.state.rarityFilter?.length === 1) {
+					return sortConfig.direction === 'descending' ? -r : r;
+				}
+				else {
+					return -r;
+				}				
+			});
+			sorted = {
+				field: 'max_level',
+				direction: sortConfig.direction ?? 'ascending',
+				result: newdata
+			}
+		}
+		else {
+			sorted = sortDataBy(data, sortConfig);
+		}
+		
+		const sortResult = sorted;
+
 		this.setState({
-			column: sorted.field,
-			direction: sorted.direction,
+			column: sortResult.field,
+			direction: sortResult.direction,
 			pagination_page: 1,
-			data: sorted.result
+			data: sortResult.result
 		});
 	}
 
+	private readonly setRarityFilter = (filter: number[] | undefined) => {
+		this.setState({...this.state, rarityFilter: filter})
+	}
+
 	render() {
-		const { column, direction, pagination_rows, pagination_page } = this.state;
+		const { rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
 		if (!dataContext || !dataContext.ships || !dataContext.playerShips) return <></>;
 
-		let { data } = this.state;
+		let { data: prefiltered } = this.state;
 		
+		let data = prefiltered.filter((ship) => {
+			if (!rarityFilter?.length) return true;
+			return rarityFilter.some((r) => ship.rarity === r);
+		})
+
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 		const setActiveShip = (ship: Ship | null | undefined) => {
@@ -119,7 +154,13 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
-		return (<>	
+		return (<div>	
+
+			<RarityFilter
+				altTitle='Filter ship rarity'
+				rarityFilter={rarityFilter ?? []}
+				setRarityFilter={this.setRarityFilter}
+			/>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -238,7 +279,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				</Table.Footer>
 			</Table>
 			<ShipHoverStat targetGroup='ships' />
-			</>);
+			</div>);
 	}
 }
 
