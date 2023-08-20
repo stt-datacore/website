@@ -348,7 +348,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 				multiple
 				selection
 				options={triggerOptions}
-				value={selectedTriggers}
+				value={selectedTriggers ?? []}
 				onChange={(e, { value }) => setTriggers(value as string[])}
 				closeOnChange
 			/>
@@ -361,7 +361,7 @@ export type BonusPickerProps = {
     bonuses?: string[];
     zeroText?: string;
 	selectedBonuses?: number[];
-	setSelectedBonuses: (triggers: number[]) => void;
+	setSelectedBonuses: (triggers: number[] | undefined) => void;
 	altTitle?: string;
 };
 
@@ -369,17 +369,17 @@ export const BonusPicker = (props: BonusPickerProps) => {
 
 	const { selectedBonuses, setSelectedBonuses } = props;
 	
-	const [bonsuses, setBonuses] = React.useState<number[]>(selectedBonuses ?? []);
+	const [bonsuses, setBonuses] = React.useState(selectedBonuses);
 	
     const bonusOptions = props.bonuses?.map((u) => {
         return {
-            key: u,
+            key: Number.parseInt(u),
             text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[u],
 			value: Number.parseInt(u),
         }
     }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE).slice(0, 3).map((dt) => {
 		return {
-			key: dt,
+			key: Number.parseInt(dt),
 			value: Number.parseInt(dt),
 			text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[dt]
 		}
@@ -397,7 +397,7 @@ export const BonusPicker = (props: BonusPickerProps) => {
 				multiple
 				selection
 				options={bonusOptions}
-				value={selectedBonuses}
+				value={selectedBonuses ?? []}
 				onChange={(e, { value }) => setBonuses(value as number[])}
 				closeOnChange
 			/>
