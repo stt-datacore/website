@@ -348,7 +348,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 				multiple
 				selection
 				options={triggerOptions}
-				value={triggers}
+				value={selectedTriggers}
 				onChange={(e, { value }) => setTriggers(value as string[])}
 				closeOnChange
 			/>
@@ -397,7 +397,7 @@ export const BonusPicker = (props: BonusPickerProps) => {
 				multiple
 				selection
 				options={bonusOptions}
-				value={bonsuses}
+				value={selectedBonuses}
 				onChange={(e, { value }) => setBonuses(value as number[])}
 				closeOnChange
 			/>
