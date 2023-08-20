@@ -138,7 +138,7 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 	const { selectedAbilities, setSelectedAbilities } = props;
     const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9);
 
-	const [selection, setSelection] = React.useState(selectedAbilities);	
+	const [ability, setAbility] = React.useState(selectedAbilities);	
 
 	const placeholder = 'Select Ship Abilities';
 	const poolList = availableAbilities?.map((c) => (
@@ -164,8 +164,8 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 	)) ?? [];
 
     React.useEffect(() => {
-        setSelectedAbilities(selection);
-    }, [selection]);
+        setSelectedAbilities(ability);
+    }, [ability]);
 
 	return (
 		<React.Fragment>
@@ -177,8 +177,8 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
                 multiple
 				placeholder={placeholder}
 				options={poolList}                
-				value={selection}								
-				onChange={(e, { value }) => setSelection(value as string[])}
+				value={selectedAbilities}								
+				onChange={(e, { value }) => setAbility(value as string[])}
 			/>
 		</React.Fragment>
 	);
@@ -196,13 +196,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 	const { selectedRankings: selectedAbilities, setSelectedRankings: setSelectedAbilities } = props;
     const availableAbilities = props.availableRankings;
 
-	enum OptionsState {
-		Uninitialized,
-		Initializing,
-		Initialized,
-	};
-
-	const [selection, setSelection] = React.useState(selectedAbilities.map(a => a.toString()));
+	const [selection, setSelection] = React.useState(selectedAbilities ?? []);
 
 	const placeholder = 'Select Ship Ability Amount';
 
@@ -244,7 +238,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
                 multiple
 				placeholder={placeholder}
 				options={poolList}                
-				value={selection}				
+				value={selectedAbilities}				
 				onChange={(e, { value }) => setSelection(value as string[])}
 			/>
 		</React.Fragment>
@@ -354,10 +348,60 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 				multiple
 				selection
 				options={triggerOptions}
-				value={triggers}
+				value={selectedTriggers ?? []}
 				onChange={(e, { value }) => setTriggers(value as string[])}
 				closeOnChange
 			/>
 		</Form.Field>
 	);
 };
+
+
+export type BonusPickerProps = {    
+    bonuses?: string[];
+    zeroText?: string;
+	selectedBonuses?: number[];
+	setSelectedBonuses: (triggers: number[] | undefined) => void;
+	altTitle?: string;
+};
+
+export const BonusPicker = (props: BonusPickerProps) => {
+
+	const { selectedBonuses, setSelectedBonuses } = props;
+	
+	const [bonsuses, setBonuses] = React.useState(selectedBonuses);
+	
+    const bonusOptions = props.bonuses?.map((u) => {
+        return {
+            key: Number.parseInt(u),
+            text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[u],
+			value: Number.parseInt(u),
+        }
+    }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE).slice(0, 3).map((dt) => {
+		return {
+			key: Number.parseInt(dt),
+			value: Number.parseInt(dt),
+			text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[dt]
+		}
+	});
+  
+	React.useEffect(() => {
+		setSelectedBonuses(bonsuses);
+	}, [bonsuses])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Bonuses'} 
+				clearable
+				multiple
+				selection
+				options={bonusOptions}
+				value={selectedBonuses ?? []}
+				onChange={(e, { value }) => setBonuses(value as number[])}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+

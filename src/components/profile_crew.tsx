@@ -27,7 +27,7 @@ import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { Ship } from '../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shiputils';
 import { MergedContext } from '../context/mergedcontext';
-import { AbilityUses, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from './crewtables/shipoptions';
+import { AbilityUses, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from './crewtables/shipoptions';
 import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMethodConfig } from './crewtables/customviews';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
@@ -253,6 +253,7 @@ interface ShipFilterConfig {
 	selectedTriggers?: string[];
 	triggerOnly?: boolean;
 	selectedUses?: number[];
+	selectedBonuses?: number[];
 }
 
 export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
@@ -270,7 +271,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const [shipFilters, setShipFilters] = useStateWithStorage<ShipFilterConfig>(pageId+"/shipFilterConfig", {});
 
-	const { selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
+	const { selectedBonuses, selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 	
 	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
 	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
@@ -412,6 +413,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 	const clearShipFilters = () => {
 		setShipFilters({});
+		setShipCrew([]);		
 		setShipPickerFilter({});
 		setShipRarityFilter([]);
 	}
@@ -538,6 +540,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 
 			if (!selectedShip && selectedTriggers?.length) {
 				if (!selectedTriggers.some(st => crew.action.ability?.condition.toString() === st)) return false;
+			}
+
+			if (selectedBonuses?.length) {
+				if (!selectedBonuses.some(st => crew.action.bonus_type === st)) return false;
 			}
 
 			if (selectedSeats?.length && !selectedSeats.some(seat => getSkills(crew).includes(seat))) return false;
@@ -767,6 +773,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								title={"Clear Ship Filters"}
 								onClick={(e) => clearShipFilters()}
 								style={{
+									marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '1em' : undefined,
 									height: "3em", 
 									width: "3em",
 									display: "flex", 
@@ -782,23 +789,10 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 								className="trash icon alt" />
 						</div>
 					</div>
-					<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
-						<div style={{marginRight: "1em"}}>
-							<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
-						</div>
-
-						{!isCheckDisabled() &&
-						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
-							<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
-							<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
-						</div>}
-						{!selectedShip &&
-						<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
-							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item })} />
-						</div>}
+					<div style={{margin: "0", marginTop:"1em", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
 						<div style={{
-							marginLeft: (window.innerWidth < DEFAULT_MOBILE_WIDTH || (isCheckDisabled() && !!selectedShip)) ? '0' : "1em",
-							marginTop: (window.innerWidth < DEFAULT_MOBILE_WIDTH) ? '0.25em' : 0						
+							marginLeft: 0,
+							marginTop: 0	
 							}}>
 							<ShipSeatPicker
 									setSelectedSeats={(item) => setShipFilters({ ... shipFilters, selectedSeats: item })}
@@ -808,6 +802,24 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>
 
 					</div>
+					<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
+						<div style={{marginRight: "1em"}}>
+							<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
+						</div>
+						<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0, marginRight:"1em"}}>
+							<BonusPicker selectedBonuses={selectedBonuses} setSelectedBonuses={(item) => setShipFilters({ ... shipFilters, selectedBonuses: item })} />
+						</div>
+						{!isCheckDisabled() &&
+						<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+							<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipFilters({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
+							<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
+						</div>}
+						{!selectedShip &&
+						<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
+							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item })} />
+						</div>}
+					</div>
+					
 					<div style={{
 						margin: "0.25em 0",
 						marginTop: 0,
@@ -866,7 +878,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
                             />
                         )}
                         <RarityFilter
-                            rarityFilter={rarityFilter}
+							rarityFilter={rarityFilter}
                             setRarityFilter={setRarityFilter}
                         />
                         <CrewTraitFilter
