@@ -44,11 +44,15 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
         const roster = playerData?.player?.character?.crew;
-
+        
         if (!item) {
             return <></>
         } 
-       
+        item.item_sources.sort((a, b) => {
+            let r = (a.avg_cost ?? 0) - (b.avg_cost ?? 0);
+            if (!r) r = a.name.localeCompare(b.name);
+            return r;
+        });
         const frozenStyle: React.CSSProperties = {
             background: 'transparent',
             color: 'white',            
