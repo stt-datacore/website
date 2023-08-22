@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-My-First-Nog is a strange card. Not quite representative of the character it manifests. A fairly adequate ship ability mixed with decent SEC and DIP stats means you will probably get quite a bit of use out of him in the early game. He fills the Ferengi collection out, however, he is an absolute pain to equip, requiring 35 faction items from the various Ferengi shops. However he’s a good beginner card and his traits will get some normal nodes unlocked for your first time round.
+This low-Rarity Nog requires a large influx of Faction Items to complete, but he’ll pay off by having a chunky Trait List for a Common Crew, which as it stands gives him slots in two Stat-boosting Collections and the strong chance for a set of four when all is said and done.

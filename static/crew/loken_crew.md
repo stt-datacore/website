@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-When Loken debuted, his ranking anywhere above, say, a ham sandwich had almost everything to do with the ENG/MED part of his skill set which was in short supply. But thanks to a 2021 trait audit, Loken picked up three new traits, one of which went on to become the largest collection in the game at the time. While those three traits didn't seem the most eventable or collectable at the time. Resourceful's over-performance in value goes to show that nothing can be taken for granted.
+Oh my God, Loken has ENG/MED! Get him and Cite him immediately! … is that we would say if his Voyage power hadn’t atrophied to the point where it’s almost irrelevant. 
 
-With a base that ranks as usable across his trait pools and even some cloak-triggered arena damage and lower end voyage ability, Loken is more well-rounded than he was at the time of his debut and has held up in value over time.
-
-By the way, we have Ham Sandwich around tier 8. Solid whole wheat base will make some shuttle runs when bonus, but few condiments limit his voyage and event potential.
+Little more than the sum of his Trait list at this point, the best Kraylor in the game is a worthwhile-ish long-term investment if you find his stars in otherwise uninspiring Beholds, since he’ll likely top out at four Collections when all is said and done.

@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Perverting science and technology never felt so right. Fusion, hybrid, abomination - whatever you want to call these experiments by WRG, this one, at least, hasn't disappointed. There are several talking points here, but let's start with Seven's pristine skill order which (s)he only shares with the less powerful Torpedo McCoy among golds. In combination with a worthwhile total score and voyage MED, (s)he's among the most impactful voyagers in the game whose value above replacement blows past CMD/SEC also-rans with similar overall numbers.
+For a long time, players hoped to luck into a Legendary Behold that included Mobile Doctor just so they could fuse him with Indignant Seven to make this powerful Fusion crew, affectionately known as “Cheesecake Seven”.
 
-Equally as mouth-watering is event eligibility to rival the fabled Zhian'tara Odo. Triggering bonuses for Doc, Seven, and a multitude of traits, (s)he has one of the safest event cushions in the game. Coupled with easily the best MED of the bunch and usable SCI, (s)he's guaranteed to add big, fat success numbers to Faction shuttles that will fail at 99% anyways.
+Nowadays the drool has dried a bit because Power Creep™ comes for them all, including this crew that counts as both EMG and Seven of Nine for Events, but Cheesecake held Power Creep off longer than anyone, due to the fact that they have a nearly unmatched eight Voyage Anti-matter Traits and a unicorn Skill set and order, including the delectable MED/ENG pairing.
 
-We'll take the downsides (gauntlet, arena) in stride, as her power/usefulness combo in other areas is simply outstanding. If you can find a Mobile Doc between the couch cushions, upgrade him to this version and flip on the telly to watch Patrick Stewart, Jeri Ryan, and company Fridays on UPN!
+Look for Indulgent Seven to continue to hold some long-term value from their Event pedigree, stellar Trait List, and how Fusing crew is so damn fun! You will need to Cite this crew to Immortalize them but it may be worth it even though they’re no longer daily use due to the possibility for up to five Collections in due time.

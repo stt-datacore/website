@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A by the books, no nonsense physician. #4 MED base with a decent proficiency give McCoy some legs but his voyage skill is lacking somewhat. He is certainly not the worst MED crew but there are better crew available if you do a little digging.
+Rura Penthe McCoy will give you some very early game Gauntlet wins over even newer players who are still using Common and Uncommon Crew, but doesn’t offer a lot else other than a MED Base skill for cracking Galaxy Map and Cadet Mission Nodes wide open. Take the notches on his two Stat-boosting Collections and look for some MED from Super Rares and Legendaries after that.

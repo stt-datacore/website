@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-As we've been tapping our foot for Strange New Worlds, Ye Olde Disco Pike has been dropping ranks. No longer really suitable for daily work, this Pike is a matter of events and collections - both of which are at the mercy of an uncertain future. There's a strong chance Anson mounts an event comeback when SNW drops, just don't let his third skill trick you into thinking he's a worthwhile option day to day.
+You might think, “Oh great, it’s Enterprise Pike!” when you see this crew in a Behold, but unfortunately this is a Discovery-era Pike that is in early 2019 inclusion in the game and shows that age. Withered Voyage score and the most mid of Skill Sets make this Chris solely a value in Pike or variant Events or if his remaining bland Traits hit a Collection. He’ll top out at four Collections if he gets lucky.

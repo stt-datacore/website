@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Lady is theoretically an event/collection combo platter, though the back half of that hasn't appeared (yet). Her non-human traits all seem likely collection candidates and in the meantime they boost an otherwise underperforming event history for Crusher who saw her variant event tally double during just the course of 2021. She's more speculative than many low-level super rares, but one can easily see a path to improvement for her.
+While Lady Beverly possesses a rather thin Trait list, she’s managed to snag a spot in the Pet People Collection so you can one day get yourself a copy of Data and Spot. Otherwise, her traits will likely top her out at four Collections, so you can safely pick up copies of Bev and her Cockatoo at your leisure and get paid off whenever Beverly or Trait Events come up, or if WRG deems one of her Traits worthy of a new Collection (i.e. “content”).
