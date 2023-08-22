@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-May has often been a punchline for Timelines players and while it's true that non-main cast 2-skiller is not a portfolio you should be drooling over, there's still value here, especially for the veteran player.
+“It’s gonna be May!” is an exasperated sigh from players who might find this Mirror Universe(?) mushroom entity hallucinated by Tilly in their Behold. 
 
-Good collections and common shuttle seating for events automatically keeps her off of the no-fly list, but if you take a stroll through her event history, it's easy to understand why one would be hesitant to take the plunge. If there was ever a "They've already had their mega" crew, this is it. Only approach May as a behold choice if you know what you're getting into and are ok playing the long game.
+May has parlayed her thin Trait set into four Collections to date and that’s pretty good considering how many crew with more Traits have a lot fewer. She’s got that extra-special Discovery hidden tag, which has given her a strong Event history and perhaps more Events in the future, especially since WRG resurrected the Discovery Mega Event in late 2022. Two skills, five Traits, four Collections… I guess we can say she’s not bad for what she is… which again is a hallucination made up of mushrooms.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A refreshingly different arena ability grabs the lede - a hefty accuracy boost activating at a snappy three seconds. If you like to win with your favorites and own Patch Adams on DVD, this is your guy. Beyond that he's a part time shuttle pilot who benefits from a good skill order to find plenty of seating opportunities when one of his traits is called. That same trait lineup, once thought to be somewhat thin, is benefitting from WRG's collection push and has been incrementally adding value to the Colonel over time.
+With a quick reminder to everyone that the Confederacy lost the American Civil War, Colonel Q is decrepit statistically with little to offer you other than his Trait list, which may increase his Collection count from three to four when his last viable Trait gets called into action. The Colonel can be the Crew you choose from a bad Legendary Behold, then you look at his Big Book note and think… “ok, he’s not THAT bad I guess, if I just follow the Traits.”
