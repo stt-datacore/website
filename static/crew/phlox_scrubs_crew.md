@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I’m never usually too hard on any MED crew as they are so few and far between that any combination of skills will be useful to new players. However Phlox doesn’t really perform as well as others in his class. His Max MED stat isn’t that much higher than his 2* counterparts and his ship ability doesn’t particularly inspire. His skills range makes him a good voyage candidate however but only able to access Sunday cadet missions whereas better medics such as Selar, Kes and Bashir can work all weekend missions. However struggling for MED crew is common so don’t dismiss him too quickly, just be prepared to move him on quickly when someone better comes along.
+As Rare Crew with MED go, Phlox is useful, but he only enjoys one day of weekend Cadet Mission eligibility and his Base seems pretty low  when you consider there are two handfuls of crew above him in the rankings. Of course MED/CMD is valuable on Voyages (Phlox’s is Primary and Tertiary) and his power is good enough to give him some staying power until you Fuse up higher Rarity Crew. As Collections go he snags a position in four of them, with an outside possibility of a fifth.

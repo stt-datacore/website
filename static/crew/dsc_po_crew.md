@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Eenie, queenie, miney...ah forget it. Po's event count reads like a Kirk or Jadzia and even if Discovery events were a house of cards, she has enough traits to power plenty of weekend work down the line. Those fistfuls of traits, with no Human, Federation, or Starfleet among them, also supercharge her collection value which has been steadily growing while showing no signs of slowing (cue Willy Wonka).
+You can have your ice cream and eat it too with this Legendary Xahean - Queen Po! She tops her frozen dessert with so many Traits and Event chances you’ll forget that her Voyage rank is now basically empty calories.
 
-We're obligated to remind you that Po was a prior campaign offering and perhaps one of the best. She's chewed through a chunk of her voyage lifespan to date and will be dropping ranks with greater velocity, though some uncommon anti-matter traits and still-usable power gives her a while longer to contribute there. One of the best trait lineups in the game had enough power on release for Po to present an impressive value portfolio even years after her addition to Timelines.
+A sick pack of Collections buoy her Event chances, including her Discovery hidden Trait which has resulted in many Mega Events in the past and now gives lasting value with a show Collection. She could even find two more Collections in the couch cushions before long. 
+
+You’ll be pleased with Po’s work even from star 1, as she contributes solidly towards Fleet Boss Battle Node solving, and feel free to use your Quantum to Fuse her up to get those global Stat boosts from her Collections.

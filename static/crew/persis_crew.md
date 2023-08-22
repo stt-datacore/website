@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Whilst her SEC isn’t anything to shout about her DIP score will fill the spaces that Tilly misses especially on Tuesday missions. Her ship ability is a good early game boost and she gains an extra collection bonus when completed.
+Persis shines in the early game with her Cadet Missions eligibility, giving her decent Bases an opportunity to clear Nodes for you, and her Traits shall also bless early game players with three non-Rarity Collections. Also, I’m pretty sure she’s wearing the same style jeans that kids these days are wearing.

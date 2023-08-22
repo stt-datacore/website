@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Those pesky HFS traits fluff up a trait list that in actuality is nearing the peak of its usefulness for collections. Granted, he offers fine value there, but that may be close to all he offers in the face of has-been voyage ability and very spotty event work. With most of his attribute scores set to drop at a consistent pace, take Broccoli for the collection value and count anything else you get from him as extra.
+Those pesky HFS Traits fluff up a Trait list that in actuality is nearing the peak of its usefulness for Collections. Granted, he offers fine value there, but that may be close to all he offers in the face of has-been Voyage ability and very spotty Event work. With most of his attribute scores set to drop at a consistent pace, take Broccoli for the Collection value and count anything else you get from him as extra.
