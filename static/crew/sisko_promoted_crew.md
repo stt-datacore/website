@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Some very middle of the road stats for a three skilled PokeCaptain but they score high enough to make him the best Voyager in the Uncommon collection. He has a ton of traits but fills the role that the other starter captains in that he is wide as an ocean but deep as a puddle. +3 attack in ship battles is a fairly good early game ability and he fills two extra collections when immortalised.
+If you are coming here to decide which of the 3 Uncommon Crew (Sisko, Kirk, Picard) to choose from your Uncommon Behold (the only one ever!), you may want to select Promoted Sisko. He’s one of the top Uncommon Voyagers, and is Traited like almost every other Sisko - nicely! Follow those Traits to four non-Rarity Collections and room for up to two more, filling out Ben’s six pack.

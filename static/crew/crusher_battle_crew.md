@@ -3,7 +3,7 @@ name: Battle Beverly Crusher
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 18
 in_portal:
 date: 21/06/2023

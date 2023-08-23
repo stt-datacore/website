@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Marine Janeway here is so very nearly a great card. She has the #3 CMD base but not a great deal of proficiency bonuses and her ship ability is a plain +5 Attack. Her voyaging score isn’t the best but her primary use will be for CMD nodes on Saturday cadet missions. Once they are taken care of feel free to freeze or throw as required.
+Macroviruses tremble when Rifle Janeway walks down the corridors of The Voyager with her compression rifle! Janeway’s primary value is clearing CMD Nodes on Cadet Challenges during the “female only” Missions, and once you’ve moved past needing to run those manually, enjoy her two non-Rarity Collections and park her in Cryostasis.

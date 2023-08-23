@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-Carrot Top is far less flashy than her dress sense implies. The event work is nil, the skill set is 💩 for voyages, and the traits have been thinner value than they look for weekend bonuses while having no proficiencies to latch onto in the gauntlet. 
-
-Nevertheless, she has some theoretical voyage power if you've been avoiding CMD/DIP/SUCK like the plague and her skills align for great Faction seating opportunities if her traits ever do open up more event work.
-
-She'll drop in value faster than other crew due to a lack of utility, but if you're a Majel fanatic (so say we all) and want a behold project off the beaten path with the promise of progress towards collections as a sweetener, you can be grateful to have this power creeped variant of one of the most joyful characters in Trek history.
+As with most four year old Legendary Crew, Lwaxana has little left to offer outside of the sum of her Traits. As of yet we are Grateful she has hit on a single Diplomat Trait for a Collection, but we would be remiss if we didn’t take it with a little grain of salt, since unfortunately the rest of her Traits may have too much overlap with existing Collections (Telepath and Ambassador), too big to be viable (Romantic) or a racial Collection that would almost entirely be the Lwaxana and Deanna Troi Show™. Take this crew in a Legendary Behold with low expectations.
