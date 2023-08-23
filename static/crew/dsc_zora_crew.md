@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Aunt Zora's previous note decried her event value in a post-Disco world, but she fired back at us with a fistful of events, both mega and standalone. Her event tally is impressive regardless and there's almost always room for DIP shuttlers.
-
-Beyond that there's some short-lived voyage ability that requires all four stars to beat out the fused event crew a typical new roster will acquire, but more important is her collection value. Everything not Human, Federation, or Starfleet is in play and she could end up as one of the better non-main cast investments for veterans looking to stack collections and requisition shuttle help.
+Zora has been reborn from the fires of Discovery Mega Events as not only the sentient computer of the ship (that’s not a trope we’ve ever seen!) but as a solid Collection piece and Fleet Boss Battles Node solver. Three Collections plus another pair of untapped Traits add up to five (yes, we do the math for you here at bigbook.app), so safely Fuse her up at your leisure and cash in.

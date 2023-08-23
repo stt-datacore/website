@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-A favorite of The Big Book staff for a bouffant hairstyle that puts Worf to shame, this Vice cops to being a bigger badass than Worf too. Great bases, including a variant-dominating CMD, perform Admirably throughout fistfuls of bonuses from Janeway's events and two scoops of traits. 
-
-While her voyage ability and its nine (!!!) anti-matter traits fall off the map, collections buoy her value right back up. Her Rikerian pair of Maverick and Gambler may hit on their own collections before the ink dries on this note, but even if she never gets them, there's plenty of value here from one of Timelines' most notable event names.
+Even in the distant alternate future, Kathryn Janeway will find a way to slot herself into weekend Events and this Vice Admiral variant is no different. Once a monster Voyager, VAJ’s remaining value is in her Trait list and the aforementioned variant Events, which are as frequent as her coffee cup refills. Four collections by now and up to two more to round out a solid six, you may also want to invest in a copy for Fleet Boss Battles Node solving while you round out her final stars.

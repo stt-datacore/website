@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-A thoroughly shameful crew premiere that will have him washing up on the shore next to all the other flotsam. This Solok card lays claim to stats four years older than its age and is (borderline) useless in almost every daily area of the game, which is a perfectly valid claim to make in an era where you can retrieve any type of crew you desire and 99% of legendary crew debut above this power level.
-
-Completely by coincidence, Solok's best area of potential potency amidst WRG's big collection push is his trait lineup. Having hit on a few collections already, the rest of his list excludes the most bloated groups and all have a chance to bump up his value in that area going forward or put his poor bases in a shuttle seat for two to four days at a time.
+Solok, notedly not the Vulcan one who plays baseball and wrestles Captain Sisko, debuted to… what is the opposite of fanfare?... in late 2021 and hasn’t gotten any better. At this point, our darling DaiMon (did anyone else notice the title basically sounds like “demon”?) is little more than the sum of his Traits, which so far include two Collections and has three more viable options to give him a set of five if you can stomach taking him in Beholds.

@@ -3,7 +3,7 @@ name: Lara
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 11
 in_portal: true
 date: 02/11/2021

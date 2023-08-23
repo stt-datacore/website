@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A fairly average voyage crew but with less than impressive ENG stats for a 3* engineer. His Jury Rigger collection fulfillment keeps from being airlocked straight away but if you are struggling for space and have better engineers then don’t hesitate to depressurise him.
+A definite future inclusion to the Undergarments Vanity Collection one day, Rescuer Tucker manages to have middle of the road value in most respects. Trip picks up two non-Rarity Collections and has two other suitable Traits, but has no Cadet Challenges eligibility on the weekend, so consider spending your valuable resources in the early game on female alien Crew instead. He’ll still be around later.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A very average performing Diplomat in terms of pure stats. She sits in the middle of the 3* DIP crew with not much to add via proficiency. Her use comes primarily to unlock a node on the cadet missions and to score in two additional collections. Cretak can participate in both weekend missions which is a bonus but after that consider getting her immortalised to make way for better DIP crew.
+One of the top Romulan Senators in the game, Cretak is otherwise a wet noodle. Minor usefulness in the form of Cadet Missions (praise be to Female Aliens!) and a place in two Stat-Boosting Collections (plus the all-important Rare Collection that gives great boosts to early game players) is her only saving grace.
