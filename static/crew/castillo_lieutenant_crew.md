@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-One of the stronger entrants in the popular CMD league. He has a #8 CMD stat with a proficiency bonus that boosts him up to #4 CMD max. That combined with a +5 Attack ship bonus and 20% attack speed gives him strong use in Arena and Skirmish. He is let down by his lack of voyage potential, no cadet participation and a lack of extra collections. But if you are looking for some strong CMD then he’s a fairly good choice.
+Shooter McGavin doesn’t have fantastic stats anywhere, but his short game is pretty good. Wait until about the end of the period in which you’re focusing on Rare Crew to finish him up, and enjoy his non-Rarity Collection and additional Traits that could give him two more. Notedly he’s one of the only three Crew below the Super Rare level with Displaced, so he might be the first notch on that Collection for you.
