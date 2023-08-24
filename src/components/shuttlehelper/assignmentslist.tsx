@@ -171,7 +171,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			return (
 				<Table.Row key={idx} style={{ cursor: 'pointer' }}
 					onClick={() => {
-						if (shuttleId && seatNum && (!assignedCrew || crew.id !== assignedCrew.id))
+						if (shuttleId !== undefined && seatNum !== undefined && (assignedCrew === undefined || crew.id !== assignedCrew.id))
 							updateAssignment(shuttleId, seatNum, crew, true);
 						setEditAssignment({});
 					}}
