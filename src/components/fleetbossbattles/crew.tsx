@@ -8,19 +8,22 @@ import { CrewFullExporter, exportDefaults } from './crewexporter';
 import { getAllCombos, getComboIndexOf, removeCrewNodeCombo } from './fbbutils';
 
 import { useStateWithStorage } from '../../utils/storage';
-import { BossCrew, ExportPreferences, FilterPreferences, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solver, SolverNode, Spotter, TraitRarities, ViableCombo } from '../../model/boss';
+import { BossCrew, ExportPreferences, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, SoloPreferences, Solver, SolverNode, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
 import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import { crewCopy } from '../../utils/crewutils';
 
-const filterDefaults = {
+const spotterDefaults = {
 	alpha: 'flag',
 	onehand: 'flag',
 	nonoptimal: 'hide',
-	noncoverage: 'show',
+	noncoverage: 'show'
+} as SpotterPreferences;
+
+const soloDefaults = {
 	usable: '',
 	shipAbility: 'hide'
-};
+} as SoloPreferences;
 
 type ChainCrewProps = {
 	view: string;
@@ -34,36 +37,47 @@ type ChainCrewProps = {
 const ChainCrew = (props: ChainCrewProps) => {
 	const { view, solver, spotter, updateSpotter } = props;
 
-	const [filterPrefs, setFilterPrefs] = useStateWithStorage<FilterPreferences>(props.dbid+'/fbb/filtering', filterDefaults, { rememberForever: true });
+	const [spotterPrefs, setSpotterPrefs] = useStateWithStorage<SpotterPreferences>(props.dbid+'/fbb/filtering', spotterDefaults, { rememberForever: true });
+	const [soloPrefs, setSoloPrefs] = useStateWithStorage<SoloPreferences>(props.dbid+'/fbb/soloing', soloDefaults, { rememberForever: true });
 	const [exportPrefs, setExportPrefs] = useStateWithStorage<ExportPreferences>(props.dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
 
 	const [optimizer, setOptimizer] = React.useState<Optimizer | undefined>(undefined);
 
 	React.useEffect(() => {
 		let resolvedCrew = crewCopy<BossCrew>(solver.crew);
-		if (filterPrefs.onehand === 'hide') resolvedCrew = filterOneHandExceptions(resolvedCrew);
-		if (filterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);
+		if (spotterPrefs.onehand === 'hide') resolvedCrew = filterOneHandExceptions(resolvedCrew);
+		if (spotterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);
 
 		const optimalCombos = getOptimalCombos(resolvedCrew);
 
 		const rarities = {} as NodeRarities;
-		const filteredGroups = {} as FilteredGroups;
+		const groups = {} as FilteredGroups;
 		solver.nodes.filter(node => node.open).forEach(node => {
 			const nodeRarities = getRaritiesByNode(node, resolvedCrew);
 			rarities[`node-${node.index}`] = nodeRarities;
-			filteredGroups[`node-${node.index}`] = filterGroupsByNode(node, resolvedCrew, nodeRarities, optimalCombos, filterPrefs);
+			groups[`node-${node.index}`] = filterGroupsByNode(node, resolvedCrew, nodeRarities, optimalCombos, spotterPrefs);
 		});
 
 		setOptimizer({
 			crew: resolvedCrew,
 			optimalCombos,
 			rarities,
-			filtered: {
-				settings: filterPrefs,
-				groups: filteredGroups
+			groups,
+			prefs: {
+				spotter: spotterPrefs,
+				solo: soloPrefs
 			}
 		});
-	}, [solver, filterPrefs]);
+	}, [solver, spotterPrefs]);
+
+	React.useEffect(() => {
+		if (!optimizer) return;
+		const prefs = {
+			spotter: spotterPrefs,
+			solo: soloPrefs
+		};
+		setOptimizer({...optimizer, prefs});
+	}, [soloPrefs]);
 
 	const usableFilterOptions = [
 		{ key: 'all', text: 'Show all crew', value: '' },
@@ -74,8 +88,8 @@ const ChainCrew = (props: ChainCrewProps) => {
 	if (!optimizer)
 		return (<div><Icon loading name='spinner' /> Loading...</div>);
 
-	const openNodes = solver.nodes.filter(node => node.open);
-	const showWarning = filterPrefs.usable === 'owned' || filterPrefs.usable === 'thawed' || filterPrefs.alpha === 'hide' || filterPrefs.onehand === 'hide';
+	const showWarning = spotterPrefs.alpha === 'hide' || spotterPrefs.onehand === 'hide'
+		|| soloPrefs.usable === 'owned' || soloPrefs.usable === 'thawed';
 
 	return (
 		<div style={{ margin: '2em 0' }}>
@@ -86,58 +100,67 @@ const ChainCrew = (props: ChainCrewProps) => {
 				{view === 'crewtable' && <span>Tap the <Icon name='check' /><Icon name='x' /> buttons to mark crew as tried.</span>}
 			</p>
 
-			<Form>
-				<Form.Group grouped>
-					<Form.Group inline>
-						<Form.Field
-							placeholder='Filter by availability'
-							control={Dropdown}
-							clearable
-							selection
-							options={usableFilterOptions}
-							value={filterPrefs.usable}
-							onChange={(e, { value }) => setFilterPrefs({...filterPrefs, usable: value})}
-						/>
-						<Form.Field
-							control={Checkbox}
-							label='Hide one hand exceptions'
-							checked={filterPrefs.onehand === 'hide'}
-							onChange={(e, data) => setFilterPrefs({...filterPrefs, onehand: data.checked ? 'hide' : 'flag'})}
-						/>
-						<Form.Field
-							control={Checkbox}
-							label='Hide alpha exceptions'
-							checked={filterPrefs.alpha === 'hide'}
-							onChange={(e, data) => setFilterPrefs({...filterPrefs, alpha: data.checked ? 'hide' : 'flag'})}
-						/>
-						{showWarning &&
-							<div>
-								<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed with the selected filters.
-							</div>
-						}
-					</Form.Group>
-					<Form.Group inline>
-						<Form.Field
-							control={Checkbox}
-							label='Hide non-optimal crew'
-							checked={filterPrefs.nonoptimal === 'hide'}
-							onChange={(e, data) => setFilterPrefs({...filterPrefs, nonoptimal: data.checked ? 'hide' : 'flag'})}
-						/>
-						<Form.Field
-							control={Checkbox}
-							label='Prioritize crew with coverage'
-							checked={filterPrefs.noncoverage === 'hide'}
-							onChange={(e, data) => setFilterPrefs({...filterPrefs, noncoverage: data.checked ? 'hide' : 'show'})}
-						/>
-						<Form.Field
-							control={Checkbox}
-							label='Show ship ability'
-							checked={filterPrefs.shipAbility === 'show'}
-							onChange={(e, data) => setFilterPrefs({...filterPrefs, shipAbility: data.checked ? 'show' : 'hide'})}
-						/>
-					</Form.Group>
-				</Form.Group>
-			</Form>
+			<Message>
+				<Form>
+					<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+						<Form.Group grouped>
+							<Header as='h4'>Unofficial Rules</Header>
+							<Form.Field
+								control={Checkbox}
+								label='Hide one hand exceptions'
+								checked={spotterPrefs.onehand === 'hide'}
+								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, onehand: data.checked ? 'hide' : 'flag'})}
+							/>
+							<Form.Field
+								control={Checkbox}
+								label='Hide alpha exceptions'
+								checked={spotterPrefs.alpha === 'hide'}
+								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, alpha: data.checked ? 'hide' : 'flag'})}
+							/>
+						</Form.Group>
+						<Form.Group grouped>
+							<Header as='h4'>Optimizations</Header>
+							<Form.Field
+								control={Checkbox}
+								label='Hide non-optimal crew'
+								checked={spotterPrefs.nonoptimal === 'hide'}
+								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, nonoptimal: data.checked ? 'hide' : 'flag'})}
+							/>
+							{view === 'crewgroups' && (
+								<Form.Field
+									control={Checkbox}
+									label='Prioritize crew with coverage'
+									checked={spotterPrefs.noncoverage === 'hide'}
+									onChange={(e, data) => setSpotterPrefs({...spotterPrefs, noncoverage: data.checked ? 'hide' : 'show'})}
+								/>
+							)}
+						</Form.Group>
+						<Form.Group grouped>
+							<Header as='h4'>User Preferences</Header>
+							<Form.Field
+								placeholder='Filter by availability'
+								control={Dropdown}
+								clearable
+								selection
+								options={usableFilterOptions}
+								value={soloPrefs.usable}
+								onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
+							/>
+							<Form.Field
+								control={Checkbox}
+								label='Show ship ability'
+								checked={soloPrefs.shipAbility === 'show'}
+								onChange={(e, data) => setSoloPrefs({...soloPrefs, shipAbility: data.checked ? 'show' : 'hide'})}
+							/>
+						</Form.Group>
+					</div>
+				</Form>
+				{showWarning &&
+					<div>
+						<Icon name='warning sign' color='yellow' /> Correct solutions may not be listed with the current settings.
+					</div>
+				}
+			</Message>
 
 			{view === 'crewgroups' &&
 				<CrewGroups solver={solver} optimizer={optimizer}
@@ -246,7 +269,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 		return { combos: possibleCombos, traits: traitRarity };
 	}
 
-	function filterGroupsByNode(node: SolverNode, crewList: BossCrew[], rarities: NodeRarity, optimalCombos: ViableCombo[], filters: FilterPreferences): FilteredGroup[] {
+	function filterGroupsByNode(node: SolverNode, crewList: BossCrew[], rarities: NodeRarity, optimalCombos: ViableCombo[], spotterPrefs: SpotterPreferences): FilteredGroup[] {
 		const comboRarity = rarities.combos;
 		const traitRarity = rarities.traits;
 		const traitGroups = [] as string[][];
@@ -267,11 +290,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 					&& traits.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
 			);
 			const highestCoverage = matchingCrew.reduce((prev, curr) => Math.max(prev, curr.nodes_rarity), 0);
-			const crewList = matchingCrew.filter(crew =>
-				(filters.noncoverage !== 'hide' || highestCoverage === 1 || crew.nodes_rarity > 1)
-					&& (filters.usable !== 'owned' || (crew.highest_owned_rarity ?? 0) > 0)
-					&& (filters.usable !== 'thawed' || ((crew.highest_owned_rarity ?? 0) > 0 && !crew.only_frozen))
-			);
+			const crewList = matchingCrew.filter(crew => spotterPrefs.noncoverage !== 'hide' || highestCoverage === 1 || crew.nodes_rarity > 1);
 
 			const oneHandException = crewList.filter(crew => crew.onehand_rule.compliant > 0).length === 0;
 
@@ -306,7 +325,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 			};
 		}).filter(row =>
 			row.crewList.length > 0
-				&& (filters.nonoptimal === 'flag' || !row.notes.nonOptimal)
+				&& (spotterPrefs.nonoptimal === 'flag' || !row.notes.nonOptimal)
 		);
 	}
 

@@ -8,11 +8,7 @@ import ItemDisplay from '../itemdisplay';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
-import { MergedContext } from '../../context/mergedcontext';
-import { FinderContext } from './findercontext';
-import { ShipSkill, TinyShipSkill, getActionColor, getActionIcon, getShipBonusIcon } from '../item_presenters/shipskill';
-import { getShipBonus } from '../../utils/crewutils';
-import CONFIG from '../CONFIG';
+import { TinyShipSkill } from '../item_presenters/shipskill';
 
 type MarkGroupProps = {
 	node: SolverNode;
@@ -67,7 +63,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					{solveOptions.map(option => (
 						<div key={option.key} style={{ marginBottom: '.5em' }}>
 							<SolveButton node={node}
-								traits={option.value ?? []} rarity={option.rarity} onehand={true}
+								traits={option.value ?? []} rarity={option.rarity} onehand={node.oneHandTest}
 								traitData={props.solver.traits} solveNode={handleSolveClick}
 							/>
 						</div>
@@ -81,7 +77,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					</div>
 				</Modal.Content>
 				<Modal.Actions>
-					<ColorsLegendPopup />
+					<TipsPopup />
 					<Button onClick={() => setModalIsOpen(false)}>
 						Close
 					</Button>
@@ -136,8 +132,6 @@ export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, trigger } = props;
 
 	const [showPicker, setShowPicker] = React.useState(false);
-	const context = React.useContext(MergedContext);
-	const groupsContext = React.useContext(FinderContext);
 
 	return (
 		<React.Fragment>
@@ -168,10 +162,13 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
 						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
-							{crew.name}<br />
-							{props.optimizer.filtered.settings.shipAbility === 'show' &&
-							<TinyShipSkill crew={crew} />}
+							{crew.name}
 						</span>
+						{props.optimizer.prefs.solo.shipAbility === 'show' && (
+							<React.Fragment>
+								<br /><TinyShipSkill crew={crew} />
+							</React.Fragment>
+						)}
 					</span>
 				</div>
 			</Grid.Column>
@@ -249,7 +246,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 				{renderOptions()}
 			</Modal.Content>
 			<Modal.Actions>
-				<ColorsLegendPopup />
+				<TipsPopup />
 				<Button icon='x' color='red' content='Mark as tried' onClick={() => handleTriedClick()} />
 				<Button onClick={() => setModalIsOpen(false)}>
 					Close
@@ -280,6 +277,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 			};
 		}) as SolverNode[];
 
+
 		return (
 			<Grid doubling columns={nodes.length as SemanticWIDTHS} textAlign='center'>
 				{nodes.map(node => {
@@ -296,7 +294,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 							{node.solveOptions?.map(option => (
 								<div key={option.key} style={{ marginBottom: '.5em' }}>
 									<SolveButton node={node}
-										traits={option.value ?? []} rarity={option.rarity} onehand={true}
+										traits={option.value ?? []} rarity={option.rarity} onehand={node.oneHandTest}
 										traitData={props.solver.traits} solveNode={handleSolveClick}
 									/>
 								</div>
@@ -372,13 +370,13 @@ const getUpdatedSolve = (node: SolverNode, traits: string[]) => {
 	return traits;
 };
 
-const ColorsLegendPopup = () => {
+const TipsPopup = () => {
 	return (
 		<Popup
 			content={renderContent()}
 			trigger={
 				<span>
-					Colors
+					Tips
 					<Icon name='question' />
 				</span>
 			}
@@ -410,4 +408,3 @@ const ColorsLegendPopup = () => {
 		);
 	}
 };
-

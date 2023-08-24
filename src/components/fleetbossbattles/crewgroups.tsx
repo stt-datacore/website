@@ -7,10 +7,16 @@ import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
-import { CrewMember } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { CrewGroupsProps, FinderContext } from './findercontext';
+
+interface CrewGroupsProps {
+	solver: Solver;
+	optimizer: Optimizer;
+	solveNode: (nodeIndex: number, traits: string[]) => void;
+	markAsTried: (crewSymbol: string) => void;
+	exportPrefs: ExportPreferences;
+};
+
+const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
@@ -18,15 +24,11 @@ const CrewGroups = (props: CrewGroupsProps) => {
 	const openNodes = solver.nodes.filter(node => node.open);
 
 	return (
-		<FinderContext.Provider value={ { ...props }}>
-			<div>
-				<CrewHoverStat targetGroup='fbb' />
-				{openNodes.map(node =>
-					<NodeGroups key={node.index} node={node} />
-				)}
-
-			</div>
-		</FinderContext.Provider>
+		<CrewGroupsContext.Provider value={{ ...props }}>
+			{openNodes.map(node =>
+				<NodeGroups key={node.index} node={node} />
+			)}
+		</CrewGroupsContext.Provider>
 	);
 };
 
@@ -35,7 +37,7 @@ type NodeGroupsProps = {
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
-	const finderData = React.useContext(FinderContext);
+	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
 	const formattedOpen = node.traitsKnown.map((trait, idx) => (
@@ -45,7 +47,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 	)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const nodeGroups = finderData.optimizer.filtered.groups[`node-${node.index}`];
+	const nodeGroups = groupsContext.optimizer.groups[`node-${node.index}`];
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -56,7 +58,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>Node {node.index+1}</p>
 					</div>
 					<div>
-						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={finderData.solver.traits} exportPrefs={finderData.exportPrefs} />
+						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={groupsContext.solver.traits} exportPrefs={groupsContext.exportPrefs} />
 					</div>
 				</div>
 			</Message>
@@ -76,7 +78,7 @@ type GroupTableProps = {
 };
 
 const GroupTable = (props: GroupTableProps) => {
-	const finderData = React.useContext(FinderContext);
+	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -99,13 +101,6 @@ const GroupTable = (props: GroupTableProps) => {
 	];
 	if (!hasNotes) tableConfig.splice(1, 1);
 
-	const traitNameInstance = (trait: string) => {
-		const instances = finderData.solver.traits.filter(t => t.trait === trait);
-		if (instances.length === 1) return allTraits.trait_names[trait];
-		const needed = instances.length - instances.filter(t => t.consumed).length;
-		return `${allTraits.trait_names[trait]} (${needed})`;
-	};
-
 	return (
 		<Table sortable celled selectable striped>
 			<Table.Header>
@@ -125,7 +120,7 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} solver={finderData.solver} optimizer={finderData.optimizer} solveNode={finderData.solveNode} />
+							<MarkGroup node={node} traits={row.traits} solver={groupsContext.solver} optimizer={groupsContext.optimizer} solveNode={groupsContext.solveNode} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
@@ -217,27 +212,40 @@ type GroupCrewProps = {
 };
 
 const GroupCrew = (props: GroupCrewProps) => {
-	const finderData = React.useContext(FinderContext);
-	const { crewList } = props;
+	const groupsContext = React.useContext(CrewGroupsContext);
 
 	const [showCrew, setShowCrew] = React.useState(false);
 
+	const usable = groupsContext.optimizer.prefs.solo.usable;
+	const crewList = props.crewList.filter(crew =>
+		(usable !== 'owned' || (crew.highest_owned_rarity ?? 0) > 0)
+			&& (usable !== 'thawed' || ((crew.highest_owned_rarity ?? 0) > 0 && !crew.only_frozen))
+	);
+
+	if (!showCrew) {
+		return (
+			<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
+				onChange={(inView, entry) => { if (inView) setShowCrew(true); }}
+			>
+				<Icon loading name='spinner' />
+				<br />Loading...
+			</InView>
+		);
+	}
+
 	return (
 		<React.Fragment>
-			{!showCrew &&
-				<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
-					onChange={(inView, entry) => { if (inView) setShowCrew(true); }}
-				>
-					<Icon loading name='spinner' />
-					<br />Loading...
-				</InView>
+			{crewList.length === 0 &&
+				<Message>
+					You have no {usable === 'thawed' ? 'unfrozen' : ''} crew with this group of traits. Change your availability user preference to see more options.
+				</Message>
 			}
-			{showCrew &&
+			{crewList.length > 0 &&
 				<Grid doubling columns={3} textAlign='center'>
 					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
 						<MarkCrew key={crew.symbol} crew={crew} trigger='card'
-							solver={finderData.solver} optimizer={finderData.optimizer}
-							solveNode={finderData.solveNode} markAsTried={finderData.markAsTried}
+							solver={groupsContext.solver} optimizer={groupsContext.optimizer}
+							solveNode={groupsContext.solveNode} markAsTried={groupsContext.markAsTried}
 						/>
 					)}
 				</Grid>

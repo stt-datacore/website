@@ -28,12 +28,11 @@ const CrewTable = (props: CrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: 'Crew' },
 	];
-	
-	if (props.optimizer.filtered.settings.shipAbility === 'show') {
-		tableConfig.push({ width: 3, title: 'Ship Ability' });
-	}
 
 	tableConfig.push({ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] });
+	if (props.optimizer.prefs.solo.shipAbility === 'show') {
+		tableConfig.push({ width: 1, title: 'Ship Ability' });
+	}
 	tableConfig.push({ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true });
 
 	const openNodes = solver.nodes.filter(node => node.open);
@@ -102,14 +101,14 @@ const CrewTable = (props: CrewTableProps) => {
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
 					</div>
 				</Table.Cell>
-				{props.optimizer.filtered.settings.shipAbility === 'show' && 
-				<Table.Cell>
-					<TinyShipSkill style={{textAlign: "center"}} crew={crew} />
-				</Table.Cell>
-				}
 				<Table.Cell>
 					<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
+				{props.optimizer.prefs.solo.shipAbility === 'show' &&
+					<Table.Cell>
+						<TinyShipSkill style={{textAlign: "center"}} crew={crew} />
+					</Table.Cell>
+				}
 				<Table.Cell textAlign='center'>
 					{crew.nodes_rarity}
 				</Table.Cell>
@@ -133,18 +132,18 @@ const CrewTable = (props: CrewTableProps) => {
 	function descriptionLabel(crew: BossCrew): JSX.Element {
 		return (
 			<div>
-				{optimizer.filtered.settings.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
-				{optimizer.filtered.settings.alpha === 'flag' && crew.alpha_rule.compliant === 0 && <Label color='orange'>Alpha exception</Label>}
-				{optimizer.filtered.settings.nonoptimal === 'flag' && !isCrewOptimal(crew, optimizer.optimalCombos) && <Label color='grey'>Non-optimal</Label>}
+				{optimizer.prefs.spotter.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
+				{optimizer.prefs.spotter.alpha === 'flag' && crew.alpha_rule.compliant === 0 && <Label color='orange'>Alpha exception</Label>}
+				{optimizer.prefs.spotter.nonoptimal === 'flag' && !isCrewOptimal(crew, optimizer.optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 			</div>
 		);
 	}
 
 	function showThisCrew(crew: BossCrew, filters: [], filterType: string): boolean {
-		if (optimizer.filtered.settings.nonoptimal === 'hide' && !isCrewOptimal(crew, optimizer.optimalCombos)) return false;
-		if ((optimizer.filtered.settings.usable === 'owned' || optimizer.filtered.settings.usable === 'thawed') && crew.highest_owned_rarity === 0) return false;
-		if (optimizer.filtered.settings.usable === 'thawed' && crew.only_frozen) return false;
+		if (optimizer.prefs.spotter.nonoptimal === 'hide' && !isCrewOptimal(crew, optimizer.optimalCombos)) return false;
+		if ((optimizer.prefs.solo.usable === 'owned' || optimizer.prefs.solo.usable === 'thawed') && crew.highest_owned_rarity === 0) return false;
+		if (optimizer.prefs.solo.usable === 'thawed' && crew.only_frozen) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
