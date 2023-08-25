@@ -816,7 +816,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 						</div>}
 						{!selectedShip &&
 						<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
-							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item })} />
+							<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item as string[] })} />
 						</div>}
 					</div>
 					

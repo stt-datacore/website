@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { CompletionState } from "../../model/player";
-import { Header, Rating } from "semantic-ui-react";
+import { Dropdown, Header, Rating } from "semantic-ui-react";
 import { isImmortal, printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -11,6 +11,7 @@ import { MergedContext } from "../../context/mergedcontext";
 import { navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
 
+export type DemandMode = "all" | "immediate";
 
 export interface ItemPresenterProps extends PresenterProps {
     item: EquipmentItem;
@@ -37,6 +38,16 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
         this.tiny = TinyStore.getStore(props.storeName)
     }    
+    
+    public get demandMode(): DemandMode {
+        return this.tiny.getValue<DemandMode>("demandMode", "all") ?? "all"
+    }
+    
+    public set demandMode(value: DemandMode) {
+        if (this.demandMode === value) return;
+        this.tiny.setValue("demandMode", value);
+        this.forceUpdate();
+    }
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
@@ -44,7 +55,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
         const roster = playerData?.player?.character?.crew;
-        
+        const mode = this.demandMode;
+
         if (!item) {
             return <></>
         } 
@@ -66,7 +78,18 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         }
 
         var me = this;
-        
+    
+        const demandOpts = [{
+            key: "all",
+            value: "all",
+            text: "All Upcoming Demands"
+        },
+        {
+            key: "immediate",
+            value: "immediate",
+            text: "Immediate Demands"
+        }];
+
         const navClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, altItem?: EquipmentItem) => {
             altItem ??= item;
             if (!altItem) return;
@@ -77,7 +100,20 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         
         let mt = true;
         const dcrew = item.demandCrew?.map(sym => {
-            const crew = roster.find(f => f.symbol === sym && !(f.level === 100 && f.equipment?.length === 4));
+            const crew = roster.find(f => {
+                    if (f.symbol !== sym || (f.level === 100 && f.equipment?.length === 4)) return false;
+                    // if (mode === 'immediate') {
+                    //     let startlevel = Math.floor(f.level / 10) * 4;
+                    //     if (f.level % 10 == 0 && f.equipment.length >= 1) startlevel = startlevel - 4;
+
+                    //     for (let bd of Object.values(f.equipment)) {
+                    //         let eqnum = startlevel + (bd as number);
+                    //         f.equipment_slots[eqnum].symbol
+                    //     }
+
+                    // }
+                    return f;
+                });
             if (crew) mt = false;
             return (<>
                 {crew && <div 
@@ -230,8 +266,22 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
 
                     <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
-                    {!empty && (<>
-                        <Header as="h3">Current Roster Demands:</Header>
+                    {!empty && 
+                        (<div>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between"
+                            }}>
+                            <Header as="h3">Current Roster Demands:</Header>
+                                {/* <div style={{fontSize: "0.8em"}}>
+                                <Dropdown 
+                                    options={demandOpts} 
+                                    value={this.demandMode} 
+                                    onChange={(e, { value }) => this.demandMode = value as DemandMode}
+                                    />
+                                </div> */}
+                            </div>
                             <div style={{
                                 display: "flex", 
                                 flexDirection: "row", 
@@ -243,7 +293,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
                                 {dcrew}                                
                             </div>
-                            </>)}
+                        </div>)}
                     </div>
                 </div>
             </div>) : <></>

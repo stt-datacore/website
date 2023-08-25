@@ -11,6 +11,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { MergedData, MergedContext } from '../context/mergedcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
+import { TriggerPicker } from './crewtables/shipoptions';
 
 type ProfileShipsProps = {
 };
@@ -25,6 +26,7 @@ type ProfileShipsState = {
 	pagination_page: number;
 	activeShip?: Ship | null;
 	rarityFilter?: number[];
+	grantFilter?: string[];
 };
 
 const pagingOptions = [
@@ -125,20 +127,31 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	private readonly setRarityFilter = (filter: number[] | undefined) => {
-		this.setState({...this.state, rarityFilter: filter})
+		window.setTimeout(() => {
+			this.setState({...this.state, rarityFilter: filter});
+		});
+		
+	}
+	private readonly setGrantFilter = (filter: string[] | undefined) => {
+		window.setTimeout(() => {
+			this.setState({...this.state, grantFilter: filter});
+		})
+		
 	}
 
 	render() {
-		const { rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
 		if (!dataContext || !dataContext.ships || !dataContext.playerShips) return <></>;
 
-		let { data: prefiltered } = this.state;
+		let prefiltered = this.state.data;
 		
 		let data = prefiltered.filter((ship) => {
-			if (!rarityFilter?.length) return true;
-			return rarityFilter.some((r) => ship.rarity === r);
+			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
+			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
+
+			return true;
 		})
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -153,14 +166,25 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
-
+		
 		return (<div>	
 
-			<RarityFilter
-				altTitle='Filter ship rarity'
-				rarityFilter={rarityFilter ?? []}
-				setRarityFilter={this.setRarityFilter}
-			/>
+			<div style={{
+				display: "flex",
+				flexDirection: "row"
+			}}>
+
+				<RarityFilter
+					altTitle='Filter ship rarity'
+					rarityFilter={rarityFilter ?? []}
+					setRarityFilter={this.setRarityFilter}
+				/>
+				<div style={{
+					marginLeft: "0.5em"
+				}}>
+					<TriggerPicker grants={true} altTitle='Filter ship grants' selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+				</div>
+			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -270,7 +294,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									options={pagingOptions}
 									value={pagination_rows}
 									onChange={(event, { value }) =>
-										this.setState({ pagination_page: 1, pagination_rows: value as number })
+										this.setState({ ... this.state, pagination_page: 1, pagination_rows: value as number })
 									}
 								/>
 							</span>
