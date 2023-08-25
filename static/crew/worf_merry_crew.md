@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-There was a time around early 2018 where Big Red, post global giveaway, would actually be a frequent player in the gauntlet. Nowadays he rarely makes it out of mothballs, though he does alright in a few gauntlets if you can look past some understandable 2-skiller bias. But more consistent value has begun to blossom years after his arrival with his collection of collections.
+Players forget Will Scarlett is a Worf variant because he doesn’t come up when you search for “Worf” in game. An oversight, surely. Long ago he would have made a Gauntlet or two with his beefy SEC/DIP Proficiencies, but this is no longer the case given the proliferation of many more crew who are “good at Gauntlet”.
 
-Any of his traits could join the collection frenzy - a few already have and he boasts a vanity cherry on top. With Worf such a strong event name, even his bad bases will ride requisition shuttles and are a nice usage safety blanket if you cite him up for collection considerations. If you must keep him out of cryo for purposes of art or weird Worf fetishes, he performs like Ardra-lite in the arena, activating fast enough, but without the damage ceiling that she can provide.
-
-Will Scarlett...a great Klingon and an even greater question.
+Worf is a common Event name, and given he has two of the top three Skills for Shuttle seating, you’ll find yourself using him from time to time. Will’s true enduring value is his deceptively thin Trait list, which should max him out someday at five stat-Boosting Collections and his episode Vanity.

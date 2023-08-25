@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-Layna, I'm begging, darling, please.
+Layna, I'm begging, darling, please. 
 
-The late Kellie Waymire's role on Voyager was made into a crew with reasonable daily use value, but now years later, power creep has left this card as a traits-only proposition.
+The late Kellie Waymire's role on Voyager was made into a crew with reasonable daily use value, but now years later, Power Creep has left this card as a Traits-only proposition. 
 
-A half dozen traits without Human, Federation, or Starfleet among them is just what we want to see. Even though most of them are quite large pools of crew, they all have a shot at relevance given WRG's concerted push toward highlighting traits and collections.
+A half dozen Traits without Human, Federation, or Starfleet among them is just what we want to see. Even though most of them are quite large pools of Crew, they all have a shot at relevance given WRG's concerted push toward highlighting Traits and Collections. Reasonably you can expect a maximum of three to four notches on her Collections belt. 
 
-On ships, her 30% attack speed ability is the maximum amount available in game, but more than likely activates too late unless you just want to win with your favorites and are looking to make a tribute to crewman Cutler.
+On Ships, her 30% Attack Speed Ability is the maximum amount available in game, but more than likely Activates too late unless you just want to win with your favorites and are looking to make a tribute to Crewman Cutler.
