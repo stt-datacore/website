@@ -309,18 +309,19 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 
 
 export type TriggerPickerProps = {    
-    triggers?: string[];
+    triggers?: string[] | number[];
     zeroText?: string;
-	selectedTriggers?: string[];
-	setSelectedTriggers: (triggers: string[]) => void;
+	selectedTriggers?: string[] | number[];
+	setSelectedTriggers: (triggers: string[] | number[]) => void;
 	altTitle?: string;
+	grants?: boolean;
 };
 
 export const TriggerPicker = (props: TriggerPickerProps) => {
 
-	const { selectedTriggers, setSelectedTriggers } = props;
+	const { grants, selectedTriggers, setSelectedTriggers } = props;
 	
-	const [triggers, setTriggers] = React.useState<string[]>(selectedTriggers ?? []);
+	const [triggers, setTriggers] = React.useState<string[] | number[]>(selectedTriggers ?? []);
 	
     const triggerOptions = props.triggers?.map((u) => {
         return {
@@ -328,13 +329,21 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
             text: u,
             value: CONFIG.CREW_SHIP_BATTLE_TRIGGER[u]
         }
-    }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_TRIGGER).map((dt) => {
+    }) ?? (grants ? 
+		Object.keys(CONFIG.SHIP_BATTLE_GRANTS).map((dt) => {
+			return {
+				key: dt,
+				value: dt,
+				text: CONFIG.SHIP_BATTLE_GRANTS[dt]
+			}
+		})
+		: Object.keys(CONFIG.CREW_SHIP_BATTLE_TRIGGER).map((dt) => {
 		return {
 			key: dt,
 			value: dt,
 			text: CONFIG.CREW_SHIP_BATTLE_TRIGGER[dt]
 		}
-	});
+	}));
   
 	React.useEffect(() => {
 		setSelectedTriggers(triggers);
@@ -343,7 +352,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Triggers'} 
+				placeholder={props.altTitle ?? (grants ? 'Grants' : 'Triggers')} 
 				clearable
 				multiple
 				selection
