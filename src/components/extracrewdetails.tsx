@@ -10,6 +10,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from "../utils/tiny";
 import { BuffStatTable } from '../utils/voyageutils';
 import { MergedContext } from '../context/mergedcontext';
+import { getVariantTraits } from '../utils/crewutils';
 
 
 interface ExtraCrewDetailsProps {
@@ -104,26 +105,8 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			this.buffs = this.context.buffConfig;
 		}
 
-		// Get variant names from traits_hidden
-		const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
-		const ignore = [
-			'female', 'male',
-			'artificial_life', 'nonhuman', 'organic', 'species_8472',
-			'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
-			'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-			'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
-		];
-		const ignoreRe = [
-			/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
-			/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
-		];
-		const variantTraits = [] as string[];
-		this.props.traits_hidden.forEach(trait => {
-			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
-				variantTraits.push(trait);
-			}
-		});
-
+		const variantTraits = getVariantTraits(this.props.traits_hidden);
+		
 		let self = this;
 
 		if (!this.context.keystones || !this.context.allCrew?.length) return;

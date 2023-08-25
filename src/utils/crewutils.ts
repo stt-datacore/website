@@ -992,10 +992,10 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 }
 
-export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
+export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
 	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
-		'female', 'male',
+		'female', 'male', 'jack',
 		'artificial_life', 'nonhuman', 'organic', 'species_8472',
 		'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 		'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
@@ -1006,11 +1006,22 @@ export function getVariantTraits(crew: PlayerCrew | CrewMember): string[] {
 		/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 	];
 	const variantTraits = [] as string[];
-	crew.traits_hidden.forEach(trait => {
-		if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
-			variantTraits.push(trait);
-		}
-	});
+
+	if ("length" in subject) {
+		subject.forEach(trait => {
+			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
+				variantTraits.push(trait);
+			}
+		});
+	}
+	else {
+		subject.traits_hidden.forEach(trait => {
+			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
+				variantTraits.push(trait);
+			}
+		});
+	}
+
 	return variantTraits;
 }
 
