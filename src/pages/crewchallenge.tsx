@@ -6,7 +6,7 @@ import Layout from '../components/layout';
 
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
-import { BaseSkills } from '../model/crew';
+import { BaseSkills, Skill } from '../model/crew';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -783,7 +783,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			else {
 				if (skills[index].skill === solvedCrew?.skills[index].skill)
 					return EvaluationState.Exact;
-				else if (solvedCrew?.skills.find(skill => skill.skill === skills[index].skill))
+				else if (solvedCrew && Object.values(solvedCrew.skills)?.find((skill: Skill) => skill.skill === skills[index].skill))
 					return EvaluationState.Adjacent;
 			}
 			return EvaluationState.Wrong;
