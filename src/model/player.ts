@@ -567,6 +567,10 @@ export interface Player {
     nodes_rarity?: number;
 
     /** Used internally. Not part of source data.  */
+    variants?: string[];
+
+
+    /** Used internally. Not part of source data.  */
     ssId?: string;
 
     /** Used internally by gauntlets. Not part of source data.  */
