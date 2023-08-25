@@ -656,6 +656,7 @@ export const query = graphql`
 					imageUrlFullBody
 					imageUrlPortrait
 					date_added
+					in_portal
 					obtained
 					...RanksFragment
 					base_skills {
