@@ -1814,7 +1814,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 																maxRarity={jcrew.max_rarity}
 																rarity={jcrew.max_rarity}
 																src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-																allCrew={this.context.allCrew}
+																allCrew={this.context.crew}
 																playerData={this.context.playerData}
 																targetGroup='gauntletsHover'
 																itemSymbol={jcrew?.symbol}

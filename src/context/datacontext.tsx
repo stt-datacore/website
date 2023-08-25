@@ -2,7 +2,7 @@ import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, SkillData } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
@@ -184,7 +184,52 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 		});
 		// Ready only if all valid demands are satisfied
-		return unsatisfied.length === 0;
+		const ready = unsatisfied.length === 0;
+
+		if (ready) {
+			if (demands.includes("items") && demands.includes("cadet")) {
+				const cadetforitem = data.cadet?.filter(f => f.cadet);
+
+				if (cadetforitem?.length) {
+					for(const item of data.items) {					
+						for (let ep of cadetforitem) {
+							let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
+							if (quests?.length) {
+								for (let quest of quests) {
+									if (quest.mastery_levels?.length) {
+										let x = 0;
+										for (let ml of quest.mastery_levels) {
+											if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+												let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+												mx = (1/mx) * 1.80;
+												let qitem = {
+													type: 4,
+													mastery: x,											
+													name: quest.name,
+													energy_quotient: 1,
+													chance_grade: 5 * mx,						
+													mission_symbol: quest.symbol,
+													cost: 1,
+													avg_cost: 1/mx,
+													cadet_mission: ep.episode_title,
+													cadet_symbol: ep.symbol
+												} as EquipmentItemSource;
+												if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+													item.item_sources.push(qitem);
+												}									
+											}
+											x++;
+										}
+									}
+								}
+							}					
+						}
+					}
+				}
+			}
+		}
+
+		return ready;
 	}
 
 	function reset(): boolean {
