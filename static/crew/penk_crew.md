@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This note originally read simply: “It’s Combs, baby!”, but we’ve since let that writer go.
+This note originally read simply: “It’s Combs, baby!”, but we’ve since let that writer go. 
 
-Perhaps the least well known of Jeffrey Combs’ many faces, this scoundrel is missing out on regular events or much daily work, but still offers a little utility. Triggerless arena damage is a one-star perk for beginning players and a trait list refreshingly absent of Human, Federation, or Starfleet is about all you can hope for when rolling the dice for future collection or event possibilities.
+Perhaps the least well known of Jeffrey Combs’ many faces, this scoundrel is missing out on regular Events or much daily work, but still offers a little utility. Triggerless Instant Damage on Ships is a one-star perk for beginning players and a Trait list refreshingly absent of Human, Federation, or Starfleet is about all you can hope for when rolling the dice for future Collection or Event possibilities. Look for Penk to hit on a likely four Collections when all is said and done.
