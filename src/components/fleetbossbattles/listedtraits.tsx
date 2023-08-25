@@ -59,12 +59,11 @@ const NamedTrait = (props: NamedTraitProps) => {
 				background: 'white',
 				color: 'black',
 				margin: '-.4em 0',
-				border: '1px solid black',
+				padding: '.25em',
+				border: '2px solid black',
 				borderRadius: '4px'
 			}}>
-				<div style={{ margin: '.3em' }}>
-					{needed}
-				</div>
+				{needed}
 			</div>
 		);
 	}

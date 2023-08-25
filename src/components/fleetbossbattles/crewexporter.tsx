@@ -194,7 +194,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		solver.nodes.forEach(node => {
 			let nodeList = '';
 			if (node.open) {
-				nodeList = exportNodeGroups(node, optimizer.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
+				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], solver.traits, exportPrefs);
 			}
 			else {
 				if (prefValue(exportPrefs, 'solve') === 'always' || (prefValue(exportPrefs, 'solve') === 'spot' && node.spotSolve)) {

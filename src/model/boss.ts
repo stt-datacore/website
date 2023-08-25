@@ -158,11 +158,14 @@ export interface Chain {
 	description: string;
 }
 
-export interface FilterPreferences {
+export interface SpotterPreferences {
 	onehand: string;
 	alpha: string;
 	nonoptimal: string;
 	noncoverage: string;
+}
+
+export interface SoloPreferences {
 	usable: string;
 	shipAbility: string;
 }
@@ -224,6 +227,7 @@ export interface SolverNode {
 	open: boolean;
 	spotSolve: boolean;
 	alphaTest: string;
+	oneHandTest: boolean;
 	possible?: any; /* { id: number, trait: string } */
 	solveOptions?: SolveOption[];
 }
@@ -315,10 +319,11 @@ export interface Optimizer {
 	crew: BossCrew[];
 	optimalCombos: ViableCombo[];
 	rarities: NodeRarities;
-	filtered: {
-		settings: FilterPreferences;
-		groups: FilteredGroups;
-	}
+	groups: FilteredGroups;
+	prefs: {
+		spotter: SpotterPreferences;
+		solo: SoloPreferences;
+	};
 }
 
 export interface FilteredGroup {

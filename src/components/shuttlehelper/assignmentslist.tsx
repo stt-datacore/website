@@ -171,7 +171,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			return (
 				<Table.Row key={idx} style={{ cursor: 'pointer' }}
 					onClick={() => {
-						if (shuttleId && seatNum && (!assignedCrew || crew.id !== assignedCrew.id))
+						if (shuttleId !== undefined && seatNum !== undefined && (assignedCrew === undefined || crew.id !== assignedCrew.id))
 							updateAssignment(shuttleId, seatNum, crew, true);
 						setEditAssignment({});
 					}}
@@ -185,7 +185,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 						{crew.prospect && (<Icon name='add user' />)}
 					</Table.Cell>
 					<Table.Cell textAlign='center'>
-						{shuttleId && seatNum && renderScoreChange(shuttleId, seatNum, crew.score)}
+						{shuttleId != undefined && seatNum != undefined && renderScoreChange(shuttleId, seatNum, crew.score)}
 					</Table.Cell>
 					<Table.Cell>
 						{currentShuttle?.name}

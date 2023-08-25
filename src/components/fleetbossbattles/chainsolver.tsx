@@ -10,7 +10,6 @@ import { useStateWithStorage } from '../../utils/storage';
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
 import { PlayerCrew } from '../../model/player';
-import { CrewMember } from '../../model/crew';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -88,7 +87,8 @@ const ChainSolver = (props: ChainSolverProps) => {
 				hiddenLeft,
 				open: hiddenLeft > 0,
 				spotSolve: !!spotSolve,
-				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0]
+				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0],
+				oneHandTest: chain.difficultyId === 6 || (chain.difficultyId === 5 && nodeIndex > 0)
 			});
 		});
 
@@ -225,8 +225,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 							alphaCompliant--;
 						}
 					}
-					// One hand rule only applies to ultra and some nodes on nightmare
-					if (chain.difficultyId === 6 || (chain.difficultyId === 5 && node.index > 0)) {
+					if (solverNodes.find(n => n.index === node.index)?.oneHandTest) {
 						const comboCount = allComboCounts.find(cc =>
 							cc.index === node.index
 								&& cc.combo.length === combo.length
