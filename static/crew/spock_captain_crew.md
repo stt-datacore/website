@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-Captain Spock would remind us that "Klingons don't have tear ducts", but forum posters do. Stats for the iconic movie Spock came in a hair under impressive and heralded the opening of many new salt mines, but years later he still has some value.
-
-Go figure, his stats haven't gotten better over time, but a seriously impressive event résumé that's not reliant on just his variant bonuses or a big trait like Disco means that he's one of the safest bets to collect fistfuls of bonuses going forward. 
-
-Unlikely to puncture the top ranks of gauntlet spreadsheets, Spocko at least has a reasonable CMD proficiency and over a dozen elevated crit sets for fresh rosters to break into that competitive area of the game. And, of course, collections. Some immediate and potential value here pairs well with a crew who will be riding event shuttles for years to come and helps justify the trip to five stars.
+With a Crew this old, you have to hope for two things - Events and Collections, both derived from Traits. Captain Spock has both! Spock Events are eternal, especially with Ethan Peck’s portrayal on a currently-airing show, and Captain Spock’s Trait list gives him options for plenty of bonuses based on those. A trio of Collections plus a few Traits untapped in his uniform pockets give the Captain of the Enterprise plenty of long term value, and if you get a copy early on in your game you might even want to bring him to Gauntlet with a beefy CMD Proficiency to get you a few wins.

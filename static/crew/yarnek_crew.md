@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Having cut his teeth in the gauntlet, Gorignak has been somewhat rudely excused from there, first by the mega crew Surak and again later by gauntlet reward Armus. His top five SCI/CMD pair is still a boon to newer players, but he's as likely to face 40% win chance walls as any other crew.
+Having cut his teeth in the Gauntlet since his 2017 debut, Gorignak has been somewhat rudely excused from there, first by the Mega Event Recurring Legendary Surak and again later by Gauntlet Exclusive Armus. His top five SCI/CMD pair is still a boon to newer players, but he's as likely to face 40% win chance walls as any other Crew. 
 
-Excellent CMD/DIP/SCI voyagers have flooded in from multiple angles, making it one of the most populous skill sets which has put Yarnek to bed there as well. Formerly offering good utility for a one-off, there's not enough power left in Rock Lobster's tank to make him worthwhile to anyone but younger rosters or collection chasers.
+Pick up Yarnek from sub-par Beholds if you have to and hope it pays off with up to three realistic Collections, plus three longshots.
