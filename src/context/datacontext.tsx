@@ -49,6 +49,7 @@ export interface DefaultCore extends ContextCommon {
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
 	ready: (demands: ValidDemands[]) => boolean;
+	cadetMapped: boolean;
 };
 
 const defaultData = {
@@ -62,8 +63,9 @@ const defaultData = {
 	gauntlets: [] as Gauntlet[],
 	missions: [] as Mission[],
 	episodes: [] as Mission[],
-	cadet: [] as Mission[]
-};
+	cadet: [] as Mission[],
+	cadetMapped: false
+} as DefaultCore;
 
 export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
 
@@ -116,6 +118,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						.then(result => {
 							setData(prev => {
 								const newData = { ...prev };
+								console.log(`Demand '${demand}' loaded, processing ...`);
 								if (demand === 'skill_bufs') {
 									let sks = {} as BuffStatTable;
 									let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
@@ -188,7 +191,11 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 		if (ready) {
 			if (demands.includes("items") && demands.includes("cadet")) {
+				if (data.cadetMapped) return true;
+				data.cadetMapped = true;
+				
 				const cadetforitem = data.cadet?.filter(f => f.cadet);
+				console.log("Finding cadet mission farm sources for items ...");
 
 				if (cadetforitem?.length) {
 					for(const item of data.items) {					
@@ -226,6 +233,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 						}
 					}
 				}
+
+				console.log("Done with cadet missions.");
 			}
 		}
 

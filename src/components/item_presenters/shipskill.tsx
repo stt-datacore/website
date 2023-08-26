@@ -15,7 +15,6 @@ const isWindow = typeof window !== 'undefined';
 // But Chrome makes us do this thing
 if (isWindow) window.setTimeout(() => {
     let imgs = Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON);
-    imgs = imgs.concat(Object.values(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON));
     imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_ABILITY_ICON));
     imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON));
     imgs = imgs.concat(["attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png"]);
