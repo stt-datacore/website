@@ -5,6 +5,7 @@ import { ShuttleSeat } from './shuttleutils';
 import ItemDisplay from '../../components/itemdisplay';
 import allFactions from '../../../static/structured/factions.json';
 import { MergedContext } from '../../context/mergedcontext';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const ShuttleFactionView = (props: { factionId: number, size: number }) => {
 	const faction = allFactions.find(af => af.id === props.factionId);
@@ -34,7 +35,7 @@ export const SeatCrewView = (props: { crew: any }) => {
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 	return (
 		<React.Fragment>
-			<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+			<div style={{display: "flex", flexDirection:"row", alignItems: "center", justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : undefined}}>
 			<ItemDisplay
 				// itemSymbol={crew.symbol}
 				// allCrew={context.allCrew}

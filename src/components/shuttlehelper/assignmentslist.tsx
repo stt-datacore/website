@@ -48,7 +48,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			<Table.Row key={seatNum} style={{ cursor: 'pointer' }}
 				onClick={() => { if (seat.skillA) setEditAssignment({shuttleId, seatNum}); }}
 			>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' width={4}>
 					<SeatSkillView seat={seat} />
 				</Table.Cell>
 				<Table.Cell textAlign={assignedCrew ? 'left' : 'right'}>
@@ -59,7 +59,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 					{assignedCrew?.immortal > 0 && (<Icon name='snowflake' />)}
 					{assignedCrew?.prospect && (<Icon name='add user' />)}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' width={3}>
 					{assignedCrew && (
 						<Button.Group>
 							<Button compact icon='lock' {... lockAttributes}
