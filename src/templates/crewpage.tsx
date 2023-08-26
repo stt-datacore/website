@@ -58,11 +58,6 @@ type StaticCrewPageProps = {
 };
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const { playerData: pd, buffConfig, maxBuffs } = React.useContext(PlayerContext);
-
-	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones', 'cadet']) : false;
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
 	return (
 		<DataWrapper header={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>

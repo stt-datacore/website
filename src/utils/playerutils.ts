@@ -4,6 +4,7 @@ import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMissi
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
     // prevent this method from being called on previous-stripped player data.
     if (p.stripped) return;
+    p.stripped = true;
 
     delete p.item_archetype_cache;
     delete p.archetype_cache;

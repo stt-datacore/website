@@ -437,18 +437,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidMount() {		
-		window.setTimeout(() =>{ 
-			this.initData();
-		})		
+		this.initData();
 	}
 
 	componentDidUpdate() {
 		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
 			this.inited = false;
 		}
-		window.setTimeout(() => {
-			this.initData();
-		})
+		this.initData();
 	}
 
 	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
