@@ -7,6 +7,7 @@ import { createMedia } from '@artsy/fresnel';
 import { useOtherPages } from './otherpages';
 import { useStateWithStorage} from '../utils/storage';
 import { playerTools } from '../pages/playertools';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 const { MediaContextProvider, Media } = createMedia({
 	breakpoints: {
@@ -174,19 +175,16 @@ const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	
 	// TODO: Rewrite this
 	// MediaContextProvider is incompatible with Node 16+
-	return (
-		<MediaContextProvider>			
-			<Media at='mobile'>
-				<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
-					{children}
-				</NavBarMobile>
-			</Media>
-			<Media greaterThanOrEqual='computer'>
-				<NavBarDesktop narrowLayout={narrowLayout} leftItems={useMainMenuItems(false)} rightItems={rightItems}>
-					{children}
-				</NavBarDesktop>
-			</Media>
-		</MediaContextProvider>
+	return (<>
+		{window.innerWidth < DEFAULT_MOBILE_WIDTH && 
+			<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
+				{children}
+			</NavBarMobile> ||
+			<NavBarDesktop narrowLayout={narrowLayout} leftItems={useMainMenuItems(false)} rightItems={rightItems}>
+				{children}
+			</NavBarDesktop>}
+		</>
+		
 	);
 };
 
