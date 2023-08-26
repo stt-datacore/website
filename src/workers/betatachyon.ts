@@ -210,11 +210,17 @@ const BetaTachyon = {
             const resultCrew = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c).slice(0, 100);
 
             for (let crew of resultCrew) {
-                let so = skillOrder(crew);
-                crew.voyagesImproved = makeVoys(so);                
+
+                let cf = allCrew.find(c => c.symbol === crew.symbol);
+                if (!cf) return -1;
+                const copycrew = oneCrewCopy(cf as PlayerCrew);
+                applyCrewBuffs(copycrew, buffs);
+                let so = skillOrder(copycrew);
+
+                crew.voyagesImproved = makeVoys(so);   
                 crew.totalEVContribution = so.primary.core * 0.35;
                 crew.evPerCitation = (so.primary.core * 0.35) / crew.max_rarity;
-                crew.totalEVRemaining = (so.primary.core * 0.35) / (crew.max_rarity - crew.rarity);
+                crew.totalEVRemaining = crew.evPerCitation * (crew.max_rarity - crew.rarity);
                 crew.amTraits = getAMSeats(crew);
             }
 
