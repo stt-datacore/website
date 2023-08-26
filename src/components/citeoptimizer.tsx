@@ -12,7 +12,7 @@ import marked from 'marked';
 import CrewStat from './crewstat';
 import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
-import { CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
+import { CiteEngine, CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { MergedData, MergedContext } from '../context/mergedcontext';
@@ -20,6 +20,7 @@ import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
 import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
+import { TinyStore } from '../utils/tiny';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -54,7 +55,7 @@ type CiteOptimizerState = {
 	citeMode?: CiteMode;
 	sort?: string;
 	direction?: 'ascending' | 'descending';	
-	checks?: SymCheck[];
+	checks?: SymCheck[];	
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -73,6 +74,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	static contextType = MergedContext;
 	context!: React.ContextType<typeof MergedContext>;
 	private lastCiteMode: CiteMode | undefined = undefined;
+	private tiny = TinyStore.getStore('citeOptimizer');
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
@@ -86,8 +88,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			touchCrew: undefined,
 			touchToggled: false,
 			citeMode: {
-				rarities: []
-			}
+				rarities: [],
+				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
+			}			
 		};
 	}
 
@@ -101,6 +104,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			this.lastCiteMode = this.state.citeMode;
 			this.runWorker(this.lastCiteMode);
 		}
+	}
+
+	readonly setEngine = (engine: CiteEngine) => {
+		if (this.state.citeMode?.engine !== engine) {
+			this.tiny.setValue('engine', engine, true);
+			this.setState({ ... this.state, citeMode: { ... this.state.citeMode, engine: engine }, citeData: null });
+		}		
 	}
 
 	readonly setChecked = (crew: PlayerCrew | string, value?: boolean) => {
@@ -144,15 +154,20 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
-		const { playerData, crew: allCrew } = this.context;
-		
+		const { playerData, crew: allCrew, buffConfig } = this.context;
+		const engine = this.state.citeMode?.engine ?? "original";
+
 		playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
+		
+		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
+		
 		worker.postMessage({
-			worker: 'citeOptimizer',
+			worker: workerName,
 			playerData,
-			allCrew
+			allCrew,
+			buffs: buffConfig
 		});
 	}
 
@@ -515,6 +530,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const buffConfig = calculateBuffConfig(this.context.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const { engine } = citeMode;
+
 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 		
 		let compact = true;
@@ -525,7 +542,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		let pri: string[] = [];
 		let sec: string[] = [];
 		let seat: string[] = [];
+
 		const confine = [] as string[];
+
+		const engOptions = ['original', 'beta_tachyon_pulse'].map(s => {
+			return {
+				key: s,
+				value: s,
+				text: appelate(s)
+			}
+		});
 
 		if (workset) {
 			let ac = workset.crewToCite.concat(workset.crewToTrain);
@@ -619,7 +645,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
 			}
 		}
-		
+
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		
@@ -654,6 +680,23 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 					]}
 				/>
+				<Segment>
+					<h3>Engine</h3>
+					<div style={{
+						display: "flex",
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+					}}>
+						<Dropdown
+							options={engOptions}							
+							placeholder={"Select Engine"}
+							value={engine}
+							onChange={(e, { value }) => {
+								this.setEngine(value as CiteEngine);
+							}}
+							/>
+
+					</div>
+				</Segment>
 				<Segment>
 					<h3>Filters</h3>
 					<div style={{

@@ -14,6 +14,8 @@ export interface AtlasIcon extends Icon {
     atlas_info: string
 }
 
+export type CiteEngine = 'original' | 'beta_tachyon_pulse';
+
 export interface CiteMode {
   rarities?: number[],
   portal?: boolean,
@@ -22,6 +24,7 @@ export interface CiteMode {
   priSkills?: string[];
   secSkills?: string[];
   seatSkills?: string[];
+  engine?: CiteEngine;
 }
 
 

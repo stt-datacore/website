@@ -105,7 +105,7 @@ export function appelate(text: string) {
 		}
 		else {
 			cpos = 0;
-			curr += ch;
+			curr += ch == '_' ? " " : ch;
 		}
 	}
 
