@@ -136,6 +136,7 @@ export interface ComputedBuff {
   core: number
   min: number
   max: number
+  skill?: string;
 }
 
 export interface SkillData {

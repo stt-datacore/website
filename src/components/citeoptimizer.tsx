@@ -687,6 +687,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<Dropdown
+							multiple={false}
 							options={engOptions}							
 							placeholder={"Select Engine"}
 							value={engine}

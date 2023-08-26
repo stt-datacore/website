@@ -158,6 +158,7 @@ export const PortalFilter = (props: CrewPortalFilterProps) => {
 				placeholder={props.altTitle ?? 'Filter by portal status'} 
 				clearable
 				selection
+				multiple={false}
 				options={portalFilterOptions}
 				value={props.portalFilter}
 				onChange={(e, { value }) => props.setPortalFilter(value === '' ? undefined : value as boolean)}
