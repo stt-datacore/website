@@ -3,7 +3,7 @@ name: Returning Saru
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 37
 in_portal: true
 date: 04/01/2022
