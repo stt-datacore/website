@@ -381,6 +381,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
 		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');		
+		const engine = this.state.citeMode?.engine ?? 'original';
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
@@ -408,6 +409,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</React.Fragment>
 						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
+						{engine === 'beta_tachyon_pulse' && 
+							<Table.HeaderCell>Antimatter Traits</Table.HeaderCell>}
 						<Table.HeaderCell>In Portal</Table.HeaderCell>
 						<Table.HeaderCell>Compare</Table.HeaderCell>
 					</Table.Row>
@@ -466,6 +469,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
+								{engine === 'beta_tachyon_pulse' && 
+									<Table.Cell>{row.amTraits}</Table.Cell>}
+
 								<Table.Cell>
 									{crew.in_portal ? "Yes" : "No"}
 								</Table.Cell>

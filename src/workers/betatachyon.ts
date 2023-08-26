@@ -14,6 +14,52 @@ interface CrewSkill {
     tertiary?: CoreSkill;
 }
 
+const amSeats = ["Astrophysicist",
+                "Bajoran",
+                "Borg",
+                "Brutal",
+                "Cardassian",
+                "Civilian",
+                "Communicator",
+                "Costumed",
+                "Crafty",
+                "Cultural Figure",
+                "Cyberneticist",
+                "Desperate",
+                "Diplomat",
+                "Duelist",
+                "Exobiology",
+                "Explorer",
+                "Federation",
+                "Ferengi",
+                "Gambler",
+                "Hero",
+                "Hologram",
+                "Human",
+                "Hunter",
+                "Innovator",
+                "Inspiring",
+                "Jury Rigger",
+                "Klingon",
+                "Marksman",
+                "Maverick",
+                "Physician",
+                "Pilot",
+                "Prodigy",
+                "Resourceful",
+                "Romantic",
+                "Romulan",
+                "Saboteur",
+                "Scoundrel",
+                "Starfleet",
+                "Survivalist",
+                "Tactician",
+                "Telepath",
+                "Undercover Operative",
+                "Veteran",
+                "Villain",
+                "Vulcan"];
+
 const BetaTachyon = {        
 
     scanCrew: (playerData: PlayerData, allCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
@@ -68,6 +114,10 @@ const BetaTachyon = {
             const skills = ["command_skill", "diplomacy_skill", "science_skill", "engineering_skill", "security_skill", "medicine_skill"];
             const shortskills = ["CMD", "DIP", "SCI", "ENG", "SEC", "MED"];
             const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
+
+            function getAMSeats(crew: PlayerCrew | CrewMember) {
+                return crew.traits_named.filter(tn => amSeats.includes(tn)).length;
+            }
 
             function skillOrder(crew: PlayerCrew) {
                 const sk = [] as ComputedBuff[];
@@ -128,17 +178,16 @@ const BetaTachyon = {
                 return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;    
             }
 
-
             if (playerData.citeMode && playerData.citeMode.rarities?.length) {
                 playerData = JSON.parse(JSON.stringify(playerData));
                 playerData.player.character.crew = playerData.player.character.crew
                 .filter((crew) => playerData.citeMode?.rarities?.includes(crew.max_rarity));
             }
 
-            const evalCrew = playerData.player.character.crew.filter((crew) => !isImmortal(crew));
+            const evalCrew = playerData.player.character.crew.filter((crew) => !isImmortal(crew) && crew.rarity !== crew.max_rarity);
             const skillbest = {} as { [key: string]: PlayerCrew[] };
             const skillout = {} as { [key: string]: PlayerCrew[] };
-            const immoCrew = playerData.player.character.crew.filter(c => isImmortal(c));
+            const immoCrew = playerData.player.character.crew.filter(c => isImmortal(c) || c.rarity === c.max_rarity);
             
             skills.forEach((sk) => {
                 skillbest[sk] = findBest(immoCrew, sk);
@@ -161,8 +210,32 @@ const BetaTachyon = {
             const resultCrew = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c).slice(0, 100);
 
             for (let crew of resultCrew) {
-                crew.voyagesImproved = makeVoys(skillOrder(crew));
+                let so = skillOrder(crew);
+                crew.voyagesImproved = makeVoys(so);                
+                crew.totalEVContribution = so.primary.core * 0.35;
+                crew.evPerCitation = (so.primary.core * 0.35) / crew.max_rarity;
+                crew.totalEVRemaining = (so.primary.core * 0.35) / (crew.max_rarity - crew.rarity);
+                crew.amTraits = getAMSeats(crew);
             }
+
+            resultCrew.sort((a, b) => {
+                let r = (b.amTraits ?? 0) - (a.amTraits ?? 0);
+                if (!r) {
+                    return (b.totalEVContribution ?? 0) - (a.totalEVContribution ?? 0);
+                    // let sa = skillOrder(a);
+                    // let sb = skillOrder(b);
+
+                    // r = sb.primary.core - sa.primary.core;
+                    // if (!r) {
+                    //     r = (sb.secondary?.core ?? 0) - (sa.secondary?.core ?? 0);
+                    //     if (!r) {
+                    //         r = (sb.tertiary?.core ?? 0) - (sa.tertiary?.core ?? 0);
+                    //     }
+                    // }
+
+                }
+                return r;
+            })
 
             resolve({
                 crewToCite: resultCrew,
