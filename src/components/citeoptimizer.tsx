@@ -484,7 +484,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={9}>
+						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 10 : 9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={paginationPage}
