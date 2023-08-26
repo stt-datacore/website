@@ -170,13 +170,15 @@ type NavBarProps = {
 	onMessageClicked: () => void;
 };
 
+const hasWindow = typeof window !== 'undefined';
+
 const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
 	
 	// TODO: Rewrite this
 	// MediaContextProvider is incompatible with Node 16+
 	return (<>
-		{window.innerWidth < DEFAULT_MOBILE_WIDTH && 
+		{hasWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH && 
 			<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
 				{children}
 			</NavBarMobile> ||
