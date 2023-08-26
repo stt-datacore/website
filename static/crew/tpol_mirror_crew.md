@@ -3,8 +3,8 @@ name: Mirror T'Pol
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 8
-events: 54
+bigbook_tier: 7
+events: 55
 in_portal: true
 date: 30/11/2016
 obtained: Post-Launch
