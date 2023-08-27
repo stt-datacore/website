@@ -1,20 +1,29 @@
 import React from 'react';
-import { Header, Table, Icon, Input, Button, Modal, Pagination, Popup } from 'semantic-ui-react';
+import { Table, Icon, Button, Modal, Pagination, Popup } from 'semantic-ui-react';
 
 import { ShuttleFactionView, SeatSkillView, SeatCrewView } from './views';
-import { Shuttlers, Shuttle, ShuttleSeat, CrewScores, getSkillSetId } from './shuttleutils';
+import { Shuttlers, ShuttleSeat, CrewScores, getSkillSetId, ISeatAssignment, IShuttleScores } from './shuttleutils';
 import { PlayerCrew } from '../../model/player';
-import { AssignedCrew } from './shuttleutils';
+
+interface IActiveAssignment {
+	shuttleId: string;
+	seatNum: number;
+};
+
+interface IAssignableCrew extends PlayerCrew {
+	ssId: string;
+	score: number;
+};
 
 type AssignmentsListProps = {
 	groupId: string;
-	crew: any[];
+	crew: PlayerCrew[];
 	setActiveStep: (newStep: string) => void;
 	recommendShuttlers: () => void;
 	shuttlers: Shuttlers;
 	setShuttlers: (shuttlers: Shuttlers) => void;
-	assigned: AssignedCrew[];
-	setAssigned: (assigned: any[]) => void;
+	assigned: ISeatAssignment[];
+	setAssigned: (assigned: ISeatAssignment[]) => void;
 	crewScores: CrewScores;
 	updateCrewScores: (todo: ShuttleSeat[], doneCallback?: () => void) => void;
 };
@@ -22,8 +31,8 @@ type AssignmentsListProps = {
 const AssignmentsList = (props: AssignmentsListProps) => {
 	const { shuttlers, setShuttlers, assigned, setAssigned, crewScores, updateCrewScores } = props;
 
-	const [shuttleScores, setShuttleScores] = React.useState([]);
-	const [editAssignment, setEditAssignment] = React.useState<{shuttleId?: string, seatNum?: number}>({});
+	const [shuttleScores, setShuttleScores] = React.useState<IShuttleScores>({} as IShuttleScores);
+	const [editAssignment, setEditAssignment] = React.useState<IActiveAssignment | undefined>(undefined);
 	const [scoreLoadQueue, setScoreLoadQueue] = React.useState('');
 
 	React.useEffect(() => {
@@ -34,15 +43,12 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 	const SeatAssignmentRow = (props: { shuttleId: string, seatNum: number, seat: ShuttleSeat }) => {
 		const { shuttleId, seatNum, seat } = props;
 
-		let assignedCrew;
+		let assignedCrew = undefined as PlayerCrew | undefined;
 		const seated = assigned.find(seat => seat.shuttleId === shuttleId && seat.seatNum === seatNum);
 		if (seated) {
 			assignedCrew = myCrew.find(crew => crew.id === seated.assignedId && crew.symbol === seated.assignedSymbol);
 			if (!assignedCrew) assignedCrew = myCrew.find(crew => crew.symbol === seated.assignedSymbol);
 		}
-
-		const lockAttributes = {} as Object;
-		if (seated?.locked) lockAttributes["color"] = 'yellow';
 
 		return (
 			<Table.Row key={seatNum} style={{ cursor: 'pointer' }}
@@ -51,18 +57,22 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 				<Table.Cell textAlign='center' width={4}>
 					<SeatSkillView seat={seat} />
 				</Table.Cell>
-				<Table.Cell textAlign={assignedCrew ? 'left' : 'right'}>
+				<Table.Cell textAlign={assignedCrew ? 'left' : 'center'}>
 					{assignedCrew && (<SeatCrewView crew={assignedCrew} />)}
 					{!assignedCrew && (<span style={{ color: 'gray' }}>(Open seat)</span>)}
 				</Table.Cell>
 				<Table.Cell>
-					{assignedCrew?.immortal > 0 && (<Icon name='snowflake' />)}
-					{assignedCrew?.prospect && (<Icon name='add user' />)}
+					{assignedCrew && (
+						<React.Fragment>
+							{assignedCrew.immortal > 0 && (<Icon name='snowflake' />)}
+							{assignedCrew.prospect && (<Icon name='add user' />)}
+						</React.Fragment>
+					)}
 				</Table.Cell>
 				<Table.Cell textAlign='center' width={3}>
 					{assignedCrew && (
 						<Button.Group>
-							<Button compact icon='lock' {... lockAttributes}
+							<Button compact icon='lock' color={seated?.locked ? 'yellow' : undefined}
 								onClick={(e) => { toggleAssignmentLock(shuttleId, seatNum); e.stopPropagation(); }} />
 							<Button compact icon='x'
 								onClick={(e) => { updateAssignment(shuttleId, seatNum); e.stopPropagation(); }} />
@@ -74,12 +84,14 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 	};
 
 	const SeatAssignmentPicker = () => {
-		if (editAssignment.seatNum === undefined || editAssignment.shuttleId === undefined) return <></>;
-		const seatNum = editAssignment.seatNum;
-		const shuttleId = editAssignment.shuttleId;
-
+		if (!editAssignment) return (<></>);
+		const { shuttleId, seatNum } = editAssignment;
 		const [paginationPage, setPaginationPage] = React.useState(1);
-		const seat = shuttlers?.shuttles?.find(shuttle => shuttle.id === shuttleId)?.seats[seatNum];
+
+		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
+		if (!shuttle) return (<></>);
+
+		const seat = shuttle.seats[seatNum];
 		if (!seat) return <></>;
 
 		const ssId = getSkillSetId(seat);
@@ -92,14 +104,13 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			return (<></>);
 		}
 
-		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
 		return (
 			<Modal
 				open={true}
-				onClose={() => setEditAssignment({})}
+				onClose={() => setEditAssignment(undefined)}
 			>
 				<Modal.Header>
-					{shuttle?.name}
+					{shuttle.name}
 					{shuttleScores[shuttleId] ?
 						<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
 							({(shuttleScores[shuttleId].chance*100).toFixed(1)}% Chance)
@@ -111,7 +122,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 				</Modal.Content>
 				<Modal.Actions>
 					<Button icon='forward' content='Next Seat' onClick={() => cycleShuttleSeat()} />
-					<Button positive onClick={() => setEditAssignment({})}>
+					<Button positive onClick={() => setEditAssignment(undefined)}>
 						Close
 					</Button>
 				</Modal.Actions>
@@ -119,7 +130,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 		);
 
 		function renderTable(): JSX.Element {
-			let assignedCrew;
+			let assignedCrew = undefined as PlayerCrew | undefined;
 			const seated = assigned.find(seat => seat.shuttleId === shuttleId && seat.seatNum == seatNum);
 			if (seated) {
 				assignedCrew = myCrew.find(crew => crew.id === seated.assignedId && crew.symbol === seated.assignedSymbol);
@@ -131,8 +142,8 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			const totalPages = Math.ceil(scores.length / rowsPerPage);
 			const data = scores.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage).map(score => {
 				const scoreCrew = myCrew.find(crew => crew.id === score.id);
-				return {...scoreCrew, ...score}
-			});
+				return {...scoreCrew, ...score};
+			}) as IAssignableCrew[];
 
 			return (
 				<React.Fragment>
@@ -165,15 +176,15 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			);
 		}
 
-		function renderRow(crew: any, idx: number, assignedCrew: any): JSX.Element {
+		function renderRow(crew: IAssignableCrew, idx: number, assignedCrew: PlayerCrew | undefined): JSX.Element {
 			const currentSeat = assigned.find(seat => seat.assignedId === crew.id && seat.assignedSymbol === crew.symbol);
 			const currentShuttle = currentSeat ? shuttlers.shuttles.find(shuttle => shuttle.id === currentSeat.shuttleId) : undefined;
 			return (
 				<Table.Row key={idx} style={{ cursor: 'pointer' }}
 					onClick={() => {
-						if (shuttleId !== undefined && seatNum !== undefined && (assignedCrew === undefined || crew.id !== assignedCrew.id))
+						if (!assignedCrew || crew.id !== assignedCrew.id)
 							updateAssignment(shuttleId, seatNum, crew, true);
-						setEditAssignment({});
+						setEditAssignment(undefined);
 					}}
 				>
 					<Table.Cell textAlign='center'>
@@ -185,7 +196,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 						{crew.prospect && (<Icon name='add user' />)}
 					</Table.Cell>
 					<Table.Cell textAlign='center'>
-						{shuttleId != undefined && seatNum != undefined && renderScoreChange(shuttleId, seatNum, crew.score)}
+						{renderScoreChange(shuttleId, seatNum, crew.score)}
 					</Table.Cell>
 					<Table.Cell>
 						{currentShuttle?.name}
@@ -206,22 +217,23 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 			const DIFFICULTY = 2000;
 			const dAvgSkill = newScores.reduce((a, b) => (a + b), 0)/newScores.length;
 			const dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
-			const attributes = {} as Object;
+			let style = {} as Object;
 			if (replacementScore === 0) {
-				if (dChance*100 >= 90) attributes["style"] = { color: 'green', fontWeight: 'bold' };
-				return (<span {...attributes}>{Math.floor(dChance*100)}%</span>);
+				if (dChance*100 >= 90) style = { color: 'green', fontWeight: 'bold' };
+				return (<span style={style}>{Math.floor(dChance*100)}%</span>);
 			}
 			const dDelta = dChance - shuttleScores[shuttleId].chance;
 			if (dDelta > 0 && dChance*100 >= 90)
-				attributes["style"] = { color: 'green', fontWeight: 'bold' };
-			return (<span {...attributes}>{dDelta > 0 ? '+' : ''}{(dDelta*100).toFixed(1)}%</span>);
+				style = { color: 'green', fontWeight: 'bold' };
+			return (<span style={style}>{dDelta > 0 ? '+' : ''}{(dDelta*100).toFixed(1)}%</span>);
 		}
 
 		function cycleShuttleSeat(): void {
+			if (!shuttle) return;
 			const nextAssignment = {
 				shuttleId: shuttleId as string,
-				seatNum: (seatNum + 1) >= (shuttle?.seats?.length ?? 0) ? 0 : seatNum + 1
-			};
+				seatNum: (seatNum + 1) >= shuttle.seats.length ? 0 : seatNum + 1
+			} as IActiveAssignment;
 			setEditAssignment(nextAssignment);
 		}
 	};
@@ -246,7 +258,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 				<Table.Body>
 					{data.length === 0 && (
 						<Table.Row>
-							<Table.Cell colSpan={6} textAlign='center'>
+							<Table.Cell colSpan={5} textAlign='center'>
 								No missions selected.
 							</Table.Cell>
 						</Table.Row>
@@ -277,7 +289,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={3}>
+						<Table.HeaderCell colSpan={2}>
 							<Button compact icon='backward' content='Change Missions' onClick={() => props.setActiveStep('missions')} />
 						</Table.HeaderCell>
 						<Table.HeaderCell colSpan={3} textAlign='right'>
@@ -286,18 +298,19 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			{editAssignment.shuttleId && (<SeatAssignmentPicker />)}
+			{editAssignment && (<SeatAssignmentPicker />)}
 		</React.Fragment>
 	);
 
 	function dismissShuttle(shuttleId: string): void {
-		let hsu = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId)
-		if (hsu) hsu.priority = 0;
-
-		setShuttlers({...shuttlers});
+		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
+		if (shuttle) {
+			shuttle.priority = 0;
+			setShuttlers({...shuttlers});
+		}
 	}
 
-	function updateAssignment(shuttleId: string, seatNum: number, assignedCrew: PlayerCrew | undefined = undefined, locked: boolean = false): void {
+	function updateAssignment(shuttleId: string, seatNum: number, assignedCrew: IAssignableCrew | undefined = undefined, locked: boolean = false): void {
 		// Unassign crew from previously assigned seat, if necessary
 		if (assignedCrew) {
 			const current = assigned.find(seat => seat.assignedId === assignedCrew.id);
@@ -338,22 +351,27 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 
 	function toggleAssignmentLock(shuttleId: string, seatNum: number): void {
 		const seated = assigned.find(seat => seat.shuttleId === shuttleId && seat.seatNum === seatNum);
-		if (seated) seated.locked = !seated.locked;
-		setAssigned([...assigned]);
+		if (seated) {
+			seated.locked = !seated.locked;
+			setAssigned([...assigned]);
+		}
 	}
 
 	function updateShuttleScores(): void {
 		const DIFFICULTY = 2000;
-		const newScores = [];
+		const newScores = {} as IShuttleScores;
 		assigned.forEach(seated => {
-			if (!newScores[seated.shuttleId]) {
-				const seatCount = shuttlers?.shuttles?.find(shuttle => shuttle.id === seated.shuttleId)?.seats?.length ?? 0;
-				newScores[seated.shuttleId] = { chance: 0, scores: Array(seatCount).fill(0) };
+			const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === seated.shuttleId);
+			if (shuttle) {
+				if (!newScores[seated.shuttleId]) {
+					const seatCount = shuttle.seats.length;
+					newScores[seated.shuttleId] = { chance: 0, scores: Array(seatCount).fill(0) };
+				}
+				newScores[seated.shuttleId].scores[seated.seatNum] = seated.seatScore;
+				const dAvgSkill = newScores[seated.shuttleId].scores.reduce((a, b) => (a + b), 0)/newScores[seated.shuttleId].scores.length;
+				const dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
+				newScores[seated.shuttleId].chance = dAvgSkill > 0 ? dChance : 0;
 			}
-			newScores[seated.shuttleId].scores[seated.seatNum] = seated.seatScore;
-			const dAvgSkill = newScores[seated.shuttleId].scores.reduce((a, b) => (a + b), 0)/newScores[seated.shuttleId].scores.length;
-			const dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
-			newScores[seated.shuttleId].chance = dAvgSkill > 0 ? dChance : 0;
 		});
 		setShuttleScores(newScores);
 	}

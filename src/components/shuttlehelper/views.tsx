@@ -5,6 +5,7 @@ import { ShuttleSeat } from './shuttleutils';
 import ItemDisplay from '../../components/itemdisplay';
 import allFactions from '../../../static/structured/factions.json';
 import { MergedContext } from '../../context/mergedcontext';
+import { PlayerCrew } from '../../model/player';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const ShuttleFactionView = (props: { factionId: number, size: number }) => {
@@ -29,13 +30,12 @@ export const SeatSkillView = (props: { seat: ShuttleSeat }) => {
 	);
 };
 
-export const SeatCrewView = (props: { crew: any }) => {
+export const SeatCrewView = (props: { crew: PlayerCrew }) => {
 	const { crew } = props;
 	// const context = React.useContext(MergedContext);
-	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 	return (
-		<React.Fragment>
-			<div style={{display: "flex", flexDirection:"row", alignItems: "center", justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : undefined}}>
+		<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : undefined }}>
 			<ItemDisplay
 				// itemSymbol={crew.symbol}
 				// allCrew={context.allCrew}
@@ -46,10 +46,8 @@ export const SeatCrewView = (props: { crew: any }) => {
 				size={32}
 				maxRarity={crew.max_rarity}
 				rarity={crew.rarity}
-				style={{ verticalAlign: 'middle' }}
 			/>
 			<span style={{ padding: '0 .5em' }}>{crew.name}</span>
-			</div>
-		</React.Fragment>
+		</div>
 	);
 };
