@@ -2645,7 +2645,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		const qcrew_pass1 = allCrew.filter((a) => a.traits_hidden.includes("q_jdl") && a.max_rarity >= 4);
-		const qcrew = qcrew_pass1.filter(q1 => (Object.values(q1.base_skills).reduce((p: Skill, n: Skill) => (p?.range_max ?? 0) + (n?.range_max ?? 0)) >= 300));
+		const qcrew = [] as CrewMember[];
+		
+		for (let qc of qcrew_pass1) {
+			let max = 0;
+			for (let sk of Object.values(qc.base_skills)) {
+				max += sk.range_max;
+			}
+			if (max >= 800) {
+				qcrew.push(qc);
+			}
+		}
+		// qcrew_pass1.filter(q1 => (Object.values(q1.base_skills).reduce((p: Skill, n: Skill) => (p?.range_max ?? 0) + (n?.range_max ?? 0)) >= 300));
 
 		const idx = Math.floor(Math.random() * (qcrew.length - 1));
 		const q = qcrew[idx];
