@@ -323,7 +323,7 @@ const BetaTachyon = {
             }
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
-            const minremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a < b ? a : b);
+            const minremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits ?? 0).reduce((a, b) => a > b ? a : b);
             
             resultCrew.sort((a, b) => {
@@ -331,17 +331,19 @@ const BetaTachyon = {
 
                 let anum = (a.voyagesImproved?.length ?? 0) / maxvoy;
                 let bnum = (a.totalEVContribution ?? 0) / maxev;
-                let cnum = (a.totalEVRemaining ?? 0) / minremain;
+                let cnum = 1 - ((a.totalEVRemaining ?? 0) / minremain);
                 let dnum = (a.amTraits ?? 0) / maxam;
+                let fnum = (acc[a.symbol].in_portal ? 0 : 1);
 
-                let fanum = (100 * (anum + bnum + cnum + dnum)) / 4;
+                let fanum = (100 * (anum + bnum + cnum + dnum + fnum)) / 5;
 
                 anum = (b.voyagesImproved?.length ?? 0) / maxvoy;
                 bnum = (b.totalEVContribution ?? 0) / maxev;
-                cnum = (b.totalEVRemaining ?? 0) / minremain;
+                cnum = 1 - ((b.totalEVRemaining ?? 0) / minremain);
                 dnum = (b.amTraits ?? 0) / maxam;
+                fnum = (acc[b.symbol].in_portal ? 0 : 1);
 
-                let fbnum = (100 * (anum + bnum + cnum + dnum)) / 4;
+                let fbnum = (100 * (anum + bnum + cnum + dnum + fnum)) / 5;
 
                 r = fbnum - fanum;
 
