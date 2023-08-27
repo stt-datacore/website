@@ -237,6 +237,8 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 			});
 			if (mobile === undefined) {
 				window.setTimeout(() => {
+					const detectMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+					
 					this.setState({ ... this.state, mobile: detectMobile });
 					return <></>;
 				});				
