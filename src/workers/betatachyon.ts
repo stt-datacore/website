@@ -187,8 +187,10 @@ const BetaTachyon = {
             const evalCrew = playerData.player.character.crew.filter((crew) => !isImmortal(crew) && crew.rarity !== crew.max_rarity);
             const skillbest = {} as { [key: string]: PlayerCrew[] };
             const skillout = {} as { [key: string]: PlayerCrew[] };
-            const immoCrew = playerData.player.character.crew.filter(c => isImmortal(c) || c.rarity === c.max_rarity);
+            let immo1 = playerData.player.character.crew.filter(c => isImmortal(c) || c.rarity === c.max_rarity);
             
+            const immoCrew = immo1?.length ? immo1 : playerData.player.character.crew;
+
             skills.forEach((sk) => {
                 skillbest[sk] = findBest(immoCrew, sk);
             });
@@ -209,8 +211,9 @@ const BetaTachyon = {
 
             const resultCrew = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c).slice(0, 100);
 
-            for (let crew of resultCrew) {
+            const rc2 = resultCrew.filter((fc, idx) => resultCrew.findIndex(g => g.symbol === fc.symbol) === idx);
 
+            for (let crew of rc2) {
                 let cf = allCrew.find(c => c.symbol === crew.symbol);
                 if (!cf) return -1;
                 const copycrew = oneCrewCopy(cf as PlayerCrew);
