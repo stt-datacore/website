@@ -2,19 +2,22 @@ import React, { PureComponent, useState } from 'react';
 import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
-import { createMedia } from '@artsy/fresnel';
+// import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
 import { useStateWithStorage} from '../utils/storage';
 import { playerTools } from '../pages/playertools';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
-const { MediaContextProvider, Media } = createMedia({
-	breakpoints: {
-		mobile: 0,
-		computer: 1024
-	}
-});
+
+const hasWindow = typeof window !== 'undefined';
+
+// const { MediaContextProvider, Media } = createMedia({
+// 	breakpoints: {
+// 		mobile: 0,
+// 		computer: 1024
+// 	}
+// });
 
 const MainContent = ({ children, narrowLayout }) =>
 	narrowLayout ? (
@@ -170,24 +173,26 @@ type NavBarProps = {
 	onMessageClicked: () => void;
 };
 
-const hasWindow = typeof window !== 'undefined';
-
 const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
 	
 	// TODO: Rewrite this
 	// MediaContextProvider is incompatible with Node 16+
-	return (<>
-		{hasWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH && 
+
+	if (hasWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+		return ( 
 			<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
 				{children}
-			</NavBarMobile> ||
+			</NavBarMobile> 
+		)
+	}
+	else {
+		return (
 			<NavBarDesktop narrowLayout={narrowLayout} leftItems={useMainMenuItems(false)} rightItems={rightItems}>
 				{children}
-			</NavBarDesktop>}
-		</>
-		
-	);
+			</NavBarDesktop>
+		)		
+	}
 };
 
 type TopMenuProps = {
