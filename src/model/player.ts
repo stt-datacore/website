@@ -510,7 +510,8 @@ export interface Player {
     evPerCitation?: number;
     voyagesImproved?: string[];
     amTraits?: number;
-
+    voyScores?: { [key: string]: number };
+    
     /** Highest rarity from out of all copies of crew owned by the player */
     highest_owned_rarity?: number;
 
