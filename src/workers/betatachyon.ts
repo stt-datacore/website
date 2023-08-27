@@ -209,11 +209,11 @@ const BetaTachyon = {
                 skillout[skill] = skillout[skill].filter(c => !isImmortal(c));
             });
 
-            const resultCrew = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c).slice(0, 100);
+            const rc1 = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c).slice(0, 100);
 
-            const rc2 = resultCrew.filter((fc, idx) => resultCrew.findIndex(g => g.symbol === fc.symbol) === idx);
+            const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.symbol === fc.symbol) === idx);
 
-            for (let crew of rc2) {
+            for (let crew of resultCrew) {
                 let cf = allCrew.find(c => c.symbol === crew.symbol);
                 if (!cf) return -1;
                 const copycrew = oneCrewCopy(cf as PlayerCrew);
