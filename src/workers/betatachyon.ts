@@ -11,6 +11,52 @@ interface CrewSkill {
     crew: PlayerCrew | CrewMember;
     skills: CoreSkill[];
 }
+const amSkillOrder = ["command_skill", "science_skill", "security_skill", "engineering_skill", "diplomacy_skill", "medicine_skill"];
+const amMap = ["Astrophysicist 	x 	x 		x 	x 	",
+    "Bajoran 	x 		x 		x 	",
+    "Borg 		x 	x 	x 		",
+    "Brutal 	x 	x 	x 	x 	x 	",
+    "Cardassian 	x 		x 		x 	",
+    "Civilian 	x 	x 	x 	x 	x 	x",
+    "Communicator 	x 		x 		x 	",
+    "Costumed 	x 	x 	x 	x 	x 	",
+    "Crafty 	x 	x 	x 		x 	",
+    "Cultural Figure 	x 		x 		x 	",
+    "Cyberneticist 		x 		x 		",
+    "Desperate 	x 	x 	x 	x 	x 	",
+    "Diplomat 	x 		x 		x 	",
+    "Duelist 	x 		x 		x 	",
+    "Exobiology 		x 				",
+    "Explorer 	x 		x 	x 		",
+    "Federation 	x 	x 	x 	x 	x 	x",
+    "Ferengi 					x 	",
+    "Gambler 	x 		x 		x 	",
+    "Hero 	x 		x 		x 	",
+    "Hologram 	x 	x 			x 	x",
+    "Human 	x 	x 	x 	x 	x 	x",
+    "Hunter 	x 		x 			",
+    "Innovator 	x 	x 		x 		",
+    "Inspiring 	x 		x 		x 	",
+    "Jury Rigger 	x 		x 	x 		",
+    "Klingon 	x 		x 		x 	",
+    "Marksman 			x 			",
+    "Maverick 	x 		x 		x 	",
+    "Physician 		x 			x 	x",
+    "Pilot 	x 		x 	x 		",
+    "Prodigy 		x 		x 		",
+    "Resourceful 	x 	x 	x 	x 	x 	",
+    "Romantic 	x 	x 	x 	x 	x 	",
+    "Romulan 			x 		x 	",
+    "Saboteur 	x 		x 			",
+    "Scoundrel 	x 		x 		x 	",
+    "Starfleet 	x 	x 	x 	x 	x 	x",
+    "Survivalist 	x 		x 		x 	",
+    "Tactician 	x 	x 	x 	x 	x 	",
+    "Telepath 	x 	x 	x 		x 	",
+    "Undercover Operative 	x 	x 	x 		x 	",
+    "Veteran 	x 		x 		x 	",
+    "Villain 	x 		x 		x 	",
+    "Vulcan 	x 	x 	x 		x 	"];
 
 const amSeats = ["Astrophysicist",
                 "Bajoran",
@@ -57,6 +103,23 @@ const amSeats = ["Astrophysicist",
                 "Veteran",
                 "Villain",
                 "Vulcan"];
+
+
+const lookupTrait = (trait: string) => {
+    const oma = [] as string[];
+    for (let ln of amMap) {
+        if (ln.startsWith(trait)) {
+            let parts = ln.split("\t");
+            let c = parts.length;
+            for (let i = 1; i < c; i++) {
+                if (parts[i].includes("x")) {
+                    oma.push(amSkillOrder[i - 1]);
+                }
+            }
+        }
+    }
+    return oma;
+}
 
 const BetaTachyon = {        
 
@@ -132,8 +195,10 @@ const BetaTachyon = {
             }            
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
-                return crew.traits_named.filter(tn => amSeats.includes(tn)).length;
+                
+                return crew.traits_named.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core)).length;
             }
+
             function countSkills(crew: PlayerCrew) {
                 let x = 0;
                 for (let skill of skills) {
@@ -144,7 +209,7 @@ const BetaTachyon = {
                 return x;
             }
 
-            function skillOrder(crew: PlayerCrew) {
+            function skillOrder(crew: PlayerCrew | CrewMember) {
                 const sk = [] as ComputedBuff[];
                 let x = 0;
                 for (let skill of skills) {
