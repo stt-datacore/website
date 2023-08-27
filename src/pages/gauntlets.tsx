@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
 
@@ -1677,7 +1677,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlet.unavailable_msg) {
 			return (
 				<Message icon>
-					<img style={{ height: "15em" }} src={`${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />
+					{this.randomQ()}
 					<Message.Content>
 						<Message.Header>{gauntlet.unavailable_msg}</Message.Header>
 						{gauntlet.unavailable_desc_msg}
@@ -2663,6 +2663,24 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>
 		)
+	}
+
+	randomQ() {
+		const { allCrew } = this.context;
+		if (!allCrew?.length) {
+			return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
+		}
+
+		const qcrew_pass1 = allCrew.filter((a) => a.traits_hidden.includes("q_jdl") && a.max_rarity >= 4);
+		const qcrew = qcrew_pass1.filter(q1 => (Object.values(q1.base_skills).reduce((p: Skill, n: Skill) => (p?.range_max ?? 0) + (n?.range_max ?? 0)) >= 300));
+
+		const idx = Math.floor(Math.random() * (qcrew.length - 1));
+		const q = qcrew[idx];
+		const img = q.imageUrlFullBody;
+		const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
+
+		return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
+
 	}
 }
 
