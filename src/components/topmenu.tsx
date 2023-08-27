@@ -9,9 +9,6 @@ import { useStateWithStorage} from '../utils/storage';
 import { playerTools } from '../pages/playertools';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
-
-const hasWindow = typeof window !== 'undefined';
-
 // const { MediaContextProvider, Media } = createMedia({
 // 	breakpoints: {
 // 		mobile: 0,
@@ -171,12 +168,13 @@ type NavBarProps = {
 	children: React.ReactNode;
 	narrowLayout?: boolean;
 	onMessageClicked: () => void;
+	mobile?: boolean;
 };
 
-const NavBar = ({ children, narrowLayout, onMessageClicked }: NavBarProps) => {
+const NavBar = ({ children, narrowLayout, onMessageClicked, mobile }: NavBarProps) => {
 	const rightItems = useRightItems({ onMessageClicked });
 
-	if (hasWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+	if (mobile) {
 		return ( 
 			<NavBarMobile leftItems={useMainMenuItems(true)} rightItems={rightItems}>
 				{children}
@@ -204,21 +202,57 @@ type TopMenuState = {
 	password: string;
 	errorMessage: string | undefined;
 	messageModalOpen: boolean;
+	mobile?: boolean;
 };
 
 class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
-	state = { user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false, messageModalOpen: false };
+	
+
+	constructor(props: TopMenuProps){
+		super(props);
+		this.state = { mobile: undefined, user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false, messageModalOpen: false };
+	}
 
 	render() {
-		const { user, password, loginDialogOpen, loggingIn, errorMessage, messageModalOpen } = this.state;
+		const { mobile, user, password, loginDialogOpen, loggingIn, errorMessage, messageModalOpen } = this.state;
 		const { narrowLayout, children } = this.props;
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
+		
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
+		const detectMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+		// console.log("Mobile mode: " + detectMobile);
+		// console.log("Mobile State: " + mobile);
+		
+		if (windowGlobal) {
+			// console.log("Inner Window Width " + window.innerWidth);
+
+			window.addEventListener('resize', (e) => {
+				const isMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+				if (isMobile !== mobile) {
+					if (isMobile) {
+						this.setState({ ... this.state, mobile: true });
+					}
+					else {
+						this.setState({ ... this.state, mobile: false });
+					}
+				}
+			});
+			if (mobile === undefined) {
+				window.setTimeout(() => {
+					const detectMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+					this.setState({ ... this.state, mobile: detectMobile });
+				});				
+
+				return <></>;
+			}
+		}
+		
 		return (
 			<React.Fragment>
-				<NavBar narrowLayout={narrowLayout} onMessageClicked={() => this.setState({ messageModalOpen: true })}>
+				<NavBar mobile={mobile || detectMobile} narrowLayout={narrowLayout} onMessageClicked={() => this.setState({ messageModalOpen: true })}>
 					{children}
 				</NavBar>
 
