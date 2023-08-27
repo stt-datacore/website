@@ -2639,7 +2639,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	randomQ() {
-		const { allCrew } = this.context;
+		const { crew: allCrew } = this.context;
 		if (!allCrew?.length) {
 			return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
 		}
