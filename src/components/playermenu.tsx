@@ -1,28 +1,27 @@
 import React from 'react';
 import { Button, Form, TextArea, Message } from 'semantic-ui-react';
 
-import { DataContext } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerData } from '../model/player';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
 const PlayerMenu = () => {
-	const coreData = React.useContext(DataContext);
-	const playerData = React.useContext(PlayerContext);
+	const global = React.useContext(GlobalContext);
+	const { player } = global;
 
-	// Requires both core crew and items. Don't show player menu if either core isn't loaded
-	if (coreData.crew?.length === 0 || coreData.items?.length === 0) return (<></>);
+	// If crew not loaded, assume core is not ready and player menu shouldn't be shown
+	if (global.core.crew.length === 0) return (<></>);
 
 	return (
 		<div style={{ margin: '2em 0 0.5em 0' }}>
-			{!playerData.loaded && <PlayerInputForm setValidInput={playerData.setInput} />
-			|| 
+			{!player.loaded && <PlayerInputForm setValidInput={player.setInput} />
+			||
 			<div>
-				Global player data: {playerData.loaded ? playerData.playerData?.player.character.display_name : 'Not loaded'}
-				{playerData.loaded && (
+				Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'}
+				{player.loaded && (
 					<span style={{ marginLeft: '1em' }}>
-						<Button compact onClick={() => playerData.reset && playerData.reset()}>Clear</Button>
+						<Button compact onClick={() => player.reset()}>Clear</Button>
 					</span>
 				)}
 			</div>
@@ -36,7 +35,6 @@ type PlayerInputFormProps = {
 };
 
 const PlayerInputForm = (props: PlayerInputFormProps) => {
-
 	const { setValidInput } = props;
 
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
@@ -109,12 +107,11 @@ const PlayerInputForm = (props: PlayerInputFormProps) => {
 			}
 			setFullInput(data);
 		};
-		if (event.target.files) { 
+		if (event.target.files) {
 			fReader.readAsText(event.target.files[0]);
 			if (inputUploadFile) inputUploadFile.files = null;
 		}
 	}
-
 
 	function parseInput() {
 		let testInput = fullInput;
@@ -169,6 +166,5 @@ const PlayerInputForm = (props: PlayerInputFormProps) => {
 		return true;
 	}
 };
-
 
 export default PlayerMenu;

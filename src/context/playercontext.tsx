@@ -1,7 +1,7 @@
 import React from 'react';
-import { CompactCrew, GameEvent, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GameEvent, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
-import { DataContext, DataProviderProperties, ValidDemands } from './datacontext';
+import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
 import { prepareProfileData } from '../utils/crewutils';
 import { Ship } from '../model/ship';
@@ -11,59 +11,49 @@ import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
 
+export interface PlayerContextData {
+	loaded: boolean;
+	setInput: (value: PlayerData | undefined) => void;
+	reset: () => void;
+	playerData?: PlayerData;
+	ephemeral?: EphemeralData;
+	strippedPlayerData?: PlayerData;
+	playerShips?: Ship[];
+	buffConfig?: BuffStatTable;
+	maxBuffs?: BuffStatTable;
+	dataSource?: string;
+};
+
 export interface EphemeralData {
 	activeCrew: CompactCrew[];
 	events: GameEvent[];
 	fleetBossBattlesRoot: BossBattlesRoot;
 	shuttleAdventures: ShuttleAdventure[];
 	voyage: Voyage[],
-	voyageDescriptions: VoyageDescription[];	
-}
+	voyageDescriptions: VoyageDescription[];
+};
 
-export interface PlayerContextData {
-	loaded: boolean;
-	input?: PlayerData;
-	setInput?: (value: PlayerData | undefined) => void;
-	strippedPlayerData?: PlayerData;
-	playerData?: PlayerData;	
-	playerShips?: Ship[];
-	buffConfig?: BuffStatTable;
-	maxBuffs?: BuffStatTable;
-	ephemeral?: EphemeralData;
-	dataSource?: string;
-	reset?: () => void;
-}
-
-const defaultPlayer = {
+export const defaultPlayer = {
 	loaded: false,
-	playerData: undefined,
-	ephmeral: undefined,
-	strippedPlayerData: undefined,
-	setInput: undefined,
-	reset: undefined,
-	additionalDemands: undefined
+	setInput: () => {},
+	reset: () => {}
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
 
 export const PlayerProvider = (props: DataProviderProperties) => {
-
 	const coreData = React.useContext(DataContext);
-
-	const dataReady = coreData.ready(['crew', 'items', 'ship_schematics']);
-	const { crew } = coreData;
+	const { children } = props;
 
 	const [loaded, setLoaded] = React.useState(false);
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
-
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<EphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
-	const { children } = props;
-	
+
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
 
@@ -75,23 +65,23 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setLoaded(false);
 		sessionStorage.clear();
-	}
+	};
 
 	const context = {
 		loaded,
+		setInput,
+		reset,
 		playerData: profile,
 		ephemeral,
 		stripped,
-		setInput,
-		reset,
+		playerShips,
 		buffConfig,
 		maxBuffs,
-		playerShips,
 		dataSource: input?.stripped === true ? 'session' : 'input'
 	} as PlayerContextData;
 
 	React.useEffect(() => {
-		if (!input || !dataReady) return;
+		if (!input) return;
 
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
@@ -137,7 +127,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		//	Ephmeral data is stripped from playerData here
 		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input});
 		strippedData.calc = input.calc ?? { 'lastImported': dtImported };
-	
+
 		if (input.stripped !== true) {
 			setStripped({ ... JSON.parse(JSON.stringify(strippedData)), stripped: true });
 		}
@@ -146,17 +136,17 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		//	so other components don't have to keep calculating the same data
 		// Pass playerData.profile as playerData to existing player tools
 		let preparedProfileData = {...strippedData};
-		prepareProfileData('PLAYER_CONTEXT', crew, preparedProfileData, dtImported);
+		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported);
 		setProfile(preparedProfileData);
 
-		if (preparedProfileData && coreData.ship_schematics?.length) {
-			let schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
-			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
-			setPlayerShips(data);
+		if (preparedProfileData) {
+			const schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
+			const mergedShips = mergeShips(schematics, preparedProfileData.player.character.ships);
+			setPlayerShips(mergedShips);
 		}
 
 		setLoaded(true);
-	}, [input, dataReady]);
+	}, [input]);
 
 	return (
 		<PlayerContext.Provider value={context}>
@@ -164,4 +154,3 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		</PlayerContext.Provider>
 	);
 };
-

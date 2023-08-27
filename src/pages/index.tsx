@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import { DataContext, ValidDemands } from '../context/datacontext';
+import { GlobalContext } from '../context/globalcontext';
 import Layout from '../components/layout';
+import DataPageLayout from '../components/datapagelayout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, isImmortal, prepareProfileData } from '../utils/crewutils';
+import { formatTierLabel } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -16,11 +17,7 @@ import { CrewMember } from '../model/crew';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
-import { PlayerContext } from '../context/playercontext';
-import { MergedContext } from '../context/mergedcontext';
 import { descriptionLabel } from '../components/crewtables/commonoptions';
-import { BuffStatTable } from '../utils/voyageutils';
-import { DataWrapper } from '../context/datawrapper';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -31,16 +28,16 @@ type IndexPageProps = {
 interface Lockable {
 	symbol: string;
 	name: string;
-}
+};
 
 const IndexPage = (props: IndexPageProps) => {
 	return (
-		<DataWrapper header='Crew Stats' demands={['all_buffs', 'crew', 'items']}>
+		<DataPageLayout header='Crew Stats'>
 			<React.Fragment>
 				<Announcement />
 				<CrewStats location={props.location} />
 			</React.Fragment>
-		</DataWrapper>
+		</DataPageLayout>
 	);
 };
 
@@ -61,8 +58,8 @@ type CrewStatsState = {
 };
 
 class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
 
 	constructor(props: CrewStatsProps | Readonly<CrewStatsProps>) {
@@ -93,9 +90,8 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 	}
 
 	async componentDidMount() {
-		const botcrew = JSON.parse(JSON.stringify(this.context.crew)) as (CrewMember | PlayerCrew)[];
-		let playerData = {} as PlayerData;
-		playerData = this.context.playerData;
+		const botcrew = JSON.parse(JSON.stringify(this.context.core.crew)) as (CrewMember | PlayerCrew)[];
+		let playerData = this.context.player.playerData;
 
 		const playerCrew: PlayerCrew[] | undefined = undefined; // playerData?.player?.character?.crew;
 
@@ -172,7 +168,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		const attributes = {
 			positive: highlighted
 		};
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		const counts = [
 			{ name: 'event', count: crew.events },
@@ -263,7 +259,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 	render() {
 		const { botcrew, tableConfig, initOptions, lockable, mode } = this.state;
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		const checkableValue = undefined; // playerData?.player?.character?.crew?.length ? (mode === 'all' ? undefined : (mode === 'unowned' ? true : false)) : undefined;
 		const caption = undefined; // playerData?.player?.character?.crew?.length ? 'Show only unowned crew' : undefined;
 

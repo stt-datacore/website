@@ -1,0 +1,47 @@
+import React from 'react';
+
+import { DataContext, DefaultCore, defaultData } from './datacontext';
+import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext';
+import { BuffStatTable } from "../utils/voyageutils";
+
+interface GlobalProviderProperties {
+	children: JSX.Element;
+};
+
+interface IDefaultGlobal {
+    core: DefaultCore;
+    player: PlayerContextData;
+    maxBuffs: BuffStatTable | undefined;
+};
+
+const defaultGlobal = {
+    core: defaultData,
+    player: defaultPlayer,
+    maxBuffs: undefined
+} as IDefaultGlobal;
+
+export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal as IDefaultGlobal);
+
+export const GlobalProvider = (props: GlobalProviderProperties) => {
+    const core = React.useContext(DataContext);
+    const player = React.useContext(PlayerContext);
+	const { children } = props;
+
+	let maxBuffs: BuffStatTable | undefined;
+	maxBuffs = player.maxBuffs;
+	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && core.all_buffs) {
+		maxBuffs = core.all_buffs;
+	}
+
+	const providerValue = {
+        core,
+        player,
+        maxBuffs
+	} as IDefaultGlobal;
+
+	return (
+		<GlobalContext.Provider value={providerValue}>
+			{children}
+		</GlobalContext.Provider>
+	);
+};

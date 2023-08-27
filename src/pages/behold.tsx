@@ -2,7 +2,9 @@ import React from 'react';
 import { Header, Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import Layout from '../components/layout';
+import { GlobalContext } from '../context/globalcontext';
+
+import DataPageLayout from '../components/datapagelayout';
 import CrewPicker from '../components/crewpicker';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
@@ -14,10 +16,7 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import CABExplanation from '../components/cabexplanation';
 import { CrewMember } from '../model/crew';
-import { PlayerCrew, PlayerData } from '../model/player';
-import { PlayerContext } from '../context/playercontext';
-import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { PlayerCrew } from '../model/player';
 import { formatTierLabel, crewCopy } from '../utils/crewutils';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../components/base/optionsmodal_base';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
@@ -30,10 +29,7 @@ type BeholdsPageProps = {
 };
 
 const BeholdsPage = (props: BeholdsPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const playerContext = React.useContext(PlayerContext);
-
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
+	const global = React.useContext(GlobalContext);
 
 	let crewFromUrl = [] as string[];
 	if (props.location) {
@@ -42,24 +38,12 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	}
 
 	return (
-		<Layout title='Behold helper'>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						crew: coreData.crew,
-						items: coreData.items,
-						playerData: {} as PlayerData,	/* Disable support for playerData until global player finalized */
-						maxBuffs: playerContext.maxBuffs
-					}}>
-						<Header as='h2'>Behold helper</Header>
-						<CrewSelector crewList={coreData.crew} initSelection={crewFromUrl} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-		</Layout>
+		<DataPageLayout header='Behold Helper'>
+			<React.Fragment>
+				<Header as='h2'>Behold Helper</Header>
+				<CrewSelector crewList={global.core.crew} initSelection={crewFromUrl} />
+			</React.Fragment>
+		</DataPageLayout>
 	);
 };
 
@@ -154,7 +138,8 @@ type CrewDetailsProps = {
 };
 
 const CrewDetails = (props: CrewDetailsProps) => {
-	const { crew: allCrew } = React.useContext(MergedContext);
+	const global = React.useContext(GlobalContext);
+	const { crew: allCrew } = global.core;
 	const { selectedCrew } = props;
 
 	const data = [] as (CrewMember | PlayerCrew)[];

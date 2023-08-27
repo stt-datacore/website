@@ -52,7 +52,7 @@ export interface DefaultCore extends ContextCommon {
 	cadetMapped: boolean;
 };
 
-const defaultData = {
+export const defaultData = {
 	crew: [] as CrewMember[],
 	ship_schematics: [] as Schematics[],
 	battle_stations: [] as BattleStations[],
@@ -104,7 +104,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			// this is a hack because BB uses all buffs but we don't always have player data
 			// and our skill_bufs does not yet match BB data. So for now, we're ignoring them.
 			if (demand === 'skill_bufs') demand = 'all_buffs';
-			
+
 			if (valid.includes(demand)) {
 				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
@@ -159,7 +159,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 											sch.ship.battle_stations = battle.battle_stations;
 										}
 									}
-									
+
 									let ship_schematics = demand === 'ship_schematics' ? result : newData.ship_schematics as Schematics[];
 									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
 
@@ -193,12 +193,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demands.includes("items") && demands.includes("cadet")) {
 				if (data.cadetMapped) return true;
 				data.cadetMapped = true;
-				
+
 				const cadetforitem = data.cadet?.filter(f => f.cadet);
 				console.log("Finding cadet mission farm sources for items ...");
 
 				if (cadetforitem?.length) {
-					for(const item of data.items) {					
+					for(const item of data.items) {
 						for (let ep of cadetforitem) {
 							let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
 							if (quests?.length) {
@@ -211,10 +211,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 												mx = (1/mx) * 1.80;
 												let qitem = {
 													type: 4,
-													mastery: x,											
+													mastery: x,
 													name: quest.name,
 													energy_quotient: 1,
-													chance_grade: 5 * mx,						
+													chance_grade: 5 * mx,
 													mission_symbol: quest.symbol,
 													cost: 1,
 													avg_cost: 1/mx,
@@ -223,13 +223,13 @@ export const DataProvider = (props: DataProviderProperties) => {
 												} as EquipmentItemSource;
 												if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
 													item.item_sources.push(qitem);
-												}									
+												}
 											}
 											x++;
 										}
 									}
 								}
-							}					
+							}
 						}
 					}
 				}
