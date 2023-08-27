@@ -2,7 +2,8 @@ import React from 'react';
 import { Header, Table, Icon, Dropdown, Input, Button, Grid, Modal, Divider } from 'semantic-ui-react';
 
 import { ShuttleFactionView, SeatSkillView } from './views';
-import { Shuttlers, Shuttle, ShuttleSeat, getSkillSetId, ShuttleAdventure } from './shuttleutils';
+import { Shuttlers, Shuttle, ShuttleSeat } from './shuttleutils';
+import { ShuttleAdventure } from '../../model/shuttle';
 
 import allFactions from '../../../static/structured/factions.json';
 
@@ -19,13 +20,12 @@ const MissionsList = (props: MissionsListProps) => {
 	const { groupId, shuttlers, setShuttlers, activeShuttles } = props;
 
 	const [editMission, setEditMission] = React.useState<Shuttle | undefined>(undefined);
-	
+
 	const [state, dispatch] = React.useReducer(reducer, {
 		data: shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId),
 		column: null,
 		direction: null
 	});
-
 	const { column, direction } = state;
 	const data: Shuttle[] = state.data;
 
@@ -36,7 +36,13 @@ const MissionsList = (props: MissionsListProps) => {
 	const CheckDropdown = () => {
 		if (data.length === 0) return (<></>);
 
-		const checkOptions: { key: string, text: string, ids: string[] }[] = [];
+		interface ICheckOption {
+			key: string;
+			text: string;
+			ids: string[];
+		};
+
+		const checkOptions: ICheckOption[] = [];
 
 		const threeSeaters = [] as string[], fourSeaters = [] as string[];
 		data.forEach(shuttle => {
@@ -86,15 +92,15 @@ const MissionsList = (props: MissionsListProps) => {
 		);
 	};
 
-	interface TableConfig {
+	interface ITableConfig {
 		title: string | JSX.Element;
 		align?: 'left' | 'right' | 'center';
 		column?: string;
 		span?: number;
 		reverse?: boolean;
-	}
+	};
 
-	const tableConfig: TableConfig[] = [
+	const tableConfig: ITableConfig[] = [
 		{ title: <CheckDropdown />, align: 'center' },
 		{ column: 'name', title: 'Mission' },
 		{ column: 'faction', title: 'Faction', align: 'center' },
@@ -104,7 +110,7 @@ const MissionsList = (props: MissionsListProps) => {
 	];
 
 	const MissionEditor = (props: { shuttle: Shuttle }) => {
-		const [shuttle, setShuttle] = React.useState(JSON.parse(JSON.stringify(props.shuttle)));
+		const [shuttle, setShuttle] = React.useState<Shuttle>(JSON.parse(JSON.stringify(props.shuttle)));
 
 		const factionOptions = allFactions.sort((a, b) => a.name.localeCompare(b.name)).map(faction => {
 			return { key: faction.id, value: faction.id, text: (<span style={{ whiteSpace: 'nowrap' }}>{faction.name}</span>) };
@@ -173,7 +179,7 @@ const MissionsList = (props: MissionsListProps) => {
 			</Modal>
 		);
 
-		function renderContent() {
+		function renderContent(): JSX.Element {
 			return (
 				<React.Fragment>
 					<Grid columns={2} divided stackable>
@@ -429,7 +435,8 @@ const MissionsList = (props: MissionsListProps) => {
 
 	function toggleMissionStatus(shuttleId: string): void {
 		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
-		if (shuttle) shuttle.priority = shuttle.priority === 0 ? missionsSelected+1 : 0;
+		if (!shuttle) return;
+		shuttle.priority = shuttle.priority === 0 ? missionsSelected+1 : 0;
 		updateShuttlers();
 	}
 
