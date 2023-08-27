@@ -210,7 +210,7 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 
 	constructor(props: TopMenuProps){
 		super(props);
-		this.state = { mobile: false, user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false, messageModalOpen: false };
+		this.state = { mobile: undefined, user: '', password: '', errorMessage: '', loginDialogOpen: false, loggingIn: false, messageModalOpen: false };
 	}
 
 	render() {
@@ -222,7 +222,12 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 		const userName = isLoggedIn ? window.localStorage.getItem('username') : '';
 		const detectMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+		// console.log("Mobile mode: " + detectMobile);
+		// console.log("Mobile State: " + mobile);
+		
 		if (windowGlobal) {
+			// console.log("Inner Window Width " + window.innerWidth);
+
 			window.addEventListener('resize', (e) => {
 				const isMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -238,10 +243,10 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 			if (mobile === undefined) {
 				window.setTimeout(() => {
 					const detectMobile = windowGlobal && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-					
 					this.setState({ ... this.state, mobile: detectMobile });
-					return <></>;
 				});				
+
+				return <></>;
 			}
 		}
 		
