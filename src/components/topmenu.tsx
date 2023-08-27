@@ -202,7 +202,7 @@ type TopMenuState = {
 	password: string;
 	errorMessage: string | undefined;
 	messageModalOpen: boolean;
-	mobile: boolean;
+	mobile?: boolean;
 };
 
 class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
@@ -235,6 +235,12 @@ class TopMenu extends PureComponent<TopMenuProps, TopMenuState> {
 					}
 				}
 			});
+			if (mobile === undefined) {
+				window.setTimeout(() => {
+					this.setState({ ... this.state, mobile: detectMobile });
+					return <></>;
+				});				
+			}
 		}
 		
 		return (
