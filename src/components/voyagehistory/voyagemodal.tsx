@@ -7,7 +7,7 @@ import allTraits from '../../../static/structured/translation_en.json';
 import { ITrackedVoyage } from './model';
 import { VoyageCrewSlot, LineupVoyage } from '../../model/player';
 
-import { DataContext } from '../../context/datacontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { HistoryContext } from './context';
 
 import LineupViewer from '../voyagecalculator/lineupviewer';
@@ -19,7 +19,7 @@ type VoyageModalProps = {
 };
 
 export const VoyageModal = (props: VoyageModalProps) => {
-	const coreData = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
 	const { history, setHistory, dbid } = React.useContext(HistoryContext);
 	const { voyage } = props;
 
@@ -89,7 +89,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				} as VoyageCrewSlot;
 				voyageCrewSlot.trait = assigned.trait;
 				// Use coreCrew instead of playerCrew, as current playerCrew may not reflect crew at voyage time
-				const coreCrew = coreData.crew.find(ac => ac.symbol === crewSymbol);
+				const coreCrew = globalContext.core.crew.find(ac => ac.symbol === crewSymbol);
 				if (coreCrew) voyageCrewSlot.crew = coreCrew;
 				voyageCrewSlots.push(voyageCrewSlot);
 			}
@@ -104,7 +104,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 			skills: voyage.skills
 		} as LineupVoyage;
 
-		const ship = coreData.ships.find(ship => ship.symbol === voyage.ship);
+		const ship = globalContext.core.ships.find(ship => ship.symbol === voyage.ship);
 
 		return (
 			<LineupViewer voyageData={voyageData} ship={ship} dbid={dbid} />

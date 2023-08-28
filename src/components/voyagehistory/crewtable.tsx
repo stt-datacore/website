@@ -6,7 +6,7 @@ import CONFIG from '../CONFIG';
 
 import { ITrackedCrewMember, ITrackedAssignmentsBySkill, ITrackedVoyage } from './model';
 
-import { DataContext } from '../../context/datacontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { HistoryContext } from './context';
 
 import { VoyageModal } from './voyagemodal';
@@ -17,7 +17,7 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 export const CrewTable = () => {
-	const coreData = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
 	const { history } = React.useContext(HistoryContext);
 
 	const [data, setData] = React.useState<ITrackedCrewMember[]>([] as ITrackedCrewMember[]);
@@ -42,7 +42,7 @@ export const CrewTable = () => {
 		const crewData = [] as ITrackedCrewMember[];
 		Object.keys(history.crew).forEach(crewSymbol => {
 			// TODO: Get crew from playerData instead of coreData
-			const crew = coreData.crew.find(crew => crew.symbol === crewSymbol);
+			const crew = globalContext.core.crew.find(crew => crew.symbol === crewSymbol);
 			if (crew) {
 				const assignments = history.crew[crewSymbol].filter(assignment => {
 					const trackedVoyage = voyages.find(voyage => voyage.tracker_id === assignment.tracker_id);

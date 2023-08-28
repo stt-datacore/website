@@ -6,8 +6,7 @@ import { IVoyageHistory, ITrackedCheckpoint } from './model';
 import { Voyage } from '../../model/player';
 import { Estimate } from '../../model/worker';
 
-import { DataContext } from '../../context/datacontext';
-import { PlayerContext } from '../../context/playercontext';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { defaultHistory, formatTime, estimateTrackedVoyage, createCheckpoint, addVoyageToHistory, addCrewToHistory } from './utils';
 import { useStateWithStorage } from '../../utils/storage';
@@ -18,23 +17,12 @@ type ActiveVoyageTrackerProps = {
 };
 
 export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
-	const coreData = React.useContext(DataContext);
-	//const playerContext = React.useContext(PlayerContext);
-
-	// Simulate playerContext from new-context
-	const { strippedPlayerData } = React.useContext(PlayerContext);
-	const playerContext = {
-		loaded: !!strippedPlayerData,
-		playerData: {
-			player: {
-				dbid: strippedPlayerData?.player.dbid ?? ''
-			}
-		}
-	};
-
+	const globalContext = React.useContext(GlobalContext);
 	const { voyageConfig, shipSymbol } = props;
 
-	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(playerContext.playerData.player.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: reconcileVoyage } );
+	const dbid = globalContext.player.playerData?.player.dbid ?? '';
+
+	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: reconcileVoyage } );
 	const [voyageReconciled, setVoyageReconciled] = React.useState(false);
 
 	if (voyageReconciled) {
@@ -83,7 +71,7 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 			createCheckpoint(activeConfig).then((checkpoint) => {
 				lastTracked.voyage_id = activeConfig.id;
 				lastTracked.created_at = Date.parse(activeConfig.created_at);
-				lastTracked.ship = coreData.ships.find(s => s.id === activeConfig.ship_id)?.symbol ?? lastTracked.ship;
+				lastTracked.ship = globalContext.core.ships.find(s => s.id === activeConfig.ship_id)?.symbol ?? lastTracked.ship;
 				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
 				lastTracked.checkpoint = checkpoint;
 				setHistory({...history});
