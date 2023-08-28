@@ -28,7 +28,7 @@ type EventInstance = {
 const EventsPage = () => {
 
 	return (
-		<DataPageLayout demands={['crew', 'cadet', 'all_buffs', 'items']}>
+		<DataPageLayout demands={['crew', 'cadet', 'all_buffs', 'items', 'ship_schematics']}>
 			<EventsPageComponent />
 		</DataPageLayout>
 	);
