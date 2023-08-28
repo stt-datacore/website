@@ -17,7 +17,7 @@ import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewItemsView } from "./crew_items";
 import {
     PlayerBuffMode,
@@ -345,8 +345,8 @@ export class CrewPresenter extends React.Component<
     CrewPresenterProps,
     CrewPresenterState
 > {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
@@ -468,7 +468,7 @@ export class CrewPresenter extends React.Component<
         var me = this;
 
         const availstates = getAvailableBuffStates(
-            this.context.playerData,
+            this.context.player.playerData,
             this.context.maxBuffs
         );
 
@@ -523,7 +523,7 @@ export class CrewPresenter extends React.Component<
         const nextBuff = (e) => {
             me.playerBuffMode = nextBuffState(
                 me.playerBuffMode,
-                me.context.playerData,
+                me.context.player.playerData,
                 me.context.maxBuffs
             );
             if (this.props.onBuffToggle) {

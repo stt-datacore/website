@@ -8,7 +8,7 @@ import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { NumericOptions } from '../model/game-elements';
 import { BossBattlesRoot, Chain } from '../model/boss';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 
 export const DIFFICULTY_NAME = {
 	1: 'Easy',
@@ -19,28 +19,28 @@ export const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
-export interface BossData extends MergedData {
+export interface BossData extends IDefaultGlobal {
 	fleetBossBattlesRoot: BossBattlesRoot;
 }
 
 export const BossDataContext = React.createContext<BossData | null>(null);
 
 export const FleetBossBattles = () => {
-	const { ephemeral, playerData, crew: crew } = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
+	const { ephemeral, playerData } = context.player;
+	const { crew } = context.core;
 	
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
-		const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
+		const owned = playerData?.player.character.crew.filter(oc => oc.symbol === ac.symbol) ?? [];
 		ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
 		ac.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
 	});
 
 	const allData: BossData = {
-		playerData,
-		crew: allCrew,
-		ephemeral: ephemeral,
+		... context,
 		fleetBossBattlesRoot: ephemeral?.fleetBossBattlesRoot ?? {} as BossBattlesRoot
 	};
 
@@ -113,7 +113,7 @@ const ChainPicker = () => {
 				/>
 			}
 			{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
-			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.crew} dbid={`${allData.playerData.player.dbid}`} />}
+			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.core.crew} dbid={`${allData.player.playerData?.player.dbid}`} />}
 		</React.Fragment>
 	);
 };

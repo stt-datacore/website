@@ -16,7 +16,7 @@ import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 
 const RECURSION_WARN = 1000000;
 const RECURSION_FORBID = 10000000;
@@ -66,11 +66,11 @@ type CrewRetrievalProps = {
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
 	const pureData = React.useContext(DataContext);
-	const merged = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
 	const keystonesReady = pureData.ready(['keystones', 'crew']);
 
-	const { playerData } = merged;
+	const { playerData } = context.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
 
@@ -80,7 +80,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 	else if (!allKeystones) {
 		let ak = JSON.parse(JSON.stringify(pureData.keystones));
 		ak.forEach(keystone => {
-			const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
+			const owned = playerData?.forte_root.items.find(k => k.id === keystone.id);
 			keystone.quantity = owned ? owned.quantity : 0;
 		});
 		setAllKeystones(ak);
@@ -99,7 +99,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 	}
 
 	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
-	const allCrew = JSON.parse(JSON.stringify(merged.crew)) as PlayerCrew[];
+	const allCrew = JSON.parse(JSON.stringify(context.core.crew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
@@ -1102,7 +1102,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
 	const { playerData } = props;
 
-	const dataContext = React.useContext(MergedContext);
+	const dataContext = React.useContext(GlobalContext);
 
 	if (!data) return (<></>);
 
@@ -1134,7 +1134,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
-		const buffConfig = dataContext.buffConfig;
+		const buffConfig = dataContext.player.buffConfig;
 		const [comboCount, ] = getCombos(crew);
 
 		return (

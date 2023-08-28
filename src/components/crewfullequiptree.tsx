@@ -6,7 +6,7 @@ import ItemSources from '../components/itemsources';
 
 import { calculateCrewDemands } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 
 type CrewFullEquipTreeProps = {
 	visible: boolean;
@@ -16,12 +16,12 @@ type CrewFullEquipTreeProps = {
 };
 
 class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	render() {
 		const { crew, items } = this.props;
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		if (!crew || !this.props.visible) {
 			return <span />;

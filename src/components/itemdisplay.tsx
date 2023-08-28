@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
-import { MergedData } from '../context/mergedcontext';
+import { IDefaultGlobal } from '../context/globalcontext';
 import { CompletionState, PlayerCrew, PlayerData, PlayerEquipmentItem } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';

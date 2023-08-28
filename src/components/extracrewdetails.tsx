@@ -9,7 +9,7 @@ import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from "../utils/tiny";
 import { BuffStatTable } from '../utils/voyageutils';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { getVariantTraits } from '../utils/crewutils';
 
 
@@ -53,8 +53,8 @@ const filterTraits = (polestar, trait) => {
 }
 
 class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetailsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	private ownedCrew?: PlayerCrew[] = undefined;
 	private buffs?: BuffStatTable;
@@ -87,9 +87,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 	}
 
 	componentDidUpdate() {
-		const crewReady = this.context?.crew?.length !== 0;
-		const keystonesReady = !!this.context?.keystones;
-		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+		const crewReady = this.context?.core.crew?.length !== 0;
+		const keystonesReady = !!this.context?.core.keystones;
+		const playerReady = !!this.context?.player.playerData?.player?.character?.crew?.length;
 
 		if (keystonesReady && crewReady && playerReady && !this.state.itemsReady) {
 			this.initData();
@@ -101,17 +101,17 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			this.ownedCrew = this.props.ownedCrew;
 		}
 		else {
-			this.ownedCrew = this.context.playerData?.player?.character?.crew;
-			this.buffs = this.context.buffConfig;
+			this.ownedCrew = this.context.player.playerData?.player?.character?.crew;
+			this.buffs = this.context.player.buffConfig;
 		}
 
 		const variantTraits = getVariantTraits(this.props.traits_hidden);
 		
 		let self = this;
 
-		if (!this.context.keystones || !this.context.crew?.length) return;
+		if (!this.context.core.keystones || !this.context.core.crew?.length) return;
 
-		const allkeystones = this.context.keystones;
+		const allkeystones = this.context.core.keystones;
 
 		let atid = this.props.crew_archetype_id;
 		let crew_keystone_crate: Constellation | undefined = undefined;
@@ -141,7 +141,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 			}
 		}
 
-		const allcrew = this.context.crew;
+		const allcrew = this.context.core.crew;
 		
 		// Use precalculated unique polestars combos if any, otherwise get best chances
 		let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?

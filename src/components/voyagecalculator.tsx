@@ -16,17 +16,19 @@ import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
 import { Schematics, Ship } from '../model/ship';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { crewCopy } from '../utils/crewutils';
 import { EphemeralData, PlayerContext } from '../context/playercontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 
-export const VoyageContext = React.createContext<MergedData>({} as MergedData);
+export const VoyageContext = React.createContext<IDefaultGlobal>({} as IDefaultGlobal);
 
 const VoyageCalculator = () => {
-	const mergedData = React.useContext(MergedContext);
-	const { ships, ephemeral, playerData, crew: allCrew, items } = mergedData;
+	const context = React.useContext(GlobalContext);
+	const { ephemeral, playerData } = context.player;
+	const { ships, crew: allCrew, items } = context.core;
+
 	const activeCrew = ephemeral?.activeCrew;
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	
@@ -43,7 +45,7 @@ const VoyageCalculator = () => {
 		};
 	});
 
-	const myCrew = crewCopy(playerData.player.character.crew) as PlayerCrew[];
+	const myCrew = crewCopy(playerData?.player.character.crew ?? []) as PlayerCrew[];
 	myCrew.forEach((crew, crewId) => {
 		crew.id = crewId+1;
 
@@ -72,13 +74,13 @@ const VoyageCalculator = () => {
 	});
 
 	// There may be other ways we should check for voyage eligibility
-	if (playerData.player.character.level < 8 || myCrew.length < 12)
+	if ((playerData?.player.character.level ?? 0) < 8 || myCrew.length < 12)
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
 	const allData = {
-		... mergedData,
+		... context,
 		crew: allCrew, ships: allShips, playerData, items
-	} as MergedData;
+	} as IDefaultGlobal;
 
 	return (
 		<VoyageContext.Provider value={allData}>
@@ -88,8 +90,8 @@ const VoyageCalculator = () => {
 
 	function fetchAllShips(ships: Ship[]) {
 
-		const ownedCount = playerData.player.character.ships.length;
-		playerData.player.character.ships.sort((a, b) => (a?.archetype_id ?? 0) - (b?.archetype_id ?? 0)).forEach((ship, idx) => {
+		const ownedCount = playerData?.player.character.ships.length ?? 0;
+		playerData?.player.character.ships.sort((a, b) => (a?.archetype_id ?? 0) - (b?.archetype_id ?? 0)).forEach((ship, idx) => {
 			// allShips is missing the default ship for some reason (1* Constellation Class), so manually add it here from playerData
 			if (ship.symbol === 'constellation_ship') {
 				const constellation = {
@@ -124,7 +126,7 @@ type VoyageMainProps = {
 
 const VoyageMain = (props: VoyageMainProps) => {
 	const playerContext = React.useContext(VoyageContext);
-	const ephemeral = playerContext.ephemeral ?? {} as EphemeralData;
+	const ephemeral = playerContext.player.ephemeral ?? {} as EphemeralData;
 	const { voyage, voyageDescriptions } = ephemeral;
 	
 	const { myCrew } = props;
@@ -168,7 +170,7 @@ type VoyageActiveCardProps = {
 };
 
 const VoyageActiveCard = (props: VoyageActiveCardProps) => {
-	const { ships: allShips } = React.useContext(VoyageContext);
+	const { ships: allShips } = React.useContext(VoyageContext).core;
 	const { voyageConfig, showInput, setShowInput } = props;
 
 	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
@@ -221,7 +223,10 @@ type VoyageActiveProps = {
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { ships: allShips, playerData, crew: allCrew, items } = React.useContext(VoyageContext);
+	const context = React.useContext(VoyageContext);
+	const { ephemeral, playerData } = context.player;
+	const { ships: allShips, crew: allCrew, items } = context.core;
+
 	const { voyageConfig, myCrew } = props;
 
 	if (!allShips) return <></>;
@@ -232,9 +237,9 @@ const VoyageActive = (props: VoyageActiveProps) => {
 				voyageData={voyageConfig as Voyage}
 				ships={allShips}
 				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
-				playerItems={playerData.player.character.items}
+				playerItems={playerData?.player.character.items}
 				roster={myCrew}
-				dbid={playerData.player.dbid}
+				dbid={playerData?.player.dbid ?? ''}
 				allCrew={allCrew}
 				allItems={items}
 				playerData={playerData}
@@ -253,8 +258,13 @@ type VoyageInputProps = {
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { crew: allCrew, ships: allShips, playerData } = React.useContext(VoyageContext);
+	const context = React.useContext(VoyageContext);
+	const { ephemeral, playerData } = context.player;
+	const { ships: allShips, crew: allCrew, items } = context.core;
+
 	const [voyageConfig, setVoyageConfig] = React.useState<Voyage>(JSON.parse(JSON.stringify(props.voyageConfig)));
+	if (!playerData) return <></>;
+
 	const allData = {
 		allCrew, allShips, playerData
 	};

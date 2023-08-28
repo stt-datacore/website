@@ -15,7 +15,7 @@ import { Ship } from '../../model/ship';
 import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { EquipmentCommon } from '../../model/equipment';
 
 type VoyageStatsProps = {

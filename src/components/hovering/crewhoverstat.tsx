@@ -6,7 +6,7 @@ import { navToCrewPage } from "../../utils/crewutils";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
 import { toDataURL } from "../item_presenters/shipskill";
 
@@ -30,8 +30,8 @@ export interface CrewTargetState extends HoverStatTargetState {
 }
 
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps, CrewTargetState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: CrewTargetProps){
         super(props);        
@@ -138,8 +138,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 }
 
 export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverStatProps, CrewHoverStatState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: CrewHoverStatProps) {
         super(props);                
@@ -238,7 +238,8 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
                 openCrew(displayItem)
             }
             else {
-                const { buffConfig, crew: allCrew, playerData } = this.context;
+                const { buffConfig, playerData } = this.context.player;
+                const { crew: allCrew } = this.context.core;
                 if (playerData && "player" in playerData) {
                     navToCrewPage(displayItem, playerData.player.character.crew, buffConfig, allCrew);
                 }

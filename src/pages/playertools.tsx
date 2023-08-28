@@ -24,10 +24,10 @@ import { PlayerCrew, PlayerData } from '../model/player';
 import { BossBattlesRoot } from '../model/boss';
 import ShipProfile from '../components/ship_profile';
 import { Ship } from '../model/ship';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { EquipmentItem } from '../model/equipment';
-import { DataWrapper } from '../context/datawrapper';
+import DataPageLayout from '../components/datapagelayout';
 import { EphemeralData } from '../context/playercontext';
 import { navigate } from 'gatsby';
 
@@ -116,9 +116,9 @@ const PlayerToolsPage = (props: any) => {
 
 
 	return (
-		<DataWrapper header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']}>
+		<DataPageLayout header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']}>
 				<PlayerToolsComponent location={props.location} />
-		</DataWrapper>
+		</DataPageLayout>
 	);
 };
 
@@ -128,11 +128,11 @@ export interface PlayerToolsProps {
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
-	const mergedContext = React.useContext(MergedContext);
+	const mergedContext = React.useContext(GlobalContext);
 
 	// The context above	
 	
-	const { playerShips, playerData, buffConfig, maxBuffs } = mergedContext;
+	const { playerShips, playerData, buffConfig, maxBuffs } = mergedContext.player;
 
 	// All things playerData
 
@@ -140,11 +140,14 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	// [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
 
 	// These are all the static assets loaded from DataContext
-	const { dataSource, ephemeral, crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext;
+	
+	const { dataSource, ephemeral } = mergedContext.player;
+	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = mergedContext.core;
+
 	const [showForm, setShowForm] = React.useState(false);
 
 	const clearPlayerData = () => {
-		if (mergedContext.clearPlayerData) mergedContext.clearPlayerData();
+		if (mergedContext.player.reset) mergedContext.player.reset();
 	}
 	// Profile data ready, show player tool panes
 	if (playerData && dataSource && dataSource && ephemeral && playerShips) {
@@ -189,6 +192,8 @@ type PlayerToolsPanesProps = {
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
+	const context = React.useContext(GlobalContext);
+
 	const { playerData,
 		buffConfig,
 		maxBuffs,
@@ -363,19 +368,26 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			<React.Fragment>
 				<ShareMessage />
 				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
-				<MergedContext.Provider value={{
-					crew: allCrew,
-					ships: allShips,
-					playerData: playerData,
-					playerShips: playerShips,
-					ephemeral: ephemeral,
-					buffConfig: buffConfig,
-					maxBuffs: maxBuffs,
-					items: items,
+				<GlobalContext.Provider value={{					
+					maxBuffs: maxBuffs,					
+					core: {
+						... context.core,
+						crew: allCrew,
+						ships: allShips,
+						items: items ?? [],
+					},
+					player: {	
+						...context.player,				
+						reset: requestClearData,						
+						playerData: playerData,
+						playerShips: playerShips,
+						ephemeral: ephemeral,
+						buffConfig: buffConfig,	
+					},
 					data
 				}}>
 					{tools[activeTool].render(props)}
-				</MergedContext.Provider>
+				</GlobalContext.Provider>
 			</React.Fragment>
 		</>
 	);

@@ -9,7 +9,7 @@ import { Demand, PlayerCrew, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
@@ -21,7 +21,7 @@ import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import Layout from '../components/layout';
-import { DataWrapper } from '../context/datawrapper';
+import DataPageLayout from '../components/datapagelayout';
 
 
 export interface EquipmentItemData {
@@ -49,9 +49,9 @@ const ItemInfoPage = () => {
 	const [header, setHeader] = React.useState<string | undefined>('');
 
 	return (
-		<DataWrapper demands={['all_buffs', 'crew', 'items', 'cadet']}>
+		<DataPageLayout demands={['all_buffs', 'crew', 'items', 'cadet']}>
 			<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
-		</DataWrapper>
+		</DataPageLayout>
 
 	);
 
@@ -59,8 +59,8 @@ const ItemInfoPage = () => {
 
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	
 	private inited: boolean = false;
 
@@ -93,7 +93,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 	private initData(symbol?: string) {
 		let urlParams = new URLSearchParams(window.location.search);
-		const { crew: allcrew, items } = this.context;
+		const { crew: allcrew, items } = this.context.core;
 		let item_symbol = symbol;
 		if (!symbol && urlParams.has('symbol')) {
 			item_symbol = urlParams.get('symbol') ?? undefined;
@@ -167,13 +167,14 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 	
 	private haveCount(symbol: string) {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
 	}
 
 	render() {
 		const { errorMessage, item_data } = this.state;
-		const { items, playerData } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
@@ -236,7 +237,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		
 		
 		const haveCount = this.haveCount(item_data.item.symbol);
-		const ship = item_data.item.type === 8 ? this.context.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
 
 		return (
 				<div>
@@ -317,7 +318,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													<ItemDisplay
 														playerData={playerData}
 														itemSymbol={entry.equipment.symbol}
-														allItems={this.context.items}
+														allItems={this.context.core.items}
 														targetGroup='item_info_items'
 														style={{ marginRight: "0.5em"}}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
@@ -367,8 +368,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 											<div style={{marginRight:"0.5em"}}>
 											<ItemDisplay
 												targetGroup='item_info'
-												allCrew={this.context.crew}
-												playerData={this.context.playerData}						
+												allCrew={this.context.core.crew}
+												playerData={this.context.player.playerData}						
 												itemSymbol={entry.crew.symbol}											
 												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 												size={60}

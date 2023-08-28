@@ -9,7 +9,7 @@ import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { CrewMember } from '../model/crew';
 import { ShipPresenter } from './item_presenters/ship_presenter';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps, OptionsModalState } from './base/optionsmodal_base';
 import { BeholdOptionsModal } from '../pages/behold';
@@ -46,8 +46,8 @@ const pagingOptions = [
 ];
 
 class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ShipProfileProps) {
 		super(props);
@@ -85,7 +85,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	private clickStation(index: number, skill: string) {
 		const { inputShip } = this.state;
 
-		let newCrew: (PlayerCrew | CrewMember)[] = this.context.playerData.player.character.crew.filter((crew) => getSkills(crew).includes(skill)) ?? [];
+		let newCrew: (PlayerCrew | CrewMember)[] = this.context.player.playerData?.player.character.crew.filter((crew) => getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
 		this.setState({ ... this.state, modalOpen: true, currentStationCrew: newCrew, currentStation: index });
 	}
@@ -174,12 +174,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
             }
         }
 		if (window.location.href.includes("ship")) {
-			if (!ship_key || !this.context.playerShips) {
+			if (!ship_key || !this.context.player.playerShips) {
 				navigate('/playertools?tool=ships');
 			}
 		}
 
-		const ship = this.context.playerShips?.find(d => d.symbol === ship_key);
+		const ship = this.context.player.playerShips?.find(d => d.symbol === ship_key);
 
 		if (ship) {
 			if (ship !== this.state.activeShip) {
@@ -188,7 +188,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					n.push(undefined);
 				}
 	
-				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.playerShips ?? [], originals: this.context.ships ?? []});
+				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.player.playerShips ?? [], originals: this.context.core.ships ?? []});
 				if (isWindow) window.setTimeout(() => this.setActiveShip());
 			}
 		}

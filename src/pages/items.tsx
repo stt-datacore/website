@@ -12,11 +12,11 @@ import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
-import { DataWrapper } from '../context/datawrapper';
+import DataPageLayout from '../components/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { populateItemCadetSources } from '../utils/itemutils';
 
@@ -24,9 +24,9 @@ export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
 	return (
-		<DataWrapper demands={['all_buffs', 'crew', 'items', 'cadet']}>
+		<DataPageLayout demands={['all_buffs', 'crew', 'items', 'cadet']}>
 			<ItemsComponent  />
-		</DataWrapper>
+		</DataPageLayout>
 	);
 };
 
@@ -49,8 +49,8 @@ const tableConfig: ITableConfigRow[] = [
 ];
 
 class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private inited: boolean;
 
 	constructor(props: ItemsComponentProps) {
@@ -103,7 +103,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 	private initData() {
 
-		const { items: origItems, crew: origCrew } = this.context;
+		const { items: origItems, crew: origCrew } = this.context.core;
 		let crew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew[];
 		let items = JSON.parse(JSON.stringify(origItems)) as EquipmentItem[];
 		items = items.filter(item => item.imageUrl && item.imageUrl !== '');
@@ -186,7 +186,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	renderTableRow(item: any): JSX.Element {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		const { items } = this.state;
 
 		return (
@@ -205,7 +205,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 								playerData={playerData}
 								itemSymbol={item.symbol}
 								allItems={items}
-								allCrew={this.context.crew}
+								allCrew={this.context.core.crew}
 								targetGroup='items_page'
 								rarity={item.rarity}
 								maxRarity={item.rarity}

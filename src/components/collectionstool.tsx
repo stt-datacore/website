@@ -13,13 +13,17 @@ import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, P
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
 
 const CollectionsTool = () => {
+	const context = React.useContext(GlobalContext);
+	const { playerData } = context.player;
+	const { crew } = context.core;
+	
+	if (!playerData) return <></>;
 
-	const { playerData, crew: crew } = React.useContext(MergedContext);
 	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
 
 	if (!allCollections) {
@@ -551,8 +555,9 @@ const CrewTable = (props: CrewTableProps) => {
 
 const RewardsGrid = (props: any) => {
 	const { rewards } = props;
-	const context = React.useContext(MergedContext);
-	const { playerData, items, crew: allCrew } = context;
+	const context = React.useContext(GlobalContext);
+	const { playerData } = context.player;
+	const { items, crew: allCrew } = context.core;
 
 	if (rewards.length == 0) return (<></>);
 

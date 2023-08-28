@@ -7,7 +7,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { EquipmentItem } from "../../model/equipment";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
 
@@ -24,8 +24,8 @@ export interface ItemPresenterState {
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 
@@ -51,10 +51,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
-        const { playerData, items } = this.context;
+        const { playerData } = this.context.player;
+        const { items } = this.context.core;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
-        const roster = playerData?.player?.character?.crew;
+        const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
         if (!item) {
@@ -130,7 +131,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         <ItemDisplay
                             targetGroup={this.props.crewTargetGroup}
                             playerData={playerData}
-                            allCrew={this.context.crew}
+                            allCrew={this.context.core.crew}
                             itemSymbol={sym}
                             rarity={crew.rarity}
                             maxRarity={crew.max_rarity}

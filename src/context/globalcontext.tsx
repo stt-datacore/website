@@ -8,10 +8,11 @@ interface GlobalProviderProperties {
 	children: JSX.Element;
 };
 
-interface IDefaultGlobal {
+export interface IDefaultGlobal {
     core: DefaultCore;
     player: PlayerContextData;
     maxBuffs: BuffStatTable | undefined;
+	data?: any;
 };
 
 const defaultGlobal = {

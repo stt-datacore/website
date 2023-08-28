@@ -4,7 +4,7 @@ import { Table, Image, Label } from 'semantic-ui-react';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../itemdisplay';
 
 function getBracketLabel(bracket) {
@@ -20,7 +20,7 @@ function getBracketLabel(bracket) {
 
 function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {ranked_brackets} = props.eventData;
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
 	return (
 		<Table celled striped compact='very'>
@@ -44,9 +44,9 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 										size={48}
 										rarity={reward.rarity ?? 0}
 										maxRarity={reward.rarity ?? 0}		
-										allCrew={context.allCrew}
-										playerData={context.playerData}
-										allItems={context.items}
+										allCrew={context.core.crew}
+										playerData={context.player.playerData}
+										allItems={context.core.items}
 										itemSymbol={reward.symbol}
 										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
 										style={{

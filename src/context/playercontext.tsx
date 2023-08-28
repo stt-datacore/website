@@ -13,8 +13,8 @@ import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
 
 export interface PlayerContextData {
 	loaded: boolean;
-	setInput: (value: PlayerData | undefined) => void;
-	reset: () => void;
+	setInput?: (value: PlayerData | undefined) => void;
+	reset?: () => void;
 	playerData?: PlayerData;
 	ephemeral?: EphemeralData;
 	strippedPlayerData?: PlayerData;
@@ -43,6 +43,8 @@ export const PlayerContext = React.createContext<PlayerContextData>(defaultPlaye
 
 export const PlayerProvider = (props: DataProviderProperties) => {
 	const coreData = React.useContext(DataContext);
+	const { crew, ship_schematics } = coreData;
+
 	const { children } = props;
 
 	const [loaded, setLoaded] = React.useState(false);
@@ -81,7 +83,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	} as PlayerContextData;
 
 	React.useEffect(() => {
-		if (!input) return;
+		if (!input || !ship_schematics.length || !crew.length) return;
 
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
@@ -146,7 +148,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		}
 
 		setLoaded(true);
-	}, [input]);
+	}, [input, crew, ship_schematics]);
 
 	return (
 		<PlayerContext.Provider value={context}>

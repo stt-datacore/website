@@ -6,7 +6,7 @@ import { exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
@@ -55,8 +55,8 @@ const pagingOptions = [
 ];
 
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore; 
 
 	constructor(props: ProfileItemsProps) {
@@ -83,11 +83,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	initData() {
 		if (this.state.data?.length && this.state.data?.length > 0) return;
-		const { playerData, items } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
 		
 		if (!items) return;
 		window.setTimeout(() => {		
-			let data = mergeItems(this.context.playerData.player.character.items, items);
+			let data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);
 
 			let { hideOwnedInfo } = this.props;
 
@@ -127,8 +128,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				}
 				if (demandos?.demands.length && this.state.addNeeded === true) {
 					for (let item of demandos.demands) {
-						if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
-							item.equipment = this.context.items.find(f => f.symbol === item.symbol);
+						if (!data.find(f => f.symbol === item.symbol) && this.context.core.items) {
+							item.equipment = this.context.core.items.find(f => f.symbol === item.symbol);
 							if (item.equipment){
 								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
 								eq.needed = item.count;
@@ -316,7 +317,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										style={{
 											opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
 										}}
-										playerData={this.context.playerData}
+										playerData={this.context.player.playerData}
 										itemSymbol={item.symbol}
 										allItems={this.state.data}
 										rarity={item.rarity}
@@ -402,7 +403,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 	
 	_exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		let text = exportItemsAlt(data);
 		if (clipboard){

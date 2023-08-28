@@ -17,11 +17,13 @@ import { ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { InitialOptions, LockedProspect } from '../model/game-elements';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { applySkillBuff, navToCrewPage } from '../utils/crewutils';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 
 
 const EventPlanner = () => {
-	const { ephemeral, playerData, crew: allCrew } = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
+	const { ephemeral, playerData } = context.player;
+	const { crew: allCrew } = context.core;
 
 	const eventData = ephemeral?.events ?? [];
 	//const [eventData, setEventData] = useStateWithStorage<EventData[] | undefined>('tools/eventData', undefined);
@@ -29,7 +31,7 @@ const EventPlanner = () => {
 	//const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', [] as PlayerCrew[]);
 
 	const [activeEvents, setActiveEvents] = React.useState<EventData[] | undefined>(undefined);
-	if (!activeEvents) {
+	if (!activeEvents || !playerData) {
 		identifyActiveEvents();
 		return (<></>);
 	}
@@ -47,7 +49,7 @@ const EventPlanner = () => {
 
 	const myCrew = [] as PlayerCrew[];
 	let fakeId = 1;
-	playerData.player.character.crew.forEach(crew => {
+	playerData?.player.character.crew.forEach(crew => {
 		const crewman = JSON.parse(JSON.stringify(crew)) as PlayerCrew;
 		crewman.id = fakeId++;
 

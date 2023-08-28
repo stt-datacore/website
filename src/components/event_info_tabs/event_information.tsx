@@ -6,7 +6,7 @@ import { getIconPath, getRarityColor } from '../../utils/assets';
 import { EventData, getEventData } from '../../utils/events';
 import CrewCard, { CrewCardBrief } from './crew_card';
 import { CompactCrew, PlayerCrew } from '../../model/player';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 const contentTypeMap = {
@@ -45,9 +45,10 @@ function sortCrew(crewArray: PlayerCrew[]) {
 
 function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 	const { eventData } = props;
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
-	const { allCrew, items, playerData } = context;
+	const { crew: allCrew, items } = context.core;
+	const { playerData } = context.player;
 
 	const { crewJson } = useStaticQuery(graphql`
 		query {

@@ -6,7 +6,7 @@ import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
 import { EventLeaderboard } from '../model/events';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { PlayerData } from '../model/player';
 import { prepareProfileData } from '../utils/crewutils';
@@ -50,16 +50,23 @@ const EventsPage = () => {
 			}
 			{isReady &&
 				<React.Fragment>
-					<MergedContext.Provider value={{
-						crew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						items: coreData.items,
-						maxBuffs: maxBuffs,
-						gauntlets: coreData.gauntlets
+					<GlobalContext.Provider value={{
+						maxBuffs: playerContext.maxBuffs,
+						core: {
+							... coreData,
+							crew: coreData.crew,
+							items: coreData.items,
+							gauntlets: coreData.gauntlets,												
+						},
+						player: {
+							...playerContext,
+							maxBuffs: maxBuffs,
+							playerData: playerData ?? {} as PlayerData,
+							buffConfig: buffConfig,
+						}
 					}}>
 						<EventsPageComponent />
-					</MergedContext.Provider>
+					</GlobalContext.Provider>
 				</React.Fragment>
 			}
 

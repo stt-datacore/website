@@ -28,7 +28,7 @@ import { ShuttleAdventure } from '../model/shuttle';
 import ShipProfile from '../components/ship_profile';
 import { Schematics, Ship } from '../model/ship';
 import { EventData } from '../utils/events';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { mergeShips } from '../utils/shiputils';
 import { Archetype17, Archetype20 } from '../model/archetype';
 import { DataContext } from '../context/datacontext';
@@ -493,7 +493,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			<React.Fragment>
 				<ShareMessage />
 				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
-				<MergedContext.Provider value={{
+				<GlobalContext.Provider value={{
 					allCrew: allCrew,
 					allShips: allShips,
 					playerData: playerData,
@@ -501,7 +501,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					bossData: fleetBossData
 				}}>
 					{tools[activeTool].render(props)}
-				</MergedContext.Provider>
+				</GlobalContext.Provider>
 			</React.Fragment>
 		</Layout>
 	);

@@ -6,7 +6,7 @@ import { EquipmentItem } from "../../model/equipment";
 import { ItemPresenter } from "../item_presenters/item_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { mergeItems } from "../../utils/itemutils";
 
 const isWindow = typeof window !== 'undefined';
@@ -29,8 +29,8 @@ export interface ItemTargetState extends HoverStatTargetState {
 }
 
 export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemTargetProps, ItemTargetState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ItemTargetProps){
         super(props);        
@@ -50,7 +50,8 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: EquipmentItem | undefined): EquipmentItem | undefined {
-        const { playerData, items } = this.context;
+        const { playerData } = this.context.player;
+        const { items } = this.context.core;
         
         let dataOut: EquipmentItem | undefined = dataIn;
 
@@ -92,8 +93,8 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 }
 
 export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, ItemHoverStatState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ItemHoverStatProps) {
         super(props);        

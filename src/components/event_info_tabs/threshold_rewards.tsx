@@ -5,11 +5,11 @@ import { getIconPath, getRarityColor } from '../../utils/assets';
 import { GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 import ItemDisplay from '../itemdisplay';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
 	return (
 		<Table celled striped compact='very'>
@@ -33,9 +33,9 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 										size={48}
 										rarity={reward.rarity}
 										maxRarity={reward.rarity}		
-										allCrew={context.allCrew}
-										allItems={context.items}
-										playerData={context.playerData}
+										allCrew={context.core.crew}
+										allItems={context.core.items}
+										playerData={context.player.playerData}
 										itemSymbol={reward.symbol}
 										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
 										style={{

@@ -8,7 +8,7 @@ import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
 import { TriggerPicker } from './crewtables/shipoptions';
@@ -39,8 +39,8 @@ const pagingOptions = [
 
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
 
 	constructor(props: ProfileShipsProps) {
@@ -66,11 +66,11 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	initData() {
-		if (!this.context.playerShips?.length) return;
+		if (!this.context.player.playerShips?.length) return;
 		if (this.inited) return;		
 		
 		this.inited = true;
-		this.setState({ ... this.state, data: this.context.playerShips });
+		this.setState({ ... this.state, data: this.context.player.playerShips });
 	}
 
 	_onChangePage(activePage) {
@@ -143,7 +143,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		const { grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
-		if (!dataContext || !dataContext.ships || !dataContext.playerShips) return <></>;
+		if (!dataContext || !dataContext.core.ships || !dataContext.player.playerShips) return <></>;
 
 		let prefiltered = this.state.data;
 		

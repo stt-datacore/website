@@ -6,7 +6,7 @@ import { Ship } from "../../model/ship";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -26,8 +26,8 @@ export interface ShipTargetState extends HoverStatTargetState {
 }
 
 export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProps, ShipTargetState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ShipTargetProps){
         super(props);        
@@ -72,7 +72,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: Ship | undefined): Ship | undefined {
-        const { buffConfig } = this.context;
+        const { buffConfig } = this.context.player;
         const applyBuffs = this.showPlayerBuffs;
         const showImmortal = this.showImmortalized;
 
@@ -117,8 +117,8 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
 }
 
 export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHoverStatState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ShipHoverStatProps) {
         super(props);        

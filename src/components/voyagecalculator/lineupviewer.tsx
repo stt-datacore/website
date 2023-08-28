@@ -11,7 +11,7 @@ import { Ship } from '../../model/ship';
 import { PlayerCrew, Voyage, VoyageCrewSlot, LineupVoyage } from '../../model/player';
 import { CrewMember, Skill } from '../../model/crew';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 
 const POPUP_DELAY = 500;
 const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
@@ -482,7 +482,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
 	return (
 		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
@@ -494,7 +494,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
 					allCrew={context.crew}
-					playerData={context.playerData}
+					playerData={context.player.playerData}
 					targetGroup='voyageLineup'
 					itemSymbol={crew.symbol}					
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}

@@ -15,7 +15,7 @@ import { CrewMember } from '../model/crew';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
 import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
@@ -71,8 +71,8 @@ export class StatLabel extends React.Component<StatLabelProps> {
 	}
 }
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private lastCiteMode: CiteMode | undefined = undefined;
 	private tiny = TinyStore.getStore('citeOptimizer');
 
@@ -154,10 +154,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
-		const { playerData, crew: allCrew, buffConfig } = this.context;
-		const engine = this.state.citeMode?.engine ?? "original";
+		const { playerData, buffConfig } = this.context.player;
+		const allCrew = this.context.core.crew;
 
-		playerData.citeMode = citeMode;
+		const engine = this.state.citeMode?.engine ?? "original";
+		if (playerData) playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
 		
@@ -181,8 +182,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderVoyageGroups(data: CiteData, confine?: string[]) {
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
+		const { playerData } = this.context.player;
 
-		const voyageData = this.context.ephemeral;
+		const voyageData = this.context.player.ephemeral;
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 
 		if (voyageData?.voyage?.length) {
@@ -195,7 +197,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
-				const findcrew = this.context.playerData.player.character.crew.find((c) => c.name === voycrew.name);
+				const findcrew = playerData?.player.character.crew.find((c) => c.name === voycrew.name);
 
 				if (!findcrew) continue;
 
@@ -341,8 +343,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										maxRarity={crew.max_rarity}
 										targetGroup='citationTarget'
 										itemSymbol={crew.symbol}
-										allCrew={this.context.crew}
-										playerData={this.context.playerData}
+										allCrew={this.context.core.crew}
+										playerData={this.context.player.playerData}
 										/>
 										<b onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
 											style={{
@@ -376,7 +378,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 
 	renderTable(data?: PlayerCrew[], tabName?: string, training = true) {
-		if (!data) return <></>;
+		if (!data || !this.context.player.playerData) return <></>;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
@@ -385,7 +387,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-		const buffConfig = calculateBuffConfig(this.context.playerData.player);
+		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		tabName ??= "";
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -417,7 +419,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Header>
 				<Table.Body>
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
-						const crew = this.context.playerData.player.character.crew.find(c => c.name == row.name);
+						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
@@ -533,8 +535,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 
 	render() {
-
-		const buffConfig = calculateBuffConfig(this.context.playerData.player);
+		if (!this.context.player.playerData) return <></>;
+		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 		const { engine } = citeMode;
 
@@ -601,7 +603,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 		
 		if (workset && citeMode?.seatSkills?.length) {
-			const { playerData } = this.context;
+			const { playerData } = this.context.player;
 
 			workset.crewToCite = workset.crewToCite
 				.map(crew => {
@@ -624,9 +626,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
 		}
 
-		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
-			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
-			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+		if (workset && citeMode?.portal !== undefined && this.context?.player?.playerData?.player?.character?.crew?.length) {
+			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
 		}
 
 		if (workset && citeMode?.nameFilter) {
@@ -804,7 +806,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</>
 					}
 				</Segment>
-				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' />
+				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.player.playerData?.player.character.crew, buffConfig)}  targetGroup='citationTarget' />
 
 			</>
 		);

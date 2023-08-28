@@ -4,7 +4,7 @@ import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { PlayerCrew, PlayerData } from "../../model/player"
 import { DataContext } from '../../context/datacontext';
 import { PlayerContext } from '../../context/playercontext';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { BuffStatTable } from '../../utils/voyageutils';
 import Announcement from '../announcement';
 import Layout from '../layout';

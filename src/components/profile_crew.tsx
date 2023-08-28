@@ -26,7 +26,7 @@ import { StatLabel } from './citeoptimizer';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { Ship } from '../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../utils/shiputils';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { AbilityUses, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from './crewtables/shipoptions';
 import { CrewFilterPanes, CrewTableCustomFilter, CustomFilterProps, FilterItemMethodConfig } from './crewtables/customviews';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
@@ -40,8 +40,12 @@ export type ProfileCrewProps = {
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
-	const { playerData, crew: crew, playerShips } = React.useContext(MergedContext);
-	const myCrew = [...playerData.player.character.crew];
+	const context = React.useContext(GlobalContext);
+
+	const { playerData, playerShips } = context.player;
+	const { crew } = context.core;
+
+	const myCrew = [...playerData?.player.character.crew ?? []];
 	const { pageId } = props;
 
 	// Check for custom initial table options from URL or <Link state>
@@ -56,7 +60,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 
 	const allCrew = [...crew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 
-	if (props.isTools) {
+	if (props.isTools && playerData) {
 		const buffConfig = calculateBuffConfig(playerData.player);
 		return (
 			<ProfileCrewTools pageId={pageId} playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
@@ -76,7 +80,10 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		}
 	}
 
-	return (<ProfileCrewTable pageId={pageId} playerData={playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
+	if (playerData) {
+		return (<ProfileCrewTable pageId={pageId} playerData={playerData} crew={myCrew} allCrew={allCrew} initOptions={initOptions} lockable={lockable} />);
+	}	
+	else return <></>;
 };
 
 type ProfileCrewToolsProps = {

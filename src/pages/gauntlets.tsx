@@ -10,7 +10,7 @@ const traits = allTraits as AllTraits;
 
 import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
@@ -24,7 +24,7 @@ import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../
 
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
-import { DataWrapper } from '../context/datawrapper';
+import DataPageLayout from '../components/datapagelayout';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
 
@@ -45,9 +45,9 @@ const SKILLS = {
 
 const GauntletsPage = () => {	
 	return (
-		<DataWrapper header='Gauntlets' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
+		<DataPageLayout demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
 			<GauntletsPageComponent />
-		</DataWrapper>
+		</DataPageLayout>
 	);
 
 }
@@ -162,8 +162,8 @@ const GauntletTabCount = 5;
 
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
-	static contextType?= MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType?= GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('gauntlets');
 
@@ -441,10 +441,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
+		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified) {
 			this.inited = false;
 		}
-		this.initData();
+		window.setTimeout(() => this.initData());
 	}
 
 	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
@@ -660,14 +660,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const rmax = range_max ?? 500;
 
-		const { crew: allCrew, buffConfig, maxBuffs } = this.context;		
+		const { buffConfig, maxBuffs } = this.context.player;		
+		const { crew: allCrew } = this.context.core;		
+
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
 
 		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
-				const nfcrew = this.context.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
+				const nfcrew = this.context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
 				if (nfcrew) {
 					const fcrew = JSON.parse(JSON.stringify(nfcrew)) as PlayerCrew;
 					for (let skname of Object.keys(fcrew.base_skills)) {
@@ -705,7 +707,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const buffMode = this.getBuffState(availBuffs);
 
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 
 		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 		gauntlet.prettyTraits = prettyTraits;
@@ -737,7 +739,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+					let c = this.context.player.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 
 					if (!crew.isOpponent && c) {
 						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
@@ -908,7 +910,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { crew: allCrew, gauntlets: gauntsin, playerData } = this.context;
+		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
+		const { playerData } = this.context.player;
+
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
 
@@ -1015,7 +1019,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				browsingGauntlet: uniques[0],
 				today,
 				yesterday,
-				lastPlayerDate: this.context.playerData?.calc?.lastModified,
+				lastPlayerDate: this.context.player.playerData?.calc?.lastModified,
 				activePrevGauntlet,
 				uniques,
 				loading: false
@@ -1036,7 +1040,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	private readonly crewInFilter = (crew: PlayerCrew, filter: FilterProps): boolean => {
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 		if (!filter.rarity || crew.rarity === filter.rarity) {
 			if (filter.ownedStatus) {
 				switch(filter.ownedStatus) {
@@ -1409,7 +1413,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
 
-		const buffConfig = this.context.buffConfig;
+		const buffConfig = this.context.player.buffConfig;
 
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -1535,8 +1539,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
 
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
-		const { maxBuffs, buffConfig } = this.context;
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const { maxBuffs, buffConfig } = this.context.player;
+		const hasPlayer = !!(this.context.player.playerData?.player?.character?.crew?.length ?? 0);
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
 
@@ -1544,11 +1548,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (this.state.uniques?.length) gauntletIn = this.state.uniques[0];
 		}
 
-		const featuredCrew = this.context.crew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
+		const featuredCrew = this.context.core.crew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
 		let jp = [] as CrewMember[];
 		
 		if (idx === 3) {
-			jp = this.context.crew.filter((crew) => {
+			jp = this.context.core.crew.filter((crew) => {
 				return (crew.obtained.toLowerCase().includes("gauntlet"));
 			})
 			.sort((a, b) => {
@@ -1556,7 +1560,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			});
 		}
 		else if (idx === 4 && gauntletIn) {
-			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.playerData.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
+			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.player.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
 			if (pc) jp = pc;
 		}
 
@@ -1690,8 +1694,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								maxRarity={featuredCrew.max_rarity}
 								rarity={featuredCrew.max_rarity}
 								src={`${process.env.GATSBY_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
-								allCrew={this.context.crew}
-								playerData={this.context.playerData}
+								allCrew={this.context.core.crew}
+								playerData={this.context.player.playerData}
 								targetGroup='gauntletsHover'
 								itemSymbol={featuredCrew?.symbol}
 							/>
@@ -1737,8 +1741,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 														maxRarity={jcrew.max_rarity}
 														rarity={jcrew.max_rarity}
 														src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-														allCrew={this.context.crew}
-														playerData={this.context.playerData}
+														allCrew={this.context.core.crew}
+														playerData={this.context.player.playerData}
 														targetGroup='gauntletsHover'
 														itemSymbol={jcrew?.symbol}
 													/>
@@ -1809,8 +1813,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 																maxRarity={jcrew.max_rarity}
 																rarity={jcrew.max_rarity}
 																src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-																allCrew={this.context.crew}
-																playerData={this.context.playerData}
+																allCrew={this.context.core.crew}
+																playerData={this.context.player.playerData}
 																targetGroup='gauntletsHover'
 																itemSymbol={jcrew?.symbol}
 															/>
@@ -2234,8 +2238,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
 		const isOpponent = "isOpponent" in crew && crew.isOpponent;
 		let tempicon = "";
-		if (inMatch) {
-			tempicon = this.context.playerData.player.character.crew_avatar.portrait.file;
+		if (inMatch && this.context.player.playerData) {
+			tempicon = this.context.player.playerData.player.character.crew_avatar.portrait.file;
 		}
 		const myIcon = tempicon;
 		let tempoppo: Opponent | undefined = undefined;
@@ -2337,11 +2341,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								display:"flex",
 								flexDirection:"row", 
 								alignItems:"center"}}>
-									{this.context.playerData.player.display_name}
+									{this.context.player.playerData?.player.display_name}
 									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
 							</div>
 							<span>
-								[{this.context.playerData.player.character.level}]
+								[{this.context.player.playerData?.player.character.level}]
 							</span>
 						</>}
 
@@ -2378,10 +2382,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>
 					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
 						<ItemDisplay
-							playerData={this.context.playerData}
+							playerData={this.context.player.playerData}
 							itemSymbol={crew.symbol}
 							targetGroup='gauntletsHover'
-							allCrew={this.context.crew}
+							allCrew={this.context.core.crew}
 							src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 							rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
 							maxRarity={crew.max_rarity}
@@ -2528,7 +2532,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	render() {
 		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 
 		if (!gauntlets) return <></>
 
@@ -2639,7 +2643,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	randomQ() {
-		const { crew: allCrew } = this.context;
+		const { crew: allCrew } = this.context.core;
 		if (!allCrew?.length) {
 			return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
 		}

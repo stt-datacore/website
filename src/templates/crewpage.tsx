@@ -16,8 +16,8 @@ import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
-import { MergedContext } from '../context/mergedcontext';
-import { DataWrapper } from '../context/datawrapper';
+import { GlobalContext } from '../context/globalcontext';
+import DataPageLayout from '../components/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';
@@ -60,9 +60,9 @@ type StaticCrewPageProps = {
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 
 	return (
-		<DataWrapper header={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
+		<DataPageLayout header={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
 			<StaticCrewComponent props={props} />
-		</DataWrapper> 
+		</DataPageLayout> 
 	);
 };
 
@@ -79,8 +79,8 @@ interface StaticCrewComponentProps {
 }
 
 class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {		
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
@@ -155,11 +155,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.props.data;
 
 
-		if (this.context.playerData?.player?.character?.crew?.length) {
-			this.ownedCrew = this.context.playerData.player.character.crew;
+		if (this.context.player.playerData?.player?.character?.crew?.length) {
+			this.ownedCrew = this.context.player.playerData.player.character.crew;
 		}
-		if (this.context.buffConfig) {
-			this.buffs = this.context.buffConfig;
+		if (this.context.player.buffConfig) {
+			this.buffs = this.context.player.buffConfig;
 		}
 
 		if (crewJson.edges.length === 0) {
@@ -208,7 +208,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				<ItemHoverStat targetGroup='crew_page_items' useBoundingClient={true} />
 				<CrewFullEquipTree
 					visible={this.state.modalVisible}
-					items={this.context.items ?? []}
+					items={this.context.core.items ?? []}
 					crew={crew}
 					onClosed={() => this.setState({ modalVisible: false })}
 				/>
@@ -276,7 +276,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 									}
 								</div>
 
-								{(this.context.items?.length ?? 0) > 0 ? (
+								{(this.context.core.items?.length ?? 0) > 0 ? (
 									<React.Fragment>
 										{this.renderEquipment(crew)}
 										{this.renderEquipmentDetails(crew)}
@@ -319,7 +319,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								}
 							</div>
 							
-							{this.context.items.length > 0 ? (
+							{this.context.core.items.length > 0 ? (
 								<React.Fragment>
 									{this.renderEquipment(crew)}
 									{this.renderEquipmentDetails(crew)}
@@ -489,7 +489,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	renderEquipment(crew: PlayerCrew) {
 		let options = [] as CrewPageOptions[];
 		crew.equipment_slots.forEach(es => {
-			let equipment = this.context.items?.find(item => item.symbol === es.symbol);
+			let equipment = this.context.core.items?.find(item => item.symbol === es.symbol);
 			if (!equipment) {
 				console.warn(`Could not find item ${es.symbol}`);
 				return;
@@ -533,7 +533,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		}
 
 		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
-		let equipment = this.context.items?.find(item => item.symbol === es?.symbol);
+		let equipment = this.context.core.items?.find(item => item.symbol === es?.symbol);
 		if (!equipment) {
 			console.error('Could not find equipment for slot', es);
 			return <span />;
@@ -553,7 +553,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			<div>
 				<Grid columns={4} centered padded>
 					{equipment.recipe.list.map(entry => {
-						let recipeEntry = this.context.items?.find(item => item.symbol === entry.symbol);
+						let recipeEntry = this.context.core.items?.find(item => item.symbol === entry.symbol);
 						if (!recipeEntry) return <></>
 						return (
 							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
