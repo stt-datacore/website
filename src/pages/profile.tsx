@@ -359,7 +359,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			acrew?.equipment_slots
 				.filter(es => es.level >= startLevel)
 				.forEach(es => {
-					craftCost += demandsPerSlot(es, items, dupeChecker, demands);
+					craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 				});
 
 			for (let elem of dupeChecker) {
