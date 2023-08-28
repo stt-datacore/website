@@ -13,6 +13,7 @@ import { prepareProfileData } from '../utils/crewutils';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import DataPageLayout from '../components/datapagelayout';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -25,52 +26,11 @@ type EventInstance = {
 
  
 const EventsPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items','cadet']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("EVENTS", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<GlobalContext.Provider value={{
-						maxBuffs: playerContext.maxBuffs,
-						core: {
-							... coreData,
-							crew: coreData.crew,
-							items: coreData.items,
-							gauntlets: coreData.gauntlets,												
-						},
-						player: {
-							...playerContext,
-							maxBuffs: maxBuffs,
-							playerData: playerData ?? {} as PlayerData,
-							buffConfig: buffConfig,
-						}
-					}}>
-						<EventsPageComponent />
-					</GlobalContext.Provider>
-				</React.Fragment>
-			}
-
-		</Layout>
+		<DataPageLayout demands={['crew', 'cadet', 'all_buffs', 'items']}>
+			<EventsPageComponent />
+		</DataPageLayout>
 	);
 
 }
@@ -104,8 +64,6 @@ function EventsPageComponent() {
 	}, []);
 
 	return (
-		<Layout>
-			<></>
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
 				<CrewHoverStat targetGroup='event_info' useBoundingClient={true}  />
@@ -157,7 +115,7 @@ function EventsPageComponent() {
 					</Modal>
 				)}
 			</Container>			
-		</Layout>
+		
 	);
 }
 

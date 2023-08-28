@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { GlobalContext } from '../context/globalcontext';
 import { ValidDemands } from '../context/datacontext';
 
