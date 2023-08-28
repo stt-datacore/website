@@ -39,7 +39,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
             demands.push(required);
     });
 
-    const isReady = global.core.ready(demands);
+    const isReady = !!global.core.ready && !!global.core.ready(demands);
 
 	return (
 		<Layout header={header} title={pageTitle ?? header} narrowLayout={narrowLayout}>
