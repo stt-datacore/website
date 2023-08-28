@@ -61,7 +61,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         if (!item) {
             return <></>
         } 
-        item.item_sources.sort((a, b) => {
+        item.item_sources?.sort((a, b) => {
             let r = (a.avg_cost ?? 0) - (b.avg_cost ?? 0);
             if (!r) r = a.name.localeCompare(b.name);
             return r;
@@ -212,7 +212,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                        <i>{item.flavor}</i>
                     </div>
                     <div>
-                    {!!(item.item_sources.length > 0) && (
+                    {!!((item.item_sources?.length ?? 0) > 0) && (
                             <div style={{fontSize: "8pt",marginRight: "1em"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
