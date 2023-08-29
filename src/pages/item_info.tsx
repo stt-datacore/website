@@ -22,6 +22,8 @@ import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat'
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import Layout from '../components/layout';
 import DataPageLayout from '../components/datapagelayout';
+import { getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
+import { renderBonuses } from '../components/item_presenters/item_presenter';
 
 
 export interface EquipmentItemData {
@@ -134,38 +136,6 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 	}
 	
-	renderBonuses(skills: { [key: string]: Skill }) {
-
-		return (<div style={{
-			display: "flex",
-			flexDirection: "column",
-			justifyContent: "space-evenly",
-			alignItems: "left"
-		}}>
-			{Object.values(skills).map(((skill, idx) => {
-				const atext = appelate(skill.skill ?? "").replace("_", " ");
-				return (
-					<div
-						title={atext}
-						key={(skill.skill ?? "") + idx}
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "flex-start",
-							alignItems: "center",
-							alignContent: "center"
-						}}
-					>
-						<div style={{width: "2em"}}>
-						<img style={{ maxHeight: "2em", maxWidth: "2em", margin: "0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
-						</div>
-						<h4 style={{ margin: "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-						<h4 style={{ margin: "0.5em"}} >{atext}</h4>
-					</div>)
-			}))}
-		</div>)
-	}
-	
 	private haveCount(symbol: string) {
 		const { playerData } = this.context.player;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
@@ -197,22 +167,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		// console.log(item_data);
 
-		let bonusText = [] as string[];
-		let bonuses = {} as { [key: string]: Skill };
-
-		if (item_data.item.bonuses) {
-			for (let [key, value] of Object.entries(item_data.item.bonuses)) {
-				let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
-				if (bonus) {
-					bonusText.push(`+${value} ${bonus.symbol}`);	
-					bonuses[bonus.skill] ??= {} as Skill;
-					bonuses[bonus.skill][bonus.stat] = value;				
-					bonuses[bonus.skill].skill = bonus.skill;
-				} else {
-					// TODO: what kind of bonus is this?
-				}
-			}
-		}
+		const { bonuses, bonusText } = getItemBonuses(item_data.item);
 
 		// TODO: share this code with equipment.ts
 		let demands = [] as IDemand[];
@@ -277,7 +232,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "0.5em",
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
 								}} as="h2">{item_data.item.name}</Header>
-							{!!bonusText?.length && this.renderBonuses(bonuses)}
+							<div style={{marginLeft:"0.75em"}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
 							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
 						</div>
 					
