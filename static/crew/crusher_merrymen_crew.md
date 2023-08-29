@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-First off, let's all take a moment to appreciate the best crew name this game has ever produced. Fetishists rejoice for a tier 1 name. Her bases are an interesting tale - she's the only appreciable Bev SEC with worthwhile MED as well. That hasn't mattered much for years, but a strong 2021 in concert with WRG's concerted effort to feature collection traits may give her more than the one (or no) event(s) per year she suffered through previously.
+First off, let's all take a moment to appreciate the best Crew name this game has ever produced. Fetishists rejoice for a tier 1 name. Her Bases are an interesting tale - she's the only appreciable Bev SEC with worthwhile MED as well. That hasn't mattered much for years, but a strong 2021-2023 for variant bonuses as well as Trait matches on weekends have given her a place to shine.
 
-Speaking of collections, Bev is worth the dive for a lot of players. We can't possibly imagine her picking up another trait-based collection from Human, Federation, or Starfleet, but even if her collection of collections doesn't increase, she'll be good value there and enjoy a soft descent from atop the collection value rankings.
+Speaking of Collections, Bev is worth the dive for a lot of players. Four inclusions is above average for her Legendary Rarity but she’s topped out without finding herself in a TNG show Collection one day.

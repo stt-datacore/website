@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-A nice change of pace from all the ENG primary Datas, AoS leverages a variant-best CMD for fairly regular event work. His smattering of traits and a Picard-themed TV show should keep him a shuttle mainstay when his bonuses hit.
-
-But with almost zero daily use, your best chance to shove Data into service would be on ships. A chunk of arena damage always catches the eye and is workable if you like to win with your favorites, but its trigger and the fact that crew retrieval makes acquiring an all-star arena team a formaility means that this is more of a vanity offering.
-
-The other bread in this compliment sandwich is nice collection value, both immediate and potential. If you're a completionist who wants him done for the vanity collection anyways, enjoy the extra perks that this variant offers.
+A nice change of pace from all the ENG Primary Datas, AoS leverages a variant-best CMD for fairly regular Event work. His smattering of Traits and a penchant for WRG to call his number for variant Events will keep him busy on the weekend. He’s also a fine choice for Beholds and Crew Retrieval, as the aforementioned smattering of Traits have given him three non-Vanity Collections plus two more possible ones hidden somewhere in that costume.

@@ -14,4 +14,4 @@ published: true
 
 “All I can do is kill him...and that no longer holds my interest.” 
 
-Ikat'ika has the right skill set for shuttles, but his bonuses are mostly reliant on some flimsy traits outside of Dominion. A pair of event features probably aren't his last ones - at least, let's hope not as his only other tangible, non-collection use is as an Ardra replacement in the arena akin to Pel or Platonian Kirk.
+Ikat'ika has the right Skill set for Shuttles, but his bonuses are mostly reliant on some flimsy Traits outside of Dominion. A pair of Event features probably aren't his last ones - at least, let's hope not as his only other tangible, non-Collection use is as an Ardra replacement in the Arena akin to Pel or Platonian Kirk.

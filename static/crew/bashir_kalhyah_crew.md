@@ -3,7 +3,7 @@ name: Kal'Hyah Bashir
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 37
 in_portal: true
 date: 03/06/2021
