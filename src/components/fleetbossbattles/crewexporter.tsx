@@ -3,6 +3,7 @@ import { Header, Button, Popup, Message, Accordion, Form, Select, Input, Icon } 
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import * as lz from 'lz-string';
 
 const FLAG_ONEHAND = '\u03A8';
 const FLAG_ALPHA = '\u03B1';
@@ -183,6 +184,7 @@ type CrewFullExporterProps = {
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	const { solver, optimizer, exportPrefs } = props;
 
+
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
 		let header = '';
@@ -209,6 +211,15 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		navigator.clipboard.writeText(header + output);
 	};
 
+	// const copyFullPermalink = () => {
+	// 	const { solver } = props;
+
+		
+	// 	let json = JSON.stringify(solver);
+	// 	let b64 = lz.compressToBase64(json);
+		
+	// }
+
 	return (
 		<Message style={{ margin: '2em 0' }}>
 			<Message.Content>
@@ -224,6 +235,16 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 						<Button icon='clipboard' content='Copy possible crew to clipboard' onClick={() => copyFull()} />
 					}
 				/>
+				{/* <Popup
+					content='Copied!'
+					on='click'
+					position='right center'
+					size='tiny'
+					trigger={
+						<Button icon='link' content='Copy permalink' onClick={() => copyFullPermalink()} />
+					}
+				/> */}
+
 			</Message.Content>
 		</Message>
 	);
