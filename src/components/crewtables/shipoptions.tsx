@@ -84,7 +84,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			value: c.symbol,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack.toLocaleString()} / Shields ${c.shields.toLocaleString()} / Hull ${c.hull.toLocaleString()}`
+			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack?.toLocaleString()} / Shields ${c.shields?.toLocaleString()} / Hull ${c.hull?.toLocaleString()}`
 		} as DropDownItem
 	));
 
