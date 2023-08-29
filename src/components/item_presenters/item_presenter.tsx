@@ -10,6 +10,43 @@ import ItemSources from "../itemsources";
 import { MergedContext } from "../../context/mergedcontext";
 import { navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
+import { Skill } from "../../model/crew";
+import { appelate } from "../../utils/misc";
+import CONFIG from "../CONFIG";
+import { getItemBonuses } from "../../utils/itemutils";
+
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string) {
+
+    return (<div style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-evenly",
+        alignItems: "left"
+    }}>
+        {Object.values(skills).map(((skill, idx) => {
+            const atext = appelate(skill.skill ?? "").replace("_", " ");
+            return (
+                <div
+                    title={atext}
+                    key={(skill.skill ?? "") + idx}
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        alignContent: "center"
+                    }}
+                >
+                    <div style={{width: "2em", marginRight: "0.5em"}}>
+                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                    </div>
+                    <h4 style={{ margin: "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                    <h4 style={{ margin: "0.5em"}} >{atext}</h4>
+                </div>)
+        }))}
+    </div>)
+}
+
 
 export type DemandMode = "all" | "immediate";
 
@@ -143,8 +180,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         });
 
         const empty = mt;
- 
-        return item ? (<div style={{ 
+
+        if (!item) return <></>;
+        const { bonuses, bonusText } = getItemBonuses(item);
+
+        return (<div style={{ 
                         fontSize: "12pt", 
                         display: "flex", 
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
@@ -180,11 +220,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",                        
-                        maxWidth: window.innerWidth < mobileWidth ? "15m" : "32em",
+                        maxWidth: window.innerWidth < mobileWidth ? "15m" : "34em",
                         minWidth: "15m",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
+                    <div style={{display: "flex", flexDirection: 'column', justifyContent: "flex-start"}}>
                         <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
                             <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={item.name}>
                                 {item.name}
@@ -198,6 +238,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 size='large' 
                                 disabled />
                         </div>
+                        {!!bonusText.length && renderBonuses(bonuses)}
                     </div>
                     <div
                         style={{
@@ -287,7 +328,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 flexDirection: "row", 
                                 justifyContent: "flex-start", 
                                 alignItems: "flex-start", 
-                                maxHeight: "320px",
+                                maxHeight: "252px",
                                 overflow: "auto",
                                 flexWrap: "wrap"}}>
 
@@ -296,7 +337,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         </div>)}
                     </div>
                 </div>
-            </div>) : <></>
+            </div>) 
         
     }
     

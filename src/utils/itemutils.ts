@@ -1,4 +1,5 @@
 import CONFIG from '../components/CONFIG';
+import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Mission } from '../model/missions';
 import { PlayerEquipmentItem } from '../model/player';
@@ -153,3 +154,32 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 
 
 
+
+export interface ItemBonusInfo {
+    bonusText: string[];
+    bonuses: { [key: string]: Skill };
+}
+
+export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
+    let bonusText = [] as string[];
+    let bonuses = {} as { [key: string]: Skill };
+    
+    if (item.bonuses) {
+        for (let [key, value] of Object.entries(item.bonuses)) {
+            let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
+            if (bonus) {
+                bonusText.push(`+${value} ${bonus.symbol}`);	
+                bonuses[bonus.skill] ??= {} as Skill;
+                bonuses[bonus.skill][bonus.stat] = value;				
+                bonuses[bonus.skill].skill = bonus.skill;
+            } else {
+                // TODO: what kind of bonus is this?
+            }
+        }
+    }
+
+    return {
+        bonusText,
+        bonuses
+    };
+}
