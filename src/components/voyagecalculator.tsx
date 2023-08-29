@@ -27,12 +27,13 @@ export const VoyageContext = React.createContext<IDefaultGlobal>({} as IDefaultG
 const VoyageCalculator = () => {
 	const context = React.useContext(GlobalContext);
 	const { ephemeral, playerData } = context.player;
-	const { ships, crew: allCrew, items } = context.core;
+	const { crew: allCrew, items } = context.core;
+	const { playerShips: ships } = context.player;
 
 	const activeCrew = ephemeral?.activeCrew;
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	
-	if (!allShips && ships) {
+	if (!allShips && !!ships) {
 		fetchAllShips(ships);
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
@@ -79,7 +80,16 @@ const VoyageCalculator = () => {
 
 	const allData = {
 		... context,
-		crew: allCrew, ships: allShips, playerData, items
+		core: {
+			...context.core,
+			crew: allCrew, 
+			ships: allShips,
+			items
+		}, 
+		player: {
+			...context.player,
+			playerData
+		}
 	} as IDefaultGlobal;
 
 	return (
