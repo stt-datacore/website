@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Despite being a fan favorite among Starfleet admirals, Ross doesn't have terribly much depth as a card. By the way, if you're looking for the gauntlet-y one, that's Admiral Owen Paris. I know, I mix them up too.
+Despite being a fan favorite among Starfleet admirals, Ross doesn't have terribly much depth as a card. By the way, if you're looking for the Gauntlet-y one, that's Admiral Owen Paris. I know, I mix them up too. 
 
-Ross' event work is on a break, but a good PIVOT, PIVOT should be his collection value where all three of his non-HFS traits are viable and may even trigger some weekend work if paired with a collection-themed mega as has been done so often in the past. There's not much else to this card, but at least he's very light on faction items and should be an easy equip to knock out during a skirmish.
+Ross' event work is on a break, but a good PIVOT, PIVOT to choose him in a Super Rare Behold should you see him pop up and you like an above average set of three Collections. That’s all he’s getting though, don’t monkey around.

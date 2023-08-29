@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Jadzia brings big bases to bear in this incarnation of her character which comes with the requisite strong event pedigree and a sprinkle of traits which have provided another dozen+ weekend bonuses. Her other offerings are modest - slow-but-strong arena evasion and middling collection value - but as a side dish to her evergreen event help, Jadzia is a fine crew to pick up in a behold.
+Alternate Future Jadzia Dax was notable as the last Jadzia to enter the game before a five year drought we call the “No Jadzia Desert”. In terms of daily use, this crew is as decrepit as Michael Westmore caught to make Terry Farrell look for this episode, but her pedigree as a Dax and her Trait list have given her work a half dozen times each of the last two years. Two Collections are below average as it stands, but she has Traits to double that number when they’re called to duty.
