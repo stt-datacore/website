@@ -301,6 +301,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							justifyContent:"space-between", 
 							alignItems: "center",
 							margin: "0.25em",
+							marginBottom: 0,
 							marginRight: 0,
 							marginLeft: 0,
 							flexWrap: "wrap"}}>
@@ -340,11 +341,10 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
 						</div>
 						
-						<br></br>
-
 						<div style={{
 							display: "flex", 
 							margin: "0.25em",
+							marginTop: 0,
 							marginRight: 0,
 							marginLeft: 0,
 							flexDirection: "row", 

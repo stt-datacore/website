@@ -132,11 +132,6 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				reverse: true
 			});
 		});
-		tableConfig.push({
-			width: 1,
-			column: `in_portal`,
-			title: "In Portal"
-		})
 		// Check for custom columns (currently only available from URL/state)
 		const customColumns = [] as string[];
 		if (initOptions && initOptions.column && tableConfig.findIndex(col => col.column === initOptions.column) == -1)
@@ -147,6 +142,12 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				column: column,
 				title: prettyCrewColumnTitle(column)
 			});
+		});
+
+		tableConfig.push({
+			width: 1,
+			column: `in_portal`,
+			title: "In Portal"
 		});
 
 		const lockable = [] as Lockable[];
@@ -238,11 +239,11 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 				)}
 
 				{customColumns.map(column => {
-					const value = column.split('.').reduce((prev, curr) => prev && prev[curr] ? prev[curr] : undefined, crew);
+					const value = column.split('.').reduce((prev, curr) => (prev && prev[curr]) ? prev[curr] : undefined, crew as any) as number;
 					if (value) {
 						return (
 							<Table.Cell key={column} textAlign='center'>
-								<b>{crew[column]}</b>
+								<b>{value}</b>
 							</Table.Cell>
 						);
 					}
