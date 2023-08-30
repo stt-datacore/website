@@ -183,3 +183,34 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
         bonuses
     };
 }
+
+
+
+export function binaryLocate(symbol: string, items: (EquipmentItem | EquipmentCommon)[]) : EquipmentItem | EquipmentCommon | undefined {
+	let lo = 0, hi = items.length - 1;
+
+	while (true)
+	{
+		if (lo > hi) break;
+
+		let p = Math.floor((hi + lo) / 2);
+		let elem = items[p];
+
+		let c = symbol.localeCompare(items[p].symbol);
+
+		if (c == 0)
+		{
+			return elem;
+		}
+		else if (c < 0)
+		{
+			hi = p - 1;
+		}
+		else
+		{
+			lo = p + 1;
+		}
+	}
+
+	return undefined;
+}

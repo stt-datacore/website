@@ -18,7 +18,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
 import DataPageLayout from '../components/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import { populateItemCadetSources } from '../utils/itemutils';
+import { binaryLocate, populateItemCadetSources } from '../utils/itemutils';
 
 export interface ItemsPageProps {}
 
@@ -70,36 +70,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 	componentDidMount() {
 		this.initData();
-	}
-	
-	private binaryLocate(symbol: string, items: EquipmentItem[]) : EquipmentItem | undefined {
-		let lo = 0, hi = items.length - 1;
-
-		while (true)
-		{
-			if (lo > hi) break;
-
-			let p = Math.floor((hi + lo) / 2);
-			let elem = items[p];
-
-			let c = symbol.localeCompare(items[p].symbol);
-
-			if (c == 0)
-			{
-				return elem;
-			}
-			else if (c < 0)
-			{
-				hi = p - 1;
-			}
-			else
-			{
-				lo = p + 1;
-			}
-		}
-
-		return undefined;
-	}
+	}	
 
 	private initData() {
 
@@ -125,7 +96,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 		
 		crew.forEach(cr => {
 			cr.equipment_slots.forEach(es => {
-				let item = this.binaryLocate(es.symbol, items);
+				let item = binaryLocate(es.symbol, items);
 				if (item) {
 					crewLevels[es.symbol] ??= new Set();
 					crewLevels[es.symbol].add(cr.name);
@@ -135,7 +106,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 		for (let symbol in crewLevels) {
 			if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
-				let item = this.binaryLocate(symbol, items);
+				let item = binaryLocate(symbol, items);
 				if (item) {
 					if (crewLevels[symbol].size > 5) {
 						item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
@@ -149,8 +120,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 		let itemsFinal = [] as EquipmentItem[];
 
 		for (let symbol of origpos) {
-			let item = this.binaryLocate(symbol, items);
-			if (item) itemsFinal.push(item);
+			let item = binaryLocate(symbol, items);
+			if (item) itemsFinal.push(item as EquipmentItem);
 		}
 
 		items = itemsFinal.filter(item => (item.type !== 2) || item.flavor);

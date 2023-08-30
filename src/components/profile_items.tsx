@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Input, Checkbox } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
+import { binaryLocate, exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
@@ -34,12 +34,18 @@ type ProfileItemsProps = {
 	pageName?: string;
 };
 
+interface ItemSearchOpts {
+	filterText?: string;
+	itemType?: number[];
+	rarity?: number[];
+}
+
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
 	data?: (EquipmentCommon | EquipmentItem)[];
 	filteredData?: (EquipmentCommon | EquipmentItem)[];
-	filterText?: string;
+	searchOpts?: ItemSearchOpts;
 	pagination_rows: number;
 	pagination_page: number;
 	
@@ -66,7 +72,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.state = {
 			column: null,
 			direction: null,
-			filterText: this.tiny.getValue('filterText', '') ?? '',
+			searchOpts: this.tiny.getValue('searchOptions'),
 			pagination_rows: 10,
 			pagination_page: 1,
 			data: props.data,
@@ -88,17 +94,43 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		
 		if (!items) return;
 		window.setTimeout(() => {		
-			let data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);
+			let data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);			
 
 			let { hideOwnedInfo } = this.props;
 
-			if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
+			if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length) {
+				let crewLevels: { [key: string]: Set<string>; } = {};
+			
+				playerData.player.character.crew.forEach(cr => {
+					cr.equipment_slots.forEach(es => {
+						let item = binaryLocate(es.symbol, items);
+						if (item) {
+							crewLevels[es.symbol] ??= new Set();
+							crewLevels[es.symbol].add(cr.name);
+						}
+					});
+				});
+		
+				for (let symbol in crewLevels) {
+					if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
+						let item = binaryLocate(symbol, items);
+						if (item) {
+							if (crewLevels[symbol].size > 5) {
+								item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
+							} else {
+								item.flavor = 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
+							}
+						}
+					}
+				}
+
 				const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
+
 				for (let item of data) {
 					if (item.type === 8) {
 						let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
-						if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
-							item.needed = scheme.schematic_gain_cost_next_level;
+						if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0 && scheme.level !== scheme.max_level) {
+							item.needed = scheme.schematic_gain_cost_next_level - (item.quantity ?? 0);
 							item.factionOnly = false;
 						}
 						else {
@@ -118,6 +150,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									item.demandCrew.push(sym);
 								}
 							}
+							if (item.demandCrew.length > 5) {
+								item.flavor = `Equippable by ${item.demandCrew.length} crew`;
+							} else {
+								item.flavor = 'Equippable by: ' + item.demandCrew.map(c => playerData.player.character.crew.find(fc => fc.symbol === c)?.name).join(', ');
+							}
+
 						}
 						else {
 							item.needed = 0;
@@ -126,8 +164,10 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						}
 					}
 				}
+
 				if (demandos?.demands.length && this.state.addNeeded === true) {
 					for (let item of demandos.demands) {
+						
 						if (!data.find(f => f.symbol === item.symbol) && this.context.core.items) {
 							item.equipment = this.context.core.items.find(f => f.symbol === item.symbol);
 							if (item.equipment){
@@ -189,9 +229,24 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private _handleFilter = (text: string | undefined) => {
-		this.tiny.setValue('filterText', text ?? '');
-		this.setState({ ...this.state, filterText: text ?? '' });
+		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: text ?? '' };
+		this.tiny.setValue('searchOptions', searchOpts);
+
+		this.setState({ ...this.state, searchOpts });
 	}
+
+	private _handleItemType = (values: number[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), itemType: values };
+		this.tiny.setValue('searchOptions', searchOpts);
+		this.setState({ ...this.state, searchOpts });
+	}
+
+	private _handleRarity = (values: number[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), rarity: values };
+		this.tiny.setValue('searchOptions', searchOpts);		
+		this.setState({ ...this.state, searchOpts });
+	}
+
 
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
@@ -202,18 +257,44 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	render() {
 		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
-		const filterText = this.state.filterText?.toLocaleLowerCase();
+		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
+		const { rarity, itemType } = this.state.searchOpts ?? {};
 
 		const { hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
+		let cit = data?.map(d => d.type);
+		cit = cit?.filter((i, idx) => cit?.indexOf(i) === idx);
+		const presentTypes = cit;
+
 		if (data?.length) {
-			if (filterText && filterText !== '') {
-				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
-					f.short_name?.toLowerCase().includes(filterText) ||
-					f.flavor?.toLowerCase().includes(filterText) ||
-					CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
-					CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
-					);
+			
+			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length) {
+				
+				data = data.filter(f => {
+					let textPass = true;
+					let rarePass = true;
+					let itemPass = true;
+
+					if (filterText && filterText !== '') {
+						textPass = f.name?.toLowerCase().includes(filterText) || 
+						f.short_name?.toLowerCase().includes(filterText) ||
+						f.flavor?.toLowerCase().includes(filterText) ||
+						CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+						CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);
+					}
+
+					if (!!rarity?.length) {
+						rarePass = rarity?.some(r => f.rarity == r);
+					}
+					if (!!itemType?.length) {
+						itemPass = itemType?.some(t => f.type == t);
+					}
+
+					return textPass && rarePass && itemPass;
+				});
+			}
+			if (rarity?.length) {
+
 			}
 
 			totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -221,6 +302,27 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			// Pagination
 			data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 		}		
+
+		const rewardFilterOpts = [] as DropdownItemProps[];
+		const rarities = [] as DropdownItemProps[];
+
+		Object.keys(presentTypes ?? CONFIG.REWARDS_ITEM_TYPE).forEach((rk) => {
+			if (rk === '1') return;
+			rewardFilterOpts.push({ 
+				key: Number.parseInt(rk),
+				value: Number.parseInt(rk),
+				text: CONFIG.REWARDS_ITEM_TYPE[rk]
+			});
+		});
+
+		Object.keys(CONFIG.RARITIES).forEach((rk) => {
+			rarities.push({ 
+				key: Number.parseInt(rk),
+				value: Number.parseInt(rk),
+				text: CONFIG.RARITIES[rk].name
+			});
+		});
+
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -242,13 +344,32 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							} 
 						} 
 					/>
-
+					<div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by item type"}
+							multiple
+							clearable
+							options={rewardFilterOpts}
+							value={itemType}
+							onChange={(e, { value }) => this._handleItemType(value as number[] | undefined)}
+						/>
+					</div>
+					<div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by rarity"}
+							multiple
+							clearable
+							options={rarities}
+							value={rarity}
+							onChange={(e, { value }) => this._handleRarity(value as number[] | undefined)}
+						/>
+					</div>
 				</div>}
 				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			{!(data?.length) && <div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
+			{!data && <div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
 			{!!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -295,7 +416,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('factionOnly')}
 						>
 							Faction Only
-						</Table.HeaderCell>}
+						</Table.HeaderCell>}						
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
