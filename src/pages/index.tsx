@@ -32,7 +32,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	return (
-		<DataPageLayout header='Crew Stats'>
+		<DataPageLayout>
 			<React.Fragment>
 				<Announcement />
 				<CrewStats location={props.location} />
