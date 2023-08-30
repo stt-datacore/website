@@ -474,7 +474,8 @@ export interface Player {
      */
     equipment: number[][] | number[]
 
-    kwipment: any[]
+    kwipment: number[][] | number[]
+    kwipment_expiration: number[]
     q_bits: number
 
     icon: Icon
