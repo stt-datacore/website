@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This Sisko has floated around the bottom tiers for a while, but WRG's landscape shift to focus on traits and collections should help him out going forward. Six viable traits (to varying degrees) and a great skill set for event shuttles are a juicy pairing for crew, especially older crew and 2-skill crew.
+This Sisko has floated around the bottom tiers for a while, but WRG's landscape shift to focus on Traits and Collections should help him out going forward. Six viable Traits (to varying degrees) and a great Skill set for Event Shuttles are a juicy pairing for crew, especially older crew and 2-Skill crew.
 
-While there's obviously a ceiling on cards who have no voyage, gauntlet, or arena ability, Niners is already a name that established rosters should keep an eye out for and he has room to grow into his traits, both in the collection tab and for weekend bonuses.
+While there's obviously a ceiling on cards who have no Voyage, Gauntlet, or Arena ability, Niners is already a name that established rosters should keep an eye out for and he has room to grow into his Traits, both in the Collection tab and for weekend bonuses. Snap up a copy of Baseball Ben for long term value in Collections and to help your Fleet solving Fleet Boss Battles Nodes!
