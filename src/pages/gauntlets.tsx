@@ -1870,6 +1870,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									style={{
 										textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 									}}
+									inline
 									direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
 									options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o } })}
 									value={this.getRangeMax(idx)}
