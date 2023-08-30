@@ -470,7 +470,7 @@ export interface Player {
 
     /**
      * Input equipment slots are nested arrays,
-     * they are mapped to 1-dimensional arrays during processing
+     * they are mapped to 1-dimensional arrays during processing if the crew is frozen
      */
     equipment: number[][] | number[]
 
