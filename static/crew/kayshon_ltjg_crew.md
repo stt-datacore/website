@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 9
-events: 2
+events: 3
 in_portal: true
 date: 26/07/2022
 obtained: Pack
