@@ -339,7 +339,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	return (
 		<>
-			<Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
+			{/* <Header as='h4'>Hello, {playerData.player.character.display_name}</Header>
 			<PlayerLevelProgress />
 			<StaleMessage />
 			<Menu compact stackable>
@@ -363,10 +363,10 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 						} />
 					</Dropdown.Menu>
 				</Dropdown>
-			</Menu>
+			</Menu> */}
 
 			<React.Fragment>
-				<ShareMessage />
+				{/* <ShareMessage /> */}
 				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
 				<GlobalContext.Provider value={{					
 					maxBuffs: maxBuffs,					

@@ -3,26 +3,47 @@ import { Button, Form, TextArea, Message } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerData } from '../../model/player';
+import { PlayerPanel } from './playerpanel';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
 const PlayerMenu = () => {
 	const global = React.useContext(GlobalContext);
 	const { player } = global;
+	const [ showPanel, setShowPanel ] = React.useState(false);
 
 	// If crew not loaded, assume core is not ready and player menu shouldn't be shown
 	if (global.core.crew.length === 0) return (<></>);
 
+	const performReset = () => {
+		if (global.player.reset) global.player.reset();
+	}
+
+	const togglePanel = (value: boolean) => {
+		setShowPanel(value);
+	}
+
+	const receiveInput = (playerData: PlayerData | undefined) => {
+		if (player.setInput) {
+			player.setInput(playerData);
+			setShowPanel(false);
+		}
+
+	}
+
 	return (
 		<div style={{ margin: '2em 0 0.5em 0' }}>
-			{!player.loaded && <PlayerInputForm setValidInput={player.setInput} />
+			{(!player.loaded || showPanel) && <PlayerInputForm setValidInput={receiveInput} />
 			||
 			<div>
-				Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'}
+				{/* Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'} */}
 				{player.loaded && (
-					<span style={{ marginLeft: '1em' }}>
-						<Button compact onClick={() => player?.reset ? player?.reset() : null}>Clear</Button>
-					</span>
+					<div>
+						{/* <span style={{ marginLeft: '1em' }}>
+							<Button compact onClick={() => player?.reset ? player?.reset() : null}>Clear</Button>
+						</span> */}
+						<PlayerPanel requestClearData={performReset} requestShowForm={togglePanel} />
+					</div>
 				)}
 			</div>
 			}

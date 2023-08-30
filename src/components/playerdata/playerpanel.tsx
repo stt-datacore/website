@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message, Icon, Button, Form, Checkbox, Progress, Header, Menu, Dropdown, Popup } from "semantic-ui-react";
+import { Message, Icon, Button, Form, Checkbox, Progress, Header, Menu, Dropdown, Popup, Accordion } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EphemeralData } from "../../context/playercontext";
 import { EquipmentItem } from "../../model/equipment";
@@ -11,34 +11,20 @@ import { useStateWithStorage } from "../../utils/storage";
 import { BuffStatTable } from "../../utils/voyageutils";
 
 export interface PlayerPanelProps {
-	playerData: PlayerData;
-	strippedPlayerData?: PlayerData;
-	dataSource: string;
-	allCrew: PlayerCrew[];
-	allShips: Ship[];
-	playerShips: Ship[];
-	ephemeral: EphemeralData;
-	buffConfig?: BuffStatTable;
-	maxBuffs?: BuffStatTable;
-	items?: EquipmentItem[];
-
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
-
-	location: any;
-	data: any;
 };
 
 export const PlayerPanel = (props: PlayerPanelProps) => {
 	const context = React.useContext(GlobalContext);
 
-	const { playerData,
-		strippedPlayerData,
-		dataSource,
-		playerShips,
+	const { 
 		requestShowForm,
 		requestClearData,
 	} = props;
+
+	const playerData = context.player.playerData ?? {} as PlayerData;
+	const strippedPlayerData = context.player.strippedPlayerData ?? {} as PlayerData;
 
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
@@ -73,50 +59,71 @@ export const PlayerPanel = (props: PlayerPanelProps) => {
 
 		// The option to auto-share profile only appears after a profile is uploaded or if previously set to auto-update
 		const bShowUploaded = profileUploaded || profileAutoUpdate;
+		const [shareExpanded, setShareExpanded] = useStateWithStorage("player/shareExpanded", true, { rememberForever: true });
 
 		return (
-			<Message icon onDismiss={() => setShowShare(false)}>
-				<Icon name='share alternate' />
-				<Message.Content>
-					<Message.Header>Share your player profile!</Message.Header>
-					{!bShowUploaded && (
-						<div>
-							<p>
-								Click here to{' '}
-								<Button size='small' color='green' onClick={() => shareProfile()}>
-									{profileUploading && <Icon loading name='spinner' />}share your profile
-								</Button>{' '}
-								and unlock more tools and export options for items and ships. More details:
-							</p>
-							<Message.List>
-								<Message.Item>
-									Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
-								</Message.Item>
-								<Message.Item>
-									There is no private information included in the player profile; information being shared is limited to:{' '}
-									<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
-								</Message.Item>
-							</Message.List>
-						</div>
-					)}
-					{bShowUploaded && (
-						<Form.Group>
-							<p>
-								Your profile was uploaded. Share the link:{' '}
-								<a
-									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
-									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
-							</p>
-							<Form.Field
-								control={Checkbox}
-								label='Automatically share profile after every import'
-								checked={profileAutoUpdate}
-								onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
-							/>
-						</Form.Group>
-					)}
-				</Message.Content>
-			</Message>
+
+			<Accordion
+					defaultActiveIndex={shareExpanded ? 0 : -1}
+					onTitleClick={(e, { active }) => {
+						setShareExpanded(!shareExpanded);
+					}}
+					panels={[
+						{
+							active: shareExpanded,
+							index: 0,
+							key: 0,
+							title: 'Share Form Data (Click Here)',
+							content: {
+								content: (
+									<Message icon onDismiss={() => setShowShare(false)}>
+									<Icon name='share alternate' />
+									<Message.Content>
+										<Message.Header>Share your player profile!</Message.Header>
+										{!bShowUploaded && (
+											<div>
+												<p>
+													Click here to{' '}
+													<Button size='small' color='green' onClick={() => shareProfile()}>
+														{profileUploading && <Icon loading name='spinner' />}share your profile
+													</Button>{' '}
+													and unlock more tools and export options for items and ships. More details:
+												</p>
+												<Message.List>
+													<Message.Item>
+														Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
+													</Message.Item>
+													<Message.Item>
+														There is no private information included in the player profile; information being shared is limited to:{' '}
+														<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
+													</Message.Item>
+												</Message.List>
+											</div>
+										)}
+										{bShowUploaded && (
+											<Form.Group>
+												<p>
+													Your profile was uploaded. Share the link:{' '}
+													<a
+														href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
+														target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
+												</p>
+												<Form.Field
+													control={Checkbox}
+													label='Automatically share profile after every import'
+													checked={profileAutoUpdate}
+													onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
+												/>
+											</Form.Group>
+										)}
+									</Message.Content>
+								</Message>
+								)
+							}
+						}
+					]}
+				/>
+
 		);
 	};
 
