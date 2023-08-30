@@ -39,7 +39,7 @@ class Layout extends PureComponent<LayoutProps, LayoutState> {
 				/>
 				<TopMenu narrowLayout={narrowLayout}>
 					{this.props.header && !this.props.headerAfterPlayerTools && <Header as='h2'>{this.props.header}</Header>}
-					<PlayerMenu />
+					<PlayerMenu compact={narrowLayout} />
 					{this.props.header && this.props.headerAfterPlayerTools && <Header as='h2'>{this.props.header}</Header>}
 					{this.props.children}
 				</TopMenu>

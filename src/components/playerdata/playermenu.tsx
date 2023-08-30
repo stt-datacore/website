@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, TextArea, Message } from 'semantic-ui-react';
+import { Button, Form, TextArea, Message, Modal } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerData } from '../../model/player';
@@ -7,10 +7,15 @@ import { PlayerPanel } from './playerpanel';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
-const PlayerMenu = () => {
+export interface PlayerMenuProps {
+	compact?: boolean;
+}
+
+const PlayerMenu = (props: PlayerMenuProps) => {
 	const global = React.useContext(GlobalContext);
 	const { player } = global;
 	const [ showPanel, setShowPanel ] = React.useState(false);
+	const { compact } = props;
 
 	// If crew not loaded, assume core is not ready and player menu shouldn't be shown
 	if (global.core.crew.length === 0) return (<></>);
@@ -35,14 +40,14 @@ const PlayerMenu = () => {
 		<div style={{ margin: '2em 0 0.5em 0' }}>
 			{(!player.loaded || showPanel) && <PlayerInputForm setValidInput={receiveInput} />
 			||
-			<div>
-				{/* Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'} */}
+			<div style={!!compact ? {display:"flex", flexDirection: "row", justifyContent: "center" } : undefined}>
+				{!!compact && <>Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'}</>}
 				{player.loaded && (
 					<div>
-						{/* <span style={{ marginLeft: '1em' }}>
+						{!!compact && <span style={{ marginLeft: '1em' }}>
 							<Button compact onClick={() => player?.reset ? player?.reset() : null}>Clear</Button>
-						</span> */}
-						<PlayerPanel requestClearData={performReset} requestShowForm={togglePanel} />
+						</span>}
+						{!compact && <PlayerPanel requestClearData={performReset} requestShowForm={togglePanel} />}
 					</div>
 				)}
 			</div>
@@ -113,6 +118,37 @@ const PlayerInputForm = (props: PlayerInputFormProps) => {
 					<p>{errorMessage}</p>
 				</Message>
 			)}
+			
+			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
+				<a href={PLAYERLINK} target='_blank'>
+					your player data
+				</a>
+				{' '}to your device, then click the 'Upload data file' button.
+			</p>
+			<p>
+				<Modal
+					trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
+					header='Player data upload on iOS'
+					content={<ul>
+						<li>Go to your player data using the link provided, logging in if asked.</li>
+						<li>Wait for the page to finish loading. It should start with:{' '}
+							<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+						</li>
+						<li>Press the share icon while viewing the page.</li>
+						<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
+						<li>Come back to this page (DataCore.app player tools).</li>
+						<li>Tap the 'Upload data file' button.</li>
+						<li>Choose the file starting with 'player?client_api...' from where you saved it.</li>
+					</ul>}
+				/>
+			</p>
+
+			<Button
+				onClick={() => inputUploadFile?.click()}
+				content='Upload data file'
+				icon='file'
+				labelPosition='right'
+			/>
 		</div>
 	);
 
