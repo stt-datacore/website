@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-One of many nice skill sets gone to waste on account of poor stat totals. This Harry variant is bereft of power, perhaps even to the point of torpedoing his thawpertunities, which are more plentiful than you might think. 
-
-Power or no, adding to his half dozen big bonus features will almost always merit the thaw and in combination with some minor collection value (don't be surprised if he makes an Alternate Future collection some time), he's generally worth a little behold capital at some point past the early game. Beware his somewhat expensive build cost requiring seven 5* items and a handful of faction trinkets.
+Alternate future Harry Kim has a bad hairstyle, bad statistics almost everywhere, but a pair of Collections and one remaining barely viable Trait that could get him a third. Kim events are not aplenty, but count on one or two a year.

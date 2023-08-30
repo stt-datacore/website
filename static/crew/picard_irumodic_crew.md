@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-What's that old codger got in his hand? Not a bottle of corner shop piss, that's for certain. Irumodic's campaign announcement said it best - "With the Gardener trait, you might have to bring him out of retirement for some shuttle missions." Great sales pitch, WRG.
-
-The shuttle and voyage numbers are still in play for newer rosters despite the card's age. And while his trait value is thinner than many other cards, Picard variant events have provided a good number of thawpertunities thus far.
+For a card released in 2018, Ol’ Beardy Picard still has some Voyage chops for a Super Rare, but that’s not why you’re picking him from a Behold. A trio of Collections and Picard’s Event pedigree give him lasting value, and we are still waiting for the Gardener Trait to bear fruit.

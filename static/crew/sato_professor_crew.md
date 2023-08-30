@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Meet the woman responsible for single-handedly annihilating the Diplomacy skill. Before her appearance, the gaps between #1 and the base ranks below were 6, 9, 6, 4, and 2. Her lead over then-#1 Odo is 238. Her DIP base at one star tops dozens of fully fused crew like Smitten or Mambo Picard. It's extremely rare for a crew to dominate the stat ranks like that and if she were Professors Data, Dax, or Burnham, then she would be among the most valuable crew in the game.
+For years, Sato stood alone at the top of the DIP Base ranks and rode many a Shuttle. While she has since been pipped by Honor Hall release Technician Uhura and Gauntlet Exclusive Mirror Mariner, this does not take away from her long reign, and she will still find herself on Shuttles if you haven’t found the time or wherewithal or good fortune to either buy Uhura or get yourself a Fully Fused Mariner.
 
-Luckily for those who don't have her, Sato is not a bonus-laden card. She will perform in many events with or without a bonus regardless, but not force out all other options as sometimes happens in, say, the gauntlet. Despite being something of a one trick pony, Sato is a singular crew and will easily stand out on your roster, even if the value of what she excels at is up for debate.
+Sato’s value is almost solely in that DIP Base, but over time her Traits have borne some Collection fruit; three as it stands, with one more viable one to possibly give her a quartet.
