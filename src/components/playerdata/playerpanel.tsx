@@ -64,13 +64,13 @@ export const PlayerPanel = (props: PlayerPanelProps) => {
 		return (
 
 			<Accordion
-					defaultActiveIndex={shareExpanded ? 0 : -1}
+					defaultActiveIndex={(shareExpanded || bShowUploaded) ? 0 : -1}
 					onTitleClick={(e, { active }) => {
 						setShareExpanded(!shareExpanded);
 					}}
 					panels={[
 						{
-							active: shareExpanded,
+							active: shareExpanded || bShowUploaded,
 							index: 0,
 							key: 0,
 							title: 'Share Form Data (Click Here)',
