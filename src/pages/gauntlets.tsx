@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox } from 'semantic-ui-react';
+import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -65,6 +65,7 @@ export interface FilterProps {
 	ownedStatus?: OwnedStatus;
 	rarity?: number;
 	maxResults?: number;
+	skillPairs?: string[];
 }
 
 export interface GauntletsPageState {
@@ -479,7 +480,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const { onlyActiveRound, hideOpponents } = this.state;
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
-		const ptop = top ?? 10;
+		const ptop = top;
 		const pairGroups = [] as PairGroup[];
 		const currSkills = [gauntlet.contest_data?.primary_skill ?? "", gauntlet.contest_data?.secondary_skill ?? ""].sort().join();
 
@@ -499,7 +500,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			pairGroups.push({
 				pair: rpairs,
-				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
+				crew: crew.filter(c => rank in c.ranks && (!ptop || (ptop && c.ranks[rank] <= ptop)))
 					.map(d => d as PlayerCrew)
 					.filter((crew2) => {		
 						if (hideOpponents && crew2.isOpponent) return false;
@@ -1042,6 +1043,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly crewInFilter = (crew: PlayerCrew, filter: FilterProps): boolean => {
 		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 		if (!filter.rarity || crew.rarity === filter.rarity) {
+			if (filter.skillPairs?.length) {
+				if (!filter.skillPairs.some((sp) => {
+					let p = sp.split("/");
+					let p1 = rankToSkill(p[0]);
+					let p2 = rankToSkill(p[1]);
+					if (!p1 || !p2) return true;
+					return (p1 in crew && crew[p1].max && p2 in crew && crew[p2].max);
+				})) return false;
+			}
 			if (filter.ownedStatus) {
 				switch(filter.ownedStatus) {
 					case 'any':
@@ -1077,6 +1087,17 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 		return true;
+	}
+
+	private readonly setSkillPairs = (pairs: string[], idx: number) => {
+		const newOwned = [ ... this.state.filterProps ];
+		newOwned[idx] = { ... newOwned[idx], skillPairs: pairs };
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
+		this.inited = false;
+		this.setState({ ...this.state, loading: true });
+		window.setTimeout(() => {
+			this.setState({... this.state, filterProps: newOwned });
+		});	
 	}
 	
 	private readonly setOwnedStatus = (status: OwnedStatus, idx: number) => {
@@ -1587,6 +1608,24 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
 		];
 
+		
+
+		const skills = ['CMD', 'DIP', 'SEC', 'SCI', 'ENG', 'MED'].sort();
+		const skillFilters = [] as DropdownItemProps[];
+
+		for (let skill1 of skills) {
+			for (let skill2 of skills) {
+				if (skill1 === skill2) continue;
+				let sp = `${skill1}/${skill2}`;
+				if (skillFilters.find(f => f.key?.includes(skill1) && f.key?.includes(skill2))) continue;
+				skillFilters.push({
+					key: sp,
+					value: sp,
+					text: sp
+				});
+			}
+		}
+
 		availBuffs.push({
 			key: 'none',
 			value: 'none',
@@ -1833,7 +1872,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 						<div style={{
 							display: "flex",
-							flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+							flexDirection: "column"
 						}}>
 							<div style={{
 								display: "flex",
@@ -1842,16 +1881,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 							}}>
 								<h4 style={{ marginRight: "0.5em" }}><b>Minimum Proficiency Max:&nbsp;</b></h4>
-
+								<div>
 								<Dropdown
 									style={{
 										textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 									}}
+									inline
 									direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
 									options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o } })}
 									value={this.getRangeMax(idx)}
 									onChange={(e, { value }) => this.setRangeMax(idx, value as number)} />
+								</div>
 							</div>
+							
 						</div>
 
 					</div>
@@ -1916,7 +1958,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 							<Dropdown
 								title="Filter Crew by Big Book Rank"
-								options={[1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: "Top " + o, key: o, value: o } })}
+								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? "Top " + o : "No Limit", key: o, value: o } })}
 								value={tops[idx]}
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 							/>
@@ -1969,38 +2011,64 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
 						</div>
-						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+
+
+						{idx !== 9 && <div style={{
 							display: "flex",
-							flexDirection: "row",
+							flexDirection: "column",
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-
-							<Checkbox
-								title="Highlight Active Round Only"
-								options={filterOptions}
-								checked={this.getActiveRound()}
-								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
-							/>
-
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+							<h4><b>Skill Pairs</b></h4>
+							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
+								<Dropdown
+									title={"Filter by skill pairs"}
+									placeholder="Skill Pairs"										
+									clearable
+									compact
+									inline
+									multiple
+									options={skillFilters}
+									value={filterProps[idx].skillPairs}
+									onChange={(e, { value }) => this.setSkillPairs(value as string[], idx)}
+								/>
+							</div>
 						</div>}
-						{idx === 4 && <div style={{
-							display: "flex",
-							flexDirection: "row",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
-							textAlign: "left"
-						}}>
 
-							<Checkbox
-								title="Hide Opponents"
-								options={filterOptions}
-								checked={this.getHideOpponents()}
-								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
-							/>
+						<div style={{display:"flex", flexDirection: "column", height: "100%", justifyContent: "space-evenly"}}>
+							{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+								display: "flex",
+								flexDirection: "row",
+								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 1em 0",
+								textAlign: "left"
+							}}>
 
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
-						</div>}
+								<Checkbox
+									title="Highlight Active Round Only"
+									options={filterOptions}
+									checked={this.getActiveRound()}
+									onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
+								/>
+
+								<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+							</div>}
+							{idx === 4 && <div style={{
+								display: "flex",
+								flexDirection: "row",
+								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
+								textAlign: "left"
+							}}>
+								<Checkbox
+									title="Hide Opponents"
+									options={filterOptions}
+									checked={this.getHideOpponents()}
+									onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
+								/>
+
+								<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
+							</div>}
+						</div>
+
 					</div>
 
 				{idx === 4 &&
