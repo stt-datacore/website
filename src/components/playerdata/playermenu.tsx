@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Form, TextArea, Message } from 'semantic-ui-react';
 
-import { GlobalContext } from '../context/globalcontext';
-import { PlayerData } from '../model/player';
+import { GlobalContext } from '../../context/globalcontext';
+import { PlayerData } from '../../model/player';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
@@ -21,7 +21,7 @@ const PlayerMenu = () => {
 				Global player data: {player.loaded ? player.playerData?.player.character.display_name : 'Not loaded'}
 				{player.loaded && (
 					<span style={{ marginLeft: '1em' }}>
-						<Button compact onClick={() => player.reset()}>Clear</Button>
+						<Button compact onClick={() => player?.reset ? player?.reset() : null}>Clear</Button>
 					</span>
 				)}
 			</div>
