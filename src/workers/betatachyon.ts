@@ -120,16 +120,11 @@ const BetaTachyon = {
                 return bs;
             }
             
-            function oneCrewCopy<T extends CrewMember>(crew: T): T {
-                let result = JSON.parse(JSON.stringify(crew)) as T;
-                if (typeof crew.date_added === 'string') {
-                    crew.date_added = new Date(crew.date_added);
-                }
-            
-                return result;
+            function isNever(crew: PlayerCrew | CrewMember) {
+                let ob = crew.obtained.toLowerCase();	
+                return (ob.includes("bossbattle") || ob.includes("honor") || ob.includes("gauntlet") || ob.includes("voyage") || ob.includes("collection"));
             }
-            
-            
+           
             const skills = ["command_skill", "diplomacy_skill", "science_skill", "engineering_skill", "security_skill", "medicine_skill"];
             const shortskills = ["CMD", "DIP", "SCI", "ENG", "SEC", "MED"];
             const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
@@ -446,10 +441,10 @@ const BetaTachyon = {
                 let cnum = 1 - ((a.totalEVRemaining ?? 0) / maxremain);
                 let dnum = 0.1 * ((a.amTraits ?? 0) / maxam);
                 let fnum = (acc[a.symbol].in_portal ? 0 : 1);
-
+                let gnum = isNever(a) ? 1 : 0;
                 let rare = 5 * (1 / skillOrderCrew[printSkillOrder(a)].length);
 
-                let fanum = (100 * (rare + anum + bnum + cnum + dnum + fnum)) / 6;
+                let fanum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
                 
                 let adist = a.score ? (a.score) : 1;
                 let adist2 = a.scoreTrip ? (a.scoreTrip) : 1;
@@ -462,10 +457,11 @@ const BetaTachyon = {
                 cnum = 1 - ((b.totalEVRemaining ?? 0) / maxremain);
                 dnum = 0.1 * ((b.amTraits ?? 0) / maxam);  
                 fnum = (acc[b.symbol].in_portal ? 0 : 1);
+                gnum = isNever(a) ? 1 : 0;
 
                 rare = 5 * (1 / skillOrderCrew[printSkillOrder(b)].length);
 
-                let fbnum = (100 * (rare + anum + bnum + cnum + dnum + fnum)) / 6;
+                let fbnum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
                 
                 let bdist = b.score ? (b.score) : 1;
                 let bdist2 = b.scoreTrip ? (b.scoreTrip) : 1;

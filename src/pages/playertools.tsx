@@ -218,7 +218,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 
 	const [varsReady, setVarsReady] = React.useState(false);
-	const [activeTool, setActiveTool] = React.useState('voyage');
+	const [activeTool, setActiveTool] = React.useState('');
 	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	React.useEffect(() => {
@@ -330,7 +330,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	let tt: string | undefined = undefined;
 
-	if (tools[activeTool].title === 'Ship Page' && selectedShip) {
+	if ((activeTool != '') && tools[activeTool].title === 'Ship Page' && selectedShip) {
 		let s = playerShips?.find((sp) => sp.symbol === selectedShip);
 		if (s) {
 			tt = s.name;
@@ -367,7 +367,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 			<React.Fragment>
 				{/* <ShareMessage /> */}
-				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
+				<Header as='h3'>{tt ? tt : activeTool === '' ? '' : tools[activeTool].title}</Header>
 				<GlobalContext.Provider value={{					
 					maxBuffs: maxBuffs,					
 					core: {
@@ -386,7 +386,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 					},
 					data
 				}}>
-					{tools[activeTool].render(props)}
+					{((activeTool ?? "") != "") ? tools[activeTool].render(props) : ""}
 				</GlobalContext.Provider>
 			</React.Fragment>
 		</>

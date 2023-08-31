@@ -1443,3 +1443,18 @@ export function getSkillOrder(crew: PlayerCrew | CrewMember) {
 export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 	return getSkillOrder(crew).join("/");
 }
+
+export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean) {
+	showNever ??= true;	
+	obtainedIfNo ??= false;
+	if (!showNever && !obtainedIfNo) return crew.in_portal ? "Yes" : "No";
+	
+	let obstr = (!!obtainedIfNo && !crew.in_portal) ? ` (${crew.obtained})` : "";
+	let ob = crew.obtained.toLowerCase();
+	
+	if (ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection")) {
+		return `Never${obstr}`;		
+	}
+
+	return `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+}

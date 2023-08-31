@@ -7,7 +7,7 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
-import { formatTierLabel, gradeToColor } from '../utils/crewutils';
+import { formatTierLabel, gradeToColor, printPortalStatus } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
@@ -359,8 +359,8 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
 							<StatLabel title="Portal" 
 								value={<>
-									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-										{crew.in_portal ? 'Yes' : 'No'}									
+									<div title={printPortalStatus(crew, true, true)} style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+										{printPortalStatus(crew, true, false)}
 									</div>								
 								</>} />
 							{markdownRemark.frontmatter.events !== null && (

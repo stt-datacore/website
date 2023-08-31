@@ -10,7 +10,7 @@ import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
-import { formatTierLabel, getSkillOrder, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel, getSkillOrder, navToCrewPage, printPortalStatus } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
@@ -527,7 +527,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									}
 
 								<Table.Cell>
-									{crew.in_portal ? "Yes" : "No"}
+									<span title={printPortalStatus(crew, true, true)}>
+										{printPortalStatus(crew)}
+									</span>
 								</Table.Cell>
 								<Table.Cell>
 									<Checkbox checked={this.getChecked(crew.symbol)} onChange={(e, { checked }) => this.setChecked(crew.symbol, checked as boolean)} />

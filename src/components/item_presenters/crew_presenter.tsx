@@ -7,6 +7,7 @@ import {
     formatTierLabel,
     getSkills,
     gradeToColor,
+    printPortalStatus,
 } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
@@ -1060,10 +1061,13 @@ export class CrewPresenter extends React.Component<
                                     value={"" + crew.ranks.gauntletRank}
                                 />
 
+                                <span title={printPortalStatus(crew, true, true)}>
                                 <StatLabel
-                                    title="In Portal"
-                                    value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : "No" }
+                                    title={"In Portal"}
+                                    
+                                    value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true, false) }
                                 />
+                                </span>
                             </div>
                         </div>
                     )}
