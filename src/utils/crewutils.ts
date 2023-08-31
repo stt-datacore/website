@@ -1405,3 +1405,32 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 }
 
 
+export function getSkillOrder(crew: PlayerCrew | CrewMember) {
+	const sk = [] as ComputedBuff[];
+	let x = 0;
+	for (let skill of Object.keys(CONFIG.SKILLS)) {
+		if (skill in crew) {
+			sk.push({ ...crew[skill], skill: skill });
+		}
+		x++;
+	}
+
+	sk.sort((a, b) => b.core - a.core);                
+	const output = [] as string[];
+
+	if (sk.length > 0 && sk[0].skill) {
+		output.push(sk[0].skill);
+	}
+	if (sk.length > 1 && sk[1].skill) {
+		output.push(sk[1].skill);
+	}
+	if (sk.length > 2 && sk[2].skill) {
+		output.push(sk[2].skill);
+	}
+
+	return output;
+}
+
+export function printSkillOrder(crew: PlayerCrew | CrewMember) {
+	return getSkillOrder(crew).join("/");
+}

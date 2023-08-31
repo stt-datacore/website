@@ -10,7 +10,7 @@ import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel, getSkillOrder, navToCrewPage } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
@@ -412,7 +412,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
 						{engine === 'beta_tachyon_pulse' && 
-							<Table.HeaderCell>Antimatter Traits</Table.HeaderCell>}
+							<React.Fragment>
+							<Table.HeaderCell>Antimatter Traits</Table.HeaderCell>
+							<Table.HeaderCell>Skill Order</Table.HeaderCell>
+							</React.Fragment>
+							}
 						<Table.HeaderCell>In Portal</Table.HeaderCell>
 						<Table.HeaderCell>Compare</Table.HeaderCell>
 					</Table.Row>
@@ -455,7 +459,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
 								<Table.Cell>
-									{Math.ceil(training ? (row.addedEV ?? 0) : (row.totalEVContribution ?? 0))}
+									{Math.ceil(training ? (row.addedEV ?? row.totalEVContribution ?? 0) : (row.totalEVContribution ?? 0))}
 								</Table.Cell>
 								{
 									!training &&
@@ -472,7 +476,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
 								{engine === 'beta_tachyon_pulse' && 
-									<Table.Cell>{row.amTraits}</Table.Cell>}
+									<React.Fragment>
+
+										<Table.Cell>{row.amTraits}</Table.Cell>
+										<Table.Cell>{getSkillOrder(row).map((mskill, idx) => (
+											<img title={appelate(mskill)} key={idx} style={{ maxHeight: "1.35em", maxWidth: "1.35em", margin: "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`} />
+										))
+										
+										}</Table.Cell>
+									</React.Fragment>
+									
+									}
 
 								<Table.Cell>
 									{crew.in_portal ? "Yes" : "No"}

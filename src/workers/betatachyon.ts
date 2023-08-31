@@ -444,20 +444,26 @@ const BetaTachyon = {
                 let anum = (a.voyagesImproved?.length ?? 0) / maxvoy;
                 let bnum = (a.totalEVContribution ?? 0) / maxev;
                 let cnum = 1 - ((a.totalEVRemaining ?? 0) / maxremain);
-                let dnum = (a.amTraits ?? 0) / maxam;
+                let dnum = 0.1 * ((a.amTraits ?? 0) / maxam);
                 let fnum = (acc[a.symbol].in_portal ? 0 : 1);
+
+                let rare = 1 / skillOrderCrew[printSkillOrder(a)].length;
+
                 let fanum = (100 * (anum + bnum + cnum + dnum + fnum)) / 5;
                 
                 let adist = a.score ? (a.score) : 1;
                 let adist2 = a.scoreTrip ? (a.scoreTrip) : 1;
 
                 fanum *= ((adist + adist2) / 2);
+                fanum *= rare;
 
                 anum = (b.voyagesImproved?.length ?? 0) / maxvoy;
                 bnum = (b.totalEVContribution ?? 0) / maxev;
                 cnum = 1 - ((b.totalEVRemaining ?? 0) / maxremain);
-                dnum = (b.amTraits ?? 0) / maxam;                
+                dnum = 0.1 * ((b.amTraits ?? 0) / maxam);  
                 fnum = (acc[b.symbol].in_portal ? 0 : 1);
+
+                rare = 1 / skillOrderCrew[printSkillOrder(b)].length;
 
                 let fbnum = (100 * (anum + bnum + cnum + dnum + fnum)) / 5;
                 
@@ -465,6 +471,7 @@ const BetaTachyon = {
                 let bdist2 = b.scoreTrip ? (b.scoreTrip) : 1;
                 
                 fbnum *= ((bdist + bdist2) / 2);
+                fbnum *= rare;
 
                 r = fbnum - fanum;
 
