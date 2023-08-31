@@ -14,4 +14,4 @@ published: true
 
 I didn't mean to say that Orion Slaver should be hauling garbage. I meant to say that he should be hauled away as garbage.
 
-Big Show has a pair of event features, but unless your account is only a couple months old when you stumble into three or four stars that way, Slaver is not going to make an impact. Like a lot of power creeped crew, he's at the mercy of his traits for future collection and event opportunities.
+Big Show has a pair of Event features, but unless your account is only a couple months old when you stumble into three or four stars that way, Slaver is not going to make an impact. Like a lot of power creeped crew, he's at the mercy of his Traits for future Collection and Event opportunities. The best news is that he could end up with a quartet of Collections if his most viable Traits pay off.

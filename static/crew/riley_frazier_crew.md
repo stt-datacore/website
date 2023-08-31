@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Riley's not quite bottom barrel in any of her metrics and so that may inflate her overall rating, but you're really only ever getting value from her traits for post-cryo activities like events or stacking collection boosts. A strong trait lineup overall may have been pooh-poohed previously for trait pools too large to be considered, but in the midst of Timelines' collection era, nothing is to be taken for granted.
-
-Her floor is multi-collection piece and her ceiling is a half dozen collections with a mega or two per year. Behold and level according to your roster needs, with her generally falling on the side of later-game pickup.
+Riley’s sole value at this stage in the game is constituted within her Trait list, which gives her value in daily use if you are helping your Fleet solve Nodes in Fleet Boss Battles, or long term value in anywhere from her current three Collections to a possible ceiling of five. An easy choice for a first or final star from Super Rare Beholds.

@@ -14,6 +14,6 @@ published: true
 
 Who has two thumbs and laughable value? This guuuyyyy!
 
-One of the more precipitous falls from grace at the super rare level, Stamets was once an unfreezable name with the inevitability of Discovery megas threatening to permanently alter card value and laugh in the name of balance.
+One of the more precipitous falls from grace at the Super Rare level, Stamets was once an unfreezable name with the inevitability of Discovery Mega Events threatening to permanently alter card value and laugh in the name of balance.
 
-In their wake, Stamets is left with a sad event clip and equally sad traits that didn't get the message about the collection era. Don't bother beholding this crew until his Prodigy trait gets picked, perhaps in concert with some events themed around the animated show.
+In their wake, Stamets is left with a sad Event clip and equally sad Traits that didn't get the message about the Collection era.

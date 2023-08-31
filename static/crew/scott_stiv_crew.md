@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Poor voyage numbers, poor event count, poor Scotty. The Doohan faithful may have to hope for some trait megas to rectify what DB refuses to and give a usable ENG base chances to pilot some shuttles. His niche +EV/instant damage in arena is available, but accompanied by poor passive stats and a slow start time, thus limiting it to new players only.
-
-One would assume that his non-HFS traits both get tagged for collections in the future, but until they do there's almost no reason to behold Scotty.
+Objectively one of the top four crew in the game with “Professor” in their name, this Super Rare variant has little to offer the player outside of art from a hilarious moment in ST: IV and perhaps two Collections. Scotty Events are sparse and his light Trait list gives him few options to cash in on Trait bonus Events.
