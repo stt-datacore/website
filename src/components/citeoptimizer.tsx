@@ -410,10 +410,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<Table.HeaderCell>EV Per Citation</Table.HeaderCell>
 						</React.Fragment>
 						}
-						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
+						<Table.HeaderCell>Voyages<br />Improved</Table.HeaderCell>
 						{engine === 'beta_tachyon_pulse' && 
 							<React.Fragment>
-							<Table.HeaderCell>Antimatter Traits</Table.HeaderCell>
+							<Table.HeaderCell>Antimatter<br />Traits</Table.HeaderCell>
 							<Table.HeaderCell>Skill Order</Table.HeaderCell>
 							</React.Fragment>
 							}
@@ -479,11 +479,49 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<React.Fragment>
 
 										<Table.Cell>{row.amTraits}</Table.Cell>
-										<Table.Cell>{getSkillOrder(row).map((mskill, idx) => (
-											<img title={appelate(mskill)} key={idx} style={{ maxHeight: "1.35em", maxWidth: "1.35em", margin: "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`} />
-										))
-										
-										}</Table.Cell>
+										<Table.Cell width={2}>
+										<div style={{
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "flex-start",
+												alignItems: "left"
+											}}>
+
+											<div style={{
+												display: "flex",
+												flexDirection: "column",
+												justifyContent: "center",
+												alignItems: "center"
+											}}>
+												<div style={{
+													display: "flex",
+													flexDirection: "row",
+													justifyContent: "space-evenly",
+													alignItems: "center"
+												}}>
+												{getSkillOrder(row).map((mskill, idx) => (
+												<img 
+													title={appelate(mskill)} 
+													key={"skimage"+idx+mskill} 
+													src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`}
+													style={{ 
+														maxHeight: "1.5em", 
+														maxWidth: "1.5em", 
+														margin: "0.5em", 															
+													}} 
+													
+												/>))}
+												</div>
+
+												<i style={{
+													fontSize: "0.75em",
+													fontWeight: "bold",
+													color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
+													}}>{Math.floor(100 * (row?.scoreTrip ?? 0)) / 10}</i>
+
+											</div>
+										</div>
+										</Table.Cell>
 									</React.Fragment>
 									
 									}
@@ -500,7 +538,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 10 : 9}>
+						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 11 : 9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={paginationPage}

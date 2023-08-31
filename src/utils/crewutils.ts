@@ -925,6 +925,15 @@ export function dynamicRangeColor(grade: number, max: number, min: number): stri
 
 
 export function gradeToColor(grade: string | number): string | null {
+
+	if (typeof grade === 'number' && grade < 1) {
+		if (grade >= 0.9) return 'lightgreen';
+		else if (grade >= 0.8) return 'aquamarine';
+		else if (grade >= 0.7) return 'yellow';
+		else if (grade >= 0.6) return 'orange';
+		else if (grade < 0.6) return 'tomato';
+	}
+	
 	switch(grade) {
 		case "A":
 		case "A-":
