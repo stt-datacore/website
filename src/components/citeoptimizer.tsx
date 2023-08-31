@@ -543,10 +543,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 		
 		let compact = true;
-		let workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
+		const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
 
 		workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
+		
 		let pri: string[] = [];
 		let sec: string[] = [];
 		let seat: string[] = [];

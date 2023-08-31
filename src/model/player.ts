@@ -583,6 +583,9 @@ export interface Player {
     score?: number;
 
     /** Used internally by gauntlets. Not part of source data.  */
+    scoreTrip?: number;
+
+    /** Used internally by gauntlets. Not part of source data.  */
     pairScores?: GauntletPairScore[];
 
     /** Used internally by gauntlets. Not part of source data.  */
