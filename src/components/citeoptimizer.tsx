@@ -711,7 +711,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
-		
+		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
 		return (	
 			<>
 				<Accordion
@@ -854,9 +855,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<>
 						<Tab
 						 	panes={[
-							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
-							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
-							{ menuItem: 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
+							{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+							{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
+							{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
 						</>
 					}
