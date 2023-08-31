@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Lucky to escape the drawing board with some non-standard traits, Shakaar’s CMD base is reliant on stray trait (mega) events, or perhaps another re-run of his feature. With zero daily value, we can really only hope that his traits slowly push him up the rungs of different value metrics as he becomes a multi-collection offering.
+As we eagerly await the promised Bajoran Collection, we look at Shakaar and think - wow, we could really see him with an 80% Trait to Collection ratio with four of five hits as the Content Train™ rolls on. We have no other relevant thoughts.
