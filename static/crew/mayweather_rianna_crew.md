@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Travis' mom has a scintillating skill set, but don't be suckered in. There's no power behind the skills and, in fact, little to no daily use whatsoever. This is a pure collection card who, should she hit on a few trait megas, will likely not find enough shuttle seats to contribute due to a general lack of MED and ENG seats during events.
+Travis' mom has a scintillating Skill set, but don't be suckered in. There's no power behind the Skills and, in fact, little to no daily use whatsoever. This is a pure Collection card (four now, with a ceiling of five) who, should she hit on a few Trait Events, will likely not find enough Shuttle seats to contribute due to a general lack of MED and ENG seats during Events.

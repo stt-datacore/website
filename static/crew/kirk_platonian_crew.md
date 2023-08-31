@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His build is on the tricky side, requiring a dozen super rare components and myriad faction items and science experiments, but he eventually pays it off through Kirk events, a couple eventable traits, and some collection value. His arena ability might be in some players' rotation if not for Ardra's existence, but you can make do with him in a pinch. Given his low utility in areas of daily use, don't feel bad about de-prioritizing this Kirk and picking him up at a later date.
+It’s hard to turn away a Kirk at any Rarity, but this one doesn’t have a ton to offer. A thin Trait list that is not likely to offer more than two to three Collections and a difficult build full of Faction Items makes him unappetizing as a Behold choice, but if you do take him and don’t have a lot of Arena or Skirmish options, his chunk of Crit Bonus as an Ardra-lite may help you in the early game. Bases are just good enough to thaw for a Kirk Faction Event, if you are making a deep run.
