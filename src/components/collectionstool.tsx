@@ -422,6 +422,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 		let zcol = filtered.map(z => z.collections).flat();
 		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
+		const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
 		const colMap = zcol.map((col, idx) => {
 			return {
@@ -444,12 +445,17 @@ const CrewTable = (props: CrewTableProps) => {
 				})
 			} as CollectionMap;
 		})
-		.filter((x) => 
-			x.collection !== undefined && x.crew?.length &&
+		.filter((x) => {
+			let bPass = x.collection !== undefined && x.crew?.length &&			
 			x.collection?.totalRewards && x.collection.milestone &&
-			(!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf)) &&
-			(!searchFilter?.length || x.crew?.some(csf => csf.name.includes(searchFilter)))
-		)
+			(!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf));
+			
+			if (searchFilter?.length && bPass) {				
+				bPass &&= x.crew?.some(csf => searches.some(search => csf.name.includes(search)));
+			}
+						
+			return !!bPass;
+		})
 		.sort((a, b) => {
 			let  acol = a.collection;
 			let  bcol = b.collection;
@@ -478,8 +484,9 @@ const CrewTable = (props: CrewTableProps) => {
 				let acount = a.pickerId ?? 1;
 				let bcount = b.pickerId ?? 1;
 				
-				let asearch = !searchFilter?.length || a.name.includes(searchFilter);
-				let bsearch = !searchFilter?.length || b.name.includes(searchFilter);
+				let asearch = !searchFilter?.length || searches.some(search => a.name.includes(search));
+				let bsearch = !searchFilter?.length || searches.some(search => b.name.includes(search));
+
 				if (asearch !== bsearch) {
 					if (asearch) r = -1;
 					else r = 1;
@@ -497,6 +504,15 @@ const CrewTable = (props: CrewTableProps) => {
 		});
 
 		return colMap.filter(cm => cm.crew?.length);
+	}
+
+	const addToSearchFilter = (value: string) => {
+		if (searchFilter?.length) {
+			setSearchFilter(searchFilter + "; " + value);
+		}
+		else {
+			setSearchFilter(value);
+		}
 	}
 
 	const colGroups = createCollectionGroups();
@@ -587,13 +603,13 @@ const CrewTable = (props: CrewTableProps) => {
 										playerData={context.player.playerData}
 										/>
 										<b
-											onClick={(e) => setSearchFilter(crew.name)} 
+											onClick={(e) => addToSearchFilter(crew.name)} 
 											style={{
 											cursor: "pointer", 
 											margin:"0.5em 0 0 0",
 											textDecoration: "underline"
 											}}
-											title={"Click to see only this crew member"}
+											title={"Click to see collections containing this crew member"}
 											>
 											{crew.name}
 										</b>			
