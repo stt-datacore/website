@@ -460,9 +460,9 @@ const CrewTable = (props: CrewTableProps) => {
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
 					col.crew.sort((a, b) => {
 						let r = 0;
-						// r = b.max_rarity - a.max_rarity;
-						if (!r) r = b.level - a.level;
+						r = a.max_rarity - b.max_rarity;
 						if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
+						if (!r) r = b.level - a.level;
 						if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
 						if (!r) r = a.name.localeCompare(b.name);
 						return r;
@@ -486,13 +486,26 @@ const CrewTable = (props: CrewTableProps) => {
 							</div>
 							<i style={{fontSize: "0.8em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
 							<i style={{fontSize: "0.8em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
+							{((collection?.owned ?? 0) < (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0)) && <i style={{color:'darkyellow', textAlign: 'center', margin: "0.5em"}}>You do not yet have enough crew to reach the next goal!</i>}
 							</div>
 						</Table.Cell>
 						<Table.Cell>
 							
 						<Grid doubling columns={3} textAlign='center'>
-								{col.crew.map((crew) => (
-									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+								{col.crew.map((crew, ccidx) => (
+									<div 
+										className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
+										style={{  
+											margin: "1.5em", 
+											display: "flex", 
+											flexDirection: "column", 
+											alignItems: "center", 
+											justifyContent: "center",
+											padding:"0.25em",
+											paddingTop: ccidx < (collection?.needed ?? 0) ? '0.75em' : undefined,
+											borderRadius: "5px",																			
+											backgroundColor: ccidx < (collection?.needed ?? 0) ? 'darkgreen' : undefined
+									}}>
 									<ItemDisplay 
 										size={64}
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
