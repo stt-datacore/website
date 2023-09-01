@@ -351,7 +351,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 										<div style={{ gridArea: 'icon' }}>
 											<img
 												width={48}
-												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 											/>
 										</div>

@@ -252,7 +252,7 @@ const UtilityWizardModal = () => {
 				const myRank = ranks[key].indexOf(crew.id) + 1;
 				myRanks[key] = myRank;
 				let threshold = 0;
-				switch (key.substr(0, 2)) {
+				switch (key.slice(0, 2)) {
 					case 'B_': threshold = getThreshold('core'); break;
 					case 'S_': threshold = getThreshold('shuttle'); break;
 					case 'G_': threshold = getThreshold('gauntlet'); break;
@@ -264,7 +264,7 @@ const UtilityWizardModal = () => {
 				ranks: myRanks,
 				thresholds,
 				counts: {
-					shuttle: thresholds.filter(key => ['B', 'S'].includes(key.substr(0, 1))).length,
+					shuttle: thresholds.filter(key => ['B', 'S'].includes(key.slice(0, 1))).length,
 					gauntlet: thresholds.filter(key => key.slice(0, 1) === 'G').length,
 					voyage: thresholds.filter(key => key.slice(0, 1) === 'V').length
 				}
@@ -303,9 +303,9 @@ const UtilityWizardModal = () => {
 
 	function renderUtilities(crew: any, options: string[]): JSX.Element {
 		if (!crew.utility) return (<></>);
-		const utilities = crew.utility.thresholds.filter(key => options.includes(key.substr(0, 1)))
+		const utilities = crew.utility.thresholds.filter(key => options.includes(key.slice(0, 1)))
 			.map(key => {
-				const shorts = key.substr(2).split('_');
+				const shorts = key.slice(2).split('_');
 				return ({
 					key,
 					rank: crew.utility.ranks[key],
@@ -395,7 +395,7 @@ const RanksModal = (props: RanksModalProps) => {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank} color={(utility > 0 && utility <= getThreshold('voyage')) ? 'green' : undefined}>
-						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);
@@ -403,7 +403,7 @@ const RanksModal = (props: RanksModalProps) => {
 				if (rank.includes('_', 2)) {
 					g.push(
 						<Statistic key={rank} color={utility > 0 && utility <= getThreshold('gauntlet') ? 'green' : undefined}>
-							<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+							<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
 							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 						</Statistic>
 					);
@@ -411,7 +411,7 @@ const RanksModal = (props: RanksModalProps) => {
 				else if (utility > 0) {
 					g1.push(
 						<Statistic key={rank} color={utility > 0 && utility <= getThreshold('gauntlet') ? 'green' : undefined}>
-							<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
+							<Statistic.Label>{skillName(rank.slice(2))}</Statistic.Label>
 							<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 						</Statistic>
 					);
@@ -419,14 +419,14 @@ const RanksModal = (props: RanksModalProps) => {
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('core') ? 'green' : undefined}>
-						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
+						<Statistic.Label>{skillName(rank.slice(2))}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('S_')) {
 				s.push(
 					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('shuttle') ? 'green' : undefined}>
-						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>
 				);

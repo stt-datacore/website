@@ -44,7 +44,7 @@ class EpisodesPage extends PureComponent {
 									<Item.Image
 										size="tiny"
 										src={`${process.env.GATSBY_ASSETS_URL}${node.episode_portrait
-												? node.episode_portrait.file.substr(1).replace('/', '_') + '.png'
+												? node.episode_portrait.file.slice(1).replace('/', '_') + '.png'
 												: 'crew_full_body_cm_empty_full.png'
 											}`}
 									/>

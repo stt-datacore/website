@@ -139,7 +139,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		if(config.activeItem) {
 			newActiveItem = activeItem === config.activeItem ? defaultColumn : config.activeItem;
 			newColumn = newActiveItem;
-			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+			sortConfig.field = newColumn + (newColumn.slice(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
 		if(config.sortKind) {
 			newSortKind = config.sortKind;
@@ -147,7 +147,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		}
 		if(config.column) {
 			newColumn = column === config.column ? defaultColumn : config.column;
-			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+			sortConfig.field = newColumn + (newColumn.slice(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
 		if (!data) return;
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);

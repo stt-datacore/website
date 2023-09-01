@@ -1057,7 +1057,7 @@ const GuessRow = (props: GuessRowProps) => {
 			return trait.replace(/[^A-Z]/gi, '').toLowerCase();
 		};
 		const properName = (trait: string) => {
-			return trait.replace(/_/g, ' ').split(' ').map(word => word.substr(0, 1).toUpperCase()+word.substr(1)).join(' ');
+			return trait.replace(/_/g, ' ').split(' ').map(word => word.slice(0, 1).toUpperCase()+word.slice(1)).join(' ');
 		};
 		// Display short_name instead of variant trait when appropriate
 		if (guess.variants.includes(trait)) {

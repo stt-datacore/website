@@ -705,7 +705,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
+							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>
@@ -870,7 +870,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 				{
 					polestars.map((p, pdx) => (
 						<Grid.Column key={pdx} width={2} textAlign='center' onClick={() => setActivePolestar(p.symbol)}>
-							<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${p.icon.file.substr(1).replace(/\//g, '_')}`} />
+							<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
 							<br /><b>{p.short_name}</b><br /><small>({(1/constellation.keystones.length*100).toFixed(1)}%)</small>
 						</Grid.Column>
 					))
@@ -1509,7 +1509,7 @@ const ComboGrid = (props: ComboGridProps) => {
 						<Grid.Row key={'combo'+cdx}>
 							{combo.map((polestar, pdx) => (
 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.substr(1).replace(/\//g, '_')}`} />
+									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
 									<br />{polestar?.short_name}
 									<br /><small>({polestar?.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar?.quantity})</small>
 								</Grid.Column>

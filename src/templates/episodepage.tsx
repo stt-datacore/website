@@ -15,7 +15,7 @@ type StaticEpisodePageProps = {
 };
 
 function imageFileUrl(img: any) {
-	return img.file.substr(1).replace('/', '_') + '.png';
+	return img.file.slice(1).replace('/', '_') + '.png';
 }
 
 class StaticEpisodePage extends Component<StaticEpisodePageProps> {

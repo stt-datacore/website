@@ -216,7 +216,7 @@ const PlayerInputForm = (props: PlayerInputFormProps) => {
 		if (paste) {
 			let fullPaste = paste.getData('text');
 			setFullInput(fullPaste);
-			setDisplayedInput(`${fullPaste.substr(0, 300)} [ ... ] ${fullPaste.substr(-100)}\n/* Note that DataCore is intentionally displaying less data here to speed up the process */`);
+			setDisplayedInput(`${fullPaste.slice(0, 300)} [ ... ] ${fullPaste.slice(-100)}\n/* Note that DataCore is intentionally displaying less data here to speed up the process */`);
 			event.preventDefault();
 			return false;
 		}

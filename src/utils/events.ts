@@ -48,7 +48,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	result.seconds_to_end = activeEvent.seconds_to_end;
 
 	// We can get event image more definitively by fetching from events/instance_id.json rather than player data
-	result.image = activeEvent.phases[0].splash_image.file.substr(1).replace(/\//g, '_') + '.png';
+	result.image = activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png';
 
 	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish

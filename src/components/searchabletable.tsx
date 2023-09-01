@@ -225,7 +225,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const columnConfig = props.config.find(col => col.column === sortColumn);
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
-			const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
 			return { field: subfield, direction: subdirection };
 		});
 	}
@@ -475,11 +475,11 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 };
 
 export const prettyCrewColumnTitle = (column: string) => {
-	if (column.substr(0, 6) == 'ranks.') {
+	if (column.slice(0, 6) == 'ranks.') {
 		let title = column.replace('ranks.', '');
-		if (title.substr(-4) == 'Rank') {
+		if (title.slice(-4) == 'Rank') {
 			title = title.replace('Rank', '');
-			title = title.substr(0, 1).toUpperCase() + title.substr(1);
+			title = title.slice(0, 1).toUpperCase() + title.slice(1);
 			return title;
 		}
 		else {

@@ -516,21 +516,21 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
+						<Statistic.Label>{skillName(rank.slice(2))}</Statistic.Label>
 						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
 					</Statistic>
 				);

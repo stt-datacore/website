@@ -335,7 +335,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				<Grid columns={5} centered padded>
 					{constellation.keystones.map((kk, idx) => (
 					<Grid.Column key={idx} textAlign='center'>
-						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.substr(1).replace(/\//g, '_')}`} />
+						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
 						<br/ >
 						<Link to={`/?search=trait:${kk.short_name}`}>
 						<span style={{ fontWeight: 'bolder' }}>
@@ -364,7 +364,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 				const polestar = crewPolestars.find((op) => filterTraits(op, trait));
 				// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
 				return polestar ?? {
-					short_name: trait.substr(0, 1).toUpperCase()+trait.substr(1),
+					short_name: trait.slice(0, 1).toUpperCase()+trait.slice(1),
 					icon: {
 						file: '/items_keystones_'+trait+'.png'
 					}
@@ -408,7 +408,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 									<Grid columns={4} centered padded>
 									{optimal.combos.map((polestar, idx) => (
 										<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
-											<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
+											<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 											<br />{polestar.short_name}
 										</Grid.Column>
 									))}
