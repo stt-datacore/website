@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -353,6 +353,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
+	const [searchFilter, setSearchFilter] = useStateWithStorage('collectionstool/searchFilter', '');
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
@@ -425,6 +426,7 @@ const CrewTable = (props: CrewTableProps) => {
 					if (fr) {
 						//if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 						//if (ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+						
 						if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
 						if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
 						if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
@@ -437,7 +439,12 @@ const CrewTable = (props: CrewTableProps) => {
 				})
 			};
 		})
-		.filter((x) => x.collection && x.crew?.length && (!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf)))
+		.filter((x) => 
+			x.collection && x.crew?.length &&
+			(!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf)) &&
+			(!searchFilter?.length || x.crew?.some(csf => csf.name.includes(searchFilter)))
+
+		)
 		.sort((a, b) => {
 			let  acol = a.collection;
 			let  bcol = b.collection;
@@ -446,27 +453,61 @@ const CrewTable = (props: CrewTableProps) => {
 			if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
 			return r;
 		});
+		
+		colMap.forEach((col, idx) => {
+
+			col.crew.forEach((a) => {
+				let acount = a.collections.filter(afc => playerCollections.find(cmf => cmf.needed && cmf.name === afc))?.length ?? 1;
+				a.pickerId = acount;
+			});
+
+			col.crew.sort((a, b) => {
+				let r = 0;
+				
+				let acount = a.pickerId ?? 1;
+				let bcount = b.pickerId ?? 1;
+				
+				let asearch = !searchFilter?.length || a.name.includes(searchFilter);
+				let bsearch = !searchFilter?.length || b.name.includes(searchFilter);
+				if (asearch !== bsearch) {
+					if (asearch) r = -1;
+					else r = 1;
+				}
+
+				if (!r) r = bcount - acount;
+				if (!r) r = a.max_rarity - b.max_rarity;
+				if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
+				if (!r) r = b.level - a.level;
+				if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
+				if (!r) r = a.name.localeCompare(b.name);
+				return r;
+			});
+
+		});
 
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
+			<Input
+				style={{ width: narrow ? '100%' : '50%' }}
+				iconPosition="left"
+				placeholder="Search..."
+				value={searchFilter}
+				onChange={(e, { value }) => setSearchFilter(value)}>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => setSearchFilter('')} >
+						<Icon name='delete' />
+					</Button>
+			</Input>
 			<Table striped>
 				{colMap.map((col, idx) => {
 
 					const collection = col.collection;
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
-					col.crew.sort((a, b) => {
-						let r = 0;
-						r = a.max_rarity - b.max_rarity;
-						if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
-						if (!r) r = b.level - a.level;
-						if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
-						if (!r) r = a.name.localeCompare(b.name);
-						return r;
-					});
 					return (<Table.Row key={"colgroup" + idx}>
 						<Table.Cell width={4}>
 							<div style={{								
@@ -519,7 +560,8 @@ const CrewTable = (props: CrewTableProps) => {
 										allCrew={context.core.crew}
 										playerData={context.player.playerData}
 										/>
-										<b 
+										<b
+											onClick={(e) => setSearchFilter(crew.name)} 
 											style={{
 											cursor: "pointer", 
 											margin:"0.5em 0 0 0",
@@ -529,6 +571,7 @@ const CrewTable = (props: CrewTableProps) => {
 											>
 											{crew.name}
 										</b>			
+										<i>({crew.pickerId} collections increased)</i>
 										<i>Level {crew.level}</i>
 										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
 									</div>
