@@ -10,7 +10,7 @@ import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import CommonCrewData, { StatLabelProps } from './commoncrewdata';
 import marked from 'marked';
 import CrewStat from './crewstat';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage, printPortalStatus } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
 import { CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
@@ -452,7 +452,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
 								<Table.Cell>
-									{crew.in_portal ? "Yes" : "No"}
+									<span title={printPortalStatus(crew, true, true)}>
+									{printPortalStatus(crew, true, true)}
+									</span>
 								</Table.Cell>
 								<Table.Cell>
 									<Checkbox checked={this.getChecked(crew.symbol)} onChange={(e, { checked }) => this.setChecked(crew.symbol, checked as boolean)} />
@@ -622,6 +624,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
+		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		
 		return (	
 			<>
@@ -747,9 +750,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<>
 						<Tab
 						 	panes={[
-							{ menuItem: 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
-							{ menuItem: 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
-							{ menuItem: 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
+								{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+								{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
+								{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
 						</>
 					}

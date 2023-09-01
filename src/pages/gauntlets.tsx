@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox } from 'semantic-ui-react';
+import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, SemanticWIDTHS } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -15,7 +15,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL } from '../utils/crewutils';
+import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
 import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
@@ -1202,13 +1202,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	private readonly columns = [
 		{ title: "Rank", key: "index" },
-		{ title: "Crew", key: "name" },
+		{ title: "Crew", key: "name", width: 3 as SemanticWIDTHS },
 		{ title: "Rarity", key: "rarity" },
 		{ title: "Crit Chance", key: "crit" },
 		{ title: "1st Pair", key: "pair_1" },
 		{ title: "2nd Pair", key: "pair_2" },
 		{ title: "3rd Pair", key: "pair_3" },
-		{ title: "Owned", key: "have" },
+		// { title: "Owned", key: "have" },
 		{ title: "In Portal", key: "in_portal" },
 	]
 
@@ -1402,7 +1402,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					flexDirection: "row",
 					opacity: disabled ? disabledOpacity : undefined
 				}}>
-					<img style={{ height: '2em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+					<img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
 					<div style={{
 						margin: "0.5em"
 					}}>
@@ -1415,7 +1415,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						flexDirection: "row",
 						opacity: disabled ? disabledOpacity : undefined
 					}}>
-						<img style={{ height: '2em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+						<img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
 						<div style={{
 							margin: "0.5em"
 						}}>
@@ -1460,6 +1460,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					<Table.Row>
 						{this.columns.map((col, hidx) =>
 							<Table.HeaderCell
+								width={col.width}
 								sorted={sortKey[idx] === col.key ? sortDirection[idx] : undefined}
 								onClick={(e) => this.columnClick(col.key, idx)}
 								key={"k_" + hidx}>
@@ -1535,11 +1536,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								<Table.Cell width={2}>
 									{pairs && pairs.length >= 3 && this.formatPair(pairs[2])}
 								</Table.Cell>
-								<Table.Cell width={2}>
+								{/* <Table.Cell width={2}>
 									{crew.have === true ? "Yes" : "No"}
-								</Table.Cell>
+								</Table.Cell> */}
 								<Table.Cell width={2}>
-									{crew.in_portal ? "Yes" : "No"}
+									<span title={printPortalStatus(crew, true, true, true)}>
+										{printPortalStatus(crew, true, false)}
+									</span>
 								</Table.Cell>
 							</Table.Row>
 						);

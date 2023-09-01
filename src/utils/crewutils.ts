@@ -1404,4 +1404,39 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	return tiers ?? {};
 }
 
+export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 
+	long ??= false;
+	
+	let obstr = (!crew.in_portal) ? `${crew.obtained}` : "";
+	if (obstr === 'HonorHall') obstr = 'Honor Hall';
+
+	if (long) {
+		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
+		else if (obstr === 'Collection') obstr = 'Collection Theshold Reward';
+	}
+	else {
+		if (obstr === 'BossBattle') obstr = 'Bridge';
+	}
+
+	return obstr;
+}
+
+export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean) {
+	showNever ??= true;	
+	long ??= false;
+	obtainedIfNo ??= false;
+
+	if (!showNever && !obtainedIfNo) return crew.in_portal ? "Yes" : "No";
+	let obstr =  obtainedIfNo ? prettyObtained(crew, long) : "";
+
+	if (obstr !== "") obstr = ` (${obstr})`;
+	let ob = crew.obtained.toLowerCase();
+	
+	if (ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection")) {
+		return `Never${obstr}`;		
+	}
+
+	return `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+}
