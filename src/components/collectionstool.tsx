@@ -134,7 +134,7 @@ const CollectionsTool = () => {
 			.replace('Immortalize ', '')
 			.replace(/^the /i, '')
 			.replace(/\.$/, '');
-		return simple.substr(0, 1).toUpperCase() + simple.substr(1);
+		return simple.slice(0, 1).toUpperCase() + simple.slice(1);
 	}
 };
 
@@ -280,8 +280,8 @@ const ProgressTable = (props: ProgressTableProps) => {
 			if (rewardFilter == '*buffs') {
 				if (collection.milestone?.buffs?.length == 0) return false;
 			}
-			else if (rewardFilter.substr(0, 1) == '=') {
-				re = new RegExp(rewardFilter.substr(1));
+			else if (rewardFilter.slice(0, 1) == '=') {
+				re = new RegExp(rewardFilter.slice(1));
 				if (!collection.milestone.rewards?.find(reward => re.test(reward.symbol))) return false;
 			}
 			else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
@@ -419,9 +419,32 @@ const CrewTable = (props: CrewTableProps) => {
 
 		const colMap = zcol.map((col, idx) => {
 			return {
-				collection: col,
-				crew: filtered.filter(f => f.collections.some(fc => fc == col))
+				collection: playerCollections.find(f => f.name === col),
+				crew: filtered.filter(crew => {
+					let fr = crew.collections.some(fc => fc == col);
+					if (fr) {
+						//if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
+						//if (ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+						if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
+						if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
+						if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
+						if (fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
+						if (fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
+						if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
+						if (fuseFilter === 'nonportal' && crew.in_portal) return false;					
+					}
+					return fr;
+				})
 			};
+		})
+		.filter((x) => x.collection && x.crew?.length && (!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf)))
+		.sort((a, b) => {
+			let  acol = a.collection;
+			let  bcol = b.collection;
+			let r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
+			if (!r) r = (bcol?.milestone?.goal as number ?? 0) - (acol?.milestone?.goal as number ?? 0);
+			if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
+			return r;
 		});
 
 		return (<div style={{
@@ -432,14 +455,14 @@ const CrewTable = (props: CrewTableProps) => {
 			<Table striped>
 				{colMap.map((col, idx) => {
 
-					const collection = playerCollections.find(f => f.name === col.collection);
+					const collection = col.collection;
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
 					col.crew.sort((a, b) => {
 						let r = 0;
 						// r = b.max_rarity - a.max_rarity;
-						if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
 						if (!r) r = b.level - a.level;
+						if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
 						if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
 						if (!r) r = a.name.localeCompare(b.name);
 						return r;
@@ -456,9 +479,13 @@ const CrewTable = (props: CrewTableProps) => {
 							}}>
 							<h2 style={{marginBottom: 0, textAlign: "center"}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
-							<div style={{marginTop: "0.5em"}}>
+							<hr style={{width: "16em"}}></hr>
+							<i style={{fontSize: "0.8em"}}>{collection.needed} needed for rewards:</i>
+							<div style={{margin: "0.5em 0 0.5em 0"}}>
 								<RewardsGrid wrap={true} rewards={rewards} />
 							</div>
+							<i style={{fontSize: "0.8em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
+							<i style={{fontSize: "0.8em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
 							</div>
 						</Table.Cell>
 						<Table.Cell>
@@ -587,11 +614,11 @@ const CrewTable = (props: CrewTableProps) => {
 			if (!hasAllCollections) return false;
 		}
 		if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
-		if (ownedFilter.substr(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+		if (ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
 		if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
 		if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
 		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (fuseFilter.substr(0, 6) === 'portal' && !crew.in_portal) return false;
+		if (fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
 		if (fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
 		if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
 		if (fuseFilter === 'nonportal' && crew.in_portal) return false;
@@ -682,8 +709,8 @@ const RewardsGrid = (props: RewardsGridProps) => {
 
 	const getImageName = (reward) => {
 		let img = reward.icon?.file.replace(/\//g, '_');
-		if (img.substr(0, 1) === '_') img = img.substr(1); else img = '/atlas/' + img;
-		if (img.substr(-4) !== '.png') img += '.png';
+		if (img.slice(0, 1) === '_') img = img.slice(1); else img = '/atlas/' + img;
+		if (img.slice(-4) !== '.png') img += '.png';
 		return img;
 	};
 
@@ -695,7 +722,8 @@ const RewardsGrid = (props: RewardsGridProps) => {
 
 	const rewardRows = [] as Reward[][];
 	rewardRows.push([]);
-	const cols = !wrap ? rewards.length : ((maxCols && maxCols >= 2) ? maxCols : 4);
+	let cols = !wrap ? rewards.length : ((maxCols && maxCols >= 4) ? maxCols : 4);
+	if (rewards.length < cols) cols = rewards.length;
 
 	if (wrap) {
 
