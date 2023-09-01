@@ -486,7 +486,10 @@ const CrewTable = (props: CrewTableProps) => {
 							</div>
 							<i style={{fontSize: "0.8em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
 							<i style={{fontSize: "0.8em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
-							{((collection?.owned ?? 0) < (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0)) && <i style={{color:'darkyellow', textAlign: 'center', margin: "0.5em"}}>You do not yet have enough crew to reach the next goal!</i>}
+							{((collection?.owned ?? 0) < (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0)) && 
+								<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
+									You need to recruit {(collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0) - (collection?.owned ?? 0)} more crew to reach the next goal.
+								</i>}
 							</div>
 						</Table.Cell>
 						<Table.Cell>
