@@ -7,7 +7,7 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
-import { formatTierLabel, gradeToColor, printPortalStatus } from '../utils/crewutils';
+import { formatTierLabel, gradeToColor, prettyObtained, printPortalStatus } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
@@ -359,7 +359,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
 							<StatLabel title="Portal" 
 								value={<>
-									<div title={printPortalStatus(crew, true, true)} style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
 										{printPortalStatus(crew, true, false)}
 									</div>								
 								</>} />
@@ -430,7 +430,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				<p>
-					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{crew.obtained})
+					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{prettyObtained(crew, true)})
 				</p>
 
 				{crew.nicknames && crew.nicknames.length > 0 && (

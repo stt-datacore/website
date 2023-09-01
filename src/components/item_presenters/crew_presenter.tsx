@@ -1060,13 +1060,11 @@ export class CrewPresenter extends React.Component<
                                     title="Gauntlet Rank"
                                     value={"" + crew.ranks.gauntletRank}
                                 />
-
-                                <span title={printPortalStatus(crew, true, true)}>
-                                <StatLabel
-                                    title={"In Portal"}
-                                    
-                                    value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true, false) }
-                                />
+                                <span title={printPortalStatus(crew, true, true, true)}>
+                                    <StatLabel
+                                        title="In Portal"
+                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
+                                    />
                                 </span>
                             </div>
                         </div>

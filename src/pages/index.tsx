@@ -9,7 +9,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, printPortalStatus } from '../utils/crewutils';
+import { formatTierLabel, isImmortal, prepareProfileData, printPortalStatus } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -252,7 +252,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 					}
 				})}
 				<Table.Cell key='in_portal' textAlign='center'>
-					<b title={printPortalStatus(crew, true, true)}>{printPortalStatus(crew, true)}</b>
+					<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, false)}</b>
 				</Table.Cell>
 			</Table.Row>
 		);

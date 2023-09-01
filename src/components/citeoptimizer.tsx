@@ -528,7 +528,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 								<Table.Cell>
 									<span title={printPortalStatus(crew, true, true)}>
-										{printPortalStatus(crew)}
+									{printPortalStatus(crew, true, true)}
 									</span>
 								</Table.Cell>
 								<Table.Cell>
@@ -712,7 +712,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-
+		
 		return (	
 			<>
 				<Accordion
