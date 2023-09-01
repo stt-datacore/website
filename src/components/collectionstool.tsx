@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button, Pagination } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -337,6 +337,11 @@ const ProgressTable = (props: ProgressTableProps) => {
 	}
 };
 
+export interface CollectionMap {
+	collection: PlayerCollection;
+	crew: PlayerCrew[];
+}
+
 type CrewTableProps = {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
@@ -354,6 +359,9 @@ const CrewTable = (props: CrewTableProps) => {
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
 	const [searchFilter, setSearchFilter] = useStateWithStorage('collectionstool/searchFilter', '');
+
+	const [groupPage, setGroupPage] = React.useState(1);
+	const [groupPageCount, setGroupPageCount] = React.useState(1);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
@@ -408,11 +416,8 @@ const CrewTable = (props: CrewTableProps) => {
 			/>)
 	}
 
-
-	const renderCollectionGroups = () => {
-
-		const { playerData } = context.player;
-		
+	const createCollectionGroups = (): CollectionMap[] => {
+		const { playerData } = context.player;		
 		const filtered = playerData?.player?.character.crew.filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol && !pc.immortal)) ?? [];
 
 		let zcol = filtered.map(z => z.collections).flat();
@@ -437,18 +442,24 @@ const CrewTable = (props: CrewTableProps) => {
 					}
 					return fr;
 				})
-			};
+			} as CollectionMap;
 		})
 		.filter((x) => 
-			x.collection && x.crew?.length &&
+			x.collection !== undefined && x.crew?.length &&
+			x.collection?.totalRewards && x.collection.milestone &&
 			(!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf)) &&
 			(!searchFilter?.length || x.crew?.some(csf => csf.name.includes(searchFilter)))
-
 		)
 		.sort((a, b) => {
 			let  acol = a.collection;
 			let  bcol = b.collection;
-			let r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
+			let r = 0;
+			let amissing = (acol?.milestone?.goal === 'n/a' ? 0 : acol?.milestone?.goal ?? 0) - (acol?.owned ?? 0);
+			let bmissing = (bcol?.milestone?.goal === 'n/a' ? 0 : bcol?.milestone?.goal ?? 0) - (bcol?.owned ?? 0);
+			if (amissing < 0) amissing = 0;
+			if (bmissing < 0) bmissing = 0;
+			if (!r) r = amissing - bmissing;
+			if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
 			if (!r) r = (bcol?.milestone?.goal as number ?? 0) - (acol?.milestone?.goal as number ?? 0);
 			if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
 			return r;
@@ -485,13 +496,27 @@ const CrewTable = (props: CrewTableProps) => {
 
 		});
 
+		return colMap.filter(cm => cm.crew?.length);
+	}
+
+	const colGroups = createCollectionGroups();
+
+	const pageCount = Math.ceil(colGroups.length / 10);
+
+	if (pageCount !== groupPageCount || groupPage > pageCount) {
+		setGroupPageCount(pageCount);
+		setGroupPage(1);
+		return <></>
+	}
+
+	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
 			<Input
-				style={{ width: narrow ? '100%' : '50%' }}
+				style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
 				iconPosition="left"
 				placeholder="Search..."
 				value={searchFilter}
@@ -502,6 +527,7 @@ const CrewTable = (props: CrewTableProps) => {
 						<Icon name='delete' />
 					</Button>
 			</Input>
+			<Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<Table striped>
 				{colMap.map((col, idx) => {
 
@@ -583,6 +609,8 @@ const CrewTable = (props: CrewTableProps) => {
 				)}
 
 			</Table>
+			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { value }) => setGroupPage(value) } />
+
 		</div>)
 
 	}
@@ -644,7 +672,7 @@ const CrewTable = (props: CrewTableProps) => {
 			<Tab 
 				panes={[
 					{ menuItem: narrow ? 'Crew' : 'Crew Table', render: () => renderTable()},
-					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups()}
+					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups(colGroups.slice(10 * (groupPage - 1), (10 * (groupPage - 1)) + 10))}
 				]}
 			/>
 	
