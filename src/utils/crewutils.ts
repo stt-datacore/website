@@ -1445,7 +1445,7 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 
 
 export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
-	let obstr = (!crew.in_portal) ? `${crew.obtained}` : "";
+	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 
 	if (long) {
