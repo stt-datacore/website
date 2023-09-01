@@ -19,6 +19,8 @@ import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { GameEvent, PlayerCrew, Voyage } from '../../model/player';
 import { AllData, CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { Helper } from './Helper';
+import { GlobalContext } from '../../context/globalcontext';
+import { EphemeralData } from '../../context/playercontext';
 
 export const RecommenderContext = React.createContext<AllData>({} as AllData);
 
@@ -528,10 +530,12 @@ type InputCrewExcluderProps = {
 }
 
 const InputCrewExcluder = (props: InputCrewExcluderProps) => {
+	const context = React.useContext(GlobalContext);	
 	const { allCrew } = React.useContext(RecommenderContext);
 	const { updateExclusions } = props;
 
-	const [eventData, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
+	const { events: eventData } = (context.player.ephemeral ?? ({ events: [] as GameEvent[] } as EphemeralData));
+
 	const [activeEvent, setActiveEvent] = React.useState<GameEvent | undefined>(undefined);
 	const [options, setOptions] = React.useState<GameWorkerOptions | undefined>(undefined);
 
