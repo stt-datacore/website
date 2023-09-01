@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -9,13 +9,16 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
 import { Collection, Filter } from '../model/game-elements';
-import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, PlayerCollection, PlayerCrew, PlayerData } from '../model/player';
+import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
+import { formatColString } from './item_presenters/crew_preparer';
+import { CrewItemsView } from './item_presenters/crew_items';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -344,8 +347,9 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
+	const context = React.useContext(GlobalContext);
 	const { allCrew, playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
-
+	
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
@@ -388,7 +392,115 @@ const CrewTable = (props: CrewTableProps) => {
 		{ key: '4*', value: 4, text: '4* Super Rare' },
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
+
 	const buffConfig = calculateBuffConfig(props.playerData.player);
+	const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	const renderTable = () => {
+		
+		return (<SearchableTable
+				id='collections/crew'
+				data={collectionCrew}
+				config={tableConfig}
+				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
+				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+			/>)
+	}
+
+
+	const renderCollectionGroups = () => {
+
+		const { playerData } = context.player;
+		
+		const filtered = playerData?.player?.character.crew.filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol && !pc.immortal)) ?? [];
+
+		let zcol = filtered.map(z => z.collections).flat();
+		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
+
+		const colMap = zcol.map((col, idx) => {
+			return {
+				collection: col,
+				crew: filtered.filter(f => f.collections.some(fc => fc == col))
+			};
+		});
+
+		return (<div style={{
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "stretch"
+		}}>
+			<Table striped>
+				{colMap.map((col, idx) => {
+
+					const collection = playerCollections.find(f => f.name === col.collection);
+					if (!collection?.totalRewards || !collection.milestone) return <></>;
+					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
+					col.crew.sort((a, b) => {
+						let r = 0;
+						// r = b.max_rarity - a.max_rarity;
+						if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
+						if (!r) r = b.level - a.level;
+						if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
+						if (!r) r = a.name.localeCompare(b.name);
+						return r;
+					});
+					return (<Table.Row key={"colgroup" + idx}>
+						<Table.Cell width={4}>
+							<div style={{								
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "100%",
+								margin: "1em"
+							}}>
+							<h2 style={{marginBottom: 0, textAlign: "center"}}>{collection.name}</h2>
+							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
+							<div style={{marginTop: "0.5em"}}>
+								<RewardsGrid wrap={true} rewards={rewards} />
+							</div>
+							</div>
+						</Table.Cell>
+						<Table.Cell>
+							
+						<Grid doubling columns={3} textAlign='center'>
+								{col.crew.map((crew) => (
+									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+									<ItemDisplay 
+										size={64}
+										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+										rarity={crew.rarity}
+										maxRarity={crew.max_rarity}
+										targetGroup={'collectionsTarget'}
+										itemSymbol={crew.symbol}
+										allCrew={context.core.crew}
+										playerData={context.player.playerData}
+										/>
+										<b 
+											style={{
+											cursor: "pointer", 
+											margin:"0.5em 0 0 0",
+											textDecoration: "underline"
+											}}
+											title={"Click to see only this crew member"}
+											>
+											{crew.name}
+										</b>			
+										<i>Level {crew.level}</i>
+										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
+									</div>
+								))}
+							</Grid>
+						</Table.Cell>
+					</Table.Row>)
+					}
+				)}
+
+			</Table>
+		</div>)
+
+	}
+
 	return (
 		<React.Fragment>
 			<Header as='h4'>Collection Crew</Header>
@@ -442,17 +554,19 @@ const CrewTable = (props: CrewTableProps) => {
 					</Form.Group>
 				</Form>
 			</div>
-			<SearchableTable
-				id='collections/crew'
-				data={collectionCrew}
-				config={tableConfig}
-				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
-				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
+
+			<Tab 
+				panes={[
+					{ menuItem: narrow ? 'Crew' : 'Crew Table', render: () => renderTable()},
+					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups()}
+				]}
 			/>
+	
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);
+
 
 	function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
 
@@ -530,7 +644,7 @@ const CrewTable = (props: CrewTableProps) => {
 					)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<RewardsGrid rewards={crew.immortalRewards} />
+					<RewardsGrid rewards={crew.immortalRewards as Reward[]} />
 				</Table.Cell>
 			</Table.Row>
 		);
@@ -552,14 +666,19 @@ const CrewTable = (props: CrewTableProps) => {
 		}
 	}
 };
+export interface RewardsGridProps {
+	rewards?: Reward[];
+	wrap?: boolean;
+	maxCols?: number;
+}
 
-const RewardsGrid = (props: any) => {
-	const { rewards } = props;
+const RewardsGrid = (props: RewardsGridProps) => {
+	const { rewards, wrap, maxCols } = props;
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { items, crew: allCrew } = context.core;
 
-	if (rewards.length == 0) return (<></>);
+	if (!rewards?.length) return (<></>);
 
 	const getImageName = (reward) => {
 		let img = reward.icon?.file.replace(/\//g, '_');
@@ -574,26 +693,56 @@ const RewardsGrid = (props: any) => {
 		return quantity;
 	};
 
+	const rewardRows = [] as Reward[][];
+	rewardRows.push([]);
+	const cols = !wrap ? rewards.length : ((maxCols && maxCols >= 2) ? maxCols : 4);
+
+	if (wrap) {
+
+		let idx = 0;
+		let cidx = 0;
+		
+		for (let reward of rewards) {
+			rewardRows[cidx].push(reward);
+			if (idx++ >= cols - 1) {
+				rewardRows.push([]);
+				idx = 0;
+				cidx++;
+			}
+		}
+	}
+	else {
+		rewardRows[0] = rewards;
+	}
+
 	return (
-		<Grid columns={rewards.length}>
-			{rewards.map((reward, idx) => {
-				const img = getImageName(reward);
+		<Grid columns={cols as SemanticWIDTHS}>
+			{rewardRows.map((row, rowIdx) => {
 				return (
-					<Grid.Column key={idx}>
-						<ItemDisplay
-							targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
-							itemSymbol={reward.symbol}
-							allCrew={allCrew}
-							allItems={items}
-							playerData={playerData}
-							src={`${process.env.GATSBY_ASSETS_URL}${img}`}
-							size={32}
-							maxRarity={reward.rarity}
-							rarity={reward.rarity}
-						/>
-						{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}
-					</Grid.Column>
-				);
+					<Grid.Row key={rowIdx + "_rowreward"}>
+
+					{row.map((reward, idx) => {
+							const img = getImageName(reward);
+							return (
+								<Grid.Column key={idx + "_rowcolreward"}>
+									<ItemDisplay
+										targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
+										itemSymbol={reward.symbol}
+										allCrew={allCrew}
+										allItems={items}
+										playerData={playerData}
+										src={`${process.env.GATSBY_ASSETS_URL}${img}`}
+										size={32}
+										maxRarity={reward.rarity}
+										rarity={reward.rarity}
+									/>
+									{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}
+								</Grid.Column>
+							);
+						})}
+
+					</Grid.Row>
+				)
 			})}
 		</Grid>
 	);

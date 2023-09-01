@@ -1171,6 +1171,7 @@ export interface BuffBase {
     icon?: AtlasIcon
     flavor?: string
     quantity?: number;
+    rarity?: number;
   }
 
   export interface ImmortalReward extends BuffBase {

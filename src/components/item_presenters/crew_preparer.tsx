@@ -227,3 +227,25 @@ export class CrewPreparer {
         return [dataIn, []];
     }
 }
+
+
+/**
+ * Format collection description text by parsing the markup
+ * @param text The collection text to parse and format
+ * @param style Optional style to include on the output DIV
+ * @returns {JSX.Element} Formatted collection description
+ */
+export const formatColString = (text: string, style?: React.CSSProperties) => {	
+	const greg = new RegExp(/(.+)\<([A-Fa-f0-9#]+)\>\<b\>(.+)\<\/b\>\<\/color\>(.+)/);
+
+	if (!greg.test(text)) {
+        return <div style={style}>{text}</div>
+	}		
+
+    const result = greg.exec(text);
+    
+    return result && <div style={style}>
+        {result[1]}<b style={{color: result[2]}}>{result[3]}</b>{result[4]}
+    </div> || <>{text}</>
+
+}

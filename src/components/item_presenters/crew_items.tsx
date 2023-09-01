@@ -16,12 +16,15 @@ export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
     flexDirection?: 'row' | 'column';
     mobileWidth?: number;
+    itemSize?: number;
+    mobileSize?: number;
 }
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const coreData = React.useContext(DataContext);
 	const itemsReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
 	const playerContext = React.useContext(PlayerContext);
+    
 	const { strippedPlayerData, buffConfig } = playerContext;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
@@ -97,7 +100,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 padding: 0
             }}>
             {equip.map((item, idx) => (
-                    <CrewItemDisplay key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
+                    <CrewItemDisplay itemSize={props.itemSize} mobileSize={props.mobileSize} key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
                 ))}
             </div>
         || <></>
@@ -107,6 +110,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
+    itemSize?: number;
+    mobileSize?: number;
 }
 
 export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
@@ -114,8 +119,11 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         super(props);
     }
 
+
     render() {
         const entry = this.props;
+        const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
+
         return (<div 
             title={this.props.equipment?.name}
             style={{
@@ -126,7 +134,7 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         }}>
             <ItemDisplay
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
-                size={window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? 24 : 32}
+                size={itemSize}
                 maxRarity={entry?.equipment?.rarity ?? 0}
                 rarity={entry?.equipment?.rarity ?? 0}                
             />
