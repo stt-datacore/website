@@ -7,6 +7,7 @@ import { PlayerCollection, PlayerCrew } from '../model/player';
 import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
+import { Icon } from 'semantic-ui-react';
 
 export type ValidDemands =
 	'battle_stations' |
@@ -50,6 +51,7 @@ export interface DefaultCore extends ContextCommon {
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
 	ready: (demands: ValidDemands[]) => boolean;
+	spin: () => JSX.Element;
 	cadetMapped: boolean;
 };
 
@@ -77,10 +79,15 @@ export const DataProvider = (props: DataProviderProperties) => {
 	const [readying, setReadying] = React.useState<string[]>([]);
 	const [data, setData] = React.useState(defaultData);
 
+	const spin = () => {
+		return (<span><Icon loading name='spinner' /> Loading...</span>);
+	}
+
 	const providerValue = {
 		...data,
 		ready,
 		reset,
+		spin
 	} as DefaultCore;
 
 	return (
@@ -88,7 +95,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			{children}
 		</DataContext.Provider>
 	);
-
+	
 	function ready(demands: ValidDemands[]): boolean {
 		// Not ready if any valid demands are already queued
 		if (readying.length > 0) return false;

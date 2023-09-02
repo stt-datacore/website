@@ -5,6 +5,10 @@ import { Link } from 'gatsby';
 import Layout from '../components/layout';
 import { CrewMember } from '../model/crew';
 import { Collection } from '../model/game-elements';
+import { GlobalContext } from '../context/globalcontext';
+import { formatColString } from '../components/item_presenters/crew_preparer';
+import DataPageLayout from '../components/datapagelayout';
+import CONFIG from '../components/CONFIG';
 
 type CollectionsPageProps = {};
 
@@ -13,64 +17,88 @@ type CollectionsPageState = {
 	allcrew?: CrewMember[];
 };
 
-class CollectionsPage extends PureComponent<CollectionsPageProps, CollectionsPageState> {
-	state: CollectionsPageState = { collections: undefined, allcrew: undefined };
+const CollectionsPage = (props: CollectionsPageProps) => {
+	return (
+		<DataPageLayout demands={['crew', 'collections']}>
+			<CollectionsPageComponent />
+		</DataPageLayout>
+	)
+}
+
+class CollectionsPageComponent extends PureComponent<CollectionsPageProps, CollectionsPageState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
+	constructor(props: CollectionsPageProps) {
+		super(props);
+		this.state = { collections: undefined, allcrew: undefined };
+	}
 
 	componentDidMount() {
-		fetch('/structured/crew.json')
-			.then(response => response.json())
-			.then(allcrew => {
-				fetch('/structured/collections.json')
-					.then(response => response.json())
-					.then(collections => {
-						this.setState({ allcrew, collections });
-					});
-			});
+		if (this.context.core.ready(['crew', 'collections'])) {
+			this.setState({ ... this.state, allcrew: this.context.core.crew, collections: this.context.core.collections });			
+		}
+
+		// fetch('/structured/crew.json')
+		// 	.then(response => response.json())
+		// 	.then(allcrew => {
+		// 		fetch('/structured/collections.json')
+		// 			.then(response => response.json())
+		// 			.then(collections => {
+		// 				this.setState({ allcrew, collections });
+		// 			});
+		// 	});
+	}
+
+	componentDidUpdate(prevProps: Readonly<CollectionsPageProps>, prevState: Readonly<CollectionsPageState>, snapshot?: any): void {
+		
+		if (!!this.state.collections && !!this.state.allcrew) return;
+
+		if (this.context.core.ready(['crew', 'collections'])) {
+			this.setState({ ... this.state, allcrew: this.context.core.crew, collections: this.context.core.collections });			
+		}
+
 	}
 
 	render() {
-		const { collections, allcrew } = this.state;
-		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 
-		const foreColor = theme === 'dark' ? 'white' : 'black';
+		// if (!this.context.core.ready(['crew', 'collections'])) return this.context.core.spin();
+
+		const { collections, allcrew } = this.state;
 
 		if (!collections || collections.length === 0) {
-			return (
-				<Layout title='Collections'>
-					<Icon loading name='spinner' /> Loading...
-				</Layout>
-			);
+			return this.context.core.spin();
 		}
 
 		return (
-			<Layout title='Collections'>				
-				<div></div>
-				<Item.Group>
-					{collections.map(collection => (
-						<Item key={collection.name} id={encodeURIComponent(collection.name)}>
-							<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
+			<Item.Group>
+				{collections.map(collection => (
+					<Item key={collection.name} id={encodeURIComponent(collection.name)}>
+						<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
 
-							<Item.Content>
-								<Item.Header><div className='text'>{collection.name}</div><hr/></Item.Header>
-								<Item.Meta>
-									<div style={{color:foreColor}}>
-										<span dangerouslySetInnerHTML={{ __html: collection.description ?? "" }} />
-									</div>
-								</Item.Meta>
-								<Item.Description>
-									<b>Crew: </b>
-									{collection.crew?.map(crew => (
-											<Link key={crew} to={`/crew/${crew}/`}>
-												{allcrew?.find(c => c.symbol === crew)?.name}
-											</Link>
-										))
-										.reduce((prev, curr) => <>{prev}, {curr}</>)}
-								</Item.Description>
-							</Item.Content>
-						</Item>
-					))}
-				</Item.Group>
-			</Layout>
+						<Item.Content>
+							<Item.Header><div className='text'>{collection.name}</div><hr/></Item.Header>
+							<Item.Meta>
+								<div className='text'>
+									{formatColString(collection.description ?? "", undefined, 'ui label')}
+								</div>
+							</Item.Meta>
+							<Item.Description>
+								<b>Crew: </b>
+								{collection.crew?.map(crew => {
+									const mapped = allcrew?.find(c => c.symbol === crew);
+									return (
+										<Link key={crew} to={`/crew/${crew}/`} style={{color: CONFIG.RARITIES[mapped?.max_rarity ?? 0].color}}>
+											{mapped?.name}
+										</Link>
+									)
+								})
+									.reduce((prev, curr) => <>{prev}, {curr}</>)}
+							</Item.Description>
+						</Item.Content>
+					</Item>
+				))}
+			</Item.Group>
 		);
 	}
 }

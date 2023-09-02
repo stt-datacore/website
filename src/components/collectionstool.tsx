@@ -31,8 +31,9 @@ const CollectionsTool = () => {
 	if (!playerData) return <></>;
 
 	if (!context.core.ready(['collections'])) {	
-		return (<><Icon loading name='spinner' /> Loading...</>);
+		return context.core.spin();
 	}
+	// ... etc ...
 
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 	const myCrew = crewCopy(playerData.player.character.crew);
