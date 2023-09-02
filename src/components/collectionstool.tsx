@@ -9,7 +9,7 @@ import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
 import { Collection, Filter } from '../model/game-elements';
-import { BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
+import { AtlasIcon, BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
@@ -20,6 +20,7 @@ import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { formatColString } from './item_presenters/crew_preparer';
 import { CrewItemsView } from './item_presenters/crew_items';
 import { getImageName } from '../utils/misc';
+import { getIconPath } from '../utils/assets';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -855,7 +856,7 @@ const RewardsGrid = (props: RewardsGridProps) => {
 									symbol: reward.symbol ?? "",
 									flavor: reward.flavor ?? "",
 									bonuses: {},
-									imageUrl: process.env.GATSBY_ASSETS_URL + img,
+									imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
 									item_sources: [],
 									archetype_id: reward.id
 								});
