@@ -9,7 +9,7 @@ import { simplejson2csv, ExportField, getImageName } from './misc';
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
-		let itemEntry = items.find(i => i.symbol === item.symbol);
+		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
 			data.push({
 				... itemEntry,
@@ -218,7 +218,10 @@ export function binaryLocate(symbol: string, items: (EquipmentItem | EquipmentCo
 
 export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward) {
 	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
+		let seeditem = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
+
 		items.push({
+			... seeditem,
 			...reward,
 			name: reward.name ?? "",
 			symbol: reward.symbol ?? "",
