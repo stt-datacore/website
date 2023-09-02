@@ -106,11 +106,12 @@ type EventPickerProps = {
 const EventPicker = (props: EventPickerProps) => {
 	const { playerData, events, crew, buffConfig, allCrew } = props;
 
-	const isc = useStateWithStorage('tools/ignoreSharedCrew', false)
+	const usc = useStateWithStorage('tools/useSharedCrew', true);
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
 	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', []);
-	const [ignoreSharedCrew, setIgnoreSharedCrew ] = isc;
+	const [useSharedCrew, setUseSharedCrew ] = usc;
+	const [sharedCrew, setSharedCrew] = useStateWithStorage('eventplanner/sharedCrew', undefined);
 	
 	const eventsList = [];
 	events.forEach((activeEvent, eventId) => {
@@ -173,18 +174,21 @@ const EventPicker = (props: EventPickerProps) => {
 		}
 	});
 
-	let sharedCrew = playerData.player.character.crew_borrows[0];
+	let newSharedCrew = playerData.player.character.crew_borrows[0];
 
-	if (!ignoreSharedCrew && sharedCrew) {
-		console.debug("Using shared crew");
-		sharedCrew = {...allCrew.find(c => c.symbol == sharedCrew.symbol), ...sharedCrew };
+	if (useSharedCrew && newSharedCrew) {
+		console.debug("Found shared crew");
+		setSharedCrew({...allCrew.find(c => c.symbol == sharedCrew.symbol), ...newSharedCrew });
 		generateBuffedSkills(sharedCrew, buffConfig);
+		sharedCrew.dateShared = new Date();
 		sharedCrew.shared = true;
 		sharedCrew.statusIcon = "share alternate";
 		sharedCrew.have = false;
 		sharedCrew.id = myCrew.length + 1;
-		console.log(sharedCrew);
 		myCrew.push(sharedCrew);
+	} else if (sharedCrew && ((Date.now() - sharedCrew.dateShared) / (1000 * 60 * 60 * 24)) > 4) { 
+		// Event has finished so delete shared crew
+		setSharedCrew(undefined);
 	}
 
 	return (
@@ -201,7 +205,7 @@ const EventPicker = (props: EventPickerProps) => {
 				<div>{eventData.description}</div>
 				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value) } /></div>)}
 			</Form>
-			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} ignoreSharedCrew={isc} />
+			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} useSharedCrew={usc} />
 			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
 			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
@@ -214,7 +218,7 @@ type EventCrewTableProps = {
 	phaseIndex: number;
 	buffConfig: any;
 	lockable?: any[];
-	ignoreSharedCrew: any[];
+	useSharedCrew: any[];
 };
 
 const EventCrewTable = (props: EventCrewTableProps) => {
@@ -225,7 +229,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 	const [initOptions, setInitOptions] = React.useState({});
-	const [ignoreSharedCrew, setIgnoreSharedCrew] = props.ignoreSharedCrew;
+	const [useSharedCrew, setUseSharedCrew] = props.useSharedCrew;
 
 	const crewAnchor = React.useRef(null);
 
@@ -397,11 +401,11 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						onChange={(e, { checked }) => setShowFrozen(checked)}
 					/>
 					<Form.Checkbox 
-						checked={ignoreSharedCrew}
-						onChange={({}, { checked }) => setIgnoreSharedCrew(checked)}
+						checked={useSharedCrew}
+						onChange={({}, { checked }) => setUseSharedCrew(checked)}
 						label={
 							<label>
-								Ignore shared crew<Popup content='Note: Crew numbers are based on user buffs and may not match actual score' trigger={<Icon name='info' />} />
+								Use shared crew<Popup content='Note: Crew numbers are based on user buffs and may not match actual score' trigger={<Icon name='info' />} />
 							</label>
 						}
 					/>
