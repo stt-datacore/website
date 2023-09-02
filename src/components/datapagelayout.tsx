@@ -1,8 +1,11 @@
 import React from 'react';
+import { Link, withPrefix, StaticQuery, graphql } from 'gatsby';
+import { Helmet } from 'react-helmet';
+
 import { GlobalContext } from '../context/globalcontext';
 import { ValidDemands } from '../context/datacontext';
 
-import Layout from '../components/layout';
+import PlayerMenu from './playerdata/playermenu';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -42,17 +45,86 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
     const isReady = !!global.core.ready && !!global.core.ready(demands);
 
 	return (
-		<Layout header={header} title={pageTitle ?? header} narrowLayout={narrowLayout}>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>{notReadyMessage ?? 'Loading data...'}</div>
-			}
-			{isReady &&
-				<React.Fragment>
-                    {children}
-				</React.Fragment>
-			}
-		</Layout>
+		<React.Fragment>
+			<DataPageHelmet title={pageTitle ?? header} />
+			<Navigation />
+			<PlayerMenu compact={narrowLayout} />
+			{renderContents()}
+		</React.Fragment>
+	);
+
+	function renderContents(): JSX.Element {
+		return (
+			<React.Fragment>
+				{!isReady &&
+					<div className='ui medium centered text active inline loader'>{notReadyMessage ?? 'Loading data...'}</div>
+				}
+				{isReady &&
+					<React.Fragment>
+						{children}
+					</React.Fragment>
+				}
+			</React.Fragment>
+		);
+	}
+};
+
+// Use Gatsby Head on each page instead of ReactHelmet in layout with Gatsby 4?
+const DataPageHelmet = (props: { title: string | undefined}) => {
+	const { title } = props;
+	return (
+		<StaticQuery
+			query={query}
+			render={(data) => (
+				<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
+					{title && <title>{title}</title>}
+					<meta property='og:type' content='website' />
+					<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
+					<meta property='og:site_name' content='DataCore' />
+					<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
+					<meta property='og:description' content={data.site.siteMetadata.defaultDescription} />
+					<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
+					<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
+					<script src={withPrefix('styles/theming.js')} type='text/javascript' />
+					<script src={withPrefix('polyfills.js')} type='text/javascript' />
+				</Helmet>
+			)}
+		/>
+	);
+};
+
+const Navigation = () => {
+	const pages = [
+		{ title: 'Home', link: '/' },
+		{ title: 'Behold', link: '/behold' },
+		{ title: 'Events', link: '/events' },
+		{ title: 'Collections', link: '/collections' },
+		{ title: 'Items', link: '/items' },
+		{ title: 'Gauntlets', link: '/gauntlets' },
+		{ title: 'Misc stats', link: '/stats' },
+		{ title: 'Episodes', link: '/episodes' },
+		{ title: 'Hall of Fame', link: '/hall_of_fame' },
+		{ title: 'Worfle', link: '/crewchallenge' }
+	];
+
+	return (
+		<ul>
+			{pages.map(page => <li key={page.link}><Link to={page.link}>{page.title}</Link></li>)}
+		</ul>
 	);
 };
 
 export default DataPageLayout;
+
+export const query = graphql`
+	query {
+		site {
+			siteMetadata {
+				defaultTitle: title
+				titleTemplate
+				defaultDescription: description
+				baseUrl
+			}
+		}
+	}
+`;
