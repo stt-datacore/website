@@ -492,11 +492,11 @@ const CrewTable = (props: CrewTableProps) => {
 					else r = 1;
 				}
 
-				if (!r) r = bcount - acount;
 				if (!r) r = a.max_rarity - b.max_rarity;
 				if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
 				if (!r) r = b.level - a.level;
 				if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
+				if (!r) r = bcount - acount;
 				if (!r) r = a.name.localeCompare(b.name);
 				return r;
 			});
