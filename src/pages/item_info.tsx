@@ -237,7 +237,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</div>
 					
 					</div>
-					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
+					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
 				<br />
 
 				{item_data.item.type === 8 && !!ship &&
