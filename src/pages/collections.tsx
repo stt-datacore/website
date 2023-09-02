@@ -98,6 +98,7 @@ class CollectionsPageComponent extends PureComponent<CollectionsPageProps, Colle
 						</Item.Content>
 					</Item>
 				))}
+				<br/><br/><br/>
 			</Item.Group>
 		);
 	}

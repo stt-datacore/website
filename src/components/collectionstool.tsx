@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button, Pagination } from 'semantic-ui-react';
+import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button, Pagination, Image } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
@@ -74,7 +74,7 @@ const CollectionsTool = () => {
 		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0 };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
-			if (pc) collection = JSON.parse(JSON.stringify(pc));
+			if (pc) collection = { ...collection, ...JSON.parse(JSON.stringify(pc)) };
 		}
 		collection.id = ac.id; // Use allCollections ids instead of ids in player data
 		collection.crew = ac.crew;
@@ -540,7 +540,7 @@ const CrewTable = (props: CrewTableProps) => {
 						<Icon name='delete' />
 					</Button>
 			</Input>
-			<Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
+			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
 			<Table striped>
 				{colMap.map((col, idx) => {
 
@@ -557,7 +557,11 @@ const CrewTable = (props: CrewTableProps) => {
 								height: "100%",
 								margin: "1em"
 							}}>
-							<h2 style={{marginBottom: 0, textAlign: "center"}}>{collection.name}</h2>
+							
+							<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
+								style={{margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+							/>
+							<h2 style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0'}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
 							<hr style={{width: "16em"}}></hr>
 							<i style={{fontSize: "0.8em"}}>{collection.needed} needed for rewards:</i>
@@ -622,8 +626,9 @@ const CrewTable = (props: CrewTableProps) => {
 				)}
 
 			</Table>
-			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
-
+			{!!colMap?.length && <Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
+			{!colMap?.length && <div className='ui segment'>No results.</div>}
+			<br /><br /><br />
 		</div>)
 
 	}
