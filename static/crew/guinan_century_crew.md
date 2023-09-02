@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Madam Guinan is regrettably no more than a collection stuffer. Though her traits afford her a pair of 45% gauntlets that her older sister(s) usually dominate, Century's proficiencies are, well, not proficient. Those same eclectic traits would seem to be on the unlikely side for future collections as well.
+Madam Guinan is regrettably no more than a Collection stuffer. Though her traits afford her a pair of 45% Gauntlets that her older sister(s) usually dominate, Century's proficiencies are, well, not proficient. Those same eclectic Traits would seem to be on the unlikely side for future Collections as well. 
 
-With only two event features to date and no other apparent niche utility, you can safely freeze and forget.
+With only two Event features to date and no other apparent niche utility, you can safely freeze and forget, only stopping to recall her if the bottom barrel Counselor Trait hits a Collection one day.

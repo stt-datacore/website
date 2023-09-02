@@ -4,7 +4,7 @@ rarity: 5
 series: original
 memory_alpha:
 bigbook_tier: 8
-events: 19
+events: 20
 in_portal: true
 date: 27/09/2018
 obtained: Event
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Fake Tucker was born with some disappointing numbers that have only gotten lower. He's not quite usable day to day (or shouldn't be), but can make a case for himself as an event/collection combo.
+Fake Tucker was born with some disappointing numbers that have only gotten lower. He's not quite usable day to day (or shouldn't be), but can make a case for himself as an Event/Collection combo. 
 
-Tucker has managed to squeeze at least one variant event in each calendar year out of a company that doesn't think much of the Enterprise series and a few of his traits haven't hit yet, but could/should. Similarly for collections, one of his current ones is a vanity, but he's quite likely to expand his grasp in that area before WRG's collection bonanza is all said and done.
+Tucker has managed to squeeze at least one variant Event in each calendar year out of a company that didn’t seem to think much of his TV show, but with the advent of the Enterprise Collection and more of his eclectic Traits hitting, he’s a viable Behold choice and maybe even someone you might want to spend some Quantum on. Four Collections and a Vanity are his ceiling (which he’s achieved), but it’s a good ceiling.

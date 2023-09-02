@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 8
-events: 31
+events: 32
 in_portal: true
 date: 07/11/2017
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-As forgettable as the episode he comes from (or maybe we just wish it was forgettable), Archer is a low floor, low ceiling collection stuffer who you'll thaw once or twice a year thanks to his shuttle-friendly skill set.
+As forgettable as the episode he comes from (or maybe we just wish it was forgettable), Archer has made the most of his Trait set by hitting pay dirt on four of them, including his show Collection. You'll thaw Archer once or twice a year thanks to his Shuttle-friendly Skill set.

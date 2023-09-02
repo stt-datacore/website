@@ -3,8 +3,8 @@ name: Sniper Ezri Dax
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 7
-events: 25
+bigbook_tier: 6
+events: 26
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Solid voyage crew stats for the girl who can see through walls. #9 MED base with reasonable SEC/DIP stats make her one of the strongest Rare voyagers in the roster. Additionally due to her alien nature she can work in all the weekend cadet missions. Nothing too special about her ship ability and no additional collection bonuses but her day to day use will exceed expectations.
+One of the top Rare Crew in the game given what you need a crew of her Rarity to do: qualify for Cadet Missions. Pew Pew Ezri has dual weekend Cadet Mission eligibility due to being non-human and female, and her Bases and Proficiencies allow her to both contribute on Voyages AND Gauntlet in the early game. Devote resources to Fully Equip and Fully Fuse her as you’re able, due to her utility.

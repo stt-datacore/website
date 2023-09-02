@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His skill set may look juicy on the behold screen, but there's simply no power to be had. Even with an event bonus, his SCI base may not be worth the thaw for some, especially in an exobiology event that has dozens of superior options. Fortunately, however, those traits do perk up (read:completely comprise) his value via collections. Behold him if you don't need any daily use from your super rares and let him eat a crew slot until you can immortalize him.
+His Skill Set may look juicy on the Behold screen, but there's simply no power to be had. Even with an Event bonus, his SCI Base may not be worth the thaw for some, especially in an Exobiology event that has dozens of superior options. Fortunately, however, those Traits do perk up (read:completely comprise) his value via Collections. Choose him in a Behold if you don't need any daily use from your Super Rares and let him eat a Crew Slot until you can Immortalize him.

@@ -4,7 +4,7 @@ rarity: 2
 series: tos
 memory_alpha:
 bigbook_tier: 10
-events: 11
+events: 12
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A very average engineer who doesn’t offer anything unique other than his Jury Rigger bonus. He won’t be making any voyages but he will have some use getting difficult nodes unlocked.
+Four Traits including Jury Rigger, a single ENG Skill, and not much else. Use him for a few Nodes and Cadet Missions in the early game, then relegate him to cryostasis.

@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 7
-events: 33
+events: 34
 in_portal: true
 date: 08/04/2021
 obtained: Event
@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-Following a veritable deluge of top shelf crew with the likes of Dexa, Human Saru, Reunion Spock & Kirk, Captain Tribble... Adira might seem like a step down, but the truth is they're simply a quality, no-frills crew who shouldn't have to live up to the lofty ambitions of their gold predecessors.
+If the oft-lauded Costumed Mega Event seems like a long time ago, it was!  Two years later, even the incredible Human Saru and Klingon West are on fumes for Voyages, so it would stand that the inferior-on-debut Xahean Adira is even worse off… and they are.  Their skill set does them no favors; competition exists there from all angles, including a handful of former Mega Recurring Legendaries, Campaigns, global giveaways, and the aforementioned powerhouse crew like RSK and Human Saru. 
 
-Xahean breaks with the DIP/ENG-y feel of previous gold variants to contribute the all too populous CMD/DIP/SCI set on voyages. Competition exists there from all angles, including a handful of former megas, campaigns, global giveaways, and the aforementioned powerhouse crew like RSK and Human Saru. While Adira's voyage power is adequate, being tethered to that bloated skill set ensures that they remain merely that; an adequate voyager.
-
-Event futures for Discovery crew remain murky following the apparent end to blanket bonuses for that particular show, but the Adira character has practically kicked the doors in to signal their arrival with three quality gold variants in short order, two of them coming from event features. With an important tie to the best non-gauntlet collection in the game, Xahean is a worthwhile, if unexciting pick-up from one of the most loaded, crew-quality megas in the game's history.
+Event futures for Discovery crew remain murky even given their resurrection in late 2022, and the end of the TV show after Season 5, but the Adira character has practically kicked the doors in to signal their arrival with three quality Legendary variants in short order, two of them coming from Event features.  Xahean Adira has found themselves in three Collections and has one more viable Trait, but topping out at four Collections makes them a compelling Crew Retrieval candidate once you’ve exhausted the top options with 5+ inclusions.

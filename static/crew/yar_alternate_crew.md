@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 18
+events: 19
 in_portal: true
 date: 17/03/2016
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Like her character, Tasha's event appearances dropped off after STT's season one, but she's still 'bridge crew' with a few eventable traits to help grant her some weekend work. Her other non-collection perk is as one-star, triggerless instant damage for new players. It activates on the slow side, but is more powerful than most triggerless damage crew at her rarity level.
+Like her character, Tasha's Event appearances dropped off after STT's season one, but she's still 'Bridge Crew' with a few Event-able Traits to help grant her some weekend work. Her other non-Collection perk is an Instant Damage Ship Ability (300%), useful for new players. Check for Sela’s mommy to max out at three Collections long after she was forgotten by the alternate Enterprise’s crew.

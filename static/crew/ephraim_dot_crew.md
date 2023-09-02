@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 7
-events: 29
+events: 30
 in_portal: true
 date: 12/10/2021
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The adorable 'super warp highway' traveling mama makes sense as a primarily voyage-based option. Accurate-but-niche traits don't pump up the collection/event/anti-matter triad as much as you'd hope for in a crew. Meaning that despite the strong Resourceful collection spot they debut with, E&D don't profile as a crew who has much wiggle room for improving in value over time. A fine day one voyager, you'll want to either invest early for their two to three year-ish voyage profile or take them as a 'some day' collection project.
+One of the best hugging crew in the game, E&D debuted as a fine Voyage option but as it does, Power Crept has reduced their long-term value to their Trait list. It’s paid off handsomely so far with a quartet of Collections but that’s all they’ll get until Automated Unit and Tardigrade inevitably get theirs (not). A fine project to add stars via Behold or Crew Retrieval, but don’t jump to Immortalize them like it’s 2021.

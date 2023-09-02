@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Goldmember’s sister climbed out of her goo pool years ago as a daily use option for voyages and arena. With the former now defunct and the latter mostly replaceable via crew retrieval or better super rare options, she's stuck in limbo waiting for the collection carnival to come to her town.
+Goldmember’s sister climbed out of her goo pool years ago as a daily use option for Voyages and Arena. With the former now defunct and the latter mostly replaceable via Crew Retrieval or better Super Rare options, she's stuck in limbo waiting for the Collection carnival to come to her town. 
 
-Any non-HFS trait set is likely to provide some interesting value, even if it's as brief as the Founder's. With three of her traits providing event bonuses thus far and seemingly all of them in play for collections, Founder is more of a wait-and-see behold option if your other choices are particularly uninspiring.
+Any non-HFS trait set is likely to provide some interesting value, even if it's as brief as the Founder's. Look to see her tap out at a ceiling of two Collections until the inevitable Deep Space Nine set hits.

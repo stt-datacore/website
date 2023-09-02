@@ -4,7 +4,7 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 6
-events: 31
+events: 32
 in_portal: true
 date: 07/04/2020
 obtained: Pack
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A former global gift who wasn't a "gift" like some poorer cards, you should be thrilled to let Medic Reno take up a crew slot. Hell, let her have two or three for what she offers you. A fantastic voyager with a fantastic skill set, Reno, a year and a half after her debut, is about at the power level that Dr. Pollard *started* at. If you've been using that other medical wonder and have been pleased with her performance over the years, Reno is stepping into a similar performance profile for the future.
+Tig Notaro’s debut as Jett Reno has been a fan favorite on Star Trek Discovery and this variant of that character has been a player favorite since its debut in a Tuesday Pack, then later as a global gift. Smart players Immortalized at least one copy of this crew and let her staff their Voyages for years, but sadly as we speak, her power has waned and her plus Skill Set including MED/ENG can no longer buoy her.
 
-Reno's scorecard looks like a compliment sandwich thanks to the Discovery Spam slapped in the middle which is unlikely to be reheated. She's been living mega to mega and with so many large trait pools, her weekend clip should slow down going forward. Luckily things pick back up with her other bread and butter; collections. One of the earliest adopters to quad collections, the time to cash those in is ASAP while you can reap her voyage rewards too. As the old saying goes, 'The best time to plant a Reno was when she came out. The second best time is now.'
+There is a silver lining to this card’s age, as Reno continued to pick up Collection after Collection, stacking five of them in quick succession. Don’t look for more, as her remaining Traits are too bloated to likely get a corresponding Collection.

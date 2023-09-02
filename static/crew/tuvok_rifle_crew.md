@@ -4,7 +4,7 @@ rarity: 3
 series: voy
 memory_alpha:
 bigbook_tier: 4
-events: 19
+events: 20
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Okay, so you have several choices with what to with Mr. Vulcan here. You can level him up and immortalise to use his #10 SEC base stat and fill out a slot on the Vulcan collection. Or keep him at level 99 and fuse with him Ambassador Neelix to make the mostly-average Tuvix. By himself Tuvok will be a handy SEC crew for Sunday cadets and his skill base will make it on a voyager or two. Keep in mind that if you have a collectivistic tendency then you might be keeping a few copies of him on standby.
+Okay, so you have a couple of options with Mr. Vulcan here. You can level him up and immortalise to use his SEC base for Sunday Cadet missions, as well as fill out a somewhat easy slot in the Vulcan collection. Or, keep him at level 99 and fuse with him Ambassador Neelix to make the meh-inducing novelty crew that is Tuvix. Early game players should take note of his mighty +10000 Crit for Ship Battles, it’s only logical.

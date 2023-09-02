@@ -3,8 +3,8 @@ name: EV Suit Pike
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 4
-events: 36
+bigbook_tier: 5
+events: 37
 in_portal: true
 date: 07/07/2020
 obtained: Pack

@@ -3,8 +3,8 @@ name: Gunslinger Uhura
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 4
-events: 21
+bigbook_tier: 5
+events: 22
 in_portal: true
 date: 15/05/2018
 obtained: Pack

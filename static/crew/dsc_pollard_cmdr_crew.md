@@ -3,8 +3,8 @@ name: Commander Pollard
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 31
+bigbook_tier: 7
+events: 32
 in_portal: true
 date: 14/12/2022
 obtained: Event

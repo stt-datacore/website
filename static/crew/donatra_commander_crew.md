@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Besides being the best part of Nemesis, Donatra is a refreshingly valuable Romulan card that rises above bad bases and common skills thanks to competitive gauntlet pairs (top five super rare proficiency total) and a set of stat-boosting collections. It's anyone's guess when she might draw some cryostasis reprieve for events, but she already has something to offer rosters young and old.
+Besides being the best part of Nemesis, Donatra is a refreshingly valuable Romulan card that rises above bad Bases and Common Skills thanks to competitive Gauntlet pairs (top ten among Super Rares) and a trio of Stat-boosting Collections, plus Traits in her pocket for a pair more. If you happen upon her early, spend some resources to Fully Equip her for some Gauntlet use, and Fuse her from Beholds for the long term Collection-based value.

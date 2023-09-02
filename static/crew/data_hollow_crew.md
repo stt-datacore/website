@@ -3,8 +3,8 @@ name: Hollow Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 31
+bigbook_tier: 4
+events: 32
 in_portal: true
 date: 08/06/2022
 obtained: Event

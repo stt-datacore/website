@@ -4,7 +4,7 @@ rarity: 1
 series: tng
 memory_alpha:
 bigbook_tier: 3
-events: 30
+events: 31
 in_portal: true
 date: 04/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Top 1* SEC stat and an average ENG stat that will get you through a mission or two. A good ship ability with shield regeneration in charged phases and quite a few useful traits to hit a few nodes. No collections to speak of but will give you a leg up in the early game.
+Tommy Boy has the top Common SEC Base and an above-average ENG that will get you through a mission or two in the early days. A good ship ability with shield regeneration that kicks in immediately (though steps up through time phased charges a few times for maximum effect) coupled with quite a few useful traits to hit a few galaxy map nodes means new accounts should level him out the gate. Toss in a hefty three Collections for relatively minimal effort, Transporter Clone Riker is deserving of your Immortalization efforts.

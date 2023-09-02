@@ -4,7 +4,7 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 8
-events: 1
+events: 2
 in_portal: true
 date: 26/10/2021
 obtained: Pack
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I'm not sure what Kyle enthusiasts were expecting from his debut crew, but this might even be better than that. Granted, he's a total event dud and may remain that way for good barring some stray communicator events. But he does debut with worthwhile voyage ability and a huge collection that will need him until the end of the game while Communicator waits in the wings for its chance to shine. To my fellow Kyleians; hold fast, brothers. Surely silver fox Wrath of Khan Kyle is coming!
+He does wear that red jumpsuit well, doesn’t he? Kyle enthusiasts waited years for this Super Rare Crew to debut, and he did so with a… whimper? Thinly Traited but at least with two Collections (that’s all he’s gonna get), consider making Kyle a choice of last-resort in your Super Rare Beholds, then beam him straight to Cryostasis.

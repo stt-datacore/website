@@ -14,12 +14,10 @@ published: true
 
 You're a new crew. A 2-dimensional being laid flat on the drawing board in WRG's offices.
 
-"Should we make her usable in gauntlet?"
+"Should we make her usable in Gauntlet?" 
 
-"Should we give her anything other than the worst voyage skill set in the game?"
+"Should we give her anything other than the worst Voyage skill set in the game, or many useful Traits?" 
 
-All you hear is uproarious laughter and the sound of a cocktail shaker. This is your life as a Dosi.
+All you hear is uproarious laughter and the sound of a cocktail shaker. 
 
-In brief, the only area of the game where Zyree functions is on voyages, thanks to reasonable debut voyage power and a couple of cooperating traits. But those traits being few and her skill set being flat out bad puts a short timer on her shelf life there.
-
-If you want a keepsake from that amusing little DS9 episode, fix yourself a Gamma Quadrant Mimosa with some Tullaberry juice, kick back, and enjoy the show.
+This is your life as a Dosi. As arguably one of the top two Dosi in the game, Zyree possesses a tissue paper-thin Trait set which will top out at two possible Collections and Voyage power that only her mother could love.  If you want a keepsake from that amusing little DS9 episode, fix yourself a Gamma Quadrant Mimosa with some Tullaberry juice, kick back, and enjoy the show.

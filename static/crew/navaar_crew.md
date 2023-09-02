@@ -3,8 +3,8 @@ name: Navaar
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 9
-events: 26
+bigbook_tier: 8
+events: 31
 in_portal: true
 date: 19/09/2019
 obtained: Event

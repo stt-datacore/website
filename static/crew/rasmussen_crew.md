@@ -4,7 +4,7 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 8
-events: 18
+events: 19
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Big Book is old enough to have spoken about Max Headroom's voyage work in the past, but sadly he's not much of a voyager any longer. In fact, he's not much of anything outside of the collection shelf which is completely understandable for a super rare crew included at the game's launch. The ruins of his daily use are still visible such as good voyage AM traits, but his usage there will come down to fusion level more than anything else.
+The Big Book is old enough to have spoken about Max Headroom's Voyage work in the past, but sadly he's not much of a Voyager any longer. In fact, he's not much of anything outside of the Collection shelf which is completely understandable for a Super Rare crew included at the game's launch. The ruins of his daily use are still visible such as good Voyage Anti-Matter Traits, but his usage there will come down to fusion level more than anything else. Look for Rasmussen to top out at four Collections if you decide to devote resources to finishing and freezing him.

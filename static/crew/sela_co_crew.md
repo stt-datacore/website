@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A crew's third event feature is when we start to take notice, but Sela's abysmal bases may be outclassed by small bonus crew in her events. Outside of new-player-only gauntlet numbers supported by just three traits, collections will increasingly be her only path to relevancy.
+A crew's third Event feature is when we start to take notice, but Sela's abysmal Bases may be outclassed by small bonus crew in her events. Outside of new-player-only Gauntlet numbers, Sela’s only value will be in her Collections, of which she will max out at a paltry two.

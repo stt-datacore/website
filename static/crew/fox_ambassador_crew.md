@@ -4,7 +4,7 @@ rarity: 3
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 5
+events: 6
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-No cadet work takes Foxy out at the knees, while the lack of a third skill dings any possible voyage or gauntlet dreams. His collection value is the headliner and rightfully so. He's not a recommended crew to level too early, but will be one that every roster finishes sooner or later.
+No Cadet work takes Foxy out at the knees, while the lack of a third Skill dings any possible Voyage or Gauntlet dreams. His Collection value is the headliner and rightfully so. He's not a recommended crew to level too early, but will be one that every roster finishes sooner or later. Look to keep harvesting Collection bonuses from this tired-looking Ambassador long after you’ve forgotten who he is until you rewatch TOS and think “OH I KNOW THAT GUY!”

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Jarok is another James Sloyan masterpiece. He's not quite as gripping in game with bad bases and skill set, but useful gauntlet numbers for young rosters and his collections are fine value. He'll need crit to help him rise above a very competitive skill set in gauntlet and once replaced from there, likely won't be seen again until an event feature.
+Jarok is another James Sloyan masterpiece. He's not quite as gripping in game with bad Bases and Skill set, but useful Gauntlet numbers for young rosters and his Trait set, while thin, has yielded 2 Collections with room for 1 more.. He'll need crit to help him rise above a very competitive Skill set in Gauntlet and once replaced from there, likely won't be seen again until an Event feature.

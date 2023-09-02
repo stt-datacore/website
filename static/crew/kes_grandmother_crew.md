@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Yup, it’s unseasoned applesauce for everyone. Granny’s voyage skill set unquestionably looks great, but a super rare with a score ranked well into triple digits simply can’t keep pace with the scores of more powerful options, even if you have to attack certain combos one skill at a time. 
+Yup, it’s unseasoned applesauce for everyone. Don’t be fooled by her Skill set and order; Kes is a decrepit Super Rare from 2020 and she Voyages like it too.
 
-Yet that remains the highlight for a crew who is missing both power and utility. Kes is part of a shrinking group of crew who have yet to hit on a collection and though that seems inevitable to change, certain large and bland tags like Civilian or Desperate may not trigger for a while, if at all. Unless you collect three or four stars of Granny at once from a Kes event (of which there have been depressingly few), feel free to save yourself the crew slot until she offers tangible collection value.
+Kes also doesn’t enjoy the Event pedigree that other “main cast” crew do; two times her number has been called in the game’s history. However, like every crew in the game, much of her value is tied to her Trait list, which is eclectic and has hit on three Collections as it stands, but unlikely to see more.

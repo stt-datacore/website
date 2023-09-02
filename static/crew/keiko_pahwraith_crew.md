@@ -3,8 +3,8 @@ name: Pah-wraith Keiko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
-events: 17
+bigbook_tier: 8
+events: 19
 in_portal: true
 date: 22/05/2018
 obtained: Pack

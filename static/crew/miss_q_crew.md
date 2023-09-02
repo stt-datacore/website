@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-"Fan favorite Suzie Plakson" is all some people need to hear, but let's go over her gameplay considerations anyways.
+"Fan favorite Suzie Plakson" is all some people need to hear, but let's go over her gameplay considerations anyways. 
 
-Suzie Q is usable on voyages for a while longer, though she likely won't unseat your influx of fused event super rares until she herself is immortalized. Event work is somewhat tricky to forecast as well - her bases are fine to thaw with a bonus, but her traits have mostly provided events in spurts thus far and she could easily be the victim of bonus droughts at any time.
-
-The safety blanket fallback here is her collection value. All bets have been off since Resourceful hit, so even her larger traits like Crafty are in play and make her a must-have to fill in the collection stat boosts as your roster ages and you graduate to legendary crew to staff all of your away teams.
+Until recently with a crush of stronger Super Rares, Miss Q was viable on Voyages in the early game, but now you can find superior options in weekly Events and in the free Campaign. Unfortunately John de Lancie’s Q gets most of the Event features slated for members of the Q Continuum, but the mother of his child does seem to find some work with her Traits. Speaking of, she has a solid set of five, and by the end of it all she may have a quintet of corresponding Collections. She’s a fine long-term investment for her Rarity.

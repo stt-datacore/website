@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Second highest 2* base SEC stat and gets a fair bit of use in cadet missions. If you don’t have L’Rell he’s certainly a good second best. Get him levelled up in your early game and you won’t have to worry about security for quite some time. His CMD is a bit of a let down however so he won’t be too useful on voyages.
+Second highest Uncommon Base SEC stat and gets a fair bit of use in Cadet Missions. If you don’t have L’Rell he’s certainly a good second best. Get him leveled up in your early game and you won’t have to worry about Security for quite some time. His CMD is a bit of a let down however so he won’t be too useful on Voyages. You’ll remember him eventually when the Villain Collection finally hits!

@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 36
+events: 37
 in_portal: true
 date: 02/09/2022
 obtained: Campaign

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Voyages are the highlight of Stamets' portfolio - his skill set is underrepresented both in terms of power and options, with only a single former mega among them. He and Leucon are really the only names in that skill set who you'd want to acquire solely for their voyage considerations, but he has a bit more to offer.
+On debut, Tactical Stamets had a nearly peerless Voyage power in his Skill Set, but two years later he finds himself on the outside looking in and leaking plasma.
 
-Stamets should be good for a few events per year even with a supporting trait list pointed directly at voyage antimatter rather than surprise event bonuses. And despite not topping 25% crit in any gauntlet, his worthwhile SEC/ENG pair won't often face walls and lets you take plenty of shots at 2-for-1ing The Caretaker as a diet version of Gangster Spock or ATB.
+Stamets should be good for a few Events per year since Discovery Mega Events made a surprising return (dead cat bounce?) and Paul remains “main cast” on a current-airing but ending show. His Gauntlet prowess looks deceptive, but he could be part of a “road less traveled” team if you like to have fun like that. Don’t look for Stamets to hit more than one more Collection, so you may not want to spend your Crew Retrievals or Behold choices on him when there are stronger and Traitier options out there.

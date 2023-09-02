@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 4
-events: 8
+events: 10
 in_portal: true
 date: 01/04/2021
 obtained: Event
@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-His employment file lists his given name; Daily Use. Amal Kotay might only make the thaw list once a year for veteran players, but sterling base and voyage ranks mean all the work he can handle into the mid-game.
+His employment file lists his given name; Ahmal M'jomo Jamaael, which means."He who is spirited." Oh hell yea, I did just drop a Sister Act 2 reference.
 
-Between the general dearth of ENG crew early on and no super rare sharing his skill set across the top fifty voyagers, it's a happy marriage of skills and power for Chakotay. Once excused from that area, his top super rare ENG base will either be a great option for daily shuttle runs or free up other ENG crew to voyage instead.
-
-Despite lacking elite peripherals, Chakotay will function like a partially fused legendary crew in crucial voyage and shuttle situations as your roster graduates toward an all-gold lineup.
+When there are thousands of crew notes to churn through, we’ve got to get economical, so allow me to rip from a Super Rare whom Amal profiles similarly to - Altan Soong. “His collection value will never escape the hundreds’ rank, his arena ability is superfluous, and his event clip will never be outstanding. [Chakotay] profiles as a fantastic early game pickup if you can snag multiple copies from an event, but don’t expect to fully fuse him from beholds before he would fall from daily use on your roster.”

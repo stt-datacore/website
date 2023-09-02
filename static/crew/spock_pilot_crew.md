@@ -4,7 +4,7 @@ rarity: 3
 series: tos
 memory_alpha:
 bigbook_tier: 3
-events: 47
+events: 49
 in_portal: true
 date: 30/08/2017
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I really hope you have stocked up on IDICs, Tactical Alerts and Security Codes because Spock is absolutely horrible to equip. Once you get over the shocking amount of replications you just had to endure then Spock is actually fairly decent voyage stock. SEC/CMD is a popular combination but Spock does them both very well. But requiring roughly an average of 7k chrons to immortalise, I think it’s cheaper to wait for better crew to drop...
+Talos IV Spock requires an insane number of Faction Items to Equip him fully, so even though he is one of the strongest Rare Voyagers, you may want to wait until you’re more well-established in the game before you devote resources to him. He’ll pay off the investment with a strong Collection ROI, having the Traits to offer up three non-Rarity notches, with one certain future inclusion and one on more shaky ground.

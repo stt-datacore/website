@@ -4,7 +4,7 @@ rarity: 3
 series: tng
 memory_alpha:
 bigbook_tier: 8
-events: 14
+events: 16
 in_portal: true
 date: 01/01/2016
 obtained: Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A perfectly average middle of the road card. Her skills cover most of what might be missing in your voyage but it’s nothing spectacular. There are plenty of better SEC crew with more meaningful use. Keep her if she’s filling a particular role for you but don’t hang on to her any longer than you need to.
+Vash’s Rare variant has little to offer in the early game except one weekend day of Cadet eligibility. Once you can devote resources to finish and freeze her, you will surely reap the benefit of her Trait list hitting future Collections to the tune of up to four, outside of her Rarity one.

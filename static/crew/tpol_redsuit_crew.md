@@ -4,7 +4,7 @@ rarity: 2
 series: ent
 memory_alpha:
 bigbook_tier: 6
-events: 39
+events: 40
 in_portal: true
 date: 11/04/2018
 obtained: Event
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The best 2* SCI stat, a respectable DIP stat and can work all week without complaining about the smell? If you have her or Festive Jadzia you can’t really go wrong fulfilling all your science objectives and her Vulcan collection adds a bonus to her satisfactory abilities.
+T’Pol stands out among Uncommon Crew with five days of Cadet Mission eligibility during weekdays, which is one of the main things you want crew of her Rarity to be able to do. A strong SCI Base to go with a serviceable DIP Base gives her utility in the Galaxy Map, as well as on Voyages and Shuttles until you can Freeze her in favor of higher Rarity Crew. Be also sure to enjoy early game notches on her two non-Rarity Collections, and look for her to add to another once the Content Train™ pulls up to that Trait’s station.

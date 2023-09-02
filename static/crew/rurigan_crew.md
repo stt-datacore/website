@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Rurigan - noted voyager who hadn't left his village in thirty years. Robust surface-level metrics ensure strong daily use performance for the aged Yaderan and while relying on traits for event work can lead to streaky shuttle opportunities, Rurigan has had fistfuls of bonuses in the years leading up to his debut.
-
-Four of his five relevant traits appear for anti-matter seating on voyages and leave some room for his pair of debut collections to expand down the line. He's one of the safer non-'bridge crew' investments out there.
+Rurigan spent the first 18 months or so in the game as an excellent, then solid Voyager, but sadly he’s reached the point in the game where his sole remaining value is his Trait list (it’s a Trait-based game, kids). The best Yaderan in the game has hit a Grand Slam of Collections (that’s four for those not familiar with baseball) by now and a long-shot Romantic just MIGHT get him to five one day. If those Traits give him weekend Event work, solid Base stats will come into play.

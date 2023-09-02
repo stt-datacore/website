@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 48
+events: 50
 in_portal:
 date: 05/06/2023
 obtained: Giveaway

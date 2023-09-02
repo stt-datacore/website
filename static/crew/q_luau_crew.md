@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 29
+events: 34
 in_portal: true
 date: 07/10/2021
 obtained: Mega
@@ -12,8 +12,6 @@ mega: true
 published: true
 ---
 
-Quau (or The Big Qahuna, if you prefer) is hardly the first incarnation of CMD/DIP/SEC among recurring mega crew, but with respect to T'Kuvma and Garth's arena hammers, he might just be the best. He improves incrementally on the slightly older giveaway crew Luau Paris and continues to reinforce the rule that CMD/DIP/SUCK should be avoided when possible, as that skill set will find it way back to your roster in droves from situations like this.
+Quau is the latest Mega Event Recurring Legendary with John de Lancie’s likeness, and unfortunately since his debut in 2021 the Power Creep has accelerated to the point where this crew is probably buried somewhere in the sand on the Voyager Holodeck.
 
-Despite his albatross skill set, Q's debut power and excellent non-HFS trait set buys him voyage run on any roster and should do so for much longer than similar megas of the past such as Suspiria or Thrax. Those traits also present players with collection value, both immediate and potential.
-
-Despite DIP's overstuffed representation among crew, Quau's skills get plenty of seating on shuttles. He rates strongly against competition from all avenues for event work and shouldn't need to look far to find seats, which may not always be true for his fellow mega variants; the MED-led Q as "God" or proficiency-heavy Lothario Q.
+CMD/DIP/SEC outside of the top ranks is a dime a dozen, and Luau Q is well outside those top ranks by now. Q finds Events like rats find cheese, as JDL is still the voice of Timelines, so he’s a strong investment from that perspective, and if you can find copies of this crew via Legendary Behold enough to Immortalize him, you shall be rewarded with three Collections (including the Q Continuum which requires a supermajority of the eligible crew to complete it) and you may find future spoils in coming months with more.

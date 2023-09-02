@@ -12,8 +12,8 @@ mega: true
 published: true
 ---
 
-Very similar to Changeling Founder (gauntlet, arena, skills), Minuet has a bit more oomph in her engine. A strong trait lineup has resulted in better collection value than her comp and grants her many more gauntlet crit sets, including a handful of 45%ers.
+In a world where WRG hasn’t released a two Skill Legendary outside of an Honor Hall crew since July 2021 (Regency Riker), Minuet was somehow once a Mega Event Recurring Legendary? I’ll take your word for it.
 
-Without a ton of experience in a world of full Balok walls yet, it's hard to give an exact determination of her efficacy in a formerly competitive CMD/DIP matchup. As a 2-skiller, she obviously operates best with large crit values, but can often be frustrating to attack into on defense. Regardless, she's a 'sometimes' option there and strong, quick defensive option in the arena as well. 
+We at the Big Book don’t advise you to bring a skillet to Gauntlet, but if you do, be prepared to see walls of superior CMD/DIP crew you have to refresh past to find Minuet a favorite matchup. 
 
-It's possible to envision a world where she becomes a 5+ collection horse down the line, so a few speculative behold stars wouldn't go amiss if the options across from her aren't particularly appealing or are hamstrung by poor traits.
+Minuet’s remaining game value lies in her Trait list (as with many older crew) and we can envision a world in which she tops out at a six pack of Stat-boosting Collections, so consider her a long-term investment if your Legendary Beholds show you no better options.

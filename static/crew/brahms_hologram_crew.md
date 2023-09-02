@@ -4,7 +4,7 @@ rarity: 3
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 19
+events: 20
 in_portal: true
 date: 11/07/2016
 obtained: Post-Launch
@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-She might be made of photonic energy but her skills are quite impressive. Sporting a #7 SCI base and #16 ENG she will unlock a fair few nodes and has a good amount of useful traits too. Her saturday and voyage potential make up for a lack of extra collection bonus and her ship ability comes with a +800 shield regeneration. Good to pair up with Rejal or T’Pol for an extra science boost.
+She might be made of photonic energy but her skills are quite impressive. Sporting decent ENG and SCI Bases for a Rare crew, she will unlock a fair few Nodes and has a good amount of useful Traits too. Her Saturday Cadet utility makes her a must-complete crew in the early game, and please enjoy the collateral benefits of her three future Collection spots.

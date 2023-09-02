@@ -3,8 +3,8 @@ name: Midwife Worf
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 41
+bigbook_tier: 7
+events: 42
 in_portal: true
 date: 11/03/2021
 obtained: Event

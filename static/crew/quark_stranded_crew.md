@@ -3,8 +3,8 @@ name: Stranded Quark
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 43
+bigbook_tier: 6
+events: 44
 in_portal: true
 date: 22/01/2019
 obtained: Pack

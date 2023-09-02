@@ -3,8 +3,8 @@ name: Sulu of the Body
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 8
-events: 18
+bigbook_tier: 9
+events: 19
 in_portal: true
 date: 12/12/2019
 obtained: Event
