@@ -25,18 +25,11 @@ import { getIconPath } from '../utils/assets';
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
-	const { crew } = context.core;
-	
+	const { crew, collections: allCollections } = context.core;
+
 	if (!playerData) return <></>;
 
-	const [allCollections, setAllCollections] = React.useState<Collection[] | null>(null);
-
-	if (!allCollections) {
-		fetch('/structured/collections.json')
-			.then(response => response.json())
-			.then((collections: Collection[]) => {
-				setAllCollections(collections);
-			});
+	if (!context.core.ready(['collections'])) {	
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 

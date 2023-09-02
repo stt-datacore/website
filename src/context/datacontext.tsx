@@ -3,8 +3,8 @@ import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, SkillData } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
-import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
+import { PlayerCollection, PlayerCrew } from '../model/player';
+import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 
@@ -45,6 +45,7 @@ export interface DefaultCore extends ContextCommon {
 	missions: Mission[],
 	episodes: Mission[],
 	cadet: Mission[],
+	collections: Collection[],
 	keystones: (KeystoneBase | Polestar | Constellation)[],
 	all_buffs: BuffStatTable,
 	gauntlets: Gauntlet[];
@@ -57,6 +58,7 @@ export const defaultData = {
 	ship_schematics: [] as Schematics[],
 	battle_stations: [] as BattleStations[],
 	ships: [] as Ship[],
+	collections: [] as Collection[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
 	all_buffs: {} as BuffStatTable,
