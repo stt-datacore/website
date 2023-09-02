@@ -250,7 +250,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                             marginBottom: "4px",
                         }}
                     >
-                       <i>{item.flavor}</i>
+                       <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
                     </div>
                     <div>
                     {!!((item.item_sources?.length ?? 0) > 0) && (
