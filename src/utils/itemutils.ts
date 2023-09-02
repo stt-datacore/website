@@ -2,8 +2,9 @@ import CONFIG from '../components/CONFIG';
 import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Mission } from '../model/missions';
-import { PlayerEquipmentItem } from '../model/player';
-import { simplejson2csv, ExportField } from './misc';
+import { AtlasIcon, BuffBase, PlayerEquipmentItem, Reward } from '../model/player';
+import { getIconPath } from './assets';
+import { simplejson2csv, ExportField, getImageName } from './misc';
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
@@ -213,4 +214,21 @@ export function binaryLocate(symbol: string, items: (EquipmentItem | EquipmentCo
 	}
 
 	return undefined;
+}
+
+export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward) {
+	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
+		items.push({
+			...reward,
+			name: reward.name ?? "",
+			symbol: reward.symbol ?? "",
+			flavor: reward.flavor ?? "",
+			bonuses: {},
+			quantity: reward.quantity,
+			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
+			item_sources: [],
+			archetype_id: reward.id,
+			isReward: true
+		});
+	}
 }

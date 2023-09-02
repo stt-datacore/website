@@ -76,7 +76,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 		const { items: origItems, crew: origCrew } = this.context.core;
 		let crew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew[];
-		let items = JSON.parse(JSON.stringify(origItems)) as EquipmentItem[];
+		let items = JSON.parse(JSON.stringify(origItems.filter(f => !f.isReward))) as EquipmentItem[];
 		items = items.filter(item => item.imageUrl && item.imageUrl !== '');
 		let origpos = items.map(item => item.symbol);
 

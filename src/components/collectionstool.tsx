@@ -21,6 +21,7 @@ import { formatColString } from './item_presenters/crew_preparer';
 import { CrewItemsView } from './item_presenters/crew_items';
 import { getImageName } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
+import { checkReward } from '../utils/itemutils';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -516,7 +517,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	if (pageCount !== groupPageCount || groupPage > pageCount) {
 		setGroupPageCount(pageCount);
-		setGroupPage(1);
+		setGroupPage(Math.min(pageCount, 1));
 		return <></>
 	}
 
@@ -842,21 +843,17 @@ const RewardsGrid = (props: RewardsGridProps) => {
 
 					{row.map((reward, idx) => {
 							const img = getImageName(reward);
-							if (!items.find(f => f.symbol === reward.symbol)) {
-								items.push({
-									...reward,
-									name: reward.name ?? "",
-									symbol: reward.symbol ?? "",
-									flavor: reward.flavor ?? "",
-									bonuses: {},
-									imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
-									item_sources: [],
-									archetype_id: reward.id
-								});
-							}
+							checkReward(items, reward);
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+										alignItems: "center"
+									}}>
 									<ItemDisplay
+										quantity={reward.quantity}
 										targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
 										itemSymbol={reward.symbol}
 										allCrew={allCrew}
@@ -867,7 +864,8 @@ const RewardsGrid = (props: RewardsGridProps) => {
 										maxRarity={reward.rarity}
 										rarity={reward.rarity}
 									/>
-									{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}
+									<span>{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
+									</div>
 								</Grid.Column>
 							);
 						})}

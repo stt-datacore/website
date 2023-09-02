@@ -18,6 +18,7 @@ import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { EquipmentCommon } from '../../model/equipment';
 import { getIconPath } from '../../utils/assets';
+import { checkReward } from '../../utils/itemutils';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
@@ -402,25 +403,14 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
 					{rewards.map((reward: Reward, idx) => {
-						const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
-						if (!this.props.allItems?.find(f => f.symbol === reward.symbol)) {
-							this.props.allItems?.push({
-								...reward,
-								name: reward.name ?? "",
-								symbol: reward.symbol ?? "",
-								flavor: reward.flavor ?? "",
-								bonuses: {},
-								imageUrl: img,							
-								archetype_id: reward.id
-							});
-						}
-
+						checkReward(this.props.allItems ?? [], reward);
 						return (
 						<Grid.Column key={idx}>
 							<Header
 								style={{ display: 'flex' }}
 								icon={
 									<ItemDisplay
+										quantity={reward.quantity}
 										src={assetURL(reward.icon?.file)}
 										size={48}
 										rarity={rarity(reward)}

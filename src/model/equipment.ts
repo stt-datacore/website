@@ -35,6 +35,7 @@ export interface EquipmentItem extends EquipmentCommon {
   recipe?: EquipmentRecipe
 
   empty?: boolean;
+  isReward?: boolean;
 
 }
 

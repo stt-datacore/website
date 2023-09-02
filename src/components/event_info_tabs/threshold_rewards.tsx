@@ -7,6 +7,7 @@ import { EventData } from '../../utils/events';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { getImageName } from '../../utils/misc';
+import { checkReward } from '../../utils/itemutils';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
@@ -20,22 +21,8 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={row.points}>
 						<Table.Cell>{row.points}</Table.Cell>
 						<Table.Cell>
-							{row.rewards.map(reward => {
-								
-								const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
-								if (!items.find(f => f.symbol === reward.symbol)) {
-									items.push({
-										...reward,
-										name: reward.name ?? "",
-										symbol: reward.symbol ?? "",
-										flavor: reward.flavor ?? "",
-										bonuses: {},
-										imageUrl: img,
-										item_sources: [],
-										archetype_id: reward.id
-									});
-								}
-
+							{row.rewards.map(reward => {								
+								checkReward(items, reward);								
 								return (
 								reward && reward.icon &&
 								<Label
@@ -47,6 +34,7 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 										alignItems: "center"
 									}}>
 									<ItemDisplay
+										quantity={reward.quantity}
 										src={getIconPath(reward.icon)}
 										size={48}
 										rarity={reward.rarity}

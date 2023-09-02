@@ -7,6 +7,7 @@ import { EventData } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../itemdisplay';
 import { getImageName } from '../../utils/misc';
+import { checkReward } from '../../utils/itemutils';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range
@@ -31,22 +32,8 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={`bracket_${row.first}_${row.last}`}>
 						<Table.Cell width={2}>{getBracketLabel(row)}</Table.Cell>
 						<Table.Cell width={14}>
-							{row.rewards.map(reward => {
-
-								const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
-								if (!items.find(f => f.symbol === reward.symbol)) {
-									items.push({
-										...reward,
-										name: reward.name ?? "",
-										symbol: reward.symbol ?? "",
-										flavor: reward.flavor ?? "",
-										bonuses: {},
-										imageUrl: img,
-										item_sources: [],
-										archetype_id: reward.id
-									});
-								}
-
+							{row.rewards.map(reward => {								
+								checkReward(items, reward);
 								return (
 									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}} 
 										color="black" title={reward.full_name}>
@@ -58,6 +45,7 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 										}}>
 										{reward.icon &&
 										<ItemDisplay
+											quantity={reward.quantity}
 											src={getIconPath(reward.icon)}
 											size={48}
 											rarity={reward.rarity ?? 0}

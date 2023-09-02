@@ -55,7 +55,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
         
         let dataOut: EquipmentItem | undefined = dataIn;
 
-        if (playerData?.player?.character?.items?.length && dataIn) {
+        if (playerData?.player?.character?.items?.length && dataIn && !dataIn.isReward) {
             const fi = playerData?.player?.character?.items?.find(f => f.symbol === dataIn?.symbol);
             const ci = items?.find(f => f.symbol === dataIn.symbol);
             if (fi && ci) {                
