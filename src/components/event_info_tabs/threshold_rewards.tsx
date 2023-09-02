@@ -2,15 +2,17 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { GameEvent } from '../../model/player';
+import { AtlasIcon, GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
+import { getImageName } from '../../utils/misc';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
 	const context = React.useContext(GlobalContext);
-
+	const { items } = context.core;
+	
 	return (
 		<Table celled striped compact='very'>
 			<Table.Body>
@@ -18,7 +20,23 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={row.points}>
 						<Table.Cell>{row.points}</Table.Cell>
 						<Table.Cell>
-							{row.rewards.map(reward => (
+							{row.rewards.map(reward => {
+								
+								const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
+								if (!items.find(f => f.symbol === reward.symbol)) {
+									items.push({
+										...reward,
+										name: reward.name ?? "",
+										symbol: reward.symbol ?? "",
+										flavor: reward.flavor ?? "",
+										bonuses: {},
+										imageUrl: img,
+										item_sources: [],
+										archetype_id: reward.id
+									});
+								}
+
+								return (
 								reward && reward.icon &&
 								<Label
 									key={`reward_${reward.id}`} color="black" title={reward.full_name}>
@@ -52,7 +70,8 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 									</div>
 								</Label>
-							))}
+							)}
+						)}
 						</Table.Cell>
 					</Table.Row>
 				))}

@@ -112,3 +112,9 @@ export function appelate(text: string) {
 	return curr;
 }
 
+export const getImageName = (reward) => {
+	let img = reward.icon?.file.replace(/\//g, '_');
+	if (img.slice(0, 1) === '_') img = img.slice(1); else img = '/atlas/' + img;
+	if (img.slice(-4) !== '.png') img += '.png';
+	return img;
+};

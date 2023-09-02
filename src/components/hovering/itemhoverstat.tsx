@@ -109,7 +109,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         const { boxStyle } = this.state;
 
         if (item) {
-            let mr = item.rarity;
+            let mr = item.rarity ?? 0;
             let clr = CONFIG.RARITIES[mr].color ?? 'gray';
             if (boxStyle.borderColor !== clr) {
                 if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});

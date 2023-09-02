@@ -127,8 +127,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		// stripped is used for any storage purpose, i.e. sharing profile and keeping in session
 		//	Ephmeral data is stripped from playerData here
-		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input});
-		strippedData.calc = input.calc ?? { 'lastImported': dtImported };
+		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input}) as PlayerData;
+		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
 
 		if (input.stripped !== true) {
 			setStripped({ ... JSON.parse(JSON.stringify(strippedData)), stripped: true });

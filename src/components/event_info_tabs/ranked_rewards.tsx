@@ -2,10 +2,11 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { GameEvent } from '../../model/player';
+import { AtlasIcon, GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../itemdisplay';
+import { getImageName } from '../../utils/misc';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range
@@ -21,6 +22,7 @@ function getBracketLabel(bracket) {
 function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {ranked_brackets} = props.eventData;
 	const context = React.useContext(GlobalContext);
+	const { items } = context.core;
 
 	return (
 		<Table celled striped compact='very'>
@@ -29,36 +31,53 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={`bracket_${row.first}_${row.last}`}>
 						<Table.Cell width={2}>{getBracketLabel(row)}</Table.Cell>
 						<Table.Cell width={14}>
-							{row.rewards.map(reward => (
-								<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}} 
-									color="black" title={reward.full_name}>
-									<div style={{
-										display: "flex",
-										flexDirection: "row",
-										justifyContent:"center",
-										alignItems: "center"
-									}}>
-									{reward.icon &&
-									<ItemDisplay
-										src={getIconPath(reward.icon)}
-										size={48}
-										rarity={reward.rarity ?? 0}
-										maxRarity={reward.rarity ?? 0}		
-										allCrew={context.core.crew}
-										playerData={context.player.playerData}
-										allItems={context.core.items}
-										itemSymbol={reward.symbol}
-										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
-										style={{
-											marginRight: "1em"
-										}}
-										
-									/>}
-									{reward.full_name}
-									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
-									</div>
-								</Label>
-							))}
+							{row.rewards.map(reward => {
+
+								const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
+								if (!items.find(f => f.symbol === reward.symbol)) {
+									items.push({
+										...reward,
+										name: reward.name ?? "",
+										symbol: reward.symbol ?? "",
+										flavor: reward.flavor ?? "",
+										bonuses: {},
+										imageUrl: img,
+										item_sources: [],
+										archetype_id: reward.id
+									});
+								}
+
+								return (
+									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}} 
+										color="black" title={reward.full_name}>
+										<div style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent:"center",
+											alignItems: "center"
+										}}>
+										{reward.icon &&
+										<ItemDisplay
+											src={getIconPath(reward.icon)}
+											size={48}
+											rarity={reward.rarity ?? 0}
+											maxRarity={reward.rarity ?? 0}		
+											allCrew={context.core.crew}
+											playerData={context.player.playerData}
+											allItems={context.core.items}
+											itemSymbol={reward.symbol}
+											targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
+											style={{
+												marginRight: "1em"
+											}}
+											
+										/>}
+										{reward.full_name}
+										{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
+										</div>
+									</Label>
+							)}
+						)}
 						</Table.Cell>
 					</Table.Row>
 				))}

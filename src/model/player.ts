@@ -648,7 +648,7 @@ export interface Player {
     date: number
   }
 
-  export interface PlayerEquipmentItem {
+  export interface PlayerEquipmentItem extends BuffBase {
     id?: number
     type?: number
     symbol: string
@@ -1168,7 +1168,7 @@ export interface Player {
 export interface BuffBase {
     symbol?: string
     name?: string
-    icon?: AtlasIcon
+    icon?: Icon | AtlasIcon;
     flavor?: string
     quantity?: number;
     rarity?: number;
@@ -1176,6 +1176,7 @@ export interface BuffBase {
 
   export interface ImmortalReward extends BuffBase {
     quantity: number;
+    icon?: AtlasIcon;
   }
 
   export interface Reward extends BuffBase {
@@ -1190,6 +1191,7 @@ export interface BuffBase {
     traits?: string[]
     action?: ShipAction
     ship?: Ship
+    icon?: AtlasIcon;
     item_type?: number
     bonuses?: Bonuses
     faction_id?: number

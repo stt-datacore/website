@@ -89,7 +89,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 
 		if (allItems && itemSymbol && targetGroup) {
 			let pitem = playerData?.player?.character?.items?.find(item => item.symbol === itemSymbol) as PlayerEquipmentItem | undefined;
-			let citem = allItems.find(crew => crew.symbol === itemSymbol) as EquipmentItem | undefined;				
+			let citem = allItems.find(item => item.symbol === itemSymbol) as EquipmentItem | undefined;				
 			if (pitem && citem) {
 				item = mergeItems([pitem], [citem])[0] as EquipmentItem;
 			}

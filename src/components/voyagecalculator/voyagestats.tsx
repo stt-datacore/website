@@ -10,13 +10,14 @@ import ItemDisplay from '../itemdisplay';
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
-import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model/player';
+import { AtlasIcon, PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { EquipmentCommon } from '../../model/equipment';
+import { getIconPath } from '../../utils/assets';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;
@@ -400,29 +401,44 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			<>
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
-					{rewards.map((entry, idx) => (
+					{rewards.map((reward: Reward, idx) => {
+						const img = getIconPath(reward.icon ?? {} as AtlasIcon, true);
+						if (!this.props.allItems?.find(f => f.symbol === reward.symbol)) {
+							this.props.allItems?.push({
+								...reward,
+								name: reward.name ?? "",
+								symbol: reward.symbol ?? "",
+								flavor: reward.flavor ?? "",
+								bonuses: {},
+								imageUrl: img,							
+								archetype_id: reward.id
+							});
+						}
+
+						return (
 						<Grid.Column key={idx}>
 							<Header
 								style={{ display: 'flex' }}
 								icon={
 									<ItemDisplay
-										src={assetURL(entry.icon.file)}
+										src={assetURL(reward.icon?.file)}
 										size={48}
-										rarity={rarity(entry)}
-										maxRarity={entry.rarity}
-										hideRarity={hideRarity(entry)}
-										targetGroup={entry.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
-										itemSymbol={getCrewSymbol(entry)}
+										rarity={rarity(reward)}
+										maxRarity={reward.rarity}
+										hideRarity={hideRarity(reward)}
+										targetGroup={reward.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
+										itemSymbol={getCrewSymbol(reward)}
 										allCrew={this.props.allCrew}
 										allItems={this.props.allItems}
 										playerData={this.props.playerData}
 									/>
 								}
-								content={entry.name}
-								subheader={`Got ${entry.quantity?.toLocaleString()} ${ownedFuncs[entry.type](entry)}`}
+								content={reward.name}
+								subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type](reward)}`}
 							/>
 						</Grid.Column>
-					))}
+					)}
+				)}
 				</Grid>
 			</div>
 			</>

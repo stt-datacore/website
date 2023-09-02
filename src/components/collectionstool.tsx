@@ -19,6 +19,7 @@ import { TinyStore } from '../utils/tiny';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { formatColString } from './item_presenters/crew_preparer';
 import { CrewItemsView } from './item_presenters/crew_items';
+import { getImageName } from '../utils/misc';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -810,13 +811,6 @@ const RewardsGrid = (props: RewardsGridProps) => {
 
 	if (!rewards?.length) return (<></>);
 
-	const getImageName = (reward) => {
-		let img = reward.icon?.file.replace(/\//g, '_');
-		if (img.slice(0, 1) === '_') img = img.slice(1); else img = '/atlas/' + img;
-		if (img.slice(-4) !== '.png') img += '.png';
-		return img;
-	};
-
 	const quantityLabel = (quantity) => {
 		if (quantity >= 10000)
 			return quantity/1000+'K';
@@ -854,6 +848,18 @@ const RewardsGrid = (props: RewardsGridProps) => {
 
 					{row.map((reward, idx) => {
 							const img = getImageName(reward);
+							if (!items.find(f => f.symbol === reward.symbol)) {
+								items.push({
+									...reward,
+									name: reward.name ?? "",
+									symbol: reward.symbol ?? "",
+									flavor: reward.flavor ?? "",
+									bonuses: {},
+									imageUrl: process.env.GATSBY_ASSETS_URL + img,
+									item_sources: [],
+									archetype_id: reward.id
+								});
+							}
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
 									<ItemDisplay
