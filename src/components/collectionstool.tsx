@@ -621,7 +621,7 @@ const CrewTable = (props: CrewTableProps) => {
 				)}
 
 			</Table>
-			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { value }) => setGroupPage(value) } />
+			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 
 		</div>)
 
