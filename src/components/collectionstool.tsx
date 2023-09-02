@@ -486,7 +486,10 @@ const CrewTable = (props: CrewTableProps) => {
 
 			col.crew.sort((a, b) => {
 				let r = 0;
-				
+				if (a.have !== b.have) {
+					if (!a.have) return 1;
+					else return -1;
+				}
 				let acount = a.pickerId ?? 1;
 				let bcount = b.pickerId ?? 1;
 				
