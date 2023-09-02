@@ -560,6 +560,7 @@ const CrewTable = (props: CrewTableProps) => {
 							
 							<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
 								style={{margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+								title={collection.name}
 							/>
 							<h2 style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0'}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
