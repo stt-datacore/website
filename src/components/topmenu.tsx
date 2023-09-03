@@ -138,7 +138,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-	const betaSite = window.location.hostname.includes("beta");
+	const betaSite = typeof window !== 'undefined' && window.location.hostname.includes("beta");
 
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
