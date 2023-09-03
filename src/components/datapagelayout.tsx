@@ -7,6 +7,7 @@ import { ValidDemands } from '../context/datacontext';
 
 import { PlayerMenu } from './playerdata/playermenu';
 import PlayerHeader from './playerdata/playerheader';
+import { Container } from 'semantic-ui-react';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -33,6 +34,12 @@ export interface DataPageLayoutProps {
 
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
+const MainContent = ({ children, narrowLayout }) =>
+	narrowLayout ? (
+		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
+	) : (
+		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
+	);
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
@@ -73,7 +80,9 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				}
 				{isReady &&
 					<React.Fragment>
-						{children}
+						<MainContent narrowLayout={narrowLayout}>
+							{children}
+						</MainContent>
 					</React.Fragment>
 				}
 			</React.Fragment>
