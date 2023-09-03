@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { withPrefix, StaticQuery, graphql } from 'gatsby';
 import TopMenu from './topmenu';
-import PlayerMenu from './playerdata/playermenu';
+import PlayerMenu from './playerdata/layout-playermenu';
 import { Header } from 'semantic-ui-react';
 
 type LayoutProps = {

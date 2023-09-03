@@ -1,3 +1,4 @@
+// This file can be deleted when all pages have transitioned from layout to datapagelayout
 import React from 'react';
 import { Message, Icon, Button, Form, Checkbox, Progress, Header, Menu, Dropdown, Popup, Accordion } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -18,7 +19,7 @@ export interface PlayerPanelProps {
 export const PlayerPanel = (props: PlayerPanelProps) => {
 	const context = React.useContext(GlobalContext);
 
-	const { 
+	const {
 		requestShowForm,
 		requestClearData,
 	} = props;

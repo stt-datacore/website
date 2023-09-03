@@ -5,7 +5,8 @@ import { Helmet } from 'react-helmet';
 import { GlobalContext } from '../context/globalcontext';
 import { ValidDemands } from '../context/datacontext';
 
-import PlayerMenu from './playerdata/playermenu';
+import { PlayerMenu } from './playerdata/playermenu';
+import PlayerHeader from './playerdata/playerheader';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -29,26 +30,37 @@ export interface DataPageLayoutProps {
 
 	/** default is true */
 	initPlayerData?: boolean;
+
+	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
-	const global = React.useContext(GlobalContext);
-
-	const { children, pageId, pageTitle, header, notReadyMessage, narrowLayout } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { core, player } = globalContext;
+	const { children, pageId, pageTitle, header, notReadyMessage, narrowLayout, playerPromptType } = props;
 
     const demands = props.demands ?? [] as ValidDemands[];
     (['crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
         if (!demands.includes(required))
             demands.push(required);
     });
+    const isReady = !!core.ready && !!core.ready(demands);
 
-    const isReady = !!global.core.ready && !!global.core.ready(demands);
+	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
+	const clearPlayerData = () => { if (player.reset) player.reset(); };
 
 	return (
 		<React.Fragment>
 			<DataPageHelmet title={pageTitle ?? header} />
-			<Navigation />
-			<PlayerMenu compact={narrowLayout} />
+			<Navigation
+				requestPlayerPanel={setPlayerPanel}
+				requestClearPlayerData={clearPlayerData}
+			/>
+			<PlayerHeader
+				promptType={playerPromptType ?? 'none'}
+				playerPanel={playerPanel}
+				setPlayerPanel={setPlayerPanel}
+			/>
 			{renderContents()}
 		</React.Fragment>
 	);
@@ -93,7 +105,12 @@ const DataPageHelmet = (props: { title: string | undefined}) => {
 	);
 };
 
-const Navigation = () => {
+type NavigationProps = {
+	requestPlayerPanel: (panel: string | undefined) => void;
+	requestClearPlayerData: () => void;
+};
+
+const Navigation = (props: NavigationProps) => {
 	const pages = [
 		{ title: 'Home', link: '/' },
 		{ title: 'Behold', link: '/behold' },
@@ -108,9 +125,15 @@ const Navigation = () => {
 	];
 
 	return (
-		<ul>
-			{pages.map(page => <li key={page.link}><Link to={page.link}>{page.title}</Link></li>)}
-		</ul>
+		<div style={{ display: 'flex', flexDirection: 'row' }}>
+			<ul>
+				{pages.map(page => <li key={page.link}><Link to={page.link}>{page.title}</Link></li>)}
+			</ul>
+			<PlayerMenu
+				requestPanel={props.requestPlayerPanel}
+				requestClearData={props.requestClearPlayerData}
+			/>
+		</div>
 	);
 };
 

@@ -38,7 +38,7 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	}
 
 	return (
-		<DataPageLayout header='Behold Helper'>
+		<DataPageLayout header='Behold Helper' playerPromptType='recommend'>
 			<React.Fragment>
 				<Header as='h2'>Behold Helper</Header>
 				<CrewSelector crewList={global.core.crew} initSelection={crewFromUrl} />

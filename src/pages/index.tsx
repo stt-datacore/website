@@ -3,7 +3,6 @@ import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../context/globalcontext';
-import Layout from '../components/layout';
 import DataPageLayout from '../components/datapagelayout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
@@ -32,7 +31,7 @@ interface Lockable {
 
 const IndexPage = (props: IndexPageProps) => {
 	return (
-		<DataPageLayout>
+		<DataPageLayout playerPromptType='recommend'>
 			<React.Fragment>
 				<Announcement />
 				<CrewStats location={props.location} />
@@ -277,9 +276,9 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 
 		if (!botcrew || botcrew.length === 0) {
 			return (
-				<Layout>
+				<React.Fragment>
 					<Icon loading name='spinner' /> Loading...
-				</Layout>
+				</React.Fragment>
 			);
 		}
 

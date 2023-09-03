@@ -19,7 +19,7 @@ const VoyageHistoryPage = () => {
 	const dbid = global.player.playerData?.player.dbid ?? '';
 
 	return (
-		<DataPageLayout header='Voyage History'>
+		<DataPageLayout header='Voyage History' playerPromptType='require'>
 			<React.Fragment>
 				<Header as='h2'>Voyage History</Header>
 				<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
