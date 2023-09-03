@@ -270,7 +270,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 					/>
 				)}
 
-				{crew.flavor && !compact && <p>{crew.flavor}</p>}
+				{crew.flavor && !compact && <p id='crew_flavor_text'>{crew.flavor}</p>}
 
 				{!compact && 
 				

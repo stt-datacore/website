@@ -415,7 +415,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
-		const filtered = playerData?.player?.character.crew.filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol && !pc.immortal)) ?? [];
+		const filtered = playerData?.player?.character.crew.concat(collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
 
 		let zcol = filtered.map(z => z.collections).flat();
 		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
@@ -425,11 +425,20 @@ const CrewTable = (props: CrewTableProps) => {
 			return {
 				collection: playerCollections.find(f => f.name === col),
 				crew: filtered.filter(crew => {
+					if (crew.immortal === CompletionState.Immortalized || crew.immortal > 0) return false;
+
 					let fr = crew.collections.some(fc => fc == col);
+					
 					if (fr) {
-						//if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
-						//if (ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
 						
+						if (collectionsFilter?.length) {
+							if (ownedFilter === 'unowned' && !!crew.have) return false;
+							if (ownedFilter.slice(0, 5) === 'owned' && !crew.have) return false;
+						}
+						else if (!crew.have) {
+							return false;
+						}
+
 						if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
 						if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
 						if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
@@ -477,7 +486,10 @@ const CrewTable = (props: CrewTableProps) => {
 
 			col.crew.sort((a, b) => {
 				let r = 0;
-				
+				if (a.have !== b.have) {
+					if (!a.have) return 1;
+					else return -1;
+				}
 				let acount = a.pickerId ?? 1;
 				let bcount = b.pickerId ?? 1;
 				
@@ -528,6 +540,11 @@ const CrewTable = (props: CrewTableProps) => {
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
+			{!collectionsFilter?.length && 
+				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
+					The grouped collection view shows only owned crew if the collections list is not filtered.
+				</i>}
+
 			<Input
 				style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
 				iconPosition="left"
@@ -562,7 +579,9 @@ const CrewTable = (props: CrewTableProps) => {
 								style={{margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
 								title={collection.name}
 							/>
-							<h2 style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0'}}>{collection.name}</h2>
+							<h2 
+								onClick={(e) => { setSearchFilter(''); setCollectionsFilter([collection.id])}}
+								style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
 							<hr style={{width: "16em"}}></hr>
 							<i style={{fontSize: "0.8em"}}>{collection.needed} needed for rewards:</i>
@@ -597,7 +616,7 @@ const CrewTable = (props: CrewTableProps) => {
 									<ItemDisplay 
 										size={64}
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-										rarity={crew.rarity}
+										rarity={!crew.have ? 0 : crew.rarity}
 										maxRarity={crew.max_rarity}
 										targetGroup={'collectionsTarget'}
 										itemSymbol={crew.symbol}

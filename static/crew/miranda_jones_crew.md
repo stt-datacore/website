@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Pre-Pulaski smokeshow Jones may be neuralizing you with her sequined dress and handsome charm, but cover your eyes and scan her stat metrics instead.
+Pre-Pulaski smokeshow Jones may be neutralizing you with her sequined dress and handsome charm, but cover your eyes and scan her Stat metrics instead.
 
-None of her numbers are even average and DIP/SCI is not hurting for representation. One of only four traits have activated weekend usefulness (Vulcan) and it's hard to see that happening many more times. If you want her for any semblance of game value, it's going to be solely for collections.
+Four Traits have yielded two Collections and that’s probably all she wrote on that front, leaving her below-average in a world in which Traits are everything. Behold insurance is the best scenario for not-Pulaski.

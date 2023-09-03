@@ -41,6 +41,10 @@ export const FleetBossBattles = () => {
 
 	const allData: BossData = {
 		... context,
+		core: {
+			... context.core,
+			crew: allCrew,
+		},
 		fleetBossBattlesRoot: ephemeral?.fleetBossBattlesRoot ?? {} as BossBattlesRoot
 	};
 

@@ -73,8 +73,8 @@ class CollectionsPageComponent extends PureComponent<CollectionsPageProps, Colle
 		return (
 			<Item.Group>
 				{collections.map(collection => (
-					<Item key={collection.name} id={encodeURIComponent(collection.name)}>
-						<Item.Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
+					<Item key={collection.name} id={encodeURIComponent(collection.name)} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+						<Item.Image size='medium' className='ui segment' style={{border: "1px solid #7f7f7f7f", width:300, height: 150, borderRadius: "6px"}} src={`${process.env.GATSBY_ASSETS_URL}${collection.image}`} />
 
 						<Item.Content>
 							<Item.Header><div className='text'>{collection.name}</div><hr/></Item.Header>
