@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Anij claims a reasonable DIP/MED gauntlet pair; a skill duo that doesn't have an oppressive wall of exclusive crew at the top like ENG/SCI or DIP/SCI does. She can pitch in on beginner rosters, but a lack of 45% crit sets, third skill flexibility, or simply bigger rolls caps her usefulness in that area.
-
-She lacks any other usefulness until such time that any her three viable traits get picked out of a hat for collections or events.
+Anij claims a reasonable DIP/MED Gauntlet pair; a Skill duo that doesn't have an oppressive wall of Exclusive crew at the top like ENG/SCI or DIP/SCI does. She can pitch in on beginner rosters, but a lack of 45% Crit sets, third Skill flexibility, or simply bigger rolls caps her usefulness in that area. Don’t count on the best Ba’ku in the game gaining more than her single current Collection.
