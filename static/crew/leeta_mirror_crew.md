@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Your garden variety filler card has been power creeped, not leaving much value behind. A hefty chunk of crit rating at four seconds with better than average passive stats for the arena is probably Leeta's only useful daily attribute.
+Your garden variety filler card has been power creeped, not leaving much value behind. A hefty chunk of Crit Rating at four seconds with better than average Passive Stats for the Arena is probably Leeta's only useful daily attribute.
 
-But the Mirror trait has given her fistfuls of events while remaining a small enough pool of crew to be called upon again. With Mirror, Bajoran, and Romantic all reasonable collection traits, she's a low-end dart throw who could pay off after an equivalent daily use super rare gets frozen. Not bad for Chase Masterson's easiest paycheck.
+Look for up to three Collections in Leeta’s future but until then stash her in Cryostasis.
