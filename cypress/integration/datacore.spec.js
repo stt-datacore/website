@@ -17,7 +17,7 @@ describe('Crew page', () => {
     cy.visit('/crew/dsc_adira_tal_new_crew/');
 
     // Check flavour text
-    cy.get('p').contains('their memories');
+    cy.get('#crew_flavor_text').contains('their memories');
     // Check ranks are showing
     cy.get('.label').contains('Voyage Rank');
   })
