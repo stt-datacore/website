@@ -1,0 +1,25 @@
+name: sync-beta
+run-name: Keep the beta branch syncronised with the master branch and active PRs
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened, synchronize]
+  
+  push:
+    branches:
+      - 'master'
+env:
+  isDraft: github.event.pull_request.draft == true
+  isMergeable: github.event.pull_request.mergeable == true
+  isFork: github.event.pull_request.head.fork == false
+jobs:
+    merge-master:
+        name: Merge pr or master branches into beta
+        runs-on: ubuntu-latest
+        if: github.ref_name == 'master' || (!$isDraft && $isMergeable && !$isFork)
+        steps:
+            - name: merge with beta
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: beta
+                github_token: ${{ secrets.GITHUB_TOKEN }}
