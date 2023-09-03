@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Lokek's event history is baffling longer than one would expect and while it seems sensible to postulate that another survivalist or Enterprise mega is unlikely, that would be mostly guesswork, as the dark art of event forecasting tends to be.
-
-Somewhat more tangible are her set of collections, including a vanity. There are certainly worse collection/event combos out there, but if your aim is to acquire crew you can use, this Sato is buried behind hundreds of others.
+One of the gatekeepers of the Primal Collection, she’s among the best of that bad set of Crew you have to Immortalize to fully unlock its potential. Three non-Vanity Collections out of a quartet of Traits seems like a good hit rate, and with a little more love to her show recently, you might see her catch a Mega Event’s worth of bonuses before long. A “eh, she’s not bad” choice in Legendary Beholds is really her ceiling.
