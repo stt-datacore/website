@@ -138,6 +138,8 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
+	const betaSite = window.location.hostname.includes("beta");
+
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
 			<Icon name='adjust' />
@@ -155,6 +157,11 @@ const useRightItems = ({ onMessageClicked }) => {
 		</Menu.Item>
 		<Menu.Item>
 			<Button size='tiny' color='green' onClick={onMessageClicked} content={'Developers needed!'} />
+		</Menu.Item>	
+		<Menu.Item onClick={() => navigate(`https://${betaSite ? 'beta.' : ''}datacore.app`)}>
+			<Popup position='bottom center' flowing hoverable trigger={<Icon name={betaSite ? 'cogs' : 'bug'} />}>
+				<p>Switch to {betaSite ? 'stable' : 'beta'} site</p>
+			</Popup>
 		</Menu.Item>
 		<Menu.Item onClick={() => window.open('https://github.com/stt-datacore/website', '_blank')}>
 			<Icon name='github' />
