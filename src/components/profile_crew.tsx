@@ -37,6 +37,7 @@ export type ProfileCrewProps = {
 	isTools?: boolean;
 	location: any;
 	pageId?: string;
+	alternateRoster?: PlayerCrew[];
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
@@ -45,7 +46,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 	const { playerData, playerShips } = context.player;
 	const { crew } = context.core;
 
-	const myCrew = [...playerData?.player.character.crew ?? []];
+	const myCrew = [...(props.alternateRoster ?? playerData?.player?.character?.crew ?? [])];
 	const { pageId } = props;
 
 	// Check for custom initial table options from URL or <Link state>
