@@ -338,8 +338,13 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				crew.base_skills = workitem.base_skills;
 				if (rarity === undefined) crew.level = workitem.level;
 				crew.equipment = workitem.equipment;
-				if (workitem.action) crew.action.bonus_amount = workitem.action.bonus_amount;
-				if (workitem.ship_battle) crew.ship_battle = workitem.ship_battle;
+				if (workitem.ship_battle && rarity === undefined) crew.ship_battle = workitem.ship_battle;
+				if (typeof rarity === 'number') {
+					crew.action.bonus_amount -= (crew.max_rarity - rarity);
+				}
+				else if (workitem.action) {
+					crew.action.bonus_amount = workitem.action.bonus_amount;
+				}
 			}
 
 			crew.have = true;
@@ -398,7 +403,10 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 
 	if (!crew.have || crew.immortal > 0) {		
 		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
-			if (rarity) rarity--;
+			if (rarity) {
+				crew.action.bonus_amount -= (crew.max_rarity - rarity);
+				rarity--;
+			}
 			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity]))});
 		}
 		if (!crew.have) {
