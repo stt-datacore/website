@@ -108,7 +108,7 @@ export interface GauntletsPageState {
 	activeTabIndex?: number;
 	onlyActiveRound?: boolean;
 	hideOpponents?: boolean;
-
+	
 	loading?: boolean;
 }
 
@@ -842,7 +842,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					return crew;
 				})
 				.sort((a, b) => {
-
 					if (rankByPair) {
 						return a.ranks[rankByPair] - b.ranks[rankByPair];
 					}
@@ -981,7 +980,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let pcs = [0, 0, 0, 0, 0];
 			let aptabs = [[], [], [], [], []] as (PlayerCrew | CrewMember)[][];
 
-			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day, idx) => {
+			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day: Gauntlet | undefined, idx) => {
 				if (!day?.matchedCrew) {
 					return;
 				}
@@ -2005,29 +2004,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								value={filterProps[idx].ownedStatus}
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
-						</div>
-
-
-						{idx !== 9 && <div style={{
+						</div>						
+						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "column",
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Skill Pairs</b></h4>
-							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
-								<Dropdown
-									title={"Filter by skill pairs"}
-									placeholder="Skill Pairs"										
-									clearable
-									compact
-									inline
-									multiple
-									options={skillFilters}
-									value={filterProps[idx].skillPairs}
-									onChange={(e, { value }) => this.setSkillPairs(value as string[], idx)}
-								/>
-							</div>
+
+							<Checkbox
+								title="Highlight Active Round Only"
+								checked={this.getActiveRound()}
+								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
+							/>
+
+							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
 						</div>}
 
 						<div style={{display:"flex", flexDirection: "column", height: "100%", justifyContent: "space-evenly"}}>
