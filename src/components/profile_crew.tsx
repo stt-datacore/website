@@ -68,8 +68,10 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 
 	const allCrew = [...crew ?? []].sort((a, b)=>a.name.localeCompare(b.name));
 
-	if (props.isTools && playerData) {
-		const buffConfig = calculateBuffConfig(playerData.player);
+	if (props.isTools && (playerData || props.alternateRoster)) {
+		
+		const buffConfig = playerData ? calculateBuffConfig(playerData.player) : context.maxBuffs as BuffStatTable;
+		
 		return (
 			<ProfileCrewTools 
 				buffMode={props.buffMode}
@@ -78,7 +80,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 				setShowUnownedCrew={props.setShowUnownedCrew} 
 				pageId={pageId} playerData={playerData} myCrew={myCrew} allCrew={allCrew} buffConfig={buffConfig}
 				ships={playerShips} initOptions={initOptions} initHighlight={initHighlight} initProspects={initProspects}
-				dbid={`${playerData.player.dbid}`} />
+				dbid={`${playerData?.player.dbid}`} />
 		);
 	}
 
@@ -259,17 +261,6 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 			<div style={{height: "2em"}}>&nbsp;</div>
 		</React.Fragment>
 	);
-
-	// function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core: number, min: number, max: number } {
-	// 	const getMultiplier = (skill: string, stat: string) => {
-	// 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-	// 	};
-	// 	return {
-	// 		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
-	// 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
-	// 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
-	// 	};
-	// }
 };
 
 
