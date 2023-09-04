@@ -7,7 +7,7 @@ import { ValidDemands } from '../../context/datacontext';
 
 import { PlayerMenu } from '../playerdata/playermenu';
 import PlayerHeader from '../playerdata/playerheader';
-import { Container } from 'semantic-ui-react';
+import { Container, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -34,6 +34,7 @@ export interface DataPageLayoutProps {
 
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
+
 const MainContent = ({ children, narrowLayout }) =>
 	narrowLayout ? (
 		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
@@ -63,12 +64,14 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				requestPlayerPanel={setPlayerPanel}
 				requestClearPlayerData={clearPlayerData}
 			/>
+			<MainContent narrowLayout={narrowLayout}>
 			<PlayerHeader
 				promptType={playerPromptType ?? 'none'}
 				playerPanel={playerPanel}
 				setPlayerPanel={setPlayerPanel}
 			/>
 			{renderContents()}
+			</MainContent>
 		</React.Fragment>
 	);
 
@@ -80,9 +83,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				}
 				{isReady &&
 					<React.Fragment>
-						<MainContent narrowLayout={narrowLayout}>
-							{children}
-						</MainContent>
+						{children}
 					</React.Fragment>
 				}
 			</React.Fragment>
@@ -119,25 +120,57 @@ type NavigationProps = {
 	requestClearPlayerData: () => void;
 };
 
+
+interface NavItem {
+	title: string,
+	link: string,
+	src?: string,
+	right?: boolean;
+	icon?: SemanticICONS;
+}
+
 const Navigation = (props: NavigationProps) => {
 	const pages = [
-		{ title: 'Home', link: '/' },
+		{ title: 'Home', link: '/', src: '/media/logo.png' },
 		{ title: 'Behold', link: '/behold' },
 		{ title: 'Events', link: '/events' },
-		{ title: 'Collections', link: '/collections' },
+		{ title: 'Crew', link: '/crew' },
+		{ title: 'Ships', link: '/crew' },
 		{ title: 'Items', link: '/items' },
+		{ title: 'Collections', link: '/collections' },
 		{ title: 'Gauntlets', link: '/gauntlets' },
 		{ title: 'Misc stats', link: '/stats' },
 		{ title: 'Episodes', link: '/episodes' },
 		{ title: 'Hall of Fame', link: '/hall_of_fame' },
-		{ title: 'Worfle', link: '/crewchallenge' }
-	];
+		{ title: 'Worfle', link: '/crewchallenge' },	
+		{ title: 'Theme', icon: "theme" as SemanticICONS, link: '/crewchallenge', right: true }
+	] as NavItem[];
+
+	function drawMenuItem(page: NavItem, idx?: number) {
+		return (
+			<Menu.Item key={'menu_'+idx} as={Link} to={page.link} style={{ padding: "0 2em", height: "48px" }} className='link item'>							
+				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>									
+					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
+					{page.icon && <Icon name={page.icon} size={'small'} />}
+					<div>{page.title}</div>
+				</div>							
+			</Menu.Item>
+		)
+	}
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row' }}>
-			<ul>
+		<div style={{ display: 'flex', flexDirection: 'column' }}>
+			<Menu>
+				{pages.filter(p => !p.right).map((page, idx) => drawMenuItem(page))}
+				<Menu.Menu position={'right'}>
+					{pages.filter(p => p.right).map((page, idx) => drawMenuItem(page))}
+				</Menu.Menu>
+	
+			</Menu>
+
+			{/* <ul>
 				{pages.map(page => <li key={page.link}><Link to={page.link}>{page.title}</Link></li>)}
-			</ul>
+			</ul> */}
 			<PlayerMenu
 				requestPanel={props.requestPlayerPanel}
 				requestClearData={props.requestClearPlayerData}
