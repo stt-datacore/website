@@ -8,7 +8,7 @@ import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOpti
 import Announcement from '../components/announcement';
 
 import CONFIG from '../components/CONFIG';
-import { formatTierLabel, isImmortal, prepareProfileData, printPortalStatus } from '../utils/crewutils';
+import { applyCrewBuffs, formatTierLabel, getSkills, isImmortal, prepareProfileData, printPortalStatus } from '../utils/crewutils';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import CABExplanation from '../components/cabexplanation';
@@ -17,6 +17,8 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { descriptionLabel } from '../components/crewtables/commonoptions';
+import ProfileCrew from '../components/profile_crew';
+import { useStateWithStorage } from '../utils/storage';
 
 const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 
@@ -30,11 +32,79 @@ interface Lockable {
 };
 
 const IndexPage = (props: IndexPageProps) => {
+	
+	const context = React.useContext(GlobalContext);
+	const playerPresent = !!context.player.playerData?.player?.character?.crew?.length;
+
+	const [buffMode, setBuffMode] = useStateWithStorage<string | undefined>('indexBoosts', "Max Boosts");
+	const [showUnownedCrew, setShowUnownedCrew] = useStateWithStorage<boolean | undefined>('indexUnowned', true);
+	const [altRoster, setAltRoster] = React.useState<PlayerCrew[] | undefined>([]);
+
+	const maxBuffs = context.maxBuffs;
+	const playerBuffs = context.player.buffConfig;
+	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
+
+	React.useEffect(() => {
+		const newRoster = context.core.crew.map(crew => {
+			let map = {
+				... JSON.parse(JSON.stringify(crew)),
+				immortal: CompletionState.DisplayAsImmortalStatic,
+				level: crew.max_level,
+				rarity: crew.max_rarity,
+				have: false,			
+				command_skill: { core: 0, min: 0, max: 0 },
+				medicine_skill: { core: 0, min: 0, max: 0 },
+				security_skill: { core: 0, min: 0, max: 0 },
+				diplomacy_skill: { core: 0, min: 0, max: 0 },
+				engineering_skill: { core: 0, min: 0, max: 0 },
+				science_skill: { core: 0, min: 0, max: 0 },
+			} as PlayerCrew;
+	
+			if (hasPlayer) {
+				let pc = context.player.playerData?.player?.character?.crew?.find(f => f.symbol === crew.symbol);
+				if (pc) {
+					map = { ... map, ... JSON.parse(JSON.stringify(pc)) };
+					map.have = true;
+				}
+				else {
+					map.rarity = 0;				
+				}
+			}
+			for (let skill of getSkills(crew)) {
+				if (!(skill in map) || !map[skill].core) map[skill] = {
+					core: crew.base_skills[skill].core,
+					max: crew.base_skills[skill].range_max,
+					min: crew.base_skills[skill].range_min,
+				}
+				map.skills ??= {};
+				if (!(skill in map.skills)) map.skills[skill] = { ... crew.base_skills[skill] };
+			}	
+			if (buffMode === 'Max Boosts' && maxBuffs) {
+				applyCrewBuffs(map, maxBuffs);
+			}
+			else if (buffMode === 'Player Boosts' && playerBuffs && hasPlayer) {
+				applyCrewBuffs(map, playerBuffs);
+			}
+			
+			return map;
+		}).filter(fc => showUnownedCrew || fc.have);
+		setAltRoster(newRoster);
+	}, [showUnownedCrew, buffMode, context]);
+
+
 	return (
 		<DataPageLayout playerPromptType='recommend'>
 			<React.Fragment>
 				<Announcement />
-				<CrewStats location={props.location} />
+				<ProfileCrew 
+					buffMode={buffMode}
+					setBuffMode={setBuffMode}
+					showUnownedCrew={!hasPlayer || showUnownedCrew}
+					setShowUnownedCrew={hasPlayer ? setShowUnownedCrew : undefined}
+					isTools={playerPresent}
+					location={"/"} 
+					alternateRoster={altRoster} />
+				{/* <CrewStats location={props.location} /> */}
 			</React.Fragment>
 		</DataPageLayout>
 	);
