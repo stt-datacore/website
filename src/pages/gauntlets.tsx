@@ -610,7 +610,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
 
 							r = Math.round(bscore) - Math.round(ascore);
-							if (!r) r = a.name.localeCompare(b.name);						
+							if (!r) r = a.name.localeCompare(b.name);					
 						}
 						return r ? r : a.ranks[rank] - b.ranks[rank];
 					})					
@@ -902,7 +902,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						b.score = getBernardsNumber(b, gauntlet, bp);
 					}
 
-					r = b.score - a.score;
+					r = r = Math.round(b.score) - Math.round(a.score);;
 
 					if (!r) r = a.name.localeCompare(b.name);
 					return r;
