@@ -4,7 +4,7 @@ import { Link, navigate } from 'gatsby';
 
 import { GlobalContext } from '../context/globalcontext';
 
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import CrewPicker from '../components/crewpicker';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';

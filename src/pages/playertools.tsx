@@ -27,7 +27,7 @@ import { Ship } from '../model/ship';
 import { GlobalContext } from '../context/globalcontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { EquipmentItem } from '../model/equipment';
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import { EphemeralData } from '../context/playercontext';
 import { navigate } from 'gatsby';
 

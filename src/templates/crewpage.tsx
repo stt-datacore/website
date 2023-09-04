@@ -17,7 +17,7 @@ import { BuffStatTable } from '../utils/voyageutils';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
 import { GlobalContext } from '../context/globalcontext';
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';

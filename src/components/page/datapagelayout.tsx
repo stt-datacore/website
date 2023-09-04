@@ -2,11 +2,11 @@ import React from 'react';
 import { Link, withPrefix, StaticQuery, graphql } from 'gatsby';
 import { Helmet } from 'react-helmet';
 
-import { GlobalContext } from '../context/globalcontext';
-import { ValidDemands } from '../context/datacontext';
+import { GlobalContext } from '../../context/globalcontext';
+import { ValidDemands } from '../../context/datacontext';
 
-import { PlayerMenu } from './playerdata/playermenu';
-import PlayerHeader from './playerdata/playerheader';
+import { PlayerMenu } from '../playerdata/playermenu';
+import PlayerHeader from '../playerdata/playerheader';
 import { Container } from 'semantic-ui-react';
 
 export interface DataPageLayoutProps {

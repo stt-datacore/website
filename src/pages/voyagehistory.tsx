@@ -4,7 +4,7 @@ import { Header, Message } from 'semantic-ui-react';
 
 import { GlobalContext } from '../context/globalcontext';
 
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import { IHistoryContext, IVoyageHistory } from '../components/voyagehistory/model';
 import { defaultHistory } from '../components/voyagehistory/utils';
 import { HistoryContext } from '../components/voyagehistory/context';

@@ -3,7 +3,7 @@ import { Header, Table, Rating, Icon } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../context/globalcontext';
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import { SearchableTable, ITableConfigRow, initSearchableOptions, initCustomOption, prettyCrewColumnTitle } from '../components/searchabletable';
 import Announcement from '../components/announcement';
 

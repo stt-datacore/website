@@ -16,7 +16,7 @@ import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { binaryLocate, populateItemCadetSources } from '../utils/itemutils';
 

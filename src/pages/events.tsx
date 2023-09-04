@@ -13,7 +13,7 @@ import { prepareProfileData } from '../utils/crewutils';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import DataPageLayout from '../components/datapagelayout';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type EventInstance = {
 	event_details?: boolean,
