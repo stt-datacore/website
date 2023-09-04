@@ -136,7 +136,7 @@ export interface GauntletsPageState {
 	activeTabIndex?: number;
 	onlyActiveRound?: boolean;
 	hideOpponents?: boolean;
-
+	
 	loading?: boolean;
 }
 
@@ -871,7 +871,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					return crew;
 				})
 				.sort((a, b) => {
-
 					if (rankByPair) {
 						return a.ranks[rankByPair] - b.ranks[rankByPair];
 					}
@@ -1011,7 +1010,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let pcs = [0, 0, 0, 0, 0];
 			let aptabs = [[], [], [], [], []] as (PlayerCrew | CrewMember)[][];
 
-			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day, idx) => {
+			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day: Gauntlet | undefined, idx) => {
 				if (!day?.matchedCrew) {
 					return;
 				}
@@ -1987,7 +1986,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								value={filterProps[idx].ownedStatus}
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
-						</div>
+						</div>						
 						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "row",
@@ -1997,7 +1996,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 							<Checkbox
 								title="Highlight Active Round Only"
-								options={filterOptions}
 								checked={this.getActiveRound()}
 								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
 							/>
