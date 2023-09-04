@@ -105,8 +105,6 @@ export interface GauntletsPageState {
 	discoveredPairs: string[][];
 	rankByPair: string[];
 
-	floatSkills: boolean[];
-
 	activeTabIndex?: number;
 	onlyActiveRound?: boolean;
 	hideOpponents?: boolean;
@@ -184,14 +182,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const rbpair = [] as string[];
 		const ptab = [] as number[];
 		const ipage = [] as number[];
-		const fsk = [] as boolean[];
 
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
 			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);
 			fprops.push(this.tiny.getValue('gauntletFilter_' + i, DEFAULT_FILTER_PROPS) ?? DEFAULT_FILTER_PROPS);
-			fsk.push(this.tiny.getValue('floatSkills_' + i, false) ?? false);
 
 			skeys.push('');
 			sdir.push(undefined);
@@ -240,7 +236,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			itemsPerPageTab: ipage,
 			tops: tops,
 			filteredCrew: [[], [], [], [], []],
-			floatSkills: fsk,
 			viewModes: vmodes,
 			gauntlets: [],
 			browsingGauntlet: undefined,
@@ -375,23 +370,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			});			
 		}
 	}
-
-	protected setFloatSkills(value: boolean, idx: number) {
-		this.tiny.setValue('floatSkills_' + idx, value, true);
-		let ofs = [ ... this.state.floatSkills ];
-		ofs[idx] = value;
-		this.inited = false;
-		this.setState({ ... this.state, loading: true });
-		window.setTimeout(() => {
-			this.setState({...this.state, floatSkills: ofs });
-		});
-	
-	}
-
-	protected getFloatSkills(idx: number) {
-		return !!this.state.floatSkills[idx];
-	}
-
 
 	protected setActiveRound(value: boolean) {
 		this.tiny.setValue('activeRound', value, true);
@@ -1005,56 +983,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day: Gauntlet | undefined, idx) => {
 				if (!day?.matchedCrew) {
 					return;
-				}
-				if (this.getFloatSkills(idx) && day?.matchedCrew?.length) {
-					
-					let newCrew = [...day.matchedCrew] as (PlayerCrew | CrewMember)[];
-					let idxes = {} as { [key: string]: number };
-					let needed = [] as (PlayerCrew | CrewMember)[];
-
-					Object.keys(CONFIG.SKILLS).forEach(skill => {						
-						if (!day.matchedCrew?.length) return;
-						const lacrew = day.matchedCrew;
-						let fidx = lacrew.findIndex(f => skill in f.base_skills) ?? -1;
-						if (fidx !== -1) {
-							idxes[skill] = fidx;			
-							if (!needed.some(n => n.symbol === lacrew[fidx].symbol)) {
-								needed.push(lacrew[fidx]);
-							}
-						} 
-					});					
-					needed.sort((a, b) => {
-						let arank = 0;
-						let brank = 0;
-						if (day.origRanks && a.symbol in day.origRanks) {
-							arank = day.origRanks[a.symbol];
-						}
-						if (day.origRanks && b.symbol in day.origRanks) {
-							brank = day.origRanks[b.symbol];
-						}
-						return arank - brank;
-					});
-
-					newCrew = newCrew.filter(f => !needed.some(n => n.symbol === f.symbol));
-					newCrew = needed.concat(newCrew);
-					needed = newCrew.slice(0, 5);
-
-					needed.sort((a, b) => {
-						let arank = 0;
-						let brank = 0;
-						if (day.origRanks && a.symbol in day.origRanks) {
-							arank = day.origRanks[a.symbol];
-						}
-						if (day.origRanks && b.symbol in day.origRanks) {
-							brank = day.origRanks[b.symbol];
-						}
-						return arank - brank;
-					});
-
-					for (let i = 0; i < needed.length; i++) {
-						newCrew[i] = needed[i];
-					}
-					day.matchedCrew = newCrew;
 				}
 
 				let ip = this.state.itemsPerPageTab[idx];
@@ -2076,23 +2004,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								value={filterProps[idx].ownedStatus}
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
-						</div>
-						{viewModes[idx] === 'table' &&
-						<div style={{
-							display: "flex",
-							flexDirection: "row",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
-							textAlign: "left"
-						}}>
-							<Checkbox
-							title="Ensure one of every skill in top ranked crew"
-							checked={this.getFloatSkills(idx)}
-							onChange={(e, { checked }) => this.setFloatSkills(checked as boolean, idx)}
-						/>
-						<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setFloatSkills(!this.getFloatSkills(idx), idx)}><b>Ensure one of every skill in top ranked crew</b></h4>
-						</div>
-
-						}
+						</div>						
 						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
 							display: "flex",
 							flexDirection: "column",
