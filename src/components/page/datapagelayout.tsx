@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, withPrefix, StaticQuery, graphql } from 'gatsby';
+import { Link, withPrefix, StaticQuery, graphql, navigate } from 'gatsby';
 import { Helmet } from 'react-helmet';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -7,7 +7,7 @@ import { ValidDemands } from '../../context/datacontext';
 
 import { PlayerMenu } from '../playerdata/playermenu';
 import PlayerHeader from '../playerdata/playerheader';
-import { Container, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
+import { Container, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -123,49 +123,137 @@ type NavigationProps = {
 
 interface NavItem {
 	title: string,
-	link: string,
+	link?: string,
 	src?: string,
 	right?: boolean;
 	icon?: SemanticICONS;
+	subMenu?: NavItem[];
+	customAction?: (data: NavItem) => void;
 }
 
 const Navigation = (props: NavigationProps) => {
 	const pages = [
 		{ title: 'Home', link: '/', src: '/media/logo.png' },
 		{ title: 'Behold', link: '/behold' },
-		{ title: 'Events', link: '/events' },
-		{ title: 'Crew', link: '/crew' },
-		{ title: 'Ships', link: '/crew' },
-		{ title: 'Items', link: '/items' },
-		{ title: 'Collections', link: '/collections' },
-		{ title: 'Gauntlets', link: '/gauntlets' },
-		{ title: 'Misc stats', link: '/stats' },
-		{ title: 'Episodes', link: '/episodes' },
-		{ title: 'Hall of Fame', link: '/hall_of_fame' },
-		{ title: 'Worfle', link: '/crewchallenge' },	
-		{ title: 'Theme', icon: "theme" as SemanticICONS, link: '/crewchallenge', right: true }
+		{ title: 'Inventory',
+			subMenu: [
+				{ title: 'Crew', link: '/crew' },
+				{ title: 'Ships', link: '/ships' },
+				{ title: 'Items', link: '/items' },
+				{ title: 'Unneeded Items', link: '/unneededitems' },
+			]
+		},
+		{ title: 'Game Info',
+			subMenu: [
+				{ title: 'Collections', link: '/collections' },
+				{ title: 'Events', link: '/events' }
+			]
+		},
+		{ title: 'Game Play',
+			subMenu: [
+				{ title: "Gauntlet", link: "/gauntlets" },
+				{ title: "Fleet Boss Battles", link: "/fleetboss" },
+				{ title: "Voyage Calculator", link: "/voyagecalc" },
+				{ title: "Event Planner", link: "/eventplanner" },
+				{ title: "Crew Retrieval", link: "/retrieval" },
+				{ title: "Citation Optimizer", link: "/optimizer" },
+				{ title: "Collections", link: "/collectiontool" },
+				{ title: "Factions", link: "/factions" },
+			]
+		},
+		{ title: 'Stats', 
+			subMenu: [
+				{ title: "Player Stats", link: "/otherstats" },
+				{ title: "Charts & Stats", link: "/charts" },
+				{ title: "Misc Stats", link: "/miscstats" },
+			]
+		},
+		{ title: 'Hall of Fame', link: '/voyfame' },
+		{ title: 'Worfle', link: '/crewchallenge' },
+		{ title: 'About', 
+			right: true,
+			subMenu: [
+				{ title: "About DataCore", link: "/about" },
+				{ title: "Announcements", link: "/announcements" },
+				{ title: "CAB STT Power Ratings", link: "/cabpower" },
+				{ title: "DataCore Bot", link: "/datacorebot" },
+				{ title: "Ways to help", link: "/help" },
+			]
+		}
 	] as NavItem[];
 
-	function drawMenuItem(page: NavItem, idx?: number) {
+
+	const createSubMenu = (title: string, children: NavItem[], verticalLayout: boolean = false) => {
+		const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '');
+		if (verticalLayout) {
+			return (
+				<Menu.Item key={`/${menuKey}`}>
+					<Menu.Header>{title}</Menu.Header>
+					<Menu.Menu>
+						{children.map(item => (
+							<Menu.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
+								{item.title}
+							</Menu.Item>
+						))}
+					</Menu.Menu>
+				</Menu.Item>
+			);
+		} else {
+			return (
+				<Dropdown key={`/${menuKey}`} item simple text={title}>
+					<Dropdown.Menu>
+						{children.map(item => (
+							<Dropdown.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
+								{item.title}
+							</Dropdown.Item>
+						))}
+					</Dropdown.Menu>
+				</Dropdown>
+			);
+		}
+	};
+
+	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
+		const menuKey = page.title.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		return (
-			<Menu.Item key={'menu_'+idx} as={Link} to={page.link} style={{ padding: "0 2em", height: "48px" }} className='link item'>							
+			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'>							
 				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>									
 					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
 					{page.icon && <Icon name={page.icon} size={'small'} />}
-					<div>{page.title}</div>
+					<div>{page.title}</div>				
 				</div>							
-			</Menu.Item>
-		)
+			</Menu.Item>)			
+	}
+
+	const menuItems = [] as JSX.Element[];
+	const rightItems = [] as JSX.Element[];
+	
+	for (let page of pages) {
+		if (page.right) continue;
+		if (page.subMenu) {
+			menuItems.push(createSubMenu(page.title, page.subMenu));
+		}
+		else {
+			menuItems.push(drawMenuItem(page));
+		}		
+	}
+	for (let page of pages) {
+		if (!page.right) continue;
+		if (page.subMenu) {
+			rightItems.push(createSubMenu(page.title, page.subMenu));
+		}
+		else {
+			rightItems.push(drawMenuItem(page));
+		}		
 	}
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			<Menu>
-				{pages.filter(p => !p.right).map((page, idx) => drawMenuItem(page))}
+				{menuItems}
 				<Menu.Menu position={'right'}>
-					{pages.filter(p => p.right).map((page, idx) => drawMenuItem(page))}
+					{rightItems}
 				</Menu.Menu>
-	
 			</Menu>
 
 			{/* <ul>
