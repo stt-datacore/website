@@ -41,9 +41,9 @@ export const PlayerShare = (props: PlayerShareProps) => {
 			{showInvite &&
 				<PlayerMessage
 					header='Share Your Player Profile'
-					content={<p>You can upload your profile to DataCore so you can easily share some data with other players. Tap here to learn more.</p>}
+					content={<p>You can upload your profile to DataCore so you can easily share some data with other players.{activePanel !== 'share' && <>{` `}Tap here to learn more.</>}</p>}
 					icon='share alternate'
-					onClick={() => { setActivePanel('share'); }}
+					onClick={activePanel !== 'share' ? () => setActivePanel('share') : undefined}
 					onDismiss={() => { setShowInvite(false); if (activePanel === 'share') setActivePanel(undefined); }}
 				/>
 			}

@@ -36,7 +36,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 	const enforceInput = !player.loaded && promptType === 'require';
 	const showRequireMessage = enforceInput;
 
-	const showRecommendMessage = !player.loaded && promptType === 'recommend' && (!dismissed.includes('recommend') || activePanel === 'input');
+	const showRecommendMessage = !player.loaded && promptType === 'recommend' && !dismissed.includes('recommend');
 
 	let isStale = false;
 	if (player.playerData?.calc?.lastModified) {
@@ -62,7 +62,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 					header='Player Data Recommended'
 					content={<p>This page is better with player data.{activePanel !== 'input' && <>{` `}Tap here to upload your player data now.</>}</p>}
 					icon='user outline'
-					onClick={() => setActivePanel('input')}
+					onClick={activePanel !== 'input' ? () => setActivePanel('input') : undefined}
 					onDismiss={() => { dismissMessage('recommend'); if (activePanel === 'input') setActivePanel(undefined); }}
 				/>
 			)}
@@ -76,6 +76,12 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 					onDismiss={() => { dismissMessage('stale'); if (activePanel === 'input') setActivePanel(undefined); }}
 				/>
 			}
+			{player.loaded &&
+				<PlayerShare
+					activePanel={activePanel}
+					setActivePanel={setActivePanel}
+				/>
+			}
 			{activePanel === 'card' &&
 				<PlayerInfo
 					requestDismiss={() => { setActivePanel(undefined); }}
@@ -85,12 +91,6 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 				<PlayerInputForm
 					setValidInput={receiveInput}
 					requestDismiss={!enforceInput ? () => { setActivePanel(undefined); } : undefined}
-				/>
-			}
-			{player.loaded &&
-				<PlayerShare
-					activePanel={activePanel}
-					setActivePanel={setActivePanel}
 				/>
 			}
 		</div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon } from 'semantic-ui-react';
+import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, SemanticICONS } from 'semantic-ui-react';
 
 import { PlayerData } from '../../model/player';
 
@@ -39,136 +39,20 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 						<Icon name='delete' />
 					</Label>
 				}
-				<div style={{ position: 'relative' }}>
-					<Grid columns={2} relaxed stackable textAlign='center'>
+				<div>
+					<Grid columns={3} stackable textAlign='center'>
 						<Grid.Row>
-							<Grid.Column>
-								<Header icon>
-									<Icon name='paste' />
-									Copy and Paste
-								</Header>
-								<p>
-									Copy the contents of
-									{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-										your player data
-									</a>,
-									<br />then paste everything into the text box below.
-								</p>
-								<Form>
-									<TextArea
-										placeholder='Paste your player data here'
-										value={displayedInput}
-										onChange={(e, { value }) => setDisplayedInput(value as string)}
-										onPaste={(e) => { return onInputPaste(e) }}
-									/>
-									<input
-										type='file'
-										onChange={(e) => { handleFileUpload(e) }}
-										style={{ display: 'none' }}
-										ref={e => inputUploadFile = e}
-									/>
-								</Form>
-								<Accordion style={{ marginTop: '1em' }}>
-									<Accordion.Title
-										active={details === 'copypaste'}
-										onClick={() => setDetails(details !== 'copypaste' ? 'copypaste' : undefined)}
-									>
-										Detailed instructions...
-									</Accordion.Title>
-									<Accordion.Content active={details === 'copypaste'} style={{ marginTop: '-1em', textAlign: 'left' }}>
-										<ol>
-											<li>
-												Open this page in your browser:{' '}
-												<a href={PLAYERLINK} target='_blank'>
-													{PLAYERLINK}
-												</a>.
-											</li>
-											<li>
-												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-											</li>
-											<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C).</li>
-											<li>Paste it (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process.</li>
-										</ol>
-									</Accordion.Content>
-								</Accordion>
+							<Grid.Column width={7} className='computer only'>
+								{renderCopyPaste()}
 							</Grid.Column>
-							<Grid.Column>
-								<Header icon>
-									<Icon name='upload' />
-									Upload
-								</Header>
-								<p>
-									Download
-									{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-										your player data
-									</a>
-									{` `}to your device,
-									<br />then upload the file. Recommended for mobile users.
-								</p>
-								<Button
-									onClick={() => inputUploadFile?.click()}
-									content='Browse for player data file to upload...'
-									icon='file text'
-									size='large'
-									color='blue'
-								/>
-								<Accordion style={{ marginTop: '1em' }}>
-									<Accordion.Title
-										active={details === 'ios'}
-										onClick={() => setDetails(details !== 'ios' ? 'ios' : undefined)}
-									>
-										Detailed <Icon name='apple' /> Apple iOS instructions...
-									</Accordion.Title>
-									<Accordion.Content active={details === 'ios'} style={{ marginTop: '-1em', textAlign: 'left' }}>
-										<ol>
-											<li>
-												Open this page on your device:{' '}
-												<a href={PLAYERLINK} target='_blank'>
-													{PLAYERLINK}
-												</a>.
-											</li>
-											<li>
-												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-											</li>
-											<li>Tap the share icon while viewing the page.</li>
-											<li>Tap "options" and choose "Web Archive", tap "save to files", choose a location, and save.</li>
-											<li>Come back to this DataCore page.</li>
-											<li>Tap the "Browse for player data file to upload..." button.</li>
-											<li>Choose the file starting with "player?client_api..." from where you saved it.</li>
-										</ol>
-									</Accordion.Content>
-									<Accordion.Title
-										active={details === 'android'}
-										onClick={() => setDetails(details !== 'android' ? 'android' : undefined)}
-									>
-										Detailed <Icon name='android' /> Android instructions...
-									</Accordion.Title>
-									<Accordion.Content active={details === 'android'} style={{ marginTop: '-1em', textAlign: 'left' }}>
-										<ol>
-											<li>
-												Open this page on your device:{' '}
-												<a href={PLAYERLINK} target='_blank'>
-													{PLAYERLINK}
-												</a>.
-											</li>
-											<li>
-												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-											</li>
-											<li>Tap the menu (three dots) icon while viewing the page.</li>
-											<li>Tap the download button, choose a location, and save.</li>
-											<li>Come back to this DataCore page.</li>
-											<li>Tap the "Browse for player data file to upload..." button.</li>
-											<li>Choose the file "player.json" from where you saved it.</li>
-										</ol>
-									</Accordion.Content>
-								</Accordion>
+							<Grid.Column width={1} stretched className='computer only' style={{ position: 'relative' }}>
+								<Divider vertical>Or</Divider>
+							</Grid.Column>
+							<Grid.Column width={7}>
+								{renderUpload()}
 							</Grid.Column>
 						</Grid.Row>
 					</Grid>
-					<Divider vertical>Or</Divider>
 				</div>
 				{errorMessage && (
 					<Message negative style={{ marginTop: '2em' }}>
@@ -179,6 +63,143 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 			</Card.Content>
 		</Card>
 	);
+
+	function renderCopyPaste(): JSX.Element {
+		return (
+			<React.Fragment>
+				<Header icon>
+					<Icon name='paste' />
+					Copy and Paste
+				</Header>
+				<p>
+					Copy the contents of
+					{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						your player data
+					</a>,
+					<br />then paste everything into the text box below.
+				</p>
+				<Form>
+					<TextArea
+						placeholder='Paste your player data here'
+						value={displayedInput}
+						onChange={(e, { value }) => setDisplayedInput(value as string)}
+						onPaste={(e) => { return onInputPaste(e) }}
+					/>
+					<input
+						type='file'
+						onChange={(e) => { handleFileUpload(e) }}
+						style={{ display: 'none' }}
+						ref={e => inputUploadFile = e}
+					/>
+				</Form>
+				<Accordion style={{ marginTop: '1em' }}>
+					<Accordion.Title
+						active={details === 'copypaste'}
+						onClick={() => setDetails(details !== 'copypaste' ? 'copypaste' : undefined)}
+					>
+						<Icon name={details === 'copypaste' ? 'caret down' : 'caret right' as SemanticICONS} />
+						Detailed instructions...
+					</Accordion.Title>
+					<Accordion.Content active={details === 'copypaste'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+						<ol>
+							<li>
+								Open this page in your browser:{' '}
+								<a href={PLAYERLINK} target='_blank'>
+									{PLAYERLINK}
+								</a>.
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+							</li>
+							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C).</li>
+							<li>Paste it (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process.</li>
+						</ol>
+					</Accordion.Content>
+				</Accordion>
+			</React.Fragment>
+		)
+	}
+
+	function renderUpload(): JSX.Element {
+		return (
+			<React.Fragment>
+				<Header icon>
+					<Icon name='upload' />
+					Upload
+				</Header>
+				<p>
+					Save
+					{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						your player data
+					</a>
+					{` `}to your device,
+					<br />then upload the file. Recommended for mobile users.
+				</p>
+				<Button
+					onClick={() => inputUploadFile?.click()}
+					content='Browse for player data file to upload...'
+					icon='file text'
+					size='large'
+					color='blue'
+				/>
+				<Accordion style={{ marginTop: '1em' }}>
+					<Accordion.Title
+						active={details === 'ios'}
+						onClick={() => setDetails(details !== 'ios' ? 'ios' : undefined)}
+					>
+						<Icon name={details === 'ios' ? 'caret down' : 'caret right' as SemanticICONS} />
+						Detailed <Icon name='apple' /> Apple iOS instructions...
+					</Accordion.Title>
+					<Accordion.Content active={details === 'ios'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+						<ol>
+							<li>
+								Open this page on your device:{' '}
+								<a href={PLAYERLINK} target='_blank'>
+									{PLAYERLINK}
+								</a>.
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+							</li>
+							<li>Tap the share icon while viewing the page.</li>
+							<li>Tap "options" and choose "Web Archive", tap "save to files", choose a location, and save.</li>
+							<li>Come back to this DataCore page.</li>
+							<li>Tap the "Browse for player data file to upload..." button.</li>
+							<li>Choose the file starting with "player?client_api..." from where you saved it.</li>
+						</ol>
+					</Accordion.Content>
+					<Accordion.Title
+						active={details === 'android'}
+						onClick={() => setDetails(details !== 'android' ? 'android' : undefined)}
+					>
+						<Icon name={details === 'android' ? 'caret down' : 'caret right' as SemanticICONS} />
+						Detailed <Icon name='android' /> Android instructions...
+					</Accordion.Title>
+					<Accordion.Content active={details === 'android'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+						<ol>
+							<li>
+								Open this page on your device:{' '}
+								<a href={PLAYERLINK} target='_blank'>
+									{PLAYERLINK}
+								</a>.
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+							</li>
+							<li>Tap the menu (three dots) icon while viewing the page.</li>
+							<li>Tap the download button, choose a location, and save.</li>
+							<li>Come back to this DataCore page.</li>
+							<li>Tap the "Browse for player data file to upload..." button.</li>
+							<li>Choose the file "player.json" from where you saved it.</li>
+						</ol>
+					</Accordion.Content>
+				</Accordion>
+			</React.Fragment>
+		);
+	}
 
 	function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
 		// use FileReader to read file content in browser
