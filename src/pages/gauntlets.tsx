@@ -1039,6 +1039,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				if (!filter.skillPairs.some((sp) => {
 					let p = sp.split("/");
 					let p1 = rankToSkill(p[0]);
+					if (p.length === 1) {
+						return !p1 || (p1 in crew && crew[p1].max);
+					}
 					let p2 = rankToSkill(p[1]);
 					if (!p1 || !p2) return true;
 					return (p1 in crew && crew[p1].max && p2 in crew && crew[p2].max);
@@ -1609,6 +1612,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const skillFilters = [] as DropdownItemProps[];
 
 		for (let skill1 of skills) {
+			skillFilters.push({
+				key: skill1,
+				value: skill1,
+				text: skill1
+			});
 			for (let skill2 of skills) {
 				if (skill1 === skill2) continue;
 				let sp = `${skill1}/${skill2}`;
@@ -2014,11 +2022,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Skill Pairs</b></h4>
+							<h4><b>Skills &amp; Pairs</b></h4>
 							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
 								<Dropdown
-									title={"Filter by skill pairs"}
-									placeholder="Skill Pairs"										
+									title={"Filter by skills or pairs"}
+									placeholder="Skills & Pairs"										
 									clearable
 									compact
 									inline
