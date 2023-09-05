@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, SemanticICONS } from 'semantic-ui-react';
 
 import { PlayerData } from '../../model/player';
+import { mobileCheck } from '../../utils/misc';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
@@ -42,12 +43,15 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 				<div>
 					<Grid columns={3} stackable textAlign='center'>
 						<Grid.Row>
-							<Grid.Column width={7} className='computer only'>
-								{renderCopyPaste()}
-							</Grid.Column>
-							<Grid.Column width={1} stretched className='computer only' style={{ position: 'relative' }}>
-								<Divider vertical>Or</Divider>
-							</Grid.Column>
+							{!mobileCheck() &&
+							<React.Fragment>
+								<Grid.Column width={7}>
+									{renderCopyPaste()}
+								</Grid.Column>
+								<Grid.Column width={1} stretched style={{ position: 'relative' }}>
+									<Divider vertical>Or</Divider>
+								</Grid.Column>
+							</React.Fragment>}
 							<Grid.Column width={7}>
 								{renderUpload()}
 							</Grid.Column>
