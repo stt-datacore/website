@@ -34,7 +34,7 @@ type SortDirection = 'ascending' | 'descending' | undefined;
 
 const isWindow = typeof window !== 'undefined';
 
-const SKILLS = {
+export const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
 	security_skill: 'SEC',
