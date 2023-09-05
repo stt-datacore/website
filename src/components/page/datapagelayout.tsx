@@ -133,42 +133,43 @@ interface NavItem {
 
 const Navigation = (props: NavigationProps) => {
 	const pages = [
-		{ title: 'Home', link: '/', src: '/media/logo.png' },
+		{ title: 'Home', link: '/home', src: '/media/logo.png' },
 		{ title: 'Behold', link: '/behold' },
 		{ title: 'Inventory',
 			subMenu: [
-				{ title: 'Crew', link: '/crew' },
-				{ title: 'Ships', link: '/ships' },
-				{ title: 'Items', link: '/items' },
-				{ title: 'Unneeded Items', link: '/unneededitems' },
+				{ title: 'Crew', link: '/' },
+				{ title: 'Ships', link: '/playertools?tool=ships' },
+				{ title: 'Items', link: '/playertools?tool=items' },
+				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded' },
 			]
 		},
 		{ title: 'Game Info',
 			subMenu: [
 				{ title: 'Collections', link: '/collections' },
-				{ title: 'Events', link: '/events' }
+				{ title: 'Events', link: '/events' },
+				{ title: 'Episodes', link: '/episodes' }
 			]
 		},
 		{ title: 'Game Play',
 			subMenu: [
 				{ title: "Gauntlet", link: "/gauntlets" },
-				{ title: "Fleet Boss Battles", link: "/fleetboss" },
-				{ title: "Voyage Calculator", link: "/voyagecalc" },
-				{ title: "Event Planner", link: "/eventplanner" },
-				{ title: "Crew Retrieval", link: "/retrieval" },
-				{ title: "Citation Optimizer", link: "/optimizer" },
-				{ title: "Collections", link: "/collectiontool" },
-				{ title: "Factions", link: "/factions" },
+				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles" },
+				{ title: "Voyage Calculator", link: "/playertools?tool=voyage" },
+				{ title: "Event Planner", link: "/playertools?tool=event-planner" },
+				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval" },
+				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer" },
+				{ title: "Collections", link: "/playertools?tool=collections" },
+				{ title: "Factions", link: "/playertools?tool=factions" },
 			]
 		},
 		{ title: 'Stats', 
 			subMenu: [
-				{ title: "Player Stats", link: "/otherstats" },
-				{ title: "Charts & Stats", link: "/charts" },
-				{ title: "Misc Stats", link: "/miscstats" },
+				{ title: "Player Stats", link: "/playertools?tool=other" },
+				{ title: "Charts & Stats", link: "/playertools?tool=charts" },
+				{ title: "Misc Stats", link: "/stats" },
 			]
 		},
-		{ title: 'Hall of Fame', link: '/voyfame' },
+		{ title: 'Hall of Fame', link: '/hall_of_fame' },
 		{ title: 'Worfle', link: '/crewchallenge' },
 		{ title: 'About', 
 			right: true,
@@ -216,7 +217,7 @@ const Navigation = (props: NavigationProps) => {
 	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
 		const menuKey = page.title.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'>							
+			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>							
 				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>									
 					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
 					{page.icon && <Icon name={page.icon} size={'small'} />}

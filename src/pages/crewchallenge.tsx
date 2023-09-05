@@ -7,6 +7,7 @@ import Layout from '../components/layout';
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
 import { BaseSkills, Skill } from '../model/crew';
+import DataPageLayout from '../components/page/datapagelayout';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -130,7 +131,8 @@ const CrewChallengeLayout = () => {
 	];
 
 	return (
-		<Layout title={PAGE_TITLE}>
+		<DataPageLayout title={PAGE_TITLE}>
+			<>
 			<Header as='h2'>{PAGE_TITLE}</Header>
 			<Menu>
 				{menuItems.map(item => (
@@ -142,7 +144,8 @@ const CrewChallengeLayout = () => {
 			{activeItem === 'daily' && <DailyGame />}
 			{activeItem === 'practice' && <PracticeGame />}
 			{activeItem === 'instructions' && renderInstructions()}
-		</Layout>
+			</>
+		</DataPageLayout>
 	);
 
 	function renderInstructions(): JSX.Element {
