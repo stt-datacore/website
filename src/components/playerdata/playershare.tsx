@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Button, Form, Checkbox } from 'semantic-ui-react';
+import { Card, Label, Icon, Button, Form, Checkbox, Message } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 
@@ -8,81 +8,121 @@ import { PlayerMessage } from './playermessage';
 import { useStateWithStorage } from '../../utils/storage';
 
 type PlayerShareProps = {
-	showPanel: boolean;
-	dismissPanel: () => void;
+	activePanel: string | undefined;
+	setActivePanel: (activePanel: string | undefined) => void;
 };
 
 export const PlayerShare = (props: PlayerShareProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, stripped } = globalContext.player;
-	const { showPanel, dismissPanel } = props;
+	const { playerData, strippedPlayerData } = globalContext.player;
+	const { activePanel, setActivePanel } = props;
 
     const dbid = playerData?.player.dbid ?? '';
 
-	const [showMessage, setShowMessage] = useStateWithStorage(dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
+	const [showInvite, setShowInvite] = useStateWithStorage(dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(dbid + '/tools/profileAutoUpdate', false, { rememberForever: true, onInitialize: variableReady });
 	const [varsReady, setVarsReady] = React.useState(0);
 	const [shareState, setShareState] = useStateWithStorage('player/shareState', 0);
+	const [showSuccess, setShowSuccess] = useStateWithStorage('player/showShareSuccess', true);
+	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
-    if (!playerData || !stripped) return (<></>);
-	if (varsReady < 2) return (<></>);	// Escape here if localStorage vars not ready to avoid possibly rendering, then un-rendering shareMessage
+	React.useEffect(() => {
+		if (varsReady < 2) return;
+		//if (profileAutoUpdate) shareProfile();
+	}, [strippedPlayerData, varsReady]);
+
+    if (!playerData || !strippedPlayerData) return (<></>);
+	if (varsReady < 2) return (<></>);	// Escape here if localStorage vars not ready to avoid possibly rendering, then un-rendering messages
 
 	const PROFILELINK = `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
 
 	return (
 		<React.Fragment>
-			{(showMessage || showPanel) &&
+			{showInvite &&
 				<PlayerMessage
-					header='Share Your Player Profile!'
-					content={<p>You can upload your profile to DataCore so you can easily share some data with other players.</p>}
+					header='Share Your Player Profile'
+					content={<p>You can upload your profile to DataCore so you can easily share some data with other players. Tap here to learn more.</p>}
 					icon='share alternate'
-					onDismiss={() => { setShowMessage(false); dismissPanel(); }}
+					onClick={() => { setActivePanel('share'); }}
+					onDismiss={() => { setShowInvite(false); if (activePanel === 'share') setActivePanel(undefined); }}
 				/>
 			}
-			{showPanel && (
-				<React.Fragment>
-					<ul>
-						<li>Once shared, your public profile will be accessible by anyone with this link: <b><a href={PROFILELINK} target='_blank'>{PROFILELINK}</a></b>.</li>
-						<li>Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.</li>
-						<li>
-							There is no private information included in the player profile; information being shared is limited to:{' '}
-							<b>DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
-						</li>
-					</ul>
-					{shareState < 2 && (
-						<Button color='green' onClick={() => shareProfile()} style={{ marginTop: '1em' }}>
-							{shareState === 1 && <Icon loading name='spinner' />}Share your profile
-						</Button>
-					)}
-					{shareState === 2 && (
-						<Form.Group>
-							<p>
-								Your profile was uploaded. Share the link:{' '}
-								<b><a href={PROFILELINK} target='_blank'>{PROFILELINK}</a></b>
-							</p>
-							<Form.Field
-								control={Checkbox}
-								label='Automatically share profile after every import'
-								checked={profileAutoUpdate}
-								onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
+			{shareState === 2 && showSuccess &&
+				<PlayerMessage
+					header='Player Profile Shared!'
+					content={
+						<p>
+							Your profile was uploaded successfully. Share the link:
+							<br /><a href={PROFILELINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{PROFILELINK}</a>
+						</p>
+					}
+					icon='share alternate'
+					onDismiss={() => { setShowSuccess(false); if (activePanel === 'share') setActivePanel(undefined); }}
+				/>
+			}
+			{activePanel === 'share' && (
+				<Card fluid>
+					<Card.Content>
+						<Label as='a' corner='right' onClick={() => setActivePanel(undefined)}>
+							<Icon name='delete' />
+						</Label>
+						<Card.Header>
+							Share Profile
+						</Card.Header>
+						<ul>
+							<li>
+								You can upload your profile to DataCore so you can easily share some data with other players. Once shared, your public profile will be accessible by anyone with this link:
+								{` `}<a href={PROFILELINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{PROFILELINK}</a>.
+							</li>
+							<li>Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.</li>
+							<li>
+								There is no private information included in the player profile; information being shared is limited to:{' '}
+								<b>DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
+							</li>
+						</ul>
+						{shareState < 2 && (
+							<Button
+								onClick={() => shareProfile()}
+								content='Share your profile'
+								icon='share alternate'
+								size='large'
+								color='blue'
 							/>
-						</Form.Group>
-					)}
-				</React.Fragment>
+						)}
+						{shareState === 2 && (
+							<Form.Group>
+								<Form.Field
+									control={Checkbox}
+									label='Automatically share profile after every import (Currently not functioning)'
+									checked={profileAutoUpdate}
+									onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
+								/>
+							</Form.Group>
+						)}
+						{errorMessage && (
+							<Message negative style={{ marginTop: '2em' }}>
+								<Message.Header>Error</Message.Header>
+								<p>{errorMessage}</p>
+							</Message>
+						)}
+					</Card.Content>
+				</Card>
 			)}
 		</React.Fragment>
 	);
 
-	function variableReady(keyName: string) {
+	function variableReady(keyName: string): void {
 		setVarsReady(prev => prev + 1);
 	}
 
-	function shareProfile() {
+	function shareProfile(): void {
+		if (shareState !== 0) return;
+
 		setShareState(1);
 
 		let jsonBody = JSON.stringify({
 			dbid,
-			player_data: stripped
+			player_data: strippedPlayerData
 		});
 
 		fetch(`${process.env.GATSBY_DATACORE_URL}api/post_profile`, {
@@ -94,10 +134,10 @@ export const PlayerShare = (props: PlayerShareProps) => {
 		}).then(() => {
 			if (!profileAutoUpdate) window.open(PROFILELINK, '_blank');
 			setShareState(2);
-		}).catch((e) => {
-			console.log(e);
-		}).finally(() => {
+			setErrorMessage(undefined);
+		}).catch((error: any) => {
 			setShareState(0);
+			setErrorMessage(`${error}`);
 		});
 	}
 };

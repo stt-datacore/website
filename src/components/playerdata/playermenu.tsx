@@ -34,7 +34,6 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 						<li><a onClick={() => requestClearData()} style={{ cursor: 'pointer' }}>Clear player data</a></li>
 					</React.Fragment>
 				)}
-				<li>(List player tools here?)</li>
 			</ul>
 		</React.Fragment>
 	);

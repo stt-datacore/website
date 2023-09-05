@@ -75,7 +75,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		reset,
 		playerData: profile,
 		ephemeral,
-		stripped,
+		strippedPlayerData: stripped,
 		playerShips,
 		buffConfig,
 		maxBuffs,

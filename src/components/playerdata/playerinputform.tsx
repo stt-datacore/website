@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, TextArea, Message, Modal } from 'semantic-ui-react';
+import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon } from 'semantic-ui-react';
 
 import { PlayerData } from '../../model/player';
 
@@ -7,14 +7,16 @@ export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=2
 
 type PlayerInputFormProps = {
 	setValidInput: (playerData: PlayerData | undefined) => void;
+	requestDismiss?: () => void;
 };
 
 export const PlayerInputForm = (props: PlayerInputFormProps) => {
-	const { setValidInput } = props;
+	const { setValidInput, requestDismiss } = props;
 
 	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
 	const [fullInput, setFullInput] = React.useState('');
 	const [displayedInput, setDisplayedInput] = React.useState('');
+	const [details, setDetails] = React.useState<string | undefined>(undefined);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
 	let inputUploadFile: HTMLInputElement | null = null;
@@ -30,78 +32,155 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 	}, [inputPlayerData]);
 
 	return (
-		<div>
-			<ul>
-				<li>
-					Open this page in your browser:{' '}
-					<a href={PLAYERLINK} target='_blank'>
-						{PLAYERLINK}
-						</a>
-				</li>
-				<li>
-					Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-					<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-					</li>
-				<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-				<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
-			</ul>
-
-			<Form>
-				<TextArea
-					placeholder='Paste your player data here'
-					value={displayedInput}
-					onChange={(e, { value }) => setDisplayedInput(value as string)}
-					onPaste={(e) => { return onInputPaste(e) }}
-				/>
-				<input
-					type='file'
-					onChange={(e) => { handleFileUpload(e) }}
-					style={{ display: 'none' }}
-					ref={e => inputUploadFile = e}
-				/>
-			</Form>
-
-			{errorMessage && (
-				<Message negative>
-					<Message.Header>Error</Message.Header>
-					<p>{errorMessage}</p>
-				</Message>
-			)}
-
-			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
-				<a href={PLAYERLINK} target='_blank'>
-					your player data
-				</a>
-				{' '}to your device, then click the 'Upload data file' button.
-			</p>
-			<p>
-				<Modal
-					trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
-					header='Player data upload on iOS'
-					content={<ul>
-						<li>Go to your player data using the link provided, logging in if asked.</li>
-						<li>Wait for the page to finish loading. It should start with:{' '}
-							<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-						</li>
-						<li>Press the share icon while viewing the page.</li>
-						<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
-						<li>Come back to this page (DataCore.app player tools).</li>
-						<li>Tap the 'Upload data file' button.</li>
-						<li>Choose the file starting with 'player?client_api...' from where you saved it.</li>
-					</ul>}
-				/>
-			</p>
-
-			<Button
-				onClick={() => inputUploadFile?.click()}
-				content='Upload data file'
-				icon='file'
-				labelPosition='right'
-			/>
-		</div>
+		<Card fluid>
+			<Card.Content>
+				{requestDismiss &&
+					<Label as='a' corner='right' onClick={requestDismiss}>
+						<Icon name='delete' />
+					</Label>
+				}
+				<div style={{ position: 'relative' }}>
+					<Grid columns={2} relaxed stackable textAlign='center'>
+						<Grid.Row>
+							<Grid.Column>
+								<Header icon>
+									<Icon name='paste' />
+									Copy and Paste
+								</Header>
+								<p>
+									Copy the contents of
+									{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+										your player data
+									</a>,
+									<br />then paste everything into the text box below.
+								</p>
+								<Form>
+									<TextArea
+										placeholder='Paste your player data here'
+										value={displayedInput}
+										onChange={(e, { value }) => setDisplayedInput(value as string)}
+										onPaste={(e) => { return onInputPaste(e) }}
+									/>
+									<input
+										type='file'
+										onChange={(e) => { handleFileUpload(e) }}
+										style={{ display: 'none' }}
+										ref={e => inputUploadFile = e}
+									/>
+								</Form>
+								<Accordion style={{ marginTop: '1em' }}>
+									<Accordion.Title
+										active={details === 'copypaste'}
+										onClick={() => setDetails(details !== 'copypaste' ? 'copypaste' : undefined)}
+									>
+										Detailed instructions...
+									</Accordion.Title>
+									<Accordion.Content active={details === 'copypaste'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+										<ol>
+											<li>
+												Open this page in your browser:{' '}
+												<a href={PLAYERLINK} target='_blank'>
+													{PLAYERLINK}
+												</a>.
+											</li>
+											<li>
+												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+											</li>
+											<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C).</li>
+											<li>Paste it (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process.</li>
+										</ol>
+									</Accordion.Content>
+								</Accordion>
+							</Grid.Column>
+							<Grid.Column>
+								<Header icon>
+									<Icon name='upload' />
+									Upload
+								</Header>
+								<p>
+									Download
+									{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+										your player data
+									</a>
+									{` `}to your device,
+									<br />then upload the file. Recommended for mobile users.
+								</p>
+								<Button
+									onClick={() => inputUploadFile?.click()}
+									content='Browse for player data file to upload...'
+									icon='file text'
+									size='large'
+									color='blue'
+								/>
+								<Accordion style={{ marginTop: '1em' }}>
+									<Accordion.Title
+										active={details === 'ios'}
+										onClick={() => setDetails(details !== 'ios' ? 'ios' : undefined)}
+									>
+										Detailed <Icon name='apple' /> Apple iOS instructions...
+									</Accordion.Title>
+									<Accordion.Content active={details === 'ios'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+										<ol>
+											<li>
+												Open this page on your device:{' '}
+												<a href={PLAYERLINK} target='_blank'>
+													{PLAYERLINK}
+												</a>.
+											</li>
+											<li>
+												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+											</li>
+											<li>Tap the share icon while viewing the page.</li>
+											<li>Tap "options" and choose "Web Archive", tap "save to files", choose a location, and save.</li>
+											<li>Come back to this DataCore page.</li>
+											<li>Tap the "Browse for player data file to upload..." button.</li>
+											<li>Choose the file starting with "player?client_api..." from where you saved it.</li>
+										</ol>
+									</Accordion.Content>
+									<Accordion.Title
+										active={details === 'android'}
+										onClick={() => setDetails(details !== 'android' ? 'android' : undefined)}
+									>
+										Detailed <Icon name='android' /> Android instructions...
+									</Accordion.Title>
+									<Accordion.Content active={details === 'android'} style={{ marginTop: '-1em', textAlign: 'left' }}>
+										<ol>
+											<li>
+												Open this page on your device:{' '}
+												<a href={PLAYERLINK} target='_blank'>
+													{PLAYERLINK}
+												</a>.
+											</li>
+											<li>
+												Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+												<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
+											</li>
+											<li>Tap the menu (three dots) icon while viewing the page.</li>
+											<li>Tap the download button, choose a location, and save.</li>
+											<li>Come back to this DataCore page.</li>
+											<li>Tap the "Browse for player data file to upload..." button.</li>
+											<li>Choose the file "player.json" from where you saved it.</li>
+										</ol>
+									</Accordion.Content>
+								</Accordion>
+							</Grid.Column>
+						</Grid.Row>
+					</Grid>
+					<Divider vertical>Or</Divider>
+				</div>
+				{errorMessage && (
+					<Message negative style={{ marginTop: '2em' }}>
+						<Message.Header>Error</Message.Header>
+						<p>{errorMessage}</p>
+					</Message>
+				)}
+			</Card.Content>
+		</Card>
 	);
 
-	function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+	function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
 		// use FileReader to read file content in browser
 		const fReader = new FileReader();
 		fReader.onload = (e) => {
@@ -119,7 +198,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 		}
 	}
 
-	function parseInput() {
+	function parseInput(): void {
 		let testInput = fullInput;
 
 		// Use inputted text if no pasted text detected
@@ -148,19 +227,19 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 			} else {
 				setErrorMessage('Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!');
 			}
-		} catch (err) {
+		} catch (error: any) {
 			if ((/Log in to CS Tools/).test(testInput)) {
 				setErrorMessage('You are not logged in! Open the player data link above and log in to the game as instructed. Then return to this DataCore page and repeat all the steps to import your data.');
 			}
 			else {
-				setErrorMessage(`Failed to read the data. Make sure the page is loaded correctly and you copied the entire contents! (${err})`);
+				setErrorMessage(`Failed to read the data. Make sure the page is loaded correctly and you copied the entire contents! (${error})`);
 			}
 		}
 
 		setFullInput('');
 	}
 
-	function onInputPaste(event) {
+	function onInputPaste(event: any): boolean {
 		let paste = event.clipboardData // deprecated: || window.clipboardData
 		if (paste) {
 			let fullPaste = paste.getData('text');

@@ -68,8 +68,8 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			<MainContent narrowLayout={narrowLayout}>
 			<PlayerHeader
 				promptType={playerPromptType ?? 'none'}
-				playerPanel={playerPanel}
-				setPlayerPanel={setPlayerPanel}
+				activePanel={playerPanel}
+				setActivePanel={setPlayerPanel}
 			/>
 			{renderContents()}
 			</MainContent>
@@ -164,7 +164,7 @@ const Navigation = (props: NavigationProps) => {
 				{ title: "Factions", link: "/playertools?tool=factions" },
 			]
 		},
-		{ title: 'Stats', 
+		{ title: 'Stats',
 			subMenu: [
 				{ title: "Player Stats", link: "/playertools?tool=other" },
 				{ title: "Charts & Stats", link: "/playertools?tool=charts" },
@@ -172,7 +172,7 @@ const Navigation = (props: NavigationProps) => {
 			]
 		},
 		{ title: 'Hall of Fame', link: '/hall_of_fame' },
-		{ title: 'Worfle', link: '/crewchallenge' },		
+		{ title: 'Worfle', link: '/crewchallenge' },
 	] as NavItem[];
 
 
@@ -209,18 +209,18 @@ const Navigation = (props: NavigationProps) => {
 	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
 		const menuKey = page.title.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>							
-				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>									
+			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>
+				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
 					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
 					{page.icon && <Icon name={page.icon} size={'small'} />}
-					<div>{page.title}</div>				
-				</div>							
-			</Menu.Item>)			
+					<div>{page.title}</div>
+				</div>
+			</Menu.Item>)
 	}
 
 	const menuItems = [] as JSX.Element[];
 	const rightItems = [] as JSX.Element[];
-	
+
 	for (let page of pages) {
 		if (page.right) continue;
 		if (page.subMenu) {
@@ -228,7 +228,7 @@ const Navigation = (props: NavigationProps) => {
 		}
 		else {
 			menuItems.push(drawMenuItem(page));
-		}		
+		}
 	}
 	for (let page of pages) {
 		if (!page.right) continue;
@@ -237,20 +237,20 @@ const Navigation = (props: NavigationProps) => {
 		}
 		else {
 			rightItems.push(drawMenuItem(page));
-		}		
+		}
 	}
 	const otherPages = useOtherPages();
 	const about = [
 		{ title: 'About DataCore', link: '/about' },
 		{ title: 'Announcements', link: '/announcements' }
 	] as NavItem[];
-	
+
 	otherPages.map((page) => {
 		about.push(
 			{ title: page.title, link: page.slug }
 		);
 	});
-	
+
 	menuItems.push(createSubMenu('About', about));
 
 
