@@ -8,6 +8,7 @@ import { ValidDemands } from '../../context/datacontext';
 import { PlayerMenu } from '../playerdata/playermenu';
 import PlayerHeader from '../playerdata/playerheader';
 import { Container, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
+import { useOtherPages } from '../otherpages';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -139,7 +140,8 @@ const Navigation = (props: NavigationProps) => {
 			subMenu: [
 				{ title: 'Crew', link: '/' },
 				{ title: 'Ships', link: '/playertools?tool=ships' },
-				{ title: 'Items', link: '/playertools?tool=items' },
+				{ title: 'Owned Items', link: '/playertools?tool=items' },
+				{ title: 'All Items', link: '/items' },
 				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded' },
 			]
 		},
@@ -170,17 +172,7 @@ const Navigation = (props: NavigationProps) => {
 			]
 		},
 		{ title: 'Hall of Fame', link: '/hall_of_fame' },
-		{ title: 'Worfle', link: '/crewchallenge' },
-		{ title: 'About', 
-			right: true,
-			subMenu: [
-				{ title: "About DataCore", link: "/about" },
-				{ title: "Announcements", link: "/announcements" },
-				{ title: "CAB STT Power Ratings", link: "/cabpower" },
-				{ title: "DataCore Bot", link: "/datacorebot" },
-				{ title: "Ways to help", link: "/help" },
-			]
-		}
+		{ title: 'Worfle', link: '/crewchallenge' },		
 	] as NavItem[];
 
 
@@ -247,6 +239,20 @@ const Navigation = (props: NavigationProps) => {
 			rightItems.push(drawMenuItem(page));
 		}		
 	}
+	const otherPages = useOtherPages();
+	const about = [
+		{ title: 'About DataCore', link: '/about' },
+		{ title: 'Announcements', link: '/announcements' }
+	] as NavItem[];
+	
+	otherPages.map((page) => {
+		about.push(
+			{ title: page.title, link: page.slug }
+		);
+	});
+	
+	menuItems.push(createSubMenu('About', about));
+
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
