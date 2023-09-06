@@ -154,12 +154,12 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	tinyCol.removeValue("selectedCollection");
 
 	const defaultMap = {
-		collectionsFilter: selColId !== undefined ? [selColId] : [] as number[]
+		collectionsFilter: selColId !== undefined ? [selColId] : [] as number[],
+		rewardFilter: []
 	} as MapFilterOptions;
 
 	const [mapFilter, setMapFilter] = useStateWithStorage('collectionstool/mapFilter', defaultMap);
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
-
 
 	if (selColId !== undefined && !mapFilter?.collectionsFilter?.includes(selColId)) {
 		
@@ -354,7 +354,15 @@ const CrewTable = (props: CrewTableProps) => {
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
 	const [searchFilter, setSearchFilter] = useStateWithStorage('collectionstool/searchFilter', '');
-	const [short, setShort] = useStateWithStorage('collectionstool/colGroupShort', false);
+	const [short, internalSetShort] = useStateWithStorage('collectionstool/colGroupShort', false, { rememberForever: true });
+	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
+
+	const setShort = (value: boolean) => {
+		if (value !== short) {
+			internalSetShort(value);
+			setMapFilter({ ... mapFilter ?? {}, rewardFilter: [] });
+		}		
+	}
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
@@ -792,7 +800,9 @@ const CrewTable = (props: CrewTableProps) => {
 				</Form>
 			</div>
 
-			<Tab 
+			<Tab 	
+				activeIndex={tabIndex}
+				onTabChange={(e, { activeIndex })=> setTabIndex(activeIndex as number ?? 0)}			
 				panes={[
 					{ menuItem: narrow ? 'Crew' : 'Crew Table', render: () => renderTable()},
 					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups(colGroups.slice(10 * (groupPage - 1), (10 * (groupPage - 1)) + 10))}

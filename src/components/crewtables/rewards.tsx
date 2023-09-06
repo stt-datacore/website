@@ -161,7 +161,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 	return (<>
 	
 	<Dropdown 
-		style={{width: "18em"}}
+		style={{width: "22em"}}
 		scrolling
 		placeholder={'Priortize rewards'}
 		options={rrOpts} 
