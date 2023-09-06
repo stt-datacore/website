@@ -23,6 +23,7 @@ import { getImageName } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
 import { checkReward, getCollectionRewards } from '../utils/itemutils';
 import { EquipmentItem } from '../model/equipment';
+import { RewardPicker, RewardsGrid, rewardOptions } from './crewtables/rewards';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -220,21 +221,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 
 	// Rewards will test value against literal symbol string, except when prefixed by:
 	//	= Regular expression against symbol, * Special test case
-	const rewardOptions = [
-		{ key: 'roAnyr', value: '*any', text: 'Any reward' },
-		{ key: 'roBuff', value: '*buffs', text: 'Buffs' },
-		{ key: 'roEner', value: 'energy', text: 'Chronitons' },
-		{ key: 'roCred', value: 'nonpremium', text: 'Credits' },
-		{ key: 'roCrew', value: '=_crew$', text: 'Crew' },
-		{ key: 'roDili', value: 'premium_purchasable', text: 'Dilithium' },
-		{ key: 'roHono', value: 'honor', text: 'Honor' },
-		{ key: 'roMeri', value: 'premium_earnable', text: 'Merits' },
-		{ key: 'roPort', value: '=premium_\\d+x_bundle', text: 'Portals' },
-		{ key: 'roRepl', value: '=^replicator_fuel', text: 'Replicator Fuel' },
-		{ key: 'roSche', value: '=_ship_schematic$', text: 'Ship schematics' },
-		{ key: 'roBoos', value: '=minor_consumables_\\d+x_bundle', text: 'Shuttle boosts' },
-		{ key: 'roTrai', value: '=_production_training$', text: 'Training' }
-	];
+	
 
 	return (
 		<React.Fragment>
@@ -279,13 +266,13 @@ const ProgressTable = (props: ProgressTableProps) => {
 		if (!showMaxed && collection.milestone.goal == 0) return false;
 
 		if (rewardFilter && rewardFilter != '*any') {
-			let re;
+			let re: RegExp;
 			if (rewardFilter == '*buffs') {
 				if (collection.milestone?.buffs?.length == 0) return false;
 			}
 			else if (rewardFilter.slice(0, 1) == '=') {
 				re = new RegExp(rewardFilter.slice(1));
-				if (!collection.milestone.rewards?.find(reward => re.test(reward.symbol))) return false;
+				if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) return false;
 			}
 			else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
 				return false;
@@ -367,6 +354,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
 	const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
 	const [searchFilter, setSearchFilter] = useStateWithStorage('collectionstool/searchFilter', '');
+	const [short, setShort] = useStateWithStorage('collectionstool/colGroupShort', false);
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
@@ -410,6 +398,44 @@ const CrewTable = (props: CrewTableProps) => {
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
 
+	const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
+		let result = false;
+
+		for (let rewardFilter of filters) {
+			let q = true;
+
+			if (rewardFilter && rewardFilter != '*any') {
+				let re: RegExp;
+				if (rewardFilter == '*buffs') {
+					if (collection.milestone?.buffs?.length == 0) q = false;
+				}
+				else if (rewardFilter.slice(0, 1) == '=') {
+					re = new RegExp(rewardFilter.slice(1));
+					if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
+				}
+				else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
+					return q = false;
+				}
+			}	
+			result ||= q;
+		}
+
+		return result;
+	}
+
+	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
+		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
+		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) > 1) return false;
+		if (!exclude?.includes('owned-ff') && ownedFilter === 'owned-ff' && crew.max_rarity !== (crew.highest_owned_rarity ?? crew.rarity)) return false;
+		if (!exclude?.includes('rarity') && rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
+		if (!exclude?.includes('portal') && fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
+		if (!exclude?.includes('portal-unique') && fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
+		if (!exclude?.includes('portal-nonunique') && fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
+		if (!exclude?.includes('nonportal') && fuseFilter === 'nonportal' && crew.in_portal) return false;
+		return true;
+	}
+
 	const buffConfig = calculateBuffConfig(props.playerData.player);
 	const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -450,13 +476,7 @@ const CrewTable = (props: CrewTableProps) => {
 							return false;
 						}
 
-						if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
-						if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
-						if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-						if (fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
-						if (fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
-						if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
-						if (fuseFilter === 'nonportal' && crew.in_portal) return false;					
+						if (!checkCommonFilter(crew, ['unowned', 'owned'])) return false;
 					}
 					return fr;
 				})
@@ -478,15 +498,25 @@ const CrewTable = (props: CrewTableProps) => {
 			let  bcol = b.collection;
 
 			if (mapFilter?.rewardFilter) {
-				let areward = getCollectionRewards([acol]);
-				let breward = getCollectionRewards([bcol]);
-				let ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
-				let byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+				let ayes = false;
+				let byes = false;
+
+				if (short) {
+					ayes = checkRewardFilter(acol, mapFilter.rewardFilter);
+					byes = checkRewardFilter(bcol, mapFilter.rewardFilter);
+				}
+				else {
+					let areward = getCollectionRewards([acol]);
+					let breward = getCollectionRewards([bcol]);
+					ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+					byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+	
+				}
 
 				if (ayes != byes) {
 					if (ayes) return -1;
 					else return 1;
-				}
+				}	
 			}
 
 			let r = 0;
@@ -526,7 +556,7 @@ const CrewTable = (props: CrewTableProps) => {
 				}
 
 				if (!r) r = a.max_rarity - b.max_rarity;
-				if (!r) r = (b.rarity / b.max_rarity) - (a.rarity / a.max_rarity);
+				if (!r) r = (b.rarity / (b.highest_owned_rarity ?? b.max_rarity)) - (a.rarity / (a.highest_owned_rarity ?? a.max_rarity));
 				if (!r) r = b.level - a.level;
 				if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
 				if (!r) r = bcount - acount;
@@ -586,7 +616,8 @@ const CrewTable = (props: CrewTableProps) => {
 			<div style={{
 				display: "flex",
 				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-				alignItems: "center"				
+				alignItems: "center",
+				justifyContent: "flex-start"			
 			}}>
 				<Input
 					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
@@ -601,15 +632,15 @@ const CrewTable = (props: CrewTableProps) => {
 						</Button>
 				</Input>
 
-				<Dropdown 
-					scrolling
-					placeholder={'Priortize rewards'}
-					options={rewardOptions} 
-					value={mapFilter.rewardFilter} 
-					multiple
-					onChange={(e, { value }) => setMapFilter({ ... mapFilter, rewardFilter: value as string[] })}
-					/>
-
+				<RewardPicker 
+					short={short}
+					setShort={setShort}
+					rewards={uniqueRewards} 
+					icons
+					value={mapFilter?.rewardFilter} 
+					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+					 />
+				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
 			</div>
 			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
 			<Table striped>
@@ -792,15 +823,7 @@ const CrewTable = (props: CrewTableProps) => {
 			}
 			if (!hasAllCollections) return false;
 		}
-		if (ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
-		if (ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
-		if (ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? 0)) > 1) return false;
-		if (ownedFilter === 'owned-ff' && crew.max_rarity !== crew.highest_owned_rarity) return false;
-		if (rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
-		if (fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
-		if (fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
-		if (fuseFilter === 'nonportal' && crew.in_portal) return false;
+		if (!checkCommonFilter(crew)) return false;
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -870,92 +893,6 @@ const CrewTable = (props: CrewTableProps) => {
 			);
 		}
 	}
-};
-export interface RewardsGridProps {
-	rewards?: Reward[];
-	wrap?: boolean;
-	maxCols?: number;
-}
-
-const RewardsGrid = (props: RewardsGridProps) => {
-	const { rewards, wrap, maxCols } = props;
-	const context = React.useContext(GlobalContext);
-	const { playerData } = context.player;
-	const { items: tempItems, crew: allCrew } = context.core;
-
-	const items = [] as EquipmentItem[];
-
-	if (!rewards?.length) return (<></>);
-
-	const quantityLabel = (quantity) => {
-		if (quantity >= 10000)
-			return quantity/1000+'K';
-		return quantity;
-	};
-
-	const rewardRows = [] as Reward[][];
-	rewardRows.push([]);
-	let cols = !wrap ? rewards.length : ((maxCols && maxCols >= 4) ? maxCols : 4);
-	if (rewards.length < cols) cols = rewards.length;
-
-	if (wrap) {
-
-		let idx = 0;
-		let cidx = 0;
-		
-		for (let reward of rewards) {
-			rewardRows[cidx].push(reward);
-			if (idx++ >= cols - 1) {
-				rewardRows.push([]);
-				idx = 0;
-				cidx++;
-			}
-		}
-	}
-	else {
-		rewardRows[0] = rewards;
-	}
-	
-	return (
-		<Grid columns={cols as SemanticWIDTHS}>
-			{rewardRows.map((row, rowIdx) => {
-				return (
-					<Grid.Row key={rowIdx + "_rowreward"}>
-
-					{row.map((reward, idx) => {
-							const img = getImageName(reward);
-							checkReward(items, reward);
-							return (
-								<Grid.Column key={idx + "_rowcolreward"}>
-									<div style={{
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-										alignItems: "center"
-									}}>
-									<ItemDisplay
-										quantity={reward.quantity}
-										targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
-										itemSymbol={reward.symbol}
-										allCrew={allCrew}
-										allItems={items}
-										playerData={playerData}
-										src={`${process.env.GATSBY_ASSETS_URL}${img}`}
-										size={32}
-										maxRarity={reward.rarity}
-										rarity={reward.rarity}
-									/>
-									<span>{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
-									</div>
-								</Grid.Column>
-							);
-						})}
-
-					</Grid.Row>
-				)
-			})}
-		</Grid>
-	);
 };
 
 export default CollectionsTool;
