@@ -123,8 +123,9 @@ type NavigationProps = {
 
 
 interface NavItem {
-	title: string,
+	title?: string,
 	link?: string,
+	tooltip?: string,
 	src?: string,
 	right?: boolean;
 	icon?: SemanticICONS;
@@ -135,8 +136,11 @@ interface NavItem {
 const Navigation = (props: NavigationProps) => {
 	const pages = [
 		{ title: 'Home', link: '/home', src: '/media/logo.png' },
+		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
+		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
+		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
 		{ title: 'Behold', link: '/behold' },
-		{ title: 'Inventory',
+		{ title: 'Roster',
 			subMenu: [
 				{ title: 'Crew', link: '/' },
 				{ title: 'Ships', link: '/playertools?tool=ships' },
@@ -207,13 +211,13 @@ const Navigation = (props: NavigationProps) => {
 	};
 
 	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
-		const menuKey = page.title.toLowerCase().replace(/[^a-z0-9_]/g, '');
+		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: "0 2em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>
-				<div style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
+			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>
+				<div title={page.tooltip} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
 					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
 					{page.icon && <Icon name={page.icon} size={'small'} />}
-					<div>{page.title}</div>
+					{page.title && <div>{page.title}</div>}
 				</div>
 			</Menu.Item>)
 	}
@@ -224,7 +228,7 @@ const Navigation = (props: NavigationProps) => {
 	for (let page of pages) {
 		if (page.right) continue;
 		if (page.subMenu) {
-			menuItems.push(createSubMenu(page.title, page.subMenu));
+			menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
 		}
 		else {
 			menuItems.push(drawMenuItem(page));
@@ -233,7 +237,7 @@ const Navigation = (props: NavigationProps) => {
 	for (let page of pages) {
 		if (!page.right) continue;
 		if (page.subMenu) {
-			rightItems.push(createSubMenu(page.title, page.subMenu));
+			rightItems.push(createSubMenu(page.title ?? '', page.subMenu));
 		}
 		else {
 			rightItems.push(drawMenuItem(page));
