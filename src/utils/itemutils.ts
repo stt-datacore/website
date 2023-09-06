@@ -2,7 +2,7 @@ import CONFIG from '../components/CONFIG';
 import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, PlayerEquipmentItem, Reward } from '../model/player';
+import { AtlasIcon, BuffBase, PlayerCollection, PlayerEquipmentItem, Reward } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField, getImageName } from './misc';
 
@@ -234,4 +234,11 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 			isReward: true
 		});
 	}
+}
+
+
+export function getCollectionRewards(playerCollections: PlayerCollection[]) {
+	return playerCollections.map((col) => {
+		return  ((col?.totalRewards ?? 0) > 0) ? col.milestone.buffs?.map(b => b as BuffBase).concat(col.milestone.rewards ?? []) as Reward[] : [];
+	}).flat();
 }

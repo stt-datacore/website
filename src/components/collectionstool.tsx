@@ -21,7 +21,7 @@ import { formatColString } from './item_presenters/crew_preparer';
 import { CrewItemsView } from './item_presenters/crew_items';
 import { getImageName } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
-import { checkReward } from '../utils/itemutils';
+import { checkReward, getCollectionRewards } from '../utils/itemutils';
 import { EquipmentItem } from '../model/equipment';
 
 const CollectionsTool = () => {
@@ -476,6 +476,19 @@ const CrewTable = (props: CrewTableProps) => {
 		.sort((a, b) => {
 			let  acol = a.collection;
 			let  bcol = b.collection;
+
+			if (mapFilter?.rewardFilter) {
+				let areward = getCollectionRewards([acol]);
+				let breward = getCollectionRewards([bcol]);
+				let ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+				let byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+
+				if (ayes != byes) {
+					if (ayes) return -1;
+					else return 1;
+				}
+			}
+
 			let r = 0;
 			let amissing = (acol?.milestone?.goal === 'n/a' ? 0 : acol?.milestone?.goal ?? 0) - (acol?.owned ?? 0);
 			let bmissing = (bcol?.milestone?.goal === 'n/a' ? 0 : bcol?.milestone?.goal ?? 0) - (bcol?.owned ?? 0);
@@ -545,9 +558,7 @@ const CrewTable = (props: CrewTableProps) => {
 		return <></>
 	}
 
-	let rewardCol = playerCollections.map((col) => {
-		return  ((col?.totalRewards ?? 0) > 0) ? col.milestone.buffs?.map(b => b as BuffBase).concat(col.milestone.rewards ?? []) as Reward[] : [];
-	}).flat();
+	let rewardCol = getCollectionRewards(playerCollections);
 	
 	const uniqueRewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
 
@@ -591,6 +602,7 @@ const CrewTable = (props: CrewTableProps) => {
 				</Input>
 
 				<Dropdown 
+					scrolling
 					placeholder={'Priortize rewards'}
 					options={rewardOptions} 
 					value={mapFilter.rewardFilter} 
