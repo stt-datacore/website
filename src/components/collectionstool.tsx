@@ -22,6 +22,7 @@ import { CrewItemsView } from './item_presenters/crew_items';
 import { getImageName } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
 import { checkReward } from '../utils/itemutils';
+import { EquipmentItem } from '../model/equipment';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -151,14 +152,18 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 	tinyCol.removeValue("selectedCollection");
 
-	const [collectionsFilter, setCollectionsFilter] = useStateWithStorage('collectionstool/collectionsFilter', selColId !== undefined ? [selColId] : [] as number[]);
+	const defaultMap = {
+		collectionsFilter: selColId !== undefined ? [selColId] : [] as number[]
+	} as MapFilterOptions;
+
+	const [mapFilter, setMapFilter] = useStateWithStorage('collectionstool/mapFilter', defaultMap);
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 
-	if (selColId !== undefined && !collectionsFilter?.includes(selColId)) {
+	if (selColId !== undefined && !mapFilter?.collectionsFilter?.includes(selColId)) {
 		
 		if (playerCollections?.some(c => c.id === selColId && !!c.milestone?.goal && !!c.needed)) {
-			setCollectionsFilter([...collectionsFilter, selColId]);
+			setMapFilter({...mapFilter, collectionsFilter: [...mapFilter?.collectionsFilter ?? [], ...[selColId]]});
 			window.setTimeout(() => {
 				crewAnchor?.current?.scrollIntoView({
 					behavior: 'smooth',
@@ -179,13 +184,14 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		<React.Fragment>
 			<ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
 			<div ref={crewAnchor} />
-			<CrewTable playerData={props.playerData} allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} collectionsFilter={collectionsFilter} setCollectionsFilter={setCollectionsFilter} />
+			<CrewTable playerData={props.playerData} allCrew={allCrew} playerCollections={playerCollections} collectionCrew={collectionCrew} mapFilter={mapFilter} setMapFilter={setMapFilter} />
 		</React.Fragment>
 	);
 
 	function filterCrewByCollection(collectionId: number): void {
 		if (!crewAnchor.current) return;
-		setCollectionsFilter([collectionId]);
+		
+		setMapFilter({ ...mapFilter, collectionsFilter: [collectionId] });
 		let opt: ScrollOptions
 		crewAnchor.current.scrollIntoView({
 			behavior: 'smooth',
@@ -334,6 +340,11 @@ const ProgressTable = (props: ProgressTableProps) => {
 	}
 };
 
+export interface MapFilterOptions {
+	collectionsFilter?: number[];
+	rewardFilter?: string[];
+}
+
 export interface CollectionMap {
 	collection: PlayerCollection;
 	crew: PlayerCrew[];
@@ -343,14 +354,14 @@ type CrewTableProps = {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
-	collectionsFilter: number[];
-	setCollectionsFilter: (collectionIds: number[]) => void;
+	mapFilter: MapFilterOptions;
+	setMapFilter: (options: MapFilterOptions) => void;
 	playerData: PlayerData;
 };
 
 const CrewTable = (props: CrewTableProps) => {
 	const context = React.useContext(GlobalContext);
-	const { allCrew, playerCollections, collectionCrew, collectionsFilter, setCollectionsFilter } = props;
+	const { allCrew, playerCollections, collectionCrew, mapFilter, setMapFilter } = props;
 	
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
 	const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
@@ -415,7 +426,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
-		const filtered = playerData?.player?.character.crew.concat(collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
+		const filtered = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
 
 		let zcol = filtered.map(z => z.collections).flat();
 		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
@@ -431,7 +442,7 @@ const CrewTable = (props: CrewTableProps) => {
 					
 					if (fr) {
 						
-						if (collectionsFilter?.length) {
+						if (mapFilter?.collectionsFilter?.length) {
 							if (ownedFilter === 'unowned' && !!crew.have) return false;
 							if (ownedFilter.slice(0, 5) === 'owned' && !crew.have) return false;
 						}
@@ -454,7 +465,7 @@ const CrewTable = (props: CrewTableProps) => {
 		.filter((x) => {
 			let bPass = x.collection !== undefined && x.crew?.length &&			
 			x.collection?.totalRewards && x.collection.milestone &&
-			(!collectionsFilter?.length || collectionsFilter.some(cf => x.collection?.id === cf));
+			(!mapFilter?.collectionsFilter?.length || mapFilter.collectionsFilter.some(cf => x.collection?.id === cf));
 			
 			if (searchFilter?.length && bPass) {				
 				bPass &&= x.crew?.some(csf => searches.some(search => csf.name.includes(search)));
@@ -534,29 +545,60 @@ const CrewTable = (props: CrewTableProps) => {
 		return <></>
 	}
 
+	let rewardCol = playerCollections.map((col) => {
+		return  ((col?.totalRewards ?? 0) > 0) ? col.milestone.buffs?.map(b => b as BuffBase).concat(col.milestone.rewards ?? []) as Reward[] : [];
+	}).flat();
+	
+	const uniqueRewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
+
+	const rewardOptions = uniqueRewards.map((reward) => {
+		return {
+			key: reward.symbol,
+			value: reward.symbol,
+			text: reward.name
+		}
+	});
+
+	//const rewards =
+
+
 	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{!collectionsFilter?.length && 
+			{!mapFilter?.collectionsFilter?.length && 
 				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 					The grouped collection view shows only owned crew if the collections list is not filtered.
 				</i>}
+			<div style={{
+				display: "flex",
+				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+				alignItems: "center"				
+			}}>
+				<Input
+					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
+					iconPosition="left"
+					placeholder="Search..."
+					value={searchFilter}
+					onChange={(e, { value }) => setSearchFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => setSearchFilter('')} >
+							<Icon name='delete' />
+						</Button>
+				</Input>
 
-			<Input
-				style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
-				iconPosition="left"
-				placeholder="Search..."
-				value={searchFilter}
-				onChange={(e, { value }) => setSearchFilter(value)}>
-					<input />
-					<Icon name='search' />
-					<Button icon onClick={() => setSearchFilter('')} >
-						<Icon name='delete' />
-					</Button>
-			</Input>
+				<Dropdown 
+					placeholder={'Priortize rewards'}
+					options={rewardOptions} 
+					value={mapFilter.rewardFilter} 
+					multiple
+					onChange={(e, { value }) => setMapFilter({ ... mapFilter, rewardFilter: value as string[] })}
+					/>
+
+			</div>
 			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
 			<Table striped>
 				{colMap.map((col, idx) => {
@@ -580,7 +622,7 @@ const CrewTable = (props: CrewTableProps) => {
 								title={collection.name}
 							/>
 							<h2 
-								onClick={(e) => { setSearchFilter(''); setCollectionsFilter([collection.id])}}
+								onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
 								style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
 							<hr style={{width: "16em"}}></hr>
@@ -666,8 +708,8 @@ const CrewTable = (props: CrewTableProps) => {
 					search
 					selection
 					options={collectionsOptions}
-					value={collectionsFilter}
-					onChange={(e, { value }) => setCollectionsFilter(value)}
+					value={mapFilter}
+					onChange={(e, { value }) => setMapFilter(value)}
 					closeOnChange
 				/>
 			</div>
@@ -728,10 +770,10 @@ const CrewTable = (props: CrewTableProps) => {
 
 		if (!filterType) return true;
 
-		if (collectionsFilter.length > 0) {
+		if (mapFilter.collectionsFilter && mapFilter.collectionsFilter.length > 0) {
 			let hasAllCollections = true;
-			for (let i = 0; i < collectionsFilter.length; i++) {
-				if (!crew.unmaxedIds?.includes(collectionsFilter[i])) {
+			for (let i = 0; i < mapFilter.collectionsFilter.length; i++) {
+				if (!crew.unmaxedIds?.includes(mapFilter[i])) {
 					hasAllCollections = false;
 					break;
 				}
@@ -760,8 +802,7 @@ const CrewTable = (props: CrewTableProps) => {
 					<td style={{ textAlign: 'right', fontSize: '.95em' }}>{collection.progress} / {collection.milestone.goal}</td>
 				</tr>
 			);
-		});
-		const buffConfig = calculateBuffConfig(props.playerData.player);
+		});		
 
 		return (
 			<Table.Row key={crew.symbol}>
@@ -828,7 +869,9 @@ const RewardsGrid = (props: RewardsGridProps) => {
 	const { rewards, wrap, maxCols } = props;
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
-	const { items, crew: allCrew } = context.core;
+	const { items: tempItems, crew: allCrew } = context.core;
+
+	const items = [] as EquipmentItem[];
 
 	if (!rewards?.length) return (<></>);
 
@@ -860,7 +903,7 @@ const RewardsGrid = (props: RewardsGridProps) => {
 	else {
 		rewardRows[0] = rewards;
 	}
-
+	
 	return (
 		<Grid columns={cols as SemanticWIDTHS}>
 			{rewardRows.map((row, rowIdx) => {
