@@ -1,4 +1,5 @@
 import { CrewMember } from "./crew";
+import { MilestoneBuff, Reward } from "./player";
 
 export type Variant = {
   name: string;
@@ -101,6 +102,12 @@ export interface Collection {
   crew?: string[];
   description?: string;
   image?: string;
+  milestones?: Milestone[];
+}
+export interface Milestone {
+  goal: number
+  buffs: MilestoneBuff[]
+  rewards: Reward[]
 }
 
 export const rarityLabels = [
