@@ -52,7 +52,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{showRequireMessage && (
 				<PlayerMessage
 					header='Player Data Required'
-					content={<p>This page requires player data. Follow the instructions below to upload your player data.</p>}
+					content={<p>This page requires player data. Follow the instructions below to import your player data.</p>}
 					icon='user outline'
 					warning={true}
 				/>
@@ -60,7 +60,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{showRecommendMessage && (
 				<PlayerMessage
 					header='Player Data Recommended'
-					content={<p>This page is better with player data.{activePanel !== 'input' && <>{` `}Tap here to upload your player data now.</>}</p>}
+					content={<p>This page is better with player data.{activePanel !== 'input' && <>{` `}Tap here to import your player data now.</>}</p>}
 					icon='user outline'
 					onClick={activePanel !== 'input' ? () => setActivePanel('input') : undefined}
 					onDismiss={() => { dismissMessage('recommend'); if (activePanel === 'input') setActivePanel(undefined); }}
@@ -69,7 +69,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{showStaleMessage &&
 				<PlayerMessage
 					header='Update Your Player Data'
-					content={<p>It's been a few hours since you last updated your player data. We recommend that you update now to make sure our tools are providing you recent information about your crew.</p>}
+					content={<p>It's been a few hours since you last imported your player data. We recommend that you update now to make sure our tools are providing you recent information about your crew.</p>}
 					icon='clock'
 					warning={true}
 					onClick={() => setActivePanel('input')}

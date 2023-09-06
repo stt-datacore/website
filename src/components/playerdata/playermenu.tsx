@@ -4,7 +4,7 @@ import { GlobalContext } from '../../context/globalcontext';
 
 type PlayerMenuProps = {
 	requestPanel: (panel: string | undefined) => void;
-    requestClearData: () => void;
+	requestClearData: () => void;
 };
 
 export const PlayerMenu = (props: PlayerMenuProps) => {
@@ -15,14 +15,13 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 	} = props;
 
 	const { playerData } = globalContext.player;
-    const dbid = playerData?.player.dbid ?? '';
 
 	return (
 		<React.Fragment>
 			<ul>
 				{!playerData && (
 					<React.Fragment>
-						<li><a onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Upload player data...</a></li>
+						<li><a onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Import player data...</a></li>
 					</React.Fragment>
 				)}
 				{playerData && (
