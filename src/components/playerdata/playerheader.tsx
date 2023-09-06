@@ -21,7 +21,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 	const { player } = globalContext;
 	const { promptType, activePanel, setActivePanel } = props;
 
-	const [dismissed, setDismissed] = useStateWithStorage('player/dismissedMessages', [] as string[]);
+	const [dismissed, setDismissed] = React.useState([] as string[]);
 
 	// If crew not loaded, assume core is not ready and player header shouldn't be shown
 	if (globalContext.core.crew.length === 0) return (<></>);
