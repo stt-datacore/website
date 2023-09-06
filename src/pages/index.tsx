@@ -134,6 +134,12 @@ const IndexPage = (props: IndexPageProps) => {
 			return map;
 		}).filter(fc => mode !== 1 || fc.have);
 		setAltRoster(newRoster);
+		if (hasPlayer && getMode() !== stepMode.hasPlayer) {
+			setMode(getMode());
+		}
+		else if (!hasPlayer && getMode() !== stepMode.noPlayer) {
+			setMode(getMode());
+		}
 	}, [showUnownedCrew, stepMode, buffMode, context]);
 
 
