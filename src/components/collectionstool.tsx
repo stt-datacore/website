@@ -434,7 +434,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
 		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
-		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) > 1) return false;
+		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) !== 1) return false;
 		if (!exclude?.includes('owned-ff') && ownedFilter === 'owned-ff' && crew.max_rarity !== (crew.highest_owned_rarity ?? crew.rarity)) return false;
 		if (!exclude?.includes('rarity') && rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
 		if (!exclude?.includes('portal') && fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
@@ -490,7 +490,7 @@ const CrewTable = (props: CrewTableProps) => {
 				})
 			} as CollectionMap;
 		})
-		.filter((x) => {
+		.filter((x) => {			
 			let bPass = x.collection !== undefined && x.crew?.length &&			
 			x.collection?.totalRewards && x.collection.milestone &&
 			(!mapFilter?.collectionsFilter?.length || mapFilter.collectionsFilter.some(cf => x.collection?.id === cf));
@@ -759,14 +759,15 @@ const CrewTable = (props: CrewTableProps) => {
 					search
 					selection
 					options={collectionsOptions}
-					value={mapFilter}
-					onChange={(e, { value }) => setMapFilter(value)}
+					value={mapFilter.collectionsFilter}
+					onChange={(e, { value }) => setMapFilter({ ...mapFilter ?? {}, collectionsFilter: value })}
 					closeOnChange
 				/>
 			</div>
 			<div style={{ margin: '1em 0' }}>
 				<Form>
 					<Form.Group inline>
+						{(tabIndex === 0 || !!mapFilter?.collectionsFilter?.length) &&
 						<Form.Field
 							placeholder='Filter by owned status'
 							control={Dropdown}
@@ -775,7 +776,7 @@ const CrewTable = (props: CrewTableProps) => {
 							options={ownedFilterOptions}
 							value={ownedFilter}
 							onChange={(e, { value }) => setOwnedFilter(value)}
-						/>
+						/>}
 						<Form.Field
 							placeholder='Filter by retrieval option'
 							control={Dropdown}
