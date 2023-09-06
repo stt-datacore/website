@@ -44,7 +44,6 @@ const IndexPage = (props: IndexPageProps) => {
 	const playerPresent = !!context.player.playerData?.player?.character?.crew?.length;
 
 	const [buffMode, setBuffMode] = useStateWithStorage<string | undefined>('indexBoosts', "Max Boosts");
-	const [showUnownedCrew, setShowUnownedCrew] = useStateWithStorage<boolean | undefined>('indexUnowned', true);
 
 	const defaultMode = {
 		hasPlayer: 1,
@@ -70,26 +69,31 @@ const IndexPage = (props: IndexPageProps) => {
 	}
 
 	const setMode = (mode: number) => {
-		if (hasPlayer) {
-			if (!stepMode.playerAllowedModes.includes(mode)) {
-				setStepMode({ ... stepMode, hasPlayer: stepMode.playerAllowedModes[0] });
+		setAltRoster([]);
+		window.setTimeout(() => {
+			if (hasPlayer) {
+				if (!stepMode.playerAllowedModes.includes(mode)) {
+					setStepMode({ ... stepMode, hasPlayer: stepMode.playerAllowedModes[0] });
+				}
+				else {				
+					setStepMode({ ... stepMode, hasPlayer: mode });
+				}
 			}
 			else {
-				setStepMode({ ... stepMode, hasPlayer: mode });
-			}
-		}
-		else {
-			if (!stepMode.noPlayerAllowedModes.includes(mode)) {
-				setStepMode({ ... stepMode, noPlayer: stepMode.noPlayerAllowedModes[0] });
-			}
-			else {
-				setStepMode({ ... stepMode, noPlayer: mode });
-			}
-		}
+				if (!stepMode.noPlayerAllowedModes.includes(mode)) {				
+					setStepMode({ ... stepMode, noPlayer: stepMode.noPlayerAllowedModes[0] });
+				}
+				else {				
+					setStepMode({ ... stepMode, noPlayer: mode });
+				}
+			}	
+		});
 	}
 
+	const mode = getMode();
+
 	React.useEffect(() => {
-		const mode = getMode();
+		
 		const newRoster = context.core.crew.map(crew => {
 			let map = {
 				... JSON.parse(JSON.stringify(crew)),
@@ -105,7 +109,7 @@ const IndexPage = (props: IndexPageProps) => {
 				science_skill: { core: 0, min: 0, max: 0 },
 			} as PlayerCrew;
 	
-			if (hasPlayer && getMode() !== 0) {
+			if (hasPlayer && mode !== 0) {
 				let pc = context.player.playerData?.player?.character?.crew?.find(f => f.symbol === crew.symbol);
 				if (pc) {
 					map = { ... map, ... JSON.parse(JSON.stringify(pc)) };
@@ -132,54 +136,51 @@ const IndexPage = (props: IndexPageProps) => {
 			}
 			
 			return map;
-		}).filter(fc => mode !== 1 || fc.have);
-		setAltRoster(newRoster);
-		if (hasPlayer && getMode() !== stepMode.hasPlayer) {
-			setMode(getMode());
-		}
-		else if (!hasPlayer && getMode() !== stepMode.noPlayer) {
-			setMode(getMode());
-		}
-	}, [showUnownedCrew, stepMode, buffMode, context]);
+		}).filter(fc => mode !== 1 || fc.have);		
+		setAltRoster(newRoster);			
 
+	}, [stepMode, buffMode, context]);
 
 	return (
 		<DataPageLayout playerPromptType='recommend'>
+
+			
 			<React.Fragment>				
 				<Announcement />
 
-					<Step.Group fluid>
-						<Step active={getMode() === 0} onClick={() => setMode(0)}>
-							<Icon name='game' />
-							<Step.Content>
-								<Step.Title>Game Roster</Step.Title>
-								<Step.Description>Overview of all crew in the game.</Step.Description>
-							</Step.Content>
-						</Step>
-						<Step disabled={!hasPlayer} active={getMode() === 1} onClick={() => setMode(1)}>
-							<Icon name='users' />
-							<Step.Content>
-								<Step.Title>Owned Crew</Step.Title>
-								<Step.Description>View only your owned crew.</Step.Description>
-							</Step.Content>
-						</Step>
-						<Step disabled={!hasPlayer} active={getMode() === 2} onClick={() => setMode(2)}>
-							<Icon name='table' />
-							<Step.Content>
-								<Step.Title>All Crew</Step.Title>
-								<Step.Description>View all crew and owned status.</Step.Description>
-							</Step.Content>
-						</Step>
-					</Step.Group>
+				<Step.Group fluid>
+					<Step active={mode === 0} onClick={() => setMode(0)}>
+						<Icon name='game' />
+						<Step.Content>
+							<Step.Title>Game Roster</Step.Title>
+							<Step.Description>Overview of all crew in the game.</Step.Description>
+						</Step.Content>
+					</Step>
+					<Step disabled={!hasPlayer} active={mode === 1} onClick={() => setMode(1)}>
+						<Icon name='users' />
+						<Step.Content>
+							<Step.Title>Owned Crew</Step.Title>
+							<Step.Description>View only your owned crew.</Step.Description>
+						</Step.Content>
+					</Step>
+					<Step disabled={!hasPlayer} active={mode === 2} onClick={() => setMode(2)}>
+						<Icon name='table' />
+						<Step.Content>
+							<Step.Title>All Crew</Step.Title>
+							<Step.Description>View all crew and owned status.</Step.Description>
+						</Step.Content>
+					</Step>
+				</Step.Group>
 
+				{(!altRoster?.length) && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>{context.core.spin()}</div> ||
 				<ProfileCrew 
 					buffMode={buffMode}
 					setBuffMode={setBuffMode}
-					showUnownedCrew={getMode() === 2}
+					showUnownedCrew={mode === 2}
 					setShowUnownedCrew={undefined}
 					isTools={playerPresent}
 					location={"/"} 
-					alternateRoster={altRoster} />
+					alternateRoster={altRoster} />}
 				{/* <CrewStats location={props.location} /> */}
 			</React.Fragment>
 		</DataPageLayout>
