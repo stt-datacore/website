@@ -345,7 +345,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
 					</div>
 				)}
-				{checkCaption && setCheckableValue !== undefined && (
+				{!!checkCaption && !!setCheckableValue && (
 					<div style={{
 						margin: "0.5em",
 						display:"flex",

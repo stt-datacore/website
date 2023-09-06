@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Table, Rating, Icon } from 'semantic-ui-react';
+import { Header, Table, Rating, Icon, Step } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../context/globalcontext';
@@ -31,6 +31,13 @@ interface Lockable {
 	name: string;
 };
 
+export interface CrewViewMode {
+	hasPlayer: number;
+	noPlayer: number;
+	playerAllowedModes: number[];
+	noPlayerAllowedModes: number[];
+}
+
 const IndexPage = (props: IndexPageProps) => {
 	
 	const context = React.useContext(GlobalContext);
@@ -38,13 +45,51 @@ const IndexPage = (props: IndexPageProps) => {
 
 	const [buffMode, setBuffMode] = useStateWithStorage<string | undefined>('indexBoosts', "Max Boosts");
 	const [showUnownedCrew, setShowUnownedCrew] = useStateWithStorage<boolean | undefined>('indexUnowned', true);
+
+	const defaultMode = {
+		hasPlayer: 1,
+		noPlayer: 0,
+		playerAllowedModes: [0, 1, 2],
+		noPlayerAllowedModes: [0]
+	} as CrewViewMode;
+
+	const [stepMode, setStepMode] = useStateWithStorage<CrewViewMode>('indexMode', defaultMode, { rememberForever: true });
 	const [altRoster, setAltRoster] = React.useState<PlayerCrew[] | undefined>([]);
 
 	const maxBuffs = context.maxBuffs;
 	const playerBuffs = context.player.buffConfig;
 	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
 
+	if (!stepMode.noPlayerAllowedModes?.length || !stepMode.playerAllowedModes?.length) {
+		throw new Error("Cannot initialize with no allowable modes!");
+	}
+
+	const getMode = () => {
+		if (hasPlayer) return stepMode.hasPlayer;
+		else return stepMode.noPlayer;
+	}
+
+	const setMode = (mode: number) => {
+		if (hasPlayer) {
+			if (!stepMode.playerAllowedModes.includes(mode)) {
+				setStepMode({ ... stepMode, hasPlayer: stepMode.playerAllowedModes[0] });
+			}
+			else {
+				setStepMode({ ... stepMode, hasPlayer: mode });
+			}
+		}
+		else {
+			if (!stepMode.noPlayerAllowedModes.includes(mode)) {
+				setStepMode({ ... stepMode, noPlayer: stepMode.noPlayerAllowedModes[0] });
+			}
+			else {
+				setStepMode({ ... stepMode, noPlayer: mode });
+			}
+		}
+	}
+
 	React.useEffect(() => {
+		const mode = getMode();
 		const newRoster = context.core.crew.map(crew => {
 			let map = {
 				... JSON.parse(JSON.stringify(crew)),
@@ -60,7 +105,7 @@ const IndexPage = (props: IndexPageProps) => {
 				science_skill: { core: 0, min: 0, max: 0 },
 			} as PlayerCrew;
 	
-			if (hasPlayer) {
+			if (hasPlayer && getMode() !== 0) {
 				let pc = context.player.playerData?.player?.character?.crew?.find(f => f.symbol === crew.symbol);
 				if (pc) {
 					map = { ... map, ... JSON.parse(JSON.stringify(pc)) };
@@ -87,20 +132,45 @@ const IndexPage = (props: IndexPageProps) => {
 			}
 			
 			return map;
-		}).filter(fc => showUnownedCrew || fc.have);
+		}).filter(fc => mode !== 1 || fc.have);
 		setAltRoster(newRoster);
-	}, [showUnownedCrew, buffMode, context]);
+	}, [showUnownedCrew, stepMode, buffMode, context]);
 
 
 	return (
 		<DataPageLayout playerPromptType='recommend'>
-			<React.Fragment>
+			<React.Fragment>				
 				<Announcement />
+
+					<Step.Group fluid>
+						<Step active={getMode() === 0} onClick={() => setMode(0)}>
+							<Icon name='game' />
+							<Step.Content>
+								<Step.Title>Game Roster</Step.Title>
+								<Step.Description>Overview of all crew in the game.</Step.Description>
+							</Step.Content>
+						</Step>
+						<Step disabled={!hasPlayer} active={getMode() === 1} onClick={() => setMode(1)}>
+							<Icon name='users' />
+							<Step.Content>
+								<Step.Title>Owned Crew</Step.Title>
+								<Step.Description>View only your owned crew.</Step.Description>
+							</Step.Content>
+						</Step>
+						<Step disabled={!hasPlayer} active={getMode() === 2} onClick={() => setMode(2)}>
+							<Icon name='table' />
+							<Step.Content>
+								<Step.Title>All Crew</Step.Title>
+								<Step.Description>View all crew and owned status.</Step.Description>
+							</Step.Content>
+						</Step>
+					</Step.Group>
+
 				<ProfileCrew 
 					buffMode={buffMode}
 					setBuffMode={setBuffMode}
-					showUnownedCrew={!hasPlayer || showUnownedCrew}
-					setShowUnownedCrew={hasPlayer ? setShowUnownedCrew : undefined}
+					showUnownedCrew={getMode() === 2}
+					setShowUnownedCrew={undefined}
 					isTools={playerPresent}
 					location={"/"} 
 					alternateRoster={altRoster} />

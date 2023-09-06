@@ -952,7 +952,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 				checkCaption={"Show Unowned Crew"}
 				checkableEnabled={!!props.playerData}
 				checkableValue={props.showUnownedCrew}
-				setCheckableValue={(e) => toggleUnowned(e)}
+				setCheckableValue={ props.setShowUnownedCrew ? (e) => toggleUnowned(e) : undefined}
 				toolCaption={"Buff Mode"}
 				dropDownChoices={availableModes}
 				dropDownValue={props.buffMode}
