@@ -172,7 +172,7 @@ const IndexPage = (props: IndexPageProps) => {
 					</Step>
 				</Step.Group>
 
-				{(!altRoster?.length) && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>{context.core.spin()}</div> ||
+				{(!altRoster?.length) && <div style={{height: "100vh", display: "flex", flexDirection: "column", alignItems: "center"}}>{context.core.spin()}</div> ||
 				<ProfileCrew 
 					buffMode={buffMode}
 					setBuffMode={setBuffMode}
