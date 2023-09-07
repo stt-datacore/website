@@ -3,6 +3,7 @@ import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
 
 type PlayerMenuProps = {
+	currentPanel?: string;
 	requestPanel: (panel: string | undefined) => void;
 	requestClearData: () => void;
 };
@@ -10,6 +11,7 @@ type PlayerMenuProps = {
 export const PlayerMenu = (props: PlayerMenuProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const {
+		currentPanel,
 		requestPanel,
 		requestClearData,
 	} = props;
@@ -18,19 +20,19 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 
 	return (
 		<React.Fragment>
-			<ul>
+			<ul style={{padding:0}}>
 				{!playerData && (
 					<React.Fragment>
-						<li><a onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Import player data...</a></li>
+						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Import player data...</span></li>
 					</React.Fragment>
 				)}
 				{playerData && (
 					<React.Fragment>
-						<li><a onClick={() => requestPanel('card')} style={{ cursor: 'pointer' }}>Logged in as {playerData.player.character.display_name}</a></li>
-						<li><a onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Update player data...</a></li>
-						<li><a onClick={() => requestPanel('share')} style={{ cursor: 'pointer' }}>Share profile...</a></li>
-						<li>Export</li>
-						<li><a onClick={() => requestClearData()} style={{ cursor: 'pointer' }}>Clear player data</a></li>
+						<li className={`ui button ${currentPanel === 'card' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('card')} style={{ cursor: 'pointer' }}>Logged in as {playerData.player.character.display_name}</span></li>
+						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Update player data...</span></li>
+						<li className={`ui button ${currentPanel === 'share' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('share')} style={{ cursor: 'pointer' }}>Share profile...</span></li>
+						<li className={`ui button disabled`}>Export</li>
+						<li className={`ui button`}><span onClick={() => requestClearData()} style={{ cursor: 'pointer' }}>Clear player data</span></li>
 					</React.Fragment>
 				)}
 			</ul>
