@@ -131,12 +131,38 @@ interface NavItem {
 	right?: boolean;
 	icon?: SemanticICONS;
 	subMenu?: NavItem[];
+	checkVisible?: (data: NavItem) => boolean;
 	customAction?: (data: NavItem) => void;
+	customRender?: (data: NavItem) => JSX.Element;
 }
 
 const Navigation = (props: NavigationProps) => {
+	const context = React.useContext(GlobalContext);
+
 	const pages = [
 		{ title: 'Home', link: '/home', src: '/media/logo.png' },
+		{ title: 'Avatar', 
+		  checkVisible: (data) => {
+			return !!context.player.playerData;
+		  },
+		  customRender: (data) => {
+			return <Menu.Item key={'customInput'} onClick={()=> props.requestPlayerPanel('input')}>
+			<img
+				style={{height:"24px", width: "24px"}}
+				src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
+						? context.player.playerData?.player.character.crew_avatar.portrait.file
+						: 'crew_portraits_cm_empty_sm.png'
+					}`}
+			/>
+			</Menu.Item>
+		  }
+		},
+		{ title: 'Player', customRender: (data) => {
+			return (<PlayerMenu
+				requestPanel={props.requestPlayerPanel}
+				requestClearData={props.requestClearPlayerData}
+			/>)
+		} },
 		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
 		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
 		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
@@ -148,13 +174,6 @@ const Navigation = (props: NavigationProps) => {
 				{ title: 'Owned Items', link: '/playertools?tool=items' },
 				{ title: 'All Items', link: '/items' },
 				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded' },
-			]
-		},
-		{ title: 'Game Info',
-			subMenu: [
-				{ title: 'Collections', link: '/collections' },
-				{ title: 'Events', link: '/events' },
-				{ title: 'Episodes', link: '/episodes' }
 			]
 		},
 		{ title: 'Game Play',
@@ -169,14 +188,21 @@ const Navigation = (props: NavigationProps) => {
 				{ title: "Factions", link: "/playertools?tool=factions" },
 			]
 		},
+		{ title: 'Game Info',
+			subMenu: [
+				{ title: 'Collections', link: '/collections' },
+				{ title: 'Events', link: '/events' },
+				{ title: 'Episodes', link: '/episodes' }
+			]
+		},
 		{ title: 'Stats',
 			subMenu: [
 				{ title: "Player Stats", link: "/playertools?tool=other" },
 				{ title: "Charts & Stats", link: "/playertools?tool=charts" },
 				{ title: "Misc Stats", link: "/stats" },
+				{ title: 'Hall of Fame', link: '/hall_of_fame' },
 			]
 		},
-		{ title: 'Hall of Fame', link: '/hall_of_fame' },
 		{ title: 'Worfle', link: '/crewchallenge' },
 	] as NavItem[];
 
@@ -228,7 +254,11 @@ const Navigation = (props: NavigationProps) => {
 
 	for (let page of pages) {
 		if (page.right) continue;
-		if (page.subMenu) {
+		if (page.checkVisible && !page.checkVisible(page)) continue;
+		if (page.customRender) {
+			menuItems.push(page.customRender(page));
+		}
+		else if (page.subMenu) {
 			menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
 		}
 		else {
@@ -237,7 +267,11 @@ const Navigation = (props: NavigationProps) => {
 	}
 	for (let page of pages) {
 		if (!page.right) continue;
-		if (page.subMenu) {
+		if (page.checkVisible && !page.checkVisible(page)) continue;
+		if (page.customRender) {
+			rightItems.push(page.customRender(page));
+		}
+		else if (page.subMenu) {
 			rightItems.push(createSubMenu(page.title ?? '', page.subMenu));
 		}
 		else {
@@ -260,13 +294,9 @@ const Navigation = (props: NavigationProps) => {
 
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column' }}>
+		<div style={{ display: 'flex', flexDirection: 'column', position: "fixed", top: "0px", width :"100vw", zIndex: "1000" }}>
 			<Menu>
 				{menuItems}
-				<PlayerMenu
-					requestPanel={props.requestPlayerPanel}
-					requestClearData={props.requestClearPlayerData}
-				/>
 				<Menu.Menu position={'right'}>
 					{rightItems}
 				</Menu.Menu>
