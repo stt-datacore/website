@@ -146,7 +146,19 @@ const Navigation = (props: NavigationProps) => {
 		  customAction: () => props.requestPlayerPanel('input'),
 		  checkVisible: (data) => {
 			return !!context.player.playerData;
-		} },
+		  },
+		  customRender: (data) => {
+			return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
+			<img
+				style={{height:"24px", width: "24px"}}
+				src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
+						? context.player.playerData?.player.character.crew_avatar.portrait.file
+						: 'crew_portraits_cm_empty_sm.png'
+					}`}
+			/>
+			</Menu.Item>
+		  }
+		},
 		{ title: 'Player', customRender: (data) => {
 			return (<PlayerMenu
 				requestPanel={props.requestPlayerPanel}
