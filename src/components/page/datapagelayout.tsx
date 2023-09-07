@@ -179,7 +179,7 @@ const Navigation = (props: NavigationProps) => {
 		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
 		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
 		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
-		{ title: 'Behold', link: '/behold' },
+		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold' },
 		{ title: 'Roster',
 			subMenu: [
 				{ title: 'Crew', link: '/' },
