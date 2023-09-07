@@ -1,7 +1,6 @@
 import React from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
 
-import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
 import ProfileShips from '../components/profile_ships';
@@ -114,7 +113,7 @@ export const playerTools: PlayerTools = {
 const PlayerToolsPage = (props: any) => {
 
 	return (
-		<DataPageLayout header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']} playerPromptType='require'>
+		<DataPageLayout pageTitle='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']} playerPromptType='require'>
 				<PlayerToolsComponent location={props.location} />
 		</DataPageLayout>
 	);

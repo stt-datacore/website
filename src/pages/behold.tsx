@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
+import { Button, Segment, Table, Rating, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import { GlobalContext } from '../context/globalcontext';
@@ -38,9 +38,8 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	}
 
 	return (
-		<DataPageLayout header='Behold Helper' playerPromptType='recommend'>
+		<DataPageLayout pageTitle='Behold Helper' playerPromptType='recommend'>
 			<React.Fragment>
-				<Header as='h2'>Behold Helper</Header>
 				<CrewSelector crewList={global.core.crew} initSelection={crewFromUrl} />
 			</React.Fragment>
 		</DataPageLayout>

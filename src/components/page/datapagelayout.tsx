@@ -7,27 +7,31 @@ import { ValidDemands } from '../../context/datacontext';
 
 import { PlayerMenu } from '../playerdata/playermenu';
 import PlayerHeader from '../playerdata/playerheader';
-import { Container, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
+import { Container, Header, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
 import { useOtherPages } from '../otherpages';
 import { v4 } from 'uuid';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
 
-    pageId?: string;
+	pageId?: string;
 
-    /**
-     * Page title, header property is used if undefined
-     */
-    pageTitle?: string;
-	header?: string;
+	/**
+	 * Title of the page, for use in both datapage header, title, and meta tags
+	 */
+	pageTitle?: string;
 
-    /**
-     * Default demands are crew, items, ship_schematics, and all_buffs.
-     */
+	/**
+	 * One or two-sentence description of the page, for use in both datapage header and meta tags
+	 */
+	pageDescription?: string;
+
+	/**
+	 * Default demands are crew, items, ship_schematics, all_buffs, and cadet
+	 */
 	demands?: ValidDemands[]
 
-    notReadyMessage?: string;
+	notReadyMessage?: string;
 
 	narrowLayout?: boolean;
 
@@ -47,32 +51,41 @@ const MainContent = ({ children, narrowLayout }) =>
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { core, player } = globalContext;
-	const { children, pageId, pageTitle, header, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
-    const demands = props.demands ?? [] as ValidDemands[];
-    (['crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
-        if (!demands.includes(required))
-            demands.push(required);
-    });
-    const isReady = !!core.ready && !!core.ready(demands);
+	const demands = props.demands ?? [] as ValidDemands[];
+	(['crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+		if (!demands.includes(required))
+			demands.push(required);
+	});
+	const isReady = !!core.ready && !!core.ready(demands);
 
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 	const clearPlayerData = () => { if (player.reset) player.reset(); };
 
 	return (
 		<React.Fragment>
-			<DataPageHelmet title={pageTitle ?? header} />
+			<DataPageHelmet
+				title={pageTitle}
+				description={pageDescription}
+			/>
 			<Navigation
 				requestPlayerPanel={setPlayerPanel}
 				requestClearPlayerData={clearPlayerData}
 			/>
 			<MainContent narrowLayout={narrowLayout}>
-			<PlayerHeader
-				promptType={playerPromptType ?? 'none'}
-				activePanel={playerPanel}
-				setActivePanel={setPlayerPanel}
-			/>
-			{renderContents()}
+				{pageTitle && (
+					<React.Fragment>
+						<Header as='h2'>{pageTitle}</Header>
+						{pageDescription && <p>{pageDescription}</p>}
+					</React.Fragment>
+				)}
+				<PlayerHeader
+					promptType={playerPromptType ?? 'none'}
+					activePanel={playerPanel}
+					setActivePanel={setPlayerPanel}
+				/>
+				{renderContents()}
 			</MainContent>
 		</React.Fragment>
 	);
@@ -94,8 +107,13 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 };
 
 // Use Gatsby Head on each page instead of ReactHelmet in layout with Gatsby 4?
-const DataPageHelmet = (props: { title: string | undefined}) => {
-	const { title } = props;
+type DataPageHelmetProps = {
+	title: string | undefined;
+	description: string | undefined;
+};
+
+const DataPageHelmet = (props: DataPageHelmetProps) => {
+	const { title, description } = props;
 	return (
 		<StaticQuery
 			query={query}
@@ -106,7 +124,7 @@ const DataPageHelmet = (props: { title: string | undefined}) => {
 					<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
 					<meta property='og:site_name' content='DataCore' />
 					<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
-					<meta property='og:description' content={data.site.siteMetadata.defaultDescription} />
+					<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
 					<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
 					<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
 					<script src={withPrefix('styles/theming.js')} type='text/javascript' />
@@ -164,9 +182,9 @@ const Navigation = (props: NavigationProps) => {
 		  customAction: () => props.requestPlayerPanel('input'),
   		  checkVisible: (data) => {
 			return !context.player.playerData;
-		  },		  
+		  },
 		},
-		{ title: 'Player', 
+		{ title: 'Player',
   		  checkVisible: (data) => {
 			return !!context.player.playerData;
 		  },
@@ -194,6 +212,7 @@ const Navigation = (props: NavigationProps) => {
 				{ title: "Gauntlet", link: "/gauntlets" },
 				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles" },
 				{ title: "Voyage Calculator", link: "/playertools?tool=voyage" },
+				{ title: "Voyage History", link: "/voyagehistory" },
 				{ title: "Event Planner", link: "/playertools?tool=event-planner" },
 				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval" },
 				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer" },

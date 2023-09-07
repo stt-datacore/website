@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import { Header, Image, Divider, Grid, Rating, Dropdown, Popup, Label, Button } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
 
-import Layout from '../components/layout';
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 import CrewFullEquipTree from '../components/crewfullequiptree';
@@ -14,8 +13,6 @@ import CONFIG from '../components/CONFIG';
 import { CompletionState, PlayerCrew } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
-import { DataContext } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
 import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
@@ -60,9 +57,9 @@ type StaticCrewPageProps = {
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 
 	return (
-		<DataPageLayout header={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
+		<DataPageLayout pageTitle={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
 			<StaticCrewComponent props={props} />
-		</DataPageLayout> 
+		</DataPageLayout>
 	);
 };
 
@@ -78,10 +75,10 @@ interface StaticCrewComponentProps {
 	props: StaticCrewPageProps;
 }
 
-class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {		
+class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
-	
+
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
 		this.state = {
@@ -92,7 +89,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			itemBig: this.stash.getValue('crew_static_big', false) ?? false
 		};
 	}
-	
+
 	owned: PlayerCrew[] | undefined = undefined;
 	ownedCrew: PlayerCrew[] | undefined = undefined;
 	buffs: BuffStatTable | undefined = undefined;
@@ -108,12 +105,12 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		window.addEventListener('resize', (e) => this._windowSize(e))
 		// if (this.stash.containsKey('owned')) {
 		// 	this.ownedCrew = this.stash.getValue('owned');
-		// 	//stash.removeValue('owned');				
-		// }			
+		// 	//stash.removeValue('owned');
+		// }
 
 		// if (this.stash.containsKey('buffs')) {
-		// 	this.buffs = this.stash.getValue('buffs');				
-		// }			
+		// 	this.buffs = this.stash.getValue('buffs');
+		// }
 
 		// Disabled until we get big book folks on-board
 		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
@@ -136,12 +133,12 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		return isLoggedIn ? window.localStorage.getItem('username') : '';
 	}
-	
+
 	_windowKey = (e: KeyboardEvent) => {
-			
+
 		if (e.key === "Escape") {
 			if (this.state.itemBig) {
-				this.setState({ ...this.state, itemBig: !this.state.itemBig });	
+				this.setState({ ...this.state, itemBig: !this.state.itemBig });
 			}
 		}
 	}
@@ -187,11 +184,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
 		}
 
-		
+
 		const imageDoubleClick = () =>{
 			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
-			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
+			this.setState({ ...this.state, itemBig: !this.state.itemBig });
 		}
 
 		return (
@@ -220,16 +217,16 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 							</div>
 						</h2>
 
-						<div 
+						<div
 							id='static_avatar'
 							style={{
-								display: "flex",		
-								maxWidth: "700px",						
+								display: "flex",
+								maxWidth: "700px",
 								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
-								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
+								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"
 							}}>
 							<div style={{
-								display: "flex",								
+								display: "flex",
 								flexDirection: "column",
 								alignItems: "center",
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
@@ -237,27 +234,27 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								<div>
 									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
 								</div>
-								<div style={{ 
-										flexGrow: 1, 
-										display: "flex", 
-										flexDirection: window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig ? "column" : "row", 
-										justifyContent: "center" 
+								<div style={{
+										flexGrow: 1,
+										display: "flex",
+										flexDirection: window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig ? "column" : "row",
+										justifyContent: "center"
 									}}
 									onDoubleClick={(e) => imageDoubleClick()}
 									title={crew.name}
 									>
-									<img style={{ 
+									<img style={{
 											cursor:
-												window.innerWidth < DEFAULT_MOBILE_WIDTH ? 
+												window.innerWidth < DEFAULT_MOBILE_WIDTH ?
 												"default" :
 												this.state.itemBig ?
 												"zoom-out" :
 												"zoom-in",
-											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%", 
+											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
 											marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
-										}} 
-										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} 
-										alt={crew.name} 
+										}}
+										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+										alt={crew.name}
 									/>
 									{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{textAlign:"center",fontSize:"0.8em", color: "gray"}}>{"(double-click to enlarge)"}</i>)}
 								</div>
@@ -294,7 +291,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 
 							</div>
 						</div>
-					</div>				
+					</div>
 				{/* <Grid columns={2}>
 					<Grid.Row stretched>
 						<Grid.Column width={16}>
@@ -318,7 +315,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
 								}
 							</div>
-							
+
 							{this.context.core.items.length > 0 ? (
 								<React.Fragment>
 									{this.renderEquipment(crew)}
@@ -334,7 +331,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 							) : (
 									<div className='ui medium centered text active inline loader'>Loading items...</div>
 								)}
-								
+
 							<Segment>
 								<h4 style={{ marginBottom: '.25em' }}>Ship Ability ({crew.action.name})</h4>
 								<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>

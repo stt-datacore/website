@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Header, Message } from 'semantic-ui-react';
+import { Message } from 'semantic-ui-react';
 
 import { GlobalContext } from '../context/globalcontext';
 
@@ -19,15 +19,12 @@ const VoyageHistoryPage = () => {
 	const dbid = global.player.playerData?.player.dbid ?? '';
 
 	return (
-		<DataPageLayout header='Voyage History' playerPromptType='require'>
+		<DataPageLayout
+			pageTitle='Voyage History'
+			pageDescription='Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.'
+			playerPromptType='require'
+		>
 			<React.Fragment>
-				<Header as='h2'>Voyage History</Header>
-				<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
-				{!global.player.loaded &&
-					<Message>
-						This page requires player data. <b><Link to='/playertools?tool=voyage'>Upload your player data now</Link></b>.
-					</Message>
-				}
 				{global.player.loaded && <PlayerVoyageHistory dbid={dbid as string} />}
 			</React.Fragment>
 		</DataPageLayout>

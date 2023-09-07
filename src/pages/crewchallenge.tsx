@@ -131,20 +131,19 @@ const CrewChallengeLayout = () => {
 	];
 
 	return (
-		<DataPageLayout title={PAGE_TITLE}>
-			<>
-			<Header as='h2'>{PAGE_TITLE}</Header>
-			<Menu>
-				{menuItems.map(item => (
-					<Menu.Item key={item.name} name={item.name} active={activeItem === item.name} onClick={() => setActiveItem(item.name)}>
-						{item.title}
-					</Menu.Item>
-				))}
-			</Menu>
-			{activeItem === 'daily' && <DailyGame />}
-			{activeItem === 'practice' && <PracticeGame />}
-			{activeItem === 'instructions' && renderInstructions()}
-			</>
+		<DataPageLayout pageTitle={PAGE_TITLE}>
+			<React.Fragment>
+				<Menu>
+					{menuItems.map(item => (
+						<Menu.Item key={item.name} name={item.name} active={activeItem === item.name} onClick={() => setActiveItem(item.name)}>
+							{item.title}
+						</Menu.Item>
+					))}
+				</Menu>
+				{activeItem === 'daily' && <DailyGame />}
+				{activeItem === 'practice' && <PracticeGame />}
+				{activeItem === 'instructions' && renderInstructions()}
+			</React.Fragment>
 		</DataPageLayout>
 	);
 

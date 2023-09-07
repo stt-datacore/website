@@ -39,7 +39,7 @@ export interface CrewViewMode {
 }
 
 const IndexPage = (props: IndexPageProps) => {
-	
+
 	const context = React.useContext(GlobalContext);
 	const playerPresent = !!context.player.playerData?.player?.character?.crew?.length;
 
@@ -75,32 +75,32 @@ const IndexPage = (props: IndexPageProps) => {
 				if (!stepMode.playerAllowedModes.includes(mode)) {
 					setStepMode({ ... stepMode, hasPlayer: stepMode.playerAllowedModes[0] });
 				}
-				else {				
+				else {
 					setStepMode({ ... stepMode, hasPlayer: mode });
 				}
 			}
 			else {
-				if (!stepMode.noPlayerAllowedModes.includes(mode)) {				
+				if (!stepMode.noPlayerAllowedModes.includes(mode)) {
 					setStepMode({ ... stepMode, noPlayer: stepMode.noPlayerAllowedModes[0] });
 				}
-				else {				
+				else {
 					setStepMode({ ... stepMode, noPlayer: mode });
 				}
-			}	
+			}
 		});
 	}
 
 	const mode = getMode();
 
 	React.useEffect(() => {
-		
+
 		const newRoster = context.core.crew.map(crew => {
 			let map = {
 				... JSON.parse(JSON.stringify(crew)),
 				immortal: CompletionState.DisplayAsImmortalStatic,
 				level: crew.max_level,
 				rarity: crew.max_rarity,
-				have: false,			
+				have: false,
 				command_skill: { core: 0, min: 0, max: 0 },
 				medicine_skill: { core: 0, min: 0, max: 0 },
 				security_skill: { core: 0, min: 0, max: 0 },
@@ -108,7 +108,7 @@ const IndexPage = (props: IndexPageProps) => {
 				engineering_skill: { core: 0, min: 0, max: 0 },
 				science_skill: { core: 0, min: 0, max: 0 },
 			} as PlayerCrew;
-	
+
 			if (hasPlayer && mode !== 0) {
 				let pc = context.player.playerData?.player?.character?.crew?.find(f => f.symbol === crew.symbol);
 				if (pc) {
@@ -116,7 +116,7 @@ const IndexPage = (props: IndexPageProps) => {
 					map.have = true;
 				}
 				else {
-					map.rarity = 0;				
+					map.rarity = 0;
 				}
 			}
 			for (let skill of getSkills(crew)) {
@@ -127,25 +127,25 @@ const IndexPage = (props: IndexPageProps) => {
 				}
 				map.skills ??= {};
 				if (!(skill in map.skills)) map.skills[skill] = { ... crew.base_skills[skill] };
-			}	
+			}
 			if (buffMode === 'Max Boosts' && maxBuffs) {
 				applyCrewBuffs(map, maxBuffs);
 			}
 			else if (buffMode === 'Player Boosts' && playerBuffs && hasPlayer) {
 				applyCrewBuffs(map, playerBuffs);
 			}
-			
+
 			return map;
-		}).filter(fc => mode !== 1 || fc.have);		
-		setAltRoster(newRoster);			
+		}).filter(fc => mode !== 1 || fc.have);
+		setAltRoster(newRoster);
 
 	}, [stepMode, buffMode, context]);
 
 	return (
-		<DataPageLayout playerPromptType='recommend'>
+		<DataPageLayout pageTitle='Crew Stats' playerPromptType='recommend'>
 
-			
-			<React.Fragment>				
+
+			<React.Fragment>
 				<Announcement />
 
 				<Step.Group fluid>
@@ -173,13 +173,13 @@ const IndexPage = (props: IndexPageProps) => {
 				</Step.Group>
 
 				{(!altRoster?.length) && <div style={{height: "100vh", display: "flex", flexDirection: "column", alignItems: "center"}}>{context.core.spin()}</div> ||
-				<ProfileCrew 
+				<ProfileCrew
 					buffMode={buffMode}
 					setBuffMode={setBuffMode}
 					showUnownedCrew={mode === 2}
 					setShowUnownedCrew={undefined}
 					isTools={playerPresent}
-					location={"/"} 
+					location={"/"}
 					alternateRoster={altRoster} />}
 				{/* <CrewStats location={props.location} /> */}
 			</React.Fragment>
