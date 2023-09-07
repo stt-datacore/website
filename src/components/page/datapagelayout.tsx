@@ -141,21 +141,23 @@ const Navigation = (props: NavigationProps) => {
 
 	const pages = [
 		{ title: 'Home', link: '/home', src: '/media/logo.png' },
-		{ title: 'Avatar', 
+		{ icon: 'paste',
+		  tooltip: "Paste or upload player data",
+		  customAction: () => props.requestPlayerPanel('input'),
 		  checkVisible: (data) => {
 			return !!context.player.playerData;
 		  },
-		  customRender: (data) => {
-			return <Menu.Item key={'customInput'} onClick={()=> props.requestPlayerPanel('input')}>
-			<img
-				style={{height:"24px", width: "24px"}}
-				src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
-						? context.player.playerData?.player.character.crew_avatar.portrait.file
-						: 'crew_portraits_cm_empty_sm.png'
-					}`}
-			/>
-			</Menu.Item>
-		  }
+		//   customRender: (data) => {
+		// 	return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
+		// 	<img
+		// 		style={{height:"24px", width: "24px"}}
+		// 		src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
+		// 				? context.player.playerData?.player.character.crew_avatar.portrait.file
+		// 				: 'crew_portraits_cm_empty_sm.png'
+		// 			}`}
+		// 	/>
+		// 	</Menu.Item>
+		//   }
 		},
 		{ title: 'Player', customRender: (data) => {
 			return (<PlayerMenu
@@ -240,10 +242,10 @@ const Navigation = (props: NavigationProps) => {
 	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
 		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
 		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>
+			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => page.customAction ? page.customAction(page) : navigate(page.link ?? '')}>
 				<div title={page.tooltip ?? page.title} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
 					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.tooltip ?? page.title} src={page.src} />}
-					{page.icon && <Icon name={page.icon} size={'small'} />}
+					{page.icon && <Icon name={page.icon} size={'large'} />}
 					{page.title && <div>{page.title}</div>}
 				</div>
 			</Menu.Item>)
