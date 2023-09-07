@@ -114,7 +114,7 @@ export const playerTools: PlayerTools = {
 const PlayerToolsPage = (props: any) => {
 
 	return (
-		<DataPageLayout header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']}>
+		<DataPageLayout header='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']} playerPromptType='require'>
 				<PlayerToolsComponent location={props.location} />
 		</DataPageLayout>
 	);
@@ -126,11 +126,11 @@ export interface PlayerToolsProps {
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const mergedContext = React.useContext(GlobalContext);
-	// The context above	
-	
+	// The context above
+
 	const { playerShips, playerData } = mergedContext.player;
 	const { dataSource, ephemeral } = mergedContext.player;
-	
+
 	// Profile data ready, show player tool panes
 	if (playerData && dataSource && dataSource && ephemeral && playerShips) {
 		return (<PlayerToolsPanes />);
