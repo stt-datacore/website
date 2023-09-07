@@ -143,10 +143,10 @@ const Navigation = (props: NavigationProps) => {
 		{ title: 'Home', link: '/home', src: '/media/logo.png' },
 		{ icon: 'paste',
 		  tooltip: "Paste or upload player data",
+		  checkVisible: (data) => {
+			return !!context.player.playerData;
+		  },
 		  customAction: () => props.requestPlayerPanel('input'),
-		//   checkVisible: (data) => {
-		// 	return !!context.player.playerData;
-		//   },
 		  customRender: (data) => {
 			return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
 			<img
@@ -159,7 +159,18 @@ const Navigation = (props: NavigationProps) => {
 			</Menu.Item>
 		  }
 		},
-		{ title: 'Player', customRender: (data) => {
+		{ src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
+		  title: 'Import Player Data ...',
+		  customAction: () => props.requestPlayerPanel('input'),
+  		  checkVisible: (data) => {
+			return !context.player.playerData;
+		  },		  
+		},
+		{ title: 'Player', 
+  		  checkVisible: (data) => {
+			return !!context.player.playerData;
+		  },
+		  customRender: (data) => {
 			return (<PlayerMenu
 				requestPanel={props.requestPlayerPanel}
 				requestClearData={props.requestClearPlayerData}
