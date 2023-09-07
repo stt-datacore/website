@@ -23,16 +23,16 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 			<ul style={{padding:0}}>
 				{!playerData && (
 					<React.Fragment>
-						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Import player data...</span></li>
+						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`} onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Import player data...</li>
 					</React.Fragment>
 				)}
 				{playerData && (
 					<React.Fragment>
-						<li className={`ui button ${currentPanel === 'card' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('card')} style={{ cursor: 'pointer' }}>Logged in as {playerData.player.character.display_name}</span></li>
-						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Update player data...</span></li>
-						<li className={`ui button ${currentPanel === 'share' ? 'toggle active' : ''}`}><span onClick={() => requestPanel('share')} style={{ cursor: 'pointer' }}>Share profile...</span></li>
+						<li className={`ui button ${currentPanel === 'card' ? 'toggle active' : ''}`} onClick={() => requestPanel('card')} style={{ cursor: 'pointer' }}>Logged in as {playerData.player.character.display_name}</li>
+						<li className={`ui button ${currentPanel === 'input' ? 'toggle active' : ''}`} onClick={() => requestPanel('input')} style={{ cursor: 'pointer' }}>Update player data...</li>
+						<li className={`ui button ${currentPanel === 'share' ? 'toggle active' : ''}`} onClick={() => requestPanel('share')} style={{ cursor: 'pointer' }}>Share profile...</li>
 						<li className={`ui button disabled`}>Export</li>
-						<li className={`ui button`}><span onClick={() => requestClearData()} style={{ cursor: 'pointer' }}>Clear player data</span></li>
+						<li className={`ui button`} onClick={() => requestClearData()} style={{ cursor: 'pointer' }}>Clear player data</li>
 					</React.Fragment>
 				)}
 			</ul>
