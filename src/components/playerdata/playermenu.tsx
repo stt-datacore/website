@@ -1,9 +1,9 @@
 import React from 'react';
+import { Menu, Dropdown } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 
 type PlayerMenuProps = {
-	currentPanel?: string;
 	requestPanel: (panel: string | undefined) => void;
 	requestClearData: () => void;
 };
@@ -11,15 +11,43 @@ type PlayerMenuProps = {
 export const PlayerMenu = (props: PlayerMenuProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const {
-		currentPanel,
 		requestPanel,
 		requestClearData,
 	} = props;
 
 	const { playerData } = globalContext.player;
 
+	if (!playerData) {
+		return (
+			<Menu.Item className='link item' onClick={() => requestPanel('input')}>
+				Import Player Data...
+			</Menu.Item>
+		);
+	}
+
 	return (
-		<React.Fragment>
+		<Menu.Menu>
+			<Dropdown item simple text={playerData.player.character.display_name}>
+				<Dropdown.Menu>
+					<Dropdown.Item onClick={() => requestPanel('input')}>
+						Update player data...
+					</Dropdown.Item>
+					<Dropdown.Item onClick={() => requestPanel('share')}>
+						Share profile...
+					</Dropdown.Item>
+					<Dropdown.Item onClick={() => requestPanel('card')}>
+						About me...
+					</Dropdown.Item>
+					<Dropdown.Item onClick={() => requestClearData()}>
+						Clear player data
+					</Dropdown.Item>
+				</Dropdown.Menu>
+			</Dropdown>
+		</Menu.Menu>
+	);
+/*
+	return (
+		<Menu.Menu>
 			<ul style={{padding:0}}>
 				{!playerData && (
 					<React.Fragment>
@@ -38,7 +66,9 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 			</ul>
 		</React.Fragment>
 	);
+*/
 };
+
 
 /*
 	function exportCrewTool() {

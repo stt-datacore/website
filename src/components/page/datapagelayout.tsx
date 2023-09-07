@@ -67,11 +67,6 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				requestClearPlayerData={clearPlayerData}
 			/>
 			<MainContent narrowLayout={narrowLayout}>
-			<PlayerMenu
-				currentPanel={playerPanel}
-				requestPanel={(panel) => setPlayerPanel(playerPanel === panel ? undefined : panel)}
-				requestClearData={clearPlayerData}
-			/>
 			<PlayerHeader
 				promptType={playerPromptType ?? 'none'}
 				activePanel={playerPanel}
@@ -268,18 +263,14 @@ const Navigation = (props: NavigationProps) => {
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			<Menu>
 				{menuItems}
+				<PlayerMenu
+					requestPanel={props.requestPlayerPanel}
+					requestClearData={props.requestClearPlayerData}
+				/>
 				<Menu.Menu position={'right'}>
 					{rightItems}
 				</Menu.Menu>
 			</Menu>
-
-			{/* <ul>
-				{pages.map(page => <li key={page.link}><Link to={page.link}>{page.title}</Link></li>)}
-			</ul> */}
-			{/* <PlayerMenu
-				requestPanel={props.requestPlayerPanel}
-				requestClearData={props.requestClearPlayerData}
-			/> */}
 		</div>
 	);
 };
