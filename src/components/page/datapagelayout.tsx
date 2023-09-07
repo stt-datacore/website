@@ -63,14 +63,17 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 	const clearPlayerData = () => { if (player.reset) player.reset(); };
 
+	// topAnchor div styled to scroll properly with a fixed header
+	const topAnchor = React.useRef<HTMLDivElement>(null);
+
 	return (
-		<React.Fragment>
+		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 			<DataPageHelmet
 				title={pageTitle}
 				description={pageDescription}
 			/>
 			<Navigation
-				requestPlayerPanel={setPlayerPanel}
+				requestPlayerPanel={(panel: string | undefined) => { setPlayerPanel(panel); scrollToTop(panel); }}
 				requestClearPlayerData={clearPlayerData}
 			/>
 			<MainContent narrowLayout={narrowLayout}>
@@ -87,7 +90,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				/>
 				{renderContents()}
 			</MainContent>
-		</React.Fragment>
+		</div>
 	);
 
 	function renderContents(): JSX.Element {
@@ -103,6 +106,15 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				}
 			</React.Fragment>
 		);
+	}
+
+	// Scroll to top of page when player panel changes
+	function scrollToTop(panel: string | undefined): void {
+		if (!panel) return;
+		if (!topAnchor.current) return;
+		topAnchor.current.scrollIntoView({
+			behavior: 'smooth'
+		});
 	}
 };
 
