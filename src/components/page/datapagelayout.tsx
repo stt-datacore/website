@@ -9,6 +9,7 @@ import { PlayerMenu } from '../playerdata/playermenu';
 import PlayerHeader from '../playerdata/playerheader';
 import { Container, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
 import { useOtherPages } from '../otherpages';
+import { v4 } from 'uuid';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -211,11 +212,11 @@ const Navigation = (props: NavigationProps) => {
 	};
 
 	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
-		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '');
+		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
 		return (
 			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => navigate(page.link ?? '')}>
-				<div title={page.tooltip} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
-					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.title} src={page.src} />}
+				<div title={page.tooltip ?? page.title} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
+					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.tooltip ?? page.title} src={page.src} />}
 					{page.icon && <Icon name={page.icon} size={'small'} />}
 					{page.title && <div>{page.title}</div>}
 				</div>
