@@ -21,9 +21,8 @@ export interface CrewItemsViewProps {
 }
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
-	const coreData = React.useContext(DataContext);
-	const itemsReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
-	const playerContext = React.useContext(PlayerContext);
+	const context = React.useContext(GlobalContext);
+	const playerContext = context.player;
     
 	const { strippedPlayerData, buffConfig } = playerContext;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
@@ -31,17 +30,14 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
 	let maxBuffs: BuffStatTable | undefined;
 
-	maxBuffs = playerContext.maxBuffs;
-    
-    if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && itemsReady) {
-		maxBuffs = coreData.all_buffs;
-	}     
+	maxBuffs = playerContext?.maxBuffs ?? context.core?.all_buffs;
+         
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
     let eqimgs = [] as string[];
     let equip = [] as EquipmentItem[];
 
-    if (!crew.equipment_slots[startlevel] || !itemsReady) {
+    if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
         //console.error(`Missing equipment slots information for crew '${crew.name}'`);
         //console.log(crew);
         eqimgs = [
@@ -60,7 +56,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             eq = crew.equipment_slots[i];
             
             if (eq) {
-                let ef = coreData.items.find(item => item.symbol === eq.symbol);
+                let ef = context.core.items.find(item => item.symbol === eq.symbol);
                 if (ef) {
                     equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
                 }
@@ -87,10 +83,9 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         });
     }
 	return (
-        !itemsReady &&
+        !context.core.items?.length &&
             <div className='ui medium centered text active inline loader'>Loading data...</div>
-        ||
-        itemsReady &&
+        ||context.core.items?.length &&
             <div style={{
                 display: "flex",
                 flexDirection: "row",
