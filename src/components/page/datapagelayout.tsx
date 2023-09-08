@@ -10,6 +10,7 @@ import PlayerHeader from '../playerdata/playerheader';
 import { Container, Header, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
 import { useOtherPages } from '../otherpages';
 import { v4 } from 'uuid';
+import { Navigation } from './navigation';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -65,7 +66,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
-
+	const mainContent = React.useRef<HTMLDivElement>(null);
 	return (
 		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 			<DataPageHelmet
@@ -73,9 +74,11 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				description={pageDescription}
 			/>
 			<Navigation
+				sidebarTarget={topAnchor}
 				requestPlayerPanel={(panel: string | undefined) => { setPlayerPanel(panel); scrollToTop(panel); }}
 				requestClearPlayerData={clearPlayerData}
-			/>
+			>
+			<div ref={mainContent}>
 			<MainContent narrowLayout={narrowLayout}>
 				{pageTitle && (
 					<React.Fragment>
@@ -90,6 +93,8 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				/>
 				{renderContents()}
 			</MainContent>
+			</div>
+			</Navigation>
 		</div>
 	);
 
@@ -144,208 +149,6 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 				</Helmet>
 			)}
 		/>
-	);
-};
-
-type NavigationProps = {
-	requestPlayerPanel: (panel: string | undefined) => void;
-	requestClearPlayerData: () => void;
-};
-
-
-interface NavItem {
-	title?: string,
-	link?: string,
-	tooltip?: string,
-	src?: string,
-	right?: boolean;
-	icon?: SemanticICONS;
-	subMenu?: NavItem[];
-	checkVisible?: (data: NavItem) => boolean;
-	customAction?: (data: NavItem) => void;
-	customRender?: (data: NavItem) => JSX.Element;
-}
-
-const Navigation = (props: NavigationProps) => {
-	const context = React.useContext(GlobalContext);
-
-	const pages = [
-		{ title: 'Home', link: '/home', src: '/media/logo.png' },
-		{ icon: 'paste',
-		  tooltip: "Paste or upload player data",
-		  checkVisible: (data) => {
-			return !!context.player.playerData;
-		  },
-		  customAction: () => props.requestPlayerPanel('input'),
-		  customRender: (data) => {
-			return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
-			<img
-				style={{height:"24px", width: "24px"}}
-				src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
-						? context.player.playerData?.player.character.crew_avatar.portrait.file
-						: 'crew_portraits_cm_empty_sm.png'
-					}`}
-			/>
-			</Menu.Item>
-		  }
-		},
-		{ src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
-		  title: 'Import Player Data ...',
-		  customAction: () => props.requestPlayerPanel('input'),
-  		  checkVisible: (data) => {
-			return !context.player.playerData;
-		  },
-		},
-		{ title: 'Player',
-  		  checkVisible: (data) => {
-			return !!context.player.playerData;
-		  },
-		  customRender: (data) => {
-			return (<PlayerMenu
-				requestPanel={props.requestPlayerPanel}
-				requestClearData={props.requestClearPlayerData}
-			/>)
-		} },
-		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
-		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
-		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
-		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold' },
-		{ title: 'Roster',
-			subMenu: [
-				{ title: 'Crew', link: '/' },
-				{ title: 'Ships', link: '/playertools?tool=ships' },
-				{ title: 'Owned Items', link: '/playertools?tool=items' },
-				{ title: 'All Items', link: '/items' },
-				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded' },
-			]
-		},
-		{ title: 'Game Play',
-			subMenu: [
-				{ title: "Gauntlet", link: "/gauntlets" },
-				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles" },
-				{ title: "Voyage Calculator", link: "/playertools?tool=voyage" },
-				{ title: "Voyage History", link: "/voyagehistory" },
-				{ title: "Event Planner", link: "/playertools?tool=event-planner" },
-				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval" },
-				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer" },
-				{ title: "Collections", link: "/playertools?tool=collections" },
-				{ title: "Factions", link: "/playertools?tool=factions" },
-			]
-		},
-		{ title: 'Game Info',
-			subMenu: [
-				{ title: 'Collections', link: '/collections' },
-				{ title: 'Events', link: '/events' },
-				{ title: 'Episodes', link: '/episodes' }
-			]
-		},
-		{ title: 'Stats',
-			subMenu: [
-				{ title: "Player Stats", link: "/playertools?tool=other" },
-				{ title: "Charts & Stats", link: "/playertools?tool=charts" },
-				{ title: "Misc Stats", link: "/stats" },
-				{ title: 'Hall of Fame', link: '/hall_of_fame' },
-			]
-		},
-		{ title: 'Worfle', link: '/crewchallenge' },
-	] as NavItem[];
-
-
-	const createSubMenu = (title: string, children: NavItem[], verticalLayout: boolean = false) => {
-		const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '');
-		if (verticalLayout) {
-			return (
-				<Menu.Item key={`/${menuKey}`}>
-					<Menu.Header>{title}</Menu.Header>
-					<Menu.Menu>
-						{children.map(item => (
-							<Menu.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
-								{item.title}
-							</Menu.Item>
-						))}
-					</Menu.Menu>
-				</Menu.Item>
-			);
-		} else {
-			return (
-				<Dropdown key={`/${menuKey}`} item simple text={title}>
-					<Dropdown.Menu>
-						{children.map(item => (
-							<Dropdown.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
-								{item.title}
-							</Dropdown.Item>
-						))}
-					</Dropdown.Menu>
-				</Dropdown>
-			);
-		}
-	};
-
-	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
-		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => page.customAction ? page.customAction(page) : navigate(page.link ?? '')}>
-				<div title={page.tooltip ?? page.title} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
-					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.tooltip ?? page.title} src={page.src} />}
-					{page.icon && <Icon name={page.icon} size={'large'} />}
-					{page.title && <div>{page.title}</div>}
-				</div>
-			</Menu.Item>)
-	}
-
-	const menuItems = [] as JSX.Element[];
-	const rightItems = [] as JSX.Element[];
-
-	for (let page of pages) {
-		if (page.right) continue;
-		if (page.checkVisible && !page.checkVisible(page)) continue;
-		if (page.customRender) {
-			menuItems.push(page.customRender(page));
-		}
-		else if (page.subMenu) {
-			menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
-		}
-		else {
-			menuItems.push(drawMenuItem(page));
-		}
-	}
-	for (let page of pages) {
-		if (!page.right) continue;
-		if (page.checkVisible && !page.checkVisible(page)) continue;
-		if (page.customRender) {
-			rightItems.push(page.customRender(page));
-		}
-		else if (page.subMenu) {
-			rightItems.push(createSubMenu(page.title ?? '', page.subMenu));
-		}
-		else {
-			rightItems.push(drawMenuItem(page));
-		}
-	}
-	const otherPages = useOtherPages();
-	const about = [
-		{ title: 'About DataCore', link: '/about' },
-		{ title: 'Announcements', link: '/announcements' }
-	] as NavItem[];
-
-	otherPages.map((page) => {
-		about.push(
-			{ title: page.title, link: page.slug }
-		);
-	});
-
-	menuItems.push(createSubMenu('About', about));
-
-
-	return (
-		<div style={{ display: 'flex', flexDirection: 'column', position: "fixed", top: "0px", width :"100vw", zIndex: "1000" }}>
-			<Menu>
-				{menuItems}
-				<Menu.Menu position={'right'}>
-					{rightItems}
-				</Menu.Menu>
-			</Menu>
-		</div>
 	);
 };
 
