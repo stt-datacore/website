@@ -52,7 +52,7 @@ export const createSubMenu = (title: string, children: NavItem[], verticalLayout
             <Dropdown key={`/${menuKey}`} item simple text={title}>
                 <Dropdown.Menu>
                     {children.map(item => (
-                        <Dropdown.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
+                        <Dropdown.Item key={`${menuKey}${item.link}`} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
                             {item.title}
                         </Dropdown.Item>
                     ))}

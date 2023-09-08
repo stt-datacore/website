@@ -1,6 +1,6 @@
 import React, { ElementRef } from 'react';
 import { navigate } from "gatsby";
-import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup } from "semantic-ui-react";
+import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup, Container, Input } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
@@ -20,14 +20,15 @@ export const Navigation = (props: NavigationProps) => {
 	const context = React.useContext(GlobalContext);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const [openBar, setOpenBar] = React.useState(false);
+	const { requestClearPlayerData, requestPlayerPanel } = props;
 
 	const requestPanel = (panel: string | undefined) => {
-		props.requestPlayerPanel(panel);
+		requestPlayerPanel(panel);
 		setOpenBar(false);
 	}
 
 	const requestClear = () => {
-		props.requestClearPlayerData();
+		requestClearPlayerData();
 		setOpenBar(false);
 	}
 
@@ -35,7 +36,8 @@ export const Navigation = (props: NavigationProps) => {
 		{ 
 			src: '/media/logo.png', 
 			customAction: (e, data) => { 
-				setOpenBar(!openBar);
+				if (isMobile) setOpenBar(!openBar);
+				else (navigate("/"))
 			} 
 		},
 		{ 
@@ -78,6 +80,7 @@ export const Navigation = (props: NavigationProps) => {
 			} 
 		},
 		{ 
+			checkVisible: () => isMobile,
 			title: 'Player',
             sidebarRole: 'heading',
             subMenu: [
@@ -97,6 +100,7 @@ export const Navigation = (props: NavigationProps) => {
 			]
 		},		
 		{ 
+			checkVisible: () => isMobile,
 			title: 'Worfle',
 			sidebarRole: 'heading',			
 			subMenu: [
@@ -104,10 +108,10 @@ export const Navigation = (props: NavigationProps) => {
 			]
 		},
 		{ src: '/media/crew_icon.png', tooltip: "Crew Roster", link: '/' },
-		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
+		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold', checkVisible: () => !isMobile },
 		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
 		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
-		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold', checkVisible: () => !isMobile },
+		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
 		{ title: 'Roster',
             sidebarRole: 'heading',
 			subMenu: [
@@ -150,14 +154,16 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: "Misc Stats", link: "/stats", sidebarRole: 'item' },
 				{ title: 'Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
 			]
-		},
-		{ 
-			title: 'Worfle',
-			sidebarRole: 'heading',			
-			subMenu: [
-				{ title: 'Worfle', link: '/crewchallenge' }
-			]
-		},		
+		},			
+		// { 
+		// 	title: 'Search',            
+		// 	right: true, 
+		// 	customRender: (data) => {
+		// 		return <Input />
+		// 	},
+		// 	customAction: (e, data) => { return true; },
+		// 	checkVisible: (data) => !isMobile
+		// },
 		{ 
 			title: 'Worfle',            
 			right: true, 
@@ -186,7 +192,31 @@ export const Navigation = (props: NavigationProps) => {
 		if (page.right) continue;
         
 		if (page.checkVisible && !page.checkVisible(page)) continue;
-		if (page.sidebarRole === undefined) {
+		if (isMobile) {
+			if (page.sidebarRole === undefined) {
+				if (page.customRender) {
+					menuItems.push(page.customRender(page));
+				}
+				else if (page.subMenu) {
+					menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
+				}
+				else {
+					menuItems.push(drawMenuItem(page));
+				}        
+			}
+			else {
+				if (page.customRender) {
+					sidebarItems.push(page.customRender(page));
+				}
+				else if (page.subMenu) {
+					sidebarItems.push(createSubMenu(page.title ?? '', page.subMenu, true));
+				}
+				else {
+					sidebarItems.push(drawMenuItem(page));
+				}        
+			}      
+		}
+		else {
 			if (page.customRender) {
 				menuItems.push(page.customRender(page));
 			}
@@ -197,17 +227,6 @@ export const Navigation = (props: NavigationProps) => {
 				menuItems.push(drawMenuItem(page));
 			}        
 		}
-		else {
-			if (page.customRender) {
-				sidebarItems.push(page.customRender(page));
-			}
-			else if (page.subMenu) {
-				sidebarItems.push(createSubMenu(page.title ?? '', page.subMenu, true));
-			}
-			else {
-				sidebarItems.push(drawMenuItem(page));
-			}        
-        }      
 	}
 
 	for (let page of pages) {
@@ -224,19 +243,26 @@ export const Navigation = (props: NavigationProps) => {
 		}
 	}
 
-	sidebarItems.push(createSubMenu('About', about, true));
+	if (!isMobile) {
+		rightItems.push(createSubMenu('About', about));
+	}
+	else {
+		sidebarItems.push(createSubMenu('About', about, true));
+	}
+	
 	
 	const sref = React.useRef<HTMLDivElement>(null);
 	
 	return (
         <>
-            <div style={{ display: 'flex', flexDirection: 'column', position: "sticky", top: "0px", zIndex: "1000" }}>
-                <Menu>
-                    {menuItems}
-                    <Menu.Menu position={'right'}>
-                        {rightItems}
-                    </Menu.Menu>
-                </Menu>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: "sticky", top: "0px", zIndex: "1000" }}>
+                <Container>
+					<Menu style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center'}}>
+						{menuItems}
+							{rightItems}
+						
+					</Menu>
+				</Container>
             </div>
 			<div ref={sref} onClick={(e) => setOpenBar(false)} style={{flexGrow: 1}}>
 				<Sidebar.Pushable style={{ minHeight:"100vh"}}>
