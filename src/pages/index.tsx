@@ -179,6 +179,7 @@ const IndexPage = (props: IndexPageProps) => {
 					showUnownedCrew={mode === 2}
 					setShowUnownedCrew={undefined}
 					isTools={playerPresent}
+					hideAdvancedTools={mode !== 1}
 					location={"/"}
 					alternateRoster={altRoster} />}
 				{/* <CrewStats location={props.location} /> */}

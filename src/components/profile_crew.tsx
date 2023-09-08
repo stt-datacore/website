@@ -35,6 +35,7 @@ const isWindow = typeof window !== 'undefined';
 
 export type ProfileCrewProps = {
 	isTools?: boolean;
+	hideAdvancedTools?: boolean;
 	location: any;
 	pageId?: string;
 
@@ -74,6 +75,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 		
 		return (
 			<ProfileCrewTools 
+				hideAdvancedTools={props.hideAdvancedTools}
 				buffMode={props.buffMode}
 				setBuffMode={props.setBuffMode}
 				showUnownedCrew={props.showUnownedCrew}
@@ -122,6 +124,7 @@ type ProfileCrewToolsProps = {
 	initProspects: string[];
 	dbid: string;
 	pageId?: string;
+	hideAdvancedTools?: boolean;
 	
 	showUnownedCrew?: boolean;	
 	setShowUnownedCrew?: (value: boolean | undefined) => void;
@@ -165,7 +168,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 	const lockable = [] as LockedProspect[];
 
 	React.useEffect(() => {
-		if (props.initProspects?.length > 0) {
+		if (!props.hideAdvancedTools && props.initProspects?.length > 0) {
 			const newProspects = [] as LockedProspect[];
 			props.initProspects.forEach(p => {
 				const newProspect = allCrew.find(c => c.symbol === p) as PlayerCrew | undefined;
@@ -186,7 +189,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 		}
 	}, [props.initProspects]);
 
-	prospects?.forEach((p) => {
+	(props.hideAdvancedTools ? [] : prospects)?.forEach((p) => {
 		let crew = allCrew.find((c) => c.symbol == p.symbol);
 		if (crew) {
 			let prospect = oneCrewCopy(crew) as PlayerCrew;
@@ -222,7 +225,7 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 		}
 	});
 
-	if (props.initHighlight != '') {
+	if (!props.hideAdvancedTools && props.initHighlight != '') {
 		const highlighted = myCrew.find(c => c.symbol === props.initHighlight);
 		if (highlighted) {
 			lockable.push({
@@ -253,11 +256,13 @@ const ProfileCrewTools = (props: ProfileCrewToolsProps) => {
 				initOptions={initOptions} 
 				lockable={lockable} 
 				wizard={wizard} />
-			{!(pageId?.includes("profile_")) &&
+			{!(pageId?.includes("profile_")) && !props.hideAdvancedTools &&
 				<Prospects pool={props.allCrew} prospects={prospects} setProspects={setProspects} />}
+			{!props.hideAdvancedTools && <>
 			<Header as='h3'>Advanced Analysis</Header>
 			<RosterSummary myCrew={myCrew} allCrew={props.allCrew} buffConfig={buffConfig} />
 			<UtilityWizard myCrew={myCrew} handleWizard={(wizardData: any) => setWizard({...wizardData})} dbid={props.dbid} />
+			</>}
 			<div style={{height: "2em"}}>&nbsp;</div>
 		</React.Fragment>
 	);
