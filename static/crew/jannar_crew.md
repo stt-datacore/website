@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Formerly the best daily use voyage exclusive, Jannar typically takes too long to fuse these days to make much of an impact. There's some niche arena use in the way of instant damage, but you're really just looking to stack stars for his collection value down the line. 
-
-A two-parter reward, it's not advisable for Jannar to be one of your purple citation targets, but if it's keeping you up at night, he's at least a crew who should never hit the portal.
+One of the Super Rare Voyage Exclusives, Jannar, like many decrepit crew of his Rarity, has value only in his Event count and his Traits. This arboreal has collected Collections slowly, almost slothly, but has accumulated two Stat-boosters and a Vanity, and has two more viable Traits for later “content” additions by WRG.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Of all of the older event/collection combo crew, this is certainly one of them. Jake simultaneously has a poor and surprisingly high number of variant events, but you'll be counting on an uptick in his trait usage as well if you're considering taking a stab at this card. He does have a few traits that could add to his collection value and trigger a mega at the same time, but there are plenty of other cards that the same can be said about. 
+BEEEEEEEEEEEEEEEEEEEES!
 
-Jake is not without a few avenues to a brighter future, but he'll need to avoid more than a few landmines to escape the 'Bees Jake' derision he usually garners.
+Solely a Collection/Event crew at this point, Jakeo has long run away from daily use and has skidded to a halt with three Collections, including the difficult Writer set, but he’s likely tapped out there. Ostensibly main cast crew, Jake has not gotten a variant bonus since 2021 but this card has TWO features, so who knows if we’ll get a third run of his event in the recent future.

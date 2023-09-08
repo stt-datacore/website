@@ -3,8 +3,8 @@ name: Deep Space Nine Mariner
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 4
-events: 22
+bigbook_tier: 3
+events: 23
 in_portal: true
 date: 25/01/2023
 obtained: Event

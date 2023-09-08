@@ -12,6 +12,4 @@ mega: true
 published: true
 ---
 
-Darth Bashir is sure to elicit a few "Back in my day"s as a former mega crew, so double check his current metrics to make sure you have a fresh perspective. Jules is no longer a competitive voyage option and shouldn't be running any shuttles without a bonus for you, but strong collections and fairly steady events are still worth taking home from the portal.
-
-It's safe to say that Bashir's value has peaked (save for that niggling little potential Desperate collection), so while he's still a fine crew to acquire, do so for his long term benefits and accept any daily use you may come across as a bonus.
+Former Mega Event Recurring Legendaries tend to loom large in the collective memory of the game, and this Bashir variant is now much closer to a Dark Lord of the Shit than the Dark Lord of the Sith. His Voyage power has melted away in the face of this trashcan fire to leave behind a trim one-two punch of Collections and Event chances. A Grand Slam (that’s four for non-baseball enjoyers) of Collections give him above average metrics there for his Rarity, and Bashir gets a reasonable amount of variant Events to go with his ancillary Trait chances.

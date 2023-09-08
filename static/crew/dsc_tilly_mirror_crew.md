@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-The Slayer of Sorna Prime rules ship battles with an iron fist and is similar to gauntleteers in that if you have a chance to grab her first star, you do it. Pair her with some fast activating crit crew like Ardra and rake in the rewards from lightning quick ship battles.
+For many years, the Slayer of Sorna Prime was one of the most desired crew in Timelines for her meta-breaking Ship Ability of 400% Instant Damage at six seconds, she would slay many a Skirmish Event and your Arena opponents. 
 
-She can save you hours of gameplay over the course of countless arena dailies and skirmishes and unlike the aforementioned gauntlet counterparts, does benefit well from extra stars (you’ll want to get her to +9/10 attack for those one shots or spend another seat for an attack crew).
+Killy is still among the top crew for Ships, but several direct upgrades have come along and tarnished that gold Terran Empire Starfleet uniform of hers, including Tactical MACO Mayweather (affectionately called TACO) and Fleet Boss Battles Exclusive Chances Taken Kirk, both of which do not include Killy’s -3 Evasion Penalty, or her 2 Use Limit.
 
-That being said, Killy’s utility is in rough shape. Her event count is propped up by six previous megas that are unlikely to repeat, while her variant events have been strangely lacking. Several crew introduced after her have encroached on her arena credentials which also steals some of the value that came from its exclusivity. And if you're only after her one star immediate damage, crew retrieval gives you your pick of any flavor out there.
-
-The fact that we're on paragraph four speaks to her role as Timelines Cultural Figure and she is still the premier arena option if you want to get into the nuts and bolts of passives, timings, etc. Just be aware of the evolution of the game and the validity of, say, going for a similar option with better collection potential like Rura Penthe Commandant or, if you're new, the gauntlet ability of a Fury Kes.
+That being said, it takes a long time to get to Kirk and TACO is expensive to get from Crew Retrieval, so happily take Killy from your Legendary Beholds and bank on a variety of variant and Trait bonus Events a year, even though Discovery Mega Events may or may not be done forever (you’ve heard this one before right?). Three Collections also make her a decent choice from that front.
