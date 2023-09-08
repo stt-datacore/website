@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Inglatu has become a community-wide punchline and it's well deserved. This is a useless card who will probably end up with a few collections down the line, but we're going to let you in on a little secret - other cards have traits too.
+Inglatu has become a community-wide punchline and it's well deserved. Zyree has dethroned him as the best Dosi in the game, but at least he has one Collection and another viable Trait. If you have naturally Immortalized Inglatu, I both salute and weep for you.

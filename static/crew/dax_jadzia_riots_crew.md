@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-One of several case studies in debut numbers, it was apparent from the beginning that this Dax was a shaky voyage investment despite the reasonable skill set. While #DaxBrand is a market leader in event reputation, this variant's thin trait set won't provide nearly as much weekend value as others and somewhat caps her potential collection value as well. Unless you're invested in the character from the show, this crew is a 'pass' more often than not.
+As far as crew holding drinks, BR Dax (not Baskin Robbins Dax unfortunately) is among the best. As far as crew who are useful, Dax is below average these days. Jadzia has the Event pedigree which has waxed and waned as the game has waxed and waned, and her Trait set is thinner than most of her cousins. A trio of Collections is likely all she’ll get, and as it stands you need nearly all Trill to complete her racial set, so perhaps consider her as a Hail Mary Legendary Behold choice over the Ensign Sylvia Tillys of the game.
