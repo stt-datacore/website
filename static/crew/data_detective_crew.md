@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-I'm reminded of a Tolian Soran quote, "Aren't you beginning to feel time gaining on you? It's like a predator. It's stalking you." As Detective ages, his torturous equipping cost becomes less palatable.
-
-Nevertheless, Data's name brand and oft-accompanying traits form a reasonable mix of event and collection usefulness. As a SEC-led option with a reliable event history to date, his 'bad' base rank can more or less be ignored - he will ride shuttles with a bonus.
-
-Already a multi-collection crew, Data should add to that count before too long and has a fairly forecastable value floor, at least as far as 2016 crew go. As a cherry on top, few others can unlock the Investigator/SEC story node in the Celestial Temple.
+As with most Dahta from his release era (2016-2020), Sherlock Holmes (oh wait, we can’t say that, sorry Estate of Arthur Conan Doyle), I mean Detective Data is a reasonable Legendary Behold choice due to a stuffed Trait list and solid Event chances. Like Brent Spiner playing variants of Dr. Soong and his creations in Trek, Data events keep coming year after year, and look for this variant to hit up to a quintet of Collections before long.
