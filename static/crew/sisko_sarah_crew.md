@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-When Sarah was a top five-ish name, she was a no-brainer behold selection as those ranks just don't drop as quickly as others due to WRG's risk-averse, low power creep management style. And that has paid off in her voyage rank trajectory lining up with where we thought it'd be and her providing several years of use thus far. Now her power lies in an area that will start to see more crew introduced above her power - something to keep in mind even while she holds a strong overall rank.
-
-Beyond that realm, she essentially has three traits to buoy her event and collection count with her immediate behold value hinging on how many of the latter she's collected. Still a worthwhile crew to behold, keep an eye on CMD/DIP/SCI and its tendency to go from "great crew" to "I have thirty-five of these crew" in a hurry.
+Sarah Sisko is one of those “she Voyaged for me for years” crew that has lost all their luster and now must rely on Event and Collections for enduring value. Former top tier Voyage power has melted away and her Trait list, while thin, is sixty percent viable, with three hits so far and two unstarters. Her decent Primary Base is well-suited for Event Shuttles if one of her Traits provides a bonus.

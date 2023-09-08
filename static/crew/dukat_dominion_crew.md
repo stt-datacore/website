@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Dukat, a complex and benevolent man, naturally has a hefty handful of traits on most of his variants. Strong collection ratings are the value here for most players and he also chips in plenty of possible future event bonuses and a shuttle-friendly skill set, though his power level likely limits him to requisition shuttles.
+Dukat, a complex and benevolent man, naturally has a hefty handful of Traits on most of his variants. Strong Collection ratings are the value here for most players and he also chips in plenty of possible future Event bonuses and a Shuttle-friendly Skill set, though his power level likely limits him to requisition Shuttles.

@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-If you're a glass half full player, Captain Garrett may not look as bad to you as some. Five non-HFS traits is a bounty and though a few seem less likely to garner WRG's attention than others, the Resourceful collection has taught us, 'Eyes open, Veer.'
-
-Until that happens, she's unfortunately a total dud who won't sniff daily work and offers only infrequent, sporadic event chances.
+One of the heroes of the Enterprise-C, Rachel has zero daily use but is well-Traited, hitting on two Collections already and with three more waiting to pay off. She can act as Legendary Behold Insurance™ and eventually you might look at her and say “hey, she’s not a bad Collection crew”.

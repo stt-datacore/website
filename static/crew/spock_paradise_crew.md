@@ -3,7 +3,7 @@ name: Paradise Spock
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 39
 in_portal:
 date: 09/08/2023
