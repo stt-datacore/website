@@ -239,7 +239,7 @@ export const Navigation = (props: NavigationProps) => {
                 </Menu>
             </div>
 			<div ref={sref} onClick={(e) => setOpenBar(false)} style={{flexGrow: 1}}>
-				<Sidebar.Pushable style={{height: !isMobile ? undefined : "100vh", minHeight:"100vh"}}>
+				<Sidebar.Pushable style={{ minHeight:"100vh"}}>
 					<Sidebar    
 						as={Grid}          					
 						animation='overlay'
