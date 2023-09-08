@@ -12,7 +12,7 @@ import { Collection, Filter } from '../model/game-elements';
 import { AtlasIcon, BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { crewCopy, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
+import { crewCopy, isImmortal, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
 import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
@@ -460,7 +460,20 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
-		const filtered = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
+		let prefiltered = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
+		let fss = {} as {[key: string]: boolean };
+	
+		if (prefiltered.length) {
+			let currsym = '';
+			for (let item of prefiltered){
+				currsym = item.symbol;
+				if (!(currsym in fss)) {
+					fss[currsym] = true;
+				}								
+				fss[currsym] = fss[currsym] && !(item.immortal > 0 || item.immortal === CompletionState.Immortalized);
+			}
+		}
+		const filtered = prefiltered.filter((crew, idx) => fss[crew.symbol] && idx === prefiltered.findIndex(c2 => c2.symbol === crew.symbol));
 
 		let zcol = filtered.map(z => z.collections).flat();
 		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
