@@ -67,7 +67,7 @@ class CollectionsPageComponent extends PureComponent<CollectionsPageProps, Colle
 		const { collections, allcrew } = this.state;
 
 		if (!collections || collections.length === 0) {
-			return this.context.core.spin();
+			return this.context.core.spin ? this.context.core.spin() : <></>;
 		}
 
 		return (

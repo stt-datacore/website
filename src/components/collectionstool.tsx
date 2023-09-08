@@ -33,7 +33,7 @@ const CollectionsTool = () => {
 	if (!playerData) return <></>;
 
 	if (!context.core.ready(['collections'])) {	
-		return context.core.spin();
+		return context.core.spin ? context.core.spin() : <></>;
 	}
 	// ... etc ...
 
