@@ -8,6 +8,7 @@ import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game
 import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
 
 export type ValidDemands =
 	'battle_stations' |
@@ -255,3 +256,30 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return true;
 	}
 };
+
+export function randomCrew(symbol: string) {
+	const { crew: allCrew } = this.context.core;
+	if (!allCrew?.length) {
+		return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
+	}
+
+	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
+	const rndcrew = [] as CrewMember[];
+	
+	for (let qc of rndcrew_pass1) {
+		let max = 0;
+		for (let sk of Object.values(qc.base_skills)) {
+			max += sk.range_max;
+		}
+		if (max >= 800) {
+			rndcrew.push(qc);
+		}
+	}
+
+	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
+	const q = rndcrew[idx];
+	const img = q.imageUrlFullBody;
+	const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
+
+	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
+}

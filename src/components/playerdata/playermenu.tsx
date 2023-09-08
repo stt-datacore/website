@@ -2,13 +2,17 @@ import React from 'react';
 import { Menu, Dropdown } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
+import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
+import { v4 } from 'uuid';
 
 type PlayerMenuProps = {
 	requestPanel: (panel: string | undefined) => void;
-	requestClearData: () => void;
+	requestClearData: () => void;	
+	vertical?: boolean;
 };
 
-export const PlayerMenu = (props: PlayerMenuProps) => {
+
+export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
 	const {
 		requestPanel,
@@ -17,34 +21,46 @@ export const PlayerMenu = (props: PlayerMenuProps) => {
 
 	const { playerData } = globalContext.player;
 
-	if (!playerData) {
-		return (
-			<Menu.Item className='link item' onClick={() => requestPanel('input')}>
-				Import Player Data...
-			</Menu.Item>
-		);
+	const playerMenu = [
+		{
+			title: "Import Player Data...",
+			checkVisible: (data) => !playerData,
+			customAction: (e, data) => requestPanel('input')
+		},
+		{
+			title: "Update player data...",
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => requestPanel('input')
+		},
+		{
+			title: "Share profile...",
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => requestPanel('share')
+		},
+		{
+			title: "About me...",
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => requestPanel('card')
+		},
+		{
+			title: "Clear Player Data",
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => requestClearData()
+		},
+	] as NavItem[];
+	
+	if (props.vertical) {
+		return <>{playerMenu.map((item) => {
+			const itemKey = item.title ?? item.tooltip ?? v4();
+			if (item.checkVisible && !item.checkVisible(item)) return <></>
+			return (<>{renderSubmenuItem(item)}</>)
+		})}</>;	
 	}
-
-	return (
-		<Menu.Menu>
-			<Dropdown item simple text={playerData.player.character.display_name}>
-				<Dropdown.Menu>
-					<Dropdown.Item onClick={() => requestPanel('input')}>
-						Update player data...
-					</Dropdown.Item>
-					<Dropdown.Item onClick={() => requestPanel('share')}>
-						Share profile...
-					</Dropdown.Item>
-					<Dropdown.Item onClick={() => requestPanel('card')}>
-						About me...
-					</Dropdown.Item>
-					<Dropdown.Item onClick={() => requestClearData()}>
-						Clear player data
-					</Dropdown.Item>
-				</Dropdown.Menu>
-			</Dropdown>
-		</Menu.Menu>
-	);
+	else {
+		
+		const items = playerMenu.filter(item => item.checkVisible ? item.checkVisible(item) : true);
+		return <>{createSubMenu(playerData?.player.character.display_name ?? '', items)}</>;			
+	}
 /*
 	return (
 		<Menu.Menu>

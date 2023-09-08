@@ -9,7 +9,7 @@ const traits = allTraits as AllTraits;
 
 
 import CONFIG from '../components/CONFIG';
-import { DataContext } from '../context/datacontext';
+import { DataContext, randomCrew } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
@@ -1696,7 +1696,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlet.unavailable_msg) {
 			return (
 				<Message icon>
-					{this.randomQ()}
+					{randomCrew("q_jdl")}
 					<Message.Content>
 						<Message.Header>{gauntlet.unavailable_msg}</Message.Header>
 						{gauntlet.unavailable_desc_msg}
@@ -2711,35 +2711,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>
 		)
-	}
-
-	randomQ() {
-		const { crew: allCrew } = this.context.core;
-		if (!allCrew?.length) {
-			return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
-		}
-
-		const qcrew_pass1 = allCrew.filter((a) => a.traits_hidden.includes("q_jdl") && a.max_rarity >= 4);
-		const qcrew = [] as CrewMember[];
-		
-		for (let qc of qcrew_pass1) {
-			let max = 0;
-			for (let sk of Object.values(qc.base_skills)) {
-				max += sk.range_max;
-			}
-			if (max >= 800) {
-				qcrew.push(qc);
-			}
-		}
-		// qcrew_pass1.filter(q1 => (Object.values(q1.base_skills).reduce((p: Skill, n: Skill) => (p?.range_max ?? 0) + (n?.range_max ?? 0)) >= 300));
-
-		const idx = Math.floor(Math.random() * (qcrew.length - 1));
-		const q = qcrew[idx];
-		const img = q.imageUrlFullBody;
-		const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
-
-		return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
-
 	}
 }
 

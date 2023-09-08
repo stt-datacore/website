@@ -6,6 +6,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
 import { PlayerMenu } from "../playerdata/playermenu";
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { NavItem, createSubMenu, drawMenuItem } from './util';
 
 type NavigationProps = {
 	requestPlayerPanel: (panel: string | undefined) => void;
@@ -14,67 +15,99 @@ type NavigationProps = {
     children: JSX.Element;
 };
 
-interface NavItem {
-	title?: string,
-	link?: string,
-	tooltip?: string,
-	src?: string,
-	right?: boolean;
-	icon?: SemanticICONS;
-	subMenu?: NavItem[];
-	checkVisible?: (data: NavItem) => boolean;
-	customAction?: (data: NavItem) => void;
-	customRender?: (data: NavItem) => JSX.Element;
-    sidebarRole?: 'item' | 'heading';
-}
 
 export const Navigation = (props: NavigationProps) => {
 	const context = React.useContext(GlobalContext);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const [openBar, setOpenBar] = React.useState(false);
 
+	const requestPanel = (panel: string | undefined) => {
+		props.requestPlayerPanel(panel);
+		setOpenBar(false);
+	}
+
+	const requestClear = () => {
+		props.requestClearPlayerData();
+		setOpenBar(false);
+	}
+
 	const pages = [
-		{ title: 'Home', src: '/media/logo.png', customAction: () => { if (!openBar) setOpenBar(true); else setOpenBar(false); } },
-		{ icon: 'paste',
-		  tooltip: "Paste or upload player data",
-		  checkVisible: (data) => {
-			return !!context.player.playerData;
-		  },
-		  customAction: () => props.requestPlayerPanel('input'),
-		  customRender: (data) => {
-			return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
-			<img
-				style={{height:"24px", width: "24px"}}
-				src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
-						? context.player.playerData?.player.character.crew_avatar.portrait.file
-						: 'crew_portraits_cm_empty_sm.png'
-					}`}
-			/>
-			</Menu.Item>
-		  }
+		{ 
+			src: '/media/logo.png', 
+			customAction: (e, data) => { 
+				setOpenBar(!openBar);
+			} 
 		},
-		{ src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
-		  title: 'Import Player Data ...',
-		  customAction: () => props.requestPlayerPanel('input'),
-  		  checkVisible: (data) => {
-			return !context.player.playerData;
-		  },
+		{ 
+			icon: 'paste',
+			tooltip: "Paste or upload player data",
+			checkVisible: (data) => {
+				return !!context.player.playerData;
+			},
+			customAction: (e, data) => props.requestPlayerPanel('input'),
+			customRender: (data) => {
+				return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
+				<img
+					style={{height:"24px", width: "24px"}}
+					src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
+							? context.player.playerData?.player.character.crew_avatar.portrait.file
+							: 'crew_portraits_cm_empty_sm.png'
+						}`}
+				/>
+				</Menu.Item>
+			}
 		},
-		{ title: 'Player',
-  		  checkVisible: (data) => {
-			return !!context.player.playerData;
-		  },
-		  customRender: (data) => {
-			return (<PlayerMenu
-				requestPanel={props.requestPlayerPanel}
-				requestClearData={props.requestClearPlayerData}
-			/>)
-		} },
+		{ 
+			src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
+			title: isMobile ? undefined : 'Import Player Data ...',
+			customAction: () => props.requestPlayerPanel('input'),
+			checkVisible: (data) => {
+				return !context.player.playerData;
+			},
+		},
+		{ 
+			title: context.player.playerData?.player?.display_name ?? 'Player',
+			checkVisible: (data) => {
+				return !!context.player.playerData && !isMobile;
+			},
+			customRender: (data) => {
+				return (<PlayerMenu
+					requestPanel={requestPanel}
+					requestClearData={requestClear}
+				/>)
+			} 
+		},
+		{ 
+			title: 'Player',
+            sidebarRole: 'heading',
+            subMenu: [
+				{ 
+					sidebarRole: 'item',
+					checkVisible: (data) => {
+						return !!context.player.playerData && !isMobile;
+					},
+					customRender: (data) => {
+						return (<PlayerMenu
+							vertical
+							requestPanel={props.requestPlayerPanel}
+							requestClearData={props.requestClearPlayerData}
+						/>)
+					} 
+				}
+			]
+		},		
+		{ 
+			title: 'Worfle',
+			sidebarRole: 'heading',			
+			subMenu: [
+				{ title: 'Worfle', link: '/crewchallenge' }
+			]
+		},
+		{ src: '/media/crew_icon.png', tooltip: "Crew Roster", link: '/' },
 		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
 		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
 		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
-		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold' },
-		{ icon: 'users', tooltip: "Crew Roster", link: '/' },
+		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold', checkVisible: () => !isMobile },
 		{ title: 'Roster',
             sidebarRole: 'heading',
 			subMenu: [
@@ -88,6 +121,7 @@ export const Navigation = (props: NavigationProps) => {
 		{ title: 'Game Play',
             sidebarRole: 'heading',
             subMenu: [
+				{ title: "Behold", link: "/behold", sidebarRole: 'item' },
 				{ title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },
 				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },
 				{ title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },
@@ -107,7 +141,8 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' }
 			]
 		},
-		{ title: 'Stats',
+		{ 
+			title: 'Stats',
             sidebarRole: 'heading',
             subMenu: [
 				{ title: "Player Stats", link: "/playertools?tool=other", sidebarRole: 'item' },
@@ -116,56 +151,20 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
 			]
 		},
-		{ title: 'Worfle', link: '/crewchallenge' },
+		{ 
+			title: 'Worfle',
+			sidebarRole: 'heading',			
+			subMenu: [
+				{ title: 'Worfle', link: '/crewchallenge' }
+			]
+		},		
+		{ 
+			title: 'Worfle',            
+			right: true, 
+			link: '/crewchallenge',
+			checkVisible: (data) => !isMobile
+		},
 	] as NavItem[];
-
-
-	const createSubMenu = (title: string, children: NavItem[], verticalLayout: boolean = false) => {
-		const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-		if (verticalLayout) {
-			return (
-                <React.Fragment>
-                {<h3 style={{marginTop:"0.75em"}}>{title}<hr/></h3>}
-                {children.map(item => (
-                    <Menu.Item fitted="horizontally" key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
-                        <div style={{
-                            display:"flex",
-                            flexDirection: "column",
-                            textAlign: "left",
-                            padding: "0.25em"
-                        }}>
-                            {item.title}
-                        </div>
-                    </Menu.Item>
-                ))}
-                </React.Fragment>
-			);
-		} else {
-			return (
-				<Dropdown key={`/${menuKey}`} item simple text={title}>
-					<Dropdown.Menu>
-						{children.map(item => (
-							<Dropdown.Item key={`${menuKey}${item.link}`} onClick={() => navigate(item.link ?? '')}>
-								{item.title}
-							</Dropdown.Item>
-						))}
-					</Dropdown.Menu>
-				</Dropdown>
-			);
-		}
-	};
-
-	function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
-		const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-		return (
-			<Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={() => page.customAction ? page.customAction(page) : navigate(page.link ?? '')}>
-				<div title={page.tooltip ?? page.title} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
-					{page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.tooltip ?? page.title} src={page.src} />}
-					{page.icon && <Icon name={page.icon} size={'large'} />}
-					{page.title && <div>{page.title}</div>}
-				</div>
-			</Menu.Item>)
-	}
 
 	const otherPages = useOtherPages();
 	const about = [
@@ -210,18 +209,7 @@ export const Navigation = (props: NavigationProps) => {
                     sidebarItems.push(drawMenuItem(page));
                 }        
             }
-        }
-        // else {
-        //     if (page.customRender) {
-        //         menuItems.push(page.customRender(page));
-        //     }
-        //     else if (page.subMenu) {
-        //         menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
-        //     }
-        //     else {
-        //         menuItems.push(drawMenuItem(page));
-        //     }    
-        // }
+        }      
 	}
 
 	for (let page of pages) {
@@ -239,10 +227,12 @@ export const Navigation = (props: NavigationProps) => {
 	}
 
 	sidebarItems.push(createSubMenu('About', about, true));
+	
+	const sref = React.useRef<HTMLDivElement>(null);
 
 	return (
         <>
-            <div style={{ display: 'flex', flexDirection: 'column', position: "fixed", top: "0px", width :"100vw", zIndex: "1000" }}>
+            <div style={{ display: 'flex', flexDirection: 'column', position: "sticky", top: "0px", zIndex: "1000" }}>
                 <Menu>
                     {menuItems}
                     <Menu.Menu position={'right'}>
@@ -250,27 +240,23 @@ export const Navigation = (props: NavigationProps) => {
                     </Menu.Menu>
                 </Menu>
             </div>
-
-            
-            <Sidebar.Pushable as={Table} style={{paddingTop:"64px"}}>
-            <Sidebar              
-              style={{paddingTop:"2.5em"}}
-              as={Grid}
-              invert
-              animation='overlay'
-              icon='labeled'              
-              onHide={() => setOpenBar(false)}
-              vertical
-              target={props.sidebarTarget}
-              visible={openBar}
-              width='thin'              
-            >
-                <Menu vertical>
-                  {sidebarItems}
-              </Menu>
-            </Sidebar>
-            {props.children}
-            </Sidebar.Pushable>
+			<div ref={sref} onClick={(e) => setOpenBar(false)} style={{flexGrow: 1}}>
+				<Sidebar.Pushable as={Segment} >
+					<Sidebar              
+						as={Grid}
+						invert
+						animation='overlay'
+						icon='labeled'           
+						onHide={() => setOpenBar(false)}
+						vertical              
+						visible={openBar}>
+						<Menu size={'large'} vertical>
+							{sidebarItems}
+						</Menu>
+					</Sidebar>
+					{props.children}
+				</Sidebar.Pushable>
+			</div>
         </>
 	);
 };

@@ -157,7 +157,7 @@ const IndexPage = (props: IndexPageProps) => {
 						</Step.Content>
 					</Step>
 					<Step disabled={!hasPlayer} active={mode === 1} onClick={() => setMode(1)}>
-						<Icon name='users' />
+						<img src='/media/crew_icon.png' style={{width:"3em", marginRight: "1em"}} />
 						<Step.Content>
 							<Step.Title>Owned Crew</Step.Title>
 							<Step.Description>View only your owned crew.</Step.Description>
