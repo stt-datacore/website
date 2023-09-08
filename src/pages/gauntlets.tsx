@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, SemanticWIDTHS } from 'semantic-ui-react';
+import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps, SemanticWIDTHS } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
 
 import allTraits from '../../static/structured/translation_en.json';
+const traits = allTraits; // as AllTraits;
+
+
 import CONFIG from '../components/CONFIG';
 import { DataContext } from '../context/datacontext';
 import { MergedContext } from '../context/mergedcontext';
@@ -18,8 +21,10 @@ import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
 import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
+
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
 
@@ -29,7 +34,7 @@ type SortDirection = 'ascending' | 'descending' | undefined;
 
 const isWindow = typeof window !== 'undefined';
 
-const SKILLS = {
+export const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
 	security_skill: 'SEC',
@@ -37,7 +42,6 @@ const SKILLS = {
 	diplomacy_skill: 'DIP',
 	medicine_skill: 'MED'
 };
-
 const GauntletsPage = () => {
 	const coreData = React.useContext(DataContext);
 	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']) : false;
@@ -94,6 +98,7 @@ export interface FilterProps {
 	ownedStatus?: OwnedStatus;
 	rarity?: number;
 	maxResults?: number;
+	skillPairs?: string[];
 }
 
 export interface GauntletsPageState {
@@ -466,18 +471,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidMount() {		
-		window.setTimeout(() =>{ 
-			this.initData();
-		})		
+		this.initData();
 	}
 
 	componentDidUpdate() {
 		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
 			this.inited = false;
 		}
-		window.setTimeout(() => {
-			this.initData();
-		})
+		window.setTimeout(() => this.initData());
 	}
 
 	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
@@ -512,7 +513,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const { onlyActiveRound, hideOpponents } = this.state;
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
-		const ptop = top ?? 10;
+		const ptop = top;
 		const pairGroups = [] as PairGroup[];
 		const currSkills = [gauntlet.contest_data?.primary_skill ?? "", gauntlet.contest_data?.secondary_skill ?? ""].sort().join();
 
@@ -532,7 +533,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			pairGroups.push({
 				pair: rpairs,
-				crew: crew.filter(c => rank in c.ranks && (c.ranks[rank] <= ptop))
+				crew: crew.filter(c => rank in c.ranks && (!ptop || (ptop && c.ranks[rank] <= ptop)))
 					.map(d => d as PlayerCrew)
 					.filter((crew2) => {		
 						if (hideOpponents && crew2.isOpponent) return false;
@@ -609,7 +610,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
 							updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
 
-							r = bscore - ascore;
+							r = Math.round(bscore) - Math.round(ascore);
+							if (!r) r = a.name.localeCompare(b.name);					
 						}
 						return r ? r : a.ranks[rank] - b.ranks[rank];
 					})					
@@ -692,7 +694,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
 
 		const rmax = range_max ?? 500;
-		const { allCrew, buffConfig, maxBuffs } = this.context;
+
+		const { buffConfig, maxBuffs } = this.context;		
+		const { allCrew } = this.context;		
+
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
 
@@ -901,19 +906,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						b.score = getBernardsNumber(b, gauntlet, bp);
 					}
 
-					return b.score - a.score;
+					r = r = Math.round(b.score) - Math.round(a.score);;
 
-					// if (ap && bp) {
-					// 	r = comparePairs(ap[0], bp[0], gauntlet.contest_data?.featured_skill, 1);
-					// 	if (ap.length > 1 && bp.length > 1) {
-					// 		r += comparePairs(ap[1], bp[1], gauntlet.contest_data?.featured_skill, 1);
-					// 		if (ap.length > 2 && bp.length > 2) {
-					// 			r += comparePairs(ap[2], bp[2], gauntlet.contest_data?.featured_skill, 1);
-					// 		}
-					// 	}
-					// }
-
-					// return r;
+					if (!r) r = a.name.localeCompare(b.name);
+					return r;
 				});
 
 		gauntlet.matchedCrew = matchedCrew;
@@ -940,17 +936,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { allCrew, gauntlets: gauntsin, playerData } = this.context;
+		const { allCrew, gauntlets: gauntsin } = this.context;
+		const { playerData } = this.context;
+
+		if (!(allCrew?.length) || !(gauntsin?.length)) return;
+		if (gauntsin.length && this.inited) return;
 
 		const hasPlayer = !!playerData?.player?.character?.crew?.length;
 		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
 
-		if (!(allCrew?.length) || !(gauntlets?.length)) return;
 		const liveGauntlet = hasPlayer ? this.state.liveGauntlet : null;
-		if (!hasPlayer) {
-			this.tiny.removeValue('liveGauntlet');
-		}
-		if (gauntlets && this.inited) return;
 
 		let uniques = [...gauntlets];
 
@@ -966,7 +961,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		for (let q of qmaps) {
 			let qparse = uniques.find(x => x.contest_data && JSON.stringify(x.contest_data) === q);
 			if (qparse) {
-				qparse = JSON.parse(JSON.stringify(qparse));
+				qparse = JSON.parse(JSON.stringify(qparse)) as Gauntlet;
 				qparse.template = true;
 				pass2.push(qparse);
 			}
@@ -1033,8 +1028,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			this.inited = true;
 
+			let actIdx = this.state.activeTabIndex;
+			
+			if (!hasPlayer) {
+				this.tiny.removeValue('liveGauntlet');
+				if (actIdx === 4) actIdx = 0;
+			}
+		
 			this.setState({
 				... this.state,
+				activeTabIndex: actIdx,
 				gauntlets: gaunts,
 				activePageTabs: aptabs,
 				totalPagesTab: pcs,
@@ -1065,6 +1068,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly crewInFilter = (crew: PlayerCrew, filter: FilterProps): boolean => {
 		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
 		if (!filter.rarity || crew.rarity === filter.rarity) {
+			if (filter.skillPairs?.length) {
+				if (!filter.skillPairs.some((sp) => {
+					let p = sp.split("/");
+					let p1 = rankToSkill(p[0]);
+					if (p.length === 1) {
+						return !p1 || (p1 in crew && crew[p1].max);
+					}
+					let p2 = rankToSkill(p[1]);
+					if (!p1 || !p2) return true;
+					return (p1 in crew && crew[p1].max && p2 in crew && crew[p2].max);
+				})) return false;
+			}
 			if (filter.ownedStatus) {
 				switch(filter.ownedStatus) {
 					case 'any':
@@ -1100,6 +1115,17 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 		}
 		return true;
+	}
+
+	private readonly setSkillPairs = (pairs: string[], idx: number) => {
+		const newOwned = [ ... this.state.filterProps ];
+		newOwned[idx] = { ... newOwned[idx], skillPairs: pairs };
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
+		this.inited = false;
+		this.setState({ ...this.state, loading: true });
+		window.setTimeout(() => {
+			this.setState({... this.state, filterProps: newOwned });
+		});	
 	}
 	
 	private readonly setOwnedStatus = (status: OwnedStatus, idx: number) => {
@@ -1566,7 +1592,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context;
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!(this.context.playerData?.player?.character?.crew?.length ?? 0);
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
 
@@ -1586,7 +1612,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			});
 		}
 		else if (idx === 4 && gauntletIn) {
-			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.playerData.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
+			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
 			if (pc) jp = pc;
 		}
 
@@ -1612,6 +1638,29 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'gauntlet', value: 'gauntlet', text: 'Gauntlet Exclusive Crew' },
 			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
 		];
+
+		
+
+		const skills = ['CMD', 'DIP', 'SEC', 'SCI', 'ENG', 'MED'].sort();
+		const skillFilters = [] as DropdownItemProps[];
+
+		for (let skill1 of skills) {
+			skillFilters.push({
+				key: skill1,
+				value: skill1,
+				text: skill1
+			});
+			for (let skill2 of skills) {
+				if (skill1 === skill2) continue;
+				let sp = `${skill1}/${skill2}`;
+				if (skillFilters.find(f => f.key?.includes(skill1) && f.key?.includes(skill2))) continue;
+				skillFilters.push({
+					key: sp,
+					value: sp,
+					text: sp
+				});
+			}
+		}
 
 		availBuffs.push({
 			key: 'none',
@@ -1859,7 +1908,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 						<div style={{
 							display: "flex",
-							flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+							flexDirection: "column"
 						}}>
 							<div style={{
 								display: "flex",
@@ -1868,7 +1917,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 							}}>
 								<h4 style={{ marginRight: "0.5em" }}><b>Minimum Proficiency Max:&nbsp;</b></h4>
-
+								<div>
 								<Dropdown
 									style={{
 										textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
@@ -1878,7 +1927,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o } })}
 									value={this.getRangeMax(idx)}
 									onChange={(e, { value }) => this.setRangeMax(idx, value as number)} />
+								</div>
 							</div>
+							
 						</div>
 
 					</div>
@@ -1943,7 +1994,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 							<Dropdown
 								title="Filter Crew by Big Book Rank"
-								options={[1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: "Top " + o, key: o, value: o } })}
+								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? "Top " + o : "No Limit", key: o, value: o } })}
 								value={tops[idx]}
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 							/>
@@ -1996,38 +2047,64 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
 							/>
 						</div>
-						{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+
+
+						{idx !== 9 && <div style={{
 							display: "flex",
-							flexDirection: "row",
+							flexDirection: "column",
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-
-							<Checkbox
-								title="Highlight Active Round Only"
-								options={filterOptions}
-								checked={this.getActiveRound()}
-								onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
-							/>
-
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+							<h4><b>Skills &amp; Pairs</b></h4>
+							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
+								<Dropdown
+									title={"Filter by skill pairs"}
+									placeholder="Skills & Pairs"										
+									clearable
+									compact
+									inline
+									multiple
+									options={skillFilters}
+									value={filterProps[idx].skillPairs}
+									onChange={(e, { value }) => this.setSkillPairs(value as string[], idx)}
+								/>
+							</div>
 						</div>}
-						{idx === 4 && <div style={{
-							display: "flex",
-							flexDirection: "row",
-							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
-							textAlign: "left"
-						}}>
 
-							<Checkbox
-								title="Hide Opponents"
-								options={filterOptions}
-								checked={this.getHideOpponents()}
-								onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
-							/>
+						<div style={{display:"flex", flexDirection: "column", height: "100%", justifyContent: "space-evenly"}}>
+							{idx === 4 && viewModes[idx] === 'pair_cards' && <div style={{
+								display: "flex",
+								flexDirection: "row",
+								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 1em 0",
+								textAlign: "left"
+							}}>
 
-							<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
-						</div>}
+								<Checkbox
+									title="Highlight Active Round Only"
+									options={filterOptions}
+									checked={this.getActiveRound()}
+									onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
+								/>
+
+								<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setActiveRound(!this.getActiveRound())}><b>Highlight Active Round Only</b></h4>
+							</div>}
+							{idx === 4 && <div style={{
+								display: "flex",
+								flexDirection: "row",
+								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
+								textAlign: "left"
+							}}>
+								<Checkbox
+									title="Hide Opponents"
+									options={filterOptions}
+									checked={this.getHideOpponents()}
+									onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
+								/>
+
+								<h4 style={{margin:"0 1em", cursor: "pointer"}} onClick={(e) => this.setHideOpponents(!this.getHideOpponents())}><b>Hide Opponents</b></h4>
+							</div>}
+						</div>
+
 					</div>
 
 				{idx === 4 &&
@@ -2265,7 +2342,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
 		const isOpponent = "isOpponent" in crew && crew.isOpponent;
 		let tempicon = "";
-		if (inMatch) {
+		if (inMatch && this.context.playerData) {
 			tempicon = this.context.playerData.player.character.crew_avatar.portrait.file;
 		}
 		const myIcon = tempicon;
@@ -2368,11 +2445,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								display:"flex",
 								flexDirection:"row", 
 								alignItems:"center"}}>
-									{this.context.playerData.player.display_name}
+									{this.context.playerData?.player.display_name}
 									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
 							</div>
 							<span>
-								[{this.context.playerData.player.character.level}]
+								[{this.context.playerData?.player.character.level}]
 							</span>
 						</>}
 
@@ -2656,7 +2733,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}
 				}]}
 				/> || <div>
-					Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link>
+					{/* Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link> */}
 					</div>}
 				<div style={{margin: "1em 0"}}>
 					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
