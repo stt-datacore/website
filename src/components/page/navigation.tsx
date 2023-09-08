@@ -1,6 +1,6 @@
 import React, { ElementRef } from 'react';
 import { navigate } from "gatsby";
-import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table } from "semantic-ui-react";
+import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
@@ -186,29 +186,27 @@ export const Navigation = (props: NavigationProps) => {
 		if (page.right) continue;
         
 		if (page.checkVisible && !page.checkVisible(page)) continue;
-        if (true) {
-            if (page.sidebarRole === undefined) {
-                if (page.customRender) {
-                    menuItems.push(page.customRender(page));
-                }
-                else if (page.subMenu) {
-                    menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
-                }
-                else {
-                    menuItems.push(drawMenuItem(page));
-                }        
-            }
-            else {
-                if (page.customRender) {
-                    sidebarItems.push(page.customRender(page));
-                }
-                else if (page.subMenu) {
-                    sidebarItems.push(createSubMenu(page.title ?? '', page.subMenu, true));
-                }
-                else {
-                    sidebarItems.push(drawMenuItem(page));
-                }        
-            }
+		if (page.sidebarRole === undefined) {
+			if (page.customRender) {
+				menuItems.push(page.customRender(page));
+			}
+			else if (page.subMenu) {
+				menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
+			}
+			else {
+				menuItems.push(drawMenuItem(page));
+			}        
+		}
+		else {
+			if (page.customRender) {
+				sidebarItems.push(page.customRender(page));
+			}
+			else if (page.subMenu) {
+				sidebarItems.push(createSubMenu(page.title ?? '', page.subMenu, true));
+			}
+			else {
+				sidebarItems.push(drawMenuItem(page));
+			}        
         }      
 	}
 
@@ -229,7 +227,7 @@ export const Navigation = (props: NavigationProps) => {
 	sidebarItems.push(createSubMenu('About', about, true));
 	
 	const sref = React.useRef<HTMLDivElement>(null);
-
+	
 	return (
         <>
             <div style={{ display: 'flex', flexDirection: 'column', position: "sticky", top: "0px", zIndex: "1000" }}>
@@ -241,20 +239,20 @@ export const Navigation = (props: NavigationProps) => {
                 </Menu>
             </div>
 			<div ref={sref} onClick={(e) => setOpenBar(false)} style={{flexGrow: 1}}>
-				<Sidebar.Pushable as={Segment} >
-					<Sidebar              
-						as={Grid}
-						invert
+				<Sidebar.Pushable style={{height: !isMobile ? undefined : "100vh", minHeight:"100vh"}}>
+					<Sidebar    
+						as={Grid}          					
 						animation='overlay'
-						icon='labeled'           
 						onHide={() => setOpenBar(false)}
-						vertical              
+						vertical					             
 						visible={openBar}>
-						<Menu size={'large'} vertical>
+						<Menu size={'large'} vertical style={{width: "300px"}}>
 							{sidebarItems}
 						</Menu>
 					</Sidebar>
+					<div>
 					{props.children}
+					</div>
 				</Sidebar.Pushable>
 			</div>
         </>
