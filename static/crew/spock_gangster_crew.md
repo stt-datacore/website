@@ -3,7 +3,7 @@ name: Gangster Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 42
 in_portal: true
 date: 01/01/2016

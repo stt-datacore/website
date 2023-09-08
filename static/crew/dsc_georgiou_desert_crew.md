@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-I guess nobody told Georgy Girl that this is a marathon, not a sprint. She shot out in the lead to become the second legendary crew in three stat-boosting collections, but her viable traits are now all tapped out, as are her best chances at event work.
+Well-ensconced as one of the top desert crew in the game, Desert PG was an early adopter of the “Collection Beast” moniker, and although she’s since been eclipsed by those with six or seven, she still has managed to squeeze every last drop from her Trait list and one hidden show tag to have a quartet.
 
-With Disco megas likely finished and her Section 31 show on ice, Georgiou is going to struggle for weekend relevance. Her shuttle-friendly bases will have no trouble earning a seat when she finds a bonus, but how often that occurs is highly questionable going forward. She's still worth a shot in low-end beholds, but her special attraction has been dwarfed by the Disney-sized Collection Theme Park that opened right next door.
+While unfortunately we are not likely to see Prime or Mirror Georgiou outside her Section 31 movie all that often, her Event chances are not dire - Discovery Mega Events notwithstanding. A solid Behold choice but not an insta-choice anymore, Fuse PG at your leisure and reap her global boost benefits.

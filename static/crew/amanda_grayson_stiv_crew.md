@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Brutally ineffective in every area of the game through her first several years, her only value reprieve will come from a fairly modest trait list. Any of the three Cs could and very well may trigger down the line, which would bump up her value slightly and at least put her on players' radars as a perfunctory freeze and forget crew to notch some collections.
+A nearly useless Super Rare, Amanda has notched her two likely Collections already and now it’s time to forget her unless she gets an Event feature, and maybe not even then given her low Bases.

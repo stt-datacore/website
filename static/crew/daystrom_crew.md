@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-You know, I knew good ol' Dick Daystrom back in college. Guy was a whizz with numbers. Pulled a lot of tail, too. All-American halfback for the SpacePatriots...shifty sonuvabitch used to juke those android defenders right outta their moon boots. We rode him all the way to State finals. Sorry...where was I?
+You know, I knew good ol' Dick Daystrom back in college. Guy was a whizz with numbers. Pulled a lot of tail, too. All-American halfback for the SpacePatriots...shifty sonuvabitch used to juke those android defenders right outta their moon boots. We rode him all the way to the State finals. Sorry...where was I?
 
-The venerable creator of the M-5 computer and namesake for the Daystrom Institute and award has a longer list of accomplishments in universe than he does in game, but at least has some wiggle room on his behold value.
+The venerable creator of the M-5 computer and namesake for both the Daystrom Institute and Award has a much longer list of accomplishments in-universe than he does in-game, so at least he won’t be losing any sleep at night.
 
-His first star will net you a premier ENG/SCI bench warmer. Two superior crew in that stack exist as gauntlet exclusives and crowd him out to a huge extent, though a handful of 45% gauntlets (none of which feature SCI) will still be a boon to fresh rosters and allow you a chance to win with your favorites.
+His first star will net you a decent ENG/SCI bench warmer with a couple of respectable 45% crits should you not yet have the mightier Exclusive options yet. Young (or just unlucky) rosters can take advantage of Tricky Dick until such time as RNG blesses them.
 
-Traits are the rest of the story here as they give Daystrom multi-collection value and a shot at requisition shuttles once immortalized. Stars two through four are a big bullet to bite, but he's not a total dud of a card.
+After this point though, it’s a long and painful wait to get to a fully Immortalized five stars, but when you do finally get there you’ll be rewarded with a notch in four Stat-Boosting Collections, to take the sting off of a card bound for the freezer upon completion.

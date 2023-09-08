@@ -12,9 +12,4 @@ mega: false
 published: true
 ---
 
-Like my belt at Thanksgiving, we're seeing  just how much Paris' skill set can handle before it snaps. The best skill set in the game dragged pathetic voyage strength kicking and screaming into service for years in some of the game's rarest skill combos, but it's hard to justify using him for anything but maybe MED/CMD or something similar on developing rosters.
-
-Perhaps more feasible is his gauntlet viability. His trio of 45% sets marries up with some unusual combos like MED/CMD or ENG/CMD
-where he might 2-for-1 more well known crew, even if he'll never dominate. A notable lack of power exists in his bases as well, but with a mix of variant and trait events in his back pocket, most rosters are going to have a hard time passing on fully fused golds with a bonus, even if they're just making requisition shuttles.
-
-Even with that ace-in-the-hole charm, a skill set does not a crew make and even though it's done a valiant job making Paris relevant thus far, when you start adding stars to him, you're going to wonder just how many it takes before the numbers on the screen finally look good.
+Don’t be fooled by the unicorn Skill set and the amazing uniform; the sun has set on Delta Flyer Paris as a daily use crew. Tom is a bankable Event name and his various Traits have given him a handful of bonuses on weekends every year except for the years where WRG forgets he exists (looking at you 2019 and 2021). Traits are the name of this game, and Tommy boy has two Stat-boosting Collections as it stands with a slot in the Lucille Davenport-rewarding Holodeck Enthusiasts, plus four more likely Traits in his jumpsuit pockets. If you invest in this crew it’s for his ceiling, not his past.

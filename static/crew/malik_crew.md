@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-An all-inclusive Enterprise mega seems like the longest of shots to re-appear, leaving just a few traits to elevate Malik's bases into service. Between his rather thin trait set and WRG's penchant for keeping us on our toes, we can only confirm that Malik does indeed have a few traits that may or may not grow his collection and event value in the future. Sorry we can't give you more to go on, but if I had a crystal ball I wouldn't be writing Timelines crew notes for a living.
+Malik has quite a few holes in his clothing and in his value in-game. A show Collection inclusion gives him two, and unless some of his very longshot Traits pay off one day, he’s finish and forget fodder.

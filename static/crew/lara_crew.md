@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-The folks behind Timelines rarely give with both hands. Yes, Lara's the worst voyager they've ever released and yes, her art looks like a crappy sticker from some dress-up mobile game (wait a minute...*we're* playing a mobile game). But she's also the first non-exclusive power gauntleteer we've had in years.
+Hanna Barb-Lara is distinctive in that she is a card that is “good for Gauntlet” is not exclusive to being a reward from a particular game mode, and one of the few top 20-rated Gauntlet crew that can be acquired from the Time Portal or Crew Retrieval. 
 
-Debuting with top ten proficiency, her SEC roll tops the list above Gangster Spock, her CMD/SEC pair matches Kahless, and her DIP/SEC pair is somewhere between Balok and Gowron - heavy names all around. It would have been nice for Lara to avoid the CMD/DIP/SEC clown fiesta, but her skill order and power level still gives her a lot of room to maneuver despite not eclipsing 25% crit in any gauntlet.
+Unfortunately, she is relatively thinly-Traited, which gives her few chances to put her strong SEC/CMD Proficiencies to good use - with only five Traits she enjoys no 45% or 65% Gauntlet Crit sets, but gets 25% 18 times. 
 
-A few of her four viable traits have hit on collections already to help make stars two through five feel less awful, but if you wanted to leave her at 1/5 for a while and let beholds nibble away at that collection value over time, that's a viable strategy.
+Despite the few Traits she has, she’s managed to hit a trio of Collections and could snag two more to make it a five spot. Lara gives her value at one and five stars, but there’s a lot of better crew to Fuse.

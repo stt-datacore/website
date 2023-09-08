@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This Landry is on a bit of a journey that mirrors (sorry) the development of Timelines. A few years ago she was a strong event option with plenty of Discovery and Mirror in her future. Then shortly after those ceaseless megas...ceased, she was kind of a dud with just one collection.
+Landry is the posterchild for crappy Mirror Universe crew that pop up in Beholds and make you groan. Thankfully, if you choose Ellen, she’ll eventually pay you off with some Collection boosts to the tune of somewhere between her current pair and a future three more. 
 
-As of this writing, WRG is hawking traits like they're Tamagotchis and it's 1999. Which means that her future is somewhere between nearly useless and a quad-collection piece with occasional mega work. There's surely a ceiling on her value, but the fact that she may not have hit it yet can be worth a shot in the dark in an otherwise stinky behold.
+We often opine on the death and subsequent resurrection, then death again(?) of Discovery Mega Events, so it’s possible Landry will find her way into more weekend use outside of her Traits, since Landry ain’t getting variant bonuses.

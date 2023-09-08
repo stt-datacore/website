@@ -3,7 +3,7 @@ name: Borg Queen Seven
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 32
 in_portal:
 date: 14/09/2021
