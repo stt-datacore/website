@@ -33,14 +33,14 @@ export const Navigation = (props: NavigationProps) => {
 	}
 
 	const pages = [
-		{ 
-			src: '/media/logo.png', 
-			customAction: (e, data) => { 
+		{
+			src: '/media/logo.png',
+			customAction: (e, data) => {
 				if (isMobile) setOpenBar(!openBar);
 				else (navigate("/"))
-			} 
+			}
 		},
-		{ 
+		{
 			icon: 'paste',
 			tooltip: "Paste or upload player data",
 			checkVisible: (data) => {
@@ -59,7 +59,7 @@ export const Navigation = (props: NavigationProps) => {
 				</Menu.Item>
 			}
 		},
-		{ 
+		{
 			src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
 			title: isMobile ? undefined : 'Import Player Data ...',
 			customAction: () => props.requestPlayerPanel('input'),
@@ -67,42 +67,42 @@ export const Navigation = (props: NavigationProps) => {
 				return !context.player.playerData;
 			},
 		},
-		{ 
+		{
 			title: context.player.playerData?.player?.display_name ?? 'Player',
 			checkVisible: (data) => {
 				return !!context.player.playerData && !isMobile;
 			},
 			customRender: (data) => {
-				return (<PlayerMenu
+				return (<PlayerMenu key={v4()}
 					requestPanel={requestPanel}
 					requestClearData={requestClear}
 				/>)
-			} 
+			}
 		},
-		{ 
+		{
 			checkVisible: () => isMobile,
 			title: 'Player',
             sidebarRole: 'heading',
             subMenu: [
-				{ 
+				{
 					sidebarRole: 'item',
 					checkVisible: (data) => {
 						return !!context.player.playerData && !isMobile;
 					},
 					customRender: (data) => {
-						return (<PlayerMenu
+						return (<PlayerMenu key={v4()}
 							vertical
 							requestPanel={props.requestPlayerPanel}
 							requestClearData={props.requestClearPlayerData}
 						/>)
-					} 
+					}
 				}
 			]
-		},		
-		{ 
+		},
+		{
 			checkVisible: () => isMobile,
 			title: 'Worfle',
-			sidebarRole: 'heading',			
+			sidebarRole: 'heading',
 			subMenu: [
 				{ title: 'Worfle', link: '/crewchallenge' }
 			]
@@ -122,51 +122,51 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
 			]
 		},
-		{ title: 'Game Play',
+		{ title: 'Tools',
             sidebarRole: 'heading',
             subMenu: [
-				{ title: "Behold", link: "/behold", sidebarRole: 'item' },
-				{ title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },
-				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },
-				{ title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },
-				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },
-				{ title: "Event Planner", link: "/playertools?tool=event-planner", sidebarRole: 'item' },
-				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },
-				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },
-				{ title: "Collections", link: "/playertools?tool=collections", sidebarRole: 'item' },
-				{ title: "Factions", link: "/playertools?tool=factions", sidebarRole: 'item' },
+				{ title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+				{ title: "Factions", link: "/playertools?tool=factions", sidebarRole: 'item' },	// Factions available at launch
+				{ title: "Event Planner", link: "/playertools?tool=event-planner", sidebarRole: 'item' },	// Events added post-launch
+				{ title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
+				{ title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },	// Voyages added v3
+				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
+				{ title: "Collection Planner", link: "/playertools?tool=collections", sidebarRole: 'item' },	// Collections added v4
+				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
 		},
 		{ title: 'Game Info',
             sidebarRole: 'heading',
             subMenu: [
-				{ title: 'Collections', link: '/collections', sidebarRole: 'item' },
+				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' },
 				{ title: 'Events', link: '/events', sidebarRole: 'item' },
-				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' }
+				{ title: 'Collections', link: '/collections', sidebarRole: 'item' },
+				{ title: 'Voyage Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
+				{ title: "Misc Game Stats", link: "/stats", sidebarRole: 'item' },
 			]
 		},
-		{ 
-			title: 'Stats',
-            sidebarRole: 'heading',
-            subMenu: [
-				{ title: "Player Stats", link: "/playertools?tool=other", sidebarRole: 'item' },
-				{ title: "Charts & Stats", link: "/playertools?tool=charts", sidebarRole: 'item' },
-				{ title: "Misc Stats", link: "/stats", sidebarRole: 'item' },
-				{ title: 'Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
-			]
-		},			
-		// { 
-		// 	title: 'Search',            
-		// 	right: true, 
+		// {
+		// 	title: 'Stats',
+        //     sidebarRole: 'heading',
+        //     subMenu: [
+		// 		{ title: "Player Stats", link: "/playertools?tool=other", sidebarRole: 'item' },
+		// 		{ title: "Charts & Stats", link: "/playertools?tool=charts", sidebarRole: 'item' },
+		// 	]
+		// },
+		// {
+		// 	title: 'Search',
+		// 	right: true,
 		// 	customRender: (data) => {
 		// 		return <Input />
 		// 	},
 		// 	customAction: (e, data) => { return true; },
 		// 	checkVisible: (data) => !isMobile
 		// },
-		{ 
-			title: 'Worfle',            
-			right: true, 
+		{
+			title: 'Worfle',
+			right: true,
 			link: '/crewchallenge',
 			checkVisible: (data) => !isMobile
 		},
@@ -190,7 +190,7 @@ export const Navigation = (props: NavigationProps) => {
 
 	for (let page of pages) {
 		if (page.right) continue;
-        
+
 		if (page.checkVisible && !page.checkVisible(page)) continue;
 		if (isMobile) {
 			if (page.sidebarRole === undefined) {
@@ -202,7 +202,7 @@ export const Navigation = (props: NavigationProps) => {
 				}
 				else {
 					menuItems.push(drawMenuItem(page));
-				}        
+				}
 			}
 			else {
 				if (page.customRender) {
@@ -213,8 +213,8 @@ export const Navigation = (props: NavigationProps) => {
 				}
 				else {
 					sidebarItems.push(drawMenuItem(page));
-				}        
-			}      
+				}
+			}
 		}
 		else {
 			if (page.customRender) {
@@ -225,7 +225,7 @@ export const Navigation = (props: NavigationProps) => {
 			}
 			else {
 				menuItems.push(drawMenuItem(page));
-			}        
+			}
 		}
 	}
 
@@ -249,10 +249,10 @@ export const Navigation = (props: NavigationProps) => {
 	else {
 		sidebarItems.push(createSubMenu('About', about, true));
 	}
-	
-	
+
+
 	const sref = React.useRef<HTMLDivElement>(null);
-	
+
 	return (
         <>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: "sticky", top: "0px", zIndex: "1000" }}>
@@ -260,17 +260,17 @@ export const Navigation = (props: NavigationProps) => {
 					<Menu style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center'}}>
 						{menuItems}
 							{rightItems}
-						
+
 					</Menu>
 				</Container>
             </div>
 			<div ref={sref} onClick={(e) => setOpenBar(false)} style={{flexGrow: 1}}>
 				<Sidebar.Pushable style={{ minHeight:"100vh"}}>
-					<Sidebar    
-						as={Grid}          					
+					<Sidebar
+						as={Grid}
 						animation='overlay'
 						onHide={() => setOpenBar(false)}
-						vertical					             
+						vertical
 						visible={openBar}>
 						<Menu size={'large'} vertical style={{width: "300px"}}>
 							{sidebarItems}

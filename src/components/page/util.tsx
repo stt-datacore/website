@@ -19,10 +19,10 @@ export interface NavItem {
 }
 
 export const renderSubmenuItem = (item: NavItem, title?: string) => {
-    const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-    
+    //const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
+
     return (
-        <Menu.Item fitted="horizontally" key={`${menuKey}${item.link}`} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
+        <Menu.Item fitted="horizontally" key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
             style={{borderRadius:"6px", paddingLeft:"0.5em", paddingRight:"0.5em"}}
         >
         <div style={{
@@ -30,7 +30,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string) => {
             flexDirection: "column",
             textAlign: "left",
             padding: "0.25em",
-            lineHeight:"1.45em"							
+            lineHeight:"1.45em"
         }}>
             {item.title}
         </div>
@@ -39,7 +39,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string) => {
 }
 
 export const createSubMenu = (title: string, children: NavItem[], verticalLayout: boolean = false) => {
-    const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
+    //const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     if (verticalLayout) {
         return (
             <React.Fragment>
@@ -49,10 +49,10 @@ export const createSubMenu = (title: string, children: NavItem[], verticalLayout
         );
     } else {
         return (
-            <Dropdown key={`/${menuKey}`} item simple text={title}>
+            <Dropdown key={v4()} item simple text={title}>
                 <Dropdown.Menu>
                     {children.map(item => (
-                        <Dropdown.Item key={`${menuKey}${item.link}`} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
+                        <Dropdown.Item key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
                             {item.title}
                         </Dropdown.Item>
                     ))}
@@ -63,9 +63,9 @@ export const createSubMenu = (title: string, children: NavItem[], verticalLayout
 };
 
 export function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
-    const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
+    //const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     return (
-        <Menu.Item key={'menu_'+idx+menuKey} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={(e) => page.customAction ? page.customAction(e.nativeEvent, page) : navigate(page.link ?? '')}>
+        <Menu.Item key={v4()} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={(e) => page.customAction ? page.customAction(e.nativeEvent, page) : navigate(page.link ?? '')}>
             <div title={page.tooltip ?? page.title} style={{display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center", margin: 0, padding: 0}}>
                 {page.src && <img style={{height:'32px', margin: "0.5em", padding: 0}} alt={page.tooltip ?? page.title} src={page.src} />}
                 {page.icon && <Icon name={page.icon} size={'large'} />}
