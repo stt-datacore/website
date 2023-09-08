@@ -97,12 +97,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 						onChange={(e, { value }) => setDisplayedInput(value as string)}
 						onPaste={(e) => { return onInputPaste(e) }}
 					/>
-					<input
-						type='file'
-						onChange={(e) => handleFileUpload(e)}
-						style={{ display: 'none' }}
-						ref={e => inputUploadFile = e}
-					/>
+					
 				</Form>
 				<Accordion style={{ marginTop: '1em' }}>
 					<Accordion.Title
@@ -158,6 +153,12 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 					icon='file text'
 					size='large'
 					color='blue'
+				/>
+				<input
+					type='file'
+					onChange={(e) => handleFileUpload(e)}
+					style={{ display: 'none' }}
+					ref={e => inputUploadFile = e}
 				/>
 				<Accordion style={{ marginTop: '1em' }}>
 					<Accordion.Title
