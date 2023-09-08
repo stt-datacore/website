@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Aside from this holofoil Crusher's ultra rare purple shading, there's not much unique about this card. Her relatively impressive 2021 doubled her event count from the previous four years combined. With the physician collection and two viable traits overall as her only other contributions, don't feel obligated to mess with this crew until you're on endgame cruise control and just looking to polish off your collection thresholds.
+Aside from this holofoil Crusher's ultra rare purple shading, there's not much unique about this card. Thinly Traited, look for her to pick up Cybernetecist as a Collection one day, and until then Finish, Freeze, and Forget her.

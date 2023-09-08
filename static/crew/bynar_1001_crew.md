@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Once considered the worst legendary crew in the game, the Bynars have vaulted up the charts to, like, the fifth-worst. WRG's collection bonanza has given them some level of reprieve and the fact that players can build them lego brick by lego brick from otherwise frozen beholds is certainly a unique value in itself.
-
-Their handsful of viable traits give them a little room for value expansion, but since their only competition for choice is citations and not beholds, you will always have better options for your honor. So I guess that sort of makes this crew note pointless. What are we even doing here? When's lunch?
+A Vanity Fusion project on their best day, these Bynars have actually found some enduring value for those stupid enough to devote time and resources to Immortalize them. A current slot in a single Collection plus Traits for two to three more will leave One Zero Zero One Enjoyers™ cackling to themselves in their straightjackets, “I told you so!”

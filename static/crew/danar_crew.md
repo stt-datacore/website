@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Despite a controversial debut argument over Augmented or not, this suitably crafty anti-hero still has a fistful of traits that have kept his value buoyant over time. 
-
-Collection value is the highlight for Roga via those aforementioned traits. He's an auto-behold must-have name for late game players and can often simply be the best overall value in your behold no matter what stage of play you're at. Although much of his daily use has dried up in the face of power creep, he'll still collect occasional mega events to merit thawing him for those ubiquitous security shuttle seats. Try saying that ten times fast...
+Is he holding a drill or a disruptor? It’s hard to tell, but Roga Danar sure is holding on to some lasting value due to all the Traits he has. The best Angosian in the game has a trio of current Collections and two more viable Traits to add to that count in the future, and those associated Traits can set him free from Cryostasis a few times a year to add his serviceable SEC Base to your Shuttles.

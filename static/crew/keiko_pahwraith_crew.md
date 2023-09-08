@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-The former drummer of The Oneders, Keiko's outrageous CMD base is as impressive and baffling now as the day she was released. While her ranking there is a significant attribute, if you have someone like the über popular First Officer Burnham or powerhouse Captain Tribble, Keiko may be somewhat redundant for non-bonus shuttle work.
-
-Nevertheless, that huge base keeps her floating among the more usable non-main cast crew and allows her to contribute even with other zeroes across the board. Bad peripheral attributes (arena/gauntlet/voyage skill set and power) hamstring her flexibility, if not her usability.
-
-Her trait set has borne little fruit as of this writing, but has more potential than some and any mega events (perhaps tied to a new collection) would be an open season showcase for her to dominate shuttles single-handedly.
+Long ago, Pah-wraith Keiko staffed every CMD daily Shuttle and somehow, flabbergastingly, sat atop the CMD Base rankings. Her time at the summit of those ratings has ended and there’s little left to make her an attractive crew outside of two likely Collection Traits which are yet to hit. CMD Shuttle seats are still extremely numerous, so if you manage to get her Immortalized she’ll likely ride requisition Faction Event Shuttles with aplomb.
