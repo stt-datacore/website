@@ -3,8 +3,15 @@ import { navigate } from 'gatsby';
 import React from 'react';
 import { Menu, Dropdown, Icon, SemanticICONS } from 'semantic-ui-react';
 import { v4 } from 'uuid';
+import * as lz from 'lz-string';
 
-export interface NavItem {
+export const MaxMenuItems = 5;
+export const MaxMobileItems = 4;
+
+export const DefaultOpts = ['crew', 'behold', 'gauntlet', 'voyage', 'fbb'] as string[];
+export const DefaultOptsMobile = ['crew', 'gauntlet', 'voyage', 'fbb'] as string[];
+
+export interface NavItem {    
 	title?: string,
 	link?: string,
 	tooltip?: string,
@@ -16,10 +23,23 @@ export interface NavItem {
 	customAction?: (e: Event, data: NavItem) => void;
 	customRender?: (data: NavItem) => JSX.Element;
     sidebarRole?: 'item' | 'heading';
+    optionKey?: string;
 }
 
-export const renderSubmenuItem = (item: NavItem, title?: string) => {
+export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: boolean) => {
     //const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
+
+    if (asDropdown) {
+        return (
+            <Dropdown.Item key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
+            >
+                <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
+                <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
+                {item.title}
+                </div>
+            </Dropdown.Item>
+        )
+    }
 
     return (
         <Menu.Item fitted="horizontally" key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
@@ -30,8 +50,10 @@ export const renderSubmenuItem = (item: NavItem, title?: string) => {
             flexDirection: "column",
             textAlign: "left",
             padding: "0.25em",
-            lineHeight:"1.45em"
+            lineHeight:"1.45em", 
+            alignItems: "center"
         }}>
+            <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
             {item.title}
         </div>
     </Menu.Item>
@@ -51,11 +73,19 @@ export const createSubMenu = (title: string, children: NavItem[], verticalLayout
         return (
             <Dropdown key={v4()} item simple text={title}>
                 <Dropdown.Menu>
-                    {children.map(item => (
-                        <Dropdown.Item key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
-                            {item.title}
-                        </Dropdown.Item>
-                    ))}
+                    {children.map(item => {
+
+                        if (item.customRender) return item.customRender(item);
+                        return (
+                            <Dropdown.Item icon={item.icon} key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
+                                <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
+                                <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
+                                {item.title}
+                                </div>
+                            </Dropdown.Item>
+                        )
+                    })}
+                    
                 </Dropdown.Menu>
             </Dropdown>
         );
@@ -72,4 +102,31 @@ export function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
                 {page.title && <div>{page.title}</div>}
             </div>
         </Menu.Item>)
+}
+
+export function getAllOptions(menu: NavItem[]) {
+    return menu.map(m => [ ... m.subMenu ?? [], m ]).flat().filter(m => !!m.optionKey && (!!m.icon || !!m.src));
+}
+
+export function settingsToPermalink(options: string[], mobileoptions: string[]) {
+
+    let opt = JSON.stringify([ options, mobileoptions ]);
+    let b64 = lz.compressToBase64(opt);
+    if (typeof document !== 'undefined') {
+        return document.location.origin + "?pmc=" + b64;
+    }
+    else {
+        return "?pmc=" + b64;
+    }
+}
+
+export function parsePermalink(value: string): string[][] | undefined {    
+    try {
+        let rev = lz.decompressFromBase64(value);
+        let opt = JSON.parse(rev);
+        if ("length" in opt && opt.length && "length" in opt[0]) return opt;
+    }
+    catch {
+    }
+    return undefined;
 }

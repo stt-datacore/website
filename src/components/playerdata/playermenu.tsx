@@ -1,16 +1,21 @@
 import React from 'react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
+import { MaxMenuItems, MaxMobileItems, NavItem, createSubMenu, getAllOptions, renderSubmenuItem } from '../page/util';
+import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
+import { Dropdown, Menu } from 'semantic-ui-react';
 
 type PlayerMenuProps = {
 	requestPanel: (panel: string | undefined) => void;
 	requestClearData: () => void;
 	vertical?: boolean;
+	navConfig?: NavigationSettingsConfig;
 };
 
 export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
+	const [modalOpen, setModalOpen] = React.useState(false);
+
 	const {
 		requestPanel,
 		requestClearData,
@@ -52,6 +57,18 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => requestClearData()
 		},
+		{
+			title: "Menu Settings",
+			checkVisible: (data) => !!playerData,
+			customRender: (data) => {
+				return props.navConfig ? <NavigationSettings 
+				config={props.navConfig}
+				renderTrigger={() => renderSubmenuItem(data, undefined, !props.vertical)}
+				isOpen={modalOpen} setIsOpen={setModalOpen} 				
+				/> : <Dropdown.Item disabled>Menu Settings</Dropdown.Item>
+			},
+			customAction: (e, data) => setModalOpen(true)
+		},
 	] as NavItem[];
 
 	if (props.vertical) {
@@ -59,14 +76,16 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			<React.Fragment>
 				{playerMenu.map((item) => {
 					if (item.checkVisible && !item.checkVisible(item)) return <></>;
-					return renderSubmenuItem(item);
-				})}
+					return item.customRender ? item.customRender(item) : renderSubmenuItem(item);
+				})}				
 			</React.Fragment>
 		);
 	}
 	else {
 		const items = playerMenu.filter(item => item.checkVisible ? item.checkVisible(item) : true);
-		return createSubMenu(playerData?.player.character.display_name ?? '', items);
+		return <React.Fragment>
+			{createSubMenu(playerData?.player.character.display_name ?? '', items)}			
+			</React.Fragment>
 	}
 };
 

@@ -1,12 +1,14 @@
 import React, { ElementRef } from 'react';
 import { navigate } from "gatsby";
-import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup, Container, Input } from "semantic-ui-react";
+import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup, Container, Input, Modal } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
 import { PlayerMenu } from "../playerdata/playermenu";
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { NavItem, createSubMenu, drawMenuItem } from './util';
+import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink } from './util';
+import { useStateWithStorage } from '../../utils/storage';
+import { NavigationSettingsConfig } from './settings';
 
 type NavigationProps = {
 	requestPlayerPanel: (panel: string | undefined) => void;
@@ -21,7 +23,25 @@ export const Navigation = (props: NavigationProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const [openBar, setOpenBar] = React.useState(false);
 	const { requestClearPlayerData, requestPlayerPanel } = props;
-
+	
+	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
+	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
+	
+	if (typeof window !== 'undefined' && !!window.location.search?.length && !!context.player.playerData) {
+		let parm = new URLSearchParams(window.location.search);	
+		if (parm.has('pmc')) {
+			let result = parsePermalink(parm.get("pmc") ?? '');
+			if (result) {
+				const res = result;
+				window.setTimeout(() => {					
+					if (JSON.stringify(res) !== JSON.stringify([activeMenu, mobileActiveMenu])) {
+						setActiveMenu(res[0]);
+						setMobileActiveMenu(res[1]);							
+					}
+				});				
+			}
+		}
+	}
 	const requestPanel = (panel: string | undefined) => {
 		requestPlayerPanel(panel);
 		setOpenBar(false);
@@ -74,6 +94,17 @@ export const Navigation = (props: NavigationProps) => {
 			},
 			customRender: (data) => {
 				return (<PlayerMenu key={v4()}
+					navConfig={{
+						current: activeMenu,
+						mobileCurrent: mobileActiveMenu,
+						maxItems: MaxMenuItems,
+						defaultOptions: DefaultOpts,
+						defaultMobileOptions: DefaultOptsMobile,
+						setCurrent: setActiveMenu,
+						setMobileCurrent: setMobileActiveMenu,
+						maxItemsMobile: MaxMobileItems,
+						menu: pages
+					}}
 					requestPanel={requestPanel}
 					requestClearData={requestClear}
 				/>)
@@ -107,36 +138,36 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Worfle', link: '/crewchallenge' }
 			]
 		},
-		{ src: '/media/crew_icon.png', tooltip: "Crew Roster", link: '/' },
-		{ src: '/media/portal.png', tooltip: 'Behold', link: '/behold', checkVisible: () => !isMobile },
-		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
-		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
-		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
+		{ optionKey: '_option0', checkVisible: () => false },
+		{ optionKey: '_option1', checkVisible: () => false },
+		{ optionKey: '_option2', checkVisible: () => false },
+		{ optionKey: '_option3', checkVisible: () => false },
+		{ optionKey: '_option4', checkVisible: () => false },
 		{ 
 			title: 'Roster',
             sidebarRole: 'heading',
 			subMenu: [
-				{ title: 'Crew', link: '/', sidebarRole: 'item' },
-				{ title: 'Ships', link: '/playertools?tool=ships', sidebarRole: 'item' },
-				{ title: 'Owned Items', link: '/playertools?tool=items', sidebarRole: 'item' },
-				{ title: 'All Items', link: '/items', sidebarRole: 'item' },
-				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
+				{ optionKey: 'crew', src: '/media/crew_icon.png', title: 'Crew', link: '/', sidebarRole: 'item' },
+				{ optionKey: 'ship', src: '/media/ship_icon.png', title: 'Ships', link: '/playertools?tool=ships', sidebarRole: 'item' },
+				{ optionKey: 'item', src: '/media/equipment_icon.png', title: 'Owned Items', link: '/playertools?tool=items', sidebarRole: 'item' },
+				{ optionKey: 'all_items', src: '/media/equipment_icon.png', title: 'All Items', link: '/items', sidebarRole: 'item' },
+				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
 			]
 		},
 		{ 
 			title: 'Tools',
             sidebarRole: 'heading',
             subMenu: [
-				{ title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
 				{ title: "Factions", link: "/playertools?tool=factions", sidebarRole: 'item' },	// Factions available at launch
-				{ title: "Event Planner", link: "/playertools?tool=event-planner", sidebarRole: 'item' },	// Events added post-launch
-				{ title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-				{ title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
-				{ title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },	// Voyages added v3
+				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/playertools?tool=event-planner", sidebarRole: 'item' },	// Events added post-launch
+				{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
+				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },	// Voyages added v3
 				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
-				{ title: "Collection Planner", link: "/playertools?tool=collections", sidebarRole: 'item' },	// Collections added v4
-				{ title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
-				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
+				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/playertools?tool=collections", sidebarRole: 'item' },	// Collections added v4
+				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
 		},
 		{ 
@@ -168,6 +199,31 @@ export const Navigation = (props: NavigationProps) => {
 		},
 	] as NavItem[];
 
+	const popts = getAllMenuOptions(pages);
+
+	const pc = pages.length;
+	const actmnu = isMobile ? mobileActiveMenu : activeMenu;
+	const cmax = isMobile ? MaxMobileItems : MaxMenuItems;
+
+	for (let p = 0; p < pc; p++) {
+		const page = pages[p];
+		if (!page) continue;
+		if (page.optionKey?.startsWith("_option")) {
+			let xkey = Number.parseInt(page.optionKey.slice(7));
+			
+			if (xkey < actmnu.length && xkey < cmax) {
+				let fopt = popts.find(o => o.optionKey === actmnu[xkey]);
+				if (fopt) {
+					pages[p] = {
+						... fopt,
+						title: undefined,
+						optionKey: undefined
+					}
+				}
+			}
+		}
+	}
+
 	const otherPages = useOtherPages();
 	const about = [
 		{ title: 'About DataCore', link: '/about', sidebarRole: 'item' },
@@ -184,8 +240,13 @@ export const Navigation = (props: NavigationProps) => {
 	const menuItems = [] as JSX.Element[];
 	const rightItems = [] as JSX.Element[];
 
-	for (let page of pages) {
+	for (let page of pages) {		
 		if (page.right) continue;
+		if (page.optionKey) {
+			if (page.optionKey.startsWith("_option")) continue;
+			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) return false;
+			else if (!isMobile && !activeMenu.includes(page.optionKey)) return false;
+		}
 
 		if (page.checkVisible && !page.checkVisible(page)) continue;
 		if (isMobile) {
@@ -227,6 +288,12 @@ export const Navigation = (props: NavigationProps) => {
 
 	for (let page of pages) {
 		if (!page.right) continue;
+		if (page.optionKey) {
+			if (page.optionKey.startsWith("_option")) continue;
+			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) return false;
+			else if (!isMobile && !activeMenu.includes(page.optionKey)) return false;
+		}
+
 		if (page.checkVisible && !page.checkVisible(page)) continue;
 		if (page.customRender) {
 			rightItems.push(page.customRender(page));
@@ -245,7 +312,6 @@ export const Navigation = (props: NavigationProps) => {
 	else {
 		sidebarItems.push(createSubMenu('About', about, true));
 	}
-
 
 	const sref = React.useRef<HTMLDivElement>(null);
 
