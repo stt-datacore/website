@@ -384,11 +384,14 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const ownedFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' },
-		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
-		{ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' },
-		{ key: 'owned-ff', value: 'owned-ff', text: 'Only show fully fused crew' }
 	];
+
+	if ((tabIndex === 0 || !!mapFilter?.collectionsFilter?.length)) {
+		ownedFilterOptions.push({ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' });
+		ownedFilterOptions.push({ key: 'owned', value: 'owned', text: 'Only show owned crew' })
+	}
+	ownedFilterOptions.push({ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' });
+	ownedFilterOptions.push({ key: 'owned-ff', value: 'owned-ff', text: 'Only show fully fused crew' });
 
 	const fuseFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
@@ -460,12 +463,12 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
-		let prefiltered = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
+		let fstep1 = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];
 		let fss = {} as {[key: string]: boolean };
 	
-		if (prefiltered.length) {
+		if (fstep1.length) {
 			let currsym = '';
-			for (let item of prefiltered){
+			for (let item of fstep1){
 				currsym = item.symbol;
 				if (!(currsym in fss)) {
 					fss[currsym] = true;
@@ -473,16 +476,16 @@ const CrewTable = (props: CrewTableProps) => {
 				fss[currsym] = fss[currsym] && !(item.immortal > 0 || item.immortal === CompletionState.Immortalized);
 			}
 		}
-		const filtered = prefiltered.filter((crew, idx) => fss[crew.symbol] && idx === prefiltered.findIndex(c2 => c2.symbol === crew.symbol));
+		const fstep2 = fstep1.filter((crew, idx) => fss[crew.symbol] && idx === fstep1.findIndex(c2 => c2.symbol === crew.symbol));
 
-		let zcol = filtered.map(z => z.collections).flat();
-		zcol = zcol.filter((cn, idx) => zcol.indexOf(cn) === idx).sort();
+		let cstep1 = fstep2.map(g => g.collections).flat();
+		cstep1 = cstep1.filter((cn, idx) => cstep1.indexOf(cn) === idx).sort();
 		const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
-		const colMap = zcol.map((col, idx) => {
+		const colMap = cstep1.map((col, idx) => {
 			return {
 				collection: playerCollections.find(f => f.name === col),
-				crew: filtered.filter(crew => {
+				crew: fstep2.filter(crew => {
 					if (crew.immortal === CompletionState.Immortalized || crew.immortal > 0) return false;
 
 					let fr = crew.collections.some(fc => fc == col);
@@ -670,6 +673,10 @@ const CrewTable = (props: CrewTableProps) => {
 					const collection = col.collection;
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
+					
+					const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
+					const crewhave = (collection?.owned ?? 0);
+
 					return (<Table.Row key={"colgroup" + idx}>
 						<Table.Cell width={4}>
 							<div style={{								
@@ -696,9 +703,9 @@ const CrewTable = (props: CrewTableProps) => {
 							</div>
 							<i style={{fontSize: "0.8em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
 							<i style={{fontSize: "0.8em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
-							{((collection?.owned ?? 0) < (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0)) && 
+							{crewhave < crewneed && 
 								<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
-									You need to recruit {(collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0) - (collection?.owned ?? 0)} more crew to reach the next goal.
+									You need to recruit {crewneed - crewhave} more crew to reach the next goal.
 								</i>}
 							</div>
 						</Table.Cell>
@@ -717,7 +724,7 @@ const CrewTable = (props: CrewTableProps) => {
 											padding:"0.25em",
 											paddingTop: ccidx < (collection?.needed ?? 0) ? '0.75em' : undefined,
 											borderRadius: "5px",																			
-											backgroundColor: ccidx < (collection?.needed ?? 0) ? 'darkgreen' : undefined
+											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined
 									}}>
 									<ItemDisplay 
 										size={64}
@@ -780,7 +787,7 @@ const CrewTable = (props: CrewTableProps) => {
 			<div style={{ margin: '1em 0' }}>
 				<Form>
 					<Form.Group inline>
-						{(tabIndex === 0 || !!mapFilter?.collectionsFilter?.length) &&
+						
 						<Form.Field
 							placeholder='Filter by owned status'
 							control={Dropdown}
@@ -789,7 +796,7 @@ const CrewTable = (props: CrewTableProps) => {
 							options={ownedFilterOptions}
 							value={ownedFilter}
 							onChange={(e, { value }) => setOwnedFilter(value)}
-						/>}
+						/>
 						<Form.Field
 							placeholder='Filter by retrieval option'
 							control={Dropdown}
