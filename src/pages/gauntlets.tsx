@@ -150,13 +150,18 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
+const crit65 = 3.90;
+const crit45 = 2.7;
+const crit25 = 1.5;
+const crit5 = 1;
+
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
 	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 
-	if (atrait >= 3) atrait = 3.90;
-	else if (atrait >= 2) atrait = 2.7;
-	else if (atrait >= 1) atrait = 1.5;
-	else atrait = 0.30;
+	if (atrait >= 3) atrait = crit65;
+	else if (atrait >= 2) atrait = crit45;
+	else if (atrait >= 1) atrait = crit25;
+	else atrait = crit5;
 	
 	apairs ??= getPlayerPairs(a, atrait);
 	
@@ -174,6 +179,7 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 				w++;
 			}
 		}
+		if (apairs.length === 1) cn /= 2;
 	}	
 	else if (apairs?.length && !("length" in apairs[0])) {
 		for (let skill of apairs as Skill[]) {
@@ -183,7 +189,7 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 				cn += dn;
 				w++;
 			}
-		}
+		}		
 	}
 
 	//cn /= w;
@@ -555,15 +561,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 						let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
 
-						if (atrait >= 3) atrait = 3.90;
-						else if (atrait >= 2) atrait = 2.7;
-						else if (atrait >= 1) atrait = 1.5;
-						else atrait = 0.30;
+						if (atrait >= 3) atrait = crit65;
+						else if (atrait >= 2) atrait = crit45;
+						else if (atrait >= 1) atrait = crit25;
+						else atrait = crit5;
 
-						if (btrait >= 3) btrait = 3.90;
-						else if (btrait >= 2) btrait = 2.7;
-						else if (btrait >= 1) btrait = 1.5;
-						else btrait = 0.30;
+						if (btrait >= 3) btrait = crit65;
+						else if (btrait >= 2) btrait = crit45;
+						else if (btrait >= 1) btrait = crit25;
+						else btrait = crit5;
 
 						let r = 0;
 						
@@ -757,7 +763,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		delete gauntlet.pairMax;
 		delete gauntlet.pairMin;
 
-		const matchedCrew =
+		const matchedCrew1 =
 			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
 				(Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) || !!e.isOpponent) ||
@@ -885,15 +891,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 					let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
-					if (atrait >= 3) atrait = 3.90;
-					else if (atrait >= 2) atrait = 2.7;
-					else if (atrait >= 1) atrait = 1.5;
-					else atrait = 0.30;
+					if (atrait >= 3) atrait = crit65;
+					else if (atrait >= 2) atrait = crit45;
+					else if (atrait >= 1) atrait = crit25;
+					else atrait = crit5;
 
-					if (btrait >= 3) btrait = 3.90;
-					else if (btrait >= 2) btrait = 2.7;
-					else if (btrait >= 1) btrait = 1.5;
-					else btrait = 0.30;
+					if (btrait >= 3) btrait = crit65;
+					else if (btrait >= 2) btrait = crit45;
+					else if (btrait >= 1) btrait = crit25;
+					else btrait = crit5;
 
 					let ap = getPlayerPairs(a, atrait);
 					let bp = getPlayerPairs(b, btrait);
@@ -909,6 +915,51 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					r = r = Math.round(b.score) - Math.round(a.score);;
 
 					if (!r) r = a.name.localeCompare(b.name);
+					return r;
+				});
+
+				const maxpg = 10;
+				let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
+			
+				const incidence = {} as { [key: string]: number };
+				const avgidx = {} as { [key: string]: number };
+				const featuredavgidx = {} as { [key: string]: number };
+				const featureds = {} as { [key: string]: number };
+		
+				for(let pg of pgs) {
+					let idx = 1;
+					
+					for (let pgcrew of pg.crew) {
+						incidence[pgcrew.symbol] ??= 0;				
+						incidence[pgcrew.symbol]++;
+						featureds[pgcrew.symbol] ??= 0;				
+						featuredavgidx[pgcrew.symbol] ??= 0;				
+						let opairs = pg.pair.map(c => rankToSkill(c));
+						if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
+							featureds[pgcrew.symbol]++;
+							featuredavgidx[pgcrew.symbol] += idx;
+						}
+		
+						avgidx[pgcrew.symbol] ??= 0;
+						avgidx[pgcrew.symbol] += idx;
+						idx++;
+					}
+				}
+				
+				Object.keys(avgidx).forEach(key => {
+					avgidx[key] /= incidence[key];
+				});
+		
+				Object.keys(featuredavgidx).forEach(key => {
+					featuredavgidx[key] /= featureds[key];
+				});
+		
+				const matchedCrew = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+					let r = 0;
+					let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
+					let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+		
+					r = bnum - anum;
 					return r;
 				});
 
