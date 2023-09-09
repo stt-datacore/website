@@ -112,7 +112,8 @@ export const Navigation = (props: NavigationProps) => {
 		{ link: "/gauntlets", src: '/media/gauntlet.png', tooltip: "Gauntlets" },
 		{ link: "/playertools?tool=voyage", src: '/media/voyage.png', tooltip: "Voyage Calculator" },
 		{ link: "/playertools?tool=fleetbossbattles", src: '/media/fbb.png', tooltip: "Fleet Boss Battles" },
-		{ title: 'Roster',
+		{ 
+			title: 'Roster',
             sidebarRole: 'heading',
 			subMenu: [
 				{ title: 'Crew', link: '/', sidebarRole: 'item' },
@@ -122,7 +123,8 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
 			]
 		},
-		{ title: 'Tools',
+		{ 
+			title: 'Tools',
             sidebarRole: 'heading',
             subMenu: [
 				{ title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
@@ -137,7 +139,8 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
 		},
-		{ title: 'Game Info',
+		{ 
+			title: 'Game Info',
             sidebarRole: 'heading',
             subMenu: [
 				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' },
@@ -147,14 +150,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: "Misc Game Stats", link: "/stats", sidebarRole: 'item' },
 			]
 		},
-		// {
-		// 	title: 'Stats',
-        //     sidebarRole: 'heading',
-        //     subMenu: [
-		// 		{ title: "Player Stats", link: "/playertools?tool=other", sidebarRole: 'item' },
-		// 		{ title: "Charts & Stats", link: "/playertools?tool=charts", sidebarRole: 'item' },
-		// 	]
-		// },
+		// TODO: Use later?
 		// {
 		// 	title: 'Search',
 		// 	right: true,
