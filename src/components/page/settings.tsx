@@ -43,6 +43,8 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
     const [workConf, setWorkConf] = React.useState(config);
 
     const menuItems = getAllOptions(config.menu);
+    
+    const [showCopied, setShowCopied] = React.useState(false);
 
     if (typeof window !== 'undefined' && document.location.search) {
         let parm = new URLSearchParams();
@@ -110,11 +112,14 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 			</Modal.Content>
 			<Modal.Actions>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
                     <Button 
                             style={{alignSelf: "flex-start"}}
                             content={`Permalink`}
                             icon='chain'
                             onClick={() => copyPermalink()} />
+                            {showCopied && <div style={{margin: "0 0.5em"}}>Link copied to clipboard!</div>}
+                        </div>
                     <div>
                         <Button 
                                 style={{alignSelf: "flex-end"}}
@@ -184,6 +189,10 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
         let url = settingsToPermalink(workConf.current, workConf.mobileCurrent);
         if (typeof navigator !== 'undefined') {
             navigator.clipboard.writeText(url);
+            setShowCopied(true);
+            window.setTimeout(() => {
+                setShowCopied(false);
+            }, 3500);
         }
     }
 
