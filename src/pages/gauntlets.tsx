@@ -120,7 +120,7 @@ const DEFAULT_FILTER_PROPS = {
 const crit65 = 3.90;
 const crit45 = 2.7;
 const crit25 = 1.5;
-const crit5 = 1.30;
+const crit5 = 1;
 
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
 	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
