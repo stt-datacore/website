@@ -217,7 +217,9 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 }
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
+	if (!buffConfig) return;
 	const getMultiplier = (skill: string, stat: string) => {
+		if (!(`${skill}_${stat}` in buffConfig)) return 0;
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 	};
 

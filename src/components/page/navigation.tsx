@@ -27,7 +27,7 @@ export const Navigation = (props: NavigationProps) => {
 	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
 	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
 	
-	if (typeof window !== 'undefined' && !!window.location.search?.length && !!context.player.playerData) {
+	if (!!context.player.playerData && typeof window !== 'undefined' && !!window.location.search?.length) {
 		let parm = new URLSearchParams(window.location.search);	
 		if (parm.has('pmc')) {
 			let result = parsePermalink(parm.get("pmc") ?? '');
@@ -217,7 +217,8 @@ export const Navigation = (props: NavigationProps) => {
 					pages[p] = {
 						... fopt,
 						title: undefined,
-						optionKey: undefined
+						optionKey: undefined,
+						tooltip: fopt.title
 					}
 				}
 			}
