@@ -117,13 +117,18 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
+const crit65 = 3.90;
+const crit45 = 2.7;
+const crit25 = 1.5;
+const crit5 = 0.30;
+
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
 	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 
-	if (atrait >= 3) atrait = 3.90;
-	else if (atrait >= 2) atrait = 2.7;
-	else if (atrait >= 1) atrait = 1.5;
-	else atrait = 0.30;
+	if (atrait >= 3) atrait = crit65;
+	else if (atrait >= 2) atrait = crit45;
+	else if (atrait >= 1) atrait = crit25;
+	else atrait = crit5;
 	
 	apairs ??= getPlayerPairs(a, atrait);
 	
@@ -141,6 +146,7 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 				w++;
 			}
 		}
+		if (apairs.length === 1) cn /= 2;
 	}	
 	else if (apairs?.length && !("length" in apairs[0])) {
 		for (let skill of apairs as Skill[]) {
@@ -150,7 +156,7 @@ export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet
 				cn += dn;
 				w++;
 			}
-		}
+		}		
 	}
 
 	//cn /= w;
@@ -522,15 +528,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 						let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
 
-						if (atrait >= 3) atrait = 3.90;
-						else if (atrait >= 2) atrait = 2.7;
-						else if (atrait >= 1) atrait = 1.5;
-						else atrait = 0.30;
+						if (atrait >= 3) atrait = crit65;
+						else if (atrait >= 2) atrait = crit45;
+						else if (atrait >= 1) atrait = crit25;
+						else atrait = crit5;
 
-						if (btrait >= 3) btrait = 3.90;
-						else if (btrait >= 2) btrait = 2.7;
-						else if (btrait >= 1) btrait = 1.5;
-						else btrait = 0.30;
+						if (btrait >= 3) btrait = crit65;
+						else if (btrait >= 2) btrait = crit45;
+						else if (btrait >= 1) btrait = crit25;
+						else btrait = crit5;
 
 						let r = 0;
 						
@@ -852,15 +858,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 					let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
-					if (atrait >= 3) atrait = 3.90;
-					else if (atrait >= 2) atrait = 2.7;
-					else if (atrait >= 1) atrait = 1.5;
-					else atrait = 0.30;
+					if (atrait >= 3) atrait = crit65;
+					else if (atrait >= 2) atrait = crit45;
+					else if (atrait >= 1) atrait = crit25;
+					else atrait = crit5;
 
-					if (btrait >= 3) btrait = 3.90;
-					else if (btrait >= 2) btrait = 2.7;
-					else if (btrait >= 1) btrait = 1.5;
-					else btrait = 0.30;
+					if (btrait >= 3) btrait = crit65;
+					else if (btrait >= 2) btrait = crit45;
+					else if (btrait >= 1) btrait = crit25;
+					else btrait = crit5;
 
 					let ap = getPlayerPairs(a, atrait);
 					let bp = getPlayerPairs(b, btrait);
