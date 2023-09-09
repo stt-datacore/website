@@ -34,7 +34,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
             <Dropdown.Item key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
             >
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
-                <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
+                {!!item.src && <div style={{width:"36px"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /></div>}
                 {item.title}
                 </div>
             </Dropdown.Item>
@@ -53,7 +53,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
             lineHeight:"1.45em", 
             alignItems: "center"
         }}>
-            <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
+            {!!item.src && <div style={{width:"36px"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /></div>}
             {item.title}
         </div>
     </Menu.Item>
@@ -79,7 +79,7 @@ export const createSubMenu = (title: string, children: NavItem[], verticalLayout
                         return (
                             <Dropdown.Item icon={item.icon} key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
                                 <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
-                                <div style={{width:"36px"}}>{!!item.src && <img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /> }</div>
+                                {!!item.src && <div style={{width:"36px"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /></div>}
                                 {item.title}
                                 </div>
                             </Dropdown.Item>

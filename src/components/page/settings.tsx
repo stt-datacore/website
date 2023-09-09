@@ -163,7 +163,11 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
                                     disabled={current.length >= maxes[idx] && !!item.optionKey && !current.includes(item.optionKey)}
                                     onChange={(e, { checked }) => toggleOption(checked ?? false, item.optionKey ?? '', idx === 1)}
                                     />
-                                <div style={{ margin: "0.5em"}}>
+                                <div style={{width:"36px", margin:"0 0.5em", display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                {!!item.icon && <Icon name={item.icon} size='small' />}
+                                {!!item.src && <img src={item.src} style={{height: '24px' }} />}
+                                </div>
+                                <div style={{ margin: "1em 0" }}>
                                     {item.title ?? item.tooltip}
                                 </div>
 
