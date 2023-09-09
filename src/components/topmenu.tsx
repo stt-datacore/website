@@ -138,8 +138,9 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-	const betaSite = window.location.hostname.includes("beta");
-	const toggle = betaSite ? <Icon name="toggle on" /> : <Icon name="toggle off" />
+const betaSite = window.location.hostname.includes("beta");
+const toggle = betaSite ? <Icon name="toggle on" /> : <Icon name="toggle off" />
+
 
 	return (<>
 		<Menu.Item onClick={() => (window as any).swapThemeCss()}>
