@@ -763,7 +763,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		delete gauntlet.pairMax;
 		delete gauntlet.pairMin;
 
-		const matchedCrew =
+		const matchedCrew1 =
 			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
 				(Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) || !!e.isOpponent) ||
@@ -915,6 +915,51 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					r = r = Math.round(b.score) - Math.round(a.score);;
 
 					if (!r) r = a.name.localeCompare(b.name);
+					return r;
+				});
+
+				const maxpg = 10;
+				let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
+			
+				const incidence = {} as { [key: string]: number };
+				const avgidx = {} as { [key: string]: number };
+				const featuredavgidx = {} as { [key: string]: number };
+				const featureds = {} as { [key: string]: number };
+		
+				for(let pg of pgs) {
+					let idx = 1;
+					
+					for (let pgcrew of pg.crew) {
+						incidence[pgcrew.symbol] ??= 0;				
+						incidence[pgcrew.symbol]++;
+						featureds[pgcrew.symbol] ??= 0;				
+						featuredavgidx[pgcrew.symbol] ??= 0;				
+						let opairs = pg.pair.map(c => rankToSkill(c));
+						if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
+							featureds[pgcrew.symbol]++;
+							featuredavgidx[pgcrew.symbol] += idx;
+						}
+		
+						avgidx[pgcrew.symbol] ??= 0;
+						avgidx[pgcrew.symbol] += idx;
+						idx++;
+					}
+				}
+				
+				Object.keys(avgidx).forEach(key => {
+					avgidx[key] /= incidence[key];
+				});
+		
+				Object.keys(featuredavgidx).forEach(key => {
+					featuredavgidx[key] /= featureds[key];
+				});
+		
+				const matchedCrew = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+					let r = 0;
+					let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
+					let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+		
+					r = bnum - anum;
 					return r;
 				});
 

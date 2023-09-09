@@ -621,7 +621,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
   }
 
 
-export function rankToSkill(rank: string) {
+export function rankToSkill(rank: string): string | undefined {
 	if (rank === "CMD") return "command_skill";
 	else if (rank === "SEC") return "security_skill";
 	else if (rank === "DIP") return "diplomacy_skill";
@@ -630,7 +630,7 @@ export function rankToSkill(rank: string) {
 	else if (rank === "ENG") return "engineering_skill";
 }
 
-export function skillToRank(skill: string) {
+export function skillToRank(skill: string): string | undefined {
 	if (!skill) return "";
 	if (skill.includes("command")) return "CMD";
 	else if (skill.includes("security")) return "SEC";
