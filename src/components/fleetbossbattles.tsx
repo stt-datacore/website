@@ -4,7 +4,7 @@ import { Dropdown, Message } from 'semantic-ui-react';
 import ChainSolver from '../components/fleetbossbattles/chainsolver';
 
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { NumericOptions } from '../model/game-elements';
 import { BossBattlesRoot, Chain } from '../model/boss';
@@ -58,6 +58,7 @@ export const FleetBossBattles = () => {
 
 const ChainPicker = () => {
 	const allData = React.useContext(BossDataContext);	
+	const { playerData } = allData?.player ?? {} as PlayerData;
 
 	const [activeBoss, setActiveBoss] = useStateWithStorage<number | undefined>('fbb/active', undefined);
 	const [chain, setChain] = React.useState<Chain | undefined>(undefined);
@@ -82,7 +83,7 @@ const ChainPicker = () => {
 			} as Chain;
 			setChain({...chain});
 		}
-	}, [activeBoss]);
+	}, [activeBoss, playerData]);
 
 	if (!allData || !allData.fleetBossBattlesRoot)
 		return <Message>No boss data found. Please upload a more recent version of your player data.</Message>;

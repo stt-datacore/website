@@ -29,10 +29,11 @@ import { EquipmentItem } from '../model/equipment';
 import DataPageLayout from '../components/page/datapagelayout';
 import { EphemeralData } from '../context/playercontext';
 import { navigate } from 'gatsby';
+import { v4 } from 'uuid';
 
 export interface PlayerTool {
 	title: string;
-	render: (props: { crew?: PlayerCrew, ship?: string, location?: any }) => JSX.Element;
+	render: (props: { rand?: string, crew?: PlayerCrew, ship?: string, location?: any }) => JSX.Element;
 	noMenu?: boolean;
 }
 
@@ -130,9 +131,15 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 	const { playerShips, playerData } = mergedContext.player;
 	const { dataSource, ephemeral } = mergedContext.player;
 
+	const [rand, setRand] = React.useState(v4());
+
+	React.useEffect(() => {
+		setRand(v4());
+	}, [playerData, ephemeral]);
+
 	// Profile data ready, show player tool panes
-	if (playerData && dataSource && dataSource && ephemeral && playerShips) {
-		return (<PlayerToolsPanes />);
+	if (playerData && dataSource && dataSource && ephemeral && playerShips && !!rand) {
+		return (<PlayerToolsPanes rand={rand} />);
 	}
 	else {
 		return <></>
@@ -140,6 +147,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 }
 
 type PlayerToolsPanesProps = {
+	rand: string;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
@@ -149,6 +157,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	const [activeTool, setActiveTool] = React.useState('');
 	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
+	const { rand } = props;
 
 	const tools = playerTools;
 	React.useEffect(() => {
@@ -176,7 +185,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	return (
 		<>
 			<React.Fragment>
-				{((activeTool ?? "") != "") ? tools[activeTool].render(props) : ""}
+				{((activeTool ?? "") != "") ? tools[activeTool].render({ rand }) : ""}
 			</React.Fragment>
 		</>
 	);
