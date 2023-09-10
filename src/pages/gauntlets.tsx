@@ -2799,8 +2799,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return (
 			<>
-			{hasPlayer && this.renderCopyPaste()}
-			{/* {hasPlayer && <Accordion
+			{/* {hasPlayer && this.renderCopyPaste()} */}
+			{hasPlayer && <Accordion
 				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
 					index: 0, 
@@ -2858,7 +2858,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</Form></>
 					}
 				}]}
-				/>} */}
+				/>}
 				<div style={{margin: "1em 0"}}>
 					<Step.Group fluid>
 						{tabPanes.map((pane, idx) => {
