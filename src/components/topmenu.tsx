@@ -1,7 +1,7 @@
 import React, { PureComponent, useState } from 'react';
 import { Container, Dropdown, Popup, Menu, Icon, Button, Modal, Form, Grid, Message, Segment, Sidebar } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-
+import { useLocation } from '@reach/router';
 import { createMedia } from '@artsy/fresnel';
 
 import { useOtherPages } from './otherpages';
@@ -138,8 +138,8 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-const betaSite = window.location.hostname.includes("beta");
-const toggle = betaSite ? <Icon name="toggle on" /> : <Icon name="toggle off" />
+	const betaSite = useLocation()?.origin?.includes("beta");
+	const toggle = betaSite ? <Icon name="toggle on" /> : <Icon name="toggle off" />
 
 
 	return (<>
