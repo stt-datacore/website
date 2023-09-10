@@ -140,7 +140,7 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 };
 
 const useRightItems = ({ onMessageClicked }) => {
-const betaSite = window.location.hostname.includes("beta");
+const betaSite = typeof window !== 'undefined' && window.location.hostname.includes("beta");
 const toggle = betaSite ? <Icon name="toggle on" /> : <Icon name="toggle off" />
 
 
