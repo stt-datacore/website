@@ -1644,7 +1644,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		const jackpots = jp;
-
+		//const oppocrew = (gauntletIn?.opponents?.map(o => o.crew_contest_data.crew ?? [])?.flat() ?? []);
+		
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
@@ -1930,7 +1931,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										}
 									}]}
 								/>}
-
+								
 						</div>
 
 						<div style={{
@@ -2650,8 +2651,41 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 
 			this.inited = false;
+			// TODO: Dormant Code to merge previous rounds!
+			// 
+			// let json = this.tiny.getValue<string>('liveGauntlet');
+			
+			// const prevGauntlet = json ? JSON.parse(json) as Gauntlet : {} as Gauntlet;
+			// const curroppos = [ ... gauntlet.opponents ?? [] ];
+			// const prevoppos = [ ... prevGauntlet?.opponents ?? [] ];
+
+			// for (let oppo of curroppos) {
+			// 	let po = prevoppos.find(fo => fo.player_id === oppo.player_id);
+			// 	if (po) {
+			// 		const crewdata = [ ... po.crew_contest_data.crew ];
+			// 		for (let pcrew of crewdata) {
+			// 			let fo = oppo.crew_contest_data.crew.find(foppo => foppo.archetype_symbol === pcrew.archetype_symbol);
+			// 			if (fo) {
+			// 				let pcopy = [ ... pcrew.skills, ...fo.skills];
+			// 				pcopy = pcopy.filter((pf, idx) => pcopy.findIndex(t => t.skill === pf.skill) === idx);
+			// 				pcrew.skills = pcopy;
+			// 			}
+			// 			else {
+			// 				po.crew_contest_data.crew.push(pcrew);
+			// 			}
+			// 		}
+			// 	}
+			// 	else {
+			// 		prevoppos.push(oppo);
+			// 	}
+			// }
+			
+			// gauntlet.opponents = prevoppos;
+
+			//this.tiny.setValue('liveGauntlet', JSON.stringify(gauntlet), false);
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
 			this.tiny.setValue('activeTabIndex', 4);
+
 			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: gauntlet, activeTabIndex: 4 });			
 		}
 		catch {
