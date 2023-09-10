@@ -27,7 +27,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     delete p.player.character.active_conflict;
     delete p.player.character.next_shuttle_bay_cost;
-    
+
     delete p.fleet_boss_battles_root;
 	delete p.captains_bridge_root;
 	delete p.scanning_root;
@@ -35,7 +35,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 	delete p.objective_event_root;
     delete p.archetype_cache;
     delete p.item_archetype_cache;
-    
+
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
     delete p.player.character.shuttle_adventures;
@@ -61,8 +61,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.replay_energy_rate;
     delete p.player.character.seconds_from_replay_energy_basis;
     delete p.player.character.seconds_from_last_boost_claim;
-    delete p.player.character.crew_borrows;
-    delete p.player.character.crew_shares;
+    // delete p.player.character.crew_borrows;
+    // delete p.player.character.crew_shares;
     delete p.player.character.crew_limit_increase_per_purchase;
     delete p.player.character.next_crew_limit_increase_cost;
     delete p.player.character.can_purchase_crew_limit_increase;

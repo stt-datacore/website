@@ -21,12 +21,14 @@ const RunningList = (props: RunningListProps) => {
 
 	const [shuttles, setShuttles] = React.useState<Shuttle[]>([] as Shuttle[]);
 	const [assigned, setAssigned] = React.useState<ISeatAssignment[]>([] as ISeatAssignment[]);
+	const [rentals, setRentals] = React.useState([] as string[]);
 
 	React.useEffect(() => {
 		const shuttles = [] as Shuttle[];
 		const assigned = [] as ISeatAssignment[];
+		const rentals = [] as string[];
 		const todo = [] as ShuttleSeat[], todoIds = [] as string[];
-		props.activeShuttles.forEach(adventure => {
+		props.activeShuttles.filter(adventure => adventure.shuttles[0].slots.some(slot => slot.crew_symbol)).forEach(adventure => {
 			const shuttle = shuttlers.shuttles.find(shuttle => shuttle.groupId === props.groupId && shuttle.id === adventure.symbol);
 			if (shuttle) {
 				shuttles.push(shuttle);
@@ -51,10 +53,12 @@ const RunningList = (props: RunningListProps) => {
 						todoIds.push(ssId);
 					}
 				});
+				if (adventure.shuttles[0].is_rental) rentals.push(adventure.symbol);
 			}
 		});
 		setShuttles(shuttles);
 		setAssigned(assigned);
+		setRentals(rentals);
 		if (todo.length > 0) props.updateCrewScores(todo);
 	}, [props.activeShuttles]);
 
@@ -82,11 +86,11 @@ const RunningList = (props: RunningListProps) => {
 	};
 
 	const shuttleScores = getShuttleScores(shuttles, assigned, props.crewScores);
-	const data = shuttles.slice().filter(shuttle => shuttle.groupId === props.groupId);
+	const data = shuttles.slice();
 
 	return (
 		<React.Fragment>
-			<p>You have {shuttles.length} shuttle{shuttles.length === 1 ? '' : 's'} currently running. Re-run these shuttles to re-use crew assignments. Warning: re-running a shuttle may override previous crew assignments.</p>
+			<p>You have {data.length} active shuttle{data.length === 1 ? '' : 's'}. {data.length > 0 && <>Re-run these shuttles to re-use crew assignments. Warning: re-running a shuttle may override previous crew assignments.</>}</p>
 			<Table celled striped compact='very'>
 				<Table.Header>
 					<Table.Row>
@@ -101,13 +105,16 @@ const RunningList = (props: RunningListProps) => {
 					{data.length === 0 && (
 						<Table.Row>
 							<Table.Cell colSpan={5} textAlign='center'>
-								No running missions.
+								No active shuttles found. You may need to update your player data.
 							</Table.Cell>
 						</Table.Row>
 					)}
 					{data.map(shuttle => (
 						<Table.Row key={shuttle.id}>
-							<Table.Cell><b>{shuttle.name}</b></Table.Cell>
+							<Table.Cell>
+								<b>{shuttle.name}</b>
+								{rentals.includes(shuttle.id) && <p>Rental</p>}
+							</Table.Cell>
 							<Table.Cell textAlign='center'>
 								<ShuttleFactionView factionId={shuttle.faction} size={3} />
 							</Table.Cell>

@@ -1,7 +1,10 @@
 import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
+import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, Shuttle, SquadronRankedBracket, ThresholdReward } from '../model/player';
+import { IEventData } from '../components/eventplanner/model';
 
+// Can delete this EventData interface when components/eventplanner.tsx is deleted
+//	Use IEventData interface from eventplanner/model instead
 export interface EventData extends GameEvent {
 	id: number;
 	rules: string;
@@ -37,8 +40,8 @@ export interface EventData extends GameEvent {
 	bonusGuessed?: boolean;
 };
 
-export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): EventData | undefined {
-	const result = {} as EventData;
+export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): IEventData | undefined {
+	const result = {} as IEventData;
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
 	result.description = activeEvent.description;
@@ -50,48 +53,49 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	// We can get event image more definitively by fetching from events/instance_id.json rather than player data
 	result.image = activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png';
 
+	result.featured = [];
+	result.bonus = [];
+
 	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
-	const activePhase = Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content;
-	
+	const activePhase = (Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content) as Content;
+
 	if (!activePhase) return result;
-	if (!result.featured) result.featured = [];
-	if (!result.bonus) result.bonus = [];
-	
-	if (activePhase.content_type == 'shuttles') {
-		activePhase.shuttles.forEach((shuttle: any) => {
+
+	if (activePhase.content_type === 'shuttles' && activePhase.shuttles) {
+		activePhase.shuttles.forEach((shuttle: Shuttle) => {
 			for (let symbol in shuttle.crew_bonuses) {
-				if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
+				if (!result.bonus.includes(symbol)) {
 					result.bonus.push(symbol);
-					if (shuttle.crew_bonuses[symbol] == 3) result.featured.push(symbol);
+					if (shuttle.crew_bonuses[symbol] === 3) result.featured.push(symbol);
 				}
 			}
 		});
 	}
-	else if (activePhase.content_type == 'gather') {
+	else if (activePhase.content_type === 'gather' && activePhase.crew_bonuses) {
 		for (let symbol in activePhase.crew_bonuses) {
-			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
+			if (!result.bonus.includes(symbol)) {
 				result.bonus.push(symbol);
-				if (activePhase.crew_bonuses[symbol] == 10) result.featured.push(symbol);
+				if (activePhase.crew_bonuses[symbol] === 10) result.featured.push(symbol);
 			}
 		}
 	}
-	else if (activePhase.content_type == 'skirmish' && activePhase.bonus_crew) {
+	else if (activePhase.content_type === 'skirmish' && activePhase.bonus_crew) {
 		for (let i = 0; i < activePhase.bonus_crew.length; i++) {
 			let symbol = activePhase.bonus_crew[i];
-			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
+			if (!result.bonus.includes(symbol)) {
 				result.bonus.push(symbol);
 				result.featured.push(symbol);
 			}
 		}
 		// Skirmish uses activePhase.bonus_traits to identify smaller bonus event crew
-		if (allCrew.length > 0) {
+		if (allCrew.length > 0 && activePhase.bonus_traits) {
 			activePhase.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
-				perfectTraits?.forEach(crew => {
-					if (!result.bonus?.includes(crew.symbol)) {
+				perfectTraits.forEach(crew => {
+					if (!result.bonus.includes(crew.symbol)) {
 						result.bonus.push(crew.symbol);
-					}						
+					}
 				});
 			});
 		}
@@ -108,28 +112,30 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	return result;
 }
 
-// Current event here refers to an ongoing event, or the next event if none is ongoing
-export async function guessCurrentEvent(): Promise<EventData> {
+export async function guessCurrentEvent(): Promise<IEventData> {
 	const { start, end } = getCurrentStartEndTimes();
-
-	// Use penultimate event instance if current time is:
-	//	>= Wednesday Noon ET (approx time when game data is updated with next week's event)
-	//		and < Monday Noon ET (when event ends)
-	// Otherwise use ultimate event
-	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
-	const index = start < 24*60*60 ? 2 : 1;
-	const eventId = allEvents[allEvents.length-index].instance_id;
-
+	const eventId = guessCurrentEventId(start);
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = getEventData(json) as EventData;
+				const activeEvent = getEventData(json) as IEventData;
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
 			})
 		);
 	});
+}
+
+// Current event here refers to an ongoing event, or the next event if none is ongoing
+function guessCurrentEventId(start: number): number {
+	// Use penultimate event instance if current time is:
+	//	>= Wednesday Noon ET (approx time when game data is updated with next week's event)
+	//		and < Monday Noon ET (when event ends)
+	// Otherwise use ultimate event
+	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
+	const currentIndex = start < 24*60*60 ? 2 : 1;
+	return allEvents[allEvents.length-currentIndex].instance_id;
 }
 
 // Get seconds to event start, end from current time
@@ -143,7 +149,7 @@ function getCurrentStartEndTimes(): { start: number, end: number } {
 
 	// Event end time is Monday Noon ET (Event Day "7", 0:00:00)
 	let endTime = new Date();
-	endTime.setDate(endTime.getDate()+7-eventDay);
+	endTime.setDate(endTime.getDate()+6-eventDay);
 	endTime.setUTCHours(16, 0, 0, 0);	// Noon ET is 16:00:00 UTC
 
 	// Event start time is Thursday Noon ET (Event Day 3, 0:00:00)
@@ -163,6 +169,34 @@ function getCurrentStartEndTimes(): { start: number, end: number } {
 	return { start, end };
 }
 
+export async function getRecentEvents(): Promise<IEventData[]> {
+	const recentEvents = [] as IEventData[];
+
+	const { start, end } = getCurrentStartEndTimes();
+	const currentEventId = guessCurrentEventId(start);
+
+	let index = 1;
+	while (recentEvents.length < 2) {
+		const eventId = allEvents[allEvents.length-index].instance_id;
+		const response = await fetch('/structured/events/'+eventId+'.json');
+		const json = await response.json();
+		const eventData = getEventData(json) as IEventData;
+		if (eventId === currentEventId) {
+			eventData.seconds_to_start = start;
+			eventData.seconds_to_end = end;
+			// Assume in phase 2 of ongoing event
+			if (eventData.content_types.length === 2 && end < 2*24*60*60) {
+				eventData.content_types = [eventData.content_types[1]];
+			}
+		}
+		recentEvents.unshift(eventData);
+		index++;
+		if (eventId === currentEventId) break;
+	}
+
+	return recentEvents;
+}
+
 function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
 	const bonus = [] as string[];
 	const featured = [] as string[];
@@ -177,7 +211,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 			const perfectName = allCrew.find(crew => crew.name === testName);
 			if (perfectName) {
 				featured.push(perfectName.symbol);
-				if (!bonus.includes[perfectName.symbol])
+				if (!bonus.includes(perfectName.symbol))
 					bonus.push(perfectName.symbol);
 			}
 			// Otherwise search for matching trait

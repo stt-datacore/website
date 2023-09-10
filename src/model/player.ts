@@ -295,7 +295,7 @@ export interface Player {
     day: number
     mission: number
   }
-  
+
   export interface CadetMission {
     id: number
     title: string
@@ -351,7 +351,7 @@ export interface Player {
      * (Same as -2/DisplayAsImmortal but with different wording)
      */
     DisplayAsImmortalOpponent=-10,
-    
+
     /**
      * Display as immortal, no way to reference.
      * (Same as -2/DisplayAsImmortal but with different wording)
@@ -389,30 +389,6 @@ export interface Player {
      */
     NotComplete=0
   }
-
-  export interface BestCombo {
-		id: number;
-		score: number;
-	}
-
-  export interface BestCombos {
-    [key: string]: BestCombo;
-  }
-
-  export interface EventCombos {
-		[key: string]: number;
-	}
-
-  export interface EventPair {
-		score: number;
-		skillA: string;
-		skillB: string;
-	}
-
-  export interface EventSkill {
-		score: number;
-		skill: string;
-	}
 
   /**
    * This object is the smallest representation of a crew member,
@@ -512,7 +488,7 @@ export interface Player {
     voyagesImproved?: string[];
     amTraits?: number;
     voyScores?: { [key: string]: number };
-    
+
     /** Highest rarity from out of all copies of crew owned by the player */
     highest_owned_rarity?: number;
 
@@ -557,13 +533,6 @@ export interface Player {
     traits_matched?: string[];
     /** Used internally. Not part of source data.  */
     only_frozen?: boolean;
-
-    /** Used internally. Not part of source data.  */
-    combos?: EventCombos;
-    /** Used internally. Not part of source data.  */
-    bestPair?: EventPair;
-    /** Used internally. Not part of source data.  */
-    bestSkill?: EventSkill;
 
     /** Reserved for Combo Matches  */
     nodes?: number[];
@@ -841,6 +810,8 @@ export interface Player {
     refresh_cost?: RefreshCost
     supports_boosts?: boolean
     shuttles?: Shuttle[]
+    bonus_crew?: string[]
+    bonus_traits?: string[]
   }
 
   export interface CrewBonuses {
@@ -1141,7 +1112,7 @@ export interface Player {
     min: number
     max: number
   }
-  
+
   export interface CryoCollection extends Collection {
     id: number
     type_id?: number

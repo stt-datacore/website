@@ -23,22 +23,22 @@ export const Navigation = (props: NavigationProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const [openBar, setOpenBar] = React.useState(false);
 	const { requestClearPlayerData, requestPlayerPanel } = props;
-	
+
 	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
 	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
-	
+
 	if (!!context.player.playerData && typeof window !== 'undefined' && !!window.location.search?.length) {
-		let parm = new URLSearchParams(window.location.search);	
+		let parm = new URLSearchParams(window.location.search);
 		if (parm.has('pmc')) {
 			let result = parsePermalink(parm.get("pmc") ?? '');
 			if (result) {
 				const res = result;
-				window.setTimeout(() => {					
+				window.setTimeout(() => {
 					if (JSON.stringify(res) !== JSON.stringify([activeMenu, mobileActiveMenu])) {
 						setActiveMenu(res[0]);
-						setMobileActiveMenu(res[1]);							
+						setMobileActiveMenu(res[1]);
 					}
-				});				
+				});
 			}
 		}
 	}
@@ -143,7 +143,7 @@ export const Navigation = (props: NavigationProps) => {
 		{ optionKey: '_option2', checkVisible: () => false },
 		{ optionKey: '_option3', checkVisible: () => false },
 		{ optionKey: '_option4', checkVisible: () => false },
-		{ 
+		{
 			title: 'Roster',
             sidebarRole: 'heading',
 			subMenu: [
@@ -154,13 +154,13 @@ export const Navigation = (props: NavigationProps) => {
 				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
 			]
 		},
-		{ 
+		{
 			title: 'Tools',
             sidebarRole: 'heading',
             subMenu: [
 				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
 				{ title: "Factions", link: "/playertools?tool=factions", sidebarRole: 'item' },	// Factions available at launch
-				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/playertools?tool=event-planner", sidebarRole: 'item' },	// Events added post-launch
+				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 				{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
 				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
 				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },	// Voyages added v3
@@ -170,7 +170,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
 		},
-		{ 
+		{
 			title: 'Game Info',
             sidebarRole: 'heading',
             subMenu: [
@@ -210,7 +210,7 @@ export const Navigation = (props: NavigationProps) => {
 		if (!page) continue;
 		if (page.optionKey?.startsWith("_option")) {
 			let xkey = Number.parseInt(page.optionKey.slice(7));
-			
+
 			if (xkey < actmnu.length && xkey < cmax) {
 				let fopt = popts.find(o => o.optionKey === actmnu[xkey]);
 				if (fopt) {
@@ -241,7 +241,7 @@ export const Navigation = (props: NavigationProps) => {
 	const menuItems = [] as JSX.Element[];
 	const rightItems = [] as JSX.Element[];
 
-	for (let page of pages) {		
+	for (let page of pages) {
 		if (page.right) continue;
 		if (page.optionKey) {
 			if (page.optionKey.startsWith("_option")) continue;
