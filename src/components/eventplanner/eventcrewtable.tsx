@@ -97,7 +97,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const canBorrow = phaseType === 'shuttles'
 		&& eventData.seconds_to_start === 0
-		&& playerData?.player.character.crew_borrows?.length
+		&& !!playerData?.player.character.crew_borrows?.length
 		&& playerData?.player.squad.rank !== 'LEADER';
 
 	// Always calculate new skill numbers from original, unaltered crew list
