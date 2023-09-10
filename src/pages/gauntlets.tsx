@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps, SemanticWIDTHS } from 'semantic-ui-react';
+import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps, SemanticWIDTHS, Step } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 import * as moment from 'moment';
 import Layout from '../components/layout';
@@ -45,7 +45,7 @@ export const SKILLS = {
 
 const GauntletsPage = () => {	
 	return (
-		<DataPageLayout demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
+		<DataPageLayout playerPromptType='recommend' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
 			<GauntletsPageComponent />
 		</DataPageLayout>
 	);
@@ -2694,6 +2694,66 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 	}
 
+	
+
+	renderCopyPaste(): JSX.Element {
+		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
+		const { liveGauntlet, gauntletJson } = this.state;
+
+		return (
+			<React.Fragment>
+				<Header icon>
+					<Icon name='paste' />
+					Copy and Paste
+				</Header>
+				<p>
+					Copy the contents of
+					{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						your player data
+					</a>,
+					<br />then paste everything into the text box below.
+				</p>
+				<Form>
+				<TextArea
+						placeholder='Paste a gauntlet, here'
+						id='__zzpp'
+						value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson ?? ''}
+						onChange={(e, { value }) => this.setState({ ... this.state, gauntletJson: value as string })}
+						onPaste={(e: ClipboardEvent) => this.parseGauntlet(e.clipboardData?.getData('text') as string)}
+					/>
+				</Form>
+				<Accordion style={{ marginTop: '1em' }}>
+					<Accordion.Title
+						
+					>
+						<Icon name={'caret down'} />
+						Post, Update or Clear Live Gauntlet Data (Click Here)
+					</Accordion.Title>
+					<Accordion.Content style={{ textAlign: 'left' }}>
+						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<ul>
+							<li>
+								Open this page in your browser:{' '}
+								<a href={PLAYERLINK} target='_blank'>
+									{PLAYERLINK}
+								</a>
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","character":'}</span> ...
+							</li>
+							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
+							<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
+							<li>Click the 'Import data' button</li>
+						</ul>
+						<p>If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts.</p>
+					</Accordion.Content>
+				</Accordion>
+			</React.Fragment>
+		);
+	}
+
+
 	render() {
 		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -2706,36 +2766,41 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const tabPanes = [
 			{
 				menuItem: isMobile ? "Today" : "Today's Gauntlet",
-				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>,
+				description: "Today's gauntlet"
 			},
 			{
 				menuItem: isMobile ? "Yesterday" : "Yesterday's Gauntlet",
-				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>,
+				description: "Yesterday's gauntlet"
 			},
 			{
 				menuItem: isMobile ? "Previous" : "Previous Gauntlets",
-				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage()}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage()}</div>,
+				description: "Browse previous gauntlets by date"
 			},
 			{
 				menuItem: isMobile ? "Browse" : "Browse Gauntlets",
-				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage(true, true)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage(true, true)}</div>,
+				description: "Browse through all known gauntlets"
 			}
 		]
 
 		if (liveGauntlet && hasPlayer){
 			tabPanes.push({
 					menuItem: isMobile ? "Live" : "Live Gauntlet",
-					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>
+					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>,
+					description: "Live gauntlet round"
 				},
 			)
 		}
-
 
 		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
 
 		return (
 			<>
-			{hasPlayer && <Accordion
+			{hasPlayer && this.renderCopyPaste()}
+			{/* {hasPlayer && <Accordion
 				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
 					index: 0, 
@@ -2793,14 +2858,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</Form></>
 					}
 				}]}
-				/> || <div>
-					{/* Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link> */}
-					</div>}
+				/>} */}
 				<div style={{margin: "1em 0"}}>
-					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
+					<Step.Group fluid>
+						{tabPanes.map((pane, idx) => {
+							return (
+								<Step active={(activeTabIndex ?? 0) === idx} onClick={() => this.setActiveTabIndex(idx)}>
+									
+									<Step.Content>
+										<Step.Title>{pane.menuItem}</Step.Title>
+										<Step.Description>{pane.description}</Step.Description>
+									</Step.Content>
+								</Step>
+							)
+						})}						
+					</Step.Group>
+					{tabPanes[activeTabIndex ?? 0].render()}
+					{/* {isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)}  menu={{ attached: false }} panes={tabPanes} />
-					}
+					} */}
 				</div>
 				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>
