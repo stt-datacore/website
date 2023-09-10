@@ -63,7 +63,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	if (calcState === 1) updateAssignments();
 
 	const canBorrow = props.eventData?.seconds_to_start === 0
-		&& playerData?.player.character.crew_borrows?.length
+		&& !!playerData?.player.character.crew_borrows?.length
 		&& playerData?.player.squad.rank !== 'LEADER';
 
 	return (
