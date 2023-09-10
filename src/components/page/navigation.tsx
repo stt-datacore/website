@@ -245,8 +245,8 @@ export const Navigation = (props: NavigationProps) => {
 		if (page.right) continue;
 		if (page.optionKey) {
 			if (page.optionKey.startsWith("_option")) continue;
-			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) return false;
-			else if (!isMobile && !activeMenu.includes(page.optionKey)) return false;
+			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) continue;
+			else if (!isMobile && !activeMenu.includes(page.optionKey)) continue;
 		}
 
 		if (page.checkVisible && !page.checkVisible(page)) continue;
@@ -291,8 +291,8 @@ export const Navigation = (props: NavigationProps) => {
 		if (!page.right) continue;
 		if (page.optionKey) {
 			if (page.optionKey.startsWith("_option")) continue;
-			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) return false;
-			else if (!isMobile && !activeMenu.includes(page.optionKey)) return false;
+			if (isMobile && !mobileActiveMenu.includes(page.optionKey)) continue;
+			else if (!isMobile && !activeMenu.includes(page.optionKey)) continue;
 		}
 
 		if (page.checkVisible && !page.checkVisible(page)) continue;

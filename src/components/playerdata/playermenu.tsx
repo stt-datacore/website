@@ -53,11 +53,6 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			link: "/playertools?tool=charts"
 		},
 		{
-			title: "Clear Player Data",
-			checkVisible: (data) => !!playerData,
-			customAction: (e, data) => requestClearData()
-		},
-		{
 			title: "Menu Settings",
 			checkVisible: (data) => !!playerData,
 			customRender: (data) => {
@@ -68,6 +63,11 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 				/> : <Dropdown.Item disabled>Menu Settings</Dropdown.Item>
 			},
 			customAction: (e, data) => setModalOpen(true)
+		},
+		{
+			title: "Clear Player Data",
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => requestClearData()
 		},
 	] as NavItem[];
 
