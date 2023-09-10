@@ -6,7 +6,7 @@ describe('Home page', () => {
   it('Renders correctly', () => {
     cy.visit('/');
 
-    cy.get('h2').contains('Crew stats');
+    cy.get('h2').contains('Crew Stats');
     cy.get('th').contains('Crew').click();
     cy.get('tbody>tr').eq(0).contains('"Bullseye" Kyle');
   });
