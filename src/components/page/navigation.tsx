@@ -20,7 +20,7 @@ type NavigationProps = {
 
 export const Navigation = (props: NavigationProps) => {
 	const context = React.useContext(GlobalContext);
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+    const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
 	const { requestClearPlayerData, requestPlayerPanel } = props;
 
@@ -218,7 +218,8 @@ export const Navigation = (props: NavigationProps) => {
 						... fopt,
 						title: undefined,
 						optionKey: undefined,
-						tooltip: fopt.title
+						tooltip: fopt.title,
+						sidebarRole: undefined
 					}
 				}
 			}
@@ -312,6 +313,12 @@ export const Navigation = (props: NavigationProps) => {
 	}
 	else {
 		sidebarItems.push(createSubMenu('About', about, true));
+	}
+
+	if (typeof window !== 'undefined') {
+		window.addEventListener('resize', (e) => {
+			setIsMobile(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
+		});
 	}
 
 	const sref = React.useRef<HTMLDivElement>(null);

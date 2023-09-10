@@ -47,13 +47,14 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
         >
         <div style={{
             display:"flex",
-            flexDirection: "column",
+            flexDirection: "row",
             textAlign: "left",
             padding: "0.25em",
             lineHeight:"1.45em", 
-            alignItems: "center"
+            alignItems: "center",
+            justifyContent: "flex-start"
         }}>
-            {!!item.src && <div style={{width:"36px"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /></div>}
+            {!!item.src && <div style={{width:"36px", marginRight: "1em"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.title} /></div>}
             {item.title}
         </div>
     </Menu.Item>
