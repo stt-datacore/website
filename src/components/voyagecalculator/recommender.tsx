@@ -11,7 +11,7 @@ import { VoyageStats } from './voyagestats';
 import { IVoyageHistory } from '../voyagehistory/model';
 import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
 
-import { guessCurrentEvent, getEventData } from '../../utils/events';
+import { getEventData } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
@@ -21,6 +21,8 @@ import { AllData, CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageCo
 import { Helper } from './Helper';
 import { GlobalContext } from '../../context/globalcontext';
 import { EphemeralData } from '../../context/playercontext';
+
+import { IEventData } from '../../components/eventplanner/model';
 
 export const RecommenderContext = React.createContext<AllData>({} as AllData);
 
@@ -530,13 +532,13 @@ type InputCrewExcluderProps = {
 }
 
 const InputCrewExcluder = (props: InputCrewExcluderProps) => {
-	const context = React.useContext(GlobalContext);	
+	const context = React.useContext(GlobalContext);
 	const { allCrew } = React.useContext(RecommenderContext);
 	const { updateExclusions } = props;
 
 	const { events: eventData } = (context.player.ephemeral ?? ({ events: [] as GameEvent[] } as EphemeralData));
 
-	const [activeEvent, setActiveEvent] = React.useState<GameEvent | undefined>(undefined);
+	const [activeEvent, setActiveEvent] = React.useState<IEventData | undefined>(undefined);
 	const [options, setOptions] = React.useState<GameWorkerOptions | undefined>(undefined);
 
 	React.useEffect(() => {

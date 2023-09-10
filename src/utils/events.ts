@@ -1,46 +1,9 @@
 import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, Shuttle, SquadronRankedBracket, ThresholdReward } from '../model/player';
+import { Content, GameEvent, Shuttle } from '../model/player';
 import { IEventData } from '../components/eventplanner/model';
 
-// Can delete this EventData interface when components/eventplanner.tsx is deleted
-//	Use IEventData interface from eventplanner/model instead
-export interface EventData extends GameEvent {
-	id: number;
-	rules: string;
-	rewards_teaser: string;
-	shop_layout: string;
-	featured_crew: FeaturedCrew[];
-	threshold_rewards: ThresholdReward[];
-	ranked_brackets: RankedBracket[];
-	squadron_ranked_brackets: SquadronRankedBracket[];
-	content: Content;
-	instance_id: number;
-	status: number;
-	seconds_to_start: number;
-	seconds_to_end: number;
-	phases: Phase[];
-	opened?: boolean | undefined;
-	opened_phase?: number | undefined;
-	victory_points?: number | undefined;
-	bonus_victory_points?: number | undefined;
-	claimed_threshold_reward_points?: number | undefined;
-	unclaimed_threshold_rewards?: any[] | undefined;
-	last_threshold_points?: number | undefined;
-	next_threshold_points?: number | undefined;
-	next_threshold_rewards?: any[] | undefined;
-	symbol: string;
-    name: string;
-	image: string;
-	description: string;
-	bonus_text: string;
-	content_types: string[];	/* shuttles, gather, etc. */
-    bonus: string[];	/* ALL bonus crew by symbol */
-	featured: string[];	/* ONLY featured crew by symbol */
-	bonusGuessed?: boolean;
-};
-
-export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): IEventData | undefined {
+export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEventData | undefined {
 	const result = {} as IEventData;
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
@@ -80,16 +43,18 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 			}
 		}
 	}
-	else if (activePhase.content_type === 'skirmish' && activePhase.bonus_crew) {
-		for (let i = 0; i < activePhase.bonus_crew.length; i++) {
-			let symbol = activePhase.bonus_crew[i];
-			if (!result.bonus.includes(symbol)) {
-				result.bonus.push(symbol);
-				result.featured.push(symbol);
+	else if (activePhase.content_type === 'skirmish') {
+		if (activePhase.bonus_crew) {
+			for (let i = 0; i < activePhase.bonus_crew.length; i++) {
+				let symbol = activePhase.bonus_crew[i];
+				if (!result.bonus.includes(symbol)) {
+					result.bonus.push(symbol);
+					result.featured.push(symbol);
+				}
 			}
 		}
 		// Skirmish uses activePhase.bonus_traits to identify smaller bonus event crew
-		if (allCrew.length > 0 && activePhase.bonus_traits) {
+		if (activePhase.bonus_traits) {
 			activePhase.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
 				perfectTraits.forEach(crew => {
@@ -102,7 +67,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
-	if (result.bonus && result.bonus.length === 0 && allCrew.length > 0) {
+	if (result.bonus.length === 0) {
 		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
 		result.bonus = bonus;
 		result.featured = featured;
@@ -112,13 +77,14 @@ export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = [])
 	return result;
 }
 
-export async function guessCurrentEvent(): Promise<IEventData> {
+// guessCurrentEvent to be deprecated; use getRecentEvents instead
+export async function guessCurrentEvent(allCrew: CrewMember[]): Promise<IEventData> {
 	const { start, end } = getCurrentStartEndTimes();
 	const eventId = guessCurrentEventId(start);
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = getEventData(json) as IEventData;
+				const activeEvent = getEventData(json, allCrew) as IEventData;
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
@@ -169,7 +135,7 @@ function getCurrentStartEndTimes(): { start: number, end: number } {
 	return { start, end };
 }
 
-export async function getRecentEvents(): Promise<IEventData[]> {
+export async function getRecentEvents(allCrew: CrewMember[]): Promise<IEventData[]> {
 	const recentEvents = [] as IEventData[];
 
 	const { start, end } = getCurrentStartEndTimes();
@@ -180,7 +146,7 @@ export async function getRecentEvents(): Promise<IEventData[]> {
 		const eventId = allEvents[allEvents.length-index].instance_id;
 		const response = await fetch('/structured/events/'+eventId+'.json');
 		const json = await response.json();
-		const eventData = getEventData(json) as IEventData;
+		const eventData = getEventData(json, allCrew) as IEventData;
 		if (eventId === currentEventId) {
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;

@@ -57,7 +57,7 @@ const EventPlannerPage = () => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents().then(recentEvents => {
+			getRecentEvents(globalContext.core.crew).then(recentEvents => {
 				setActiveEvents([...recentEvents]);
 			});
 		}
