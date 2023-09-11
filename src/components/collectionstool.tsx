@@ -12,7 +12,7 @@ import { Collection, Filter } from '../model/game-elements';
 import { AtlasIcon, BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { crewCopy, isImmortal, navToCrewPage, oneCrewCopy, starCost } from '../utils/crewutils';
+import { crewCopy, isImmortal, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../utils/crewutils';
 import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
@@ -23,7 +23,7 @@ import { getImageName } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
 import { checkReward, getCollectionRewards } from '../utils/itemutils';
 import { EquipmentItem } from '../model/equipment';
-import { RewardPicker, RewardsGrid, rewardOptions } from './crewtables/rewards';
+import { RewardPicker, RewardsGrid, RewardsGridNeed, rewardOptions } from './crewtables/rewards';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);
@@ -335,6 +335,7 @@ export interface MapFilterOptions {
 export interface CollectionMap {
 	collection: PlayerCollection;
 	crew: PlayerCrew[];
+	neededStars?: number[];
 }
 
 type CrewTableProps = {
@@ -503,7 +504,7 @@ const CrewTable = (props: CrewTableProps) => {
 						if (!checkCommonFilter(crew, ['unowned', 'owned'])) return false;
 					}
 					return fr;
-				})
+				})				
 			} as CollectionMap;
 		})
 		.filter((x) => {			
@@ -551,6 +552,7 @@ const CrewTable = (props: CrewTableProps) => {
 				return r;
 			});
 
+			col.neededStars = neededStars(col.crew, col.collection.needed ?? 0);
 		});
 		
 		colMap.forEach((c) => c.collection.neededCost = starCost(c.crew, c.collection.needed));
@@ -648,17 +650,23 @@ const CrewTable = (props: CrewTableProps) => {
 	
 	const uniqueRewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
 
-	const rewardOptions = uniqueRewards.map((reward) => {
-		return {
-			key: reward.symbol,
-			value: reward.symbol,
-			text: reward.name
-		}
-	});
+	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
+
+	const makeCiteNeeds = (col: CollectionMap) => {
+		if (!col.neededStars?.length) return [];
+		const gridneed = [] as RewardsGridNeed[];
+		col.neededStars.forEach((star, idx) => {
+			if (idx >= 2 && idx <= 5 && star) {
+				gridneed.push({
+					symbol: citeSymbols[idx],
+					quantity: star
+				});
+			}	
+		});
+		return gridneed;
+	}
 
 	//const rewards =
-
-
 	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
 		return (<div style={{
 			display: "flex",
@@ -737,14 +745,19 @@ const CrewTable = (props: CrewTableProps) => {
 							<i style={{fontSize: "0.9em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
 							
 							{!!collection.neededCost && 
+								<div style={{marginTop:"0.5em"}}>
 								<i style={{fontSize: "0.9em"}}>
-									Star cost to next: 
+									Citation cost to next: 
 									<img
 									src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 									style={{width : '16px', verticalAlign: 'text-bottom'}}
 									/> 
 									{collection.neededCost.toLocaleString()}
-								</i> || <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
+								</i>
+								<div style={{marginTop:"0.5em"}}>
+								<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
+								</div>
+								</div> || <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
 									All crew required to reach the next milestone are already fully fused.
 									</i>}
 								

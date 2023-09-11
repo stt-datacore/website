@@ -1,7 +1,7 @@
 import React from "react";
 import { Dropdown, Grid, SemanticWIDTHS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { PlayerCollection, Reward } from "../../model/player";
+import { BuffBase, PlayerCollection, Reward } from "../../model/player";
 import { EquipmentItem } from "../../model/equipment";
 import { checkReward, getCollectionRewards } from "../../utils/itemutils";
 import { getImageName } from "../../utils/misc";
@@ -22,22 +22,62 @@ export const rewardOptions = [
 	{ key: 'roBoos', value: '=minor_consumables_\\d+x_bundle', text: 'Shuttle boosts' },
 	{ key: 'roTrai', value: '=_production_training$', text: 'Training' }
 ];
-
+export interface RewardsGridNeed {
+	symbol: string;
+	quantity: number;
+}
 export interface RewardsGridProps {
 	rewards?: Reward[];
 	wrap?: boolean;
 	maxCols?: number;
+	kind?: 'reward' | 'need';
+	needs?: RewardsGridNeed[];
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
-	const { rewards, wrap, maxCols } = props;
+
+	// props.rewards ??= [];
+	// props.needs ??= [];
+	// props.kind ??= 'reward';
+	// props.maxCols ??= 4;
+	// props.wrap ??= false;
+
+	const { kind, needs, wrap, maxCols } = props;
+	const rewards = props.rewards ?? [];
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { items: tempItems, crew: allCrew } = context.core;
 
 	const items = [] as EquipmentItem[];
 
-	if (!rewards?.length) return (<></>);
+	if (kind === 'need' && needs?.length) {
+		for (let need of needs) {
+			let found = tempItems.find(f => f.symbol === need.symbol);
+			if (found) {
+				items.push({
+					... JSON.parse(JSON.stringify(found)),
+					needed: need.quantity
+				});
+			}
+		}
+	}
+
+	if (!rewards?.length) {
+		if (items.length) {
+			for(let i of items) rewards.push({
+				... i,
+				type: i.type ?? 0,
+				id: i.id ?? 0,
+				full_name : i.name ?? i.symbol,
+				quantity: i.needed ?? 0,
+				icon: { atlas_info: '', file: i.imageUrl }
+			});
+		}
+		else {
+			return (<></>);
+		}		
+	}
+
 
 	const quantityLabel = (quantity) => {
 		if (quantity >= 10000)
@@ -75,8 +115,8 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 					<Grid.Row key={rowIdx + "_rowreward"}>
 
 					{row.map((reward, idx) => {
-							const img = getImageName(reward);
-							checkReward(items, reward);
+							const img = needs?.length ? reward.icon?.file : getImageName(reward);
+							checkReward(items, reward, !!needs?.length);
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
 									<div style={{
@@ -97,7 +137,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										maxRarity={reward.rarity}
 										rarity={reward.rarity}
 									/>
-									<span>{reward.quantity > 1 && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
+									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
 									</div>
 								</Grid.Column>
 							);

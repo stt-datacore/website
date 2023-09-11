@@ -216,7 +216,7 @@ export function binaryLocate(symbol: string, items: (EquipmentItem | EquipmentCo
 	return undefined;
 }
 
-export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward) {
+export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
 	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
 		let seeditem = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
 
@@ -227,11 +227,12 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 			symbol: reward.symbol ?? "",
 			flavor: reward.flavor ?? "",
 			bonuses: {},
-			quantity: reward.quantity,
+			quantity: !!needed ? 0 : reward.quantity,
+			needed: !needed ? 0 : reward.quantity,
 			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
 			item_sources: [],
 			archetype_id: reward.id,
-			isReward: true
+			isReward: !needed
 		});
 	}
 }

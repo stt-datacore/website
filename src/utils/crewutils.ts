@@ -1531,3 +1531,19 @@ export function starCost(crew: PlayerCrew[], limit?: number) {
 
 	return tc;
 }
+
+export function neededStars(crew: PlayerCrew[], limit?: number) {
+	const costs = [0, 0, 0, 0, 0, 0];
+
+	limit ??= crew.length;
+	let tc = 0;
+
+	for (let c = 0; c < limit; c++) {
+		let cm = crew[c];		 
+		if (!cm) continue;
+		let rdiff = (cm.max_rarity ?? 2 * cm.rarity) - cm.rarity;
+		costs[cm.max_rarity] += rdiff;
+	}
+
+	return costs;
+}
