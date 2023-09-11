@@ -338,6 +338,12 @@ export interface CollectionMap {
 	neededStars?: number[];
 }
 
+export interface CollectionGroup {
+	name: string;
+	maps: CollectionMap[];
+	uniqueCrew: PlayerCrew[];
+}
+
 type CrewTableProps = {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
@@ -615,8 +621,12 @@ const CrewTable = (props: CrewTableProps) => {
 
 	// for(let col of colGroups) {
 	// 	linkScores[col.collection.name] ??= [];
-	// 	for (let col2 of colGroups) {
+	// 	if (col.collection.owned - (col.collection.needed ?? 0) < 0) continue;
+	// 	for (let col2 of colGroups) {			
+	// 		if (col2.collection.owned - (col2.collection.needed ?? 0) < 0) continue;
 	// 		if (col.collection.name === col2.collection.name) continue;
+	// 		if ((col.collection.needed ?? 0) < (col2.collection.needed ?? 0)) continue;
+
 	// 		let crew = col.crew.filter(cr => col2.crew.some(cr2 => cr2.symbol === cr.symbol));
 	// 		crew = crew.concat(col2.crew.filter(cr => col.crew.some(cr2 => cr2.symbol === cr.symbol)));
 	// 		crew = crew.filter((cr, idx) => crew.findIndex(cr2 => cr2.symbol === cr.symbol) === idx);
@@ -637,6 +647,22 @@ const CrewTable = (props: CrewTableProps) => {
 	// 		return r;
 	// 	});
 	// }
+
+	// const colOptimized = Object.keys(linkScores).map((key, idx) => {
+		
+	// 	let unique = linkScores[key].map(c => c.crew).flat();
+	// 	unique = unique.filter((fi, idx) => unique.findIndex(f2 => f2.symbol === fi.symbol) === idx);
+
+	// 	return {
+	// 		name: key,
+	// 		maps: linkScores[key],
+	// 		uniqueCrew: unique
+	// 	} as CollectionGroup;
+	// }).filter((g) => !!g.maps?.length).sort((a, b) => {
+	// 	let dista = a.uniqueCrew.length;
+	// 	let distb = b.uniqueCrew.length;
+	// 	return distb - dista;
+	// });
 
 	const pageCount = Math.ceil(colGroups.length / 10);
 
