@@ -336,12 +336,19 @@ export interface CollectionMap {
 	collection: PlayerCollection;
 	crew: PlayerCrew[];
 	neededStars?: number[];
+	completes: boolean;
 }
 
 export interface CollectionGroup {
 	name: string;
 	maps: CollectionMap[];
 	uniqueCrew: PlayerCrew[];
+	commonCrew: PlayerCrew[];
+	collection: PlayerCollection;
+	nonfullfilling?: number;
+	nonfullfillingRatio?: number;
+	neededStars?: number[];
+	uniqueCost?: number;
 }
 
 type CrewTableProps = {
@@ -373,6 +380,9 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
+
+	const [optPage, setOptPage] = React.useState(1);
+	const [optPageCount, setOptPageCount] = React.useState(1);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
@@ -617,54 +627,101 @@ const CrewTable = (props: CrewTableProps) => {
 	const colGroups = createCollectionGroups();
 
 	// TODO: Find a use for this code
-	// const linkScores = {} as { [key: string]: CollectionMap[] };
+	const linkScores = {} as { [key: string]: CollectionMap[] };
 
-	// for(let col of colGroups) {
-	// 	linkScores[col.collection.name] ??= [];
-	// 	if (col.collection.owned - (col.collection.needed ?? 0) < 0) continue;
-	// 	for (let col2 of colGroups) {			
-	// 		if (col2.collection.owned - (col2.collection.needed ?? 0) < 0) continue;
-	// 		if (col.collection.name === col2.collection.name) continue;
-	// 		if ((col.collection.needed ?? 0) < (col2.collection.needed ?? 0)) continue;
+	for(let col of colGroups) {
+		linkScores[col.collection.name] ??= [];
+		if (col.collection.progress === 'n/a') continue;
+		if ((col.collection.progress ?? 0) + (col.collection.needed ?? 0) > (col.collection.owned ?? 0)) continue;
+		for (let col2 of colGroups) {			
+			if (col2.collection.progress === 'n/a') continue;
+			if ((col2.collection.progress ?? 0) + (col2.collection.needed ?? 0) > (col2.collection.owned ?? 0)) continue;
+			if (col.collection.name === col2.collection.name) continue;
+			if ((col.collection.needed ?? 0) < (col2.collection.needed ?? 0)) continue;
 
-	// 		let crew = col.crew.filter(cr => col2.crew.some(cr2 => cr2.symbol === cr.symbol));
-	// 		crew = crew.concat(col2.crew.filter(cr => col.crew.some(cr2 => cr2.symbol === cr.symbol)));
-	// 		crew = crew.filter((cr, idx) => crew.findIndex(cr2 => cr2.symbol === cr.symbol) === idx);
-	// 		crew.sort((a, b) => a.name.localeCompare(b.name));
-	// 		if (!!crew?.length) {
+			let crew = col.crew.filter(cr => col2.crew.some(cr2 => cr2.symbol === cr.symbol));
+			crew = crew.concat(col2.crew.filter(cr => col.crew.some(cr2 => cr2.symbol === cr.symbol)));
+			crew = crew.filter((cr, idx) => crew.findIndex(cr2 => cr2.symbol === cr.symbol) === idx);
+			crew.sort((a, b) => a.name.localeCompare(b.name));
+			if (!!crew?.length) {
 				
-	// 			linkScores[col.collection.name].push({
-	// 				collection: col2.collection,
-	// 				crew: crew
-	// 			});
-	// 		}
+				linkScores[col.collection.name].push({
+					collection: col2.collection,
+					crew: crew,
+					completes: crew.length >= (col2.collection.needed ?? 0)
+				});
+			}
 
-	// 	}
+		}
 
-	// 	linkScores[col.collection.name].sort((a, b) => {
-	// 		let r = b.crew.length - a.crew.length;
-	// 		if (!r) r = a.collection.name.localeCompare(b.collection.name);
-	// 		return r;
-	// 	});
-	// }
+		linkScores[col.collection.name] = linkScores[col.collection.name]
+			.filter(ls => ls.completes)
+			.sort((a, b) => {
+			let r = b.crew.length - a.crew.length;
+			if (!r) r = a.collection.name.localeCompare(b.collection.name);
+			return r;
+		});
+	}
 
-	// const colOptimized = Object.keys(linkScores).map((key, idx) => {
+	const colOptimized = Object.keys(linkScores).map((key, idx) => {
 		
-	// 	let unique = linkScores[key].map(c => c.crew).flat();
-	// 	unique = unique.filter((fi, idx) => unique.findIndex(f2 => f2.symbol === fi.symbol) === idx);
+		let unique = linkScores[key].map(c => c.crew).flat();
+		let col = colGroups.find(f => f.collection.name === key);
 
-	// 	return {
-	// 		name: key,
-	// 		maps: linkScores[key],
-	// 		uniqueCrew: unique
-	// 	} as CollectionGroup;
-	// }).filter((g) => !!g.maps?.length).sort((a, b) => {
-	// 	let dista = a.uniqueCrew.length;
-	// 	let distb = b.uniqueCrew.length;
-	// 	return distb - dista;
-	// });
+		let common = [...unique];
+		common = common.filter((fi, idx) => unique.findIndex(f2 => f2.symbol === fi.symbol) === idx);
+
+		unique = [...unique, ...col?.crew ?? []];
+		unique = unique.filter((fi, idx) => unique.findIndex(f2 => f2.symbol === fi.symbol) === idx);
+
+		return {
+			name: key,
+			maps: linkScores[key],
+			uniqueCrew: unique,
+			commonCrew: common,
+			collection: col?.collection,
+			neededStars: neededStars(unique),
+			uniqueCost: starCost(unique)
+		} as CollectionGroup;
+	}).filter((g) => !!g.maps?.length && g.maps.some(gm => gm.completes)).sort((a, b) => {
+		let dista = a.uniqueCrew.length - a.commonCrew.length;
+		let distb = b.uniqueCrew.length - b.commonCrew.length;
+		let r = 0; 
+
+		a.nonfullfilling = dista;
+		b.nonfullfilling = distb;
+		
+		if (dista >= 0 && distb >= 0) {
+			if (dista !== distb) {
+				if (dista === 0) return -1;
+				else if (distb === 0) return 1;
+			}
+
+			a.nonfullfillingRatio = a.maps.length / dista;
+			b.nonfullfillingRatio = b.maps.length / distb;
+
+			r = dista - distb;
+		}
+		else if (dista >= 0) {
+			return -1;
+		}
+		else if (distb >= 0) {
+			return 1;
+		}
+		else {
+			r = distb - dista;
+		}
+		
+		if (!r) r = b.maps.length - a.maps.length;
+
+		if (!r) {
+			r = (a.uniqueCost ?? 0) - (b.uniqueCost ?? 0);
+		}
+		return r;
+	});
 
 	const pageCount = Math.ceil(colGroups.length / 10);
+	const optCount = Math.ceil(colOptimized.length / 10);
 
 	if (pageCount !== groupPageCount || groupPage > pageCount) {
 		setGroupPageCount(pageCount);
@@ -672,13 +729,18 @@ const CrewTable = (props: CrewTableProps) => {
 		return <></>
 	}
 
+	if (optCount !== optPageCount || optPage > optCount) {
+		setOptPageCount(optCount);
+		setOptPage(Math.min(optCount, 1));
+		return <></>
+	}
 	let rewardCol = getCollectionRewards(playerCollections);
 	
 	const uniqueRewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
 
 	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
 
-	const makeCiteNeeds = (col: CollectionMap) => {
+	const makeCiteNeeds = (col: CollectionMap | CollectionGroup) => {
 		if (!col.neededStars?.length) return [];
 		const gridneed = [] as RewardsGridNeed[];
 		col.neededStars.forEach((star, idx) => {
@@ -851,6 +913,201 @@ const CrewTable = (props: CrewTableProps) => {
 
 	}
 
+
+	//const rewards =
+	const renderOptimizer = (colMap: CollectionGroup[]) => {		
+		return (<div style={{
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "stretch"
+		}}>
+			{/* {!mapFilter?.collectionsFilter?.length && 
+				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
+					The collection optimizer view shows only owned crew if the collections list is not filtered.
+				</i>} */}
+			{/* <div style={{
+				display: "flex",
+				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+				alignItems: "center",
+				justifyContent: "flex-start"			
+			}}>
+				<Input
+					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
+					iconPosition="left"
+					placeholder="Search..."
+					value={searchFilter}
+					onChange={(e, { value }) => setSearchFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => setSearchFilter('')} >
+							<Icon name='delete' />
+						</Button>
+				</Input>
+
+				<RewardPicker 
+					short={short}
+					setShort={setShort}
+					rewards={uniqueRewards} 
+					icons
+					value={mapFilter?.rewardFilter} 
+					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+					 />
+				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+			</div> */}
+			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
+			<Table striped>
+				{colMap.map((col, idx) => {
+
+					const collection = col.collection;
+					if (!collection?.totalRewards || !collection.milestone) return <></>;
+					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
+					
+					const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
+					const crewhave = (collection?.owned ?? 0);
+
+					return (<Table.Row key={"colgroup" + idx}>
+						<Table.Cell width={4}>
+							<div style={{								
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "100%",
+								margin: "1em"
+							}}>
+							
+							<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
+								style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+								title={collection.name}
+							/>
+							<h2 
+								onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
+								style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
+							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
+							<hr style={{width: "16em"}}></hr>
+							<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
+							<div style={{margin: "0.5em 0 0.5em 0"}}>
+								<RewardsGrid wrap={true} rewards={rewards} />
+							</div>
+							<i style={{fontSize: "0.9em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
+							<i style={{fontSize: "0.9em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
+							
+							{(crewhave >= crewneed && !!collection.neededCost) && 
+								(<div style={{marginTop:"0.5em"}}>
+								<i style={{fontSize: "0.9em"}}>
+									Citation cost to next: 
+									<img
+									src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+									style={{width : '16px', verticalAlign: 'text-bottom'}}
+									/> 
+									{collection.neededCost.toLocaleString()}
+								</i>
+								<div style={{marginTop:"0.5em"}}>
+								<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
+								</div>
+								</div>)}
+								{(crewhave >= crewneed && !collection.neededCost && <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
+									All crew required to reach the next milestone are already fully fused.
+									</i>)}
+								
+							{crewhave < crewneed && 
+								<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
+									You need to recruit {crewneed - crewhave} more crew to reach the next goal.
+								</i>}
+							</div>
+						</Table.Cell>
+						<Table.Cell>
+						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
+							
+						<Grid doubling columns={3} textAlign='center'>
+								{col.maps.map((c) => {
+										const collection = c.collection;
+										if (!collection?.totalRewards || !collection.milestone) return <></>;
+										const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
+										
+										const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
+										const crewhave = (collection?.owned ?? 0);
+
+									return <div style={{								
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+										alignItems: "center",
+										height: "100%",
+										margin: "1em"
+									}}>
+									
+									<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
+										style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+										title={collection.name}
+									/>
+									<h2 
+										onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
+										style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
+									<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
+									<hr style={{width: "16em"}}></hr>
+									<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
+									<div style={{margin: "0.5em 0 0.5em 0"}}>
+										<RewardsGrid wrap={true} rewards={rewards} />
+									</div></div>
+								})}
+						</Grid>
+						<Grid doubling columns={3} textAlign='center'>
+								{col.uniqueCrew.map((crew, ccidx) => (
+									<div 
+										className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
+										style={{  
+											margin: "1.5em", 
+											display: "flex", 
+											flexDirection: "column", 
+											alignItems: "center", 
+											justifyContent: "center",
+											padding:"0.25em",
+											paddingTop: ccidx < (collection?.needed ?? 0) ? '0.75em' : undefined,
+											borderRadius: "5px",																			
+											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined
+									}}>
+									<ItemDisplay 
+										size={64}
+										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+										rarity={!crew.have ? 0 : crew.rarity}
+										maxRarity={crew.max_rarity}
+										targetGroup={'collectionsTarget'}
+										itemSymbol={crew.symbol}
+										allCrew={context.core.crew}
+										playerData={context.player.playerData}
+										/>
+										<b
+											onClick={(e) => addToSearchFilter(crew.name)} 
+											style={{
+											cursor: "pointer", 
+											margin:"0.5em 0 0 0",
+											textDecoration: "underline"
+											}}
+											title={"Click to see collections containing this crew member"}
+											>
+											{crew.name}
+										</b>			
+										<i>({crew.pickerId} collections increased)</i>
+										<i>Level {crew.level}</i>
+										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
+									</div>
+								))}
+							</Grid>
+						</Table.Cell>
+					</Table.Row>)
+					}
+				)}
+
+			</Table>
+			{!!colMap?.length && <Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
+			{!colMap?.length && <div className='ui segment'>No results.</div>}
+			<br /><br /><br />
+		</div>)
+
+	}
+
+
 	return (
 		<React.Fragment>
 			<Header as='h4'>Collection Crew</Header>
@@ -911,7 +1168,8 @@ const CrewTable = (props: CrewTableProps) => {
 				onTabChange={(e, { activeIndex })=> setTabIndex(activeIndex as number ?? 0)}			
 				panes={[
 					{ menuItem: narrow ? 'Crew' : 'Crew Table', render: () => renderTable()},
-					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups(colGroups.slice(10 * (groupPage - 1), (10 * (groupPage - 1)) + 10))}
+					{ menuItem: narrow ? 'Collections' : 'Collection Crew Groups', render: () => renderCollectionGroups(colGroups.slice(10 * (groupPage - 1), (10 * (groupPage - 1)) + 10))},
+					{ menuItem: narrow ? 'Optimizer' : 'Collection Crew Optimizer', render: () => renderOptimizer(colOptimized.slice(10 * (optPage - 1), (10 * (optPage - 1)) + 10))}
 				]}
 			/>
 	
