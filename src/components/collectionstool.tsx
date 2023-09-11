@@ -744,8 +744,8 @@ const CrewTable = (props: CrewTableProps) => {
 							<i style={{fontSize: "0.9em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
 							<i style={{fontSize: "0.9em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
 							
-							{!!collection.neededCost && 
-								<div style={{marginTop:"0.5em"}}>
+							{(crewhave >= crewneed && !!collection.neededCost) && 
+								(<div style={{marginTop:"0.5em"}}>
 								<i style={{fontSize: "0.9em"}}>
 									Citation cost to next: 
 									<img
@@ -757,9 +757,10 @@ const CrewTable = (props: CrewTableProps) => {
 								<div style={{marginTop:"0.5em"}}>
 								<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
 								</div>
-								</div> || <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
+								</div>)}
+								{(crewhave >= crewneed && !collection.neededCost && <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
 									All crew required to reach the next milestone are already fully fused.
-									</i>}
+									</i>)}
 								
 							{crewhave < crewneed && 
 								<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
