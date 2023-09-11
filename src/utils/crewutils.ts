@@ -1514,3 +1514,20 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 
 	return `${crew.in_portal ? "Yes" : "No"}${obstr}`;
 }
+
+export function starCost(crew: PlayerCrew[], limit?: number) {
+	const costs = [0, 0, 500, 4500, 18000, 50000];
+
+	limit ??= crew.length;
+	let tc = 0;
+
+	for (let c = 0; c < limit; c++) {
+		let cm = crew[c];		 
+		if (!cm) continue;
+		let rdiff = (cm.max_rarity ?? 2 * cm.rarity) - cm.rarity;
+		if (!rdiff) continue;		
+		tc += rdiff * costs[cm.max_rarity];
+	}
+
+	return tc;
+}

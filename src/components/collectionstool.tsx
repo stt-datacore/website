@@ -12,7 +12,7 @@ import { Collection, Filter } from '../model/game-elements';
 import { AtlasIcon, BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { crewCopy, isImmortal, navToCrewPage, oneCrewCopy } from '../utils/crewutils';
+import { crewCopy, isImmortal, navToCrewPage, oneCrewCopy, starCost } from '../utils/crewutils';
 import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
@@ -516,44 +516,7 @@ const CrewTable = (props: CrewTableProps) => {
 			}
 						
 			return !!bPass;
-		})
-		.sort((a, b) => {
-			let  acol = a.collection;
-			let  bcol = b.collection;
-
-			if (mapFilter?.rewardFilter) {
-				let ayes = false;
-				let byes = false;
-
-				if (short) {
-					ayes = checkRewardFilter(acol, mapFilter.rewardFilter);
-					byes = checkRewardFilter(bcol, mapFilter.rewardFilter);
-				}
-				else {
-					let areward = getCollectionRewards([acol]);
-					let breward = getCollectionRewards([bcol]);
-					ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
-					byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
-	
-				}
-
-				if (ayes != byes) {
-					if (ayes) return -1;
-					else return 1;
-				}	
-			}
-
-			let r = 0;
-			let amissing = (acol?.milestone?.goal === 'n/a' ? 0 : acol?.milestone?.goal ?? 0) - (acol?.owned ?? 0);
-			let bmissing = (bcol?.milestone?.goal === 'n/a' ? 0 : bcol?.milestone?.goal ?? 0) - (bcol?.owned ?? 0);
-			if (amissing < 0) amissing = 0;
-			if (bmissing < 0) bmissing = 0;
-			if (!r) r = amissing - bmissing;
-			if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
-			if (!r) r = (bcol?.milestone?.goal as number ?? 0) - (acol?.milestone?.goal as number ?? 0);
-			if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
-			return r;
-		});
+		});		
 		
 		colMap.forEach((col, idx) => {
 
@@ -589,6 +552,47 @@ const CrewTable = (props: CrewTableProps) => {
 			});
 
 		});
+		
+		colMap.forEach((c) => c.collection.neededCost = starCost(c.crew, c.collection.needed));
+		
+		colMap.sort((a, b) => {
+			let  acol = a.collection;
+			let  bcol = b.collection;
+
+			if (mapFilter?.rewardFilter) {
+				let ayes = false;
+				let byes = false;
+
+				if (short) {
+					ayes = checkRewardFilter(acol, mapFilter.rewardFilter);
+					byes = checkRewardFilter(bcol, mapFilter.rewardFilter);
+				}
+				else {
+					let areward = getCollectionRewards([acol]);
+					let breward = getCollectionRewards([bcol]);
+					ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+					byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
+	
+				}
+
+				if (ayes != byes) {
+					if (ayes) return -1;
+					else return 1;
+				}	
+			}
+
+			let r = 0;
+			let amissing = (acol?.milestone?.goal === 'n/a' ? 0 : acol?.milestone?.goal ?? 0) - (acol?.owned ?? 0);
+			let bmissing = (bcol?.milestone?.goal === 'n/a' ? 0 : bcol?.milestone?.goal ?? 0) - (bcol?.owned ?? 0);
+			if (amissing < 0) amissing = 0;
+			if (bmissing < 0) bmissing = 0;
+			if (!r) r = amissing - bmissing;
+			if (!r) r = (acol?.neededCost ?? 0) - (bcol?.neededCost ?? 0);
+			if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
+			if (!r) r = (bcol?.milestone?.goal as number ?? 0) - (acol?.milestone?.goal as number ?? 0);
+			if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
+			return r;
+		});
 
 		return colMap.filter(cm => cm.crew?.length);
 	}
@@ -603,6 +607,34 @@ const CrewTable = (props: CrewTableProps) => {
 	}
 
 	const colGroups = createCollectionGroups();
+
+	// TODO: Find a use for this code
+	// const linkScores = {} as { [key: string]: CollectionMap[] };
+
+	// for(let col of colGroups) {
+	// 	linkScores[col.collection.name] ??= [];
+	// 	for (let col2 of colGroups) {
+	// 		if (col.collection.name === col2.collection.name) continue;
+	// 		let crew = col.crew.filter(cr => col2.crew.some(cr2 => cr2.symbol === cr.symbol));
+	// 		crew = crew.concat(col2.crew.filter(cr => col.crew.some(cr2 => cr2.symbol === cr.symbol)));
+	// 		crew = crew.filter((cr, idx) => crew.findIndex(cr2 => cr2.symbol === cr.symbol) === idx);
+	// 		crew.sort((a, b) => a.name.localeCompare(b.name));
+	// 		if (!!crew?.length) {
+				
+	// 			linkScores[col.collection.name].push({
+	// 				collection: col2.collection,
+	// 				crew: crew
+	// 			});
+	// 		}
+
+	// 	}
+
+	// 	linkScores[col.collection.name].sort((a, b) => {
+	// 		let r = b.crew.length - a.crew.length;
+	// 		if (!r) r = a.collection.name.localeCompare(b.collection.name);
+	// 		return r;
+	// 	});
+	// }
 
 	const pageCount = Math.ceil(colGroups.length / 10);
 
@@ -689,20 +721,33 @@ const CrewTable = (props: CrewTableProps) => {
 							}}>
 							
 							<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
-								style={{margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+								style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
 								title={collection.name}
 							/>
 							<h2 
 								onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
-								style={{marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
+								style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
 							<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
 							<hr style={{width: "16em"}}></hr>
-							<i style={{fontSize: "0.8em"}}>{collection.needed} needed for rewards:</i>
+							<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
 							<div style={{margin: "0.5em 0 0.5em 0"}}>
 								<RewardsGrid wrap={true} rewards={rewards} />
 							</div>
-							<i style={{fontSize: "0.8em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
-							<i style={{fontSize: "0.8em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
+							<i style={{fontSize: "0.9em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
+							<i style={{fontSize: "0.9em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
+							
+							{!!collection.neededCost && 
+								<i style={{fontSize: "0.9em"}}>
+									Star cost to next: 
+									<img
+									src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+									style={{width : '16px', verticalAlign: 'text-bottom'}}
+									/> 
+									{collection.neededCost.toLocaleString()}
+								</i> || <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
+									All crew required to reach the next milestone are already fully fused.
+									</i>}
+								
 							{crewhave < crewneed && 
 								<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
 									You need to recruit {crewneed - crewhave} more crew to reach the next goal.
