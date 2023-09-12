@@ -687,17 +687,75 @@ const CrewTable = (props: CrewTableProps) => {
 			const names = col.maps.map(c => c.collection.name);
 			
 			let result = makeAllCombos(names);
-			// for (let i = 0; i <  result.length; i++) {
+			
+			let exact = [] as {names: string[], count: number}[];
+			let over = [] as {names: string[], count: number}[];
+			let under = [] as {names: string[], count: number}[];
+			let colneed = col.collection.needed ?? 0;
+			
+			for (let test of result) {
+				let cols = test.map(tc => col.maps.find(f => f.collection.name === tc));
 				
-			// 	result[i] = [ col.collection.name, ... result[i]];
-			// }
-			return result;
+				if (cols?.length) {			
+					let extracrew = [] as string[];
+					extracrew = cols.map(cm => cm?.crew).flat().map(f => f?.symbol ?? '');
+					extracrew = extracrew.filter((ef, i) => ef !== '' && extracrew.findIndex(fi => fi === ef) === i) ?? [];
+					let total = extracrew.length; // cols.map(c => c?.collection.needed ?? 0).reduce((p, n) => p + n, 0);
+					let tc = cols.map(c => c?.collection.needed ?? 0).reduce((p, n) => p + n, 0);
+
+					if (total) {
+						if (total === colneed && tc === colneed) {
+							exact.push({ names: test, count: total });
+						}	
+						else if (total > colneed || tc > colneed) {
+							over.push({ names: test, count: total });
+						}
+						else  {
+							under.push({ names: test, count: total });
+						}
+						
+						
+					}
+				}
+			}
+			exact.sort((a, b) => b.count - a.count);
+			under.sort((a, b) => b.count - a.count);
+			for (let ex of exact) {
+				ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
+			}
+			if (exact.length > 1) {
+				return exact.map(d => d.names);
+			}
+			return exact.concat(under).map(d => d.names);
 		}
 
 		for (let col of colOptimized) {
 			col.combos = createCombos(col);
 		}
-		return colOptimized;
+		return colOptimized.sort((a, b) => {
+			if (a.combos && b.combos) {
+				let acb = a.combos.length;
+				let bcb = a.combos.length;
+				let ayes = a.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
+				let byes = b.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
+				
+				let r = byes - ayes;
+				if (!r) {
+					r = bcb - acb;
+				}
+				return r;
+			}	
+			else if (a.combos) {
+				return -1;
+			}
+			else if (b.combos) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+
+		});
 	}
 
 	const colOptimized = createOptimizerGroups();

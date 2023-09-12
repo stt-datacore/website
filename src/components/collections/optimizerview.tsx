@@ -9,6 +9,7 @@ import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { neededStars, starCost } from '../../utils/crewutils';
+import { useStateWithStorage } from '../../utils/storage';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
@@ -29,6 +30,8 @@ export const CollectionOptimizerTable = (props) => {
     
     const { colOptimized } = props;
     
+	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1);
+
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
 	const [optPageCount, setOptPageCount] = React.useState(1);
@@ -58,7 +61,7 @@ export const CollectionOptimizerTable = (props) => {
 		}
 		else {
 			let split = combo.split(" / ");
-			return split.map(s => col.maps.find(cm => cm.collection.name === s)).filter(f => f) as CollectionMap[];	
+			return split.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionMap[];	
 		}
 	}
 
@@ -141,8 +144,9 @@ export const CollectionOptimizerTable = (props) => {
 		return cma.slice(0, allneed);			
 		
 	}
+	
 
-	const optCount = Math.ceil(colOptimized.length / 10);
+	const optCount = Math.ceil(colOptimized.length / pageSize);
 
 	if (optCount !== optPageCount || optPage > optCount) {
 		setOptPageCount(optCount);
@@ -216,9 +220,28 @@ export const CollectionOptimizerTable = (props) => {
 					 />
 				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
 			</div> */}
-			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />}
+			{!!colMap?.length && 			
+			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
+			<div style={{margin:"0 0.5em", padding: 0}}>
+			Items Per Page:
+			<Dropdown 
+				style={{margin: "0.5em"}}
+				placeholder={"Items Per Page"}
+				value={pageSize}
+				onChange={(e, { value }) => setPageSize(value as number)}
+				options={[1,2,5,10].map(x => {
+					return {
+						value: x,
+						key: x,
+						text: "" + x
+					}
+				})}
+				/>
+			</div>
+			</div>}
 			<Table striped>
-				{colMap.slice(10 * (optPage - 1), (10 * (optPage - 1)) + 10).map((col, idx) => {
+				{colMap.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
 					
 					const optCombo = getCombo(col);
 					const comboCrew = getOptCrew(col, optCombo);
@@ -384,7 +407,26 @@ export const CollectionOptimizerTable = (props) => {
 				)}
 
 			</Table>
-			{!!colMap?.length && <Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />}
+			{!!colMap?.length && 			
+			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
+			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+			Items Per Page:
+			<Dropdown 
+				style={{margin: "0.5em"}}
+				placeholder={"Items Per Page"}
+				value={pageSize}
+				onChange={(e, { value }) => setPageSize(value as number)}
+				options={[1,2,5,10].map(x => {
+					return {
+						value: x,
+						key: x,
+						text: "" + x
+					}
+				})}
+				/>
+			</div>
+			</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />
 		</div>)
