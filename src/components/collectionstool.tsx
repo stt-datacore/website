@@ -373,6 +373,7 @@ const CrewTable = (props: CrewTableProps) => {
 		ownedFilterOptions.push({ key: 'owned', value: 'owned', text: 'Only show owned crew' })
 	}
 	ownedFilterOptions.push({ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' });
+	ownedFilterOptions.push({ key: 'owned-threshold', value: 'owned-threshold', text: 'Only show crew needing 1 or 2 fuses' });
 	ownedFilterOptions.push({ key: 'owned-ff', value: 'owned-ff', text: 'Only show fully fused crew' });
 
 	const fuseFilterOptions = [
@@ -419,6 +420,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
 		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+		if (!exclude?.includes('owned-threshold') && ownedFilter === 'owned-threshold' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) > 2) return false;
 		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) !== 1) return false;
 		if (!exclude?.includes('owned-ff') && ownedFilter === 'owned-ff' && crew.max_rarity !== (crew.highest_owned_rarity ?? crew.rarity)) return false;
 		if (!exclude?.includes('rarity') && rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
