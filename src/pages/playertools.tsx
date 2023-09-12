@@ -113,15 +113,19 @@ export const playerTools: PlayerTools = {
 
 const PlayerToolsPage = (props: any) => {
 
+	const [pageTitle, setPageTitle] = React.useState("Player Tools");
+
 	return (
-		<DataPageLayout pageTitle='Player Tools' demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']} playerPromptType='require'>
-				<PlayerToolsComponent location={props.location} />
+		<DataPageLayout pageTitle={pageTitle} demands={['ship_schematics', 'crew', 'items', 'skill_bufs','cadet']} playerPromptType='require'>
+				<PlayerToolsComponent pageTitle={pageTitle} setPageTitle={setPageTitle} location={props.location} />
 		</DataPageLayout>
 	);
 };
 
 export interface PlayerToolsProps {
 	location: any;
+	setPageTitle: (value: string) => void;
+	pageTitle: string;
 }
 
 const PlayerToolsComponent = (props: PlayerToolsProps) => {
@@ -139,7 +143,7 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
 	// Profile data ready, show player tool panes
 	if (playerData && dataSource && dataSource && ephemeral && playerShips && !!rand) {
-		return (<PlayerToolsPanes rand={rand} />);
+		return (<PlayerToolsPanes pageProps={props} rand={rand} />);
 	}
 	else {
 		return <></>
@@ -148,12 +152,14 @@ const PlayerToolsComponent = (props: PlayerToolsProps) => {
 
 type PlayerToolsPanesProps = {
 	rand: string;
+	pageProps: PlayerToolsProps;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const context = React.useContext(GlobalContext);
 
 	const { playerShips } = context.player;
+	const { pageTitle, setPageTitle } = props.pageProps;
 
 	const [activeTool, setActiveTool] = React.useState('');
 	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
@@ -175,6 +181,12 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 	let tt: string | undefined = undefined;
 
+	React.useEffect(() => {
+		if ((activeTool != '') && tools[activeTool].title !== pageTitle) {
+			setPageTitle(tools[activeTool].title);		
+		}
+	}, [activeTool]);
+	
 	if ((activeTool != '') && tools[activeTool].title === 'Ship Page' && selectedShip) {
 		let s = playerShips?.find((sp) => sp.symbol === selectedShip);
 		if (s) {
