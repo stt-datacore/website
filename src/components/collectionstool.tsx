@@ -698,28 +698,26 @@ const CrewTable = (props: CrewTableProps) => {
 				
 				if (cols?.length) {			
 					let extracrew = [] as string[];
-					extracrew = cols.map(cm => cm?.crew).flat().map(f => f?.symbol ?? '');
+					extracrew = cols.map(cm => cm?.crew.slice(0, cm.collection.needed)).flat().map(f => f?.symbol ?? '');
 					extracrew = extracrew.filter((ef, i) => ef !== '' && extracrew.findIndex(fi => fi === ef) === i) ?? [];
 					let total = extracrew.length; // cols.map(c => c?.collection.needed ?? 0).reduce((p, n) => p + n, 0);
 					let tc = cols.map(c => c?.collection.needed ?? 0).reduce((p, n) => p + n, 0);
 
 					if (total) {
-						if (total === colneed && tc === colneed) {
+						if (total === colneed) {
 							exact.push({ names: test, count: total });
 						}	
-						else if (total > colneed || tc > colneed) {
+						else if (total > colneed) {
 							over.push({ names: test, count: total });
 						}
 						else  {
 							under.push({ names: test, count: total });
 						}
-						
-						
 					}
 				}
 			}
-			exact.sort((a, b) => b.count - a.count);
-			under.sort((a, b) => b.count - a.count);
+			exact.sort((a, b) => b.names.length - a.names.length);
+			under.sort((a, b) => b.names.length - a.names.length);
 			for (let ex of exact) {
 				ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
 			}
