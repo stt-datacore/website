@@ -1,6 +1,6 @@
 import React from 'react';
 import { CollectionFilterContext, CollectionGroup, CollectionMap } from './utils';
-import { Pagination, Table, Grid, Image } from 'semantic-ui-react';
+import { Pagination, Table, Grid, Image, Dropdown } from 'semantic-ui-react';
 import { Reward, BuffBase } from '../../model/player';
 import { RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
@@ -8,11 +8,16 @@ import { formatColString } from '../item_presenters/crew_preparer';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { starCost } from '../../utils/crewutils';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
 }
 
+interface ComboConfig {
+	collection: string;
+	name: string;
+}
 
 export const CollectionOptimizerTable = (props) => {
     const colContext = React.useContext(CollectionFilterContext);
@@ -23,8 +28,107 @@ export const CollectionOptimizerTable = (props) => {
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
     const { colOptimized } = props;
-    const [optPage, setOptPage] = React.useState(1);
+    
+	const [combos, setCombos] = React.useState([] as ComboConfig[]);
+	const [optPage, setOptPage] = React.useState(1);
 	const [optPageCount, setOptPageCount] = React.useState(1);
+
+	const setCombo = (col: CollectionGroup, combo: string) => {
+		let f = combos.find(cf => cf.collection === col.collection.name);
+		if (!f) {
+			combos.push({
+				collection: col.collection.name,
+				name: combo
+			})
+		}
+		else {
+			f.name = combo;
+		}
+		setCombos([... combos]);
+	}
+
+	const getCombo = (col: CollectionGroup) => {
+		let f = combos.find(cf => cf.collection === col.collection.name);
+		return f?.name ?? (col.combos?.length ? col.combos[0].join(" / ") : undefined);
+	}
+	
+	const getOptCols = (col: CollectionGroup, combo?: string) => {
+		if (!combo) {
+			return col.maps;
+		}
+		else {
+			let split = combo.split(" / ");
+			return split.map(s => col.maps.find(cm => cm.collection.name === s)).filter(f => f) as CollectionMap[];	
+		}
+	}
+
+	const getOptCrew = (col: CollectionGroup, combo?: string) => {
+		if (!combo) {
+			return col.uniqueCrew;
+		}
+		else {
+			let cols = getOptCols(col, combo);
+
+			let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
+			let chks = [ 0, ... cols.map(c => 0) ];
+			let allneed = undefined as number | undefined;
+
+			let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);
+			
+			max = Math.max(max, col.collection.needed ?? 0);
+			let cma = cols.map(c => c.crew).flat();
+			cma = cma.filter((cz, idx) => cma.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+			
+			cma.sort((a, b) => {
+				let x = 0;
+				let y = 0;
+				for (let i = 0; i < cols.length; i++) {
+					if (col.collection.crew?.find(f => f === a.symbol)) x++;
+					if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
+						x++;
+					}
+					if (col.collection.crew?.find(f => f === b.symbol)) y++;
+					if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
+						y++;
+					}
+				}
+				let r = y - x;
+				if (!r) {
+					r = starCost([a]) - starCost([b]);
+				}
+				return r;
+			});
+			
+			let p = 0;
+			
+			for (let item of cma) {
+				if (col.collection.crew?.find(f => item.symbol === f)) {
+					chks[0]++;
+				}
+				for (let i = 0; i < cols.length; i++) {
+					if (cols[i].crew.find(fc => fc.symbol === item.symbol)) {
+						chks[i+1]++;
+					}					
+				}
+
+				let ct = 0;				
+				for (let i = 0; i < needs.length; i++) {
+					if (chks[i] >= needs[i]) ct++;
+				}
+				if (ct >= needs.length) {
+					allneed = p;
+				}
+				p++;
+			}
+
+			return cma.slice(0, allneed);
+			// return col.uniqueCrew.filter((uc) => {
+			// 	return col.collection.crew?.some(cc => uc.symbol === cc) && cols.some(cc => cc.crew.some(v => v.symbol === uc.symbol));
+			// }).sort((a, b) => {
+			// 	return starCost([a]) - starCost([b]);
+			// }).slice(0, max);
+		}
+	}
 
 	const optCount = Math.ceil(colOptimized.length / 10);
 
@@ -164,9 +268,23 @@ export const CollectionOptimizerTable = (props) => {
 						</Table.Cell>
 						<Table.Cell>
 						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
-							
-						<Grid doubling columns={3} textAlign='center'>
-								{col.maps.map((c) => {
+							{!!col.combos?.length && 
+							<div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+							<Dropdown 
+								placeholder={"Select Options"}
+								value={getCombo(col)}
+								onChange={(e, { value }) => setCombo(col, value as string)}
+								options={col.combos.map(opt => {
+								return {
+									key: opt.join(" / "),
+									value: opt.join(" / "),
+									text: opt.join(" / ")
+								}								
+							})}/>
+							</div>}
+
+							<Grid doubling columns={3} textAlign='center'>
+								{getOptCols(col, getCombo(col)).map((c) => {
 										const collection = c.collection;
 										if (!collection?.totalRewards || !collection.milestone) return <></>;
 										const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
@@ -199,7 +317,7 @@ export const CollectionOptimizerTable = (props) => {
 								})}
 						</Grid>
 						<Grid doubling columns={3} textAlign='center'>
-								{col.uniqueCrew.map((crew, ccidx) => (
+								{getOptCrew(col, getCombo(col)).map((crew, ccidx) => (
 									<div 
 										className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
 										style={{  
@@ -209,9 +327,10 @@ export const CollectionOptimizerTable = (props) => {
 											alignItems: "center", 
 											justifyContent: "center",
 											padding:"0.25em",
-											paddingTop: ccidx < (collection?.needed ?? 0) ? '0.75em' : undefined,
+											paddingTop: '0.75em',
 											borderRadius: "5px",																			
-											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined
+											border: !!getCombo(col) && !(crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? '1px solid darkgreen' : undefined,
+											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined,
 									}}>
 									<ItemDisplay 
 										size={64}
