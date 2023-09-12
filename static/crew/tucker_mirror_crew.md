@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Tucker events limp along as a yearly blip or two on the radar, but in conjunction with various traits, this variant has had a respectable weekend run so far that includes a handful of big bonus features. Owning a couple of collections with a chance at modest expansion in that area is all that late game players need to see to pick him up, but fledgling rosters should be aware that his chances for daily contributions are extremely limited at best.
+Tucker Events limp along as a yearly blip or two on the radar, but in conjunction with various Traits, this variant has had a respectable weekend run so far that includes a handful of big bonus features. Owning a trio of Collections with a chance at modest expansion in that area is all that late game players need to see to pick him up, but fledgling rosters should be aware that his chances for daily contributions are extremely limited at best.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The skill set won’t look great on the behold screen, but like his tux, Sisko is one of the very best to wear it. A multi-year reign as the top SEC base with regular event work would be good enough for most cards, but he throws in workable voyage power and eight anti-matter traits to go with it.
+Formal Dress Benny Sisko once held the title of top SEC Base and upper echelon Voyage power for some time, but he’s since lost them both, finding instead a place among the top Collection and Event crew in the game. One of the gatekeepers to Scapegoat O’Brien (who has likewise sagged in value due to time and Power Creep), Sisko has three additional Stat-boosting Collections and Traits in tow to pop him up to a maximum of five, making him well-above average in that aspect of crew valuation.
 
-That delicious bevy of traits also gives him huge collection potential, but the most interesting outcome is the one he's already in. The more-than-a-vanity collection Bada-Bing rewards a big time power crew in Scapegoat O'Brien. With only three gold crew required to obtain him, that collection is more valuable than meets the eye and should outstrip something like a 1% skill boost for years, especially in the short term.
+Sisko is a blue chip Event name and all those Traits give him chances to cash in his chips for weekend work even when his name isn’t called for a variant bonus. Still-strong SEC Base will help him sit on your Faction Shuttles, and while his Skill set would be a liability on Voyages (if he was still being used there), SEC, CMD, and DIP are among the most common Shuttle seats. Gladly choose HR Sisko in your Legendary Beholds and thank us later.

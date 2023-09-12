@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 33
+events: 34
 in_portal: true
 date: 03/01/2019
 obtained: Event
@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-A true all-rounder, EMA runs the gamut from starter crew to late game anchor. Let's start with two of his underappreciated attributes for the newbies - triggerless (slow) arena damage and some gauntlet maneuverability. Four 45% gauntlets and a ton of elevated crit gauntlets overall join up with a gorgeous skill set to give him coverage over two of the rarer skill pairs and helps him snatch a few 2-for-1 wins for midgame rosters.
+The Emergency Medical Android spent a long time as a no-brainer choice in Legendary Beholds, on Citation lists, and in the early days of Crew Retrieval he was a common snipe. They do say time is the fire in which daily use crew burn, and the EMA has unfortunately slipped from that august role.
 
-His juicy skill set/trait combo carries through to voyages where he punches way above his power level and has aged and will age better than almost any other crew. He's the only legendary MED primary to offer both SEC and CMD and supports it with a half dozen anti-matter traits to write his own ticket for priority seating.
+EMA does feature enduring value from his Ship Ability, which is a decent 250% Instant Damage without a Trigger or Use Limit and a +9 to Attack, so if you get a copy of him early on in your playthrough you can use him on Ships until you acquire one of the meta 400% booms.
 
-In one of his few weak spots, Doc variant events have been a wasteland for Faction action over the past several years. While his slew of traits have helped supplement that, MED seating can be hard to come by and so he will rarely ride shuttles without a bonus. Those helpful traits (Gee, it's almost like traits matter) also grant him multi-collection status with room for more. He should be among the first names you immortalize for every one of them.
+WRG was gracious enough to Trait the EMA very well; with two current Collections and a ceiling of six, he’s well-above average in that field, and said Traits add to sporadic Doctor variant Events so you can call upon him on the weekend at least once a quarter.

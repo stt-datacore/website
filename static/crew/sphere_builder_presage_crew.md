@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A former daily use Hoss, Presage stood out among her peers at release, even amidst a crazy stretch of power crew at the 2018/2019 turn. Time has worked its voodoo on this crew, but there's still enough usage to justify the behold capital. Alongside legitimate four or five collection potential and edge case gauntlet ability for younger rosters, Presage is a versatile crew who's doing an admirable job fighting back against stat creep.
+Little more than a Collection piece at this time, she’s managed to accumulate three Stat-boosting Collections plus a Vanity, and has Traits for two more to make a nice set of five when all is said and done. Choose from a Legendary Behold without much hesitation and join the ranks of those players with the best Presage in the game!
