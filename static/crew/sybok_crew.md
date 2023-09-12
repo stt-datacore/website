@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-This horse trader's biggest drawbacks are a lack of daily work and an expensive build consisting of the typical Vulcan faction items and nearly twenty super rare components. But his base would play in most trait events he encounters and he's already a multi-collection piece with strong untapped traits. Sybok may not get you to Sha Ka Ree, but he’ll help you pass the Great Collection Barrier
+This horse trader's biggest drawbacks are a lack of daily work and an expensive build consisting of the typical Vulcan Faction Items and nearly twenty Super Rare Components. But his Base would play in most Trait Events he encounters and he's already a multi-Collection piece with strong untapped Traits. Sybok may not get you to Sha Ka Ree, but he’ll help you pass the Great Collection Barrier.

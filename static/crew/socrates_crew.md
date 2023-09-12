@@ -3,8 +3,8 @@ name: Socrates
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
-events: 23
+bigbook_tier: 6
+events: 24
 in_portal: true
 date: 29/12/2020
 obtained: Pack
