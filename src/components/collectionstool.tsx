@@ -733,14 +733,14 @@ const CrewTable = (props: CrewTableProps) => {
 		return colOptimized.sort((a, b) => {
 			if (a.combos && b.combos) {
 				let acb = a.combos.length;
-				let bcb = a.combos.length;
+				let bcb = b.combos.length;
 				let ayes = a.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
 				let byes = b.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
+				let r = 0;
 				
-				let r = byes - ayes;
-				if (!r) {
-					r = bcb - acb;
-				}
+				if (!r) r = byes - ayes;
+				if (!r) r = bcb - acb;
+
 				return r;
 			}	
 			else if (a.combos) {

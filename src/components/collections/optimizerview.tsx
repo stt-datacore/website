@@ -72,11 +72,13 @@ export const CollectionOptimizerTable = (props) => {
 			cma = col.uniqueCrew;
 		}
 		else {
-			let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);
-			
-			max = Math.max(max, col.collection.needed ?? 0);
+
 			cma = cols.map(c => c.crew.slice(0, c.collection.needed)).flat();
 			cma = cma.filter((cz, idx) => cma.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+
+			let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);			
+			max = col.collection.needed ?? 0;
+
 			if (cma.length < max) {
 				let cm = 0;
 				let cidx = 0;
