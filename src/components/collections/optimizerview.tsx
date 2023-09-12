@@ -1,14 +1,14 @@
 import React from 'react';
 import { CollectionFilterContext, CollectionGroup, CollectionMap } from './utils';
 import { Pagination, Table, Grid, Image, Dropdown } from 'semantic-ui-react';
-import { Reward, BuffBase, PlayerCrew } from '../../model/player';
+import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { starCost } from '../../utils/crewutils';
+import { neededStars, starCost } from '../../utils/crewutils';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
@@ -205,8 +205,13 @@ export const CollectionOptimizerTable = (props) => {
 			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />}
 			<Table striped>
 				{colMap.slice(10 * (optPage - 1), (10 * (optPage - 1)) + 10).map((col, idx) => {
-
-					const collection = col.collection;
+					
+					const optCombo = getCombo(col);
+					const comboCrew = getOptCrew(col, optCombo);
+					
+					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
+					collection.neededCost = starCost(comboCrew);
+					col.neededStars = neededStars(comboCrew);
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
 					
@@ -270,7 +275,7 @@ export const CollectionOptimizerTable = (props) => {
 							<div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
 							<Dropdown 
 								placeholder={"Select Options"}
-								value={getCombo(col)}
+								value={optCombo}
 								onChange={(e, { value }) => setCombo(col, value as string)}
 								options={col.combos.map(opt => {
 								return {
@@ -282,7 +287,7 @@ export const CollectionOptimizerTable = (props) => {
 							</div>}
 
 							<Grid doubling columns={3} textAlign='center'>
-								{getOptCols(col, getCombo(col)).map((c) => {
+								{getOptCols(col, optCombo).map((c) => {
 										const collection = c.collection;
 										if (!collection?.totalRewards || !collection.milestone) return <></>;
 										const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
@@ -315,7 +320,7 @@ export const CollectionOptimizerTable = (props) => {
 								})}
 						</Grid>
 						<Grid doubling columns={3} textAlign='center'>
-								{getOptCrew(col, getCombo(col)).map((crew, ccidx) => (
+								{comboCrew.map((crew, ccidx) => (
 									<div 
 										className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
 										style={{  
