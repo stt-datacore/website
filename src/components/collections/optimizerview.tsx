@@ -74,6 +74,20 @@ export const CollectionOptimizerTable = (props) => {
 			max = Math.max(max, col.collection.needed ?? 0);
 			cma = cols.map(c => c.crew).flat();
 			cma = cma.filter((cz, idx) => cma.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+			if (cma.length < max) {
+				let cm = 0;
+				let cidx = 0;
+				let c = col.uniqueCrew.length;
+				while (cm < max && cidx < c) {
+					if (cma.some(cc => cc.symbol === col.uniqueCrew[cidx].symbol)) {
+						cidx++;
+						continue;
+					}
+					cma.push(col.uniqueCrew[cidx]);
+					cidx++;
+					cm++;					
+				}
+			}
 		}			
 
 		let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
@@ -271,9 +285,11 @@ export const CollectionOptimizerTable = (props) => {
 						</Table.Cell>
 						<Table.Cell>
 						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
-							{!!col.combos?.length && 
-							<div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
+							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+							<div style={{margin: "0.25em"}}>Variations: </div>
 							<Dropdown 
+								scrolling
 								placeholder={"Select Options"}
 								value={optCombo}
 								onChange={(e, { value }) => setCombo(col, value as string)}

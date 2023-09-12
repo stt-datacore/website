@@ -142,3 +142,48 @@ function iOS() {
 	// iPad on iOS 13 detection
 	|| (navigator.userAgent.includes("Mac") && "ontouchend" in document)
   }
+
+
+  export function makeAllCombos<T>(source: T[], current?: T[][], index?: number): T[][] {
+	current ??= [];
+	index ??= 0;
+
+	let i = 0;
+	let c = current.length;
+	let newc = [ ...current ];
+	
+	newc.push([source[index]]);
+	
+	for (i = 0; i < c; i++) {
+		newc.push([...current[i], source[index]]);		
+	}
+	
+	current = newc;
+	
+	if (index < source.length - 1) {
+		current = makeAllCombos(source, current, index + 1);
+	}
+
+	return current;
+  }
+
+  export function arrayUnion<T>(arr1: T[], arr2: T[]): T[] {
+	let newarr = [...arr1];
+	for (let elem of arr2) {
+		if (!newarr.includes(elem)) {
+			newarr.push(elem);
+		}
+	}
+	return newarr;
+  }
+
+  export function arraysUnion<T>(arr: T[][]) {
+	let newarr = [ ... arr[0] ];
+
+	let c = arr.length;
+	for (let i = 1; i < c; i++) {
+		newarr = arrayUnion(newarr, arr[i]);
+	}
+
+	return newarr;
+  }

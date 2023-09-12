@@ -19,7 +19,7 @@ import { TinyStore } from '../utils/tiny';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { formatColString } from './item_presenters/crew_preparer';
 import { CrewItemsView } from './item_presenters/crew_items';
-import { getImageName } from '../utils/misc';
+import { getImageName, makeAllCombos } from '../utils/misc';
 import { getIconPath } from '../utils/assets';
 import { checkReward, getCollectionRewards } from '../utils/itemutils';
 import { EquipmentItem } from '../model/equipment';
@@ -684,39 +684,14 @@ const CrewTable = (props: CrewTableProps) => {
 		});
 
 		const createCombos = (col: CollectionGroup) => {
-			var allcombos = [] as string[][];		
+			const names = col.maps.map(c => c.collection.name);
 			
-			function isInCombos(x: string[]) {
-				return allcombos.some(ac => x.every(xs => ac.includes(xs)));
-			}
-
-			if (col.uniqueCrew.length > (col.collection.needed ?? 0)) {
-				let idx1 = 0;
-				for (let subcol1 of col.maps) {
-					let currcombo = [subcol1.collection.name] as string[];
-					let x = 0;
-					let idx2 = 0;
-					for (let subcol2 of col.maps) {
-						if (idx2 <= idx1) {
-							idx2++;
-							continue;
-						}
-						idx2++;
-
-						let tempcombo = [ ... currcombo, subcol2.collection.name ];
-						if (isInCombos(tempcombo)) continue;
-						x += subcol2.crew.length;
-						currcombo.push(subcol2.collection.name);
-						if (x >= (col.collection.needed ?? 0)) break;
-					}
-
-					idx1++;			
-					if (x >= (col.collection.needed ?? 0)) {					
-						allcombos.push(currcombo);
-					}				
-				}
-			}
-			return allcombos;
+			let result = makeAllCombos(names);
+			// for (let i = 0; i <  result.length; i++) {
+				
+			// 	result[i] = [ col.collection.name, ... result[i]];
+			// }
+			return result;
 		}
 
 		for (let col of colOptimized) {
