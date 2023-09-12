@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-All-Terrain Burnham is her first gauntleteer variant and helps flesh out a well-rounded Timelines character. She parlays strong SEC and overall proficiency numbers into two respectably ranked gauntlet pairs; both close enough to catch number one sleeping if she brings a crit advantage. She's an auto-include in her pair of 45% gauntlets and is otherwise spunky enough to be in the rotation mix alongside similar names like Gangster Spock and Gary Seven.
+All-Terrain Burnham is her first Gauntleteer variant and helps flesh out a well-rounded Timelines character. She parlays strong SEC and overall Proficiency numbers into two respectably ranked Gauntlet pairs; both close enough to catch number one sleeping if she brings a Crit advantage. She's a near auto-include in her pair of 45% Gauntlets and is otherwise spunky enough to be in the rotation mix alongside similar names like Gangster Spock and Gary Seven.
 
-Starting to fall out of voyage use on many rosters, Burnham still has enough play in the areas of events and collections to give her strong overall utility and a worthwhile payoff for stars two through five - not something often said about 'gauntlet crew'. First Officer Burnham may hog the headlines, but the ATB can take you anywhere you want to go.
+No longer finding Voyage work due to her age, ATB finds Event work as a Burnham variant as well as latching on to Trait bonuses to provide additional value. Three Collections could grow to six, so feel satisfied taking her in Legendary Beholds at any Fusionlevel.

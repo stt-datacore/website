@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The most useful of the DS9 era uniformed Admirals, Paris is on the edge of helpful for voyages, provided you can obtain the requisite number of stars, but should find most of his work in the gauntlet. Twenty total elevated crit gauntlets should be plenty for newer players using Paris as a stepping stone to gold level CMD/SEC options.
+The most useful of the DS9 era uniformed Admirals, Daddy Paris should find most of his work in the gauntlet. Almost thirty total elevated Crit Gauntlets should be plenty for newer players using Owen as a stepping stone to Legendary CMD/SEC options.
 
-One of his three collectionable traits have triggered, giving him some long term value, though his room for growth in that area is limited. See you in Sto-vo-kor, L'Kor.
+One of his two viable Traits have triggered a Collection slot, giving him some long term value, though his room for growth in that area is limited. See you in Sto-vo-kor, L'Kor.

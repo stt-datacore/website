@@ -14,8 +14,6 @@ published: true
 
 Card art showing Scott Bakula's frontula (someone fan me) comes from the episode where Archer's a total dick. Haha, like that narrows it down.
 
-Still a fine daily use option, Humbled is viable in the gauntlet, on shuttles, and on voyages. His formerly #2 DIP base is competitive enough with everyone not named Sato or Saru and should find some daily use in between his streaky event bonuses.
+Humbled is viable in the Gauntlet with a trio of decent Proficiencies, but it can be deceiving against walls of OP Exclusives. A single 45% Crit set and almost thirty 25% sets give him some life if you can grab a copy of him early in a playthrough, but for an elderly player he may almost never find a slot amongst your team of five.
 
-One of the best skill sets for a DIP primary helps out on voyages as well. His half dozen anti-matter traits and splash of MED/CMD should have him making a handful of different combos there for a while longer. And that same rare skill stack pans out in the gauntlet where he's a mid-level option who new players especially will appreciate.
-
-One would assume that his handful of viable traits will catch a collection or three over time and help offset any stat rank droopage to keep him in contention as a strong behold choice.
+One would assume that his handful of viable Traits will catch a Collection or four over time and help offset his Stat rank droopage to keep him in contention as a strong Behold choice.
