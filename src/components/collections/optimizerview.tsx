@@ -1,7 +1,7 @@
 import React from 'react';
 import { CollectionFilterContext, CollectionGroup, CollectionMap } from './utils';
 import { Pagination, Table, Grid, Image, Dropdown } from 'semantic-ui-react';
-import { Reward, BuffBase } from '../../model/player';
+import { Reward, BuffBase, PlayerCrew } from '../../model/player';
 import { RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
@@ -63,71 +63,69 @@ export const CollectionOptimizerTable = (props) => {
 	}
 
 	const getOptCrew = (col: CollectionGroup, combo?: string) => {
+		let cma: PlayerCrew[];
+		let cols = getOptCols(col, combo);
 		if (!combo) {
-			return col.uniqueCrew;
+			cma = col.uniqueCrew;
 		}
 		else {
-			let cols = getOptCols(col, combo);
-
-			let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
-			let chks = [ 0, ... cols.map(c => 0) ];
-			let allneed = undefined as number | undefined;
-
 			let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);
 			
 			max = Math.max(max, col.collection.needed ?? 0);
-			let cma = cols.map(c => c.crew).flat();
+			cma = cols.map(c => c.crew).flat();
 			cma = cma.filter((cz, idx) => cma.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
-			
-			cma.sort((a, b) => {
-				let x = 0;
-				let y = 0;
-				for (let i = 0; i < cols.length; i++) {
-					if (col.collection.crew?.find(f => f === a.symbol)) x++;
-					if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
-						x++;
-					}
-					if (col.collection.crew?.find(f => f === b.symbol)) y++;
-					if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
-						y++;
-					}
-				}
-				let r = y - x;
-				if (!r) {
-					r = starCost([a]) - starCost([b]);
-				}
-				return r;
-			});
-			
-			let p = 0;
-			
-			for (let item of cma) {
-				if (col.collection.crew?.find(f => item.symbol === f)) {
-					chks[0]++;
-				}
-				for (let i = 0; i < cols.length; i++) {
-					if (cols[i].crew.find(fc => fc.symbol === item.symbol)) {
-						chks[i+1]++;
-					}					
-				}
+		}			
 
-				let ct = 0;				
-				for (let i = 0; i < needs.length; i++) {
-					if (chks[i] >= needs[i]) ct++;
+		let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
+		let chks = [ 0, ... cols.map(c => 0) ];
+		let allneed = undefined as number | undefined;
+
+		cma.sort((a, b) => {
+			let x = 0;
+			let y = 0;
+
+			if (col.collection.crew?.find(f => f === a.symbol)) x++;
+			if (col.collection.crew?.find(f => f === b.symbol)) y++;
+
+			for (let i = 0; i < cols.length; i++) {
+				if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
+					x++;
 				}
-				if (ct >= needs.length) {
-					allneed = p;
+				if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
+					y++;
 				}
-				p++;
+			}
+			let r = y - x;
+			if (!r) {
+				r = starCost([a]) - starCost([b]);
+			}
+			return r;
+		});
+		
+		let p = 0;
+		
+		for (let item of cma) {
+			if (col.collection.crew?.find(f => item.symbol === f)) {
+				chks[0]++;
+			}
+			for (let i = 0; i < cols.length; i++) {
+				if (cols[i].crew.find(fc => fc.symbol === item.symbol)) {
+					chks[i+1]++;
+				}					
 			}
 
-			return cma.slice(0, allneed);
-			// return col.uniqueCrew.filter((uc) => {
-			// 	return col.collection.crew?.some(cc => uc.symbol === cc) && cols.some(cc => cc.crew.some(v => v.symbol === uc.symbol));
-			// }).sort((a, b) => {
-			// 	return starCost([a]) - starCost([b]);
-			// }).slice(0, max);
+			let ct = 0;				
+			for (let i = 0; i < needs.length; i++) {
+				if (chks[i] >= needs[i]) ct++;
+			}
+			if (ct >= needs.length && !allneed) {
+				allneed = p + 1;
+			}
+			p++;
 		}
+
+		return cma.slice(0, allneed);			
+		
 	}
 
 	const optCount = Math.ceil(colOptimized.length / 10);
@@ -149,7 +147,7 @@ export const CollectionOptimizerTable = (props) => {
 
 	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
 
-	const makeCiteNeeds = (col: CollectionMap | CollectionGroup) => {
+	const makeCiteNeeds = (col: CollectionMap | CollectionGroup, combo?: string) => {
 		if (!col.neededStars?.length) return [];
 		const gridneed = [] as RewardsGridNeed[];
 		col.neededStars.forEach((star, idx) => {
@@ -329,7 +327,7 @@ export const CollectionOptimizerTable = (props) => {
 											padding:"0.25em",
 											paddingTop: '0.75em',
 											borderRadius: "5px",																			
-											border: !!getCombo(col) && !(crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? '1px solid darkgreen' : undefined,
+											border: !(crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? '1px solid darkgreen' : undefined,
 											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined,
 									}}>
 									<ItemDisplay 
