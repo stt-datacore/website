@@ -30,7 +30,7 @@ export const CollectionOptimizerTable = (props) => {
     
     const { colOptimized } = props;
     
-	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1);
+	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1, { rememberForever: true });
 
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
