@@ -2,21 +2,19 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Message } from 'semantic-ui-react';
 
+import { IVoyageHistory } from '../model/voyage';
 import { GlobalContext } from '../context/globalcontext';
-
 import DataPageLayout from '../components/page/datapagelayout';
-import { IHistoryContext, IVoyageHistory } from '../components/voyagehistory/model';
-import { defaultHistory } from '../components/voyagehistory/utils';
-import { HistoryContext } from '../components/voyagehistory/context';
-import { VoyagesTable } from '../components/voyagehistory/voyagestable';
-import { CrewTable } from '../components/voyagehistory/crewtable';
-
 import { useStateWithStorage } from '../utils/storage';
 
-const VoyageHistoryPage = () => {
-	const global = React.useContext(GlobalContext);
+import { IHistoryContext, HistoryContext } from '../components/voyagehistory/context';
+import { VoyagesTable } from '../components/voyagehistory/voyagestable';
+import { CrewTable } from '../components/voyagehistory/crewtable';
+import { defaultHistory } from '../components/voyagehistory/utils';
 
-	const dbid = global.player.playerData?.player.dbid ?? '';
+const VoyageHistoryPage = () => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
 
 	return (
 		<DataPageLayout
@@ -25,7 +23,7 @@ const VoyageHistoryPage = () => {
 			playerPromptType='require'
 		>
 			<React.Fragment>
-				{global.player.loaded && <PlayerVoyageHistory dbid={dbid as string} />}
+				{playerData && <PlayerVoyageHistory dbid={`${playerData.player.dbid}`} />}
 			</React.Fragment>
 		</DataPageLayout>
 	);
@@ -39,8 +37,7 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true } );
 
 	const historyContext = {
-		history, setHistory,
-		dbid: props.dbid
+		history, setHistory
 	} as IHistoryContext;
 
 	return (

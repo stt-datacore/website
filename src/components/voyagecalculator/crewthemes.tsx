@@ -8,7 +8,7 @@ interface IThemeOption {
 	key: string;
 	name: string;
 	description: string;
-	category: 'collection' | 'series' | 'rarity' | 'trait' | 'age';
+	keywords: string;
 	eligible: number;
 	onSelect: () => void;
 };
@@ -16,7 +16,9 @@ interface IThemeOption {
 type CrewThemesProps = {
 	rosterType: 'allCrew' | 'myCrew';
 	rosterCrew: IVoyageCrew[];
-	preExcludedCrew: IVoyageCrew[];
+	preExcludeCrew: (preConsideredCrew: IVoyageCrew[]) => IVoyageCrew[];
+	considerActive: boolean;
+	considerFrozen: boolean;
 	setPreConsideredCrew: (preConsideredCrew: IVoyageCrew[]) => void;
 };
 
@@ -29,7 +31,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 
 	React.useEffect(() => {
 		calculateThemes();
-	}, [props.rosterCrew, props.preExcludedCrew]);
+	}, [props.rosterCrew, props.considerActive, props.considerFrozen]);
 
 	return (
 		<Modal
@@ -59,6 +61,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 	function calculateThemes(): void {
 		const themes = [] as IThemeOption[];
 
+		const preExcludedCrew = props.preExcludeCrew(props.rosterCrew);
+
 		globalContext.core.collections.forEach(collection => {
 			const key = `collection-${collection.id}`;
 			let description = '';
@@ -66,12 +70,12 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description = collection.description.replace('Immortalize', '').replace(/\.$/, '');
 			}
 			const crewIds = props.rosterCrew.filter(crew => (collection.crew ?? []).includes(crew.symbol)).map(crew => crew.id);
-			const eligibleIds = props.preExcludedCrew.filter(crew => crewIds.includes(crew.id));
+			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
 			themes.push({
 				key,
 				name: collection.name,
 				description: description,
-				category: 'collection',
+				keywords: 'collection',
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			});
@@ -92,12 +96,12 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{ key: 'snw', name: 'Strange New Worlds' },
 		] as ISeriesOption[]).forEach(theme => {
 			const crewIds = props.rosterCrew.filter(crew => crew.traits_hidden.includes(theme.key)).map(crew => crew.id);
-			const eligibleIds = props.preExcludedCrew.filter(crew => crewIds.includes(crew.id));
+			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
 			themes.push({
 				key: theme.key,
 				name: `Star Trek ${theme.name}`,
 				description: `Crew from Star Trek ${theme.name} (${theme.key.toUpperCase()})`,
-				category: 'series',
+				keywords: 'series',
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption);
@@ -107,7 +111,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			key: string;
 			name: string;
 			description: string;
-			category: string;
+			keywords: string;
 			filter: (crew: IVoyageCrew) => boolean;
 		};
 
@@ -116,35 +120,35 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'super rare',
 				name: 'Super Rare Crew',
 				description: 'Super Rare (4 Star) Crew',
-				category: 'rarity',
+				keywords: 'rarity',
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 4
 			},
 			{
 				key: 'female',
 				name: 'Ladies\' Choice',
 				description: 'Female crew',
-				category: 'trait',
+				keywords: 'trait',
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('female')
 			},
 			{
 				key: 'starfleet',
 				name: 'Ad Astra Per Aspera',
 				description: 'Crew with the Starfleet trait',
-				category: 'trait',
+				keywords: 'trait',
 				filter: (crew: IVoyageCrew) => crew.traits.includes('starfleet')
 			},
 			{
 				key: 'nonhuman',
 				name: 'Extra-terrestrial',
 				description: 'Non-human crew',
-				category: 'trait',
+				keywords: 'trait',
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('nonhuman')
 			},
 			{
 				key: 'freshman',
 				name: 'Freshman Class',
 				description: 'Crew released in the past year',
-				category: 'age',
+				keywords: 'age',
 				filter: (crew: IVoyageCrew) => {
 					const dtNow = Date.now();
 					const dtAdded = new Date(crew.date_added);
@@ -158,19 +162,19 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'meremortals',
 				name: 'Mere Mortals',
 				description: 'Crew who are not fully fused',
-				category: 'rarity',
+				keywords: 'rarity',
 				filter: (crew: IVoyageCrew) => crew.rarity < crew.max_rarity
 			} as IFilterOption);
 		}
 
 		customThemes.forEach(theme => {
 			const crewIds = props.rosterCrew.filter(crew => theme.filter(crew)).map(crew => crew.id);
-			const eligibleIds = props.preExcludedCrew.filter(crew => crewIds.includes(crew.id));
+			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
 			themes.push({
 				key: theme.key,
 				name: theme.name,
 				description: theme.description,
-				category: 'trait',
+				keywords: 'trait',
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption);
@@ -240,7 +244,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 	const filteredData = data.filter(theme => {
 		if (query === '') return true;
 		const re = new RegExp(query, 'i');
-		return re.test(theme.name) || re.test(theme.description) || re.test(theme.category);
+		return re.test(theme.name) || re.test(theme.description) || re.test(theme.keywords);
 	});
 
 	return (

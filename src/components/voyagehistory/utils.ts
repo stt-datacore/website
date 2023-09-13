@@ -1,10 +1,8 @@
-import { IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedFlatEstimate } from './model';
 import { Voyage } from '../../model/player';
-import { IVoyageCalcConfig } from '../../model/voyage';
+import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
-
 import CONFIG from '../CONFIG';
-
+import { flattenEstimate } from '../../utils/voyageutils';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 export const defaultHistory = {
@@ -129,24 +127,4 @@ export function getRuntime(voyageConfig: Voyage): number {
 	}
 
 	return runtime;
-}
-
-function flattenEstimate(estimate: Estimate): ITrackedFlatEstimate {
-	const extent = estimate.refills[0];
-	const flatEstimate = {
-		median: extent.result,
-		minimum: extent.saferResult,
-		moonshot: extent.moonshotResult,
-		dilemma: {
-			hour: extent.lastDil,
-			chance: extent.dilChance
-		}
-	} as ITrackedFlatEstimate;
-	return flatEstimate;
-}
-
-export function formatTime(time: number): string {
-	let hours = Math.floor(time);
-	let minutes = Math.floor((time-hours)*60);
-	return hours+"h " +minutes+"m";
 }

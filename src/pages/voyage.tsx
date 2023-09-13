@@ -21,6 +21,7 @@ const VoyagePage = () => {
 
 	React.useEffect(() => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
+		console.log(activeVoyageId);
 		setActiveVoyageId(activeVoyageId);
 		setShowCalculator(activeVoyageId === 0);
 	}, [playerData]);

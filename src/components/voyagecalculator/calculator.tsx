@@ -4,7 +4,7 @@ import { Link } from 'gatsby';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
-import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew } from '../../model/voyage';
+import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageHistory } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -19,7 +19,6 @@ import { Helper } from './helpers/Helper';
 import { VoyageStats } from './voyagestats';
 import { CIVASMessage } from './civas';
 
-import { IVoyageHistory } from '../voyagehistory/model';
 import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
@@ -355,15 +354,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	}, [calculatorContext.crew]);
 
 	React.useEffect(() => {
-		const preExcludedCrew = preConsideredCrew.filter(crewman => {
-			if (!considerActive && crewman.active_status === 2)
-				return false;
-
-			if (!considerFrozen && crewman.immortal > 0)
-				return false;
-
-			return true;
-		});
+		const preExcludedCrew = preExcludeCrew(preConsideredCrew);
 		setPreExcludedCrew([...preExcludedCrew]);
 		const consideredCrew = preExcludedCrew.filter(crewman => {
 			if (excludedCrewIds.includes(crewman.id))
@@ -410,7 +401,9 @@ const CrewOptions = (props: CrewOptionsProps) => {
 						<CrewThemes
 							rosterType={rosterType}
 							rosterCrew={calculatorContext.crew}
-							preExcludedCrew={preExcludedCrew}
+							preExcludeCrew={preExcludeCrew}
+							considerActive={considerActive}
+							considerFrozen={considerFrozen}
 							setPreConsideredCrew={setPreConsideredCrew}
 						/>
 					</Segment>
@@ -426,6 +419,18 @@ const CrewOptions = (props: CrewOptionsProps) => {
 			</Grid.Row>
 		</Grid>
 	);
+
+	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
+		return preConsideredCrew.filter(crewman => {
+			if (!considerActive && crewman.active_status === 2)
+				return false;
+
+			if (!considerFrozen && crewman.immortal > 0)
+				return false;
+
+			return true;
+		});
+	}
 };
 
 type ResultsGroupProps = {

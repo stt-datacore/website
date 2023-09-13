@@ -41,11 +41,11 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 		setMyShips([...rosterShips]);
 	}, []);
 
-	if (!playerData || !ephemeral)
+	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
 
 	const voyageConfig = ephemeral.voyage[0];
-	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id) as Ship;
+	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id);
 
 	const msgTypes = {
 		started: 'has been running for',
@@ -92,7 +92,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 				<React.Fragment>
 					<VoyageStats
 						voyageData={voyageConfig}
-						ships={[ship]}
+						ships={ship ? [ship] : []}
 						showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
 						playerItems={playerData.player.character.items}
 						roster={myCrew}

@@ -1,17 +1,14 @@
 import React from 'react';
 import { Modal, Message, Checkbox, Button } from 'semantic-ui-react';
 
-import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
-
-import { ITrackedVoyage } from './model';
 import { VoyageCrewSlot } from '../../model/player';
-import { IVoyageCalcConfig } from '../../model/voyage';
-
+import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { HistoryContext } from './context';
+import CONFIG from '../../components/CONFIG';
+import { LineupViewer } from '../../components/voyagecalculator/lineupviewer';
 
-import { LineupViewer } from '../voyagecalculator/lineupviewer';
+import { HistoryContext } from './context';
 
 type VoyageModalProps = {
 	voyage: ITrackedVoyage;
@@ -21,7 +18,7 @@ type VoyageModalProps = {
 
 export const VoyageModal = (props: VoyageModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { history, setHistory, dbid } = React.useContext(HistoryContext);
+	const { history, setHistory } = React.useContext(HistoryContext);
 	const { voyage } = props;
 
 	const dtCreated = new Date(voyage.created_at);

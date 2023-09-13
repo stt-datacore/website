@@ -2,19 +2,16 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Header, Form, Dropdown, Table, Rating, Modal, Icon, Button } from 'semantic-ui-react';
 
-import CONFIG from '../CONFIG';
-
-import { ITrackedCrewMember, ITrackedAssignmentsBySkill, ITrackedVoyage } from './model';
-
+import { ITrackedCrewMember, ITrackedAssignmentsBySkill, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { HistoryContext } from './context';
-
-import { VoyageModal } from './voyagemodal';
-import { formatTime } from './utils';
-
-import { SearchableTable, ITableConfigRow } from '../searchabletable';
+import CONFIG from '../../components/CONFIG';
+import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
+import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { formatTime } from '../../utils/voyageutils';
+
+import { HistoryContext } from './context';
+import { VoyageModal } from './voyagemodal';
 
 export const CrewTable = () => {
 	const globalContext = React.useContext(GlobalContext);

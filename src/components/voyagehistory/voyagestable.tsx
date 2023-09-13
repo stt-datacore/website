@@ -2,15 +2,14 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
 
-import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
-
-import { ITrackedVoyage, ITrackedCheckpoint } from './model';
+import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
+import CONFIG from '../../components/CONFIG';
+import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from './context';
-
 import { VoyageModal } from './voyagemodal';
-import { formatTime, removeVoyageFromHistory } from './utils';
+import { removeVoyageFromHistory } from './utils';
 
 export const VoyagesTable = () => {
 	const { history, setHistory } = React.useContext(HistoryContext);
@@ -23,29 +22,35 @@ export const VoyagesTable = () => {
 	});
 	const { data, column, direction } = state;
 
-	const [skillFilter, setSkillFilter] = React.useState<string | undefined>(undefined);
-	const [revivalFilter, setRevivalFilter] = React.useState<string | undefined>(undefined);
+	const [skillFilter, setSkillFilter] = React.useState<string>('');
+	const [revivalFilter, setRevivalFilter] = React.useState<string>('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 
 	React.useEffect(() => {
 		dispatch({ type: 'UPDATE_DATA', data: history.voyages });
 	}, [history]);
 
+	interface IDropdownOption {
+		key: string;
+		value: string;
+		text: string;
+	};
+
 	const skillOptions = [
-		{ key: 'all', value: undefined, text: 'Show all voyages' },
+		{ key: 'all', value: '', text: 'Show all voyages' },
 		{ key: 'cmd', value: 'command_skill', text: 'Only show voyages with command' },
 		{ key: 'dip', value: 'diplomacy_skill', text: 'Only show voyages with diplomacy' },
 		{ key: 'eng', value: 'engineering_skill', text: 'Only show voyages with engineering' },
 		{ key: 'med', value: 'medicine_skill', text: 'Only show voyages with medicine' },
 		{ key: 'sci', value: 'science_skill', text: 'Only show voyages with science' },
 		{ key: 'sec', value: 'security_skill', text: 'Only show voyages with security' }
-	];
+	] as IDropdownOption[];
 
 	const revivalOptions = [
-		{ key: 'all', value: undefined, text: 'Show all voyages' },
+		{ key: 'all', value: '', text: 'Show all voyages' },
 		{ key: 'hide', value: 'hide', text: 'Hide revived voyages' },
 		{ key: 'revived', value: 'revived', text: 'Only show revived voyages' }
-	];
+	] as IDropdownOption[];
 
 	interface ICustomRow {
 		column: string;
@@ -88,7 +93,7 @@ export const VoyagesTable = () => {
 						clearable
 						options={skillOptions}
 						value={skillFilter}
-						onChange={(e, { value }) => setSkillFilter(value)}
+						onChange={(e, { value }) => setSkillFilter(value as string)}
 					/>
 					<Form.Field
 						placeholder='Filter by revivals'
@@ -97,7 +102,7 @@ export const VoyagesTable = () => {
 						clearable
 						options={revivalOptions}
 						value={revivalFilter}
-						onChange={(e, { value }) => setRevivalFilter(value)}
+						onChange={(e, { value }) => setRevivalFilter(value as string)}
 					/>
 				</Form.Group>
 			</Form>
