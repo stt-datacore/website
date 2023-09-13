@@ -266,7 +266,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			window.setTimeout(() => {
 				this.inited = false;
 				this.tiny.setValue('gauntletSettings', value, true);
-				this.setState({ ...this.state, gauntletSettings: value, loading: false });
+				this.setState({ ...this.state, gauntletSettings: value });
 			});
 		}
 	}
