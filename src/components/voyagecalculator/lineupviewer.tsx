@@ -1,36 +1,68 @@
 import React from 'react';
 import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
-import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
-
-import ItemDisplay from '../itemdisplay';
-
-import { useStateWithStorage } from '../../utils/storage';
-import { Ship } from '../../model/ship';
-import { PlayerCrew, Voyage, VoyageCrewSlot, LineupVoyage } from '../../model/player';
 import { CrewMember, Skill } from '../../model/crew';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
+import { Ship } from '../../model/ship';
+import { IVoyageCalcConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import ItemDisplay from '../itemdisplay';
+import CONFIG from '../CONFIG';
+import { useStateWithStorage } from '../../utils/storage';
 
+interface IAssignment {
+	crew: PlayerCrew;
+	name: string;
+	trait: string;
+	bestRank: IBestRank | undefined;
+};
+
+interface IBestRank {
+	skill: string;
+	rank: number;
+};
+
+interface IShipData {
+	direction: 'left' | 'right';
+	index: number;
+	shipBonus: number;
+	crewBonus: number;
+};
+
+interface IViewContext {
+	voyageConfig: IVoyageCalcConfig | Voyage;
+	rosterType?: 'allCrew' | 'myCrew';
+	ship?: Ship;
+	shipData: IShipData;
+	assignments: IAssignment[];
+};
+
+const ViewContext = React.createContext<IViewContext>({} as IViewContext);
+
+const SHOW_SHIP_FINDER = false;
 const POPUP_DELAY = 500;
+
 const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
-	voyageData: Voyage | LineupVoyage;
+	voyageConfig: IVoyageCalcConfig | Voyage;
 	ship?: Ship;
 	roster?: PlayerCrew[];
-	dbid: string;
+	rosterType?: 'allCrew' | 'myCrew';
 };
 
-const LineupViewer = (props: LineupViewerProps) => {
-	const { voyageData, ship, roster, dbid } = props;
+export const LineupViewer = (props: LineupViewerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	const { voyageConfig, ship, roster, rosterType } = props;
 
 	const getBestRank = (crew: PlayerCrew | CrewMember, seatSkill: string) => {
 		const best = {
 			skill: 'None',
 			rank: 1000
-		};
+		} as IBestRank;
 		if ('skills' in crew) {
 			Object.keys(crew.skills).forEach(crewSkill => {
 				const skr = skillRankings.find(sr => sr.skill === crewSkill);
@@ -54,7 +86,7 @@ const LineupViewer = (props: LineupViewerProps) => {
 
 	const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
 		skill,
-		roster: (roster ?? []).filter(c => Object.keys(c.skills).includes(skill))
+		roster: (roster ?? [] as PlayerCrew[]).filter(c => Object.keys(c.skills).includes(skill))
 			.filter(c => c.skills[skill].core > 0)
 			.sort((c1, c2) => {
 				// Sort by skill voyage score descending
@@ -84,56 +116,74 @@ const LineupViewer = (props: LineupViewerProps) => {
 
 	const usedCrew = [] as number[];
 	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
-		const { crew, name, trait, skill } = (Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
-		const bestRank = getBestRank(crew, skill);
+		const { crew, name, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
+		const bestRank = rosterType === 'myCrew' && voyageConfig.state === 'pending' ? getBestRank(crew, skill) : undefined;
 		if (!crew.imageUrlPortrait)
-			crew.imageUrlPortrait =
-				`${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
+			crew.imageUrlPortrait = `${crew.portrait.file.slice(1).replace('/', '_')}.png`;
 		usedCrew.push(crew.id);
 		return {
 			crew, name, trait, bestRank
-		};
-	});
+		} as IAssignment;
+	}) as IAssignment[];
 
 	const shipData = {
-		direction: '',
+		direction: 'right',
 		index: -1,
 		shipBonus: 0,
 		crewBonus: 0
-	};
+	} as IShipData;
 
 	if (ship) {
 		if (!ship.index) ship.index = { left: 0, right: 0 };
 		shipData.direction = ship.index.right < ship.index.left ? 'right' : 'left';
 		shipData.index = ship.index[shipData.direction] ?? 0;
-		shipData.shipBonus = ship.traits?.includes(voyageData.ship_trait) ? 150 : 0;
-		shipData.crewBonus = voyageData.max_hp - ship.antimatter - shipData.shipBonus;
+		shipData.shipBonus = ship.traits?.includes(voyageConfig.ship_trait) ? 150 : 0;
+		shipData.crewBonus = voyageConfig.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
-	return <ViewPicker voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} dbid={dbid} />;
-};
-
-type ViewPickerProps = {
-	voyageData: Voyage | LineupVoyage;
-	ship?: Ship;
-	shipData: {direction: string, index: number, shipBonus: number, crewBonus: number };
-	assignments: any[];
-	dbid: string;
-};
-
-const ViewPicker = (props: ViewPickerProps) => {
-	const { voyageData, ship, shipData, assignments, dbid } = props;
-
-	const [layout, setLayout] = useStateWithStorage(dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+	const viewContext = {
+		voyageConfig,
+		rosterType,
+		ship,
+		shipData,
+		assignments
+	} as IViewContext;
 
 	return (
+		<ViewContext.Provider value={viewContext}>
+			<React.Fragment>
+				{playerData && <PlayerViewPicker dbid={`${playerData.player.dbid}`} />}
+				{!playerData && <NonPlayerViewPicker />}
+			</React.Fragment>
+		</ViewContext.Provider>
+	);
+};
+
+const PlayerViewPicker = (props: { dbid: string }) => {
+	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+	return (
 		<React.Fragment>
-			{(layout === 'table-compact' || layout === 'table-standard') &&
-				<TableView layout={layout} voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />
-			}
-			{(layout === 'grid-cards' || layout === 'grid-icons') &&
-				<GridView layout={layout} voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />
-			}
+			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
+			{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView layout={layout} />}
+			<div style={{ marginTop: '2em' }}>
+				Toggle layout:{` `}
+				<Button.Group>
+					<Button icon='align justify' color={layout === 'table-compact' ? 'blue' : undefined} onClick={() => setLayout('table-compact')} />
+					<Button icon='list' color={layout === 'table-standard' ? 'blue' : undefined} onClick={() => setLayout('table-standard')} />
+					<Button icon='block layout' color={layout === 'grid-cards' ? 'blue' : undefined} onClick={() => setLayout('grid-cards')} />
+					<Button icon='ellipsis horizontal' color={layout === 'grid-icons' ? 'blue' : undefined} onClick={() => setLayout('grid-icons')} />
+				</Button.Group>
+			</div>
+		</React.Fragment>
+	);
+};
+
+const NonPlayerViewPicker = () => {
+	const [layout, setLayout] = React.useState('table-compact');
+	return (
+		<React.Fragment>
+			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
+			{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView layout={layout} />}
 			<div style={{ marginTop: '2em' }}>
 				Toggle layout:{` `}
 				<Button.Group>
@@ -149,14 +199,11 @@ const ViewPicker = (props: ViewPickerProps) => {
 
 type ViewProps = {
 	layout: string;
-	voyageData: Voyage | LineupVoyage;
-	ship?: Ship;
-	shipData: any;
-	assignments: any[];
 };
 
 const TableView = (props: ViewProps) => {
-	const { layout, voyageData, ship, shipData, assignments } = props;
+	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
+	const { layout } = props;
 
 	const compact = layout === 'table-compact';
 
@@ -169,7 +216,7 @@ const TableView = (props: ViewProps) => {
 				</React.Fragment>
 			</Grid.Column>
 			<Grid.Column verticalAlign='middle'>
-				<Aggregates layout={layout} voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />
+				<Aggregates layout={layout} />
 			</Grid.Column>
 		</Grid>
 	);
@@ -185,7 +232,7 @@ const TableView = (props: ViewProps) => {
 							<b>{ship.name}</b>
 						</Table.Cell>
 						<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-							{voyageData.state === 'pending' &&
+							{SHOW_SHIP_FINDER && voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
@@ -196,7 +243,7 @@ const TableView = (props: ViewProps) => {
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits?.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageConfig.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
@@ -215,7 +262,6 @@ const TableView = (props: ViewProps) => {
 				<Table.Body>
 					{seated.map((assignment, idx) => {
 						const { crew, name, trait, bestRank } = assignment;
-						const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 						return (
 							<Table.Row key={idx}>
 								<Table.Cell width={5}>{name}</Table.Cell>
@@ -225,7 +271,7 @@ const TableView = (props: ViewProps) => {
 											{!compact &&
 												<span style={{ paddingRight: '.3em' }}>
 													<ItemDisplay
-														src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
+														src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 														size={32}
 														maxRarity={crew.max_rarity}
 														rarity={crew.rarity}
@@ -233,16 +279,16 @@ const TableView = (props: ViewProps) => {
 													/>
 												</span>
 											}
-											<span style={{ marginLeft: "0.25em", fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
+											<span style={{ marginLeft: '0.25em', fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
 										</div>
 									}>
 										<Popup.Content>
-											<AssignmentCard assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={true} />
+											<AssignmentCard assignment={assignment} showFinder={!!bestRank} showSkills={true} />
 										</Popup.Content>
 									</Popup>
 								</Table.Cell>
 								<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-									{voyageData.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
+									{bestRank && <CrewFinder crew={crew} bestRank={bestRank} />}
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									{crew.traits.includes(trait.toLowerCase()) &&
@@ -263,7 +309,8 @@ const TableView = (props: ViewProps) => {
 };
 
 const GridView = (props: ViewProps) => {
-	const { layout, voyageData, ship, shipData, assignments } = props;
+	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
+	const { layout } = props;
 
 	return (
 		<React.Fragment>
@@ -283,7 +330,7 @@ const GridView = (props: ViewProps) => {
 			}
 
 			<div style={{ marginTop: '2em' }}>
-				<Aggregates layout={layout} voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />
+				<Aggregates layout={layout} />
 			</div>
 		</React.Fragment>
 	);
@@ -299,7 +346,7 @@ const GridView = (props: ViewProps) => {
 							<b>{ship.name}</b>
 						</Table.Cell>
 						<Table.Cell width={2} className='iconic' style={{ fontSize: '1.1em' }}>
-							{voyageData.state === 'pending' &&
+							{SHOW_SHIP_FINDER && voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
@@ -310,7 +357,7 @@ const GridView = (props: ViewProps) => {
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits?.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageConfig.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
@@ -328,7 +375,7 @@ const GridView = (props: ViewProps) => {
 				{assignments.map((assignment, idx) => {
 					return (
 						<Grid.Column key={idx}>
-							<AssignmentCard assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={false} />
+							<AssignmentCard assignment={assignment} showFinder={!!assignment.bestRank} showSkills={false} />
 						</Grid.Column>
 					);
 				})}
@@ -341,13 +388,12 @@ const GridView = (props: ViewProps) => {
 			<React.Fragment>
 				{assignments.map((assignment, idx) => {
 					const { crew, name, trait, bestRank } = assignment;
-					const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 					return (
 						<Grid.Column key={idx}>
 							<Popup mouseEnterDelay={POPUP_DELAY} trigger={
 								<div style={{ cursor: 'help' }}>
 									<ItemDisplay
-										src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
+										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 										size={48}
 										maxRarity={crew.max_rarity}
 										rarity={crew.rarity}
@@ -355,11 +401,11 @@ const GridView = (props: ViewProps) => {
 								</div>
 							}>
 								<Popup.Content>
-									<AssignmentCard assignment={assignment} showFinder={voyageData.state === 'pending'} showSkills={true} />
+									<AssignmentCard assignment={assignment} showFinder={!!bestRank} showSkills={true} />
 								</Popup.Content>
 							</Popup>
-							{voyageData.state === 'pending' &&
-								<div style={{ textAlign: 'center' }}>
+							{bestRank &&
+								<div style={{ marginTop: '.3em', textAlign: 'center', fontSize: '1.1em' }}>
 									<CrewFinder crew={crew} bestRank={bestRank} />
 								</div>
 							}
@@ -372,7 +418,8 @@ const GridView = (props: ViewProps) => {
 };
 
 const Aggregates = (props: ViewProps) => {
-	const { layout, voyageData, ship, shipData, assignments } = props;
+	const { voyageConfig, ship, shipData } = React.useContext(ViewContext);
+	const { layout } = props;
 
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
@@ -406,7 +453,7 @@ const Aggregates = (props: ViewProps) => {
 						<Table.Cell>Antimatter</Table.Cell>
 						<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 							{ship && (
-								<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageData.max_hp}</span>}>
+								<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
 									<Popup.Content>
 										{ship.antimatter} (Level {ship.level} Ship)
 										<br />+{shipData.shipBonus} (Ship Trait Bonus)
@@ -414,7 +461,7 @@ const Aggregates = (props: ViewProps) => {
 									</Popup.Content>
 								</Popup>
 							)}
-							{!ship && <span>{voyageData.max_hp}</span>}
+							{!ship && <span>{voyageConfig.max_hp}</span>}
 						</Table.Cell>
 						<Table.Cell className='iconic'>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
@@ -430,7 +477,7 @@ const Aggregates = (props: ViewProps) => {
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
 					{skills.map((entry, idx) => {
-						const agg = voyageData.skill_aggregates[entry];
+						const agg = voyageConfig.skill_aggregates[entry];
 						if (typeof(agg) === 'number') {
 							return (
 								<Table.Row key={idx}>
@@ -450,8 +497,8 @@ const Aggregates = (props: ViewProps) => {
 								<Table.Row key={idx}>
 									<Table.Cell>{CONFIG.SKILLS[entry]}</Table.Cell>
 									<Table.Cell className='iconic'>
-										{voyageData.skills.primary_skill === entry && <Icon name='star' color='yellow' />}
-										{voyageData.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
+										{voyageConfig.skills.primary_skill === entry && <Icon name='star' color='yellow' />}
+										{voyageConfig.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
 									</Table.Cell>
 									<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 										<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
@@ -474,14 +521,13 @@ const Aggregates = (props: ViewProps) => {
 };
 
 type AssignmentCardProps = {
-	assignment: any;
+	assignment: IAssignment;
 	showFinder: boolean;
 	showSkills: boolean;
 };
 
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
-	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
 
 	const context = React.useContext(GlobalContext);
 
@@ -491,14 +537,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				<Label corner='right' style={{ fontSize: '1.1em', textAlign: 'right', padding: '.4em .4em 0 0' }}>
 					<CrewFinder crew={crew} bestRank={bestRank} />
 				</Label>
-			}			
+			}
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
 					allCrew={context.core.crew}
 					playerData={context.player.playerData}
 					targetGroup='voyageLineup'
-					itemSymbol={crew.symbol}					
-					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
+					itemSymbol={crew.symbol}
+					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 					size={96}
 					maxRarity={crew.max_rarity}
 					rarity={crew.rarity}
@@ -544,12 +590,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 };
 
 type CrewFinderProps = {
-	crew: any;
-	bestRank: any;
+	crew: PlayerCrew;
+	bestRank: IBestRank | undefined;
 };
 
 const CrewFinder = (props: CrewFinderProps) => {
 	const { crew, bestRank } = props;
+
+	if (!bestRank) return (<></>);
 
 	const POSITION_POSTFIX = [
 		'th',
@@ -576,13 +624,13 @@ const CrewFinder = (props: CrewFinderProps) => {
 	if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
-			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='snowflake' /></div>
+			trigger: <div style={{textAlign: 'center' }}><Icon name='snowflake' /></div>
 		};
 	}
 	else if (crew.active_status === 2) {
 		popup = {
 			content: 'On shuttle',
-			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='space shuttle' /></div>
+			trigger: <div style={{textAlign: 'center' }}><Icon name='space shuttle' /></div>
 		};
 	}
 	return (
@@ -593,5 +641,3 @@ const CrewFinder = (props: CrewFinderProps) => {
 		} />
 	);
 };
-
-export default LineupViewer;

@@ -1,10 +1,10 @@
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-import CONFIG from '../CONFIG';
-import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../model/worker';
+import '../../../typings/worker';
+import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import CONFIG from '../../CONFIG';
+import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
-import { VoyageDescription } from '../../model/player';
+import { VoyageDescription } from '../../../model/player';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 

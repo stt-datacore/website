@@ -1,5 +1,6 @@
 import { IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedFlatEstimate } from './model';
 import { Voyage } from '../../model/player';
+import { IVoyageCalcConfig } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 
 import CONFIG from '../CONFIG';
@@ -11,14 +12,14 @@ export const defaultHistory = {
 	crew: {}
 } as IVoyageHistory;
 
-export function addVoyageToHistory(history: IVoyageHistory, voyageConfig: Voyage, shipSymbol: string, estimate: Estimate): number {
+export function addVoyageToHistory(history: IVoyageHistory, voyageConfig: IVoyageCalcConfig | Voyage, shipSymbol: string, estimate: Estimate): number {
 	// Get next unused id to track this voyage
 	const trackerId = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
 
 	const flatEstimate = flattenEstimate(estimate);
 	const voyage = {
 		tracker_id: trackerId,
-		voyage_id: voyageConfig.id,	// *
+		voyage_id: 0,	// *
 		skills: voyageConfig.skills,
 		ship: shipSymbol,	// *
 		ship_trait: voyageConfig.ship_trait,
@@ -41,7 +42,7 @@ export function addVoyageToHistory(history: IVoyageHistory, voyageConfig: Voyage
 	return trackerId;
 }
 
-export function addCrewToHistory(history: IVoyageHistory, trackerId: number, voyageConfig: Voyage): void {
+export function addCrewToHistory(history: IVoyageHistory, trackerId: number, voyageConfig: IVoyageCalcConfig): void {
 	CONFIG.VOYAGE_CREW_SLOTS.forEach((slotSymbol, slotIndex) => {
 		const voyageSlot = voyageConfig.crew_slots.find(slot => slot.symbol === slotSymbol);
 		if (voyageSlot) {

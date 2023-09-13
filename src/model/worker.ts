@@ -1,10 +1,8 @@
-import React from "react";
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, Skill } from "./crew";
-import { PlayerCrew, PlayerData, VoyageDescription } from "./player";
+import { PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
-import { EquipmentItem } from "./equipment";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -23,13 +21,9 @@ export interface VoyageStatsConfig {
 }
 
 export interface GameWorkerOptions {
-    initialized: boolean;
-    list?: GameWorkerOptionsList[];
     strategy?: string;
     searchDepth?: number;
     extendsTarget?: number;
-    // roster?: PlayerCrew[];
-    // voyage_description?: VoyageDescription;
 }
 
 export interface CalculatorProps {

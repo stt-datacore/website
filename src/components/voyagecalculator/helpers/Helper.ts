@@ -1,14 +1,13 @@
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-import { PlayerCrew, Voyage } from '../../model/player';
-import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
+import '../../../typings/worker';
+import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import { IVoyageInputConfig, IVoyageCrew } from '../../../model/voyage';
+import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
 
-
 export type HelperProps = {
-	voyageConfig: Voyage;
+	voyageConfig: IVoyageInputConfig;
 	bestShip: VoyageConsideration;
-	consideredCrew: PlayerCrew[];
+	consideredCrew: IVoyageCrew[];
 	calcOptions: GameWorkerOptions;
 	resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void
 };
@@ -19,9 +18,9 @@ export abstract class Helper {
 	abstract readonly calcName: string;
 	abstract readonly calcOptions: GameWorkerOptions;
 
-	readonly voyageConfig: Voyage;
+	readonly voyageConfig: IVoyageInputConfig;
 	readonly bestShip: VoyageConsideration;
-	readonly consideredCrew: PlayerCrew[];
+	readonly consideredCrew: IVoyageCrew[];
 	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
 
 	calcWorker: UnifiedWorker;

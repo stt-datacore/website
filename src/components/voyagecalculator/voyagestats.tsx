@@ -1,34 +1,29 @@
 import React, { Component } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message, Dimmer, Loader } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Segment, Message, Dimmer, Loader } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
-import CONFIG from '../CONFIG';
-
-import LineupViewer from './lineupviewer';
+import { LineupViewer } from './lineupviewer';
 import ItemDisplay from '../itemdisplay';
 
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
-import { AtlasIcon, PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
+import { PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
+import { Estimate, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { GlobalContext } from '../../context/globalcontext';
 import { EquipmentCommon } from '../../model/equipment';
-import { getIconPath } from '../../utils/assets';
 import { checkReward } from '../../utils/itemutils';
 
 type VoyageStatsProps = {
-	voyageData: Voyage;
+	voyageData: Voyage;	// Note: non-active voyage being passed here as IVoyageCalcConfig
 	numSims?: number;
-	ships: Ship[] | VoyageConsideration[];
+	ships: Ship[];
 	showPanels: string[];
 	estimate?: Estimate;
 	roster?: PlayerCrew[];
+	rosterType?: 'allCrew' | 'myCrew';
 	playerItems?: PlayerEquipmentItem[];
-	dbid: string | number;
 	allCrew?: CrewMember[];
 	allItems?: EquipmentCommon[];
 	playerData?: PlayerData;
@@ -73,10 +68,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		if (!voyageData)
 			return;
-		console.log("VoyageStat Ships");
-		console.log(ships);
 
-		this.ship = ships.length == 1 ? (ships[0] as VoyageConsideration).ship : (ships as Ship[]).find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const duration = voyageData.voyage_duration ?? 0;
@@ -216,9 +209,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const { voyageData, roster, dbid } = this.props;
+		const { voyageData, roster, rosterType } = this.props;
 		if (!this.ship || !roster) return <></>;
-		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={`${dbid}`} />;
+		return <LineupViewer voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -309,7 +302,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						h += 25;
 					}
 				}
-			}	
+			}
 		}
 
 		const dupeHonor = h + honor;
@@ -335,7 +328,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
-					
+
 					{" if all duplicate crew are dismissed)"}</span>
 				)}
 			</span>
