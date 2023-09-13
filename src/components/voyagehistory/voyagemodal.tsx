@@ -5,12 +5,13 @@ import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
 
 import { ITrackedVoyage } from './model';
-import { VoyageCrewSlot, LineupVoyage } from '../../model/player';
+import { VoyageCrewSlot } from '../../model/player';
+import { IVoyageCalcConfig } from '../../model/voyage';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { HistoryContext } from './context';
 
-import LineupViewer from '../voyagecalculator/lineupviewer';
+import { LineupViewer } from '../voyagecalculator/lineupviewer';
 
 type VoyageModalProps = {
 	voyage: ITrackedVoyage;
@@ -95,19 +96,19 @@ export const VoyageModal = (props: VoyageModalProps) => {
 			}
 		});
 
-		const voyageData = {
+		const voyageConfig = {
 			crew_slots: voyageCrewSlots,
 			ship_trait: voyage.ship_trait,
 			max_hp: voyage.max_hp,
 			state: '',
 			skill_aggregates: voyage.skill_aggregates,
 			skills: voyage.skills
-		} as LineupVoyage;
+		} as IVoyageCalcConfig;
 
 		const ship = globalContext.core.ships.find(ship => ship.symbol === voyage.ship);
 
 		return (
-			<LineupViewer voyageData={voyageData} ship={ship} dbid={dbid} />
+			<LineupViewer voyageConfig={voyageConfig} ship={ship} />
 		);
 	}
 

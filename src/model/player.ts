@@ -993,19 +993,7 @@ export interface Player {
     state: string
   }
 
-  export interface VoyageBase {
-    id: number
-    name: string
-    description: string
-    icon: string
-    skills: VoyageSkills
-    ship_trait: string
-    crew_slots: CrewSlot[]
-    state?: string
-  }
-
-
-  export interface VoyageDescription extends VoyageBase {
+  export interface VoyageDescription {
     id: number
     symbol: string
     name: string
@@ -1029,12 +1017,7 @@ export interface Player {
     trait: string
   }
 
-  export interface VoyageInfo {
-    voyage_descriptions: VoyageDescription[];
-    voyage: Voyage[];
-  }
-
-  export interface Voyage extends VoyageBase {
+  export interface Voyage {
     id: number
     name: string
     description: string
@@ -1060,16 +1043,6 @@ export interface Player {
     time_to_next_event: number
     ship_id: number
     crew_slots: VoyageCrewSlot[]
-  }
-
-  // Minimal Voyage interfaces needed for LineupViewer
-  export interface LineupVoyage {
-    crew_slots: VoyageCrewSlot[]
-    ship_trait: string
-    max_hp: number
-    state: string
-    skill_aggregates: BaseSkills
-    skills: VoyageSkills
   }
 
   export interface PendingRewards {

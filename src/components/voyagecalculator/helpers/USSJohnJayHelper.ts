@@ -1,7 +1,7 @@
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-import { PlayerCrew } from '../../model/player';
-import { CalcResult, JohnJayBest } from '../../model/worker';
+import '../../../typings/worker';
+import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import { IVoyageCrew } from '../../../model/voyage';
+import { CalcResult, JohnJayBest } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
 
@@ -51,7 +51,7 @@ export class USSJohnJayHelper extends Helper {
 			return {
 				entries: best.crew.map((crew, entryId) => ({
 					slotId: entryId,
-					choice: this.consideredCrew.find(c => c.id === crew.id) ?? {} as PlayerCrew,
+					choice: this.consideredCrew.find(c => c.id === crew.id) ?? {} as IVoyageCrew,
 					hasTrait: best.traits[entryId]
 				})),
 				estimate: best.estimate,

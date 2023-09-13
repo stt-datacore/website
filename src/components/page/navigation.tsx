@@ -163,7 +163,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 				{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
 				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
-				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/playertools?tool=voyage", sidebarRole: 'item' },	// Voyages added v3
+				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/playertools?tool=collections", sidebarRole: 'item' },	// Collections added v4
 				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8

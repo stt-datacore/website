@@ -18,18 +18,12 @@ export enum CalculatorState {
 	NotStarted,
 	InProgress,
 	Done
-}
+};
 
 export interface CalculatorHelper {
 	id: string;
 	name: string;
 	helper: <T extends Helper>(props: HelperProps) => T;
-}
-
-export const formatTime = (time: number): string => {
-	let hours = Math.floor(time);
-	let minutes = Math.floor((time-hours)*60);
-	return hours+"h " +minutes+"m";
 };
 
 export const CALCULATORS = {
