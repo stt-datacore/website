@@ -26,6 +26,8 @@ export interface HoverStatProps {
     boxStyle?: React.CSSProperties;
     mobileWidth?: number;
     useBoundingClient?: boolean;
+    alternatePositioning?: boolean;
+    customOffset?: Coord;
 
     /**
      * Time in milliseconds to wait before activating the window
@@ -316,7 +318,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     
     protected realignTarget = (target?: HTMLElement) => {
 
-        const { useBoundingClient } = this.props;
+        const { useBoundingClient, alternatePositioning, customOffset } = this.props;
         const { divId } = this.state;  
         const hoverstat = document.getElementById(divId);    
         target ??= this.currentTarget;  
@@ -343,14 +345,21 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         if (!ancestor) {
             hoverstat.style.position = "fixed";
+            if (alternatePositioning) {
+                x += window.scrollX;
+                y += window.scrollY;    
+            }
         }
         else {
             hoverstat.style.position = "absolute";
         }            
-
+        if (customOffset) {
+            x += customOffset.x;
+            y += customOffset.y;
+        }
         hoverstat.style.display = "flex";
         hoverstat.style.opacity = "0";
-
+        hoverstat.style.zIndex = "1000000";
         if (isWindow) window.setTimeout(() => {
             let hoverstat = document.getElementById(divId);     
             // console.log("Activate " + divId);

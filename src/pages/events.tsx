@@ -66,9 +66,7 @@ function EventsPageComponent() {
 	return (
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
-				<CrewHoverStat targetGroup='event_info' useBoundingClient={true}  />
-				<ItemHoverStat targetGroup='event_info_items' useBoundingClient={true} />
-
+				
 				{loadingError && (
 					<Message negative>
 						<Message.Header>Unable to load event information</Message.Header>

@@ -270,8 +270,8 @@ const GridView = (props: ViewProps) => {
 			{renderShip()}
 			{layout === 'grid-cards' &&
 				<div>
-					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' />
 					<Grid columns={6} doubling centered>
+						<CrewHoverStat alternatePositioning={true} useBoundingClient={true} targetGroup='voyageLineup' />
 						{renderCards()}
 					</Grid>
 				</div>
@@ -281,6 +281,7 @@ const GridView = (props: ViewProps) => {
 					{renderIcons()}
 				</Grid>
 			}
+
 			<div style={{ marginTop: '2em' }}>
 				<Aggregates layout={layout} voyageData={voyageData} ship={ship} shipData={shipData} assignments={assignments} />
 			</div>
@@ -490,7 +491,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				<Label corner='right' style={{ fontSize: '1.1em', textAlign: 'right', padding: '.4em .4em 0 0' }}>
 					<CrewFinder crew={crew} bestRank={bestRank} />
 				</Label>
-			}
+			}			
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
 					allCrew={context.core.crew}

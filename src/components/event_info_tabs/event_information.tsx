@@ -3,7 +3,7 @@ import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
 import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { EventData, getEventData } from '../../utils/events';
+import { getEventData } from '../../utils/events';
 import CrewCard, { CrewCardBrief } from './crew_card';
 import { CompactCrew, PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
@@ -43,7 +43,7 @@ function sortCrew(crewArray: PlayerCrew[]) {
 	return groups.flat();
 }
 
-function EventInformationTab(props: { eventData: EventData | GameEvent }) {
+function EventInformationTab(props: { eventData: GameEvent }) {
 	const { eventData } = props;
 	const context = React.useContext(GlobalContext);
 
