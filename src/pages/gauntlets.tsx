@@ -27,6 +27,7 @@ import { ShipSkill } from '../components/item_presenters/shipskill';
 import DataPageLayout from '../components/page/datapagelayout';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
+import GauntletSettingsPopup, { GauntletSettings, defaultSettings } from '../components/gauntlet/settings';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -110,6 +111,9 @@ export interface GauntletsPageState {
 	hideOpponents?: boolean;
 
 	loading?: boolean;
+	settingsOpen: boolean;
+
+	gauntletSettings: GauntletSettings;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -117,20 +121,16 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
-const crit65 = 3.90;
-const crit45 = 2.7;
-const crit25 = 1.5;
-const crit5 = 1;
-
-export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
+export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
 	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+	settings ??= defaultSettings;
 
-	if (atrait >= 3) atrait = crit65;
-	else if (atrait >= 2) atrait = crit45;
-	else if (atrait >= 1) atrait = crit25;
-	else atrait = crit5;
+	if (atrait >= 3) atrait = settings.crit65;
+	else if (atrait >= 2) atrait = settings.crit45;
+	else if (atrait >= 1) atrait = settings.crit25;
+	else atrait = settings.crit5;
 	
-	apairs ??= getPlayerPairs(a, atrait);
+	apairs ??= getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
 	
 	let cn = 0;
 	let w = 0;
@@ -188,7 +188,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const rbpair = [] as string[];
 		const ptab = [] as number[];
 		const ipage = [] as number[];
-
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
@@ -204,6 +203,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			ipage.push(10);
 		}
 
+		const settings = this.tiny.getValue<GauntletSettings>('gauntletSettings', defaultSettings) ?? defaultSettings;
 		const liveJson = this.tiny.getValue<string | undefined>('liveGauntlet', undefined);
 		let lg: Gauntlet | undefined = undefined;
 
@@ -248,7 +248,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			uniques: [],
 			filterProps: fprops,			
 			activeTabIndex: activeTabIndex,
-			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false)
+			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false),
+			gauntletSettings: settings,
+			settingsOpen: false
+		}
+	}
+	readonly getSettingsOpen = () => {
+		return this.state.settingsOpen;
+	}
+	readonly setSettingsOpen = (value: boolean) => {
+		this.setState({ ... this.state, settingsOpen: value });
+	}
+
+	readonly setSettings = (value: GauntletSettings) => {
+		if (JSON.stringify(value) !== JSON.stringify(this.state.gauntletSettings)) {
+			this.setState({ ... this.state, loading: true });
+			window.setTimeout(() => {
+				this.inited = false;
+				this.tiny.setValue('gauntletSettings', value);
+				this.setState({ ...this.state, gauntletSettings: value, loading: false });
+			});
 		}
 	}
 
@@ -504,6 +523,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let pjoin = srank.join();
 			
 			const hapres = rpairs.map(z => rankToSkill(z)).sort().join();
+			const { gauntletSettings: settings } = this.state;
 
 			pairGroups.push({
 				pair: rpairs,
@@ -529,20 +549,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 						let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
 
-						if (atrait >= 3) atrait = crit65;
-						else if (atrait >= 2) atrait = crit45;
-						else if (atrait >= 1) atrait = crit25;
-						else atrait = crit5;
+						if (atrait >= 3) atrait = settings.crit65;
+						else if (atrait >= 2) atrait = settings.crit45;
+						else if (atrait >= 1) atrait = settings.crit25;
+						else atrait = settings.crit5;
 
-						if (btrait >= 3) btrait = crit65;
-						else if (btrait >= 2) btrait = crit45;
-						else if (btrait >= 1) btrait = crit25;
-						else btrait = crit5;
+						if (btrait >= 3) btrait = settings.crit65;
+						else if (btrait >= 2) btrait = settings.crit45;
+						else if (btrait >= 1) btrait = settings.crit25;
+						else btrait = settings.crit5;
 
 						let r = 0;
 						
-						let apairs = getPlayerPairs(a, atrait);
-						let bpairs = getPlayerPairs(b, btrait);
+						let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+						let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
 
 						if (apairs && bpairs) {
 							let amatch = [] as Skill[];
@@ -578,8 +598,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 							});
 
-							const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch) : getBernardsNumber(a, gauntlet, apairs);
-							const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch) : getBernardsNumber(b, gauntlet, bpairs);
+							const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
+							const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
 	
 							updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
 							updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
@@ -731,6 +751,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		delete gauntlet.pairMax;
 		delete gauntlet.pairMin;
 
+		const { gauntletSettings: settings } = this.state;
+
 		const matchedCrew1 =
 			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
@@ -859,25 +881,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 					let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
-					if (atrait >= 3) atrait = crit65;
-					else if (atrait >= 2) atrait = crit45;
-					else if (atrait >= 1) atrait = crit25;
-					else atrait = crit5;
+					if (atrait >= 3) atrait = settings.crit65;
+					else if (atrait >= 2) atrait = settings.crit45;
+					else if (atrait >= 1) atrait = settings.crit25;
+					else atrait = settings.crit5;
 
-					if (btrait >= 3) btrait = crit65;
-					else if (btrait >= 2) btrait = crit45;
-					else if (btrait >= 1) btrait = crit25;
-					else btrait = crit5;
+					if (btrait >= 3) btrait = settings.crit65;
+					else if (btrait >= 2) btrait = settings.crit45;
+					else if (btrait >= 1) btrait = settings.crit25;
+					else btrait = settings.crit5;
 
-					let ap = getPlayerPairs(a, atrait);
-					let bp = getPlayerPairs(b, btrait);
+					let ap = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+					let bp = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
 
 					if (!a.score) {
-						a.score = getBernardsNumber(a, gauntlet, ap);
+						a.score = getBernardsNumber(a, gauntlet, ap, settings);
 					}
 
 					if (!b.score) {
-						b.score = getBernardsNumber(b, gauntlet, bp);
+						b.score = getBernardsNumber(b, gauntlet, bp, settings);
 					}
 
 					r = r = Math.round(b.score) - Math.round(a.score);;
@@ -2878,6 +2900,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)}  menu={{ attached: false }} panes={tabPanes} />
 					} */}
+					<GauntletSettingsPopup 
+						isOpen={this.state.settingsOpen}
+						setIsOpen={this.setSettingsOpen}
+						config={{
+							current: this.state.gauntletSettings,
+							setCurrent: this.setSettings,
+							defaultOptions: defaultSettings
+							}} />
 				</div>
 				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>

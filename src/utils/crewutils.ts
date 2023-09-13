@@ -667,8 +667,11 @@ export const emptySkill = {
 	range_min: 0
 } as Skill;
 
-export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
+export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number, minMult?: number, maxMult?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 0;
+	
+	minMult ??= 1;
+	maxMult ??= 1;
 	
 	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
 
@@ -686,7 +689,9 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
 
 			skillObj.range_min *= (1 + multi);
+			skillObj.range_min *= minMult;
 			skillObj.range_max *= (1 + multi);
+			skillObj.range_max *= maxMult;
 		}
 		if (skills.length > 1) skills.sort((a, b) => ((b.range_max + b.range_min) / 2) - ((a.range_max + a.range_min) / 2));
 
