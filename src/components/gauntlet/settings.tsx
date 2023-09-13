@@ -103,7 +103,7 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
 		>
 			<Modal.Header>
                 <React.Fragment>
-                    Menu Settings
+                    Advanced Gauntlet Settings
                 </React.Fragment>
 			</Modal.Header>
 			<Modal.Content scrolling>
