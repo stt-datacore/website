@@ -6,6 +6,8 @@ import { GlobalContext } from '../../context/globalcontext';
 import { PlayerMessage } from './playermessage';
 
 import { useStateWithStorage } from '../../utils/storage';
+import { exportCrew, downloadData } from '../../utils/crewutils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 type PlayerShareProps = {
 	activePanel: string | undefined;
@@ -25,6 +27,7 @@ export const PlayerShare = (props: PlayerShareProps) => {
 	const [shareState, setShareState] = useStateWithStorage('player/shareState', 0);
 	const [showSuccess, setShowSuccess] = useStateWithStorage('player/showShareSuccess', true);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
+	const [copied, setCopied] = React.useState(false);
 
 	React.useEffect(() => {
 		if (varsReady < 2) return;
@@ -105,6 +108,28 @@ export const PlayerShare = (props: PlayerShareProps) => {
 								<p>{errorMessage}</p>
 							</Message>
 						)}
+
+						<div style={{display:'flex', 
+							flexDirection: 
+								window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+							marginTop: "0.5em", 
+							alignItems: 
+								window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center'}}>
+									
+						<Button
+								onClick={() => exportCrewTool()}
+								content='Export CSV'
+								icon='table alternate'
+								size='large'								
+							/>
+						<Button
+								onClick={() => exportCrewToClipboard()}
+								content='Copy to Clipboard'
+								icon='clipboard alternate'
+								size='large'								
+							/>
+						{copied && <div>Profile copied to clipboard!</div>}
+						</div>
 					</Card.Content>
 				</Card>
 			)}
@@ -114,7 +139,19 @@ export const PlayerShare = (props: PlayerShareProps) => {
 	function variableReady(keyName: string): void {
 		setVarsReady(prev => prev + 1);
 	}
+	function exportCrewTool() {		
+		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew)) : "";
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
+	}
 
+	function exportCrewToClipboard() {
+		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew), '\t') : "";
+		navigator.clipboard.writeText(text);
+		setCopied(true);
+		window.setTimeout(() => {
+			setCopied(false);
+		}, 3500);
+	}
 	function shareProfile(): void {
 		if (shareState !== 0) return;
 
