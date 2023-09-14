@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The skill set is going to look useful on the behold screen, but Feezal is not. Current 1/5 event reward crew are going to blow past her on voyages leaving her with traits as her only lifeline. Until they trigger she's worthless and if they do call forth events, she may not be worth the thaw.
+One of the trio of Mrs. Phloxes but the only one seen on screen, Feezal flirts with Trip but does not flirt with any daily use. A single show-based Collection and a quartet of extremely unlikely Traits means she is relegated to Super Rare Behold Insurance™ at best.

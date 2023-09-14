@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Itchy's events stop and start more than a rusted, red '36 Ford as he lives from mega to mega, but his traits have done a good job providing him chances at some shuttle piloting along with multiple collections. With a relatively pricey build, you might opt to level him after other daily-useful crew, but he's a fine low end pickup from beholds.
+Itchy's Events stop and start more than a rusted, red '36 Ford as he lives from Trait bonus to Trait bonus, but they have done a good job providing him chances at some Shuttle piloting along with a trio of Collections. In the early game, Icheb can provide a stopgap option on your Ships with a 350% Instant Damage ability behind a Position Trigger.

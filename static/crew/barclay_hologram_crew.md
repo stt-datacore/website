@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Three traits have done a tremendous amount of heavy lifting for a card in Holo Barclay who desperately needs them. With no daily use and awful bases that many players won't bother thawing, his value hinges on those three little words and their collection and event opportunities in the future.
+Three Traits have done a tremendous amount of heavy lifting for a card in Holo Barclay who desperately needs them. With no daily use and awful bases that many players won't bother Thawing, his value hinges on those three little words and their Collection and Event opportunities in the future.
 
 Don't feel bad passing on this crew for someone you'd be able to use a little more often, or at least one not standing in front of an impossibly strong neon light.

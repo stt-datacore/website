@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-When your character washes up on the beach in an RPG and you grab a rusty pipe to go fight some crabs.
+When your character washes up on the beach in an RPG and you grab a rusty pipe to go fight some crabs - here’s Taresian Kim!
 
-There are three points of interest here: arena evasion for the early game, fairly consistent events to highlight mediocre bases, and a few non-HFS traits that might hit the collection lotto at some point down the line. As of this writing he's one of the easier super rares to ignore, but has a path to value should his traits become featured material in the future.
+There are three points of interest here: Arena Evasion for the early game, fairly consistent Events to highlight mediocre Bases, and a few viable Traits that might hit the Collection lotto at some point down the line. As of this writing he's one of the easier Super Rares to ignore, but has a path to value should his Traits become featured material in the future.

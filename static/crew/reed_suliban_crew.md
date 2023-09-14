@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Poor stats across the board means he's not suitable for your typical daily work. Outside of his lone 45% gauntlet, Balok and others will slap him around with ease, though he can play stepping stone to help a fresh roster climb the gauntlet ladder.
+Dominic Keating described the process of having this makeup put on as horrific, and lo and behold the card representing that episode is equally as bad. 
 
-Reed's event work is equally unreliable and he sometimes just drops nothing burgers over the course of entire years, even though a few untapped traits may help smooth things out in the future. Until he becomes a multi-collection piece, he's an easy avoid for any player except those who are brand new and find him in a behold against some all-time bad choices.
+If you pick up this Reed from a nightmare of a Legendary Behold very early on in your game (and God, who were the other two choices if you picked him?) you can get some Gauntlet use from his passable Proficiencies. Reed Events get as much love as Malcolm's character development on Enterprise, with entire years skipped (2019, 2021, 2022), so the only long-term investment for this crew is his Trait list. None of his viable ones have generated a Collection place yet, but if they all do, you could be in for a medium sized surprise with a total of four possible.

@@ -3,7 +3,7 @@ name: Ensign Mendon
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 0
 in_portal: true
 date: 21/07/2016
