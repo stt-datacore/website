@@ -54,7 +54,7 @@ export interface ICoreContext extends ICoreData {
 };
 
 interface IDemandResult {
-	demand: string;
+	demand: ValidDemands;
 	json: any;
 };
 
@@ -177,7 +177,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'crew':
 						newData.crew = processCrew(result.json);
 						break;
-					case 'gauntlet':
+					case 'gauntlets':
 						newData.gauntlets = processGauntlets(result.json);
 						break;
 					// case 'skill_bufs':
