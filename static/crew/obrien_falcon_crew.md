@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-He's still the man with the Golden Gun whose big SEC base draws more looks than Scaramanga's third nipple, but he's dead weight on voyages despite his third skill. The recommend value pivot has become the promise of more collections from his delightfully bad guy-esque trait set.
+He's still the man with the Golden Gun whose big SEC base draws more looks than Scaramanga's third nipple, but he's dead weight on Voyages given his age. The recommended value pivot has become the promise of more Collections from his delightfully bad guy-esque Trait set.
 
-Already a multi-collection offering with a tremendously strong event and shuttle pedigree, this card sits in the top echelon of non-voyage/gauntlet crew and is a recommended shuttle horse.
+Already a multi-Collection offering with a tremendously strong Event and Shuttle pedigree, this card sits in the top echelon of non-Voyage/Gauntlet crew and is a recommended Shuttle horse.

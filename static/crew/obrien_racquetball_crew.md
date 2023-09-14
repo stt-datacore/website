@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-This is the ideal male body. You may not like it but this is what peak performance looks like. "They say the pasty was so hard that it could be dropped down a mine shaft without breaking." I'm sorry, wrong pasty quote. But speaking of drop shots, you must have had a dozen ENG voyages by now and Miles hasn't missed one yet. Nobody can be that lucky, it's impossible.
+Racquetball O’Brien may be the prime example of Power Creep™ that seemed to have accelerated to near-Warp 10 velocities in 2022 and 2023. Released with a baller Voyage score and the sort of physique we nerds can only dream of, Miles has found himself edged out again and again by more desirable crew to the point where he’s an edge-case option while all your better crew are on Faction Shuttles. 
 
-Pirouetting neutrinos aren't to blame this time, Miley's just a wrecking ball on voyages thanks to his hefty overall score and tree trunk-like ankles. 'Rambo from Wish' shares a skill set with big brother Scape🐐 O'Brien, but a different enough order to be a great compliment rather than competition.
-
-Relatively weak accompanying traits don't do him a ton of favors for collections or event work, but smart money still has him picking up one or two collections/megas before WRG's love affair with traits comes to an end. With O'Brien variant events in the mix as well, he's a top-heavy offering, but one with enough utility to escape the one trick pony designation - at least, if you believe his arena ability quote.
+Still a stalwart ENG Base for O’Brien and Trait bonus events, he’s still got some room to improve on the Collection front but with few viable Traits left, you might be sending him to Cryostasis cold therapy for his aching calves before long.
