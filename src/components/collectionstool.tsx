@@ -231,7 +231,6 @@ const ProgressTable = (props: ProgressTableProps) => {
 
 	return (
 		<React.Fragment>
-			<p>Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.</p>
 			<div style={{ margin: '.5em 0' }}>
 				<Form>
 					<Form.Group inline>
@@ -781,24 +780,28 @@ const CrewTable = (props: CrewTableProps) => {
 		{ 
 			menuItem: 'Progress', 
 			description: 'Collection Progress',
+			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
 			render: () => <ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} /> 
 		},
 		{ 
 			menuItem: 'Crew', 
 			description: 'Crew Table', 
+			longDescription: 'Search for crew that will help you make progress on collections and see what rewards you could claim by immortalizing certain crew right now. Note: maxed collections and immortalized crew will not be shown in this table.',
 			showFilters: true,
 			render: () => renderTable()
 		},
 		{ 
 			menuItem: 'Collections', 
 			description: 'Collection Crew Groups', 
+			longDescription: "Show crew grouped into collections sorted by closest to max. Crew highlighted in green are required to reach the next tier. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.",
 			showFilters: true,
 			render: () => <CollectionGroupTable playerCollections={playerCollections} colGroups={colGroups} />
 		},
 		{ 
 			menuItem: 'Optimizer', 
 			description: 'Collection Crew Optimizer', 
+			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
 			render: () => <CollectionOptimizerTable colOptimized={colOptimized} />
 		}
@@ -822,11 +825,11 @@ const CrewTable = (props: CrewTableProps) => {
 					})}						
 				</Step.Group>
 			</div>
+			<Header as='h4'>{tabPanes[tabIndex ?? 0].description}</Header>
+				<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
 
 			{tabPanes[tabIndex ?? 0].showFilters && 
 			<React.Fragment>
-				<Header as='h4'>Collection Crew</Header>
-				<p>Search for crew that will help you make progress on collections and see what rewards you could claim by immortalizing certain crew right now. Note: maxed collections and immortalized crew will not be shown in this table.</p>
 				<div style={{ margin: '1em 0' }}>
 					<Form.Field
 						placeholder='Filter by collections'

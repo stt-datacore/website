@@ -11,6 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
 import ItemDisplay from '../itemdisplay';
+import { useStateWithStorage } from '../../utils/storage';
 
 export interface GroupTableProps {
 	playerCollections: PlayerCollection[];
@@ -25,7 +26,8 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
     const { setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-    
+	const [pageSize, setPageSize] = useStateWithStorage("colGroups/itemsPerPage", 1, { rememberForever: true });
+
 	const setShort = (value: boolean) => {
 		if (value !== short) {
 			internalSetShort(value);
@@ -45,7 +47,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		}
 	}
 
-	const pageCount = Math.ceil(colGroups.length / 10);
+	const pageCount = Math.ceil(colGroups.length / pageSize);
 
 	if (pageCount !== groupPageCount || groupPage > pageCount) {
 		setGroupPageCount(pageCount);
@@ -115,7 +117,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			</div>
 			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
 			<Table striped>
-				{colMap.slice(10 * (groupPage - 1), (10 * (groupPage - 1)) + 10).map((col, idx) => {
+				{colMap.slice(pageSize * (groupPage - 1), (pageSize * (groupPage - 1)) + pageSize).map((col, idx) => {
 
 					const collection = col.collection;
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
