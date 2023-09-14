@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Lumped in with the other purple Mirorr dregs isn't quite fair to this Uhura. She has some collection value with traits other than simply Terran Empire and beyond that she does an Ardra-lite impression in the arena, offers some fairly reliable event bonuses (with admittedly poor bases), and even owns four different 45% crit trait sets in the gauntlet.
-
-She's absolutely on the weak side due to age, but a must-have for a stat-boosting collection taht brings her other offerings into the limelight again on young rosters.
+Mirror Uhura unfortunately is among the set of crew that are so old and Bases so low you may not even retrieve them from Cryostasis when they get a Featured Event bonus, but at least she has a solid set of Traits that will likely  top her out at a quartet when all is said and done, which means she is a worthwhile long term investment from that perspective.

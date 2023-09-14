@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-After some first year jitters, Holonovel has been a consistent weekend warrior with a base worth thawing. While there's not much else to his 'use' profile, all four of his non-HFS traits should find homes in their respective collections before too long. Now watch this drive.
+It’s an older crew sir, but it checks out. I was just about to clear him. Ol’ Holonovel Doctor from game launch has found a nice niche as a Event/Collection specialist, with a strong enough Base to ride Event Shuttles when variant and Trait bonuses give him weekend work. The usual EMH Traits plus one should give him a nice ceiling of four Collections when he finishes playing through the whole course.

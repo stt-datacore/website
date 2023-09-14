@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-In the nearly four years since this card has debuted, she's caught two events and one collection. Not exactly an enthralling return on investment for five gold stars. The latter of those benefits is sure to balloon during Toyota Trait-a-thon (God help us if we get a Probe collection), but until she's a multi-collection piece *at minimum*, she's only a consideration in all-Frasier beholds.
+In the five years since this card has debuted, she's caught two Events and two Collections. Not exactly an enthralling return on investment for Immortalizing a Legendary crew. The latter of those benefits is sure to balloon during Toyota Trait-a-thon (God help us if we get a Probe Collection), but until she's the best option in the worst Legendary Behold you can think of, ignore her and her oath of celibacy.
