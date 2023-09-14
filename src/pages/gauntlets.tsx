@@ -46,7 +46,7 @@ export const SKILLS = {
 
 const GauntletsPage = () => {	
 	return (
-		<DataPageLayout playerPromptType='recommend' demands={['all_buffs', 'crew', 'gauntlets', 'items']}>
+		<DataPageLayout playerPromptType='recommend' demands={['gauntlets', 'all_buffs', 'crew', 'items']}>
 			<GauntletsPageComponent />
 		</DataPageLayout>
 	);
