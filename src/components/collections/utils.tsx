@@ -164,9 +164,64 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
             {children}    
         </CollectionFilterContext.Provider>)
 } 
+export const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
+    let result = false;
 
+    for (let rewardFilter of filters) {
+        let q = true;
 
+        if (rewardFilter && rewardFilter != '*any') {
+            let re: RegExp;
+            if (rewardFilter == '*buffs') {
+                if (collection.milestone?.buffs?.length == 0) q = false;
+            }
+            else if (rewardFilter.slice(0, 1) == '=') {
+                re = new RegExp(rewardFilter.slice(1));
+                if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
+            }
+            else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
+                q = false;
+            }
+        }	
+        result ||= q;
+    }
 
+    return result;
+}
+
+export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCollection[], colGroup2: PlayerCollection[], short?: boolean): number {
+    if (!mapFilter?.rewardFilter) return 0;
+
+    let ayes = 0;
+    let byes = 0;
+    
+    let areward = getCollectionRewards(colGroup1);
+    let breward = getCollectionRewards(colGroup2);
+
+    for (let col1 of colGroup1) {
+        if (!col1) continue;
+        if (short) {
+            ayes += checkRewardFilter(col1, mapFilter.rewardFilter) ? 1 : 0;
+        }
+        else {
+            
+            ayes += areward?.filter(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf))?.length ?? 0;
+        }
+    }
+
+    for (let col2 of colGroup2) {
+        if (!col2) continue;
+        if (short) {
+            byes += checkRewardFilter(col2, mapFilter.rewardFilter) ? 1 : 0;
+        }
+        else {
+            
+            byes += breward?.filter(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf))?.length ?? 0;
+        }
+    }
+
+    return byes - ayes;
+}
 
 
 

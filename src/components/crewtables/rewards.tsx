@@ -151,16 +151,21 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 };
 
 export interface RewardPickerProps {
-	rewards: Reward[];
+	source: PlayerCollection[];
 	short?: boolean;
 	setShort?: (value: boolean) => void;
 	icons?: boolean;
 	value?: string[];
 	onChange: (value?: string[]) => void;
+	placeholder?: string;
 }
 
 export const RewardPicker = (props: RewardPickerProps) => {
-	const { rewards, icons, setShort, short, value, onChange } = props;
+	const { placeholder, source, icons, setShort, short, value, onChange } = props;
+	
+    let rewardCol = !source ? [] : getCollectionRewards(source);	
+	const rewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
+
 	const rrOpts = short ? [ ... rewardOptions ] : rewards.map((reward) => {
 		return {
 			key: reward.symbol,
@@ -203,7 +208,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 	<Dropdown 
 		style={{width: "22em"}}
 		scrolling
-		placeholder={'Priortize rewards'}
+		placeholder={placeholder ?? 'Priortize rewards'}
 		options={rrOpts} 
 		value={value}
 		multiple

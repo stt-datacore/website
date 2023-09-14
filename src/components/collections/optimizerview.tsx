@@ -1,8 +1,8 @@
 import React from 'react';
 import { CollectionFilterContext, CollectionGroup, CollectionMap } from './utils';
-import { Pagination, Table, Grid, Image, Dropdown } from 'semantic-ui-react';
+import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
-import { RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
+import { RewardPicker, RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
 import ItemDisplay from '../itemdisplay';
@@ -13,6 +13,7 @@ import { useStateWithStorage } from '../../utils/storage';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
+	playerCollections: PlayerCollection[];
 }
 
 interface ComboConfig {
@@ -20,10 +21,10 @@ interface ComboConfig {
 	name: string;
 }
 
-export const CollectionOptimizerTable = (props) => {
+export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
-    const { playerCollections, colGroups } = props;
+    const { playerCollections } = props;
     const { setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -35,6 +36,13 @@ export const CollectionOptimizerTable = (props) => {
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
 	const [optPageCount, setOptPageCount] = React.useState(1);
+
+	const setShort = (value: boolean) => {
+		if (value !== short) {
+			internalSetShort(value);
+			setMapFilter({ ... mapFilter ?? {}, rewardFilter: [] });
+		}		
+	}
 
 	const setCombo = (col: CollectionGroup, combo: string) => {
 		let f = combos.find(cf => cf.collection === col.collection.name);
@@ -189,11 +197,12 @@ export const CollectionOptimizerTable = (props) => {
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{/* {!mapFilter?.collectionsFilter?.length && 
+			{!mapFilter?.collectionsFilter?.length && 
 				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 					The collection optimizer view shows only owned crew if the collections list is not filtered.
-				</i>} */}
-			{/* <div style={{
+				</i>}
+			
+			<div style={{
 				display: "flex",
 				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
 				alignItems: "center",
@@ -215,13 +224,13 @@ export const CollectionOptimizerTable = (props) => {
 				<RewardPicker 
 					short={short}
 					setShort={setShort}
-					rewards={uniqueRewards} 
+					source={playerCollections} 
 					icons
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
 				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
-			</div> */}
+			</div>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
 			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />

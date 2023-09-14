@@ -5,7 +5,7 @@ import { PlayerCrew, PlayerCollection, PlayerData, CompletionState, BuffBase, Re
 import { neededStars, starCost } from '../../utils/crewutils';
 import { getCollectionRewards } from '../../utils/itemutils';
 import { CollectionFilterContext, CollectionGroup, CollectionMap, MapFilterOptions } from './utils';
-import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid } from 'semantic-ui-react';
+import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
 import { RewardsGridNeed, RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { CrewItemsView } from '../item_presenters/crew_items';
@@ -54,10 +54,6 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		setGroupPage(Math.min(pageCount, 1));
 		return <></>
 	}
-
-    let rewardCol = getCollectionRewards(playerCollections);
-	
-	const uniqueRewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
 
 	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
 
@@ -108,14 +104,34 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				<RewardPicker 
 					short={short}
 					setShort={setShort}
-					rewards={uniqueRewards} 
+					source={playerCollections} 
 					icons
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
 				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
 			</div>
-			{!!colMap?.length && <Pagination style={{margin: "0.25em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
+			{!!colMap?.length && 			
+			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
+			<div style={{margin:"0 0.5em", padding: 0}}>
+			Items Per Page:
+			<Dropdown 
+				style={{margin: "0.5em"}}
+				placeholder={"Items Per Page"}
+				value={pageSize}
+				onChange={(e, { value }) => setPageSize(value as number)}
+				options={[1,2,5,10].map(x => {
+					return {
+						value: x,
+						key: x,
+						text: "" + x
+					}
+				})}
+				/>
+			</div>
+			</div>}
+
 			<Table striped>
 				{colMap.slice(pageSize * (groupPage - 1), (pageSize * (groupPage - 1)) + pageSize).map((col, idx) => {
 
@@ -227,7 +243,26 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				)}
 
 			</Table>
-			{!!colMap?.length && <Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={groupPageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />}
+			{!!colMap?.length && 			
+			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
+			<div style={{margin:"0 0.5em", padding: 0}}>
+			Items Per Page:
+			<Dropdown 
+				style={{margin: "0.5em"}}
+				placeholder={"Items Per Page"}
+				value={pageSize}
+				onChange={(e, { value }) => setPageSize(value as number)}
+				options={[1,2,5,10].map(x => {
+					return {
+						value: x,
+						key: x,
+						text: "" + x
+					}
+				})}
+				/>
+			</div>
+			</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />
 		</div>)

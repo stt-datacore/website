@@ -1,33 +1,27 @@
 import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Grid, Popup, Tab, SemanticWIDTHS, Input, Button, Pagination, Image, Step } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Popup, Step, DropdownItemProps } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 
-import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
 import { useStateWithStorage } from '../utils/storage';
 import { CrewMember } from '../model/crew';
-import { Collection, Filter } from '../model/game-elements';
-import { AtlasIcon, BuffBase, CompletionState, CryoCollection, ImmortalReward, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
+import { Filter } from '../model/game-elements';
+import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
-import { crewCopy, isImmortal, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../utils/crewutils';
+import { crewCopy, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../utils/crewutils';
 import { GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { TinyStore } from '../utils/tiny';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
-import { formatColString } from './item_presenters/crew_preparer';
-import { CrewItemsView } from './item_presenters/crew_items';
-import { getImageName, makeAllCombos } from '../utils/misc';
-import { getIconPath } from '../utils/assets';
-import { checkReward, getCollectionRewards } from '../utils/itemutils';
-import { EquipmentItem } from '../model/equipment';
-import { RewardPicker, RewardsGrid, RewardsGridNeed, rewardOptions } from './crewtables/rewards';
-import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProvider, CollectionFilterContext } from './collections/utils';
+import { makeAllCombos } from '../utils/misc';
+import { getCollectionRewards } from '../utils/itemutils';
+import { RewardsGrid, rewardOptions } from './crewtables/rewards';
+import { CollectionMap, CollectionGroup, CollectionFilterProvider, CollectionFilterContext, compareRewards } from './collections/utils';
 import { CollectionGroupTable } from './collections/groupview';
 import { CollectionOptimizerTable } from './collections/optimizerview';
-import GauntletSettingsPopup, { defaultSettings } from './gauntlet/settings';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -365,14 +359,14 @@ const CrewTable = (props: CrewTableProps) => {
 		};
 	});
 
-	const ownedFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-	];
+	const ownedFilterOptions = [] as DropdownItemProps;
 
-	if ((tabIndex === 0 || !!mapFilter?.collectionsFilter?.length)) {
+	if (((tabIndex === 0 || !!mapFilter?.collectionsFilter?.length) && tabIndex !== 3)) {
+		ownedFilterOptions.push({ key: 'none', value: '', text: 'Show all crew' })
 		ownedFilterOptions.push({ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' });
-		ownedFilterOptions.push({ key: 'owned', value: 'owned', text: 'Only show owned crew' })
 	}
+
+	ownedFilterOptions.push({ key: 'owned', value: 'owned', text: 'Only show owned crew' })
 	ownedFilterOptions.push({ key: 'owned-impact', value: 'owned-impact', text: 'Only show crew needing 1 fuse' });
 	ownedFilterOptions.push({ key: 'owned-threshold', value: 'owned-threshold', text: 'Only show crew needing 1 or 2 fuses' });
 	ownedFilterOptions.push({ key: 'owned-ff', value: 'owned-ff', text: 'Only show fully fused crew' });
@@ -393,31 +387,6 @@ const CrewTable = (props: CrewTableProps) => {
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
 
-	const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
-		let result = false;
-
-		for (let rewardFilter of filters) {
-			let q = true;
-
-			if (rewardFilter && rewardFilter != '*any') {
-				let re: RegExp;
-				if (rewardFilter == '*buffs') {
-					if (collection.milestone?.buffs?.length == 0) q = false;
-				}
-				else if (rewardFilter.slice(0, 1) == '=') {
-					re = new RegExp(rewardFilter.slice(1));
-					if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
-				}
-				else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
-					return q = false;
-				}
-			}	
-			result ||= q;
-		}
-
-		return result;
-	}
-
 	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
 		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
@@ -431,6 +400,8 @@ const CrewTable = (props: CrewTableProps) => {
 		if (!exclude?.includes('nonportal') && fuseFilter === 'nonportal' && crew.in_portal) return false;
 		return true;
 	}
+
+	const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
@@ -451,11 +422,12 @@ const CrewTable = (props: CrewTableProps) => {
 
 		let cstep1 = fstep2.map(g => g.collections).flat();
 		cstep1 = cstep1.filter((cn, idx) => cstep1.indexOf(cn) === idx).sort();
-		const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
 		const colMap = cstep1.map((col, idx) => {
+			const cobj = playerCollections.find(f => f.name === col);
+			
 			return {
-				collection: playerCollections.find(f => f.name === col),
+				collection: cobj,
 				crew: fstep2.filter(crew => {
 					if (crew.immortal === CompletionState.Immortalized || crew.immortal > 0) return false;
 
@@ -476,18 +448,10 @@ const CrewTable = (props: CrewTableProps) => {
 					return fr;
 				})				
 			} as CollectionMap;
-		})
-		.filter((x) => {			
-			let bPass = x.collection !== undefined && x.crew?.length &&			
-			x.collection?.totalRewards && x.collection.milestone &&
-			(!mapFilter?.collectionsFilter?.length || mapFilter.collectionsFilter.some(cf => x.collection?.id === cf));
-			
-			if (searchFilter?.length && bPass) {				
-				bPass &&= x.crew?.some(csf => searches.some(search => csf.name.includes(search)));
-			}
-						
-			return !!bPass;
-		});		
+		}).filter(fc => {
+			if (!fc.collection.milestone.goal) return false;
+			return true;
+		});
 		
 		colMap.forEach((col, idx) => {
 
@@ -530,30 +494,13 @@ const CrewTable = (props: CrewTableProps) => {
 		colMap.sort((a, b) => {
 			let  acol = a.collection;
 			let  bcol = b.collection;
+			let r = 0;
 
 			if (mapFilter?.rewardFilter) {
-				let ayes = false;
-				let byes = false;
-
-				if (short) {
-					ayes = checkRewardFilter(acol, mapFilter.rewardFilter);
-					byes = checkRewardFilter(bcol, mapFilter.rewardFilter);
-				}
-				else {
-					let areward = getCollectionRewards([acol]);
-					let breward = getCollectionRewards([bcol]);
-					ayes = areward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
-					byes = breward?.some(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf));
-	
-				}
-
-				if (ayes != byes) {
-					if (ayes) return -1;
-					else return 1;
-				}	
+				r = compareRewards(mapFilter, [acol], [bcol], short);
+				if (r) return r;
 			}
 
-			let r = 0;
 			let amissing = (acol?.milestone?.goal === 'n/a' ? 0 : acol?.milestone?.goal ?? 0) - (acol?.owned ?? 0);
 			let bmissing = (bcol?.milestone?.goal === 'n/a' ? 0 : bcol?.milestone?.goal ?? 0) - (bcol?.owned ?? 0);
 			if (amissing < 0) amissing = 0;
@@ -570,12 +517,25 @@ const CrewTable = (props: CrewTableProps) => {
 	}
 
 
-	const colGroups = createCollectionGroups();
+	const unfilteredGroups = createCollectionGroups();
+
+	const colGroups = unfilteredGroups.filter((x) => {			
+		let bPass = x.collection !== undefined && x.crew?.length &&			
+		x.collection?.totalRewards && x.collection.milestone &&
+		(!mapFilter?.collectionsFilter?.length || mapFilter.collectionsFilter.some(cf => x.collection?.id === cf));
+		
+		if (searchFilter?.length && bPass) {				
+			bPass &&= x.crew?.some(csf => searches.some(search => csf.name.includes(search)));
+		}
+					
+		return !!bPass;
+	});		
+	
 
 	// TODO: Optimizer depends on createCollectionGroups, wrap it in!
 	// TODO: Sort Optimizer by filter options
 	// TODO: Optimizer option show crew on top
-	const createOptimizerGroups = () => {
+	const createOptimizerGroups = (colGroups: CollectionMap[]) => {
 		const linkScores = {} as { [key: string]: CollectionMap[] };
 
 		for(let col of colGroups) {
@@ -734,8 +694,51 @@ const CrewTable = (props: CrewTableProps) => {
 
 		for (let col of colOptimized) {
 			col.combos = createCombos(col);
-		}
-		return colOptimized.sort((a, b) => {
+				
+			if (mapFilter?.rewardFilter?.length) {
+				col.combos?.sort((a, b) => {
+
+					let acol = (a.map(a => playerCollections.find(f => f.name === a)) ?? []) as PlayerCollection[];
+					let bcol = (b.map(b => playerCollections.find(f => f.name === b)) ?? []) as PlayerCollection[];
+
+					if (acol && bcol) {
+						return compareRewards(mapFilter, acol, bcol, short);
+					}
+					else if (acol) {
+						return -1;
+					}
+					else if (bcol) {
+						return 1;
+					}
+					return 0;
+				});
+			}
+			if (mapFilter?.collectionsFilter?.length) {
+				col.combos = col.combos.filter(fc => {
+					let col = fc.map(sc => playerCollections.find(col => col.name === sc));
+					return col.some(c => mapFilter?.collectionsFilter?.includes(c?.id ?? -1));
+				});
+			}
+		}		
+
+		return colOptimized
+			.filter(c => c.combos?.length)
+			.sort((a, b) => {
+			
+			if (mapFilter?.rewardFilter?.length) {
+				let  acol = a?.collection;
+				let  bcol = b?.collection;
+				let r = 0;
+	
+				if (mapFilter?.rewardFilter) {
+					r = compareRewards(mapFilter, 
+						[ acol, ...a?.maps?.map(d => d.collection) ?? []].filter(e => e), 
+						[ bcol, ...b?.maps?.map(d => d.collection) ?? []].filter(e => e), 
+						short);
+					if (r) return r;
+				}	
+			}
+
 			if (a.combos && b.combos) {
 				let acb = a.combos.length;
 				let bcb = b.combos.length;
@@ -761,9 +764,14 @@ const CrewTable = (props: CrewTableProps) => {
 		});
 	}
 
-	const colOptimized = createOptimizerGroups();
+	const colOptimized = createOptimizerGroups(unfilteredGroups.map(g => {
+		return {
+			... g,
+			crew: g.crew.filter(f => f.have || (f.immortal !== undefined && f.immortal >= -1))
+		}
+	}).filter(f => !!f.crew.length));
+
 	const buffConfig = calculateBuffConfig(props.playerData.player);
-	const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	const renderTable = () => {
 		
@@ -803,7 +811,7 @@ const CrewTable = (props: CrewTableProps) => {
 			description: 'Collection Crew Optimizer', 
 			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
-			render: () => <CollectionOptimizerTable colOptimized={colOptimized} />
+			render: () => <CollectionOptimizerTable playerCollections={playerCollections} colOptimized={colOptimized} />
 		}
 	];
 
