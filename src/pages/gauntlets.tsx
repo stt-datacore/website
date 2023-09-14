@@ -2817,6 +2817,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			)
 		}
 
+		if (activeTabIndex !== undefined && (activeTabIndex < 0 || activeTabIndex >= tabPanes.length)) {
+			this.setActiveTabIndex(0);
+			return this.context.core.spin();
+		}
+
 		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
 
 		return (
