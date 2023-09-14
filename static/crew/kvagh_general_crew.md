@@ -3,7 +3,7 @@ name: General K'Vagh
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 25
 in_portal:
 date: 14/06/2023
