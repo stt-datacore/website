@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Falling out of contention on voyages, Navaar even lost the 'best Orion' crown to Osyraa, at least for now. Bereft of spark or usability as of this writing, her redemption arc will begin and end at her trait list. If she ever realizes her five or six collection ceiling or even comes close, she may as well be Batten a thousand for certain art aficionados and would be forcing herself into behold conversations one tapped trait at a time.
+The most useful of the trio of Orion ladies from “Bound”, Navaar was the only one with Voyage capability (now aged out) with her remaining value coming from her bountiful Trait list, giving rise to three Collections as it stands and up to three more in reserve.

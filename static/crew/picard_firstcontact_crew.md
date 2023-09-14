@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-When your character has [Graham's number] variants, a few duds are expected. A (luke)warm shuttle body for Picard events and gauntlet work for a brand new roster is about all he's good for in the realm of 'actual' use, though a trait list filled with intimidatingly large words should expand his collection value over time.
+When your character has [Graham's number] variants, a few duds are expected. A (luke)warm Shuttle body for Picard events and Gauntlet work for a brand new roster is about all he's good for in the realm of 'actual' use, though a Trait list filled with intimidatingly large words should expand his Collection value over time, to the tune of a likely ceiling of four.
