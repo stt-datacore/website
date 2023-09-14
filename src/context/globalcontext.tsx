@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DataContext, DefaultCore, defaultData } from './datacontext';
+import { DataContext, ICoreContext, defaultCore } from './datacontext';
 import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext';
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -9,14 +9,14 @@ interface GlobalProviderProperties {
 };
 
 export interface IDefaultGlobal {
-    core: DefaultCore;
+    core: ICoreContext;
     player: PlayerContextData;
     maxBuffs: BuffStatTable | undefined;
 	data?: any;
 };
 
 const defaultGlobal = {
-    core: defaultData,
+    core: defaultCore,
     player: defaultPlayer,
     maxBuffs: undefined
 } as IDefaultGlobal;
