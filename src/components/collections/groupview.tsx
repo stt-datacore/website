@@ -223,7 +223,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 											}}
 											title={"Click to see collections containing this crew member"}
 											>
-											{crew.name}
+											{crew.favorite && <Icon name='heart' style={{textDecoration: 'none'}} />} {crew.name}
 										</b>			
 										<i>({crew.pickerId} collections increased)</i>
 										<i>Level {crew.level}</i>

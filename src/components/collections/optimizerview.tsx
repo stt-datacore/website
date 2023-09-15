@@ -119,7 +119,11 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		cma.sort((a, b) => {
 			let x = 0;
 			let y = 0;
-
+			
+			if (a.favorite != b.favorite) {
+				if (a.favorite) return -1;
+				else return 1;
+			}
 			if (col.collection.crew?.find(f => f === a.symbol)) x++;
 			if (col.collection.crew?.find(f => f === b.symbol)) y++;
 
@@ -467,7 +471,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 											}}
 											title={"Click to see collections containing this crew member"}
 											>
-											{crew.name}
+											{crew.favorite && <Icon name='heart' style={{textDecoration:"none"}}  />} {crew.name}
 										</b>			
 										<i>({crew.pickerId} collections increased)</i>
 										<i>Level {crew.level}</i>

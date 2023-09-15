@@ -447,7 +447,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 						if (!checkCommonFilter(crew, ['unowned', 'owned'])) return false;
 					}
 					return fr;
-				})				
+				})
 			} as CollectionMap;
 		}).filter(fc => {
 			if (!fc.collection.milestone.goal) return false;
@@ -467,6 +467,11 @@ const CollectionsViews = (props: CrewTableProps) => {
 					if (!a.have) return 1;
 					else return -1;
 				}
+				if (a.favorite !== b.favorite) {
+					if (a.favorite) return -1;
+					else return 1;
+				}
+
 				let acount = a.pickerId ?? 1;
 				let bcount = b.pickerId ?? 1;
 				
@@ -695,7 +700,6 @@ const CollectionsViews = (props: CrewTableProps) => {
 
 		for (let col of colOptimized) {
 			col.combos = createCombos(col);
-				
 			if (mapFilter?.rewardFilter?.length) {
 				col.combos?.sort((a, b) => {
 
