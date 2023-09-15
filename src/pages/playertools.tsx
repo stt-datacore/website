@@ -1,5 +1,4 @@
 import React from 'react';
-import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
 
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
@@ -9,7 +8,6 @@ import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
 import CiteOptimizer from '../components/citeoptimizer';
-import CollectionsTool from '../components/collectionstool';
 import EventPlanner from '../components/eventplanner';
 
 import CrewRetrieval from '../components/crewretrieval';
@@ -17,17 +15,11 @@ import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
 import FleetBossBattles from '../components/fleetbossbattles';
 
-import { exportCrew, downloadData } from '../utils/crewutils';
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerCrew, PlayerData } from '../model/player';
-import { BossBattlesRoot } from '../model/boss';
+import { PlayerCrew } from '../model/player';
 import ShipProfile from '../components/ship_profile';
-import { Ship } from '../model/ship';
 import { GlobalContext } from '../context/globalcontext';
-import { BuffStatTable } from '../utils/voyageutils';
-import { EquipmentItem } from '../model/equipment';
 import DataPageLayout from '../components/page/datapagelayout';
-import { EphemeralData } from '../context/playercontext';
 import { navigate } from 'gatsby';
 import { v4 } from 'uuid';
 
@@ -61,10 +53,6 @@ export const playerTools: PlayerTools = {
 	'cite-optimizer': {
 		title: 'Citation Optimizer',
 		render: () => <CiteOptimizer />
-	},
-	'collections': {
-		title: 'Collections',
-		render: () => <CollectionsTool />
 	},
 	'fleetbossbattles': {
 		title: 'Fleet Boss Battles',

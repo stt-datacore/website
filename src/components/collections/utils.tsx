@@ -7,6 +7,7 @@ import { TinyStore } from '../../utils/tiny';
 import { getCollectionRewards } from '../../utils/itemutils';
 import { neededStars, starCost } from '../../utils/crewutils';
 import { GlobalContext } from '../../context/globalcontext';
+import { RewardsGridNeed } from '../crewtables/rewards';
 
 export interface MapFilterOptions {
 	collectionsFilter?: number[];
@@ -227,4 +228,31 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
 
 
 
+export const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
+
+
+export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew, combo?: string) => {
+    const gridneed = [] as RewardsGridNeed[];
+    
+    if ("rarity" in item) {
+        
+        gridneed.push({
+            symbol: citeSymbols[item.max_rarity],
+            quantity: item.max_rarity - item.rarity
+        })	
+        return gridneed;
+    }
+    
+    if (!item.neededStars?.length) return gridneed;
+
+    item.neededStars.forEach((star, idx) => {
+        if (idx >= 2 && idx <= 5 && star) {
+            gridneed.push({
+                symbol: citeSymbols[idx],
+                quantity: star
+            });
+        }	
+    });
+    return gridneed;
+}
 

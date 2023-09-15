@@ -2,33 +2,34 @@ import React from 'react';
 import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Popup, Step, DropdownItemProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
+import { SearchableTable, ITableConfigRow } from '../searchabletable';
 
-import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { useStateWithStorage } from '../utils/storage';
-import { CrewMember } from '../model/crew';
-import { Filter } from '../model/game-elements';
-import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../model/player';
-import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { calculateBuffConfig } from '../utils/voyageutils';
-import { crewCopy, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../utils/crewutils';
-import { GlobalContext } from '../context/globalcontext';
-import { ItemHoverStat } from './hovering/itemhoverstat';
-import { TinyStore } from '../utils/tiny';
-import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
-import { makeAllCombos } from '../utils/misc';
-import { getCollectionRewards } from '../utils/itemutils';
-import { RewardsGrid, rewardOptions } from './crewtables/rewards';
-import { CollectionMap, CollectionGroup, CollectionFilterProvider, CollectionFilterContext, compareRewards } from './collections/utils';
-import { CollectionGroupTable } from './collections/groupview';
-import { CollectionOptimizerTable } from './collections/optimizerview';
+import { crewMatchesSearchFilter } from '../../utils/crewsearch';
+import { useStateWithStorage } from '../../utils/storage';
+import { CrewMember } from '../../model/crew';
+import { Filter } from '../../model/game-elements';
+import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { calculateBuffConfig } from '../../utils/voyageutils';
+import { crewCopy, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { TinyStore } from '../../utils/tiny';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { makeAllCombos } from '../../utils/misc';
+import { getCollectionRewards } from '../../utils/itemutils';
+import { RewardsGrid, rewardOptions } from '../crewtables/rewards';
+import { CollectionMap, CollectionGroup, CollectionFilterProvider, CollectionFilterContext, compareRewards } from './utils';
+import { CollectionGroupTable } from './groupview';
+import { CollectionOptimizerTable } from './optimizerview';
+import CollectionsOverviewComponent from './overview';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
 
-	if (!playerData) return <></>;
+	if (!playerData) return <CollectionsOverviewComponent />;
 
 	if (!context.core.ready(['collections'])) {	
 		return context.core.spin ? context.core.spin() : <></>;
@@ -179,7 +180,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		<React.Fragment>
 			<div ref={crewAnchor} />
 			<CollectionFilterProvider pageId='collectionTool' playerCollections={playerCollections}>
-				<CrewTable 
+				<CollectionsViews 
 					filterCrewByCollection={filterCrewByCollection}
 					playerData={props.playerData} 
 					allCrew={allCrew} 
@@ -335,7 +336,7 @@ type CrewTableProps = {
 	filterCrewByCollection: (collectionId: number) => void;
 };
 
-const CrewTable = (props: CrewTableProps) => {
+const CollectionsViews = (props: CrewTableProps) => {
 	const context = React.useContext(GlobalContext);
 	const colContext = React.useContext(CollectionFilterContext);
 
@@ -802,31 +803,48 @@ const CrewTable = (props: CrewTableProps) => {
 
 	const tabPanes = [
 		{ 
+			menuItem: 'Overview',
+			longTitle: 'Collections Overview',
+			description: 'Collections Overview',
+			longDescription: "Overview of All Collections",
+			showFilters: false,
+			requirePlayer: false,
+			render: () => <CollectionsOverviewComponent />
+		},
+		{ 
 			menuItem: 'Progress', 
+			longTitle: 'Collection Milestone Progress',
 			description: 'Collection Progress',
 			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
-			render: () => <ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} /> 
+			requirePlayer: true,
+			render: () => <ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
 		},
 		{ 
 			menuItem: 'Crew', 
-			description: 'Crew Table', 
+			longTitle: 'Crew Table',
+			description: 'Collections Grouped by Crew', 
 			longDescription: 'Search for crew that will help you make progress on collections and see what rewards you could claim by immortalizing certain crew right now. Note: maxed collections and immortalized crew will not be shown in this table.',
 			showFilters: true,
+			requirePlayer: true,
 			render: () => renderTable()
 		},
 		{ 
-			menuItem: 'Collections', 
-			description: 'Collection Crew Groups', 
+			menuItem: 'Groups', 
+			longTitle: 'Collections Crew Groups',
+			description: <>Crew grouped by collection,<br/>and sorted by cost</>, 
 			longDescription: "Show crew grouped into collections sorted by closest to max. Crew highlighted in green are required to reach the next tier. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.",
 			showFilters: true,
+			requirePlayer: true,
 			render: () => <CollectionGroupTable playerCollections={playerCollections} colGroups={colGroups} />
 		},
 		{ 
 			menuItem: 'Optimizer', 
-			description: 'Collection Crew Optimizer', 
+			longTitle: 'Collections Milestone Optimizer',
+			description: <>See which crew can complete the<br/>most collections, at once.</>, 
 			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
+			requirePlayer: true,
 			render: () => <CollectionOptimizerTable playerCollections={playerCollections} colOptimized={colOptimized} />
 		}
 	];
@@ -849,7 +867,7 @@ const CrewTable = (props: CrewTableProps) => {
 					})}						
 				</Step.Group>
 			</div>
-			<Header as='h4'>{tabPanes[tabIndex ?? 0].description}</Header>
+			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle}</Header>
 				<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
 
 			{tabPanes[tabIndex ?? 0].showFilters && 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown, Grid, SemanticWIDTHS } from "semantic-ui-react";
+import { Dropdown, Grid, Icon, SemanticWIDTHS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { BuffBase, PlayerCollection, Reward } from "../../model/player";
 import { EquipmentItem } from "../../model/equipment";
@@ -79,7 +79,12 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	}
 
 
-	const quantityLabel = (quantity) => {
+	const quantityLabel = (quantity?: number) => {
+
+		if (quantity === undefined) return 0;
+		if (quantity === 0){
+			return <Icon name='check circle' style={{margin: 0, padding: 0, textAlign: 'center', color:'lightgreen', height:'24px'}} />
+		}
 		if (quantity >= 10000)
 			return quantity/1000+'K';
 		return quantity;
@@ -137,6 +142,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										maxRarity={reward.rarity}
 										rarity={reward.rarity}
 									/>
+									
 									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
 									</div>
 								</Grid.Column>

@@ -4,7 +4,7 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew, PlayerCollection, PlayerData, CompletionState, BuffBase, Reward } from '../../model/player';
 import { neededStars, starCost } from '../../utils/crewutils';
 import { getCollectionRewards } from '../../utils/itemutils';
-import { CollectionFilterContext, CollectionGroup, CollectionMap, MapFilterOptions } from './utils';
+import { CollectionFilterContext, CollectionGroup, CollectionMap, MapFilterOptions, makeCiteNeeds } from './utils';
 import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
 import { RewardsGridNeed, RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
@@ -53,22 +53,6 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		setGroupPageCount(pageCount);
 		setGroupPage(Math.min(pageCount, 1));
 		return <></>
-	}
-
-	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
-
-	const makeCiteNeeds = (col: CollectionMap | CollectionGroup) => {
-		if (!col.neededStars?.length) return [];
-		const gridneed = [] as RewardsGridNeed[];
-		col.neededStars.forEach((star, idx) => {
-			if (idx >= 2 && idx <= 5 && star) {
-				gridneed.push({
-					symbol: citeSymbols[idx],
-					quantity: star
-				});
-			}	
-		});
-		return gridneed;
 	}
 
 	//const rewards =
@@ -205,11 +189,19 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 											flexDirection: "column", 
 											alignItems: "center", 
 											justifyContent: "center",
-											padding:"0.25em",
+											padding:"0.25em 1em",
 											paddingTop: ccidx < (collection?.needed ?? 0) ? '0.75em' : undefined,
 											borderRadius: "5px",																			
-											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined
+											
 									}}>
+									
+									{ccidx < (collection?.needed ?? 0) && 
+										<div style={{zIndex: 500, display: 'flex', width: "100%", flexDirection:'row', justifyContent: 'center'}}>
+										<Icon color='green' 
+											name='star'
+											style={{marginLeft:"-52px", marginBottom: "-16px", height:'24px'}} />
+										</div>}
+									
 									<ItemDisplay 
 										size={64}
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
@@ -220,6 +212,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 										allCrew={context.core.crew}
 										playerData={context.player.playerData}
 										/>
+
 										<b
 											onClick={(e) => addToSearchFilter(crew.name)} 
 											style={{
@@ -234,6 +227,11 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 										<i>({crew.pickerId} collections increased)</i>
 										<i>Level {crew.level}</i>
 										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
+										
+										<div style={{margin:"0.5em 0"}}>
+										<RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
+										</div>
+											
 									</div>
 								))}
 							</Grid>

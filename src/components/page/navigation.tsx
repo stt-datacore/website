@@ -165,7 +165,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
 				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
-				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/playertools?tool=collections", sidebarRole: 'item' },	// Collections added v4
+				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
 				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
 				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
@@ -176,7 +176,6 @@ export const Navigation = (props: NavigationProps) => {
             subMenu: [
 				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' },
 				{ title: 'Events', link: '/events', sidebarRole: 'item' },
-				{ title: 'Collections', link: '/collections', sidebarRole: 'item' },
 				{ title: 'Voyage Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
 				{ title: "Misc Game Stats", link: "/stats", sidebarRole: 'item' },
 			]

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollectionFilterContext, CollectionGroup, CollectionMap } from './utils';
+import { CollectionFilterContext, CollectionGroup, CollectionMap, makeCiteNeeds } from './utils';
 import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
@@ -10,6 +10,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { neededStars, starCost } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
+import { appelate } from '../../utils/misc';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
@@ -36,6 +37,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
 	const [optPageCount, setOptPageCount] = React.useState(1);	
+	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
+
 	const costMap = [] as { collection: string, combo: string[], cost: number, crew: PlayerCrew[] }[];
 
 	const setByCost = (value: boolean) => {
@@ -199,23 +202,6 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			setSearchFilter(value);
 		}
 	}
-
-	const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
-
-	const makeCiteNeeds = (col: CollectionMap | CollectionGroup, combo?: string) => {
-		if (!col.neededStars?.length) return [];
-		const gridneed = [] as RewardsGridNeed[];
-		col.neededStars.forEach((star, idx) => {
-			if (idx >= 2 && idx <= 5 && star) {
-				gridneed.push({
-					symbol: citeSymbols[idx],
-					quantity: star
-				});
-			}	
-		});
-		return gridneed;
-	}
-
 	
 	if (byCost && colOptimized?.length ){
 		colOptimized.forEach(col => {
@@ -290,23 +276,39 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
-			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
-			<div style={{margin:"0 0.5em", padding: 0}}>
-			Items Per Page:
-			<Dropdown 
-				style={{margin: "0.5em"}}
-				placeholder={"Items Per Page"}
-				value={pageSize}
-				onChange={(e, { value }) => setPageSize(value as number)}
-				options={[1,2,5,10].map(x => {
-					return {
-						value: x,
-						key: x,
-						text: "" + x
-					}
-				})}
-				/>
-			</div>
+				<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
+				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+					Items Per Page:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Items Per Page"}
+						value={pageSize}
+						onChange={(e, { value }) => setPageSize(value as number)}
+						options={[1,2,5,10].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + x
+							}
+						})}
+						/>
+				</div>
+				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+					Show Crew:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Show Crew"}
+						value={crewPos}
+						onChange={(e, { value }) => setCrewPos(value as ('top' | 'bottom'))}
+						options={['top', 'bottom'].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + appelate(x)
+							}
+						})}
+						/>
+				</div>
 			</div>}
 			<Table striped>
 				{colMap.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
@@ -375,7 +377,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 							</div>
 						</Table.Cell>
 						<Table.Cell>
-						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
+							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
 							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 							<div style={{margin: "0.25em"}}>Variations: </div>
@@ -393,43 +395,47 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 							})}/>
 							</div>}
 
-							<Grid doubling columns={3} textAlign='center'>
-								{getOptCols(col, optCombo).map((c) => {
-										const collection = c.collection;
-										if (!collection?.totalRewards || !collection.milestone) return <></>;
-										const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
-										
-										const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
-										const crewhave = (collection?.owned ?? 0);
+							<div style={{display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column'}}>
+							<div style={{display:'flex', flexDirection:'column'}}>
+								<Grid doubling columns={3} textAlign='center'>								
+									{getOptCols(col, optCombo).map((c) => {
+											const collection = c.collection;
+											if (!collection?.totalRewards || !collection.milestone) return <></>;
+											const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
+											
+											const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
+											const crewhave = (collection?.owned ?? 0);
 
-									return <div style={{								
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-										alignItems: "center",
-										height: "100%",
-										margin: "1em"
-									}}>
-									
-									<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
-										style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
-										title={collection.name}
-									/>
-									<h2 
-										onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
-										style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
-									<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
-									<hr style={{width: "16em"}}></hr>
-									<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
-									<div style={{margin: "0.5em 0 0.5em 0"}}>
-										<RewardsGrid wrap={true} rewards={rewards} />
-									</div></div>
-								})}
-						</Grid>
+										return <div style={{								
+											display: "flex",
+											flexDirection: "column",
+											justifyContent: "center",
+											alignItems: "center",
+											height: "100%",
+											margin: "1em",
+											maxWidth: "325px"
+										}}>
+										
+										<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
+											style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
+											title={collection.name}
+										/>
+										<h2 
+											onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
+											style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
+										<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
+										<hr style={{width: "16em"}}></hr>
+										<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
+										<div style={{margin: "0.5em 0 0.5em 0"}}>
+											<RewardsGrid wrap={true} rewards={rewards} />
+										</div></div>
+									})}
+							</Grid>
+						</div>
 						<Grid doubling columns={3} textAlign='center'>
 								{comboCrew.map((crew, ccidx) => (
 									<div 
-										className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
+										//className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
 										style={{  
 											margin: "1.5em", 
 											display: "flex", 
@@ -440,7 +446,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 											paddingTop: '0.75em',
 											borderRadius: "5px",																			
 											border: !(crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? '1px solid darkgreen' : undefined,
-											backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined,
+											//backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined,
 									}}>
 									<ItemDisplay 
 										size={64}
@@ -466,9 +472,18 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 										<i>({crew.pickerId} collections increased)</i>
 										<i>Level {crew.level}</i>
 										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
+										
+										{crew.rarity !== crew.max_rarity && 
+											<div style={{margin:"0.5em 0"}}>
+											<RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
+											</div>
+											}
+											
+
 									</div>
 								))}
 							</Grid>
+							</div>
 						</Table.Cell>
 					</Table.Row>)
 					}
@@ -477,23 +492,39 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</Table>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
-			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
-			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
-			Items Per Page:
-			<Dropdown 
-				style={{margin: "0.5em"}}
-				placeholder={"Items Per Page"}
-				value={pageSize}
-				onChange={(e, { value }) => setPageSize(value as number)}
-				options={[1,2,5,10].map(x => {
-					return {
-						value: x,
-						key: x,
-						text: "" + x
-					}
-				})}
-				/>
-			</div>
+				<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
+				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+					Items Per Page:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Items Per Page"}
+						value={pageSize}
+						onChange={(e, { value }) => setPageSize(value as number)}
+						options={[1,2,5,10].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + x
+							}
+						})}
+						/>
+				</div>
+				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+					Show Crew:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Show Crew"}
+						value={crewPos}
+						onChange={(e, { value }) => setCrewPos(value as ('top' | 'bottom'))}
+						options={['top', 'bottom'].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + appelate(x)
+							}
+						})}
+						/>
+				</div>
 			</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />

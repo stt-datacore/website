@@ -617,6 +617,7 @@ export class CrewPresenter extends React.Component<
                     display: "flex",
                     flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
                     width: hover ? undefined : width,
+                    textAlign: 'left'
                 }}
             >
                 <div
