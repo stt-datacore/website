@@ -7,7 +7,6 @@ import { CrewMember } from '../../model/crew';
 import { Collection } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import { formatColString } from '../item_presenters/crew_preparer';
-import DataPageLayout from '../page/datapagelayout';
 import CONFIG from '../CONFIG';
 
 type CollectionsPageProps = {};
