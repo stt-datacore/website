@@ -723,45 +723,61 @@ const CrewTable = (props: CrewTableProps) => {
 
 		return colOptimized
 			.filter(c => c.combos?.length)
+			.map(fc => {
+				if (mapFilter?.rewardFilter?.length) {
+					let col = (fc.combos?.map(sc => sc.map(tu => playerCollections?.find(col => col?.name === tu?.replace("* ", ''))))?.filter(c => c) ?? []) as PlayerCollection[][];
+					
+					col?.sort((a, b) => {
+						return compareRewards(mapFilter, a, b, short);
+					});
+
+					if (col?.length) {
+						fc.combos = col?.map(c => c.map(d => d.name));
+					}					
+				}
+				return fc;
+			})
 			.sort((a, b) => {
-			
-			if (mapFilter?.rewardFilter?.length) {
-				let  acol = a?.collection;
-				let  bcol = b?.collection;
-				let r = 0;
-	
-				if (mapFilter?.rewardFilter) {
-					r = compareRewards(mapFilter, 
-						[ acol, ...a?.maps?.map(d => d.collection) ?? []].filter(e => e), 
-						[ bcol, ...b?.maps?.map(d => d.collection) ?? []].filter(e => e), 
-						short);
-					if (r) return r;
+				if (mapFilter?.rewardFilter?.length) {
+					let  acol = a?.collection;
+					let  bcol = b?.collection;
+					let r = 0;
+		
+					if (mapFilter?.rewardFilter) {
+						r = (compareRewards(mapFilter, [acol], [bcol], short));
+						if (r) return r;
+						r = compareRewards(mapFilter, 
+							[ acol, ...a?.maps?.map(d => d.collection) ?? []].filter(e => e), 
+							[ bcol, ...b?.maps?.map(d => d.collection) ?? []].filter(e => e), 
+							short);
+
+						if (r) return r;
+					}	
+				}
+
+				if (a.combos && b.combos) {
+					let acb = a.combos.length;
+					let bcb = b.combos.length;
+					let ayes = a.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
+					let byes = b.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
+					let r = 0;
+					
+					if (!r) r = byes - ayes;
+					if (!r) r = bcb - acb;
+
+					return r;
 				}	
-			}
+				else if (a.combos) {
+					return -1;
+				}
+				else if (b.combos) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
 
-			if (a.combos && b.combos) {
-				let acb = a.combos.length;
-				let bcb = b.combos.length;
-				let ayes = a.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
-				let byes = b.combos.filter(c => c[0].startsWith("* "))?.length ?? 0;
-				let r = 0;
-				
-				if (!r) r = byes - ayes;
-				if (!r) r = bcb - acb;
-
-				return r;
-			}	
-			else if (a.combos) {
-				return -1;
-			}
-			else if (b.combos) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
-
-		});
+			});
 	}
 
 	const colOptimized = createOptimizerGroups(unfilteredGroups.map(g => {
