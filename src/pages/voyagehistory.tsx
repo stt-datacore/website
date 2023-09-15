@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'gatsby';
-import { Message } from 'semantic-ui-react';
+import { Link, navigate } from 'gatsby';
+import { Message, Button } from 'semantic-ui-react';
 
 import { IVoyageHistory } from '../model/voyage';
 import { GlobalContext } from '../context/globalcontext';
@@ -11,6 +11,8 @@ import { IHistoryContext, HistoryContext } from '../components/voyagehistory/con
 import { VoyagesTable } from '../components/voyagehistory/voyagestable';
 import { CrewTable } from '../components/voyagehistory/crewtable';
 import { defaultHistory } from '../components/voyagehistory/utils';
+
+import { ActiveVoyage } from '../components/voyagecalculator/activevoyage';
 
 const VoyageHistoryPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -23,7 +25,7 @@ const VoyageHistoryPage = () => {
 			playerPromptType='require'
 		>
 			<React.Fragment>
-				{playerData && <PlayerVoyageHistory dbid={`${playerData.player.dbid}`} />}
+				{playerData && <PlayerVoyageHistory key={`${playerData.player.dbid}`} dbid={`${playerData.player.dbid}`} />}
 			</React.Fragment>
 		</DataPageLayout>
 	);
@@ -34,27 +36,54 @@ type PlayerVoyageHistoryProps = {
 };
 
 const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
-	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true } );
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData, ephemeral } = globalContext.player;
+
+	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: () => setHistoryReady(true) } );
+	const [historyReady, setHistoryReady] = React.useState(false);
+	const [activeVoyageId, setActiveVoyageId] = React.useState(0);
+
+	React.useEffect(() => {
+		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
+		setActiveVoyageId(activeVoyageId);
+	}, [playerData]);
 
 	const historyContext = {
-		history, setHistory
+		history, setHistory, activeVoyageId
 	} as IHistoryContext;
+
+	const actionButtons = [
+		<Button key='active'
+			content='View active voyage'
+			icon='exchange'
+			size='large'
+			onClick={()=> navigate('/voyage')}
+		/>
+	] as JSX.Element[];
 
 	return (
 		<HistoryContext.Provider value={historyContext}>
-			<div style={{ marginTop: '2em' }}>
+			<React.Fragment>
+				{activeVoyageId > 0 &&
+					<ActiveVoyage
+						history={historyReady ? history : undefined}
+						setHistory={setHistory}
+						showDetails={false}
+						actionButtons={actionButtons}
+					/>
+				}
 				{history.voyages.length === 0 &&
 					<Message>
-						You have no tracked voyages yet. <b><Link to='/playertools?tool=voyage'>Use the voyage calculator</Link></b> to start tracking now.
+						You have no tracked voyages yet.{activeVoyageId === 0 && <>{` `}<b><Link to='/voyage'>Use the voyage calculator</Link></b> to start tracking now.</>}
 					</Message>
 				}
 				{history.voyages.length > 0 &&
 					<React.Fragment>
-						<VoyagesTable />
+						<VoyagesTable activeVoyageId={activeVoyageId} />
 						<CrewTable />
 					</React.Fragment>
 				}
-			</div>
+			</React.Fragment>
 		</HistoryContext.Provider>
 	);
 };

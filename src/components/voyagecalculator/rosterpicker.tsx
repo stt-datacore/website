@@ -107,7 +107,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		return (<></>);
 
 	return (
-		<Step.Group fluid>
+		<Step.Group fluid widths={2}>
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<Icon name='users' />
 				<Step.Content>

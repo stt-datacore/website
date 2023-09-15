@@ -1,51 +1,54 @@
 import React from 'react';
-import { Link } from 'gatsby';
 import { Card, Image, Button } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
-import { Ship } from '../../model/ship';
 import { IVoyageCrew, IVoyageHistory, ITrackedCheckpoint } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
 import CONFIG from '../CONFIG';
-import { useStateWithStorage } from '../../utils/storage';
 import { formatTime } from '../../utils/voyageutils';
 
 import { CIVASMessage } from './civas';
 import { VoyageStats } from './voyagestats';
-import { rosterizeMyCrew, rosterizeMyShips } from './rosterpicker';
+import { rosterizeMyCrew } from './rosterpicker';
 
-import { getRuntime, defaultHistory, estimateTrackedVoyage, createCheckpoint, addVoyageToHistory, addCrewToHistory } from '../../components/voyagehistory/utils';
+import { getRuntime, estimateTrackedVoyage, createCheckpoint, addVoyageToHistory, addCrewToHistory } from '../../components/voyagehistory/utils';
 
 type ActiveVoyageProps = {
-	showCalculator: boolean;
-	setShowCalculator: (showCalculator: boolean) => void;
+	history?: IVoyageHistory;
+	setHistory: (history: IVoyageHistory) => void;
+	showDetails: boolean;
+	actionButtons: JSX.Element[];
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, playerShips, ephemeral } = globalContext.player;
-	const { showCalculator, setShowCalculator } = props;
+	const { playerData, ephemeral } = globalContext.player;
+	const { showDetails, actionButtons } = props;
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
-	const [myShips, setMyShips] = React.useState<Ship[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
 		const rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew ?? []);
-		const rosterShips = rosterizeMyShips(playerShips ?? []);
 		setMyCrew([...rosterCrew]);
-		setMyShips([...rosterShips]);
 	}, []);
 
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
 
 	const voyageConfig = ephemeral.voyage[0];
+
 	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id);
+	const shipIcon = ship?.icon ? `${ship.icon.file.slice(1).replace('/', '_')}.png` : '';
+
+	let header = '';
+	if (voyageConfig.ship_name) header = voyageConfig.ship_name;
+	if (ship?.name && header !== '') header += ` $(ship.name)`
+	else if (ship?.name) header = ship.name;
 
 	const msgTypes = {
 		started: 'has been running for',
@@ -66,29 +69,34 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 		<React.Fragment>
 			<Card fluid>
 				<Card.Content>
-					{ship && <Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />}
-					{ship && <Card.Header>{voyageConfig.ship_name ? `${voyageConfig.ship_name} (${ship.name})` : `${ship.name}`}</Card.Header>}
-					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', rowGap: '1em' }}>
+					{shipIcon !== '' && <Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${shipIcon}`} style={{ height: '5em' }} />}
+					{header !== '' && (
+						<Card.Header>
+							{header}
+						</Card.Header>
+					)}
+					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
 							<p>
 								Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
 							</p>
 							<p style={{ marginTop: '.5em' }}>
 								Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>.
-								{ship && <ActiveVoyageTracker voyageConfig={voyageConfig} shipSymbol={ship.symbol} dbid={`${playerData.player.dbid}`} />}
+								{props.history && ship &&
+									<ActiveVoyageTracker
+										history={props.history} setHistory={props.setHistory}
+										voyageConfig={voyageConfig} shipSymbol={ship.symbol}
+									/>
+								}
 							</p>
 						</div>
-						<div>
-							<Button content={showCalculator ? 'View active voyage' : 'View crew calculator'}
-								icon='exchange'
-								size='large'
-								onClick={()=> setShowCalculator(showCalculator ? false : true)}
-							/>
+						<div style={{ display: 'flex', flexDirection: 'column' }}>
+							{actionButtons}
 						</div>
 					</div>
 				</Card.Content>
 			</Card>
-			{!showCalculator && myCrew && myShips && (
+			{showDetails && myCrew && (
 				<React.Fragment>
 					<VoyageStats
 						voyageData={voyageConfig}
@@ -111,19 +119,20 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 };
 
 type ActiveVoyageTrackerProps = {
+	history: IVoyageHistory;
+	setHistory: (history: IVoyageHistory) => void;
 	voyageConfig: Voyage;
 	shipSymbol: string;
-	dbid: string;
 };
 
 export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { voyageConfig, shipSymbol, dbid } = props;
+	const { history, setHistory, voyageConfig, shipSymbol } = props;
 
-	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: reconcileVoyage } );
 	const [voyageReconciled, setVoyageReconciled] = React.useState(false);
 
 	React.useEffect(() => {
+		reconcileVoyage();
 		return function cleanup() {
 			// Cancel active calculations when leaving page (TODO)
 		}
@@ -135,13 +144,11 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 			<span>
 				{` `}You are not tracking this voyage.
 				{` `}<Button compact content='Start tracking' onClick={initializeTracking} />
-				{history.voyages.length > 0 && <>{` `}<Link to='/voyagehistory/'>View history</Link></>}
 			</span>
 		);
 		return (
 			<span>
 				{` `}Your initial estimate was <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>.
-				{` `}<Link to='/voyagehistory/'>View history</Link>
 			</span>
 		);
 	}
@@ -149,7 +156,11 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 
 	function reconcileVoyage(): void {
 		if (!voyageConfig || !voyageConfig.state) return;	// Voyage not yet set or not active
-		if (history.voyages.length === 0) return;	// No tracked voyages in history
+		// No tracked voyages in history
+		if (history.voyages.length === 0) {
+			setVoyageReconciled(true);
+			return;
+		}
 
 		const activeConfig = {...voyageConfig} as Voyage;
 		const trackedVoyage = history.voyages.find(voyage => voyage.voyage_id === activeConfig.id);
