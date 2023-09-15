@@ -11,7 +11,7 @@ import ProfileCharts from '../components/profile_charts';
 import CiteOptimizer from '../components/citeoptimizer';
 import CollectionsTool from '../components/collectionstool';
 import EventPlanner from '../components/eventplanner';
-import VoyageCalculator from '../components/voyagecalculator';
+
 import CrewRetrieval from '../components/crewretrieval';
 import FactionInfo from '../components/factions';
 import UnneededItems from '../components/unneededitems';
@@ -42,10 +42,6 @@ export interface PlayerTools {
 }
 
 export const playerTools: PlayerTools = {
-	'voyage': {
-		title: 'Voyage Calculator',
-		render: () => <VoyageCalculator />
-	},
 	'event-planner': {
 		title: 'Event Planner',
 		render: () => <EventPlanner />
