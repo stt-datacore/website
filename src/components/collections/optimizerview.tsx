@@ -325,8 +325,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
 					const crewhave = (collection?.owned ?? 0);
 
-					return (<Table.Row key={"colgroup" + idx}>
-						<Table.Cell width={4}>
+					return (<Table.Row key={"colgroup" + idx} >
+						<Table.Cell width={4} style={{verticalAlign:"top"}}>
 							<div style={{								
 								display: "flex",
 								flexDirection: "column",
@@ -376,7 +376,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 								</i>}
 							</div>
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell style={{verticalAlign:"top"}}>
 							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
 							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
