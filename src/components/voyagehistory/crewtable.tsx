@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Header, Form, Dropdown, Table, Rating, Modal, Icon, Button } from 'semantic-ui-react';
 
+import { PlayerCrew } from '../../model/player';
 import { ITrackedCrewMember, ITrackedAssignmentsBySkill, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
@@ -39,7 +40,7 @@ export const CrewTable = () => {
 		const crewData = [] as ITrackedCrewMember[];
 		Object.keys(history.crew).forEach(crewSymbol => {
 			// TODO: Get crew from playerData instead of coreData
-			const crew = globalContext.core.crew.find(crew => crew.symbol === crewSymbol);
+			const crew = globalContext.core.crew.find(crew => crew.symbol === crewSymbol) as PlayerCrew;
 			if (crew) {
 				const assignments = history.crew[crewSymbol].filter(assignment => {
 					const trackedVoyage = voyages.find(voyage => voyage.tracker_id === assignment.tracker_id);
@@ -184,7 +185,7 @@ export const CrewTable = () => {
 				<Table.Cell textAlign='center'>
 					{crew.assignments.length > 0 && formatTime(crew.average_estimate)}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => viewVoyage(crew.last_assignment.tracker_id)} style={{ cursor: 'zoom-in' }}>
+				<Table.Cell textAlign='center' onClick={() => viewVoyage(crew.last_assignment.tracker_id)} style={{ cursor: 'pointer' }}>
 					{dtLastAssignment?.toLocaleDateString()}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill => renderPercentCell(crew, skill.name))}
@@ -197,7 +198,7 @@ export const CrewTable = () => {
 		if (usage === 0) return (<Table.Cell key={skillName} />);
 		return (
 			<Table.Cell key={skillName}
-				textAlign='center' style={{ cursor: 'zoom-in' }}
+				textAlign='center' style={{ cursor: 'pointer' }}
 				onClick={() => setActiveCrew(crew)}
 			>
 				{usage === 1 ? '100' : `${(usage*100).toFixed(1)}`}

@@ -11,8 +11,13 @@ import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
 import { removeVoyageFromHistory } from './utils';
 
-export const VoyagesTable = () => {
+type VoyagesTableProps = {
+	activeVoyageId: number;
+};
+
+export const VoyagesTable = (props: VoyagesTableProps) => {
 	const { history, setHistory } = React.useContext(HistoryContext);
+	const { activeVoyageId } = props;
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -138,8 +143,8 @@ export const VoyagesTable = () => {
 			<Message style={{ margin: '1em 0' }}>
 				<Message.Content>
 					<Message.Header>Tips</Message.Header>
-					<p>Once you start tracking a voyage, update your player data on the <Link to='/playertools?tool=voyage'>voyage calculator</Link> while your voyage is running to automatically track your current runtime and estimate.</p>
-					<p>You may want to check on the voyage in-game shortly before uploading your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
+					<p>Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.</p>
+					<p>You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
 					<p>Because voyages can be recalled at any time, we use <i>last estimates</i> (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.</p>
 					<p>Voyage history does not synchronize across multiple devices. You can only update a voyage estimate on the device where you initially tracked it.</p>
 				</Message.Content>
@@ -156,9 +161,10 @@ export const VoyagesTable = () => {
 	function renderTableRow(row: ITrackedVoyage): JSX.Element {
 		const dtCreated = new Date(row.created_at);
 		return (
-			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'zoom-in' }}>
+			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
+					{row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
