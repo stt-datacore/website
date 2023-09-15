@@ -156,7 +156,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			}
 			if (ct >= needs.length && !allneed) {
 				allneed = p + 1;
-			}
+			}			
 			p++;
 		}
 
@@ -473,11 +473,9 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 										<i>Level {crew.level}</i>
 										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
 										
-										{crew.rarity !== crew.max_rarity && 
-											<div style={{margin:"0.5em 0"}}>
-											<RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
-											</div>
-											}
+										<div style={{margin:"0.5em 0"}}>
+										<RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
+										</div>
 											
 
 									</div>
