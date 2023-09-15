@@ -158,10 +158,11 @@ export interface RewardPickerProps {
 	value?: string[];
 	onChange: (value?: string[]) => void;
 	placeholder?: string;
+	disabled?: boolean;
 }
 
 export const RewardPicker = (props: RewardPickerProps) => {
-	const { placeholder, source, icons, setShort, short, value, onChange } = props;
+	const { disabled, placeholder, source, icons, setShort, short, value, onChange } = props;
 	
     let rewardCol = !source ? [] : getCollectionRewards(source);	
 	const rewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
@@ -206,6 +207,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 	return (<>
 	
 	<Dropdown 
+		disabled={disabled}
 		style={{width: "22em"}}
 		scrolling
 		placeholder={placeholder ?? 'Priortize rewards'}

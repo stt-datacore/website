@@ -31,6 +31,7 @@ export interface CollectionGroup {
 	neededStars?: number[];
 	uniqueCost?: number;
 	combos?: string[][];
+    comboCost?: number[];
 }
 
 // const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');

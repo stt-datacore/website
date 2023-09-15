@@ -32,11 +32,17 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const { colOptimized } = props;
     
 	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1, { rememberForever: true });
-
+	const [byCost, internalSetByCost] = useStateWithStorage("colOptimizer/sortByCost", false, { rememberForever: true });
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
-	const [optPageCount, setOptPageCount] = React.useState(1);
+	const [optPageCount, setOptPageCount] = React.useState(1);	
+	const costMap = [] as { collection: string, combo: string[], cost: number, crew: PlayerCrew[] }[];
 
+	const setByCost = (value: boolean) => {
+		internalSetByCost(value);
+		setMapFilter({ ... mapFilter });
+	}
+	
 	const setShort = (value: boolean) => {
 		if (value !== short) {
 			internalSetShort(value);
@@ -156,6 +162,27 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	}
 	
 
+	colOptimized.forEach((col) => {			
+		col.comboCost = [];
+		for(let combo of col.combos ?? []) {
+			let crew = getOptCrew(col, combo.join(" / "));
+			costMap.push({
+				collection: col.collection.name,
+				combo: combo,
+				cost: starCost(crew),
+				crew: crew
+			});
+		}
+
+		//cmap.sort((a, b) => a.cost - b.cost);
+		//col.combos = cmap.map(m => m.combo);
+		col.comboCost = costMap.map(m => m.cost);
+	});
+
+	const findCrew = (col: CollectionGroup, combo?: string) => {
+		return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.join(" / ") === combo))?.crew ?? [];
+	}
+
 	const optCount = Math.ceil(colOptimized.length / pageSize);
 
 	if (optCount !== optPageCount || optPage > optCount) {
@@ -189,6 +216,35 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		return gridneed;
 	}
 
+	
+	if (byCost && colOptimized?.length ){
+		colOptimized.forEach(col => {
+			let map = costMap.filter(f => f.collection === col.collection.name);
+			map.sort((a, b) => a.cost - b.cost);
+			col.combos = map.map(m => m.combo);
+			col.comboCost = map.map(m => m.cost);
+		});
+		colOptimized.sort((a, b) => {
+			let acost = 0;
+			let bcost = 0;
+
+			if (a.comboCost?.length) {
+				acost = a.comboCost[0];
+			}
+			else {
+				acost = 0;
+			}
+			if (b.comboCost?.length) {
+				bcost = b.comboCost[0];
+			}
+			else {
+				bcost = 0;
+			}
+			return acost - bcost;
+
+		});	
+	}
+
 
 	//const rewards =
 	const renderOptimizer = (colMap: CollectionGroup[]) => {		
@@ -197,10 +253,9 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{!mapFilter?.collectionsFilter?.length && 
-				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
-					The collection optimizer view shows only owned crew if the collections list is not filtered.
-				</i>}
+			<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
+				The collection optimizer view shows only owned crew.
+			</i>
 			
 			<div style={{
 				display: "flex",
@@ -226,10 +281,12 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					setShort={setShort}
 					source={playerCollections} 
 					icons
+					disabled={byCost}
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
-				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox disabled={byCost} style={{margin: "0 0.5em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox style={{margin: "0 0.5em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
 			</div>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
@@ -255,7 +312,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				{colMap.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
 					
 					const optCombo = getCombo(col);
-					const comboCrew = getOptCrew(col, optCombo);
+					const comboCrew = findCrew(col, optCombo);
 					
 					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
 					collection.neededCost = starCost(comboCrew);
