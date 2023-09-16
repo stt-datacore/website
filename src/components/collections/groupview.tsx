@@ -54,7 +54,9 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		setGroupPage(Math.min(pageCount, 1));
 		return <></>
 	}
-
+	let crewprep = colGroups.map((col) => col.crew).flat();
+	const allCrew = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx).sort((a, b) => a.name.localeCompare(b.name));
+	
 	//const rewards =
 	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
 		return (<div style={{
@@ -72,18 +74,28 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				alignItems: "center",
 				justifyContent: "flex-start"			
 			}}>
-				<Input
+				<Dropdown
+					multiple
 					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
 					iconPosition="left"
-					placeholder="Search..."
-					value={searchFilter}
-					onChange={(e, { value }) => setSearchFilter(value)}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => setSearchFilter('')} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
+					scrolling		
+					options={allCrew?.map(ca => {
+						return {
+							key: ca.name,
+							value: ca.name,
+							text: 
+								<div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
+									<img 
+										src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`} 
+										style={{height:'2em', marginRight:"0.5em"}} />
+									{ca.name}
+								</div>
+						}
+					}) ?? []}
+					placeholder="Click crew name to filter..."
+					value={searchFilter.split(";").map(s => s.trim())}
+					onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
+
 
 				<RewardPicker 
 					short={short}

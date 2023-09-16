@@ -463,10 +463,20 @@ const CollectionsViews = (props: CrewTableProps) => {
 
 			col.crew.sort((a, b) => {
 				let r = 0;
+				
+				if (searches?.length) {
+					let ares = searches.includes(a.name);
+					let bres = searches.includes(b.name);
+					if (ares !== bres) {
+						if (ares) return -1;
+						return 1;
+					}
+				}
 				if (a.have !== b.have) {
 					if (!a.have) return 1;
 					else return -1;
 				}
+
 				if (a.favorite !== b.favorite) {
 					if (a.favorite) return -1;
 					else return 1;
@@ -719,10 +729,12 @@ const CollectionsViews = (props: CrewTableProps) => {
 				});
 			}
 			if (mapFilter?.collectionsFilter?.length) {
-				col.combos = col.combos.filter(fc => {
-					let col = fc.map(sc => playerCollections.find(col => col.name === sc));
-					return col.some(c => mapFilter?.collectionsFilter?.includes(c?.id ?? -1));
-				});
+				if (!mapFilter?.collectionsFilter?.includes(col.collection.id)) {
+					col.combos = col.combos.filter(fc => {
+						let col = fc.map(sc => playerCollections.find(col => col.name === sc.replace("* ", '')));
+						return col.some(c => mapFilter?.collectionsFilter?.includes(c?.id ?? -1));
+					});	
+				}
 			}
 		}		
 

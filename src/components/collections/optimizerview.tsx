@@ -11,6 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { neededStars, starCost } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { appelate } from '../../utils/misc';
+import CollectionsCrewCard from './crewcard';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
@@ -39,6 +40,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const [optPageCount, setOptPageCount] = React.useState(1);	
 	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
 
+	const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 	const costMap = [] as { collection: string, combo: string[], cost: number, crew: PlayerCrew[] }[];
 
 	const setByCost = (value: boolean) => {
@@ -120,6 +122,14 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			let x = 0;
 			let y = 0;
 			
+			if (searches?.length) {
+				let ares = searches.includes(a.name);
+				let bres = searches.includes(b.name);
+				if (ares !== bres) {
+					if (ares) return -1;
+					return 1;
+				}
+			}
 			if (a.favorite != b.favorite) {
 				if (a.favorite) return -1;
 				else return 1;
@@ -190,14 +200,6 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.join(" / ") === combo))?.crew ?? [];
 	}
 
-	const optCount = Math.ceil(colOptimized.length / pageSize);
-
-	if (optCount !== optPageCount || optPage > optCount) {
-		setOptPageCount(optCount);
-		setOptPage(Math.min(optCount, 1));
-		return <></>
-	}
-
     const addToSearchFilter = (value: string) => {
 		if (searchFilter?.length) {
 			setSearchFilter(searchFilter + "; " + value);
@@ -210,10 +212,11 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	if (byCost && colOptimized?.length ){
 		colOptimized.forEach(col => {
 			let map = costMap.filter(f => f.collection === col.collection.name);
-			map.sort((a, b) => a.cost - b.cost);
+			map = map.filter(mf => !!mf.cost).sort((a, b) => a.cost - b.cost);
 			col.combos = map.map(m => m.combo);
 			col.comboCost = map.map(m => m.cost);
 		});
+	
 		colOptimized.sort((a, b) => {
 			let acost = 0;
 			let bcost = 0;
@@ -235,6 +238,36 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		});	
 	}
 
+	let crewprep = colOptimized.map((col) => col.uniqueCrew).flat();
+	const allCrew = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx).sort((a, b) => a.name.localeCompare(b.name));
+	
+	const finalCol = colOptimized.filter((col) => {		
+		if (searches?.length) {
+			let newcombos = [] as string[][];
+			let newcombocost = [] as number[];
+			let x = 0;
+			for (let combo of col.combos ?? []) {
+				let fc = findCrew(col, combo.join(" / "));
+				if (fc.some(fcc => searches.includes(fcc.name))) {
+					newcombos.push(combo);
+					if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
+				}
+				x++;
+			}
+			col.combos = newcombos;
+			col.comboCost = newcombocost;
+			if (!col.uniqueCrew?.some(f => searches.includes(f.name))) return false;
+		}
+		return !!col.combos?.length;
+	});
+
+	const optCount = Math.ceil(finalCol.length / pageSize);
+
+	if (optCount !== optPageCount || optPage > optCount) {
+		setOptPageCount(optCount);
+		setOptPage(Math.min(optCount, 1));
+		return <></>
+	}
 
 	//const rewards =
 	const renderOptimizer = (colMap: CollectionGroup[]) => {		
@@ -253,18 +286,27 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				alignItems: "center",
 				justifyContent: "flex-start"			
 			}}>
-				<Input
+				<Dropdown
+					multiple
 					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
 					iconPosition="left"
-					placeholder="Search..."
-					value={searchFilter}
-					onChange={(e, { value }) => setSearchFilter(value)}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => setSearchFilter('')} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
+					scrolling		
+					options={allCrew?.map(ca => {
+						return {
+							key: ca.name,
+							value: ca.name,
+							text: 
+								<div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
+									<img 
+										src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`} 
+										style={{height:'2em', marginRight:"0.5em"}} />
+									{ca.name}
+								</div>
+						}
+					}) ?? []}
+					placeholder="Click crew name to filter..."
+					value={searchFilter.split(";").map(s => s.trim())}
+					onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
 
 				<RewardPicker 
 					short={short}
@@ -438,51 +480,11 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						</div>
 						<Grid doubling columns={3} textAlign='center'>
 								{comboCrew.map((crew, ccidx) => (
-									<div 
-										//className={ccidx < (collection?.needed ?? 0) ? 'ui segment' : undefined}
-										style={{  
-											margin: "1.5em", 
-											display: "flex", 
-											flexDirection: "column", 
-											alignItems: "center", 
-											justifyContent: "center",
-											padding:"0.25em",
-											paddingTop: '0.75em',
-											borderRadius: "5px",																			
-											border: !(crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? '1px solid darkgreen' : undefined,
-											//backgroundColor: (crewhave >= crewneed && ccidx < (collection?.needed ?? 0)) ? 'darkgreen' : undefined,
-									}}>
-									<ItemDisplay 
-										size={64}
-										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-										rarity={!crew.have ? 0 : crew.rarity}
-										maxRarity={crew.max_rarity}
-										targetGroup={'collectionsTarget'}
-										itemSymbol={crew.symbol}
-										allCrew={context.core.crew}
-										playerData={context.player.playerData}
-										/>
-										<b
-											onClick={(e) => addToSearchFilter(crew.name)} 
-											style={{
-											cursor: "pointer", 
-											margin:"0.5em 0 0 0",
-											textDecoration: "underline"
-											}}
-											title={"Click to see collections containing this crew member"}
-											>
-											{crew.favorite && <Icon name='heart' style={{textDecoration:"none"}}  />} {crew.name}
-										</b>			
-										<i>({crew.pickerId} collections increased)</i>
-										<i>Level {crew.level}</i>
-										<CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
-										
-										<div style={{margin:"0.5em 0"}}>
-										<RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
-										</div>
-											
-
-									</div>
+									<CollectionsCrewCard 
+										crew={crew} 
+										collection={collection}
+										index={ccidx} 
+										onClick={(e, data) => addToSearchFilter(data.name)} />
 								))}
 							</Grid>
 							</div>
@@ -534,5 +536,5 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 	}
 
-    return renderOptimizer(colOptimized);
+    return renderOptimizer(finalCol);
 }
