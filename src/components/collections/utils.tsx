@@ -59,6 +59,9 @@ export interface CollectionFilterProps {
     ownedFilter: string;
     setOwnedFilter: (value?: string) => void;
 
+    costMode: 'normal' | 'sale';
+    setCostMode: (value: 'normal' | 'sale') => void;
+
     checkCommonFilter: (crew: PlayerCrew, exclude?: string[]) => boolean;
     checkRewardFilter: (collection: PlayerCollection, filters: string[]) => boolean;
 };
@@ -69,6 +72,7 @@ const DefaultData = {
     rarityFilter: [],
     fuseFilter: '',
     ownedFilter: '',
+    costMode: 'normal',
     short: false,
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
@@ -78,6 +82,7 @@ const DefaultData = {
     checkCommonFilter: (value) => false,
     checkRewardFilter: (value) => false,
     setShort: (value) => false,
+    setCostMode: (value) => false
 } as CollectionFilterProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterProps>(DefaultData);
@@ -93,7 +98,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const { children, pageId, playerCollections } = props;
 	const tinyCol = TinyStore.getStore('collections');   
 
-	const offsel = tinyCol.getValue<string | undefined>(pageId + "/selectedCollection");
+	const offsel = tinyCol.getValue<string | undefined>(pageId + "/selectedCollection");    
 	const selColId = playerCollections.find(f => f.name === offsel)?.id;
 	const defaultMap = {
 		collectionsFilter: selColId !== undefined ? [selColId] : [] as number[],
@@ -106,6 +111,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const [searchFilter, setSearchFilter] = useStateWithStorage(pageId + 'collectionstool/searchFilter', '');
     const [mapFilter, setMapFilter] = useStateWithStorage(pageId + 'collectionstool/mapFilter', defaultMap);
 	const [short, internalSetShort] = useStateWithStorage('collectionstool/colGroupShort', false, { rememberForever: true });
+	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
 
     const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
 		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
@@ -160,6 +166,8 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         checkRewardFilter,
         short,
         setShort: internalSetShort,
+        costMode,
+        setCostMode
     } as CollectionFilterProps;
 
     return (<CollectionFilterContext.Provider value={data}>

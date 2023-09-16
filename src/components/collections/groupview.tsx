@@ -5,7 +5,7 @@ import { PlayerCrew, PlayerCollection, PlayerData, CompletionState, BuffBase, Re
 import { neededStars, starCost } from '../../utils/crewutils';
 import { getCollectionRewards } from '../../utils/itemutils';
 import { CollectionFilterContext, CollectionGroup, CollectionMap, MapFilterOptions, makeCiteNeeds } from './utils';
-import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
+import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import { RewardsGridNeed, RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { CrewItemsView } from '../item_presenters/crew_items';
@@ -23,7 +23,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { playerCollections, colGroups } = props;
-    const { setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 	const [pageSize, setPageSize] = useStateWithStorage("colGroups/itemsPerPage", 1, { rememberForever: true });
@@ -76,7 +76,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			}}>
 				<Dropdown
 					multiple
-					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
+					style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
 					iconPosition="left"
 					scrolling		
 					options={allCrew?.map(ca => {
@@ -105,7 +105,9 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
-				<Checkbox label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox style={{margin: "0 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox style={{margin: "0 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+
 			</div>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
@@ -177,6 +179,19 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 									</i>
 									<div style={{marginTop:"0.5em"}}>
 									<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
+									<Progress 
+										value={context.player.playerData?.player.honor} total={collection.neededCost} 
+										label={
+											<div style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent: "center"}}>
+												<img
+													src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+													style={{width : '16px', verticalAlign: 'text-bottom', margin:"0 0.5em"}}
+													/>
+												{context.player.playerData?.player.honor.toLocaleString()} / {collection.neededCost.toLocaleString()}
+												{(context.player.playerData?.player.honor ?? 0) > (collection.neededCost ?? 0) && <Icon name='check' size='small' color='green' style={{margin:"0 0.5em"}} />}
+											</div>}
+										
+										/>									
 									</div>
 									</div>)}
 									{(crewhave >= crewneed && !collection.neededCost && <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CollectionFilterContext, CollectionGroup, CollectionMap, makeCiteNeeds } from './utils';
-import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input } from 'semantic-ui-react';
+import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
@@ -27,7 +27,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { playerCollections } = props;
-    const { setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
@@ -147,7 +147,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			}
 			let r = y - x;
 			if (!r) {
-				r = starCost([a]) - starCost([b]);
+				r = starCost([a], undefined, costMode === 'sale') - starCost([b], undefined, costMode === 'sale');
 			}
 			return r;
 		});
@@ -186,7 +186,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			costMap.push({
 				collection: col.collection.name,
 				combo: combo,
-				cost: starCost(crew),
+				cost: starCost(crew, undefined, costMode === 'sale'),
 				crew: crew
 			});
 		}
@@ -297,7 +297,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			}}>
 				<Dropdown
 					multiple
-					style={{ width: narrow ? '100%' : '50%', margin: "0.5em 0" }}
+					style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
 					iconPosition="left"
 					scrolling		
 					options={allCrew?.map(ca => {
@@ -326,8 +326,9 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
-				<Checkbox disabled={byCost} style={{margin: "0 0.5em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
-				<Checkbox style={{margin: "0 0.5em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
+				<Checkbox disabled={byCost} style={{margin: "0 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox style={{margin: "0 1em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
+				<Checkbox style={{margin: "0 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 			</div>
 			{!!colMap?.length && 			
 			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
@@ -372,7 +373,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					const comboCrew = findCrew(col, optCombo);
 					
 					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
-					collection.neededCost = starCost(comboCrew);
+					collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 					col.neededStars = neededStars(comboCrew);
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 					const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
@@ -419,6 +420,19 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 								</i>
 								<div style={{marginTop:"0.5em"}}>
 								<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
+								<Progress 
+									value={context.player.playerData?.player.honor} total={collection.neededCost} 
+									label={
+										<div style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent: "center"}}>
+											<img
+												src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+												style={{width : '16px', verticalAlign: 'text-bottom', margin:"0 0.5em"}}
+												/>
+											{context.player.playerData?.player.honor.toLocaleString()} / {collection.neededCost.toLocaleString()}
+											{(context.player.playerData?.player.honor ?? 0) > (collection.neededCost ?? 0) && <Icon name='check' size='small' color='green' style={{margin:"0 0.5em"}} />}
+										</div>}
+							
+									/>
 								</div>
 								</div>)}
 								{(crewhave >= crewneed && !collection.neededCost && <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>

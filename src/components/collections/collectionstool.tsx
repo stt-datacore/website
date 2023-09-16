@@ -341,7 +341,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 	const colContext = React.useContext(CollectionFilterContext);
 
 	const { playerCollections, collectionCrew, filterCrewByCollection } = props;
-	const { short, mapFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { costMode, setCostMode, short, mapFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
@@ -505,7 +505,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 			col.neededStars = neededStars(col.crew, col.collection.needed ?? 0);
 		});
 		
-		colMap.forEach((c) => c.collection.neededCost = starCost(c.crew, c.collection.needed));
+		colMap.forEach((c) => c.collection.neededCost = starCost(c.crew, c.collection.needed, costMode === 'sale'));
 		
 		colMap.sort((a, b) => {
 			let  acol = a.collection;
@@ -614,7 +614,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 				let cb = innercounts[b.symbol];
 				r = cb - ca;
 				if (!r) {
-					r = starCost([a]) - starCost([b]);
+					r = starCost([a], undefined, costMode === 'sale') - starCost([b], undefined, costMode === 'sale');
 				}
 				return r;
 			});
@@ -625,7 +625,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 				commonCrew: common,
 				collection: col?.collection,
 				neededStars: neededStars(unique),
-				uniqueCost: starCost(unique)
+				uniqueCost: starCost(unique, undefined, costMode === 'sale')
 			} as CollectionGroup;
 		}).filter((g) => !!g.maps?.length && g.maps.some(gm => gm.completes)).sort((a, b) => {
 			let dista = a.uniqueCrew.length - a.commonCrew.length;

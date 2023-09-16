@@ -1520,8 +1520,8 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 	return `${crew.in_portal ? "Yes" : "No"}${obstr}`;
 }
 
-export function starCost(crew: PlayerCrew[], limit?: number) {
-	const costs = [0, 0, 500, 4500, 18000, 50000];
+export function starCost(crew: PlayerCrew[], limit?: number, sale?: boolean) {
+	const costs = [0, 0, 500, 4500, 18000, sale ? 40000 : 50000];
 
 	limit ??= crew.length;
 	let tc = 0;
