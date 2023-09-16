@@ -13,7 +13,7 @@ import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
-import { StatLabelProps } from "../commoncrewdata";
+import { StatLabelProps } from "../statlabel";
 import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
@@ -109,7 +109,7 @@ export interface CollectionDisplayProps {
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
-    const tinyCol = TinyStore.getStore('collections');    
+    const tinyCol = TinyStore.getStore('collections');
     const dispClick = (e, col: string) => {
         tinyCol.setValue('selectedCollection', col);
         navigate("/playertools/?tool=collections");
@@ -118,8 +118,8 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     const { crew, style } = props;
     if (!crew.collections?.length) return <></>;
     return (<div style={{
-        ... (style ?? {}),  
-        cursor: "pointer"      
+        ... (style ?? {}),
+        cursor: "pointer"
     }}>
         {crew.collections?.map((col, idx) => (
             <a onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>

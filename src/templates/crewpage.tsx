@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Header, Image, Divider, Grid, Rating, Dropdown, Popup, Label, Button } from 'semantic-ui-react';
+import { Header, Image, Divider, Grid, Rating, Dropdown, Popup, Label, Button, Segment, Icon } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 import CrewFullEquipTree from '../components/crewfullequiptree';
-import CommonCrewData from '../components/commoncrewdata';
-import ExtraCrewDetails from '../components/extracrewdetails';
+import { Common } from '../components/crewdata/common';
+import ExtraCrewDetails from '../components/crewdata/extracrewdetails';
 
 import CONFIG from '../components/CONFIG';
 import { CompletionState, PlayerCrew } from '../model/player';
@@ -264,31 +264,19 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 								flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
 								flexDirection: "column",
 							}}>
-								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
+								<Common crew={crew} markdownRemark={markdownRemark} />
+								{false &&
 								<div style={{ margin: '1em 0', textAlign: 'right' }}>
 									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 									(<h3><a style={{color: 'lightgreen', cursor: "pointer"}} onClick={(e) => navigate("/playertools?tool=crew&search=" + crew.name)} title="Click to see crew in roster">OWNED</a></h3>)
 									||
-									<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
+									<Button fluid onClick={() => { this._addProspect(crew); }}>
+										<Icon name='add user' color='green' />
+										Preview {crew.short_name} in your roster
+									</Button>
 									}
 								</div>
-
-								{(this.context.core.items?.length ?? 0) > 0 ? (
-									<React.Fragment>
-										{this.renderEquipment(crew)}
-										{this.renderEquipmentDetails(crew)}
-										<Button
-											onClick={() => this.setState({ modalVisible: true })}
-											style={{ marginTop: '1em' }}
-											content='Full equipment tree'
-											icon='right arrow'
-											labelPosition='right'
-										/>
-									</React.Fragment>
-								) : (
-										<div className='ui medium centered text active inline loader'>Loading items...</div>
-								)}
-
+								}
 							</div>
 						</div>
 					</div>
@@ -402,7 +390,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					<React.Fragment>
 						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
-							-- <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
+							— <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
 						</div>
 					</React.Fragment>
 				)}
@@ -441,6 +429,22 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						</Comment.Group>
 							)*/}
 				<Divider horizontal hidden style={{ marginTop: '4em' }} />
+				{(this.context.core.items?.length ?? 0) > 0 ? (
+					<Segment>
+						<Header as='h4'>Equipment Build Costs</Header>
+						{this.renderEquipment(crew)}
+						{this.renderEquipmentDetails(crew)}
+						<Button
+							onClick={() => this.setState({ modalVisible: true })}
+							style={{ marginTop: '1em' }}
+							content='Full equipment tree'
+							icon='right arrow'
+							labelPosition='right'
+						/>
+					</Segment>
+				) : (
+					<div className='ui medium centered text active inline loader'>Loading items...</div>
+				)}
 				<ExtraCrewDetails
 					crew_archetype_id={crew.archetype_id}
 					max_rarity={crew.max_rarity}

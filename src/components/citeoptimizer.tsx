@@ -7,12 +7,11 @@ import { SearchableTable, ITableConfigRow } from '../components/searchabletable'
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
 import { useStateWithStorage } from '../utils/storage';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
-import CommonCrewData, { StatLabelProps } from './commoncrewdata';
+import { StatLabelProps } from '../components/statlabel';
 import marked from 'marked';
-import CrewStat from './crewstat';
 import { formatTierLabel, getSkillOrder, navToCrewPage, printPortalStatus } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
-import { CiteEngine, CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
+import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { GlobalContext } from '../context/globalcontext';
@@ -54,8 +53,8 @@ type CiteOptimizerState = {
 	touchToggled: boolean;
 	citeMode?: CiteMode;
 	sort?: string;
-	direction?: 'ascending' | 'descending';	
-	checks?: SymCheck[];	
+	direction?: 'ascending' | 'descending';
+	checks?: SymCheck[];
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -90,7 +89,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			citeMode: {
 				rarities: [],
 				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
-			}			
+			}
 		};
 	}
 
@@ -110,7 +109,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (this.state.citeMode?.engine !== engine) {
 			this.tiny.setValue('engine', engine, true);
 			this.setState({ ... this.state, citeMode: { ... this.state.citeMode, engine: engine }, citeData: null });
-		}		
+		}
 	}
 
 	readonly setChecked = (crew: PlayerCrew | string, value?: boolean) => {
@@ -123,7 +122,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		else {
 			fi = fpros.find(z => z.symbol === crew.symbol) ?? null;
 		}
-		
+
 		if (fi) {
 			fi.checked = value ?? false;
 		}
@@ -134,7 +133,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 			fpros.push(fi);
 		}
-		
+
 		this.setState({ ... this.state, checks: fpros });
 	}
 
@@ -161,9 +160,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (playerData) playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
-		
+
 		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
-		
+
 		worker.postMessage({
 			worker: workerName,
 			playerData,
@@ -217,7 +216,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}
 					return value;
 				});
-				
+
 				crew.voyagesImproved = voycrew.voyagesImproved;
 				crew.evPerCitation = voycrew.evPerCitation;
 				crew.addedEV = voycrew.addedEV;
@@ -235,9 +234,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
 						voyages.push(currvoy);
 					}
-	
+
 					let test = currvoy.crew.find((c) => c.name === crew.name);
-	
+
 					if (!test) {
 						currvoy.crew.push(crew);
 					}
@@ -249,7 +248,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 			let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
 			let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
-			
+
 			if (!a.maxEV) a.maxEV = ma;
 			if (!b.maxEV) b.maxEV = mb;
 
@@ -263,23 +262,23 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			else if (b.voyage === currentVoyage) return 1;
 
 			let r = mb - ma;
-		
+
 			if (r) return r;
-			
+
 			r = ra - rb;
 
 			if (r) return r;
 
 			ma = a.crew.map(ac => ac.pickerId ?? 0).reduce((prev, curr) => prev + curr);
 			mb = b.crew.map(bc => bc.pickerId ?? 0).reduce((prev, curr) => prev + curr);
-			
+
 			r = ma - mb;
-			
+
 			if (r) return r;
-			
+
 			r = b.crew.length - a.crew.length;
 			if (!r) r = a.voyage.localeCompare(b.voyage);
-		
+
 			return r;
 		});
 
@@ -294,7 +293,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				else {
 					return a.name.localeCompare(b.name);
 				}
-				
+
 			})
 		})
 
@@ -313,11 +312,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					if (citeMode?.secSkills?.length) {
 						if (!citeMode.secSkills.includes(sp[1])) return (<></>);
 					}
-					
+
 
 					return (<Table.Row key={"voy" + idx}>
 						<Table.Cell style={{backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined,}}>
-							<div style={{								
+							<div style={{
 								display: "flex",
 								flexDirection: "column",
 								justifyContent: "center",
@@ -332,11 +331,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							</div>
 						</Table.Cell>
 						<Table.Cell>
-							
+
 						<Grid doubling columns={3} textAlign='center'>
 								{voyage.crew.map((crew) => (
 									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-									<ItemDisplay 
+									<ItemDisplay
 										size={64}
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 										rarity={crew.rarity}
@@ -348,7 +347,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										/>
 										<b onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
 											style={{
-											cursor: "pointer", 
+											cursor: "pointer",
 											margin:"0.5em 0 0 0",
 											textDecoration: "underline"
 											}}
@@ -357,7 +356,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												{crew.name} ({crew.pickerId})
 										</b>
 										<i style={{margin:"0"}} >
-											<span 
+											<span
 											title={"Click to see only voyages involving this crew member"}
 											style={{cursor: "pointer", margin:"0", textDecoration: "underline"}}
 											 onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
@@ -382,7 +381,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
-		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');		
+		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
 		const engine = this.state.citeMode?.engine ?? 'original';
 
 		const baseRow = (paginationPage - 1) * paginationRows;
@@ -395,7 +394,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-		
+
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -411,7 +410,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</React.Fragment>
 						}
 						<Table.HeaderCell>Voyages<br />Improved</Table.HeaderCell>
-						{engine === 'beta_tachyon_pulse' && 
+						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>
 							<Table.HeaderCell>Antimatter<br />Traits</Table.HeaderCell>
 							<Table.HeaderCell>Skill Order</Table.HeaderCell>
@@ -475,7 +474,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
-								{engine === 'beta_tachyon_pulse' && 
+								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
 
 										<Table.Cell>{row.amTraits}</Table.Cell>
@@ -500,16 +499,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 													alignItems: "center"
 												}}>
 												{getSkillOrder(row).map((mskill, idx) => (
-												<img 
-													title={appelate(mskill)} 
-													key={"skimage"+idx+mskill} 
+												<img
+													title={appelate(mskill)}
+													key={"skimage"+idx+mskill}
 													src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`}
-													style={{ 
-														maxHeight: "1.5em", 
-														maxWidth: "1.5em", 
-														margin: "0.5em", 															
-													}} 
-													
+													style={{
+														maxHeight: "1.5em",
+														maxWidth: "1.5em",
+														margin: "0.5em",
+													}}
+
 												/>))}
 												</div>
 
@@ -523,7 +522,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										</div>
 										</Table.Cell>
 									</React.Fragment>
-									
+
 									}
 
 								<Table.Cell>
@@ -595,13 +594,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const { engine } = citeMode;
 
 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
-		
+
 		let compact = true;
 		const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
 
 		workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
-		
+
 		let pri: string[] = [];
 		let sec: string[] = [];
 		let seat: string[] = [];
@@ -651,12 +650,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 		}
-		
+
 		if (workset && citeMode?.secSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 		}
-		
+
 		if (workset && citeMode?.seatSkills?.length) {
 			const { playerData } = this.context.player;
 
@@ -712,8 +711,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-		
-		return (	
+
+		return (
 			<>
 				<Accordion
 					defaultActiveIndex={-1}
@@ -752,7 +751,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}}>
 						<Dropdown
 							multiple={false}
-							options={engOptions}							
+							options={engOptions}
 							placeholder={"Select Engine"}
 							value={engine}
 							onChange={(e, { value }) => {
@@ -781,36 +780,36 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
 							<PortalFilter
 								portalFilter={citeMode?.portal}
-								setPortalFilter={(data) => {									
+								setPortalFilter={(data) => {
 									setCiteMode({ ... citeMode ?? {}, portal: data });
 								}}
 								/>
 						</div>
 						<div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
-							<Input		
-														
+							<Input
+
 								label={"Search"}
 								value={citeMode.nameFilter}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
 								/>
-							<i className='delete icon'								
-								title={"Clear Searches and Comparison Marks"} 							    
+							<i className='delete icon'
+								title={"Clear Searches and Comparison Marks"}
 								style={{
-									cursor: "pointer", 
+									cursor: "pointer",
 									marginLeft: "0.75em"
-								}} 								
+								}}
 								onClick={(e) => {
-										setCiteMode({ ... citeMode ?? {}, nameFilter: '' }); 
+										setCiteMode({ ... citeMode ?? {}, nameFilter: '' });
 										window.setTimeout(() => {
-											this.setState({ ...this.state, checks: undefined }); 
+											this.setState({ ...this.state, checks: undefined });
 										});
-										
-									} 
-								} 
+
+									}
+								}
 						 	/>
 
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={priSkills}
 								multiple
@@ -820,7 +819,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, priSkills: value as string[] })}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={secSkills}
 								multiple
@@ -830,7 +829,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={seatSkills}
 								multiple

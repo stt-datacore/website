@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { Header, Grid, Segment, Table, Pagination, Dropdown } from 'semantic-ui-react';
-import ItemDisplay from '../components/itemdisplay';
+import ItemDisplay from '../../components/itemdisplay';
 import { Link } from 'gatsby';
-import { BaseSkills, CrewMember } from '../model/crew';
-import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo, Variant, categorizeKeystones } from '../model/game-elements';
-import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { useStateWithStorage } from '../utils/storage';
-import { TinyStore } from "../utils/tiny";
-import { BuffStatTable } from '../utils/voyageutils';
-import { GlobalContext } from '../context/globalcontext';
-import { getVariantTraits } from '../utils/crewutils';
+import { BaseSkills, CrewMember } from '../../model/crew';
+import { Constellation, ConstellationMap, KeystoneBase, Polestar, PolestarCombo, Variant, categorizeKeystones } from '../../model/game-elements';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { CompletionState, PlayerCrew, PlayerData } from '../../model/player';
+import { useStateWithStorage } from '../../utils/storage';
+import { TinyStore } from "../../utils/tiny";
+import { BuffStatTable } from '../../utils/voyageutils';
+import { GlobalContext } from '../../context/globalcontext';
+import { getVariantTraits } from '../../utils/crewutils';
 
 
 interface ExtraCrewDetailsProps {
@@ -71,7 +71,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 
 	constructor(props: ExtraCrewDetailsProps) {
 		super(props);
-	
+
 	}
 
 	readonly getNameFromTrait = (trait: string, found: PlayerCrew[]) => {
@@ -106,7 +106,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		}
 
 		const variantTraits = getVariantTraits(this.props.traits_hidden);
-		
+
 		let self = this;
 
 		if (!this.context.core.keystones || !this.context.core.crew?.length) return;
@@ -117,7 +117,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let crew_keystone_crate: Constellation | undefined = undefined;
 
 		crew_keystone_crate = allkeystones?.find((k) => k.crew_archetype_id === this.props.crew_archetype_id) as Constellation;
-		
+
 		let [crates, keystones] = categorizeKeystones(allkeystones ?? []);
 
 		// Rarity and skills aren't in keystone crates, but should be used for optimal crew retrieval
@@ -127,13 +127,13 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let skillstones = keystones.filter((keystone) =>
 			keystone.filter && keystone.filter.type === 'skill' && keystone.filter.skill && this.props.base_skills[keystone.filter.skill]
 		);
-		
-		
+
+
 		let constMap: ConstellationMap | undefined = undefined;
 
 		if (crew_keystone_crate && crew_keystone_crate.keystones) {
 			constMap = {
-				name: crew_keystone_crate.name, 
+				name: crew_keystone_crate.name,
 				flavor: crew_keystone_crate.flavor,
 				keystones: (crew_keystone_crate.keystones.map((kid) => keystones.find((k) => k.id === kid)) ?? [] as Polestar[]) as Polestar[],
 				raritystone,
@@ -142,7 +142,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		}
 
 		const allcrew = this.context.core.crew;
-		
+
 		// Use precalculated unique polestars combos if any, otherwise get best chances
 		let optimalpolestars = this.props.unique_polestar_combos && this.props.unique_polestar_combos.length > 0 ?
 			this._optimizeUniquePolestars(this.props.unique_polestar_combos) :
@@ -187,14 +187,14 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 						else {
 							fitem.immortal = CompletionState.DisplayAsImmortalUnowned;
 						}
-					}	
+					}
 					else {
 						fitem.immortal = CompletionState.DisplayAsImmortalStatic;
 					}
 				}
 				// short_name may not always be the best name to use, depending on the first variant
 				//	Hardcode fix to show Dax as group name, otherwise short_name will be E. Dax for all dax
-				
+
 				variants.push({ 'name': self.getNameFromTrait(trait, found), 'trait_variants': found });
 			}
 		});
@@ -452,7 +452,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		if (this.state.variants.length == 0) {
 			return <span />;
 		}
-		
+
 		let me = this;
 		return (
 			this.state.variants.map((group, idx) => (
@@ -461,9 +461,9 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 					<Grid centered padded>
 						{group.trait_variants.map(variant => (
 							<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
-								<CrewTarget 									
+								<CrewTarget
 									targetGroup='variants'
-									
+
 									inputItem={variant}
 									>
 								<ItemDisplay
@@ -477,7 +477,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 							</Grid.Column>
 						))}
 					</Grid>
-				</Segment>								
+				</Segment>
 			))
 		);
 	}

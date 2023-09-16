@@ -4,7 +4,6 @@ import { Link } from 'gatsby';
 import marked from 'marked';
 
 import Layout from '../components/layout';
-import CommonCrewData from '../components/commoncrewdata';
 import { CrewMember } from '../model/crew';
 
 type BridgeCrewPageProps = {
