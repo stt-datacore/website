@@ -209,10 +209,19 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		}
 	}
 	
+	if (colOptimized?.length) {
+		colOptimized.forEach(col => {
+			let map = costMap.filter(f => f.collection === col.collection.name);
+			map = map.filter(mf => (!byCost || (byCost && !!mf.cost)) && mf.crew.length <= (col.collection.needed ?? 0));
+			col.combos = map.map(m => m.combo);
+			col.comboCost = map.map(m => m.cost);
+		});	
+	}
+
 	if (byCost && colOptimized?.length ){
 		colOptimized.forEach(col => {
 			let map = costMap.filter(f => f.collection === col.collection.name);
-			map = map.filter(mf => !!mf.cost).sort((a, b) => a.cost - b.cost);
+			map = map.sort((a, b) => a.cost - b.cost);
 			col.combos = map.map(m => m.combo);
 			col.comboCost = map.map(m => m.cost);
 		});
