@@ -91,7 +91,7 @@ export const Common = (props: CommonProps) => {
 			elements.push(<DateAdded key={field} crew={crew} />);
 
 		if (field === 'flavor' && crew.flavor)
-			elements.push(<p key={field}>{crew.flavor}</p>);
+			elements.push(<p key={field} id='crew_flavor_text'>{crew.flavor}</p>);
 
 		if (field === 'fuses')
 			elements.push(<Fuses key={field} crew={crew} />);
