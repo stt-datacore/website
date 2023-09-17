@@ -965,9 +965,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 				</div>
 			</React.Fragment>}
 
-			<div>
 				{tabPanes[tabIndex ?? 0].render()}
-			</div>
 	
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />

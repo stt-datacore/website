@@ -71,8 +71,10 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				</i>}
 			<div style={{
 				display: "flex",
-				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-				alignItems: "center",
+				flexDirection: 
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+				alignItems:
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
 				justifyContent: "flex-start"			
 			}}>
 				<Dropdown
@@ -106,13 +108,19 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
-				<Checkbox style={{margin: "0 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
-				<Checkbox style={{margin: "0 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+				<Checkbox style={{margin: "0.5em 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 
 			</div>
 			{!!colMap?.length && 			
-			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
-			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
+			<div style={{display:"flex",
+						flexDirection: 
+							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+						alignItems: "center"						
+						}}>
+			<Pagination style={{
+				margin: "1em 0 1em 0"				
+				}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
 			Items Per Page:
 			<Dropdown 
@@ -225,7 +233,11 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 			</Table>
 			{!!colMap?.length && 			
-			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+			<div style={{display:"flex",
+			flexDirection: 
+				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+			alignItems: "center"						
+			}}>
 			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
 			Items Per Page:

@@ -299,8 +299,12 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			
 			<div style={{
 				display: "flex",
-				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-				alignItems: "center",
+				flexDirection: 
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+
+				alignItems:
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
+
 				justifyContent: "flex-start"			
 			}}>
 				<Dropdown
@@ -335,11 +339,15 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
 				<Checkbox disabled={byCost} style={{margin: "0 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
-				<Checkbox style={{margin: "0 1em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
-				<Checkbox style={{margin: "0 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+				<Checkbox style={{margin: "0.5em 1em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
+				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 			</div>
 			{!!colMap?.length && 			
-			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+				<div style={{display:"flex",
+					flexDirection: 
+						window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+					alignItems: "center"						
+					}}>
 				<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
 					Items Per Page:
@@ -357,7 +365,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						})}
 						/>
 				</div>
-				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+				<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 					Show Crew:
 					<Dropdown 
 						style={{margin: "0.5em"}}
@@ -464,6 +472,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 							<div style={{margin: "0.25em"}}>Variations: </div>
 							<Dropdown 
+								fluid={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH}
+								direction={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'left' : undefined}
 								scrolling
 								placeholder={"Select Options"}
 								value={optCombo}
@@ -532,7 +542,12 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 			</Table>
 			{!!colMap?.length && 			
-			<div style={{display:"flex", flexDirection: "row", alignItems: "center"}}>
+				<div style={{display:"flex",
+						flexDirection: 
+							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+						alignItems: "center"						
+						}}>
+
 				<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
 					Items Per Page:
@@ -550,7 +565,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						})}
 						/>
 				</div>
-				<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
+				<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 					Show Crew:
 					<Dropdown 
 						style={{margin: "0.5em"}}
