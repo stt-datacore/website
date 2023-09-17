@@ -55,16 +55,24 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		}		
 	}
 
-	const setCombo = (col: CollectionGroup, combo: string) => {
+	const setCombo = (col: CollectionGroup, combo: string | undefined) => {
 		let f = combos.find(cf => cf.collection === col.collection.name);
 		if (!f) {
+			if (!combo) return;			
 			combos.push({
 				collection: col.collection.name,
 				name: combo
 			})
 		}
 		else {
-			f.name = combo;
+			if (!combo) {
+				let newCol = combos.filter(cf => cf.collection !== col.collection.name) ?? [];
+				setCombos(newCol);
+				return;
+			}
+			else {
+				f.name = combo;
+			}			
 		}
 		setCombos([... combos]);
 	}
@@ -369,9 +377,14 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			<Table striped>
 				{colMap.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
 					
-					const optCombo = getCombo(col);
+					const optCombo = getCombo(col);					
 					const comboCrew = findCrew(col, optCombo);
-					
+					if (!comboCrew?.length && optCombo !== undefined && optCombo !== '') {
+						window.setTimeout(() => {
+							setCombo(col, col.combos ? col.combos[0].join(" / ") : undefined);
+						});						
+						return <></>
+					}
 					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
 					collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 					col.neededStars = neededStars(comboCrew);
@@ -462,6 +475,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 									text: opt.join(" / ")
 								}								
 							})}/>
+							<br />
 							</div>}
 
 							<div style={{display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column'}}>
