@@ -153,7 +153,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 	tinyCol.removeValue("collectionsTool/selectedCollection");
 
-	const { mapFilter, setMapFilter } = colContext;
+	const { setSearchFilter, mapFilter, setMapFilter } = colContext;
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
 	if (selColId !== undefined && !mapFilter?.collectionsFilter?.includes(selColId)) {
@@ -173,8 +173,8 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		// }
 	}
 
-	console.log("Collections")
-	console.log(playerCollections);
+	// console.log("Collections")
+	// console.log(playerCollections);
 
 	return (
 		<React.Fragment>
@@ -191,13 +191,8 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	);
 
 	function filterCrewByCollection(collectionId: number): void {
-		if (!crewAnchor.current) return;
-		
-		setMapFilter({ ...mapFilter, collectionsFilter: [collectionId] });
-		let opt: ScrollOptions
-		crewAnchor.current.scrollIntoView({
-			behavior: 'smooth',
-		});
+		setSearchFilter(''); 
+		setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collectionId]});
 	}
 };
 
@@ -341,7 +336,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 	const colContext = React.useContext(CollectionFilterContext);
 
 	const { playerCollections, collectionCrew, filterCrewByCollection } = props;
-	const { costMode, setCostMode, short, mapFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { costMode, setCostMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
@@ -825,7 +820,14 @@ const CollectionsViews = (props: CrewTableProps) => {
 			longDescription: "Overview of All Collections",
 			showFilters: false,
 			requirePlayer: false,
-			render: () => <CollectionsOverviewComponent />
+			render: () => <CollectionsOverviewComponent
+				onClick={(col) => {
+					if (!context.player.playerData) return;
+					setTabIndex(3);					
+					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [col]});
+					setSearchFilter(''); 
+				}}
+			/>
 		},
 		{ 
 			menuItem: 'Progress', 
@@ -834,7 +836,12 @@ const CollectionsViews = (props: CrewTableProps) => {
 			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
 			requirePlayer: true,
-			render: () => <ProgressTable playerCollections={playerCollections} filterCrewByCollection={filterCrewByCollection} />
+			render: () => <ProgressTable playerCollections={playerCollections} 
+				filterCrewByCollection={(collection) => {
+					setTabIndex(2);
+					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection]});
+					setSearchFilter(''); 					
+				}} />
 		},
 		{ 
 			menuItem: 'Crew', 
@@ -961,7 +968,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 		if (mapFilter.collectionsFilter && mapFilter.collectionsFilter.length > 0) {
 			let hasAllCollections = true;
 			for (let i = 0; i < mapFilter.collectionsFilter.length; i++) {
-				if (!crew.unmaxedIds?.includes(mapFilter[i])) {
+				if (!crew.unmaxedIds?.includes(mapFilter.collectionsFilter[i])) {
 					hasAllCollections = false;
 					break;
 				}

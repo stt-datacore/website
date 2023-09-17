@@ -33,6 +33,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
     return (<div 
         className={needed && highlightIfNeeded ? highlightClassName : className}
         style={{  
+            width: "200px",
             margin: "1.5em", 
             display: "flex", 
             flexDirection: "column", 
@@ -77,8 +78,8 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
         <i>Level {crew.level}</i>
         <CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
         
-        <div style={{margin:"0.5em 0"}}>
-        <RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} />
+        <div style={{margin:"0.5em 0"}} title={crew.have ? 'Citations' : 'Unowned'}>
+        <RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} negative={!crew.have} />
         </div>
             
     </div>)

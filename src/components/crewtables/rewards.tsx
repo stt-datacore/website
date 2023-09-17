@@ -32,6 +32,7 @@ export interface RewardsGridProps {
 	maxCols?: number;
 	kind?: 'reward' | 'need';
 	needs?: RewardsGridNeed[];
+	negative?: boolean;
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
@@ -79,16 +80,23 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	}
 
 
-	const quantityLabel = (quantity?: number) => {
+	const quantityLabel = (quantity?: number, neg?: boolean) => {
 
 		if (quantity === undefined) return 0;
 		if (quantity === 0){
-			return <Icon name='check circle' style={{margin: 0, padding: 0, textAlign: 'center', color:'lightgreen', height:'24px'}} />
+			if (neg) {
+				return <Icon name='close' style={{margin: 0, padding: 0, textAlign: 'center', color:'gray', height:'24px'}} />
+			}
+			else {
+				return <Icon name='check circle' style={{margin: 0, padding: 0, textAlign: 'center', color:'lightgreen', height:'24px'}} />
+			}
 		}
 		if (quantity >= 10000)
 			return quantity/1000+'K';
 		return quantity;
 	};
+	
+	const { negative } = props;
 
 	const rewardRows = [] as Reward[][];
 	rewardRows.push([]);
@@ -143,7 +151,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										rarity={reward.rarity}
 									/>
 									
-									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity)}</small></div>)}</span>
+									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative)}</small></div>)}</span>
 									</div>
 								</Grid.Column>
 							);
