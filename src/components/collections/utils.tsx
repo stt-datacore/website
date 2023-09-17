@@ -35,11 +35,6 @@ export interface CollectionGroup {
     comboCost?: number[];
 }
 
-// const [ownedFilter, setOwnedFilter] = useStateWithStorage('collectionstool/ownedFilter', '');
-// const [fuseFilter, setFuseFilter] = useStateWithStorage('collectionstool/fuseFilter', '');
-// const [rarityFilter, setRarityFilter] = useStateWithStorage('collectionstool/rarityFilter', [] as number[]);
-// const [searchFilter, setSearchFilter] = useStateWithStorage('collectionstool/searchFilter', '');
-
 export interface CollectionFilterProps {
     short: boolean;	
     setShort: (value: boolean) => void;
@@ -92,7 +87,30 @@ export interface CollectionFiltersProps {
     playerCollections: PlayerCollection[];
     children: JSX.Element;
 }
+export const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
+    let result = false;
 
+    for (let rewardFilter of filters) {
+        let q = true;
+
+        if (rewardFilter && rewardFilter != '*any') {
+            let re: RegExp;
+            if (rewardFilter == '*buffs') {
+                if (collection.milestone?.buffs?.length == 0) q = false;
+            }
+            else if (rewardFilter.slice(0, 1) == '=') {
+                re = new RegExp(rewardFilter.slice(1));
+                if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
+            }
+            else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
+                q = false;
+            }
+        }	
+        result ||= q;
+    }
+
+    return result;
+}
 export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const context = React.useContext(GlobalContext);
     const { children, pageId, playerCollections } = props;
@@ -126,31 +144,6 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 		return true;
 	}
 
-    const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
-		let result = false;
-
-		for (let rewardFilter of filters) {
-			let q = true;
-
-			if (rewardFilter && rewardFilter != '*any') {
-				let re: RegExp;
-				if (rewardFilter == '*buffs') {
-					if (collection.milestone?.buffs?.length == 0) q = false;
-				}
-				else if (rewardFilter.slice(0, 1) == '=') {
-					re = new RegExp(rewardFilter.slice(1));
-					if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
-				}
-				else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
-					return q = false;
-				}
-			}	
-			result ||= q;
-		}
-
-		return result;
-	}
-
     const data = {
         mapFilter,
         searchFilter,
@@ -174,30 +167,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
             {children}    
         </CollectionFilterContext.Provider>)
 } 
-export const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
-    let result = false;
 
-    for (let rewardFilter of filters) {
-        let q = true;
-
-        if (rewardFilter && rewardFilter != '*any') {
-            let re: RegExp;
-            if (rewardFilter == '*buffs') {
-                if (collection.milestone?.buffs?.length == 0) q = false;
-            }
-            else if (rewardFilter.slice(0, 1) == '=') {
-                re = new RegExp(rewardFilter.slice(1));
-                if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) q = false;
-            }
-            else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
-                q = false;
-            }
-        }	
-        result ||= q;
-    }
-
-    return result;
-}
 
 export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCollection[], colGroup2: PlayerCollection[], short?: boolean): number {
     if (!mapFilter?.rewardFilter) return 0;
