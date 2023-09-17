@@ -98,7 +98,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 			onClose={closeModal}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
-			
+			size='mini'
 			closeIcon
 		>
 			<Modal.Header>
