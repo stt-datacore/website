@@ -348,7 +348,7 @@ export const Skills = (props: SkillsProps) => {
 					</div>
 				))}
 				{buffConfig &&
-					<div>
+					<div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<Icon name='arrow alternate circle up' size='small' style={{ color: 'lightgreen' }} />
 						{!compact && <>Player boosts applied</>}
 					</div>
