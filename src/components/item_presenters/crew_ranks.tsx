@@ -1,5 +1,5 @@
 import React from 'react';
-import { graphql, Link, navigate } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 import { Header, Segment, Accordion, Statistic, Divider, Icon, SemanticICONS } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
@@ -9,13 +9,13 @@ import { StatLabel } from '../../components/statlabel';
 import { getCoolStats } from '../../utils/misc';
 import { formatTierLabel, gradeToColor, printPortalStatus } from '../../utils/crewutils';
 
-type RankHighlightsProps = {
+type CrewRankHighlightsProps = {
 	crew: CrewMember;
 	markdownRemark?: any;
 	compact?: boolean;
 };
 
-export const RankHighlights = (props: RankHighlightsProps) => {
+export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 	const { crew, markdownRemark, compact } = props;
 
 	if (compact) {
@@ -111,27 +111,35 @@ export const RankHighlights = (props: RankHighlightsProps) => {
 	);
 };
 
-type RanksProps = {
+type CrewRanksProps = {
 	crew: CrewMember;
 	myCrew?: PlayerCrew[];
 };
 
-export const Ranks = (props: RanksProps) => {
+export const CrewRanks = (props: CrewRanksProps) => {
 	const { crew, myCrew } = props;
 	const [showPane, setShowPane] = React.useState(false);
 	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(crew, false);
 	return (
-		<Accordion style={{ marginBottom: '1em' }}>
+		<Accordion style={{ }}>
 			<Accordion.Title
 				active={showPane}
 				onClick={() => setShowPane(!showPane)}
 			>
 				<Icon name={showPane ? 'caret down' : 'caret right' as SemanticICONS} />
-				{title}
+				{!showPane && <>{title}</>}
+				{showPane && (
+					<React.Fragment>
+						{!!myCrew ? 'Ranks on your roster' : 'All ranks'}, based on unboosted immortalized skills:
+					</React.Fragment>
+				)}
 			</Accordion.Title>
 			<Accordion.Content active={showPane}>
-				<p style={{ textAlign: 'center' }}>Ranks based on unboosted immortalized skills</p>
-				{showPane && renderOtherRanks()}
+				{showPane && (
+					<div style={{ marginBottom: '1em' }}>
+						{renderOtherRanks()}
+					</div>
+				)}
 			</Accordion.Content>
 		</Accordion>
 	);
@@ -292,55 +300,3 @@ const rankLinker = (roster: boolean, rank: number, symbol: string, column: strin
 		}
 	}
 };
-
-export const query = graphql`
-	fragment RanksFragment on CrewJson {
-		cab_ov
-		cab_ov_rank
-		cab_ov_grade
-		ranks {
-			voyRank
-			gauntletRank
-			voyTriplet {
-				name
-				rank
-			}
-			V_CMD_SCI
-			V_CMD_SEC
-			V_CMD_ENG
-			V_CMD_DIP
-			V_CMD_MED
-			V_SCI_SEC
-			V_SCI_ENG
-			V_SCI_DIP
-			V_SCI_MED
-			V_SEC_ENG
-			V_SEC_DIP
-			V_SEC_MED
-			V_ENG_DIP
-			V_ENG_MED
-			V_DIP_MED
-			G_CMD_SCI
-			G_CMD_SEC
-			G_CMD_ENG
-			G_CMD_DIP
-			G_CMD_MED
-			G_SCI_SEC
-			G_SCI_ENG
-			G_SCI_DIP
-			G_SCI_MED
-			G_SEC_ENG
-			G_SEC_DIP
-			G_SEC_MED
-			G_ENG_DIP
-			G_ENG_MED
-			G_DIP_MED
-			B_SCI
-			B_SEC
-			B_ENG
-			B_DIP
-			B_CMD
-			B_MED
-		}
-	}
-`;

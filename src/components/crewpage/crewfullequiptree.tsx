@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Header, Popup, Modal, Grid, Icon, Button } from 'semantic-ui-react';
 
-import ItemDisplay from '../components/itemdisplay';
-import ItemSources from '../components/itemsources';
+import ItemDisplay from '../../components/itemdisplay';
+import ItemSources from '../../components/itemsources';
 
-import { calculateCrewDemands } from '../utils/equipment';
-import CONFIG from '../components/CONFIG';
-import { GlobalContext } from '../context/globalcontext';
+import { calculateCrewDemands } from '../../utils/equipment';
+import CONFIG from '../../components/CONFIG';
+import { GlobalContext } from '../../context/globalcontext';
 
 type CrewFullEquipTreeProps = {
 	visible: boolean;

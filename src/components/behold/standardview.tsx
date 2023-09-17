@@ -4,8 +4,8 @@ import { navigate } from 'gatsby';
 import marked from 'marked';
 
 import { CrewMember } from '../../model/crew';
-import { Common } from '../../components/crewdata/common';
 import { CrewPresenter } from '../../components/item_presenters/crew_presenter';
+import { ClassicPresenter } from '../../components/item_presenters/classic_presenter';
 import { DEFAULT_MOBILE_WIDTH } from '../../components/hovering/hoverstat';
 
 type StandardViewProps = {
@@ -43,7 +43,7 @@ export const StandardView = (props: StandardViewProps) => {
 						storeName='beholdsPage'
 						hover={window.innerWidth < DEFAULT_MOBILE_WIDTH}
 						crew={crew} />
-					<Common
+					<ClassicPresenter
 						crew={crew}
 						fields={['ranks', 'crew_demands', 'cross_fuses', 'date_added']}
 					/>

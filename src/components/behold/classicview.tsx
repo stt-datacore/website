@@ -1,11 +1,17 @@
 import React from 'react';
 import { Link, navigate } from 'gatsby';
-import { Grid, Card, Label, Image, Button, Icon, SemanticWIDTHS } from 'semantic-ui-react';
+import { Grid, Card, Label, Image, Button, Icon, Rating, SemanticWIDTHS } from 'semantic-ui-react';
 import marked from 'marked';
 
 import { CrewMember } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
-import { Common } from '../../components/crewdata/common';
+import { ClassicPresenter, Skills, IFieldOverride } from '../../components/item_presenters/classic_presenter';
+
+interface IOwnedCounts {
+	total: number;
+	fullyFused: number;
+	highestNonFF: number;
+};
 
 type ClassicViewProps = {
 	selectedCrew: string[];
@@ -38,10 +44,36 @@ type CardCrewProps = {
 const CardCrew = (props: CardCrewProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
 	const { crew, index } = props;
-	const rarity = playerData ? 'rarity_next' : 'rarity';
-	const skills = playerData ? 'skills_next' : 'skills';
+
+	const fieldOverrides = [] as IFieldOverride[];
+	if (playerData) {
+		const ownedCounts = {
+			total: 0,
+			fullyFused: 0,
+			highestNonFF: 0,
+		} as IOwnedCounts;
+
+		const owned = playerData.player.character.crew.filter(mc => mc.symbol === crew.symbol);
+		ownedCounts.total = owned.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
+		ownedCounts.fullyFused = owned.filter(mc => mc.rarity === crew.max_rarity).length;
+		ownedCounts.highestNonFF = owned.filter(mc => mc.rarity !== crew.max_rarity)
+			.reduce((prev, curr) => Math.max(curr.rarity, prev), 0);
+
+		const nextRarity = ownedCounts.total > 0 ? (ownedCounts.highestNonFF > 0 ? ownedCounts.highestNonFF + 1 : crew.max_rarity) : 1;
+
+		fieldOverrides.push(
+			{
+				field: 'rarity',
+				override: (crew: CrewMember, compact?: boolean) => <RarityNext key='rarity' crew={crew} ownedCounts={ownedCounts} />
+			},
+			{
+				field: 'skills',
+				override: (crew: CrewMember, compact?: boolean) => <Skills key='skills' crew={crew} rarity={nextRarity} compact={compact} />
+			}
+		)
+	}
+
 	return (
 		<Grid.Column>
 			<Card fluid>
@@ -53,9 +85,10 @@ const CardCrew = (props: CardCrewProps) => {
 					<Card.Header>
 						<Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
 					</Card.Header>
-					<Common
+					<ClassicPresenter
 						crew={crew}
-						fields={[rarity, skills, 'rank_highlights', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
+						fields={['rarity', 'skills', 'rank_highlights', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
+						fieldOverrides={fieldOverrides}
 						compact={true}
 					/>
 					<div style={{ marginTop: '1em' }}>
@@ -88,4 +121,54 @@ const CardCrew = (props: CardCrewProps) => {
 		};
 		navigate(linkUrl, { state: linkState });
 	}
+};
+
+type RarityNextProps = {
+	crew: CrewMember;
+	ownedCounts: IOwnedCounts;
+};
+
+const RarityNext = (props: RarityNextProps) => {
+	const { crew, ownedCounts } = props;
+
+	if (ownedCounts.fullyFused > 0 && ownedCounts.highestNonFF === 0) {
+		return (
+			<React.Fragment>
+				{ownedCounts.fullyFused > 1 && <>{ownedCounts.fullyFused}{` `}</>}
+				Owned <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled />
+			</React.Fragment>
+		);
+	}
+
+	if (ownedCounts.total === 0) {
+		return (
+			<React.Fragment>
+				Unowned
+				<span style={{ whiteSpace: 'nowrap' }}>
+					<Icon name='arrow right' />
+					<Rating defaultRating={1} maxRating={crew.max_rarity} icon='star' size='small' disabled />
+				</span>
+			</React.Fragment>
+		);
+	}
+
+	return (
+		<React.Fragment>
+			<Rating defaultRating={ownedCounts.highestNonFF} maxRating={crew.max_rarity} icon='star' size='small' disabled />
+			<span style={{ whiteSpace: 'nowrap' }}>
+				<Icon name='arrow right' />
+				<Rating defaultRating={ownedCounts.highestNonFF+1} maxRating={crew.max_rarity} icon='star' size='small' disabled />
+			</span>
+			{(ownedCounts.total > 1 || ownedCounts.fullyFused > 0) &&
+				<React.Fragment>
+					<br/>({ownedCounts.total} owned
+					{ownedCounts.fullyFused > 0 &&
+						<React.Fragment>
+							, {ownedCounts.fullyFused} already <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled />
+						</React.Fragment>
+					})
+				</React.Fragment>
+			}
+		</React.Fragment>
+	);
 };
