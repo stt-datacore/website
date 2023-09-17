@@ -111,8 +111,8 @@ export interface CollectionDisplayProps {
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
     const tinyCol = TinyStore.getStore('collections');
     const dispClick = (e, col: string) => {
-        tinyCol.setValue('selectedCollection', col);
-        navigate("/playertools/?tool=collections");
+        
+        navigate("/collections?select=" + encodeURIComponent(col));
     }
 
     const { crew, style } = props;

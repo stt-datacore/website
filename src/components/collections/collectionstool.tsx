@@ -399,6 +399,24 @@ const CollectionsViews = (props: CrewTableProps) => {
 
 	const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
+	if (typeof window !== 'undefined' && !!window.location.search?.length) {
+		if (context.player.playerData) {
+			let params = new URLSearchParams(window.location.search);
+			let sel = params.get("select");
+			let findcol = playerCollections?.find(f => f.name === sel);
+			if (findcol) {
+				const selnum = findcol.id;
+				if (!mapFilter?.collectionsFilter?.includes(selnum)) {				
+					window.setTimeout(() => {
+						window.history.replaceState({}, document.title, "/collections");
+						setMapFilter({ ... (mapFilter ?? {}), collectionsFilter: [selnum]});
+						setTabIndex(3);
+					});
+				}			
+			}
+		}
+	}
+
 	const createCollectionGroups = (): CollectionMap[] => {
 		const { playerData } = context.player;		
 		let fstep1 = playerData?.player?.character.crew.concat(mapFilter?.collectionsFilter?.length ? (playerData?.player?.character.unOwnedCrew ?? []) : []).filter(fc => collectionCrew.some(pc => pc.symbol === fc.symbol)) ?? [];

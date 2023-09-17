@@ -141,7 +141,7 @@ const Collections = (props: { crew: CrewMember }) => {
 			<b>Collections: </b>
 			{crew.collections
 				.map(col => (
-					<Link key={col} to={`/collections/#${encodeURIComponent(col)}`}>
+					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
 						{col}
 					</Link>
 				))
