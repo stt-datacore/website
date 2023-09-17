@@ -1,12 +1,10 @@
 import React from 'react';
 
-import { CrewMember } from "../../model/crew";
-import { CompletionState, PlayerCollection, PlayerCrew, PlayerData } from "../../model/player";
+import { GlobalContext } from '../../context/globalcontext';
+import { PlayerCollection, PlayerCrew } from "../../model/player";
+import { getCollectionRewards } from '../../utils/itemutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { TinyStore } from '../../utils/tiny';
-import { getCollectionRewards } from '../../utils/itemutils';
-import { neededStars, starCost } from '../../utils/crewutils';
-import { GlobalContext } from '../../context/globalcontext';
 import { RewardsGridNeed } from '../crewtables/rewards';
 
 export interface MapFilterOptions {
@@ -131,9 +129,11 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 	const [short, internalSetShort] = useStateWithStorage('collectionstool/colGroupShort', false, { rememberForever: true });
 	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
 
-    const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
+   
+	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
 		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
 		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
+		if (!exclude?.includes('owned-threshold') && ownedFilter === 'owned-threshold' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) > 2) return false;
 		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) !== 1) return false;
 		if (!exclude?.includes('owned-ff') && ownedFilter === 'owned-ff' && crew.max_rarity !== (crew.highest_owned_rarity ?? crew.rarity)) return false;
 		if (!exclude?.includes('rarity') && rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
@@ -143,6 +143,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 		if (!exclude?.includes('nonportal') && fuseFilter === 'nonportal' && crew.in_portal) return false;
 		return true;
 	}
+
 
     const data = {
         mapFilter,

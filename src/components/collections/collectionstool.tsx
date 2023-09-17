@@ -1,28 +1,26 @@
-import React from 'react';
-import { Table, Icon, Rating, Form, Checkbox, Dropdown, Header, Popup, Step, DropdownItemProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
+import React from 'react';
+import { Checkbox, Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
 
-import { SearchableTable, ITableConfigRow } from '../searchabletable';
+import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
-import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { useStateWithStorage } from '../../utils/storage';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
 import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
-import { calculateBuffConfig } from '../../utils/voyageutils';
+import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { crewCopy, navToCrewPage, neededStars, oneCrewCopy, starCost } from '../../utils/crewutils';
-import { GlobalContext } from '../../context/globalcontext';
-import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { TinyStore } from '../../utils/tiny';
-import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { makeAllCombos } from '../../utils/misc';
-import { getCollectionRewards } from '../../utils/itemutils';
+import { useStateWithStorage } from '../../utils/storage';
+import { TinyStore } from '../../utils/tiny';
+import { calculateBuffConfig } from '../../utils/voyageutils';
 import { RewardsGrid, rewardOptions } from '../crewtables/rewards';
-import { CollectionMap, CollectionGroup, CollectionFilterProvider, CollectionFilterContext, compareRewards } from './utils';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { CollectionGroupTable } from './groupview';
 import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
+import { CollectionFilterContext, CollectionFilterProvider, CollectionGroup, CollectionMap, compareRewards } from './utils';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -335,8 +333,8 @@ const CollectionsViews = (props: CrewTableProps) => {
 	const context = React.useContext(GlobalContext);
 	const colContext = React.useContext(CollectionFilterContext);
 
-	const { playerCollections, collectionCrew, filterCrewByCollection } = props;
-	const { costMode, setCostMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { playerCollections, collectionCrew } = props;
+	const { checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
@@ -382,20 +380,6 @@ const CollectionsViews = (props: CrewTableProps) => {
 		{ key: '4*', value: 4, text: '4* Super Rare' },
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
-
-	const checkCommonFilter = (crew: PlayerCrew, exclude?: string[]) => {
-		if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;
-		if (!exclude?.includes('owned') && ownedFilter.slice(0, 5) === 'owned' && crew.highest_owned_rarity === 0) return false;
-		if (!exclude?.includes('owned-threshold') && ownedFilter === 'owned-threshold' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) > 2) return false;
-		if (!exclude?.includes('owned-impact') && ownedFilter === 'owned-impact' && (crew.max_rarity - (crew.highest_owned_rarity ?? crew.rarity ?? 0)) !== 1) return false;
-		if (!exclude?.includes('owned-ff') && ownedFilter === 'owned-ff' && crew.max_rarity !== (crew.highest_owned_rarity ?? crew.rarity)) return false;
-		if (!exclude?.includes('rarity') && rarityFilter.length > 0 && !rarityFilter.includes(crew.max_rarity)) return false;
-		if (!exclude?.includes('portal') && fuseFilter.slice(0, 6) === 'portal' && !crew.in_portal) return false;
-		if (!exclude?.includes('portal-unique') && fuseFilter === 'portal-unique' && !crew.unique_polestar_combos?.length) return false;
-		if (!exclude?.includes('portal-nonunique') && fuseFilter === 'portal-nonunique' && crew.unique_polestar_combos?.length !== 0) return false;
-		if (!exclude?.includes('nonportal') && fuseFilter === 'nonportal' && crew.in_portal) return false;
-		return true;
-	}
 
 	const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
 
