@@ -1027,7 +1027,7 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
 	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
-		'female', 'male', 'jack',
+		'female', 'male',
 		'artificial_life', 'nonhuman', 'organic', 'species_8472',
 		'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
 		'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
