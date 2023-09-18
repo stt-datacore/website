@@ -1,6 +1,8 @@
 import { Link } from 'gatsby';
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
+
+import '../../typings/worker';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { ITableConfigRow, SearchableTable } from '../searchabletable';

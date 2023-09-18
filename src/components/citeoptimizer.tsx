@@ -2,7 +2,10 @@ import React from 'react';
 import { Dropdown, Grid, Table, Icon, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { calculateBuffConfig } from '../utils/voyageutils';
+
+import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+
 import { StatLabelProps } from '../components/statlabel';
 import { getSkillOrder, navToCrewPage, printPortalStatus } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
