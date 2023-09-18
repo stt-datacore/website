@@ -223,9 +223,6 @@ const CollectionOptimizer = {
                 return !!bPass;
             });
 
-            // TODO: Optimizer depends on createCollectionGroups, wrap it in!
-            // TODO: Sort Optimizer by filter options
-            // TODO: Optimizer option show crew on top
             const createOptimizerGroups = (colGroups: CollectionMap[]) => {
                 const linkScores = {} as { [key: string]: CollectionMap[] };
 
@@ -286,8 +283,9 @@ const CollectionOptimizer = {
 
                         let common = [...unique];
                         common = common.filter(
-                            (fi, idx) =>
-                                unique.findIndex((f2) => f2.symbol === fi.symbol) === idx
+                            (fi, idx) => {
+                                return unique.findIndex((f2) => f2.symbol === fi.symbol) === idx;
+                            }                                
                         );
 
                         unique = [...unique, ...(col?.crew ?? [])];
@@ -376,7 +374,12 @@ const CollectionOptimizer = {
                         let cols = test.map((tc) =>
                             col.maps.find((f) => f.collection.name === tc)
                         );
-
+                        // change this approach.
+                        // not from collections, from crew!
+                        // iterate through common crew,
+                        // add collection notches until
+                        // all collections are fulfilled
+                        // top crew will fill the most collections
                         if (cols?.length) {
                             let extracrew = [] as string[];
                             extracrew = cols
