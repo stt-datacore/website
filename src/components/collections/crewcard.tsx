@@ -26,8 +26,6 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
     const highlightClassName = props.highlightClassName ?? 'ui segment';
     const { style, className } = props;
 
-    const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
-    const crewhave = (collection?.owned ?? 0);
     const needed = index < (collection?.needed ?? 0);
     
     return (<div 

@@ -23,7 +23,7 @@ import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { CollectionGroupTable } from './groupview';
 import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
-import { CollectionFilterContext, CollectionFilterProvider } from './utils';
+import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -137,7 +137,7 @@ const CollectionsTool = () => {
 	}
 };
 
-type CollectionsUIProps = {
+export interface CollectionsUIProps {
 	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
 	allCrew: PlayerCrew[];
@@ -167,15 +167,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				});	
 			});			
 		}
-		// else {
-		// 	window.setTimeout(() => {
-		// 		navigate("/collections#" + encodeURIComponent(offsel ?? ""));
-		// 	});			
-		// }
 	}
-
-	// console.log("Collections")
-	// console.log(playerCollections);
 
 	return (
 		<React.Fragment>
@@ -197,13 +189,15 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	}
 };
 
-type ProgressTableProps = {
+export interface ProgressTableProps {
 	playerCollections: PlayerCollection[];
 	filterCrewByCollection: (collectionId: number) => void;
+	workerRunning: boolean;
 };
 
 const ProgressTable = (props: ProgressTableProps) => {
-	const { playerCollections, filterCrewByCollection } = props;
+	const { workerRunning, playerCollections, filterCrewByCollection } = props;
+	const context = React.useContext(GlobalContext);
 
 	const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
 	const [showMaxed, setShowMaxed] = useStateWithStorage('collectionstool/showMaxed', false);
@@ -219,7 +213,9 @@ const ProgressTable = (props: ProgressTableProps) => {
 	// Rewards will test value against literal symbol string, except when prefixed by:
 	//	= Regular expression against symbol, * Special test case
 	
-
+	if (workerRunning) {
+		return context.core.spin("Calculating Collection Progress...");
+	}
 	return (
 		<React.Fragment>
 			<div style={{ margin: '.5em 0' }}>
@@ -324,7 +320,7 @@ const ProgressTable = (props: ProgressTableProps) => {
 };
 
 
-type CrewTableProps = {
+export interface CrewViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
@@ -332,7 +328,7 @@ type CrewTableProps = {
 	filterCrewByCollection: (collectionId: number) => void;
 };
 
-const CollectionsViews = (props: CrewTableProps) => {
+const CollectionsViews = (props: CrewViewsProps) => {
 	const context = React.useContext(GlobalContext);
 	const colContext = React.useContext(CollectionFilterContext);
 	const [workerRunning, setWorkerRunning] = React.useState(false);
@@ -475,7 +471,7 @@ const CollectionsViews = (props: CrewTableProps) => {
 			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
 			requirePlayer: true,
-			render: (workerRunning: boolean) => <ProgressTable playerCollections={playerCollections} 
+			render: (workerRunning: boolean) => <ProgressTable workerRunning={workerRunning} playerCollections={playerCollections} 
 				filterCrewByCollection={(collection) => {
 					setTabIndex(2);
 					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection]});
@@ -512,12 +508,14 @@ const CollectionsViews = (props: CrewTableProps) => {
 	];
 
 	React.useEffect(() => {
-		runWorker();
-	}, [context, colContext]);	
+		setWorkerRunning(true);
+	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter]);	
 
 	React.useEffect(() => {
-		setWorkerRunning(true);
-	}, [context, mapFilter.collectionsFilter, rarityFilter, fuseFilter, ownedFilter]);	
+		window.setTimeout(() => {
+			runWorker();
+		});		
+	}, [context, colContext]);
 
 	return (
 		<React.Fragment>
@@ -598,7 +596,6 @@ const CollectionsViews = (props: CrewTableProps) => {
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);
-
 
 	function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
 

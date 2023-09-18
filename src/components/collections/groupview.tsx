@@ -1,7 +1,7 @@
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerCollection, BuffBase, Reward } from '../../model/player';
-import { CollectionFilterContext } from './utils';
+import { CollectionFilterContext } from './filtercontext';
 import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';

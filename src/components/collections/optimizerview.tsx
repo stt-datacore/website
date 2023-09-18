@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollectionFilterContext } from './utils';
+import { CollectionFilterContext } from './filtercontext';
 import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
