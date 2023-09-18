@@ -5,7 +5,7 @@ import { CollectionFilterContext } from './filtercontext';
 import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { formatColString } from '../item_presenters/crew_preparer';
+import { formatColString } from './overview';
 import { useStateWithStorage } from '../../utils/storage';
 import CollectionsCrewCard from './crewcard';
 import { CollectionMap } from '../../model/collectionfilter';

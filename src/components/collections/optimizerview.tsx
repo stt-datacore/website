@@ -4,7 +4,7 @@ import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
-import { formatColString } from '../item_presenters/crew_preparer';
+import { formatColString } from './overview';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
