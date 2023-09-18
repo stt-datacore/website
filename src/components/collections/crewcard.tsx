@@ -46,7 +46,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
     }}>
     
     {needed && highlightIfNeeded && 
-        <div style={{zIndex: 500, display: 'flex', width: "100%", flexDirection:'row', justifyContent: 'center'}}>
+        <div style={{zIndex: 5, display: 'flex', width: "100%", flexDirection:'row', justifyContent: 'center'}}>
         <Icon color='green' 
             name='star'
             style={{marginLeft:"-52px", marginBottom: "-16px", height:'24px'}} />
