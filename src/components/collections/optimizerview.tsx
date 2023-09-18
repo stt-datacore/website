@@ -588,7 +588,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				</div>
 			</div>}
 			</>}
-			{workerRunning && <div style={{height:"100vh"}}>{context.core.spin("Calculating Crew...")}</div>}
+			{workerRunning && <div style={{height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start"}}>{context.core.spin("Calculating Crew...")}</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />
 		</div>)

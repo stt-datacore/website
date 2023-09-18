@@ -488,10 +488,10 @@ const CollectionsViews = (props: CrewViewsProps) => {
 			render: (workerRunning: boolean) => renderTable(workerRunning)
 		},
 		{ 
-			menuItem: 'Groups', 
+			menuItem: 'Collections', 
 			longTitle: 'Collections Crew Groups',
-			description: <>Crew grouped by collection,<br/>and sorted by cost</>, 
-			longDescription: "Show crew grouped into collections sorted by closest to max. Crew highlighted in green are required to reach the next tier. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.",
+			description: <>Visualize crew grouped into<br/>collections, and sorted by cost</>, 
+			longDescription: <>Show crew grouped into collections sorted by closest to max. Crew marked by a green star <Icon name='star' color='green' size='small' /> are required to reach the next tier. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.</>,
 			showFilters: true,
 			requirePlayer: true,
 			render: (workerRunning: boolean) => <CollectionGroupTable workerRunning={workerRunning} playerCollections={playerCollections} colGroups={colGroups} />
