@@ -4,8 +4,8 @@ import { Icon } from 'semantic-ui-react';
 import { RewardsGrid } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import ItemDisplay from '../itemdisplay';
-import { makeCiteNeeds } from './utils';
 import { GlobalContext } from '../../context/globalcontext';
+import { makeCiteNeeds } from '../../utils/collectionutils';
 
 
 export interface CollectionsCrewCardProps {

@@ -6,6 +6,7 @@ import { EquipmentItem } from "../../model/equipment";
 import { checkReward, getCollectionRewards } from "../../utils/itemutils";
 import { getImageName } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
+import { RewardsGridNeed } from "../../model/crew";
 
 export const rewardOptions = [
 	{ key: 'roAnyr', value: '*any', text: 'Any reward' },
@@ -22,10 +23,6 @@ export const rewardOptions = [
 	{ key: 'roBoos', value: '=minor_consumables_\\d+x_bundle', text: 'Shuttle boosts' },
 	{ key: 'roTrai', value: '=_production_training$', text: 'Training' }
 ];
-export interface RewardsGridNeed {
-	symbol: string;
-	quantity: number;
-}
 export interface RewardsGridProps {
 	rewards?: Reward[];
 	wrap?: boolean;

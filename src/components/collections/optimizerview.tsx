@@ -1,21 +1,23 @@
 import React from 'react';
-import { CollectionFilterContext, CollectionGroup, CollectionMap, makeCiteNeeds } from './utils';
+import { CollectionFilterContext } from './utils';
 import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
-import { RewardPicker, RewardsGrid, RewardsGridNeed } from '../crewtables/rewards';
+import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { neededStars, starCost } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { appelate } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
+import { CollectionGroup, CollectionMap } from '../../model/collectionfilter';
+import { makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
 	playerCollections: PlayerCollection[];
+	workerRunning: boolean;
 }
 
 interface ComboConfig {
@@ -26,7 +28,7 @@ interface ComboConfig {
 export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
-    const { playerCollections } = props;
+    const { workerRunning, playerCollections } = props;
     const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -342,6 +344,9 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 			</div>
+
+			{!workerRunning &&
+			<>
 			{!!colMap?.length && 			
 				<div style={{display:"flex",
 					flexDirection: 
@@ -582,6 +587,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						/>
 				</div>
 			</div>}
+			</>}
+			{workerRunning && <div style={{height:"100vh"}}>{context.core.spin("Calculating Crew...")}</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />
 		</div>)

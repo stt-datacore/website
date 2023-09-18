@@ -50,7 +50,7 @@ export interface ICoreData {
 export interface ICoreContext extends ICoreData {
 	ready: (demands: ValidDemands[]) => boolean;
 	reset: () => boolean;
-	spin: () => JSX.Element;
+	spin: (message?: string) => JSX.Element;
 };
 
 interface IDemandResult {
@@ -88,8 +88,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 	const [isReadying, setIsReadying] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
 
-	const spin = () => {
-		return (<span><Icon loading name='spinner' /> Loading...</span>);
+	const spin = (message?: string) => {
+		message ??= "Loading..."
+		return (<span><Icon loading name='spinner' /> {message}</span>);
 	};
 
 	const providerValue = {

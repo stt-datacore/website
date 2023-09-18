@@ -1,29 +1,27 @@
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
-import { CrewMember } from '../../model/crew';
-import { PlayerCrew, PlayerCollection, PlayerData, CompletionState, BuffBase, Reward } from '../../model/player';
-import { neededStars, starCost } from '../../utils/crewutils';
-import { getCollectionRewards } from '../../utils/itemutils';
-import { CollectionFilterContext, CollectionGroup, CollectionMap, MapFilterOptions, makeCiteNeeds } from './utils';
-import { Image, Input, Icon, Button, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
-import { RewardsGridNeed, RewardPicker, RewardsGrid } from '../crewtables/rewards';
+import { PlayerCollection, BuffBase, Reward } from '../../model/player';
+import { CollectionFilterContext } from './utils';
+import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
+import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { CrewItemsView } from '../item_presenters/crew_items';
 import { formatColString } from '../item_presenters/crew_preparer';
-import ItemDisplay from '../itemdisplay';
 import { useStateWithStorage } from '../../utils/storage';
 import CollectionsCrewCard from './crewcard';
+import { CollectionMap } from '../../model/collectionfilter';
+import { makeCiteNeeds } from '../../utils/collectionutils';
 
 export interface GroupTableProps {
 	playerCollections: PlayerCollection[];
     colGroups: CollectionMap[];
+	workerRunning: boolean;
 };
 
 
 export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
-    const { playerCollections, colGroups } = props;
+    const { workerRunning, playerCollections, colGroups } = props;
     const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -112,6 +110,9 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 
 			</div>
+
+			{!workerRunning && 
+			<>
 			{!!colMap?.length && 			
 			<div style={{display:"flex",
 						flexDirection: 
@@ -256,6 +257,8 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				/>
 			</div>
 			</div>}
+			</>}
+			{workerRunning && <div style={{height:"100vh"}}>{context.core.spin("Calculating Crew...")}</div>}
 			{!colMap?.length && <div className='ui segment'>No results.</div>}
 			<br /><br /><br />
 		</div>)

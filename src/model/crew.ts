@@ -222,3 +222,7 @@ export interface CrewConstellation {
   crew_archetype_id: number
 }
 
+export interface RewardsGridNeed {
+	symbol: string;
+	quantity: number;
+}

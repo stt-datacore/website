@@ -1,6 +1,6 @@
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, Skill } from "./crew";
-import { PlayerCrew, PlayerData } from "./player";
+import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -137,3 +137,5 @@ export interface ExportCrew {
     max_rarity: number;
     skillData: number[];
 }
+
+
