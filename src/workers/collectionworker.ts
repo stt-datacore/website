@@ -415,9 +415,9 @@ const CollectionOptimizer = {
                         }
                     }
 
-                    exact.sort((a, b) => b.names.length - a.names.length);
-                    under.sort((a, b) => b.names.length - a.names.length);
-                    over.sort((a, b) => b.names.length - a.names.length);
+                    exact.sort((a, b) => b.crew.length - a.crew.length);
+                    under.sort((a, b) => b.crew.length - a.crew.length);
+                    over.sort((a, b) => b.crew.length - a.crew.length);
                     
                     for (let ex of exact) {
                         ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
