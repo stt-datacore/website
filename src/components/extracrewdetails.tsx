@@ -10,7 +10,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from "../utils/tiny";
 import { BuffStatTable } from '../utils/voyageutils';
 import { MergedContext } from '../context/mergedcontext';
-import { getVariantTraits } from '../utils/crewutils';
+import { crewVariantIgnore, getVariantTraits } from '../utils/crewutils';
 
 
 interface ExtraCrewDetailsProps {
@@ -152,7 +152,7 @@ class ExtraCrewDetails extends Component<ExtraCrewDetailsProps, ExtraCrewDetails
 		let variants: Variant[] = [];
 
 		variantTraits.forEach(function (trait) {
-			let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0);
+			let found = allcrew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0 && !crewVariantIgnore.includes(ac.symbol));
 			if (!self.masterCrew) {
 				self.masterCrew = [];
 			}

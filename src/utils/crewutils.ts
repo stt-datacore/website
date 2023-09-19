@@ -1024,6 +1024,8 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 }
 
+export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
+	
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
 	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
