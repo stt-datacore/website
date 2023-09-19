@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-While she may have been grandfathered into a very healthy event count, her usage there predictably dried up when the Discovery megas did. Aside from some niche voyage use for young rosters, she'll be waiting at the bus stop for her collection connection. She's met the minimum threshold to catch the eye of most veteran players and if her count there grows, weigh her value as a behold option accordingly.
+This is vanilla Siranna plus a few extra Traits, so from that perspective she is superior in every way to her cousin. A sizable DIP Base will let her play on weekends if those Traits snag a bonus, and a few are just viable enough to give her a four Collection ceiling.

@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Diplomacy at the end of an...arrow? A former top ten voyager, Merry Men Troi still holds water in that area of the game to highlight her contributions to your roster. Unfortunately, her seven traits are less relevant than most, with her character-wide Betazoid/Empath/Counselor trio not getting a ton of love for voyage anti-matter, events, or collections.
-
-Those latter two offerings could certainly spike as WRG continues to welcome every conceivable trait into the collection family, but even with out them, her reliable voyage and variant event work will provide her avenues for value on any roster.
+Diplomacy at the end of an...arrow? A former top ten Voyager, MM Troi has little left to offer today’s player outside of what she can fire off from the Traits in her quiver. A single Stat-boosting Collection and her episode Vanity are all she has been able to hit at this point, but Troi Events are common enough and her DIP Base large enough to make an impact, and she could still strike the target with a few more Collections one day.

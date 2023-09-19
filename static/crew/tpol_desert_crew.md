@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Still fairly well rounded, T'Pol is a worthwhile option for voyages, events, and collections. The first, voyages, is owing in part to a SEC/SCI stack that isn't terribly accessible at the legendary level, at least not among crew that you'd actively want to fuse up.
-
-When she inevitably falls from usage there, consider a prodigious event history littered with a few traits that seem to have caught WRG's eye in the past and may again in the future. Those traits have also made her a multi-collection piece with a small avenue for value expansion in that area.
+Still fairly well rounded, T'Pol is a worthwhile option for Voyages, Events, and Collections. When she inevitably falls from usage on Voyages, which should happen around the time the proverbial ink dries on this note, consider a prodigious Event history littered with a few Traits that seem to have caught WRG's eye in the past and may again in the future. Those Traits have also made her a multi-Collection piece with a small avenue for value expansion in that area.

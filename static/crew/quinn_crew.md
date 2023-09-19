@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-The rare reward for a mission in Episode 10 (don't forget to ad warp!), Quinn (still) offers some respectable base and voyage power. His event future is difficult to forecast reliably with no variants and a trait set eclectic enough to make an interior decorator blush, but with daily use ability and some intriguing collection potential, he might not need them.
-
-His availability makes him a fascinating study into citations. Though the pitfalls of CMD/DIP/SEC one-off crew are very well documented, he's also offers reasonable power and beams himself and an ad-warped copy onto your ship for free. If you're the morality play sort of Trek fan, you could do worse than the man who gave us all a peek behind the Qurtain.
+The rare reward for a mission in Episode 10 (don't forget to Ad Warp!), Quinn no longer offers any daily use due to age, but is an interesting study in Legendary Citation use. You could argue that the best time to have Fully Fused him was the day he was acquired, and the second best day is now, given that he’s finally coming into his own via Collection slots. Difficult spots in rather niche Writer and Q Continuum Collections make him an intriguing choice for a Citation target, and given he could top out at a total of four, you may want to consider plopping down three Legendary Cites on him and cashing in.

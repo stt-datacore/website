@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-He may hate chili powder, but how else is Tuco going to stay warm through those frosty nights on AR-558? Vargas' pair of 1100+ bases could make a splash if he gets lucky with traits, but until that cavalry arrives, he's stuck on that Godforsaken rock waiting for rescue. Hefty arena attack represents a shred of value elsewhere, though most space battles involving the Krayton are over before he can activate.
+He may hate chili powder, but how else is Tuco going to stay warm through those frosty nights on AR-558? Vargas' pair of strong Bases could make a splash if he gets lucky with Traits, but until that cavalry arrives, he's stuck on that Godforsaken rock waiting for rescue. A hefty Attack Boost on Ships represents a shred of value elsewhere, though most space battles involving the Krayton are over before he can Activate.

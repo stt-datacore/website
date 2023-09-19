@@ -14,6 +14,4 @@ published: true
 
 Learn to be fully erect with this ONE WEIRD TRICK - Chiropractors HATE him!
 
-Despite Kirk's disappearing act in 2021, he remains one of the premier event names in Timelines and Roman slots into a huge blind spot in Kirk's skill portfolio; DIP (at least where Orions aren't concerned). Even without much trait help, this variant is a viable candidate for duping if you're a Faction event connoisseur or, at minimum, the first crew you grab out of cryo.
-
-But before he makes it to Rura Penthe, newer players will enjoy his prodigious voyage power. Bad skill set or no, Roman offers a huge score (having debuted at #1 overall and piercing the bottom of the legendary ranks) and a handful of anti-matter traits to enable usage the mimics a partially fused gold crew. With a passable arena ability, Roman offers a little something to everyone and is elite in multiple areas.
+Despite Kirk's disappearing act in 2021, he remains one of the premier Event names in Timelines and Roman slots into a huge blind spot in Kirk's Skill portfolio; DIP (at least where Orions aren't concerned). Even without much Trait help, this variant is a viable candidate for duping if you're a Faction Event connoisseur or, at minimum, the first crew you grab out of Cryostasis. New players, if they can acquire all four stars quickly, may even see him on a Voyage or two before they start to accumulate better Rarity crew in spades.
