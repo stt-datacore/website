@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CrewMember, SkillData } from "../../model/crew";
+import { CrewMember, Skill, SkillData } from "../../model/crew";
 import { CompletionState, PlayerCrew } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
@@ -872,59 +872,20 @@ export class CrewPresenter extends React.Component<
                             marginBottom: "2px",
                         }}
                     >
-                        {skillData.base_skills.security_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="security_skill"
-                                data={skillData.base_skills.security_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
+                        {Object.entries(skillData.base_skills).sort(([akey, askill], [bkey, bskill]) => {
+                            return (bskill as Skill).core - (askill as Skill).core;
+                            
+                        }).map(([key, skill]) => {
 
-                        {skillData.base_skills.command_skill && (
-                            <CrewStat
+                            return <CrewStat
+                                key={"crewpresent_skill_" + key}
                                 proficiencies={proficiencies}
-                                skill_name="command_skill"
-                                data={skillData.base_skills.command_skill}
+                                skill_name={key}
+                                data={skill}
                                 scale={hover ? 0.75 : 1}
                             />
-                        )}
+                        })}
 
-                        {skillData.base_skills.diplomacy_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="diplomacy_skill"
-                                data={skillData.base_skills.diplomacy_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.science_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="science_skill"
-                                data={skillData.base_skills.science_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.medicine_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="medicine_skill"
-                                data={skillData.base_skills.medicine_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.engineering_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="engineering_skill"
-                                data={skillData.base_skills.engineering_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
                         <div style={{ width: "4px" }} />
                     </div>
                     <div
