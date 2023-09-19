@@ -8,7 +8,6 @@ import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
 import CiteOptimizer from '../components/citeoptimizer';
-import EventPlanner from '../components/eventplanner';
 
 import CrewRetrieval from '../components/crewretrieval';
 import FactionInfo from '../components/factions';
@@ -34,10 +33,6 @@ export interface PlayerTools {
 }
 
 export const playerTools: PlayerTools = {
-	'event-planner': {
-		title: 'Event Planner',
-		render: () => <EventPlanner />
-	},
 	'crew': {
 		title: 'Crew',
 		render: ({ location }) => <ProfileCrew isTools={true} location={location} />
