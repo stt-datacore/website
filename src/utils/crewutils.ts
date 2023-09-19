@@ -1040,6 +1040,11 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 }
 
+export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
+	return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
+}
+export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
+	
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
 	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
@@ -1054,7 +1059,7 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 		/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 	];
 	const variantTraits = [] as string[];
-
+	
 	if ("length" in subject) {
 		subject.forEach(trait => {
 			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {

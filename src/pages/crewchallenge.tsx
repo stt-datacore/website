@@ -8,6 +8,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
 import { BaseSkills, Skill } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
+import { getVariantTraits } from '../utils/crewutils';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -670,30 +671,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			}
 			return skills;
 		};
-
-		const getVariantTraits = (traitsHidden: string[]) => {
-			// Get variant names from traits_hidden
-			const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
-			const ignore = [
-				'female', 'male',
-				'artificial_life', 'nonhuman', 'organic', 'species_8472',
-				'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
-				'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-				'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
-			];
-			const ignoreRe = [
-				/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
-				/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
-			];
-			const variantTraits = [] as string[];
-			traitsHidden.forEach(trait => {
-				if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
-					variantTraits.push(trait);
-				}
-			});
-			return variantTraits;
-		};
-
+		
 		const getVariants = (variantTraits: string[], shortName: string) => {
 			const variants = variantTraits.slice();
 			// Dax hacks

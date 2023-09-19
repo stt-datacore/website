@@ -7,7 +7,7 @@ import { Variant } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../../components/itemdisplay';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
-import { getVariantTraits } from '../../utils/crewutils';
+import { crewVariantIgnore, getShortNameFromTrait, getVariantTraits } from '../../utils/crewutils';
 
 type CrewVariantsProps = {
 	traits_hidden: string[];
@@ -24,7 +24,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 
 		const variantTraits = getVariantTraits(traits_hidden);
 		variantTraits.forEach(trait => {
-			const variantGroup = globalContext.core.crew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0)
+			const variantGroup = globalContext.core.crew.filter(ac => ac.traits_hidden.indexOf(trait) >= 0 && !crewVariantIgnore.includes(ac.symbol))
 				.map(cp => JSON.parse(JSON.stringify(cp)) as CrewMember);
 
 			// Ignore variant group if crew is the only member of the group
@@ -56,10 +56,6 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			{variants.map((group, idx) => renderGroup(group, idx))}
 		</React.Fragment>
 	);
-
-	function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
-		return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
-	}
 
 	function renderGroup(group: Variant, idx: number): JSX.Element {
 		return (
