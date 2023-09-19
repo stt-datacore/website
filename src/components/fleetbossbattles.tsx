@@ -118,7 +118,7 @@ const ChainPicker = () => {
 				/>
 			}
 			{chainOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
-			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.core.crew} dbid={`${allData.player.playerData?.player.dbid}`} />}
+			{chain && <ChainSolver key={chain.id} chain={chain} allCrew={allData.core.crew as PlayerCrew[]} dbid={`${allData.player.playerData?.player.dbid}`} />}
 		</React.Fragment>
 	);
 };

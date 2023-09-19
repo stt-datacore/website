@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Message, Button } from 'semantic-ui-react';
+import { Icon, Message, Button } from 'semantic-ui-react';
 
-import { findPotentialCrew, mergeShips } from '../utils/shiputils';
-import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { Ship, Schematics, Ability, ShipBonus } from '../model/ship';
-import { PlayerCrew, PlayerData } from '../model/player';
+import { findPotentialCrew } from '../utils/shiputils';
+import { Ship } from '../model/ship';
+import { PlayerCrew } from '../model/player';
 import CONFIG from './CONFIG';
-import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { CrewMember } from '../model/crew';
 import { ShipPresenter } from './item_presenters/ship_presenter';
 import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
-import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps, OptionsModalState } from './base/optionsmodal_base';
-import { BeholdOptionsModal } from '../pages/behold';
+import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from './base/optionsmodal_base';
 import { ShipAbilityPicker } from './crewtables/shipoptions';
 import CrewPicker from './crewpicker';
 import { getShipBonus, getSkills } from '../utils/crewutils';

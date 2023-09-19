@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Message, Checkbox, Button } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { VoyageCrewSlot } from '../../model/player';
+import { PlayerCrew, VoyageCrewSlot } from '../../model/player';
 import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
@@ -88,7 +88,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				voyageCrewSlot.trait = assigned.trait;
 				// Use coreCrew instead of playerCrew, as current playerCrew may not reflect crew at voyage time
 				const coreCrew = globalContext.core.crew.find(ac => ac.symbol === crewSymbol);
-				if (coreCrew) voyageCrewSlot.crew = coreCrew;
+				if (coreCrew) voyageCrewSlot.crew = coreCrew as PlayerCrew;
 				voyageCrewSlots.push(voyageCrewSlot);
 			}
 		});
