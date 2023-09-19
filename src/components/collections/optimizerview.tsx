@@ -11,7 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { useStateWithStorage } from '../../utils/storage';
 import { appelate } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
-import { CollectionGroup, CollectionMap } from '../../model/collectionfilter';
+import { ColComboMap, CollectionGroup, CollectionMap } from '../../model/collectionfilter';
 import { makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
 
 export interface CollectionOptimizerProps {
@@ -43,7 +43,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
 
 	const searches = searchFilter?.length ? searchFilter.split(';').map(sf => sf.trim())?.filter(f => f?.length) ?? [] : [];
-	const costMap = [] as { collection: string, combo: string[], cost: number, crew: PlayerCrew[] }[];
+	const costMap = [] as { collection: string, combo: ColComboMap, cost: number, crew: PlayerCrew[] }[];
 
 	const setByCost = (value: boolean) => {
 		internalSetByCost(value);
@@ -81,7 +81,12 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 	const getCombo = (col: CollectionGroup) => {
 		let f = combos.find(cf => cf.collection === col.collection.name);
-		return f?.name ?? (col.combos?.length ? col.combos[0].join(" / ") : undefined);
+		return f?.name ?? (col.combos?.length ? col.combos[0].names.join(" / ") : undefined);
+	}
+
+	
+	const findOptCombo = (col: CollectionGroup, combo: string) => {
+		return col.combos?.find(cbo => cbo.names.join(" / ") === combo);
 	}
 	
 	const getOptCols = (col: CollectionGroup, combo?: string) => {
@@ -89,38 +94,32 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			return col.maps;
 		}
 		else {
-			let split = combo.split(" / ");
-			return split.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionMap[];	
+			let fc = findOptCombo(col, combo);
+			if (fc) return fc.names.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionMap[];	
+			return [];
 		}
 	}
 
 	const getOptCrew = (col: CollectionGroup, combo?: string) => {
-		let cma: PlayerCrew[];
+		let crewmap: PlayerCrew[];
 		let cols = getOptCols(col, combo);
 		if (!combo) {
-			cma = col.uniqueCrew;
+			crewmap = col.uniqueCrew;
 		}
 		else {
-
-			cma = cols.map(c => c.crew.slice(0, c.collection.needed)).flat();
-			cma = cma.filter((cz, idx) => cma.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+			crewmap = col.uniqueCrew; // cols.map(c => c.crew).flat().concat(col.uniqueCrew);
+			//crewmap = crewmap.filter((cz, idx) => crewmap.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+			if (combo === 'Healthy Discourse / A New Challenger Approaches / Convergence Day') {
+				console.log("here");
+			}
+			crewmap = findOptCombo(col, combo)?.crew.map(ncrew => crewmap.find(cr => cr.symbol === ncrew) as PlayerCrew) as PlayerCrew[];
 
 			let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);			
 			max = col.collection.needed ?? 0;
 
-			if (cma.length < max) {
-				let cm = 0;
-				let cidx = 0;
-				let c = col.uniqueCrew.length;
-				while (cm < max && cidx < c) {
-					if (cma.some(cc => cc.symbol === col.uniqueCrew[cidx].symbol)) {
-						cidx++;
-						continue;
-					}
-					cma.push(col.uniqueCrew[cidx]);
-					cidx++;
-					cm++;					
-				}
+			if (crewmap.length < max) {
+				let leftover = col.uniqueCrew.filter(fc => !crewmap.some(cm => cm.symbol === fc.symbol));
+				crewmap = crewmap.concat(leftover.slice(0, max - crewmap.length));
 			}
 		}			
 
@@ -128,7 +127,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		let chks = [ 0, ... cols.map(c => 0) ];
 		let allneed = undefined as number | undefined;
 
-		cma.sort((a, b) => {
+		crewmap.sort((a, b) => {
 			let x = 0;
 			let y = 0;
 			
@@ -164,7 +163,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		
 		let p = 0;
 		
-		for (let item of cma) {
+		for (let item of crewmap) {
 			if (col.collection.crew?.find(f => item.symbol === f)) {
 				chks[0]++;
 			}
@@ -184,7 +183,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			p++;
 		}
 
-		return cma.slice(0, allneed);			
+		return crewmap.slice(0, allneed);			
 		
 	}
 	
@@ -192,7 +191,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	colOptimized.forEach((col) => {			
 		col.comboCost = [];
 		for(let combo of col.combos ?? []) {
-			let crew = getOptCrew(col, combo.join(" / "));
+			let crew = getOptCrew(col, combo.names.join(" / "));
 			costMap.push({
 				collection: col.collection.name,
 				combo: combo,
@@ -207,7 +206,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	});
 
 	const findCrew = (col: CollectionGroup, combo?: string) => {
-		return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.join(" / ") === combo))?.crew ?? [];
+		return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.names.join(" / ") === combo))?.crew ?? [];
 	}
 
     const addToSearchFilter = (value: string) => {
@@ -262,11 +261,11 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	
 	const finalCol = colOptimized.filter((col) => {		
 		if (searches?.length) {
-			let newcombos = [] as string[][];
+			let newcombos = [] as ColComboMap[];
 			let newcombocost = [] as number[];
 			let x = 0;
 			for (let combo of col.combos ?? []) {
-				let fc = findCrew(col, combo.join(" / "));
+				let fc = findCrew(col, combo.names.join(" / "));
 				if (fc.some(fcc => searches.includes(fcc.name))) {
 					newcombos.push(combo);
 					if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
@@ -394,7 +393,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					const comboCrew = findCrew(col, optCombo);
 					if (!comboCrew?.length && optCombo !== undefined && optCombo !== '') {
 						window.setTimeout(() => {
-							setCombo(col, col.combos ? col.combos[0].join(" / ") : undefined);
+							setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
 						});						
 						return <></>
 					}
@@ -485,9 +484,9 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 								onChange={(e, { value }) => setCombo(col, value as string)}
 								options={col.combos.map(opt => {
 								return {
-									key: opt.join(" / "),
-									value: opt.join(" / "),
-									text: opt.join(" / ")
+									key: opt.names.join(" / "),
+									value: opt.names.join(" / "),
+									text: opt.names.join(" / ")
 								}								
 							})}/>
 							<br />

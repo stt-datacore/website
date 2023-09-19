@@ -4,6 +4,7 @@ import {
     CollectionGroup,
     CollectionWorkerConfig,
     CollectionWorkerResult,
+    ColComboMap,
 } from "../model/collectionfilter";
 import { CompletionState, PlayerCollection } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
@@ -360,72 +361,87 @@ const CollectionOptimizer = {
                         return r;
                     });
 
-                const createCombos = (col: CollectionGroup) => {
+                const createCombos = (col: CollectionGroup): ColComboMap[] => {
                     const names = col.maps.map((c) => c.collection.name);
-
                     let result = makeAllCombos(names);
+                    
+                    const colNeeded = col.collection.needed ?? 0;
 
-                    let exact = [] as { names: string[]; count: number }[];
-                    let over = [] as { names: string[]; count: number }[];
-                    let under = [] as { names: string[]; count: number }[];
-                    let colneed = col.collection.needed ?? 0;
+                    let exact = [] as ColComboMap[];
+                    let over = [] as ColComboMap[];
+                    let under = [] as ColComboMap[];
 
                     for (let test of result) {
                         let cols = test.map((tc) =>
                             col.maps.find((f) => f.collection.name === tc)
-                        );
+                        ) as CollectionMap[];
+                    
                         // change this approach.
                         // not from collections, from crew!
                         // iterate through common crew,
                         // add collection notches until
                         // all collections are fulfilled
                         // top crew will fill the most collections
+
+                        const colCounts = {} as { [key: string]: { count: number, need: number, crew: string[] }};
+
                         if (cols?.length) {
-                            let extracrew = [] as string[];
-                            extracrew = cols
-                                .map((cm) => cm?.crew.slice(0, cm.collection.needed))
-                                .flat()
-                                .map((f) => f?.symbol ?? "");
-                            extracrew =
-                                extracrew.filter(
-                                    (ef, i) =>
-                                        ef !== "" && extracrew.findIndex((fi) => fi === ef) === i
-                                ) ?? [];
-                            let total = extracrew.length; // cols.map(c => c?.collection.needed ?? 0).reduce((p, n) => p + n, 0);
-                            let tc = cols
-                                .map((c) => c?.collection.needed ?? 0)
-                                .reduce((p, n) => p + n, 0);
+                            let good = [] as CollectionMap[];
+
+                            let allcrew = cols.map(c => c.crew).flat();
+                            allcrew = allcrew.filter((f, i) => f && allcrew.findIndex(f2 => f2 && f2.symbol === f.symbol) === i);
+                            for (let crew of allcrew) {
+                                let cfound = cols.filter(f => f.crew.find(fc => fc.symbol === crew.symbol)) ?? [];
+                                for (let ckey of cfound) {
+                                    if (good.findIndex(d => d.collection.name === ckey.collection.name) !== -1) continue;
+                                    colCounts[ckey.collection.name] ??= { count: 0, need: ckey.collection.needed ?? 0, crew: [] };
+                                    colCounts[ckey.collection.name].count++;
+                                    colCounts[ckey.collection.name].crew.push(crew.symbol);
+                                    
+                                    if (colCounts[ckey.collection.name].count === colCounts[ckey.collection.name].need) {
+                                        if (!good.includes(ckey)) good.push(ckey);
+                                    }
+                                }
+                            }
+                        }
+                        const foundCols = Object.keys(colCounts);
+                        if (foundCols.length === test.length) {
+                            let crewnames = Object.values(colCounts).map(v => v.crew).flat();
+                            crewnames = crewnames.filter((cn, idx) => crewnames.findIndex(cn2 => cn2 === cn) === idx);
+                            let total = crewnames.length;
 
                             if (total) {
-                                if (total === colneed) {
-                                    exact.push({ names: test, count: total });
-                                } else if (total > colneed) {
-                                    over.push({ names: test, count: total });
+                                if (total === colNeeded) {
+                                    exact.push({ names: test, count: total, crew: crewnames });
+                                } else if (total > colNeeded) {
+                                    over.push({ names: test, count: total, crew: crewnames });
                                 } else {
-                                    under.push({ names: test, count: total });
+                                    under.push({ names: test, count: total, crew: crewnames });
                                 }
                             }
                         }
                     }
+
                     exact.sort((a, b) => b.names.length - a.names.length);
                     under.sort((a, b) => b.names.length - a.names.length);
+
                     for (let ex of exact) {
                         ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
                     }
                     if (exact.length > 1) {
-                        return exact.map((d) => d.names);
+                        return exact;
                     }
-                    return exact.concat(under).map((d) => d.names);
+                    return exact.concat(under); //.map((d) => d.names);
                 };
 
                 for (let col of colOptimized) {
                     col.combos = createCombos(col);
                     if (mapFilter?.rewardFilter?.length) {
                         col.combos?.sort((a, b) => {
-                            let acol = (a.map((a) =>
+                            let acol = (a.names.map((a) =>
                                 playerCollections.find((f) => f.name === a)
                             ) ?? []) as PlayerCollection[];
-                            let bcol = (b.map((b) =>
+                            let bcol = (b.names.map((b) =>
                                 playerCollections.find((f) => f.name === b)
                             ) ?? []) as PlayerCollection[];
 
@@ -441,8 +457,8 @@ const CollectionOptimizer = {
                     }
                     if (mapFilter?.collectionsFilter?.length) {
                         if (!mapFilter?.collectionsFilter?.includes(col.collection.id)) {
-                            col.combos = col.combos.filter((fc) => {
-                                let col = fc.map((sc) =>
+                            col.combos = col.combos?.filter((fc) => {
+                                let col = fc.names.map((sc) =>
                                     playerCollections.find(
                                         (col) => col.name === sc.replace("* ", "")
                                     )
@@ -461,7 +477,7 @@ const CollectionOptimizer = {
                         if (mapFilter?.rewardFilter?.length) {
                             let col = (fc.combos
                                 ?.map((sc) =>
-                                    sc.map((tu) =>
+                                    sc.names.map((tu) =>
                                         playerCollections?.find(
                                             (col) => col?.name === tu?.replace("* ", "")
                                         )
@@ -474,7 +490,14 @@ const CollectionOptimizer = {
                             });
 
                             if (col?.length) {
-                                fc.combos = col?.map((c) => c.map((d) => d.name));
+                                let newcombo = [] as ColComboMap[];
+                                for (let pc of col) {
+                                    let cb = fc.combos?.find(ff => ff.names.every(ffn => pc.some(cush => cush.name === ffn)))
+                                    if (cb) {
+                                        newcombo.push(cb);
+                                    }
+                                }
+                                fc.combos = newcombo;
                             }
                         }
                         return fc;
@@ -507,9 +530,9 @@ const CollectionOptimizer = {
                             let acb = a.combos.length;
                             let bcb = b.combos.length;
                             let ayes =
-                                a.combos.filter((c) => c[0].startsWith("* "))?.length ?? 0;
+                                a.combos.filter((c) => c.names[0].startsWith("* "))?.length ?? 0;
                             let byes =
-                                b.combos.filter((c) => c[0].startsWith("* "))?.length ?? 0;
+                                b.combos.filter((c) => c.names[0].startsWith("* "))?.length ?? 0;
                             let r = 0;
 
                             if (!r) r = byes - ayes;

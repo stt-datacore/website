@@ -13,6 +13,12 @@ export interface CollectionMap {
 	completes: boolean;
 }
 
+export interface ColComboMap {
+    names: string[]; 
+    count: number;
+    crew: string[]; 
+}
+
 export interface CollectionGroup {
 	name: string;
 	maps: CollectionMap[];
@@ -23,7 +29,7 @@ export interface CollectionGroup {
 	nonfullfillingRatio?: number;
 	neededStars?: number[];
 	uniqueCost?: number;
-	combos?: string[][];
+	combos?: ColComboMap[];
     comboCost?: number[];
 }
 
