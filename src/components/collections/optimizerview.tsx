@@ -11,7 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { useStateWithStorage } from '../../utils/storage';
 import { appelate } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
-import { ColComboMap, CollectionGroup, CollectionMap } from '../../model/collectionfilter';
+import { ColComboMap, CollectionGroup, CollectionMap, CollectionMatchMode } from '../../model/collectionfilter';
 import { makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
 
 export interface CollectionOptimizerProps {
@@ -29,7 +29,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections } = props;
-    const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
@@ -385,6 +385,22 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						})}
 						/>
 				</div>
+				<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
+					Mode:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Mode"}
+						value={matchMode}
+						onChange={(e, { value }) => setMatchMode(value as CollectionMatchMode)}
+						options={['normal', 'exact-only', 'extended', 'inexact-only'].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + appelate(x)
+							}
+						})}
+						/>
+				</div>
 			</div>}
 			<Table striped>
 				{colMap.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
@@ -577,6 +593,22 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						value={crewPos}
 						onChange={(e, { value }) => setCrewPos(value as ('top' | 'bottom'))}
 						options={['top', 'bottom'].map(x => {
+							return {
+								value: x,
+								key: x,
+								text: "" + appelate(x)
+							}
+						})}
+						/>
+				</div>
+				<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
+					Mode:
+					<Dropdown 
+						style={{margin: "0.5em"}}
+						placeholder={"Mode"}
+						value={matchMode}
+						onChange={(e, { value }) => setMatchMode(value as CollectionMatchMode)}
+						options={['normal', 'exact-only', 'extended', 'inexact-only'].map(x => {
 							return {
 								value: x,
 								key: x,

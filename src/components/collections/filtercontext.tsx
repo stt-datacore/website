@@ -5,7 +5,7 @@ import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { getCollectionRewards } from '../../utils/itemutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { TinyStore } from '../../utils/tiny';
-import { MapFilterOptions, CollectionFilterContextProps, CollectionMap, CollectionGroup } from '../../model/collectionfilter';
+import { MapFilterOptions, CollectionFilterContextProps, CollectionMap, CollectionGroup, CollectionMatchMode } from '../../model/collectionfilter';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 
 const DefaultData = {
@@ -16,6 +16,7 @@ const DefaultData = {
     ownedFilter: '',
     costMode: 'normal',
     short: false,
+    matchMode: 'normal',    
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
     setRarityFilter: (value) => null,
@@ -24,7 +25,8 @@ const DefaultData = {
     checkCommonFilter: (value) => false,
     checkRewardFilter: (value) => false,
     setShort: (value) => false,
-    setCostMode: (value) => false
+    setCostMode: (value) => false,
+    setMatchMode: (value) => false
 } as CollectionFilterContextProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
@@ -53,6 +55,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const [mapFilter, setMapFilter] = useStateWithStorage(pageId + 'collectionstool/mapFilter', defaultMap);
 	const [short, internalSetShort] = useStateWithStorage('collectionstool/colGroupShort', false, { rememberForever: true });
 	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
+	const [matchMode, setMatchMode] = useStateWithStorage<CollectionMatchMode>("colOptimizer/matchMode", 'normal', { rememberForever: true });
 
     const data = {
         mapFilter,
@@ -62,6 +65,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         ownedFilter,
         short,
         costMode,
+        matchMode,
 
         setMapFilter,
         setSearchFilter,
@@ -73,7 +77,8 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         checkRewardFilter,
 
         setShort: internalSetShort,
-        setCostMode
+        setCostMode,
+        setMatchMode
     } as CollectionFilterContextProps;
 
     return (<CollectionFilterContext.Provider value={data}>

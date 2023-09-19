@@ -13,7 +13,7 @@ const CollectionOptimizer = {
     scanAll: (config: CollectionWorkerConfig) => {
         return new Promise<CollectionWorkerResult>((resolve, reject) => {
             const { playerData, filterProps } = config;
-            const { playerCollections, collectionCrew } = config;
+            const { playerCollections, collectionCrew, matchMode } = config;
             const {
                 costMode,
                 short,
@@ -376,13 +376,6 @@ const CollectionOptimizer = {
                             col.maps.find((f) => f.collection.name === tc)
                         ) as CollectionMap[];
                     
-                        // change this approach.
-                        // not from collections, from crew!
-                        // iterate through common crew,
-                        // add collection notches until
-                        // all collections are fulfilled
-                        // top crew will fill the most collections
-
                         const colCounts = {} as { [key: string]: { count: number, need: number, crew: string[] }};
 
                         if (cols?.length) {
@@ -424,14 +417,29 @@ const CollectionOptimizer = {
 
                     exact.sort((a, b) => b.names.length - a.names.length);
                     under.sort((a, b) => b.names.length - a.names.length);
-
+                    over.sort((a, b) => b.names.length - a.names.length);
+                    
                     for (let ex of exact) {
                         ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
                     }
-                    if (exact.length > 1) {
+
+                    if (matchMode === 'normal') {
+                        if (exact.length > 1) {
+                            return exact;
+                        }
+                        else {
+                            return exact.concat(under); 
+                        }
+                    }
+                    else if (matchMode === 'exact-only') {
                         return exact;
                     }
-                    return exact.concat(under); //.map((d) => d.names);
+                    else if (matchMode === 'inexact-only') {
+                        return under;
+                    }
+                    else {
+                        return exact.concat(under);
+                    }
                 };
 
                 for (let col of colOptimized) {

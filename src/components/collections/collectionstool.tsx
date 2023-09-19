@@ -336,7 +336,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
 
 	const { playerCollections, collectionCrew } = props;
-	const { checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
@@ -430,7 +430,8 @@ const CollectionsViews = (props: CrewViewsProps) => {
 					short,
 					costMode,			
 				},
-				collectionCrew
+				collectionCrew,
+				matchMode: matchMode
 			} as CollectionWorkerConfig
 		});
 	}
@@ -518,7 +519,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 
 	React.useEffect(() => {
 		setWorkerRunning(true);
-	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter]);	
+	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode]);	
 
 	React.useEffect(() => {
 		window.setTimeout(() => {

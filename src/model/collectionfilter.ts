@@ -42,6 +42,7 @@ export interface CollectionFilterProps {
     fuseFilter: string;
     ownedFilter: string;
     costMode: 'normal' | 'sale';
+    matchMode: CollectionMatchMode;
 };
 
 
@@ -67,15 +68,21 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
     costMode: 'normal' | 'sale';
     setCostMode: (value: 'normal' | 'sale') => void;
 
+    matchMode: CollectionMatchMode;
+    setMatchMode: (value: CollectionMatchMode) => void;
+
     checkCommonFilter: (filter: CollectionFilterProps, crew: PlayerCrew, exclude?: string[]) => boolean;
     checkRewardFilter: (collection: PlayerCollection, filters: string[]) => boolean;
 };
+
+export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';
 
 export interface CollectionWorkerConfig {
     playerData: PlayerData;
     filterProps: CollectionFilterProps;
     playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
+    matchMode: CollectionMatchMode;
 }
 
 export interface CollectionWorkerResult {
