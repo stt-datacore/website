@@ -8,7 +8,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
 import { BaseSkills, Skill } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
-import { getVariantTraits } from '../utils/crewutils';
+import { crewVariantIgnore, getVariantTraits } from '../utils/crewutils';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -703,7 +703,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 		// Dax hacks
 		if (shortName === 'E. Dax') shortName = 'Ezri';
 		if (shortName === 'J. Dax') shortName = 'Jadzia';
-		const variantTraits = getVariantTraits(crew.traits_hidden);
+		const variantTraits = crewVariantIgnore.includes(crew.symbol) ? [] : getVariantTraits(crew.traits_hidden);
 		return {
 			symbol: crew.symbol,
 			name: crew.name,
