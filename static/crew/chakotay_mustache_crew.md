@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Commander Generic debuted as a daily use option, but now that the bloom is off the rose, there's just scattershot event opportunities and a somewhat low collection ceiling left standing. Having at least one collection should save him from the first wave of low-on-space airlocks and give him some appeal to veteran players, but you could go years without saying the phrase "Gee, I'm glad I have Resolute to thaw for this run of Chakotay events!"
+If Chakotay would just check the time on the pocketwatch he is holding, he would see that his time is up (and has been for some time) as a useful crew. While he does wield a strong DIP Base (gift giving is a diplomatic skill surely) for when his name is called for variant and the occasional Trait Event, he has very slim Collection value which leaves him on the outside looking in most of the time.

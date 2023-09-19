@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-There's a joke that makes the rounds referring to The Bashirs' riding shotgun on the first recorded 'natural' twelve hour voyage, but even though it might be their best offering, they're not a crew you should be targeting for that part of the game, especially not from star one.
-
-Two anti-matter seats and poor power metrics tell you about as much as you need to know of their voyage ability, but without anything else to offer in the daily use or event realms, they're more or less just a collection piece with a place in Timelines' history (congratulations Roykirk).
+There's a joke that makes the rounds referring to The Bashirs' riding shotgun on the first recorded 'natural' twelve hour Voyage, but they're not a crew you should be targeting for that part of the game, especially not from star one. They're more or less just a low-level Collection piece with a place in Timelines' history (congratulations Roykirk).

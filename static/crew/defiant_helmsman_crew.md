@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Like our good buddy Vargas, former 6-packer Wyatt checks all the wrong boxes for crew. Not main cast, poor traits, two skills... His notable avenue for value, arena instant damage, has become little more than an eyebrow raiser as Wyatt joins armfuls of other crew who fill the same role at eight seconds or better; many without Wyatt's trigger restriction and easily available from crew retrieval.
-
-The right skill pair for shuttle seating means that if you can follow a Borg sphere through a temporal inversion back to 2018's Pilot mega to plug him into a shuttle for a few days, by all means. Otherwise, leave this one to the collectors and head to the forums to complain about the degradation of the prestige of legendary crew.
+It’s about the cones… I mean Traits. Helmsman (Ben) Wyatt has four Traits, three of which are almost certainly unviable for Collections, and while he has two serviceable Bases, they likely need his all-too-common Traits to hit on the weekend in order to pitch in on Shuttles. Without any variants to pitch in, the only other thing of note is a 400% Instant Damage Ship Ability, behind a Position Trigger, without any Limits, so if you want to figure out a fun Arena/Skirmish team with a Position Ship, he could be your guy. Send more calzones!

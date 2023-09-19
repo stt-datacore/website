@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Admiral Owen's prodigal son has been a punchline since his debut. Some thematically appropriate arena evasion is an option if you can swallow the accuracy handicap, but realistically he's a popsicle stick with traits attached. Keep an eye out for some more 'realistic' mega and collection possibilities like Pilot or Maverick to hit - if enough of them do, he may squeak into contention in low level beholds.
+Admiral Owen's prodigal son has been a punchline since his debut. Some thematically appropriate Evasion on Ships is an option if you can swallow the Accuracy handicap, but realistically he's a popsicle stick with Traits attached. Keep an eye out for some more 'realistic' Mega Event and Collection possibilities like Pilot or Maverick to hit; if enough of them do, he may squeak into contention in inferior Legendary Beholds.

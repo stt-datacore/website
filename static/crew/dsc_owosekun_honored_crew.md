@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Flying under the radar for her lack of an on-screen presence, OwO (what's this?) still brings the goods with a few more years of voyage ability and multiple collections which should reach (and stop at) three. The end of the Discovery deluge predictably torpedoed her weekend usability, but worthwhile bases will provide spot use on shuttles and shine with a rare bonus.
+One of the supplementary bridge crew characters from Discovery, Owo’s Event pedigree was based almost entirely upon her inclusion in those oft-heralded Mega Events, but this particular variant’s Event has been rerun once already, so look to possibly pick up extra stars from a possible rererun (anything is possible with WRG!). Outside of this, Owo will top out at four Collections, which is slightly above average for a Legendary, and may acquire some additional weekend work from those ancillary Traits.
