@@ -335,11 +335,17 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					setShort={setShort}
 					source={playerCollections} 
 					icons
-					disabled={byCost}
+					//disabled={byCost}
 					value={mapFilter?.rewardFilter} 
 					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 					 />
-				<Checkbox disabled={byCost} style={{margin: "0 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
+				<Checkbox 
+					// disabled={byCost} 
+					style={{margin: "0 1em"}} 
+					label={"Group rewards"} 
+					checked={short} 
+					onChange={(e, { checked }) => setShort(checked ?? false)} 
+					/>
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 			</div>
