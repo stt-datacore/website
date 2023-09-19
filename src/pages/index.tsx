@@ -98,9 +98,10 @@ const IndexPage = (props: IndexPageProps) => {
 			let map = {
 				... JSON.parse(JSON.stringify(crew)),
 				immortal: CompletionState.DisplayAsImmortalStatic,
-				level: crew.max_level,
+				level: context.player.playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */
 				rarity: crew.max_rarity,
 				have: false,
+				date_added: crew.date_added,
 				command_skill: { core: 0, min: 0, max: 0 },
 				medicine_skill: { core: 0, min: 0, max: 0 },
 				security_skill: { core: 0, min: 0, max: 0 },

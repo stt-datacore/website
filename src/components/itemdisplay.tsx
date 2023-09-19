@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
-import { IDefaultGlobal } from '../context/globalcontext';
 import { CompletionState, PlayerCrew, PlayerData, PlayerEquipmentItem } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
-import { VoyageContext } from './voyagecalculator';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { ItemTarget } from './hovering/itemhoverstat';
 import { mergeItems } from '../utils/itemutils';
