@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Stop smiling at me like that, you're creeping me out. New and improved Happy Annorax outdoes standard issue Annorax statistically, but that doesn't do much to help him escape his soon-coming fate as a non-event stat dud with little else to speak of. 
-
-Beloved is on the trait audit transplant list waiting for a Romantic donor, but this Annorax version is a lover, not a fighter, so if he ends up sitting on your bench for a while waiting on that Casual mega (Hi, Frasier!), he won't make much of a fuss.
+Stop smiling at me like that, you're creeping me out. New and improved Happy Annorax outdoes standard issue Annorax statistically, but that doesn't do much to help him escape his fate as a non-Event Stat dud with little else to speak of other than a pair of Collections with perhaps two more untapped Traits for later.

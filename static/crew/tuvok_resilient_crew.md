@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-Beginning to drop from voyage consideration on endgame rosters, BlinkVok still deserves fringe consideration there thanks to a fortuitous skill set and plenty of anti-matter traits, but is making the transition to event and collection piece.
-
-WRG has been frankly disrespectful to Tim Russ' incredible, consummate Vulcan character. While traits have buoyed him to weekend relevance, Tuvok has averaged a measly one event per year for his variants. One can only hope the trait megas continue to roll while the studio wakes up and gives us a dozen more events for Tuvok and his great candle-making, cake-decorating variants in the future.
-
-While we're holding our collective breaths, enjoy his multi-collection status with a little room for improvement in that area. Resilient is a fine mid-level behold option who should hold value reasonably well down the line.
+Blindvok was true to his namesake on Voyages for a good long time due to his strong Skill set and Traits giving Anti-matter bonus matches, but no longer. Now you can find Tuvok pitching in as a long term investment for Collections and Events, with a bevy of Traits, some tapped for Collections and some still in waiting.

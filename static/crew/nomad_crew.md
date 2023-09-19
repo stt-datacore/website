@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Nomad coordinate! Oops, wrong episode. Well, equally iconic to the Original Series faithful is the suppository-looking Nomad. This probe's über sophisticated tech doesn't quite translate in game, leaving him on the outside looking in for daily use. 
-
-An interesting cocktail of traits should lengthen Nomad's voyage lifespan just a hair and, if you cross your fingers hard enough, offer up some event chances down the line. With WRG's collection push in full bloom and a few collections in hand already, Nomad is in line to serve man for at least a while longer.
+This note is fresh off a cameo appearance in Season 3 of Lower Decks, in which Nomad is stored in the anomalies storage room of the Cerritos, which is pretty much where this crew should be in game as well. This Probe has four or five viable Traits for Events and Collections, so look for it to be an average to above-average value in those areas, but little else.

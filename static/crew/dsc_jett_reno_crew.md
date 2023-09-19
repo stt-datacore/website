@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Whispers of the dreamy ENG/MED combo did not come to fruition for this particular variant nor any realistic voyage work, so with Discovery megas dead (but not yet buried. They love to swerve us) and her traits tapped for collections, what you see is what you get.
+Whispers of the dreamy ENG/MED combo did not come to fruition for this particular variant nor any Voyage work, so with the status of Discovery Mega Events unknown and her Traits tapped for Collections, what you see is what you get.
 
-Some strong arena firepower (+10 attack/crit bonus) at a speedy four seconds is there if you want to win with your favorites and besides that, Jett's pre-loaded with a collection trio that should keep her out of the bottom tier rung for good, even if she's already hit her head on her value ceiling.
+Some strong Arena firepower (+10 Attack/Crit Bonus) at a speedy four seconds is there if you want to win with your favorites and besides that, Jett's pre-loaded with a Collection quartet that should keep her out of the bottom tier rung for good, even if she's already hit her head on her value ceiling.

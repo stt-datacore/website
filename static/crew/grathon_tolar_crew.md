@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-It doesn’t end well for the prisoner of a thousand data rods, but that doesn’t mean he's dead on arrival for your roster. Despite Tolar's less than prolific event history, his handful of features have been worth more to him than the average super rare, owing to his huge ENG base. Until more of his traits hit on collection and event opportunities, young roster who acquired multiple stars at once may lean on his serviceable arena accuracy and daily shuttle work.
+It doesn’t end well for the prisoner of a thousand data rods, but that doesn’t mean he's dead on arrival for your roster. Despite Tolar's less than prolific Event history, his handful of features have been worth more to him than the average Super Rare, owing to his sizable ENG Base. Until more of his Traits hit on Collection and Event opportunities, feel free to finish and forget him.

@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-When it comes to voyages, Garak is definitely on the back nine (at Gedi Prime) despite his juicy trait lineup. If you can squeeze a few combos out of him still, that's the cherry on top. Taking the lede is his rich trait inventory which could and probably will supplement a respectable number of variant events. Strong SEC base power will have him finding shuttle seating at will, even if there's a somewhat sour Romulan sitting in that chair already.
-
-His collection pot crock pot has been slow cooking for years and though he only owns a spot in one as of this writing, he could be in three or four by the time you read this and has a higher ceiling than most. If that all isn't enough of a package, Garak also pitches in an acceptably fast 400% damage ship ability that pairs nicely with a Killy/RPC to make a strong one-two punch for Arena and Skirmishes. I don't know about you, but I'd call THAT a bargain.
+Aged out of daily use by now, Sabo Garak is still a worthwhile Legendary Behold selection if you are in need of a 400% Instant Damage crew for your Skirmish/Arena set up, or are chasing long-term investments for Collections. Garak should reasonably top out at a six pack of Collections while only having one now, making him one of the best investments in the game. Featured in an odd Faction/Skirmish Event which has just been rerun for the second time, you might find yourself acquiring more stars for him via a rerererun before long.
