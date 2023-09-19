@@ -48,7 +48,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 	const showStaleMessage = isStale && !dismissed.includes('stale');
 
 	return (
-		<div>
+		<div style={{marginBottom: "1em"}}>
 			{showRequireMessage && (
 				<PlayerMessage
 					header='Player Data Required'
