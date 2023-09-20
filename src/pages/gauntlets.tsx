@@ -150,9 +150,9 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
-const crit65 = 3.90;
-const crit45 = 2.7;
-const crit25 = 1.5;
+const crit65 = 2;
+const crit45 = 1.85;
+const crit25 = 1.45;
 const crit5 = 1;
 
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
@@ -917,51 +917,61 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!r) r = a.name.localeCompare(b.name);
 					return r;
 				});
-
-				const maxpg = 10;
-				let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
-			
-				const incidence = {} as { [key: string]: number };
-				const avgidx = {} as { [key: string]: number };
-				const featuredavgidx = {} as { [key: string]: number };
-				const featureds = {} as { [key: string]: number };
-		
-				for(let pg of pgs) {
-					let idx = 1;
-					
-					for (let pgcrew of pg.crew) {
-						incidence[pgcrew.symbol] ??= 0;				
-						incidence[pgcrew.symbol]++;
-						featureds[pgcrew.symbol] ??= 0;				
-						featuredavgidx[pgcrew.symbol] ??= 0;				
-						let opairs = pg.pair.map(c => rankToSkill(c));
-						if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
-							featureds[pgcrew.symbol]++;
-							featuredavgidx[pgcrew.symbol] += idx;
-						}
-		
-						avgidx[pgcrew.symbol] ??= 0;
-						avgidx[pgcrew.symbol] += idx;
-						idx++;
-					}
-				}
 				
-				Object.keys(avgidx).forEach(key => {
-					avgidx[key] /= incidence[key];
-				});
+		let matchedResult: PlayerCrew[] | undefined = undefined;
+
+		if (gauntlet?.prettyTraits?.length) {
+			const maxpg = 10;
+			let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
 		
-				Object.keys(featuredavgidx).forEach(key => {
-					featuredavgidx[key] /= featureds[key];
-				});
-		
-				const matchedCrew = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
-					let r = 0;
-					let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
-					let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
-		
-					r = bnum - anum;
-					return r;
-				});
+			const incidence = {} as { [key: string]: number };
+			const avgidx = {} as { [key: string]: number };
+			const featuredavgidx = {} as { [key: string]: number };
+			const featureds = {} as { [key: string]: number };
+	
+			for(let pg of pgs) {
+				let idx = 1;
+				
+				for (let pgcrew of pg.crew) {
+					incidence[pgcrew.symbol] ??= 0;				
+					incidence[pgcrew.symbol]++;
+					featureds[pgcrew.symbol] ??= 0;				
+					featuredavgidx[pgcrew.symbol] ??= 0;				
+					let opairs = pg.pair.map(c => rankToSkill(c));
+					if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
+						featureds[pgcrew.symbol]++;
+						featuredavgidx[pgcrew.symbol] += idx;
+					}
+	
+					avgidx[pgcrew.symbol] ??= 0;
+					avgidx[pgcrew.symbol] += idx;
+					idx++;
+				}
+			}
+			
+			Object.keys(avgidx).forEach(key => {
+				avgidx[key] /= incidence[key];
+			});
+	
+			Object.keys(featuredavgidx).forEach(key => {
+				featuredavgidx[key] /= featureds[key];
+			});
+	
+			matchedResult = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+				let r = 0;
+				let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
+				let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+	
+				r = bnum - anum;
+				return r;
+			});
+
+		}
+		else {
+			matchedResult = matchedCrew1;
+		}
+
+		const matchedCrew = matchedResult;
 
 		gauntlet.matchedCrew = matchedCrew;
 		gauntlet.origRanks = {};
