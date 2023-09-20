@@ -190,7 +190,7 @@ const CrewConfigTableMaker = () => {
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 
-	const [tableView, setTableView] = React.useState<TableView>(getDefaultTable() as TableView);
+	const [tableView, setTableView] = useStateWithStorage<TableView>('rosterTable/tableView', getDefaultTable() as TableView);
 
 	React.useEffect(() => {
 		// Reset toggleable filters on roster type change
