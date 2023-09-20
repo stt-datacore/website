@@ -134,15 +134,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	componentDidMount() {
 		this.initData();
 	}
-	componentDidUpdate() {
-		this.initData();
+
+	componentDidUpdate(prevProps: Readonly<ProfileItemsProps>, prevState: Readonly<ProfileItemsState>, snapshot?: any): void {		
+		this.initData();	
 	}
 
 	initData() {
-		if (this.state.data?.length && this.state.data?.length > 0) return;
 		const { playerData } = this.context.player;
-		const { items } = this.context.core;
 		
+		if (playerData) {
+			if (playerData.calculatedDemands && this.state.data?.length && this.state.data?.length > 0) return;
+		}
+		else {
+			if (this.state.data?.length && this.state.data?.length > 0) return;
+		}
+		
+		const { items } = this.context.core;		
 		if (!items) return;
 		
 		this.runWorker();
@@ -218,7 +225,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		let { data } = this.state;
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
 		const { rarity, itemType } = this.state.searchOpts ?? {};
-
+		const { playerData } = this.context.player;
+		let bReady: boolean = !!data?.length;
+		if (playerData) {
+			if (!playerData.calculatedDemands) {
+				bReady = false;
+			}
+		}
 		const { hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
 		let cit = data?.map(d => d.type);
@@ -329,8 +342,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			{!data && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
-			{!!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
+			{(!data || !bReady) && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
+			{bReady && !!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
@@ -456,7 +469,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
 			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
 			<br />
-				{!hideOwnedInfo && !!(data?.length) &&
+				{!hideOwnedInfo && !!(data?.length) && bReady &&
 					<div style={{
 						display: "flex",
 						flexDirection: "row",
