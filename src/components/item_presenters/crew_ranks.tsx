@@ -270,8 +270,6 @@ export const CrewRanks = (props: CrewRanksProps) => {
 };
 
 const rankLinker = (roster: boolean, rank: number, symbol: string, column: string, direction: string = 'ascending', search: string | undefined = undefined) => {
-	return (<>{rank}</>);
-	// Links temporarily disabled
 	if (roster) return (<>{rank}</>);
 	const linkState = {
 		search: search ?? '',
