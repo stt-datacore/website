@@ -298,10 +298,11 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 			<div style={{
 				display: "flex",
 				flexDirection: "column",
-				justifyContent: "flex-start"
+				justifyContent: "flex-start",
+				marginBottom: "1em"
 			}}>
 				<div style={{
-					margin: "1em 0 0 0",
+					margin: "0",
 					display: "flex",
 					flexDirection: window.innerWidth < 725 ? "column" : "row",
 					justifyContent: "flex-start"
