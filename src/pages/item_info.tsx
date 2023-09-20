@@ -20,7 +20,6 @@ import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import Layout from '../components/layout';
 import DataPageLayout from '../components/page/datapagelayout';
 import { getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
@@ -243,7 +242,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.item.type === 8 && !!ship &&
 					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
 						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
-							<Link to={`/playertools?tool=ship&ship=${ship.symbol}`}>
+							<Link to={`/ship_info?ship=${ship.symbol}`}>
 								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
 								<ItemDisplay 
 									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}

@@ -2,13 +2,12 @@ import React from 'react';
 import { InView } from 'react-intersection-observer';
 import { Header, Icon, Menu, Grid, Input, Button, Table, Image, Rating, Divider, Statistic, Modal, Message, Popup, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
 
-import Layout from '../components/layout';
-
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
-import { BaseSkills, Skill } from '../model/crew';
+import { BaseSkills, CrewMember, Skill } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
 import { crewVariantIgnore, getVariantTraits } from '../utils/crewutils';
+import { GlobalContext } from '../context/globalcontext';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -68,11 +67,11 @@ class PlayerStats {
 const PortalCrewContext = React.createContext<PlayerCrew[]>([]);
 
 const CrewChallenge = () => {
-	const [portalCrew, setPortalCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
+	const [portalCrew, setPortalCrew] = React.useState<CrewMember[]>([]);
+	const context = React.useContext(GlobalContext);
 
-	async function fetchAllCrew() {
-		const crewResponse = await fetch('/structured/crew.json');
-		const allcrew = await crewResponse.json();
+	function fetchAllCrew() {
+		const allcrew = context.core.crew;
 		// Sort here to ensure consistency for seedrandom
 		const portalcrew = allcrew.filter(crew => crew.in_portal).sort((a, b) => a.name.localeCompare(b.name));
 		// Fix incorrect series; changes here are consistent with unofficial Trait Audit thread:
@@ -108,15 +107,11 @@ const CrewChallenge = () => {
 	}, []);
 
 	if (!portalCrew) {
-		return (
-			<Layout title={PAGE_TITLE}>
-				<Icon loading name='spinner' /> Loading...
-			</Layout>
-		);
+		context.core.spin();
 	}
 
 	return (
-		<PortalCrewContext.Provider value={portalCrew}>
+		<PortalCrewContext.Provider value={portalCrew as PlayerCrew[]}>
 			<CrewChallengeLayout />
 		</PortalCrewContext.Provider>
 	);

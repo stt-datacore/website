@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Header, Table, Icon } from 'semantic-ui-react';
+import { Header, Table, Icon, Step } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
@@ -19,13 +18,44 @@ import ItemDisplay from '../components/itemdisplay';
 import DataPageLayout from '../components/page/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { binaryLocate, populateItemCadetSources } from '../utils/itemutils';
+import { useStateWithStorage } from '../utils/storage';
+import ProfileItems from '../components/profile_items';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
+	
+	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
+	const context = React.useContext(GlobalContext);
+
+	const hasPlayer = !!context.player.playerData;
+	const allActive = activeTabIndex === 0 || !hasPlayer;
+
 	return (
-		<DataPageLayout demands={['all_buffs', 'crew', 'items', 'cadet']}>
-			<ItemsComponent  />
+
+		<DataPageLayout pageTitle='Items' demands={['all_buffs', 'crew', 'items', 'cadet']}>
+			<React.Fragment>
+			
+			<Step.Group>
+				<Step active={allActive} onClick={() => setActiveTabIndex(0)}>
+					<Step.Content>
+						<Step.Title>All Items</Step.Title>
+						<Step.Description>Overview of all items in the game.</Step.Description>
+					</Step.Content>
+				</Step>
+
+				{hasPlayer && <Step active={!allActive} onClick={() => setActiveTabIndex(1)}>
+					<Step.Content>
+						<Step.Title>Owned Items</Step.Title>
+						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
+					</Step.Content>
+				</Step>}
+			</Step.Group>
+
+			{allActive && <ItemsComponent  />}
+			{!allActive && <ProfileItems />}
+
+			</React.Fragment>
 		</DataPageLayout>
 	);
 };

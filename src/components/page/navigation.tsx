@@ -148,10 +148,9 @@ export const Navigation = (props: NavigationProps) => {
             sidebarRole: 'heading',
 			subMenu: [
 				{ optionKey: 'crew', src: '/media/crew_icon.png', title: 'Crew', link: '/', sidebarRole: 'item' },
-				{ optionKey: 'ship', src: '/media/ship_icon.png', title: 'Ships', link: '/playertools?tool=ships', sidebarRole: 'item' },
-				{ optionKey: 'item', src: '/media/equipment_icon.png', title: 'Owned Items', link: '/playertools?tool=items', sidebarRole: 'item' },
-				{ optionKey: 'all_items', src: '/media/equipment_icon.png', title: 'All Items', link: '/items', sidebarRole: 'item' },
-				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: 'Unneeded Items', link: '/playertools?tool=unneeded', sidebarRole: 'item' },
+				{ optionKey: 'ship', src: '/media/ship_icon.png', title: 'Ships', link: '/ships', sidebarRole: 'item' },
+				{ optionKey: 'items', src: '/media/equipment_icon.png', title: 'Items', link: '/items', sidebarRole: 'item' },
+				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: 'Unneeded Items', link: '/unneeded', sidebarRole: 'item' },
 			]
 		},
 		{
@@ -159,15 +158,15 @@ export const Navigation = (props: NavigationProps) => {
             sidebarRole: 'heading',
             subMenu: [
 				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-				{ title: "Factions", link: "/playertools?tool=factions", sidebarRole: 'item' },	// Factions available at launch
+				{ title: "Factions", link: "/factions", sidebarRole: 'item' },	// Factions available at launch
 				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 				{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/playertools?tool=cite-optimizer", sidebarRole: 'item' },	// Citations added 1.9
+				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 				{ title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
-				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/playertools?tool=crew-retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
-				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/playertools?tool=fleetbossbattles", sidebarRole: 'item' },	// Fleet boss battles added v9
+				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
 			]
 		},
 		{

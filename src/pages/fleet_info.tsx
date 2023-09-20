@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Label, Message, Icon, Table, Item, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
-
-import Layout from '../components/layout';
-import { PlayerData } from '../model/player';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type FleetInfoPageProps = {};
 
@@ -60,8 +58,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Fleet information'>
-					<Header as="h4">Fleet information</Header>
+				<DataPageLayout pageTitle='Fleet information'>
+					<React.Fragment>
 					{errorMessage && (
 						<Message negative>
 							<Message.Header>Unable to load fleet profile</Message.Header>
@@ -77,7 +75,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						Are you looking to share your player profile? Go to the <Link to={`/playertools`}>Player Tools page</Link> to
 							upload your player.json and access other useful player tools.
 						</p>
-				</Layout>
+					</React.Fragment>
+				</DataPageLayout>
 			);
 		}
 
@@ -101,7 +100,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		}
 
 		return (
-			<Layout title={fleet_data.name}>
+			<DataPageLayout pageTitle={fleet_data.name}>
+				<React.Fragment>
 				<Item.Group>
 					<Item>
 						<Item.Image size="tiny" src={`${process.env.GATSBY_ASSETS_URL}${imageUrl}`} />
@@ -213,7 +213,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						))}
 					</Table.Body>
 				</Table>
-			</Layout>
+				</React.Fragment>
+			</DataPageLayout>
 		);
 	}
 }

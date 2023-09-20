@@ -46,11 +46,11 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 		},
 		{
 			title: "My Achievements",
-			link: "/playertools?tool=other"
+			link: "/achievements"
 		},
 		{
 			title: "My Charts & Stats",
-			link: "/playertools?tool=charts"
+			link: "/charts"
 		},
 		{
 			title: "Menu Settings",

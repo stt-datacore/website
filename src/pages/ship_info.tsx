@@ -4,17 +4,18 @@ import { Icon, Message, Button } from 'semantic-ui-react';
 import { findPotentialCrew } from '../utils/shiputils';
 import { Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
-import CONFIG from './CONFIG';
+import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { ShipPresenter } from './item_presenters/ship_presenter';
+import { ShipPresenter } from '../components/item_presenters/ship_presenter';
 import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
-import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from './base/optionsmodal_base';
-import { ShipAbilityPicker } from './crewtables/shipoptions';
-import CrewPicker from './crewpicker';
+import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../components/base/optionsmodal_base';
+import { ShipAbilityPicker } from '../components/crewtables/shipoptions';
+import CrewPicker from '../components/crewpicker';
 import { getShipBonus, getSkills } from '../utils/crewutils';
-import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { getActionColor, getShipBonusIcon } from './item_presenters/shipskill';
+import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
+import { getActionColor, getShipBonusIcon } from '../components/item_presenters/shipskill';
+import DataPageLayout from '../components/page/datapagelayout';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -41,6 +42,16 @@ const pagingOptions = [
 	{ key: '2', value: '50', text: '50' },
 	{ key: '3', value: '100', text: '100' }
 ];
+
+const ShipInfoPage = () => {
+
+	const [title, setTitle] = React.useState('Ship Details');
+
+	return <DataPageLayout pageTitle={title}>
+		<ShipProfile />
+	</DataPageLayout>
+	
+}
 
 class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	static contextType = GlobalContext;
@@ -172,7 +183,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
         }
 		if (window.location.href.includes("ship")) {
 			if (!ship_key || !this.context.player.playerShips) {
-				navigate('/playertools?tool=ships');
+				navigate('/ships');
 			}
 		}
 
@@ -203,7 +214,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
         }
 		if (isWindow && window.location.href.includes("ship")) {
 			if (!ship_key || !data) {
-				navigate('/playertools?tool=ships');
+				navigate('/ships');
 			}
 		}
 
@@ -435,4 +446,4 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 };
 
 
-export default ShipProfile;
+export default ShipInfoPage;

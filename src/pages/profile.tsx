@@ -4,7 +4,6 @@ import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
 
-import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
 import ProfileShips from '../components/profile_ships';
@@ -26,6 +25,7 @@ import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import DataPageLayout from '../components/page/datapagelayout';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -61,7 +61,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	}
 
 	return (
-		<Layout>
+		<DataPageLayout>
+			<React.Fragment>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
@@ -82,7 +83,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 						</GlobalContext.Provider>
 				</React.Fragment>
 			}
-		</Layout>
+			</React.Fragment>
+		</DataPageLayout>
 	);
 }
 

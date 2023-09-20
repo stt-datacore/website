@@ -186,8 +186,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         
         const navClick = () => {
             if (!displayItem) return;
-            navigate('/playertools?tool=ship&ship=' + displayItem.symbol);            
-            //window.location.href = 'playertools?tool=ship&ship=' + ship.symbol;
+            navigate('/ship_info?ship=' + displayItem.symbol);            
         }
 
         const onClose = () => {
