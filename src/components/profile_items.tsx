@@ -95,8 +95,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { items } = this.context.core;
 		
 		if (!items) return;
+		
+		const data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);
+
 		window.setTimeout(() => {		
-			let data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);			
+			
 			const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
 
 			data.sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -175,7 +178,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				if (rosterDemands?.demands.length && this.state.addNeeded === true) {
 					for (let item of rosterDemands.demands) {
 
-						if (!binaryLocate(item.symbol, data) && this.context.core.items) {
+						if (!binaryLocate(item.symbol, data) && items) {
 							item.equipment = binaryLocate(item.symbol, catalog) as EquipmentItem | undefined;
 							if (item.equipment){
 								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
@@ -189,15 +192,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					}
 				}
 			}
-			window.setTimeout(() => {
-				if (this.state.addNeeded) {
-					data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-					this.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
-				}
-				else {
-					this.setState({ ... this.state, data });	
-				}
-			});
+
+			if (this.state.addNeeded) {
+				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				this.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+			}
+			else {
+				this.setState({ ... this.state, data });	
+			}
 		});
 
 	}
