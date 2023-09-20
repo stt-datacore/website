@@ -41,9 +41,6 @@ export interface GauntletSettingsProps {
 	isOpen: boolean;
 };
 
-
-
-
 export const crit65 = 2;
 export const crit45 = 1.85;
 export const crit25 = 1.45;
