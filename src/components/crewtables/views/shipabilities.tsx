@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Checkbox } from 'semantic-ui-react';
+import { Form, Table, Checkbox } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../context/globalcontext';
 
@@ -294,7 +294,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	}
 
 	return (
-		<React.Fragment>
+		<Form>
 			<div style={{
 				display: "flex",
 				flexDirection: "column",
@@ -398,6 +398,6 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					</div>
 				</div>
 			</div>
-		</React.Fragment>
+		</Form>
 	);
 };

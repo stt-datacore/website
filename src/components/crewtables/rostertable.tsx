@@ -21,6 +21,7 @@ import { CrewPortalFilter } from './filters/crewportal';
 import { getBaseTableConfig, CrewBaseCells } from './views/base';
 import { ShipAbilitiesFilter, shipTableConfig, CrewShipCells } from './views/shipabilities';
 import { getRanksTableConfig, CrewRankCells } from './views/ranks';
+import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './views/crewutility';
 
 import RosterSummary from './rostersummary';
 
@@ -149,7 +150,8 @@ type TableView =
 	'' |
 	'ship' |
 	'g_ranks' |
-	'v_ranks';
+	'v_ranks' |
+	'crewutility';
 
 interface IToggleableFilter {
 	id: string;
@@ -190,9 +192,13 @@ const CrewConfigTableMaker = () => {
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 
-	const [tableView, setTableView] = useStateWithStorage<TableView>('rosterTable/tableView', getDefaultTable() as TableView);
+	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	React.useEffect(() => {
+		// Reset table views when not available on updated roster type
+		const activeView = tableViews.find(view => view.id === tableView);
+		if (activeView && !activeView.available) setTableView('');
+
 		// Reset toggleable filters on roster type change
 		//	Otherwise hidden filters stay in effect when changing roster type
 		const resetList = [] as string[];
@@ -266,6 +272,22 @@ const CrewConfigTableMaker = () => {
 			optionText: 'Show voyage ranks',
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
+		},
+		{
+			id: 'crew_utility',
+			available: playerData && rosterType === 'myCrew',
+			optionText: 'Show crew utility',
+			form:
+				<CrewUtilityForm
+					pageId={pageId}
+					rosterCrew={rosterCrew}
+					crewMarkups={crewMarkups}
+					setCrewMarkups={setCrewMarkups}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>,
+			tableConfig: getCrewUtilityTableConfig(),
+			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells crew={crew} />
 		},
 	] as ITableView[];
 
@@ -361,8 +383,8 @@ const CrewConfigTableMaker = () => {
 						<Loader inline active={isPreparing} />
 					</div>
 				</div>
-				{view && view.form}
 			</Form>
+			{view && view.form}
 			{preparedCrew &&
 				<CrewConfigTable
 					pageId={pageId}
@@ -379,8 +401,8 @@ const CrewConfigTableMaker = () => {
 		</React.Fragment>
 	);
 
-	function getDefaultTable(): string {
-		let defaultTable = '';
+	function getDefaultTable(): TableView {
+		let defaultTable: TableView = '';
 		if (initOptions?.column) {
 			if (initOptions.column.startsWith('ranks.G_')) defaultTable = 'g_ranks';
 			if (initOptions.column.startsWith('ranks.V_')) defaultTable = 'v_ranks';
