@@ -3,6 +3,7 @@ import { BaseSkills, Skill } from "./crew";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
+import { EquipmentCommon, EquipmentItem } from "./equipment";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -138,4 +139,12 @@ export interface ExportCrew {
     skillData: number[];
 }
 
+export interface EquipmentWorkerConfig {
+    items: EquipmentItem[];
+    playerData: PlayerData;
+    addNeeded?: boolean;
+}
 
+export interface EquipmentWorkerResults {
+    items: (EquipmentCommon | EquipmentItem)[];    
+}

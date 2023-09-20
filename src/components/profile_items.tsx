@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
+
+import '../typings/worker';
+import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+
 import { binaryLocate, exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
@@ -14,6 +18,7 @@ import { TinyStore } from '../utils/tiny';
 import { downloadData } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewHoverStat } from './hovering/crewhoverstat';
+import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -82,6 +87,33 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		};
 	}
 
+	private runWorker() {
+		const worker = new UnifiedWorker();
+		const { playerData } = this.context.player;
+		const items = this.context.core.items;
+		const { addNeeded } = this.state;
+		
+		var me = this;
+
+		worker.addEventListener('message', (message: { data: { result: EquipmentWorkerResults } }) => {			
+			if (addNeeded) {
+				message.data.result.items.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				me.setState({ ... this.state, data: message.data.result.items, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+			}
+			else {
+				me.setState({ ... this.state, data: message.data.result.items });	
+			}			
+		});
+
+		worker.postMessage({
+			worker: 'equipmentWorker',
+			config: { 
+				playerData,
+				items,
+				addNeeded: this.state.addNeeded			
+				} as EquipmentWorkerConfig
+		});
+	}
 	componentDidMount() {
 		this.initData();
 	}
@@ -96,112 +128,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		
 		if (!items) return;
 		
-		const data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);
-
-		window.setTimeout(() => {		
-			
-			const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
-
-			data.sort((a, b) => a.symbol.localeCompare(b.symbol));
-
-			let { hideOwnedInfo } = this.props;
-
-			if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length) {
-				let crewLevels: { [key: string]: Set<string>; } = {};
-			
-				playerData.player.character.crew.forEach(cr => {
-					cr.equipment_slots.forEach(es => {
-						let item = binaryLocate(es.symbol, catalog);
-						if (item) {
-							crewLevels[es.symbol] ??= new Set();
-							crewLevels[es.symbol].add(cr.name);
-						}
-					});
-				});
-		
-				for (let symbol in crewLevels) {
-					if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
-						let item = binaryLocate(symbol, catalog);
-						if (item) {
-							if (crewLevels[symbol].size > 5) {
-								item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
-							} else {
-								item.flavor = 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
-							}
-						}
-					}
-				}
-
-				const rosterDemands = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
-				
-				rosterDemands?.demands.sort((a, b) => a.symbol.localeCompare(b.symbol));
-
-				for (let item of data) {
-					if (item.type === 8) {
-						let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
-						if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0 && scheme.level !== scheme.max_level) {
-							item.needed = scheme.schematic_gain_cost_next_level - (item.quantity ?? 0);
-							item.factionOnly = false;
-						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
-							if ("demandCrew" in item) delete item.demandCrew;
-						}
-					}
-					else if (item.type === 2 || item.type === 3) {
-						const fitem = binaryLocate(item.symbol, rosterDemands?.demands ?? []);
-						if (fitem) {
-							item.needed = fitem.count;
-							item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-							item.demandCrew ??= []
-							for (let sym of fitem.crewSymbols) {
-								if (sym && !item.demandCrew.find(f => f === sym)) {
-									item.demandCrew.push(sym);
-								}
-							}
-							if (item.demandCrew.length > 5) {
-								item.flavor = `Equippable by ${item.demandCrew.length} crew`;
-							} else {
-								item.flavor = 'Equippable by: ' + item.demandCrew.map(c => playerData.player.character.crew.find(fc => fc.symbol === c)?.name).join(', ');
-							}
-
-						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
-							item.demandCrew = [];
-						}
-					}
-				}
-
-				if (rosterDemands?.demands.length && this.state.addNeeded === true) {
-					for (let item of rosterDemands.demands) {
-
-						if (!binaryLocate(item.symbol, data) && items) {
-							item.equipment = binaryLocate(item.symbol, catalog) as EquipmentItem | undefined;
-							if (item.equipment){
-								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
-								eq.needed = item.count;
-								eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-								eq.quantity = 0;
-								eq.demandCrew = [ ... item.crewSymbols ];
-								data.push(eq);
-							}
-						}
-					}
-				}
-			}
-
-			if (this.state.addNeeded) {
-				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-				this.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
-			}
-			else {
-				this.setState({ ... this.state, data });	
-			}
-		});
-
+		this.runWorker();
 	}
 
 	private _onChangePage(activePage) {
@@ -260,7 +187,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
 		this.tiny.setValue('addNeeded', value ?? false);
-		this.setState({ ... this.state, data: [], addNeeded: value ?? false });
+		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
 	}
 
 	render() {
@@ -379,7 +306,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			{!data && <div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
+			{!data && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
 			{!!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>

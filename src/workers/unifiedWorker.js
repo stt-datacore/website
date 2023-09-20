@@ -6,6 +6,7 @@ import voyagers from './voyagers.js';
 import Optimizer from './optimizer.js';
 import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
+import ItemsWorker from './itemsworker.ts';
 
 self.addEventListener('message', message => {
   const postResult = (result, inProgress) => {
@@ -19,6 +20,7 @@ self.addEventListener('message', message => {
     'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
     'ironywrit': () => BetaTachyon.scanCrew(message.data.playerData, message.data.allCrew, message.data.buffs).then(data => postResult(data, false)),
     'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
+    'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
     'iampicard': () => voymod().then(mod => {
         let result = mod.calculate(JSON.stringify(message.data), res => {
           postResult(res, true);
