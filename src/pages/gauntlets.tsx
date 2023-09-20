@@ -1,26 +1,22 @@
-import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps, SemanticWIDTHS, Step } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import React from 'react';
+import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 import * as moment from 'moment';
-import Layout from '../components/layout';
 import { AllTraits } from '../model/traits';
 import allTraits from '../../static/structured/translation_en.json';
 const traits = allTraits as AllTraits;
 
 
-import CONFIG from '../components/CONFIG';
-import { DataContext, randomCrew } from '../context/datacontext';
+import { randomCrew } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
-import { PlayerContext } from '../context/playercontext';
-import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { CompletionState, PlayerCrew } from '../model/player';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
-import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
+import { CrewPresenter } from '../components/item_presenters/crew_presenter';
+import { BuffNames, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
@@ -121,8 +117,8 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
-export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
-	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
+	let atrait = gauntlet?.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 	settings ??= defaultSettings;
 
 	if (atrait >= 3) atrait = settings.crit65;
