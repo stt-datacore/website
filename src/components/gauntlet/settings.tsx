@@ -44,9 +44,9 @@ export interface GauntletSettingsProps {
 
 
 
-export const crit65 = 3.90;
-export const crit45 = 2.7;
-export const crit25 = 1.5;
+export const crit65 = 2;
+export const crit45 = 1.85;
+export const crit25 = 1.45;
 export const crit5 = 1;
 
 export const defaultSettings = {
