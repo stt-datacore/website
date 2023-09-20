@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message } from 'semantic-ui-react';
+import { Header, Table, Icon, Rating, Form, Dropdown, Checkbox, Image, Message, Popup } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import CONFIG from './CONFIG';
@@ -23,7 +23,6 @@ const EventPlanner = (props: EventPlannerProps) => {
 
 	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
 	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', []);
-
 	const [activeEvents, setActiveEvents] = React.useState(undefined);
 	if (!activeEvents) {
 		identifyActiveEvents();
@@ -65,10 +64,13 @@ const EventPlanner = (props: EventPlannerProps) => {
 				rarity: crew.max_rarity,
 				base_skills: ff.base_skills
 			});
+		} else {
+			crewman.statusIcon = 'snowflake';
 		}
 
 		myCrew.push(crewman);
-	});
+	}); 
+
 
 	const buffConfig = calculateBuffConfig(playerData.player);
 
@@ -104,10 +106,13 @@ type EventPickerProps = {
 const EventPicker = (props: EventPickerProps) => {
 	const { playerData, events, crew, buffConfig, allCrew } = props;
 
+	const usc = useStateWithStorage('tools/useSharedCrew', true);
 	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
 	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', []);
-
+	const [useSharedCrew, setUseSharedCrew ] = usc;
+	const [sharedCrew, setSharedCrew] = useStateWithStorage('eventplanner/sharedCrew', undefined);
+	
 	const eventsList = [];
 	events.forEach((activeEvent, eventId) => {
 		eventsList.push(
@@ -152,20 +157,12 @@ const EventPicker = (props: EventPickerProps) => {
 			prospect = JSON.parse(JSON.stringify(prospect));
 			prospect.id = myCrew.length+1;
 			prospect.prospect = true;
+			prospect.statusIcon = "user add";
 			prospect.have = false;
 			prospect.rarity = p.rarity;
 			prospect.level = 100;
 			prospect.immortal = 0;
-			CONFIG.SKILLS_SHORT.forEach(skill => {
-				let score = { core: 0, min: 0, max: 0 };
-				if (prospect.base_skills[skill.name]) {
-					if (prospect.rarity == prospect.max_rarity)
-						score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
-					else
-						score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity-1].base_skills[skill.name]);
-				}
-				prospect[skill.name] = score;
-			});
+			generateBuffedSkills(prospect, buffConfig);
 			myCrew.push(prospect);
 			lockable.push({
 				symbol: prospect.symbol,
@@ -176,6 +173,23 @@ const EventPicker = (props: EventPickerProps) => {
 			});
 		}
 	});
+
+	let newSharedCrew = playerData.player.character.crew_borrows[0];
+
+	if (useSharedCrew && newSharedCrew) {
+		console.debug("Found shared crew");
+		setSharedCrew({...allCrew.find(c => c.symbol == sharedCrew.symbol), ...newSharedCrew });
+		generateBuffedSkills(sharedCrew, buffConfig);
+		sharedCrew.dateShared = new Date();
+		sharedCrew.shared = true;
+		sharedCrew.statusIcon = "share alternate";
+		sharedCrew.have = false;
+		sharedCrew.id = myCrew.length + 1;
+		myCrew.push(sharedCrew);
+	} else if (sharedCrew && ((Date.now() - sharedCrew.dateShared) / (1000 * 60 * 60 * 24)) > 4) { 
+		// Event has finished so delete shared crew
+		setSharedCrew(undefined);
+	}
 
 	return (
 		<React.Fragment>
@@ -191,7 +205,7 @@ const EventPicker = (props: EventPickerProps) => {
 				<div>{eventData.description}</div>
 				{phaseList.length > 1 && (<div style={{ margin: '1em 0' }}>Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value) } /></div>)}
 			</Form>
-			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} />
+			<EventCrewTable crew={myCrew} eventData={eventData} phaseIndex={phaseIndex} buffConfig={buffConfig} lockable={lockable} useSharedCrew={usc} />
 			<EventProspects pool={allBonusCrew} prospects={prospects} setProspects={setProspects} />
 			{eventData.content_types[phaseIndex] == 'shuttles' && (<EventShuttles playerData={playerData} crew={myCrew} eventData={eventData} />)}
 		</React.Fragment>
@@ -204,6 +218,7 @@ type EventCrewTableProps = {
 	phaseIndex: number;
 	buffConfig: any;
 	lockable?: any[];
+	useSharedCrew: any[];
 };
 
 const EventCrewTable = (props: EventCrewTableProps) => {
@@ -214,6 +229,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 	const [initOptions, setInitOptions] = React.useState({});
+	const [useSharedCrew, setUseSharedCrew] = props.useSharedCrew;
 
 	const crewAnchor = React.useRef(null);
 
@@ -384,6 +400,15 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 						checked={showFrozen}
 						onChange={(e, { checked }) => setShowFrozen(checked)}
 					/>
+					<Form.Checkbox 
+						checked={useSharedCrew}
+						onChange={({}, { checked }) => setUseSharedCrew(checked)}
+						label={
+							<label>
+								Use shared crew<Popup content='Note: Crew numbers are based on user buffs and may not match actual score' trigger={<Icon name='info' />} />
+							</label>
+						}
+					/>
 				</Form.Group>
 			</div>
 			<SearchableTable
@@ -463,8 +488,7 @@ const EventCrewTable = (props: EventCrewTableProps) => {
 				<div><Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
 				<div>
 					{crew.favorite && <Icon name='heart' />}
-					{crew.immortal > 0 && <Icon name='snowflake' />}
-					{crew.prospect && <Icon name='add user' />}
+					{crew.statusIcon && <Icon name={crew.statusIcon} />}
 					<span>{crew.immortal ? (`${crew.immortal} frozen`) : (`Level ${crew.level}`)}</span>
 				</div>
 			</div>
@@ -558,9 +582,8 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		if (!best) best = {score: 0};
 		if (best.score > 0) {
 			let bestCrew = crew.find(c => c.id === best.id);
-			let icon = (<></>);
-			if (bestCrew.immortal) icon = (<Icon name='snowflake' />);
-			if (bestCrew.prospect) icon = (<Icon name='add user' />);
+			const icon = (bestCrew.statusIcon) ? (<Icon name={bestCrew.statusIcon} />) : (<></>);
+			
 			return (
 				<Table.Cell key={key} textAlign='center' style={{ cursor: 'zoom-in' }} onClick={() => handleClick(skillA, skillB)}>
 					<img width={36} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew.imageUrlPortrait}`} /><br/>{icon} {bestCrew.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
@@ -660,6 +683,19 @@ function applySkillBuff(buffConfig: any, skill: string, base_skill: any): { core
 		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
 		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
 	};
+}
+
+function generateBuffedSkills(crew, buffConfig) {
+	CONFIG.SKILLS_SHORT.forEach(skill => {
+		let score = { core: 0, min: 0, max: 0 };
+		if (crew.base_skills[skill.name]) {
+			if (crew.rarity == crew.max_rarity)
+				score = applySkillBuff(buffConfig, skill.name, crew.base_skills[skill.name]);
+			else
+				score = applySkillBuff(buffConfig, skill.name, crew.skill_data[prospect.rarity-1].base_skills[skill.name]);
+		}
+		crew[skill.name] = score;
+	});
 }
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
