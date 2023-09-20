@@ -32,7 +32,7 @@ const ItemsWorker = {
 				for (let symbol in crewLevels) {
 					if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
 						let item = binaryLocate(symbol, catalog);
-						if (item) {
+						if (item && !item.flavor) {
 							if (crewLevels[symbol].size > 5) {
 								item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
 							} else {

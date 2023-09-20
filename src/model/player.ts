@@ -5,7 +5,7 @@ import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
-import { EquipmentCommon } from "./equipment";
+import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
 import { Archetype17, ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
@@ -39,6 +39,7 @@ export interface PlayerData {
     version?: 17 | 20;
     stripped?: boolean;
     citeMode?: CiteMode;
+    calculatedDemands?: EquipmentItem[];
 }
 
 export interface Player {

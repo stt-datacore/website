@@ -90,18 +90,35 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	private runWorker() {
 		const worker = new UnifiedWorker();
 		const { playerData } = this.context.player;
+
 		const items = this.context.core.items;
 		const { addNeeded } = this.state;
 		
 		var me = this;
 
-		worker.addEventListener('message', (message: { data: { result: EquipmentWorkerResults } }) => {			
+		if (playerData?.calculatedDemands?.length) {
+			let data = [ ... playerData.calculatedDemands ];
+
 			if (addNeeded) {
-				message.data.result.items.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-				me.setState({ ... this.state, data: message.data.result.items, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				me.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
 			}
 			else {
-				me.setState({ ... this.state, data: message.data.result.items });	
+				me.setState({ ... this.state, data });	
+			}			
+			return;
+		}
+
+		worker.addEventListener('message', (message: { data: { result: EquipmentWorkerResults } }) => {						
+			if (playerData) playerData.calculatedDemands = message.data.result.items as EquipmentItem[];
+			let data = [ ... message.data.result.items ];
+			
+			if (addNeeded) {
+				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				me.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+			}
+			else {
+				me.setState({ ... this.state, data });	
 			}			
 		});
 
@@ -186,6 +203,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
+		const { playerData } = this.context.player;
+
+		if (playerData) {
+			delete playerData.calculatedDemands;
+		}
+
 		this.tiny.setValue('addNeeded', value ?? false);
 		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
 	}
