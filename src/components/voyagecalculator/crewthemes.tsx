@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button, Input, Table, Message, Icon } from 'semantic-ui-react';
+import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'semantic-ui-react';
 
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -10,6 +10,7 @@ interface IThemeOption {
 	description: string;
 	keywords: string;
 	eligible: number;
+	collectionCount?: number;
 	onSelect: () => void;
 };
 
@@ -25,7 +26,6 @@ type CrewThemesProps = {
 export const CrewThemes = (props: CrewThemesProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [themes, setThemes] = React.useState<IThemeOption[]>([] as IThemeOption[]);
 	const [selectedTheme, setSelectedTheme] = React.useState<IThemeOption | undefined>(undefined);
 
@@ -33,30 +33,32 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		calculateThemes();
 	}, [props.rosterCrew, props.considerActive, props.considerFrozen]);
 
+	if (!selectedTheme) return renderModal();
+
 	return (
-		<Modal
-			size='small'
-			open={modalIsOpen}
-			onClose={() => setModalIsOpen(false)}
-			onOpen={() => setModalIsOpen(true)}
-			trigger={renderTrigger()}
-			centered={false}
-		>
-			<Modal.Header>
-				Themed Voyages
-			</Modal.Header>
-			<Modal.Content scrolling>
-				<p>Select a theme to consider crew who you normally wouldn't send out on voyages. Your voyage may not run as long as it would with your regulars, but the crew may yet surprise you!</p>
-				{modalIsOpen && <ThemesTable themes={themes} selectTheme={onThemeSelected} />}
-			</Modal.Content>
-			<Modal.Actions>
-				{selectedTheme && <Button color='red' content='Clear Theme' onClick={clearTheme} />}
-				<Button onClick={() => setModalIsOpen(false)}>
-					Close
-				</Button>
-			</Modal.Actions>
-		</Modal>
+		<Message icon onDismiss={clearTheme}>
+			<Icon name='paint brush' color='blue' />
+			<Message.Content>
+				<Message.Header>
+					{selectedTheme.name}
+				</Message.Header>
+				{selectedTheme.description}
+				<div style={{ marginTop: '1em' }}>
+					{renderModal()}
+				</div>
+			</Message.Content>
+		</Message>
 	);
+
+	function renderModal(): JSX.Element {
+		return (
+			<CrewThemePicker
+				themes={themes}
+				selectedTheme={selectedTheme}
+				setSelectedTheme={setSelectedTheme}
+			/>
+		);
+	}
 
 	function calculateThemes(): void {
 		const themes = [] as IThemeOption[];
@@ -65,18 +67,16 @@ export const CrewThemes = (props: CrewThemesProps) => {
 
 		globalContext.core.collections.forEach(collection => {
 			const key = `collection-${collection.id}`;
-			let description = '';
-			if (collection.description) {
-				description = collection.description.replace('Immortalize', '').replace(/\.$/, '');
-			}
+			const description = collection.description ? simplerDescription(collection.description) : '';
 			const crewIds = props.rosterCrew.filter(crew => (collection.crew ?? []).includes(crew.symbol)).map(crew => crew.id);
 			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
 			themes.push({
 				key,
 				name: collection.name,
-				description: description,
+				description,
 				keywords: 'collection',
 				eligible: eligibleIds.length,
+				collectionCount: collection.crew ? collection.crew.length : 0,
 				onSelect: () => filterByCrewIds(crewIds)
 			});
 		});
@@ -155,6 +155,26 @@ export const CrewThemes = (props: CrewThemesProps) => {
 					return dtAdded.getTime() > (dtNow - (365*24*60*60*1000));
 				}
 			},
+			{
+				key: 'captains',
+				name: 'Captain\'s Prerogative',
+				description: 'Only Kirks, Picards, Siskos, Janeways, Archers, Burnhams, or Pikes (as lead roles of their respective shows)',
+				keywords: 'crew',
+				filter: (crew: IVoyageCrew) => {
+					const captains = [
+						['kirk', 'tos'],
+						['picard', 'tng'],
+						['sisko', 'ds9'],
+						['janeway', 'voy'],
+						['archer', 'ent'],
+						['burnham', 'dsc'],
+						['pike', 'snw']
+					];
+					return captains.some(traitpair => {
+						return traitpair.every(trait => crew.traits_hidden.includes(trait));
+					});
+				}
+			},
 		] as IFilterOption[];
 
 		if (props.rosterType === 'myCrew') {
@@ -183,10 +203,70 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		setThemes([...themes]);
 	}
 
+	function simplerDescription(description: string): string {
+		let simple = description.replace(/&lt;/g, '<').replace(/&gt;/g, '>') /* Webarchive import fix */
+			.replace(/(<([^>]+)>)/g, '')
+			.replace('Immortalize ', '')
+			.replace(/^the /i, '')
+			.replace(/\.$/, '');
+		return simple.slice(0, 1).toUpperCase() + simple.slice(1);
+	}
+
+	function filterByCrewIds(crewIds: number[]): void {
+		const rosterCrew = props.rosterCrew.filter(crew => crewIds.includes(crew.id));
+		props.setPreConsideredCrew([...rosterCrew]);
+	}
+
+	function clearTheme(): void {
+		props.setPreConsideredCrew([...props.rosterCrew]);
+		setSelectedTheme(undefined);
+	}
+};
+
+type CrewThemePickerProps = {
+	themes: IThemeOption[];
+	selectedTheme: IThemeOption | undefined;
+	setSelectedTheme: (selectedTheme: IThemeOption | undefined) => void;
+};
+
+const CrewThemePicker = (props: CrewThemePickerProps) => {
+	const { themes, selectedTheme, setSelectedTheme } = props;
+
+	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+
+	return (
+		<Modal
+			size='small'
+			open={modalIsOpen}
+			onClose={() => setModalIsOpen(false)}
+			onOpen={() => setModalIsOpen(true)}
+			trigger={renderTrigger()}
+			centered={false}
+		>
+			<Modal.Header>
+				Themed Voyages
+			</Modal.Header>
+			<Modal.Content scrolling>
+				<p>Select a theme to consider crew who you normally wouldn't send out on voyages. Your voyage may not run as long as it would with your regulars, but the crew may yet surprise you!</p>
+				{modalIsOpen && <ThemesTable themes={themes} selectTheme={onThemeSelected} />}
+			</Modal.Content>
+			<Modal.Actions>
+				{selectedTheme &&
+					<Button color='red' onClick={() => setSelectedTheme(undefined)}>
+						Clear theme
+					</Button>
+				}
+				<Button onClick={() => setModalIsOpen(false)}>
+					Close
+				</Button>
+			</Modal.Actions>
+		</Modal>
+	);
+
 	function renderTrigger(): JSX.Element {
 		if (!selectedTheme) return <Button icon='paint brush' content='Themed Voyages...' />;
 		return (
-			<Button icon='paint brush' color='blue' content={`Theme: ${selectedTheme.name}`} />
+			<Button floated='right' content='Choose a different themed voyage...' />
 		);
 	}
 
@@ -194,22 +274,6 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		theme.onSelect();
 		setSelectedTheme(theme);
 		setModalIsOpen(false);
-	}
-
-	function clearTheme(): void {
-		props.setPreConsideredCrew([...props.rosterCrew]);
-		setSelectedTheme(undefined);
-		setModalIsOpen(false);
-	}
-
-	function filterByCrewSymbols(crewSymbols: string[] = []): void {
-		const rosterCrew = props.rosterCrew.filter(crew => crewSymbols.includes(crew.symbol));
-		props.setPreConsideredCrew([...rosterCrew]);
-	}
-
-	function filterByCrewIds(crewIds: number[]): void {
-		const rosterCrew = props.rosterCrew.filter(crew => crewIds.includes(crew.id));
-		props.setPreConsideredCrew([...rosterCrew]);
 	}
 };
 
@@ -221,13 +285,20 @@ type ThemesTableProps = {
 const ThemesTable = (props: ThemesTableProps) => {
 	const [state, dispatch] = React.useReducer(reducer, {
 		data: props.themes.sort((a, b) => a.name.localeCompare(b.name)),
-		column: 'date',
-		direction: 'descending'
+		column: 'name',
+		direction: 'ascending'
 	});
 	const { data, column, direction } = state;
 
 	const [query, setQuery] = React.useState('');
 	const [highlightedTheme, setHighlightedTheme] = React.useState<IThemeOption | undefined>(undefined);
+	const [themeFilter, setThemeFilter] = React.useState<string>('ineligible');
+
+	const themeFilterOptions = [
+		{ key: 'none', value: '', text: 'Show all themes' },
+		{ key: 'impossible', value: 'impossible', text: 'Hide impossible themes only' },
+		{ key: 'ineligible', value: 'ineligible', text: 'Hide all ineligible themes' },
+	];
 
 	interface ICustomRow {
 		column: string;
@@ -241,25 +312,40 @@ const ThemesTable = (props: ThemesTableProps) => {
 		{ column: 'eligible', title: 'Eligible Crew', descendFirst: true }
 	] as ICustomRow[];
 
-	const filteredData = data.filter(theme => {
+	const filteredData = data.filter((theme: IThemeOption) => {
+		if (themeFilter === 'ineligible' && theme.eligible < 12) return false;
+		if (themeFilter === 'impossible' && (!theme.collectionCount || theme.collectionCount < 12)) return false;
 		if (query === '') return true;
 		const re = new RegExp(query, 'i');
 		return re.test(theme.name) || re.test(theme.description) || re.test(theme.keywords);
-	});
+	}) as IThemeOption[];
 
 	return (
 		<React.Fragment>
-			<Input fluid iconPosition='left'
-				placeholder='Search for themes by name or description...'
-				value={query}
-				onChange={(e, { value }) => setQuery(value)}
-			>
-				<input />
-				<Icon name='search' />
-				<Button icon onClick={() => setQuery('')}>
-					<Icon name='delete' />
-				</Button>
-			</Input>
+			<Form>
+				<Input fluid iconPosition='left'
+					placeholder='Search for themes by name or description...'
+					value={query}
+					onChange={(e, { value }) => setQuery(value)}
+				>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => setQuery('')}>
+						<Icon name='delete' />
+					</Button>
+				</Input>
+				<Form.Group inline>
+					<Form.Field
+						placeholder='Filter themes'
+						control={Dropdown}
+						clearable
+						selection
+						options={themeFilterOptions}
+						value={themeFilter}
+						onChange={(e, { value }) => setThemeFilter(value as string)}
+					/>
+				</Form.Group>
+			</Form>
 			<Table sortable celled selectable striped>
 				<Table.Header>
 					<Table.Row>
@@ -284,6 +370,14 @@ const ThemesTable = (props: ThemesTableProps) => {
 
 	function renderTableRow(row: IThemeOption): JSX.Element {
 		const highlighted = highlightedTheme?.key === row.key;
+		let errorMessage = '';
+		if (highlighted) {
+			if (row.collectionCount && row.collectionCount < 12)
+				errorMessage = 'Theme impossible because there aren\'t enough crew in the game yet.';
+			else if (row.eligible < 12)
+				errorMessage = 'Theme ineligible because you don\'t have enough crew available.';
+		}
+
 		return (
 			<Table.Row key={row.key}
 				onClick={() => validateTheme(row)}
@@ -294,8 +388,8 @@ const ThemesTable = (props: ThemesTableProps) => {
 					<span style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 						{row.name}
 					</span>
-					<div dangerouslySetInnerHTML={{ __html: row.description }} />
-					{highlighted && <Message error>Not enough eligible crew to select this theme!</Message>}
+					<div>{row.description}</div>
+					{errorMessage !== '' && <Message error>{errorMessage}</Message>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{row.eligible}</b>
@@ -317,11 +411,11 @@ const ThemesTable = (props: ThemesTableProps) => {
 		switch (action.type) {
 			case 'UPDATE_DATA':
 				const updatedData = action.data.slice();
-				sorter(updatedData, 'created_at', 'descending');
+				sorter(updatedData, 'name', 'ascending');
 				return {
-					column: 'created_at',
+					column: 'name',
 					data: updatedData,
-					direction: 'descending'
+					direction: 'ascending'
 				};
 			case 'CHANGE_SORT':
 				let direction = action.descendFirst ? 'descending' : 'ascending';
