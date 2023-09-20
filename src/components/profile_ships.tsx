@@ -155,7 +155,12 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		let data = prefiltered.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
-			if (textFilter?.length && !ship.name?.includes(textFilter) && !ship.traits?.some(t => t.includes(textFilter)) && !ship.traits_hidden?.some(t => t.includes(textFilter))) return false;
+			if (textFilter?.length) {
+				const usearch = textFilter.toLocaleUpperCase();
+				if (!ship.name?.toLocaleUpperCase().includes(usearch) 
+					&& !ship.traits?.some(t => t.toLocaleUpperCase().includes(usearch)) 
+					&& !ship.traits_hidden?.some(t => t.toLocaleUpperCase().includes(textFilter))) return false;
+			} 
 			return true;
 		})
 

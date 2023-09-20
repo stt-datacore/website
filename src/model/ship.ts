@@ -41,7 +41,7 @@ export interface Ship extends ShipBonus {
   attacks_per_second: number;
   shield_regen: number;
   traits?: string[];
-  traits_hidden?: any[];
+  traits_hidden?: string[];
   antimatter: number;
   id: number;
   level: number;
