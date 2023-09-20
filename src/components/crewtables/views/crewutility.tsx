@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
 
 import { PlayerUtilityRanks } from '../../../model/player';
@@ -110,14 +111,14 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	return (
 		<div style={{ marginBottom: '1em' }}>
 			<p>
-				Crew utility identifies the number of useful skill sets each crew has, relative to others on your roster with similar skill sets.
-				<Button content='Customize...' compact onClick={() => setShowPane(!showPane)} style={{ marginLeft: '1em' }} />
+				Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets, based entirely on skill numbers. For specific advice on crew to use, consult the <Link to='/eventplanner'>Event Planner</Link>, <Link to='/gauntlets'>Gauntlets</Link>, or <Link to='/voyage'>Voyage Calculator</Link>.
 			</p>
+			<Button content='Customize utility scoring...' onClick={() => setShowPane(!showPane)} />
 			{showPane &&
-				<React.Fragment>
+				<div style={{ margin: '1em 0' }}>
 					<p>You can measure utility for different areas of the game. A higher number will consider more crew as useful in that area of gameplay.</p>
 					{renderThresholdForm()}
-				</React.Fragment>
+				</div>
 			}
 		</div>
 	);

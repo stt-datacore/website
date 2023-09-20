@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import { Form, Dropdown, Header, Loader } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
@@ -263,6 +264,7 @@ const CrewConfigTableMaker = () => {
 			id: 'g_ranks',
 			available: true,
 			optionText: 'Show gauntlet ranks',
+			form: <p>Ranks based on unboosted immortalized max proficiencies. For specific advice on crew to use, consult <Link to='/gauntlets'>Gauntlets</Link>.</p>,
 			tableConfig: getRanksTableConfig('gauntlet'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='G_' />
 		},
@@ -270,6 +272,7 @@ const CrewConfigTableMaker = () => {
 			id: 'v_ranks',
 			available: true,
 			optionText: 'Show voyage ranks',
+			form: <p>Ranks based on unboosted immortalized skill numbers. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
