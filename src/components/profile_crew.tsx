@@ -4,7 +4,7 @@ import { GlobalContext } from '../context/globalcontext';
 import { RosterTable } from '../components/crewtables/rostertable';
 
 type ProfileCrewProps = {
-
+	pageId?: string;
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
@@ -15,7 +15,7 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 
 	return (
 		<React.Fragment>
-			<RosterTable key='profileView'
+			<RosterTable key={'profileView' + props.pageId}
 				pageId='profile'
 				rosterCrew={playerData.player.character.crew} rosterType='profileCrew'
 			/>

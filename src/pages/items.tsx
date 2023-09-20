@@ -52,8 +52,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 				</Step>}
 			</Step.Group>
 
-			{allActive && <ItemsComponent  />}
-			{!allActive && <ProfileItems />}
+			<ItemsComponent noRender={!allActive} />
+			<ProfileItems noRender={allActive} />
 
 			</React.Fragment>
 		</DataPageLayout>
@@ -63,6 +63,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 
 interface ItemsComponentProps {
+	noRender?: boolean;
 };
 
 interface ItemsComponentState {
@@ -236,6 +237,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	render() {
+		if (this.props.noRender) return <></>
 		return (<>
 				<Header as="h2">Items</Header>
 

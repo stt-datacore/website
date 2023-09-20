@@ -172,7 +172,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} isTools={true} location={location} /> || <></>
+				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',

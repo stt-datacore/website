@@ -1,6 +1,7 @@
 import CONFIG from '../components/CONFIG';
 import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { ISymbol, SymbolName } from '../model/game-elements';
 import { Mission } from '../model/missions';
 import { AtlasIcon, BuffBase, PlayerCollection, PlayerEquipmentItem, Reward } from '../model/player';
 import { getIconPath } from './assets';
@@ -187,7 +188,7 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
 
 
 
-export function binaryLocate(symbol: string, items: (EquipmentItem | EquipmentCommon)[]) : EquipmentItem | EquipmentCommon | undefined {
+export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T | undefined {
 	let lo = 0, hi = items.length - 1;
 
 	while (true)

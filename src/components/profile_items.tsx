@@ -32,6 +32,8 @@ type ProfileItemsProps = {
 	addNeeded?: boolean;
 
 	pageName?: string;
+	
+	noRender?: boolean;
 };
 
 interface ItemSearchOpts {
@@ -50,7 +52,7 @@ type ProfileItemsState = {
 	pagination_page: number;
 	
 	/** Add needed but unowned items to list */
-	addNeeded?: boolean;
+	addNeeded?: boolean;	
 };
 
 const pagingOptions = [
@@ -95,6 +97,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (!items) return;
 		window.setTimeout(() => {		
 			let data = mergeItems(this.context.player.playerData?.player.character.items ?? [], items);			
+			const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
+
+			data.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
 			let { hideOwnedInfo } = this.props;
 
@@ -103,7 +108,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			
 				playerData.player.character.crew.forEach(cr => {
 					cr.equipment_slots.forEach(es => {
-						let item = binaryLocate(es.symbol, items);
+						let item = binaryLocate(es.symbol, catalog);
 						if (item) {
 							crewLevels[es.symbol] ??= new Set();
 							crewLevels[es.symbol].add(cr.name);
@@ -113,7 +118,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		
 				for (let symbol in crewLevels) {
 					if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
-						let item = binaryLocate(symbol, items);
+						let item = binaryLocate(symbol, catalog);
 						if (item) {
 							if (crewLevels[symbol].size > 5) {
 								item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
@@ -124,7 +129,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					}
 				}
 
-				const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
+				const rosterDemands = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
+				
+				rosterDemands?.demands.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
 				for (let item of data) {
 					if (item.type === 8) {
@@ -140,7 +147,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						}
 					}
 					else if (item.type === 2 || item.type === 3) {
-						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
+						const fitem = binaryLocate(item.symbol, rosterDemands?.demands ?? []);
 						if (fitem) {
 							item.needed = fitem.count;
 							item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
@@ -165,11 +172,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					}
 				}
 
-				if (demandos?.demands.length && this.state.addNeeded === true) {
-					for (let item of demandos.demands) {
-						
-						if (!data.find(f => f.symbol === item.symbol) && this.context.core.items) {
-							item.equipment = this.context.core.items.find(f => f.symbol === item.symbol);
+				if (rosterDemands?.demands.length && this.state.addNeeded === true) {
+					for (let item of rosterDemands.demands) {
+
+						if (!binaryLocate(item.symbol, data) && this.context.core.items) {
+							item.equipment = binaryLocate(item.symbol, catalog) as EquipmentItem | undefined;
 							if (item.equipment){
 								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
 								eq.needed = item.count;
@@ -323,6 +330,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			});
 		});
 
+		if (this.props.noRender) return <></>
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
