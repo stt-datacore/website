@@ -903,39 +903,48 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!r) r = a.name.localeCompare(b.name);
 					return r;
 				});
-
-				const maxpg = 10;
-				let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
-			
-				const incidence = {} as { [key: string]: number };
-				const avgidx = {} as { [key: string]: number };
 		
-				for(let pg of pgs) {
-					let idx = 1;
-					
-					for (let pgcrew of pg.crew) {
-						incidence[pgcrew.symbol] ??= 0;				
-						incidence[pgcrew.symbol]++;
+		let matchedResults: PlayerCrew[] | undefined = undefined;
 
-						avgidx[pgcrew.symbol] ??= 0;
-						avgidx[pgcrew.symbol] += idx;
-
-						idx++;
-					}
-				}
+		if (gauntlet.prettyTraits?.length) {
+			const maxpg = 10;
+			let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
+		
+			const incidence = {} as { [key: string]: number };
+			const avgidx = {} as { [key: string]: number };
+	
+			for(let pg of pgs) {
+				let idx = 1;
 				
-				Object.keys(avgidx).forEach(key => {
-					avgidx[key] /= incidence[key];
-				});
-		
-				const matchedCrew = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
-					let r = 0;
-					let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
-					let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+				for (let pgcrew of pg.crew) {
+					incidence[pgcrew.symbol] ??= 0;				
+					incidence[pgcrew.symbol]++;
 
-					r = bnum - anum;
-					return r;
-				});
+					avgidx[pgcrew.symbol] ??= 0;
+					avgidx[pgcrew.symbol] += idx;
+
+					idx++;
+				}
+			}
+			
+			Object.keys(avgidx).forEach(key => {
+				avgidx[key] /= incidence[key];
+			});
+	
+			matchedResults = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+				let r = 0;
+				let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
+				let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+
+				r = bnum - anum;
+				return r;
+			});
+		}
+		else {
+			matchedResults = matchedCrew1;
+		}
+
+		const matchedCrew = matchedResults;
 
 		gauntlet.matchedCrew = matchedCrew;
 		gauntlet.origRanks = {};
