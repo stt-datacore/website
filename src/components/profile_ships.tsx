@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Button, Input } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -12,6 +12,7 @@ import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
 import { TriggerPicker } from './crewtables/shipoptions';
+import { isMobile } from 'react-device-detect';
 
 type ProfileShipsProps = {
 };
@@ -27,6 +28,7 @@ type ProfileShipsState = {
 	activeShip?: Ship | null;
 	rarityFilter?: number[];
 	grantFilter?: string[];
+	textFilter?: string;
 };
 
 const pagingOptions = [
@@ -76,6 +78,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	_onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
+
+	
 
 	_handleSort(clickedColumn) {
 		const { column, direction } = this.state;
@@ -135,12 +139,13 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	private readonly setGrantFilter = (filter: string[] | undefined) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, grantFilter: filter});
-		})
-		
+		})		
 	}
-
+	private readonly setTextFilter = (filter?: string) => {
+		this.setState({ ...this.state, textFilter: filter });
+	}
 	render() {
-		const { grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { textFilter, grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
 		if (!dataContext || !dataContext.core.ships || !dataContext.player.playerShips) return <></>;
@@ -150,7 +155,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		let data = prefiltered.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
-
+			if (textFilter?.length && !ship.name?.includes(textFilter) && !ship.traits?.some(t => t.includes(textFilter)) && !ship.traits_hidden?.some(t => t.includes(textFilter))) return false;
 			return true;
 		})
 
@@ -173,6 +178,18 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				display: "flex",
 				flexDirection: "row"
 			}}>
+				<Input
+					style={{ width: isMobile ? '100%' : '50%' }}
+					iconPosition="left"
+					placeholder="Search by name or trait..."
+					value={textFilter}
+					onChange={(e, { value }) => this.setTextFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => this.setTextFilter('')} >
+							<Icon name='delete' />
+						</Button>
+				</Input>
 
 				<RarityFilter
 					altTitle='Filter ship rarity'
