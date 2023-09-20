@@ -120,7 +120,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 
 	const [shipRarityFilter, setShipRarityFilter] = React.useState([] as number[]);
 	const [shipPickerFilter, setShipPickerFilter] = React.useState({} as ShipPickerFilter);
-	const [shipFilters, setShipAbilitiess] = React.useState<ShipAbilitiesConfig>({});
+	const [shipFilters, setShipFilters] = React.useState<ShipAbilitiesConfig>({});
 
 	const { selectedBonuses, selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
 
@@ -178,7 +178,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	React.useEffect(() => {
 		if (selectedShip && !selectedShip?.actions?.some(l => l.status && l.status !== 16)) {
 			if (triggerOnly) {
-				setShipAbilitiess({ ... shipFilters, triggerOnly: false });
+				setShipFilters({ ... shipFilters, triggerOnly: false });
 			}
 		}
 	}, [selectedShip]);
@@ -202,7 +202,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 		if (selectedRankings?.length) {
 			let newselranks = selectedRankings?.filter(ab => rankings?.some(av => av.key === ab));
 			if (newselranks.length != selectedRankings.length) {
-				setShipAbilitiess({ ... shipFilters, selectedRankings: newselranks });
+				setShipFilters({ ... shipFilters, selectedRankings: newselranks });
 			}
 		}
 	}, [rankings])
@@ -211,7 +211,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 		if (selectedUses?.length) {
 			let usesel = selectedUses.filter(su => availableUses.some(v => v == su));
 			if (JSON.stringify(selectedUses) != JSON.stringify(usesel)) {
-				setShipAbilitiess({ ... shipFilters, selectedUses: usesel });
+				setShipFilters({ ... shipFilters, selectedUses: usesel });
 			}
 		}
 	}, [availableUses])
@@ -283,7 +283,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	}
 
 	const clearShipAbilitiess = () => {
-		setShipAbilitiess({});
+		setShipFilters({});
 		setShipCrew([]);
 		setShipPickerFilter({});
 		setShipRarityFilter([]);
@@ -318,7 +318,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 							filter={shipPickerFilter}
 							selectedShip={selectedShip}
 							pool={props.ships}
-							setSelectedShip={(item) => setShipAbilitiess({ ... shipFilters, selectedShip: item })}
+							setSelectedShip={(item) => setShipFilters({ ... shipFilters, selectedShip: item })}
 							playerData={props.playerData} />
 					</div>
 					<div className="ui button"
@@ -348,7 +348,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 						marginTop: 0
 						}}>
 						<ShipSeatPicker
-								setSelectedSeats={(item) => setShipAbilitiess({ ... shipFilters, selectedSeats: item })}
+								setSelectedSeats={(item) => setShipFilters({ ... shipFilters, selectedSeats: item })}
 								selectedSeats={selectedSeats ?? []}
 								availableSeats={availableSeats}
 							/>
@@ -358,19 +358,19 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 
 				<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
 					<div style={{marginRight: "1em"}}>
-						<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipAbilitiess({ ... shipFilters, selectedUses: item })} />
+						<AbilityUses uses={availableUses} selectedUses={selectedUses ?? []} setSelectedUses={(item) => setShipFilters({ ... shipFilters, selectedUses: item })} />
 					</div>
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0, marginRight:"1em"}}>
-						<BonusPicker selectedBonuses={selectedBonuses} setSelectedBonuses={(item) => setShipAbilitiess({ ... shipFilters, selectedBonuses: item })} />
+						<BonusPicker selectedBonuses={selectedBonuses} setSelectedBonuses={(item) => setShipFilters({ ... shipFilters, selectedBonuses: item })} />
 					</div>
 					{!isCheckDisabled() &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
-						<Checkbox checked={triggerOnly} onChange={(e, { value }) => setShipAbilitiess({ ... shipFilters, triggerOnly: !!!triggerOnly })} />
+						<Checkbox checked={triggerOnly} onChange={(e, { checked }) => setShipFilters({ ... shipFilters, triggerOnly: checked as boolean })} />
 						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 					</div>}
 					{!selectedShip &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
-						<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipAbilitiess({ ... shipFilters, selectedTriggers: item as string[] })} />
+						<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item as string[] })} />
 					</div>}
 				</div>
 
@@ -384,14 +384,14 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 						<ShipAbilityPicker
 								selectedAbilities={selectedAbilities ?? []}
-								setSelectedAbilities={(item) => setShipAbilitiess({ ... shipFilters, selectedAbilities: item })}
+								setSelectedAbilities={(item) => setShipFilters({ ... shipFilters, selectedAbilities: item })}
 								availableAbilities={availableAbilities}
 							/>
 					</div>
 					<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 						<ShipAbilityRankPicker
 								selectedRankings={selectedRankings ?? []}
-								setSelectedRankings={(item) => setShipAbilitiess({ ... shipFilters, selectedRankings: item })}
+								setSelectedRankings={(item) => setShipFilters({ ... shipFilters, selectedRankings: item })}
 								availableRankings={rankings}
 							/>
 					</div>
