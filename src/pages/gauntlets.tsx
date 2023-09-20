@@ -909,11 +909,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			
 				const incidence = {} as { [key: string]: number };
 				const avgidx = {} as { [key: string]: number };
-				
-				// TODO: Re-evaluate what role, if any, featured skills should have
-
-				// const featuredavgidx = {} as { [key: string]: number };
-				// const featureds = {} as { [key: string]: number };
 		
 				for(let pg of pgs) {
 					let idx = 1;
@@ -922,16 +917,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						incidence[pgcrew.symbol] ??= 0;				
 						incidence[pgcrew.symbol]++;
 
-						// featureds[pgcrew.symbol] ??= 0;				
-						// featuredavgidx[pgcrew.symbol] ??= 0;				
-						// let opairs = pg.pair.map(c => rankToSkill(c));
-						// if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
-						// 	featureds[pgcrew.symbol]++;
-						// 	featuredavgidx[pgcrew.symbol] += idx;
-						// }
-		
 						avgidx[pgcrew.symbol] ??= 0;
 						avgidx[pgcrew.symbol] += idx;
+
 						idx++;
 					}
 				}
@@ -940,18 +928,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					avgidx[key] /= incidence[key];
 				});
 		
-				// Object.keys(featuredavgidx).forEach(key => {
-				// 	featuredavgidx[key] /= featureds[key];
-				// });
-		
 				const matchedCrew = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
 					let r = 0;
 					let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
 					let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
-					// let cnum = (maxpg - featuredavgidx[a.symbol]) * featureds[a.symbol];
-					// let dnum = (maxpg - featuredavgidx[b.symbol]) * featureds[b.symbol];
-					// anum += (cnum * 0.1);
-					// bnum += (dnum * 0.1);
 
 					r = bnum - anum;
 					return r;
