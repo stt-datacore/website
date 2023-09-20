@@ -130,7 +130,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				{!showPane && <>{title}</>}
 				{showPane && (
 					<React.Fragment>
-						{!!myCrew ? 'Ranks on your roster' : 'All ranks'}, based on unboosted immortalized skills:
+						{!!myCrew ? 'Ranks on your roster' : 'All ranks'}, based on BigBook.app rankings:
 					</React.Fragment>
 				)}
 			</Accordion.Title>

@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
 
+import { Skill } from '../../../model/crew';
 import { PlayerUtilityRanks } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
+import { getBernardsNumber } from '../../../pages/gauntlets';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
@@ -111,7 +113,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	return (
 		<div style={{ marginBottom: '1em' }}>
 			<p>
-				Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets, based entirely on skill numbers. For specific advice on crew to use, consult the <Link to='/eventplanner'>Event Planner</Link>, <Link to='/gauntlets'>Gauntlets</Link>, or <Link to='/voyage'>Voyage Calculator</Link>.
+				Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets. For specific advice on crew to use, consult the <Link to='/eventplanner'>Event Planner</Link>, <Link to='/gauntlets'>Gauntlets</Link>, or <Link to='/voyage'>Voyage Calculator</Link>.
 			</p>
 			<Button content='Customize utility scoring...' onClick={() => setShowPane(!showPane)} />
 			{showPane &&
@@ -214,8 +216,18 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		const rankGauntlet = (skills: string[]) => {
 			const gauntletScore = (crew: IRosterCrew) => {
 				if ((userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile) && Object.keys(crew.base_skills).length < 3) return 0;
-				const scores = skills.map(skill => crewScore(crew, skill));
-				return scores.reduce((prev, curr) => prev + curr.max, 0)/scores.length;
+				const skillsForBernard = skills.map(skillName => {
+					const skill = crewScore(crew, skillName);
+					return {
+						core: skill.core,
+						range_min: skill.min,
+						range_max: skill.max,
+						skill: skillName
+					} as Skill;
+				});
+				return getBernardsNumber(crew, undefined, skillsForBernard);
+				//const scores = skills.map(skill => crewScore(crew, skill));
+				//return scores.reduce((prev, curr) => prev + curr.max, 0)/scores.length;
 			};
 			return rosterCrew.slice().filter(crew => gauntletScore(crew) > 0)
 				.sort((a, b) => gauntletScore(b) - gauntletScore(a))
