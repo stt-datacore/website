@@ -568,17 +568,20 @@ export class CrewPresenter extends React.Component<
 
         let immo = me.immortalMode;
         let sd = JSON.parse(JSON.stringify(crew)) as SkillData;
-
+        let sc = 0;
         getSkills(crew).forEach((skill) => {
             if (!(skill in crew)) return;
+            if (!crew[skill].core) return;
             sd.base_skills[skill] = {
                 core: crew[skill].core,
                 range_min: crew[skill].min,
                 range_max: crew[skill].max,
             };
+            sc++;
         });
 
         const skillData = sd;
+        const skillCount = sc;
 
         const getStars = () => {
             if (me.immortalMode === "min") return 1;
@@ -867,7 +870,7 @@ export class CrewPresenter extends React.Component<
                             flexWrap: "wrap",
                             fontSize: hover ? "1.2em" : "0.9em",
                             flexDirection: isMobile ? "column" : "row",
-                            justifyContent: "space-evenly",
+                            justifyContent: skillCount < 3 ? "flex-start" : 'space-evenly',
                             marginTop: "4px",
                             marginBottom: "2px",
                         }}
