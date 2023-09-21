@@ -37,7 +37,7 @@ export const PlayerShare = (props: PlayerShareProps) => {
     if (!playerData || !strippedPlayerData) return (<></>);
 	if (varsReady < 2) return (<></>);	// Escape here if localStorage vars not ready to avoid possibly rendering, then un-rendering messages
 
-	const PROFILELINK = `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
+	const PROFILELINK = (typeof window !== 'undefined') ? window.location.origin + `/?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
 
 	return (
 		<React.Fragment>
