@@ -12,6 +12,7 @@ interface IThemeOption {
 	eligible: number;
 	collectionCount?: number;
 	onSelect: () => void;
+	notes?: JSX.Element;
 };
 
 type CrewThemesProps = {
@@ -43,7 +44,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 					{selectedTheme.name}
 				</Message.Header>
 				{selectedTheme.description}
-				<div style={{ marginTop: '1em' }}>
+				<div style={{ marginTop: '.5em' }}>
 					{renderModal()}
 				</div>
 			</Message.Content>
@@ -66,19 +67,25 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		const preExcludedCrew = props.preExcludeCrew(props.rosterCrew);
 
 		globalContext.core.collections.forEach(collection => {
-			const key = `collection-${collection.id}`;
-			const description = collection.description ? simplerDescription(collection.description) : '';
 			const crewIds = props.rosterCrew.filter(crew => (collection.crew ?? []).includes(crew.symbol)).map(crew => crew.id);
 			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
-			themes.push({
-				key,
+			const theme = {
+				key: `collection-${collection.id}`,
 				name: collection.name,
-				description,
+				description: collection.description ? simplerDescription(collection.description) : '',
+				crewIds,
 				keywords: 'collection',
 				eligible: eligibleIds.length,
 				collectionCount: collection.crew ? collection.crew.length : 0,
 				onSelect: () => filterByCrewIds(crewIds)
-			});
+			} as IThemeOption;
+			let notes: JSX.Element | undefined = undefined;
+			if (collection.crew && collection.crew.length < 12)
+				notes = <><Icon name='warning sign' color='red' />Theme impossible because there aren't enough crew in this collection yet.</>;
+			else
+				notes = getThemeNotes(eligibleIds.length);
+			if (notes) theme.notes = notes;
+			themes.push(theme);
 		});
 
 		interface ISeriesOption {
@@ -94,20 +101,23 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{ key: 'pic', name: 'Picard' },
 			{ key: 'low', name: 'Lower Decks' },
 			{ key: 'snw', name: 'Strange New Worlds' },
-		] as ISeriesOption[]).forEach(theme => {
-			const crewIds = props.rosterCrew.filter(crew => crew.traits_hidden.includes(theme.key)).map(crew => crew.id);
+		] as ISeriesOption[]).forEach(series => {
+			const crewIds = props.rosterCrew.filter(crew => crew.traits_hidden.includes(series.key)).map(crew => crew.id);
 			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
-			themes.push({
-				key: theme.key,
-				name: `Star Trek ${theme.name}`,
-				description: `Crew from Star Trek ${theme.name} (${theme.key.toUpperCase()})`,
+			const theme = {
+				key: series.key,
+				name: `Star Trek ${series.name}`,
+				description: `Crew from Star Trek ${series.name} (${series.key.toUpperCase()})`,
 				keywords: 'series',
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
-			} as IThemeOption);
+			} as IThemeOption;
+			const notes = getThemeNotes(eligibleIds.length);
+			if (notes) theme.notes = notes;
+			themes.push(theme);
 		});
 
-		interface IFilterOption {
+		interface ICustomTheme {
 			key: string;
 			name: string;
 			description: string;
@@ -158,8 +168,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{
 				key: 'captains',
 				name: 'Captain\'s Prerogative',
-				description: 'Only Kirks, Picards, Siskos, Janeways, Archers, Burnhams, or Pikes (as lead roles of their respective shows)',
-				keywords: 'crew',
+				description: 'Captains who have leading roles in their respective shows (i.e. TOS Kirk, TNG Picard, DS9 Sisko, VOY Janeway, ENT Archer, DSC Burnham, or SNW Pike)',
+				keywords: 'variant,series',
 				filter: (crew: IVoyageCrew) => {
 					const captains = [
 						['kirk', 'tos'],
@@ -175,7 +185,21 @@ export const CrewThemes = (props: CrewThemesProps) => {
 					});
 				}
 			},
-		] as IFilterOption[];
+			{
+				key: 'bottomcrew',
+				name: 'Bottom of the Barrel',
+				description: 'Crew who are ranked Tier 10 by Big Book or graded F by CAB',
+				keywords: 'ranking',
+				filter: (crew: IVoyageCrew) => crew.bigbook_tier === 10 || crew.cab_ov_grade === 'F'
+			},
+			{
+				key: 'twoskills',
+				name: 'Double Majors',
+				description: 'Crew who have exactly 2 skills',
+				keywords: 'skill',
+				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
+			},
+		] as ICustomTheme[];
 
 		if (props.rosterType === 'myCrew') {
 			customThemes.push({
@@ -184,20 +208,23 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Crew who are not fully fused',
 				keywords: 'rarity',
 				filter: (crew: IVoyageCrew) => crew.rarity < crew.max_rarity
-			} as IFilterOption);
+			} as ICustomTheme);
 		}
 
-		customThemes.forEach(theme => {
-			const crewIds = props.rosterCrew.filter(crew => theme.filter(crew)).map(crew => crew.id);
+		customThemes.forEach(custom => {
+			const crewIds = props.rosterCrew.filter(crew => custom.filter(crew)).map(crew => crew.id);
 			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
-			themes.push({
-				key: theme.key,
-				name: theme.name,
-				description: theme.description,
+			const theme = {
+				key: custom.key,
+				name: custom.name,
+				description: custom.description,
 				keywords: 'trait',
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
-			} as IThemeOption);
+			} as IThemeOption;
+			const notes = getThemeNotes(eligibleIds.length);
+			if (notes) theme.notes = notes;
+			themes.push(theme);
 		});
 
 		setThemes([...themes]);
@@ -210,6 +237,14 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			.replace(/^the /i, '')
 			.replace(/\.$/, '');
 		return simple.slice(0, 1).toUpperCase() + simple.slice(1);
+	}
+
+	function getThemeNotes(eligibleCount: number): JSX.Element | undefined {
+		if (eligibleCount < 12)
+			return <><Icon name='warning sign' color='red' />Theme ineligible because you don't have enough crew available.</>;
+		else if (eligibleCount < 20)
+			return <><Icon name='warning sign' color='yellow' />There may not be enough crew to configure a valid voyage with this theme.</>;
+		return undefined;
 	}
 
 	function filterByCrewIds(crewIds: number[]): void {
@@ -266,7 +301,7 @@ const CrewThemePicker = (props: CrewThemePickerProps) => {
 	function renderTrigger(): JSX.Element {
 		if (!selectedTheme) return <Button icon='paint brush' content='Themed Voyages...' />;
 		return (
-			<Button floated='right' content='Choose a different themed voyage...' />
+			<Button floated='right' content='Choose a different voyage theme...' />
 		);
 	}
 
@@ -296,7 +331,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 
 	const themeFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all themes' },
-		{ key: 'impossible', value: 'impossible', text: 'Hide impossible themes only' },
+		{ key: 'impossible', value: 'impossible', text: 'Hide impossible collection-based themes' },
 		{ key: 'ineligible', value: 'ineligible', text: 'Hide all ineligible themes' },
 	];
 
@@ -369,19 +404,11 @@ const ThemesTable = (props: ThemesTableProps) => {
 	);
 
 	function renderTableRow(row: IThemeOption): JSX.Element {
-		const highlighted = highlightedTheme?.key === row.key;
-		let errorMessage = '';
-		if (highlighted) {
-			if (row.collectionCount && row.collectionCount < 12)
-				errorMessage = 'Theme impossible because there aren\'t enough crew in the game yet.';
-			else if (row.eligible < 12)
-				errorMessage = 'Theme ineligible because you don\'t have enough crew available.';
-		}
-
+		const isHighlighted = highlightedTheme?.key === row.key;
 		return (
 			<Table.Row key={row.key}
 				onClick={() => validateTheme(row)}
-				active={highlighted}
+				active={isHighlighted}
 				style={{ cursor: 'pointer' }}
 			>
 				<Table.Cell>
@@ -389,10 +416,13 @@ const ThemesTable = (props: ThemesTableProps) => {
 						{row.name}
 					</span>
 					<div>{row.description}</div>
-					{errorMessage !== '' && <Message error>{errorMessage}</Message>}
+					{!isHighlighted && !!row.notes && <div style={{ marginTop: '.5em' }}>{row.notes}</div>}
+					{isHighlighted && row.notes && <Message error>{row.notes}</Message>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<b>{row.eligible}</b>
+					<span style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						{row.eligible}
+					</span>
 				</Table.Cell>
 			</Table.Row>
 		);
