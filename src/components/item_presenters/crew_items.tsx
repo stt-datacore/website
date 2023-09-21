@@ -1,13 +1,9 @@
 import * as React from 'react';
 
 import { CrewMember, EquipmentSlot } from "../../model/crew";
-import { PlayerCrew, PlayerData } from "../../model/player"
-import { DataContext } from '../../context/datacontext';
-import { PlayerContext } from '../../context/playercontext';
+import { PlayerCrew } from "../../model/player"
 import { GlobalContext } from '../../context/globalcontext';
 import { BuffStatTable } from '../../utils/voyageutils';
-import Announcement from '../announcement';
-import Layout from '../layout';
 import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
@@ -24,14 +20,13 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
     
-	const { strippedPlayerData, buffConfig } = playerContext;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
     const crew = props.crew as PlayerCrew;
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext?.maxBuffs ?? context.core?.all_buffs;
-         
+    crew.equipment ??= [];
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
     let eqimgs = [] as string[];
