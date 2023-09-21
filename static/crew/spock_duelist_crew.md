@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Though SEC/SCI is well known as a useful skill set, Spock lacks the voyage power to make an impact beyond the early game. Thankfully, his remarkably stable event history (including three features) and collection value make him an occasional contributor on even established rosters.
+Though SEC/SCI is well known as a useful Skill set, Spock lacks the Voyage power to make an impact beyond the early game. Thankfully, his remarkably stable Event history (including three features) and Collection value make him an occasional contributor on even established rosters.
 
-A slow-activating instant damage with good passive crit may make an appearance in skirmishes or for young rosters and fill out the edges a bit on a card who's easy to label as old and weak at a glance. Kal-if-fee is a fairly easy build by Spock standards, but make sure to ad-warp some cadet missions to meet his requirement of *forty* uncommon IDICs .
+A slow-Activating Instant Damage with good Passive Crit Rating and Bonus may make an appearance in Skirmishes or for young rosters and fill out the edges a bit on a card who's easy to label as old and weak at a glance. Kal-if-fee is a fairly easy build by Spock standards, but make sure to ad-warp some Cadet Missions to meet his requirement of *forty* Uncommon IDICs .

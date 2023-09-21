@@ -12,18 +12,18 @@ mega: false
 published: true
 ---
 
-The sages in beholds did dwell
-In time portals that held them well
+The sages in Beholds did dwell
+In Time Portals that held them well
 And with the Portal's echoing yell
 Their star counts grow and value swells
 
-And there, amid the purple cites,
-Two new collections appeared that night
-And with the counting of the traits
-The Sages knew to adjust tier weights
+And there, amid the Super Rare Cites,
+Two new Collections appeared that night
+And with the counting of the Traits
+The Sages knew to adjust Tier weights
 The Holy Big Book led them back,
 Away from crew held in six packs
-Instead with lists of traits on fire,
+Instead with lists of Traits on fire,
 Collection crew rose higher and higher
 
 That'll be three frangs, please.
