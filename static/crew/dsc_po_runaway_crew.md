@@ -12,13 +12,4 @@ mega: false
 published: true
 ---
 
-I'm going to tell you a story.
-Just a fear years ago, I tried a second account at the worst time.
-A more motley lineup of event crew you've never seen, from Minuet to Harriman.
-Po might actually be better than all of them combined.
-Boy, I wish I had her as my starting crew and if you snagged her early, good timing!
-
-From top to bottom, Runaway excels and hits several elite high spots.
-A strong event history and voyage power, but even better are her collections.
-Po has the collection count to make her an automatic behold hold for veterans.
-Family runaway or not, Po is one crew you'll want to welcome with open arms.
+One of the crew that messes with Behold Bots since she’s crouching, Runaway Po enjoys a solid all around pedigree (for now). Still viable on Voyages until you acquire some higher Rarity crew, Po has a sextet of Collections including her hidden “dsc” Trait, and all those nice Traits give her viability with a bevy of Trait-based weekend bonuses.

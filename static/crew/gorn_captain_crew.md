@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The Lizard King's middling gauntlet pair and quartet of 45% gauntlets are a fine starter kit on new rosters, but will soon be stomped at every turn by superior legendary options. The vast majority of his value lies in the Veteran collection and any future expansions in that area.
+The Lizard King's middling Gauntlet pair and quartet of 45% Gauntlets are a fine starter kit on new rosters, but will soon be stomped at every turn by superior Legendary options. The vast majority of his value lies in his Trait list, which could bear fruit to the tune of a ceiling of a trio of Collections.

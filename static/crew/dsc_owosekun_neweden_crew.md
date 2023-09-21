@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-One of the exciting aspects of Timelines' shift toward new collections is not knowing how much better formerly discarded or underwhelming crew might get. In this case, NEO is the opposite - a crew who has 'peaked', but as the saying goes, a bird in the hand is worth two in the bush.
+One of the exciting aspects of Timelines' shift toward new Collections is not knowing how much better formerly discarded or underwhelming crew might get. In this case, NEO is the opposite - a crew who has 'peaked', but as the saying goes, a bird in the hand is worth two in the bush.
 
-Owo's collection trio is very unlikely to expand outside of a rarity collection and the waves of Discovery megas have calmed as well. But she also stands as bankable collection value with a little early game arena work and a strong base for trait events or the rare Owo feature.
+Owo's Collection quarter is very unlikely to expand outside of a Rarity Collection and the waves of Discovery Mega Events have calmed as well. But she also stands as bankable Collection value with a little early game work on Ships, and a strong base for Trait Events or the rare Owo feature.

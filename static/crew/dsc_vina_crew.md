@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Vina's raw numbers are a few years old now, so if your name is Devinoni and you're looking for an edge, this crew doesn't quite fit the bill. A low-end voyage option, Vina also predictably had her utility torpedoed when Discovery megas ended.
-
-Although she would still fit as a voyage/shuttle option in the right context, her prospective collection traits are rather bloated and it may take her a while to reach her maximum potential there. Early adopters are probably fine with her trajectory thus far, but we advise caution on a ground-up investment at this point.
+This Vina is pining for the days when she got daily use on Voyages, and doesn’t have the Traits to make her a long term investment in future Collections. If her thin Trait list bears fruit via another Collection or weekend work, consider yourself lucky, but I wouldn’t count on it.
