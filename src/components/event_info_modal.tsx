@@ -89,8 +89,8 @@ function EventInfoModal(props: EventInfoModalProps) {
 				panes={panes}
 				renderActiveOnly
 			/>
-			<CrewHoverStat customOffset={{x:-1 * (window.innerWidth / 8), y:0}} targetGroup='event_info' useBoundingClient={true}  />
-			<ItemHoverStat customOffset={{x:-1 * (window.innerWidth / 8), y:0}} targetGroup='event_info_items' useBoundingClient={true} />
+			<CrewHoverStat targetGroup='event_info' modalPositioning={true}  />
+			<ItemHoverStat targetGroup='event_info_items' modalPositioning={true} />
 		</Container>
 	);
 }

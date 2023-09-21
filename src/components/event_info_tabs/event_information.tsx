@@ -90,7 +90,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
-		crewMap[crew.symbol] = crew;
+		crewMap[crew.symbol] = crew as PlayerCrew;
 	})
 
 	const {
@@ -147,7 +147,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 			{bonusCrew.length === 0 && (
 				<p>Bonus crew not yet determined for this event.</p>
 			)}
-			{sortCrew(bonusCrew).map(crew => (
+			{sortCrew(bonusCrew as PlayerCrew[]).map(crew => (
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
 					<CrewTarget targetGroup='event_info' inputItem={crewMap[crew.symbol]}>
 					<Image

@@ -16,6 +16,7 @@ import { RosterPicker } from '../components/voyagecalculator/rosterpicker';
 import { ConfigInput } from '../components/voyagecalculator/configinput';
 
 import { defaultHistory } from '../components/voyagehistory/utils';
+import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
 const VoyagePage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -38,6 +39,8 @@ const VoyagePage = () => {
 			demands={['collections']}
 		>
 			<React.Fragment>
+				<CrewHoverStat targetGroup='voyageLineup' />	
+
 				{playerData &&
 					<PlayerActiveVoyage
 						key={`${playerData.player.dbid}`}

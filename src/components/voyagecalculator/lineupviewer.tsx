@@ -318,7 +318,6 @@ const GridView = (props: ViewProps) => {
 			{layout === 'grid-cards' &&
 				<div>
 					<Grid columns={6} doubling centered>
-						<CrewHoverStat alternatePositioning={true} useBoundingClient={true} targetGroup='voyageLineup' />
 						{renderCards()}
 					</Grid>
 				</div>

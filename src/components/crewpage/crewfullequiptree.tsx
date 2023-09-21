@@ -7,6 +7,7 @@ import ItemSources from '../../components/itemsources';
 import { calculateCrewDemands } from '../../utils/equipment';
 import CONFIG from '../../components/CONFIG';
 import { GlobalContext } from '../../context/globalcontext';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
 
 type CrewFullEquipTreeProps = {
 	visible: boolean;
@@ -36,7 +37,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Faction-only items required <b>{factionOnlyTotal}</b>
 					</p>
-					<p>
+					<p>						
 						Estimated chroniton cost{' '}
 						<span style={{ display: 'inline-block' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
@@ -68,6 +69,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 						<b>{craftCost}</b>
 					</p>
 					<Grid columns={3} centered padded>
+					<ItemHoverStat targetGroup='crew_page_items' modalPositioning={true} />
 						{demands.map((entry, idx) => (
 							entry.equipment &&
 							<Grid.Column key={idx}>

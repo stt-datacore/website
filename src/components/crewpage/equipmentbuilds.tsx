@@ -47,8 +47,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 				items={globalContext.core.items}
 				crew={crew}
 				onClosed={() => setModalVisible(false)}
-			/>
-			<ItemHoverStat targetGroup='crew_page_items' useBoundingClient={true} />
+			/>			
 		</React.Fragment>
 	);
 

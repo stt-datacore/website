@@ -188,6 +188,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         return (<div style={{ 
                         fontSize: "12pt", 
                         display: "flex", 
+                        textAlign: 'left',
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
                         
