@@ -26,6 +26,7 @@ import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
+import { v4 } from 'uuid';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -138,8 +139,9 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		if (dbid && !playerData?.player && !errorMessage) {
 			let lastModified: Date | undefined = undefined;
+			let hash = v4();
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
+			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/${dbid}?hash=${hash}`)
 				.then(response => {
 					let lmstr = response.headers.get('Last-Modified');
 					if (lmstr) lastModified = new Date(Date.parse(lmstr));
@@ -196,6 +198,11 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			}
 		];
 
+		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player.character.crew_avatar
+			? (playerData.player.character.crew_avatar.portrait.file ?? playerData.player.character.crew_avatar.portrait)
+			: 'crew_portraits_cm_empty_sm.png'
+		}`;
+
 		return (
 			playerData?.player &&
 			(<>
@@ -203,10 +210,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 					<Item>
 						<Item.Image
 							size='tiny'
-							src={`${process.env.GATSBY_ASSETS_URL}${playerData.player.character.crew_avatar
-									? playerData.player.character.crew_avatar.portrait.file ?? playerData.player.character.crew_avatar.portrait
-									: 'crew_portraits_cm_empty_sm.png'
-								}`}
+							src={avatar}
 						/>
 
 						<Item.Content>
