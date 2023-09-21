@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Burnham, Burnham, Burnham! I'm sick to death of hearing about Burnham! Burnham Brady strikes again with another statistically strong crew including the first showing of MED from the character to get her on the scoreboard across all six skills.
+Burnham, Burnham, Burnham! I'm sick to death of hearing about Burnham! Burnham Brady strikes again with another useful crew, including the first showing of MED from the character to get her on the scoreboard across all six Skills.
 
-A hefty voyage score is further enhanced by a skill order that's unique among super rares (Q2, War Correspondent Jake) and should bump any number of other DIP super rares to the freezer. Fugitive lacks frills, but hits the base/voyage/event triad like several of her other versions and has the right skill set for her situation.
+Her unicorn Skill set and order buoy a decaying Voyage score among Super Rares, but you want her for her Traits; two Collections for now and Traits for up to two more. Even though Discovery is ending after 5 seasons, it does seem like even concluded shows can find themselves slated for Mega Events, and Burnham Events do seem to come up more often than many others.

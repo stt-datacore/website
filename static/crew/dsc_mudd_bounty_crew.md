@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-This Mudd is better known for his art than anything statistically (They're real and they're spectacular). That's not to say he's a dud card, but he doesn't offer anything particularly unique. 
+This Mudd is better known for his art than anything statistically (They're real and they're spectacular). That's not to say he's a dud card, but he doesn't offer anything particularly unique.
 
-His strong trait lineup is the headliner here. While the two-bonus Courier mega with he and Morn doesn't seem terribly likely, simply stockpiling non-HFS traits is not unreasonable and already he's compiled an impressive event portfolio, Discovery megas aside.
+His strong Trait lineup is the headliner here. While a Courier Mega Event doesn't seem terribly likely, simply stockpiling non-HFS Traits is not unreasonable and already he's compiled an impressive Event portfolio, Discovery Mega Events notwithstanding.
 
-Despite drifting through his twilight voyage years, Mudd is the type of crew who can age well on the back of his traits, which makes him a situationally worthy behold choice, though a lukewarm reception is understandable.
+Mudd is the type of crew who can age well on the back of his Traits, which makes him a situationally worthy Behold choice, though a lukewarm reception is understandable.

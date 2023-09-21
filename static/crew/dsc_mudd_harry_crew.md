@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Most players thought this pill peddler would be out of a job when Disco megas folded their tents, but not only have Mudd's traits proven out since then, he's also caught a respectable number of variant events. The safe bet is still to expect ups and downs, but he's shown that he'll still give you opportunities to flex his bases on shuttles from time to time.
+Most players thought this pill peddler would be out of a job when Discovery Mega Events went from constant to infrequent, but not only have Mudd's Traits proven out since then, he's also caught a respectable number of variant Events. The safe bet is still to expect ups and downs, but he's shown that he'll still give you opportunities to flex his Bases on Shuttles from time to time.
 
-Unless you're a schrute, I mean shrewd arena-goer looking for an attack boost, the other area of interest with this card is the collections tab. Already a multi-collection offering, his smattering of Q-adjacent traits are as likely as any to be called upon to expand his influence there while continuing to compile event bonuses along the way.
+Unless you're a schrute, I mean shrewd Arena-goer looking for an Attack Boost, the other area of interest with this card is the Collections tab. Already a multi-Collection offering, his smattering of Q-like Traits are as likely as any to be called upon to expand his influence there while continuing to compile Event bonuses along the way.

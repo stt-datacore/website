@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-You kinda had to be there for Kamala. Her voyage power on release justified some daily usage, but with a very common skill set and lone anti-matter trait to fall back on, she won't perform up to her abilities in most cases.
+You kinda had to be there for Kamala. 
 
-With only a few potential collections in the hopper, this particular phoenix is more Last Stand than First Class. But if you’re particularly Taken, then who am I to deny love?
+With only a few potential Collections in the hopper, this particular phoenix is more Last Stand than First Class. But if you’re particularly Taken, then who am I to deny love?
