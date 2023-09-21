@@ -415,6 +415,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 		// The option to auto-share profile only appears after a profile is uploaded or if previously set to auto-update
 		const bShowUploaded = profileUploaded || profileAutoUpdate;
+		
+		const profileUrl = (typeof window !== 'undefined') ? window.location.origin + "/" : process.env.GATSBY_DATACORE_URL;
 
 		return (
 			<Message icon onDismiss={() => setShowShare(false)}>
@@ -446,8 +448,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 							<p>
 								Your profile was uploaded. Share the link:{' '}
 								<a
-									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
-									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
+									href={`${profileUrl}profile/?dbid=${playerData.player.dbid}`}
+									target='_blank'>{`${profileUrl}profile/?dbid=${playerData.player.dbid}`}</a>
 							</p>
 							<Form.Field
 								control={Checkbox}
