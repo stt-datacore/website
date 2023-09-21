@@ -194,13 +194,12 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			}
 		];
 
-		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player.character.crew_avatar
-			? (playerData.player.character.crew_avatar.portrait.file ?? playerData.player.character.crew_avatar.portrait)
-			: 'crew_portraits_cm_empty_sm.png'
-		}`;
+		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
+			? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
+			: 'crew_portraits_cm_empty_sm.png'}`;
 
 		return (
-			playerData.player &&
+			playerData?.player &&
 			(<>
 				<Item.Group>
 					<Item>
