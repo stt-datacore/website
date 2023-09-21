@@ -74,7 +74,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 							core: coreData,
 							player: {
 								loaded: !!profData,
-								playerData: profData ?? strippedPlayerData ?? {} as PlayerData,
+								playerData: profData,
 								buffConfig: buffConfig,							
 								playerShips: profData?.player.character.ships	
 							},
@@ -133,9 +133,17 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		}
 	}
 
+	
+	private initing = false;
+
 	componentDidUpdate() {
 		const { dbid, errorMessage } = this.state;
 		const { playerData } = this.context.player;
+
+		const me = this;
+		if (me.initing) return;
+		
+		me.initing = true;
 
 		if (dbid && !playerData?.player && !errorMessage) {
 			let lastModified: Date | undefined = undefined;
@@ -149,7 +157,6 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 					return response.json();
 				})
 				.then(playerData => {
-					const me = this;
 
 					if (isWindow) window.setTimeout(() => {
 						if (me.props.props.setPlayerData) {
@@ -162,7 +169,10 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 					});
 				})
 				.catch(err => {
-					this.setState({ errorMessage: err });
+					me.setState({ errorMessage: err });
+				})
+				.finally(() => {
+					me.initing = false;
 				});
 		}
 	}
@@ -197,6 +207,9 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 				render: () => <ProfileCharts />
 			}
 		];
+
+		console.log("Avatar Debug");
+		console.log(playerData?.player?.character?.crew_avatar);
 
 		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
 			? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
