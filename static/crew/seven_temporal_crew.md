@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This Seven has been weak for years, leading to her former Big Book highlight detailing her event features alongside Leo da Vinci. And while it's true that she's generally good for a few events per year, those big bonus features are going to be the only time her putrid bases are worth the thaw. 
+This Seven has been weak for years, leading to her former Big Book highlight detailing her Event features alongside Leo da Vinci. And while it's true that she's generally good for a few Events per year, those big bonus features are going to be the only time her putrid Bases are worth the thaw.
 
-Outside of them, her best opportunity to be useful to you is in the collections tab which sees her with a Borg trophy on the shelf, but could add a few more down the line. Including Temporal Agent. We're not kidding. The absolute state of this game.
+Outside of them, her best opportunity to be useful to you is in the Collections tab which sees her with two trophies on the shelf, but could add one or more down the line, depending how long this game lasts.
