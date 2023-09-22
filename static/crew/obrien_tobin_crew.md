@@ -3,7 +3,7 @@ name: Tobin O'Brien
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 28
 in_portal:
 date: 14/02/2023

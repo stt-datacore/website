@@ -14,6 +14,6 @@ published: true
 
 "They used to be better" is an easy refrain for older cards, but at least in this case it's better than "They used to be alive." Got eeeem!
 
-Pretty far removed from the voyage and daily shuttle pictures (barring an embarrassment of blue fusion fodder early on), you're essentially welcoming aboard two armfuls of traits with an eye toward collections.
+Pretty far removed from the Voyage and daily Shuttle pictures (barring an embarrassment of Rare Fusion fodder early on), you're essentially welcoming aboard two armfuls of Traits with an eye toward Collections.
 
-While fusion crew often boast enhanced event prospects (Reunion Spock & Kirk, Indulgent Seven), Neelix has never been a big name for bonuses and even Tuvok has garnered a disrespectfully small number of events. Consider Tuvix an early/mid-game fusion prospect with some nice trait potential, but it's generally better to focus on the influx of pre-fused event reward crew early on.
+While Fusion crew often boast enhanced Event prospects (Reunion Spock & Kirk, Indulgent Seven), Neelix has never been a big name for bonuses and even Tuvok has garnered a disrespectfully small number of Events. Consider Tuvix an early/mid-game Fusion prospect with some nice Trait potential, but it's generally better to focus on the influx of pre-Fused Event reward crew early on.

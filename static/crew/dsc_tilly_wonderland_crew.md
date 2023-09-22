@@ -14,8 +14,6 @@ published: true
 
 We occasionally discuss the concept of 'empty calories' crew in this space and Tilly is certainly cake and soda for breakfast. Dahar Master Kor said it best, "Savor the fruit of life, my young friends. It has a sweet taste when it is fresh from the vine. But don't live too long. The taste turns bitter after a time."
 
-We can give Tilly her voyage due in an uncrowded skill set on release, but her debut power sits right in the sour spot of day one work that ranks below the release threshold of 'good voyagers', ensuring she drops ranks at an unfortunate rate. With the Oreo double stuffed trait trio of HFS as her only anti-matter contributions, she won't be beating out any other options in neck and neck situations.
+Tilly’s lack of Traits sabotage her utility, as they usually do. She has likely capped out at a pair of Collections, and really only variant or another resurrection of Discovery Mega Events will give her life on the weekends.
 
-That same lack of traits sabotage her utility elsewhere. Casual may be the only collection she ever snags and Tilly could really use the help for event bonuses; she's averaged less than an event per year without Discovery's influence which obviously neuters a CMD base that looks good on paper.
-
-Even a CMD/ENG gauntlet pair bereft of elevated crit chances misses the boat for what could be niche utility thanks to that stack's lack of strong gauntlet options and no walls to speak of. Tilly fanatics can take solace in Wonderland being her second best variant, but it's not been much of a horse race.
+Even a CMD/ENG Gauntlet pair bereft of elevated Crit chances misses the boat for what could be niche utility thanks to that stack's lack of strong Gauntlet options and no walls to speak of.
