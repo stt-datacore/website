@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Infamous throughout the Captain division of arena for her instant damage at four seconds with hefty passive evasion, T'Mir is also becoming something of a collection Kwik-E-Mart. With a handful in the holster already and a surprisingly steady event history, she should be attractive to rosters at every level.
+“Not’pol” is infamous throughout the Captain Division of Arena for her Instant Damage at four seconds with hefty Passive Evasion, T'Mir is also becoming something of a Collection Kwik-E-Mart. With a handful in the holster already and a surprisingly steady Event history, she should be attractive to rosters at every level.

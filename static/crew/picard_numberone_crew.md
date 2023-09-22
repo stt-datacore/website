@@ -3,7 +3,7 @@ name: Picard and Number One
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 37
 in_portal: true
 date: 06/02/2020
