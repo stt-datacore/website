@@ -157,12 +157,9 @@ export const PlayerShare = (props: PlayerShareProps) => {
 
 		setShareState(1);
 
-		let jsonBody = JSON.stringify({
-			dbid,
-			player_data: strippedPlayerData
-		});
+		let jsonBody = JSON.stringify(strippedPlayerData);
 
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/post_profile`, {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
