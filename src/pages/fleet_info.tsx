@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Header, Label, Message, Icon, Table, Item, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import DataPageLayout from '../components/page/datapagelayout';
+import { GlobalContext } from '../context/globalcontext';
 
 type FleetInfoPageProps = {};
 
@@ -9,11 +10,15 @@ type FleetInfoPageState = {
 	fleet_id?: string;
 	fleet_data?: any;
 	errorMessage?: string;
+	errorTitle?: string;
 	factions?: any;
 	events?: any;
 };
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	constructor(props: FleetInfoPageProps) {
 		super(props);
 
@@ -40,7 +45,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('fleetid') && false) {
-			let fleet_id = urlParams.get('fleetid');
+			let fleet_id = urlParams.get('fleetid') ?? undefined;
 			this.setState({ fleet_id });
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info?fleetid=` + fleet_id)
@@ -73,7 +78,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						</div>
 					)}
 					<p>
-						Go to <Link to={`/`}>Home</Link>
+						Go back to <Link to={`/profile/?dbid=${this.context.player.playerData?.player.dbid}`}>Your Profile</Link>
 						</p>
 					</React.Fragment>
 				</DataPageLayout>
