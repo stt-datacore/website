@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His name is Buck and he’s here to party. Already a strong collection option, Buck's found his niche and should stick with it. Rounding out a sextet of collections would be awesome value for a super rare and his event clip seems likely to pick up as well with a handful of non-HFS traits in tow. Even if you don't use him day to day, he's one of the better long term value prospects from the minor leagues.
+His name is Buck and he’s here to party. Already a strong Collection option, Buck's found his niche and should stick with it. Rounding out a sextet of Collections would be awesome value for a Super Rare and his Event clip seems likely to pick up given all his Traits. Even if you don't use him day to day, he's one of the better long term value prospects from the minor leagues.

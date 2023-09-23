@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Sistine Chapel this card is not, though Christine is still worth some behold capital for her collections. Disappointing release numbers did her no favors as she's no longer viable in other areas of the game unless she picks up another big bonus feature and a younger roster is able to obtain multiple stars at once. If your other behold options are similarly unusable for typical voyage and shuttle runs, take her collections and run.
+Sistine Chapel this card is not, though Christine is still worth some Behold capital for her Collections. Jess Bush’s SNW version of the character is sure to give this variant some weekend bonuses, but outside of that, grab Majel’s version for her ceiling of four Collections.
