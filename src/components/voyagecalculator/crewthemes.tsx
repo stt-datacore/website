@@ -90,9 +90,15 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			themes.push(theme);
 		});
 
-		let scn = globalContext.core.collections.filter(fc => fc.crew?.length && fc.crew.length <= 20).map(c => c.name);
+		let scn = globalContext.core.collections.filter(col => {
+			if (col.milestones) {
+				return !col.milestones.some(ms => !!ms.buffs.length)
+			}
+			return false;
+		}).map(col => col.name)
+		//let scn = globalContext.core.collections.filter(fc => fc.crew?.length && fc.crew.length <= 20).map(c => c.name);
 		const smallerCrew = globalContext.core.crew.filter(crew => crew.collections.some(col => scn.includes(col))).map(crew => crew.symbol);
-		
+
 		// This gets all non-collection traits into custom themes
 		// It relies on player data and creates a lot of themes so it is commented out.
 
@@ -246,7 +252,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{
 				key: 'vanity',
 				name: 'Vanity Fair',
-				description: 'Crew who are members of collections with less than 20 crew',
+				description: 'Crew who are members of vanity collections',
 				keywords: ['trait'],
 				filter: (crew: IVoyageCrew) => smallerCrew.includes(crew.symbol)
 			},
