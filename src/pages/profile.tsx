@@ -149,14 +149,14 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			let lastModified: Date | undefined = undefined;
 			let hash = v4();
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&hash=${hash}`)
+			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/${dbid}?hash=${hash}`)
 				.then(response => {
+					let lmstr = response.headers.get('Last-Modified');
+					if (lmstr) lastModified = new Date(Date.parse(lmstr));
+
 					return response.json();
 				})
-				.then(serverResponse => {					
-					let lmstr = serverResponse.timeStamp as string;
-					if (lmstr) lastModified = new Date(Date.parse(lmstr));
-					let playerData = serverResponse.playerData;
+				.then(playerData => {
 
 					if (isWindow) window.setTimeout(() => {
 						if (me.props.props.setPlayerData) {
