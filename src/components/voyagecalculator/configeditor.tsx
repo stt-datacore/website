@@ -107,10 +107,10 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
 				'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
 			const knownCrewTraits = ['android','astrophysicist','bajoran','borg','brutal',
-				'cardassian','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
+				'cardassian','caregiver','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
 				'desperate','diplomat','doctor','duelist','exobiology','explorer','federation','ferengi',
 				'gambler','hero','hologram','human','hunter','innovator','inspiring','jury_rigger','klingon',
-				'marksman','maverick','pilot','prodigy','resourceful','romantic','romulan',
+				'marksman','maverick','mirror_universe','nurse','pilot','prodigy','resourceful','romantic','romulan',
 				'saboteur','scoundrel','starfleet','survivalist','tactician','telepath','undercover_operative',
 				'veteran','villain','vulcan'];
 
