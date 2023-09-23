@@ -4,6 +4,7 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { appelate } from '../../utils/misc';
+import { getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
@@ -228,10 +229,21 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
 			},
 			{
+				key: 'multivariant',
+				name: 'Me, and also Me',
+				description: 'Crew who have multiple variants',
+				keywords: 'trait',
+				filter: (crew: IVoyageCrew) => {
+					let vartrait = getVariantTraits(crew);
+					let ct = globalContext.core.crew.filter(fcrew => fcrew.traits_hidden.some(th => vartrait.includes(th))).length;
+					return ct >= 2;
+				}
+			},
+			{
 				key: 'gauntlet',
 				name: 'Moonlighting',
 				description: 'Crew who are top-ranked for gauntlet',
-				keywords: 'skill',
+				keywords: 'ranking',
 				filter: (crew: IVoyageCrew) => crew.ranks.gauntletRank <= 20 || Object.keys(crew.ranks).filter(r => r.startsWith("G_"))?.some(key => crew.ranks[key] <= 20)
 			},
 		] as ICustomTheme[];
