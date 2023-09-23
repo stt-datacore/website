@@ -25,7 +25,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		this.state = {
 			fleet_id: undefined,
 			fleet_data: undefined,
-			errorTitle: "Fleet Info Coming Soon!",
+			errorTitle: "Fleet Info",
 			errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
 	}
