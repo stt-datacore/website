@@ -230,13 +230,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			},
 			{
 				key: 'multivariant',
-				name: 'Me, and also Me',
-				description: 'Crew who have multiple variants',
+				name: 'Me, and Me, and also Me',
+				description: 'Crew who have five or more legendary variants',
 				keywords: 'trait',
 				filter: (crew: IVoyageCrew) => {
 					let vartrait = getVariantTraits(crew);
-					let ct = globalContext.core.crew.filter(fcrew => fcrew.traits_hidden.some(th => vartrait.includes(th))).length;
-					return ct >= 2;
+					let ct = globalContext.core.crew.filter(fcrew => fcrew.max_rarity === 5 && fcrew.traits_hidden.some(th => vartrait.includes(th))).length;
+					return ct >= 5;
 				}
 			},
 			{
