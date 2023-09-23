@@ -199,6 +199,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				keywords: 'skill',
 				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
 			},
+			{
+				key: 'gauntlet',
+				name: 'Moonlighting',
+				description: 'Crew who are top-ranked for gauntlet',
+				keywords: 'skill',
+				filter: (crew: IVoyageCrew) => crew.ranks.gauntletRank <= 20 || Object.keys(crew.ranks).filter(r => r.startsWith("G_"))?.some(key => crew.ranks[key] <= 20)
+			},
 		] as ICustomTheme[];
 
 		if (props.rosterType === 'myCrew') {
