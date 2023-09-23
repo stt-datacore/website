@@ -96,7 +96,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 			return false;
 		}).map(col => col.name)
-		//let scn = globalContext.core.collections.filter(fc => fc.crew?.length && fc.crew.length <= 20).map(c => c.name);
+
 		const smallerCrew = globalContext.core.crew.filter(crew => crew.collections.some(col => scn.includes(col))).map(crew => crew.symbol);
 
 		// This gets all non-collection traits into custom themes
@@ -248,6 +248,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Crew who have exactly 2 skills',
 				keywords: ['skill'],
 				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
+			},
+			{
+				key: 'state',
+				name: 'Matters of State',
+				description: 'Royalty, Politicians, and Diplomats',
+				keywords: ['trait'],
+				filter: (crew: IVoyageCrew) => crew.traits.some(trait => ["royalty", "diplomat", "politician"].includes(trait))
 			},
 			{
 				key: 'vanity',
