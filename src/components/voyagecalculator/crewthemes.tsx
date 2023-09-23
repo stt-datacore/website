@@ -3,12 +3,13 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
+import { appelate } from '../../utils/misc';
 
 interface IThemeOption {
 	key: string;
 	name: string;
 	description: string;
-	keywords: string;
+	keywords: string[];
 	eligible: number;
 	collectionCount?: number;
 	onSelect: () => void;
@@ -74,7 +75,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: collection.name,
 				description: collection.description ? simplerDescription(collection.description) : '',
 				crewIds,
-				keywords: 'collection',
+				keywords: ['collection'],
 				eligible: eligibleIds.length,
 				collectionCount: collection.crew ? collection.crew.length : 0,
 				onSelect: () => filterByCrewIds(crewIds)
@@ -87,6 +88,33 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
+
+		// let rtraits = globalContext.core.crew.map(crew => crew.traits).flat();
+		// rtraits = rtraits.filter((f, idx) => rtraits.findIndex(fi => fi === f) === idx);
+		// const nonCollections = rtraits.filter(trait => !globalContext.player.playerData?.player.character.cryo_collections.some(cc => cc.traits?.some(tr => tr === trait)));
+
+		// nonCollections.forEach(trait => {
+		// 	trait = trait.toLowerCase();
+		// 	const crewIds = props.rosterCrew.filter(crew => crew.traits.some(t => t.toLowerCase() === trait)).map(crew => crew.id);
+		// 	const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
+		// 	const theme = {
+		// 		key: `noncollection-${trait}`,
+		// 		name: appelate(trait),
+		// 		description: 'Crew with the \"' + appelate(trait) + '\" non-collection trait',
+		// 		crewIds,
+		// 		keywords: ['noncollection', 'non-collection', 'trait'],
+		// 		eligible: eligibleIds.length,
+		// 		collectionCount: crewIds.length,
+		// 		onSelect: () => filterByCrewIds(crewIds)
+		// 	} as IThemeOption;
+		// 	let notes: JSX.Element | undefined = undefined;
+		// 	if (crewIds.length < 12)
+		// 		notes = <><Icon name='warning sign' color='red' />Theme impossible because there aren't enough crew in this collection yet.</>;
+		// 	else
+		// 		notes = getThemeNotes(eligibleIds.length);
+		// 	if (notes) theme.notes = notes;
+		// 	themes.push(theme);
+		// });
 
 		interface ISeriesOption {
 			key: string;
@@ -108,7 +136,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: series.key,
 				name: `Star Trek ${series.name}`,
 				description: `Crew from Star Trek ${series.name} (${series.key.toUpperCase()})`,
-				keywords: 'series',
+				keywords: ['series'],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
@@ -225,7 +253,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: custom.key,
 				name: custom.name,
 				description: custom.description,
-				keywords: 'trait',
+				keywords: ['trait', 'custom'],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
@@ -359,7 +387,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 		if (themeFilter === 'impossible' && (!theme.collectionCount || theme.collectionCount < 12)) return false;
 		if (query === '') return true;
 		const re = new RegExp(query, 'i');
-		return re.test(theme.name) || re.test(theme.description) || re.test(theme.keywords);
+		return re.test(theme.name) || re.test(theme.description) || theme.keywords.some(kw => re.test(kw));
 	}) as IThemeOption[];
 
 	return (
