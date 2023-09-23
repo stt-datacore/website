@@ -1,10 +1,11 @@
-import { checkCommonFilter, compareRewards, neededStars, starCost } from "../utils/collectionutils";
+import { checkCommonFilter, compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
     CollectionMap,
     CollectionGroup,
     CollectionWorkerConfig,
     CollectionWorkerResult,
     ColComboMap,
+    ComboCostMap,
 } from "../model/collectionfilter";
 import { CompletionState, PlayerCollection } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
@@ -13,7 +14,7 @@ const CollectionOptimizer = {
     scanAll: (config: CollectionWorkerConfig) => {
         return new Promise<CollectionWorkerResult>((resolve, reject) => {
             const { playerData, filterProps } = config;
-            const { playerCollections, collectionCrew, matchMode } = config;
+            const { playerCollections, collectionCrew, matchMode, byCost } = config;
             const {
                 costMode,
                 short,
@@ -564,9 +565,115 @@ const CollectionOptimizer = {
                 }
             }).filter(f => !!f.crew.length));
 
+            const newCostMap = [] as ComboCostMap[];
+            
+            colOptimized.forEach((col) => {			
+                let seengroups = {} as { [key: string]: ComboCostMap };            
+                col.comboCost = [];		
+
+                if (col.collection.name === "Elysian Kingdom") {
+                    console.log("break here");
+                }
+                for(let combo of col.combos ?? []) {
+                    let comboname = combo.names.join(" / ");
+                    let crew = getOptCrew(col, costMode, searches, comboname);
+                    let grouped = crew.map(c => c.symbol).sort().join(",");
+                    
+                    let cm = {
+                        collection: col.collection.name,
+                        combo: combo,
+                        cost: starCost(crew, undefined, costMode === 'sale'),
+                        crew: crew
+                    };
+                    
+                    seengroups[grouped] ??= cm;
+                    
+                    if (combo.names.length > seengroups[grouped].combo.names.length) {
+                        seengroups[grouped] = cm;
+                    }
+    
+                }
+
+                let cm = [] as ComboCostMap[];
+
+                let newcombos = [] as ColComboMap[];
+                let sg = Object.keys(seengroups);
+
+                sg.forEach(key => {
+                    let value = seengroups[key];
+                    if (!newcombos.find(fc => fc.names.sort().join(" / ") === value.combo.names.sort().join(" / "))) {
+                        newcombos.push(value.combo);
+                        cm.push(value);
+                        newCostMap.push(value);	    
+                    }
+                });
+
+                col.combos = newcombos;
+                col.comboCost = cm.map(m => m.cost);
+            });
+            
+            if (colOptimized?.length) {
+                colOptimized.forEach(col => {
+                    let map = newCostMap.filter(f => f.collection === col.collection.name);
+                    map = map.filter(mf => (!byCost || (byCost && !!mf.cost)) && mf.crew.length <= (col.collection.needed ?? 0));
+                    col.combos = map.map(m => m.combo);
+                    col.comboCost = map.map(m => m.cost);
+                });	
+            }
+    
+            if (byCost && colOptimized?.length) {
+                colOptimized.forEach(col => {
+                    let map = newCostMap.filter(f => f.collection === col.collection.name);
+                    map = map.sort((a, b) => a.cost - b.cost);
+                    col.combos = map.map(m => m.combo);
+                    col.comboCost = map.map(m => m.cost);
+                });
+            
+                colOptimized.sort((a, b) => {
+                    let acost = 0;
+                    let bcost = 0;
+    
+                    if (a.comboCost?.length) {
+                        acost = a.comboCost[0];
+                    }
+                    else {
+                        acost = 0;
+                    }
+                    if (b.comboCost?.length) {
+                        bcost = b.comboCost[0];
+                    }
+                    else {
+                        bcost = 0;
+                    }
+                    return acost - bcost;
+    
+                });	
+            }
+    
+            let fc = colOptimized.filter((col) => {		
+                if (searches?.length) {
+                    let newcombos = [] as ColComboMap[];
+                    let newcombocost = [] as number[];
+                    let x = 0;
+                    for (let combo of col.combos ?? []) {
+                        let fc = findColGroupsCrew(newCostMap, col, combo.names.join(" / "));
+                        if (fc.some(fcc => searches.includes(fcc.name))) {
+                            newcombos.push(combo);
+                            if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
+                        }
+                        x++;
+                    }
+                    col.combos = newcombos;
+                    col.comboCost = newcombocost;
+                    if (!col.uniqueCrew?.some(f => searches.includes(f.name))) return false;
+                }
+                return !!col.combos?.length;
+            });
+
             resolve({
-                groups: colOptimized,
+                groups: fc,
                 maps: colGroups,
+                costMap: newCostMap
             });
         });
     },

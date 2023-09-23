@@ -1,5 +1,5 @@
 import { RewardsGridNeed } from "../model/crew";
-import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProps } from "../model/collectionfilter";
+import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProps, ComboCostMap } from "../model/collectionfilter";
 import { PlayerCollection, PlayerCrew } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
 
@@ -143,3 +143,110 @@ export const checkCommonFilter = (filters: CollectionFilterProps, crew: PlayerCr
     return true;
 }
 
+
+	
+export const findOptCombo = (col: CollectionGroup, combo: string) => {
+    return col.combos?.find(cbo => cbo.names.join(" / ") === combo);
+}
+
+export const getOptCols = (col: CollectionGroup, combo?: string) => {
+    if (!combo) {
+        return col.maps;
+    }
+    else {
+        let fc = findOptCombo(col, combo);
+        if (fc) return fc.names.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionMap[];	
+        return [];
+    }
+}
+
+export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', searches?: string[], combo?: string) => {
+    let crewmap: PlayerCrew[];
+    let cols = getOptCols(col, combo);
+    if (!combo) {
+        crewmap = col.uniqueCrew;
+    }
+    else {
+        crewmap = col.uniqueCrew; // cols.map(c => c.crew).flat().concat(col.uniqueCrew);
+        //crewmap = crewmap.filter((cz, idx) => crewmap.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
+        if (combo === 'Healthy Discourse / A New Challenger Approaches / Convergence Day') {
+            console.log("here");
+        }
+        crewmap = findOptCombo(col, combo)?.crew.map(ncrew => crewmap.find(cr => cr.symbol === ncrew) as PlayerCrew) as PlayerCrew[];
+
+        let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);			
+        max = col.collection.needed ?? 0;
+
+        if (crewmap.length < max) {
+            let leftover = col.uniqueCrew.filter(fc => !crewmap.some(cm => cm.symbol === fc.symbol));
+            crewmap = crewmap.concat(leftover.slice(0, max - crewmap.length));
+        }
+    }			
+
+    let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
+    let chks = [ 0, ... cols.map(c => 0) ];
+    let allneed = undefined as number | undefined;
+
+    crewmap.sort((a, b) => {
+        let x = 0;
+        let y = 0;
+        
+        if (searches?.length) {
+            let ares = searches.includes(a.name);
+            let bres = searches.includes(b.name);
+            if (ares !== bres) {
+                if (ares) return -1;
+                return 1;
+            }
+        }
+        if (a.favorite != b.favorite) {
+            if (a.favorite) return -1;
+            else return 1;
+        }
+        if (col.collection.crew?.find(f => f === a.symbol)) x++;
+        if (col.collection.crew?.find(f => f === b.symbol)) y++;
+
+        for (let i = 0; i < cols.length; i++) {
+            if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
+                x++;
+            }
+            if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
+                y++;
+            }
+        }
+        let r = y - x;
+        if (!r) {
+            r = starCost([a], undefined, costMode === 'sale') - starCost([b], undefined, costMode === 'sale');
+        }
+        return r;
+    });
+    
+    let p = 0;
+    
+    for (let item of crewmap) {
+        if (col.collection.crew?.find(f => item.symbol === f)) {
+            chks[0]++;
+        }
+        for (let i = 0; i < cols.length; i++) {
+            if (cols[i].crew.find(fc => fc.symbol === item.symbol)) {
+                chks[i+1]++;
+            }					
+        }
+
+        let ct = 0;				
+        for (let i = 0; i < needs.length; i++) {
+            if (chks[i] >= needs[i]) ct++;
+        }
+        if (ct >= needs.length && !allneed) {
+            allneed = p + 1;
+        }			
+        p++;
+    }
+
+    return crewmap.slice(0, allneed);			
+    
+}
+
+export const findColGroupsCrew = (costMap: ComboCostMap[], col: CollectionGroup, combo?: string) => {
+    return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.names.join(" / ") === combo))?.crew ?? [];
+}

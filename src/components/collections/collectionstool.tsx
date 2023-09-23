@@ -8,7 +8,7 @@ import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { CollectionGroup, CollectionMap, CollectionWorkerConfig, CollectionWorkerResult } from '../../model/collectionfilter';
+import { CollectionGroup, CollectionMap, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
 import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
 import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
@@ -334,9 +334,10 @@ const CollectionsViews = (props: CrewViewsProps) => {
 	const [workerRunning, setWorkerRunning] = React.useState(false);
 	const [colGroups, setColGroups] = React.useState<CollectionMap[]>([]);
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
+	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections, collectionCrew } = props;
-	const { matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { byCost, matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
@@ -408,6 +409,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 	const processWorkerResult = (result: CollectionWorkerResult) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
+		setCostMap(result.costMap);
 		setWorkerRunning(false);
 	}
 
@@ -431,7 +433,8 @@ const CollectionsViews = (props: CrewViewsProps) => {
 					costMode,			
 				},
 				collectionCrew,
-				matchMode: matchMode
+				matchMode: matchMode,
+				byCost: byCost
 			} as CollectionWorkerConfig
 		});
 	}
@@ -513,7 +516,12 @@ const CollectionsViews = (props: CrewViewsProps) => {
 			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
 			requirePlayer: true,
-			render: (workerRunning: boolean) => <CollectionOptimizerTable workerRunning={workerRunning} playerCollections={playerCollections} colOptimized={colOptimized} />
+			render: (workerRunning: boolean) => <CollectionOptimizerTable 
+				workerRunning={workerRunning} 
+				playerCollections={playerCollections} 
+				colOptimized={colOptimized}
+				costMap={costMap}
+				/>
 		}
 	];
 

@@ -19,6 +19,12 @@ export interface ColComboMap {
     crew: string[]; 
 }
 
+export interface ComboCostMap { 
+    collection: string; 
+    combo: ColComboMap; 
+    cost: number; crew: PlayerCrew[] 
+}
+
 export interface CollectionGroup {
 	name: string;
 	maps: CollectionMap[];
@@ -68,6 +74,9 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
     costMode: 'normal' | 'sale';
     setCostMode: (value: 'normal' | 'sale') => void;
 
+    byCost: boolean;
+    setByCost: (value: boolean) => void;
+
     matchMode: CollectionMatchMode;
     setMatchMode: (value: CollectionMatchMode) => void;
 
@@ -83,9 +92,11 @@ export interface CollectionWorkerConfig {
     playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
     matchMode: CollectionMatchMode;
+    byCost: boolean;
 }
 
 export interface CollectionWorkerResult {
     groups: CollectionGroup[];
     maps: CollectionMap[];
+    costMap: ComboCostMap[];
 }
