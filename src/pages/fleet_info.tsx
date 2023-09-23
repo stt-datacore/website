@@ -20,7 +20,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		this.state = {
 			fleet_id: undefined,
 			fleet_data: undefined,
-			errorMessage: "Due to changes by the game developers, DataCore can no longer load fleet info."
+			errorTitle: "Fleet Info is currently disabled.",
+			errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
 	}
 
@@ -54,15 +55,15 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	render() {
-		const { fleet_id, errorMessage, fleet_data, factions, events } = this.state;
+		const { fleet_id, errorMessage, errorTitle, fleet_data, factions, events } = this.state;
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
 				<DataPageLayout pageTitle='Fleet information'>
 					<React.Fragment>
 					{errorMessage && (
-						<Message negative>
-							<Message.Header>Unable to load fleet profile</Message.Header>
+						<Message style={{backgroundColor: 'darkorange'}}>
+							<Message.Header>{errorTitle}</Message.Header>
 							<pre>{errorMessage.toString()}</pre>
 						</Message>
 					)}
@@ -72,8 +73,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						</div>
 					)}
 					<p>
-						Are you looking to share your player profile? Go to the <Link to={`/playertools`}>Player Tools page</Link> to
-							upload your player.json and access other useful player tools.
+						Go to <Link to={`/`}>Home</Link>
 						</p>
 					</React.Fragment>
 				</DataPageLayout>
