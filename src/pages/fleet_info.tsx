@@ -14,7 +14,7 @@ type FleetInfoPageState = {
 	factions?: any;
 	events?: any;
 };
-//
+
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
