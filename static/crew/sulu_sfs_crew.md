@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-It took nearly three years for Sulu to collect his first variant event and with bases like his, it wasn't worth the wait. Despite enjoying a wealth of traits, Sulu's event history is quite spotty. The half glass full guy would say that's bound to change.
+It took nearly three years for Sulu to collect his first variant Event and with Bases like his, it wasn't worth the wait. Despite enjoying a wealth of Traits, Sulu's Event history is quite spotty. The half glass full guy would say that's bound to change.
 
-Indeed Sulu owns several traits in the right range for collections and their accompanying introductory mega event. He could become a relatively valuable option overnight. 'Could' being the operative word. At the moment he's a bit of new player gauntlet with tons of elevated crit gauntlets including three 45% sets and a joke arena ability that initializes tomorrow and hides behind a cloak trigger.
+Indeed, Sulu owns several Traits in the right range for Collections and their accompanying introductory Mega Event. He could become a relatively valuable option overnight. 'Could' being the operative word. At the moment he's a bit of new player Gauntlet option with tons of elevated Crit sets including three 45% combinations and a joke Ship Ability that Initializes tomorrow and hides behind a Cloak Trigger.

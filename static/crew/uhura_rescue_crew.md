@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-In the face of a poor voyage skill set, Youhura's strong debut numbers and nice traits bought her a little extra time in that area and she should hang with the new hotness longer than most CMD/DIP/SUCK.
-
-When excused from there, her plus skill set, which has produced thin value as of this writing, looks primed to be the beneficiary of WRG's collection era and can help supplement Uhura's modest event clip and shuttle-oriented skill set. Her usage will vary from roster to roster, but she's a fine mid-level speculative investment.
+One of the Youhura Trio along with Lt. Commander and Tribble, who were all released about the same time in the same triplet with about the same Voyage power, RT Uhura has a little more long term value due to (you guessed it!) her Traits! A ceiling of five puts her well above average, and those extra Traits give her extra weekend work outside of Uhura’s main cast variant chances.

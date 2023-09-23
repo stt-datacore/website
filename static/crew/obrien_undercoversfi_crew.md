@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Similar to his alter ego Chief O'Brien - let's call him Chief 2.0. He trades in a pricier build cost (huge chron cost and 80-ish faction items) for better stats in every area. He's still not a voyage or daily shuttle option, but offers maybe the best arena  evasion ability that money can buy. Fast initialization, long duration, and heaps of accuracy and crit. And like most versions of the Chief, a few collections and two events per year.
+Similar to his alter ego Chief O'Brien - let's call him Chief 2.0. He's not a Voyage or daily Shuttle option, but offers maybe the best Evasion Ship Ability that money can buy. Fast Initialization, long Duration, and heaps of Accuracy and Crit Bonus. And like most versions of the Chief, a few Collections and Events per year.

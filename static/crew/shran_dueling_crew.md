@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-All of Shran's features have overlapped with trait events as of this writing; a terrible waste of Jeffery Combs' talents. With essentially no daily usability left in his base or proficiency numbers, cherish the moments when you do get to level/thaw him for events.
-
-His one chance to be of use on a consistent basis - he's a 'win with your favorites' type of option on ships. A fast-activating attack boost with elite offensive passives are useful enough to slot into the first seat for skirmishes or in the arena. And, oh yea, he makes a hell of a bridge crew photo op next to Ushaan Archer.
+With essentially no daily usability left in his Base or Proficiency numbers, cherish the moments when you do get to level/thaw Ushaan Shran for Events. We could see a ceiling of four Collections for this crew, which is a bonanza for one with only a quartet of Traits. And, oh yea, he makes a hell of a bridge crew photo op next to Ushaan Archer.
