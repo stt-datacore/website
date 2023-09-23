@@ -3,12 +3,14 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
+import { appelate } from '../../utils/misc';
+import { getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
 	name: string;
 	description: string;
-	keywords: string;
+	keywords: string[];
 	eligible: number;
 	collectionCount?: number;
 	onSelect: () => void;
@@ -74,7 +76,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: collection.name,
 				description: collection.description ? simplerDescription(collection.description) : '',
 				crewIds,
-				keywords: 'collection',
+				keywords: ['collection'],
 				eligible: eligibleIds.length,
 				collectionCount: collection.crew ? collection.crew.length : 0,
 				onSelect: () => filterByCrewIds(crewIds)
@@ -87,6 +89,47 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
+
+		let scn = globalContext.core.collections.filter(col => {
+			if (col.milestones) {
+				return !col.milestones.some(ms => !!ms.buffs.length)
+			}
+			return false;
+		}).map(col => col.name)
+
+		const smallerCrew = globalContext.core.crew.filter(crew => crew.collections.some(col => scn.includes(col))).map(crew => crew.symbol);
+
+		// This gets all non-collection traits into custom themes
+		// It relies on player data and creates a lot of themes so it is commented out.
+
+		// let rtraits = globalContext.core.crew.map(crew => crew.traits).flat();
+		// rtraits = rtraits.filter((f, idx) => rtraits.findIndex(fi => fi === f) === idx);
+		// const nonCollections = rtraits.filter(trait => !globalContext.player.playerData?.player.character.cryo_collections.some(cc => cc.traits?.some(tr => tr === trait)));
+
+		// nonCollections.forEach(trait => {
+		// 	trait = trait.toLowerCase();
+		// 	const crewIds = props.rosterCrew.filter(crew => crew.traits.some(t => t.toLowerCase() === trait)).map(crew => crew.id);
+		// 	const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));
+		// 	const theme = {
+		// 		key: `noncollection-${trait}`,
+		// 		name: appelate(trait),
+		// 		description: 'Crew with the \"' + appelate(trait) + '\" non-collection trait',
+		// 		crewIds,
+		// 		keywords: ['noncollection', 'non-collection', 'trait'],
+		// 		eligible: eligibleIds.length,
+		// 		collectionCount: crewIds.length,
+		// 		onSelect: () => filterByCrewIds(crewIds)
+		// 	} as IThemeOption;
+		// 	let notes: JSX.Element | undefined = undefined;
+		// 	if (crewIds.length < 12)
+		// 		notes = <><Icon name='warning sign' color='red' />Theme impossible because there aren't enough crew in this collection yet.</>;
+		// 	else
+		// 		notes = getThemeNotes(eligibleIds.length);
+		// 	if (notes) theme.notes = notes;
+		// 	themes.push(theme);
+		// });
+
+
 
 		interface ISeriesOption {
 			key: string;
@@ -108,7 +151,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: series.key,
 				name: `Star Trek ${series.name}`,
 				description: `Crew from Star Trek ${series.name} (${series.key.toUpperCase()})`,
-				keywords: 'series',
+				keywords: ['series'],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
@@ -121,7 +164,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			key: string;
 			name: string;
 			description: string;
-			keywords: string;
+			keywords: string[];
 			filter: (crew: IVoyageCrew) => boolean;
 		};
 
@@ -130,35 +173,42 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'super rare',
 				name: 'Super Rare Crew',
 				description: 'Super Rare (4 Star) Crew',
-				keywords: 'rarity',
+				keywords: ['rarity'],
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 4
+			},
+			{
+				key: 'alien',
+				name: 'Alien Elites',
+				description: 'Extraterrestrial legendary crew',
+				keywords: ['trait'],
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && !crew.traits.includes("human") && crew.traits_hidden.includes('nonhuman') && !crew.traits_hidden.includes('artificial_life')
 			},
 			{
 				key: 'female',
 				name: 'Ladies\' Choice',
 				description: 'Female crew',
-				keywords: 'trait',
+				keywords: ['trait'],
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('female')
 			},
 			{
 				key: 'starfleet',
 				name: 'Ad Astra Per Aspera',
 				description: 'Crew with the Starfleet trait',
-				keywords: 'trait',
+				keywords: ['trait'],
 				filter: (crew: IVoyageCrew) => crew.traits.includes('starfleet')
 			},
 			{
 				key: 'nonhuman',
 				name: 'Extra-terrestrial',
 				description: 'Non-human crew',
-				keywords: 'trait',
+				keywords: ['trait'],
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('nonhuman')
 			},
 			{
 				key: 'freshman',
 				name: 'Freshman Class',
 				description: 'Crew released in the past year',
-				keywords: 'age',
+				keywords: ['age'],
 				filter: (crew: IVoyageCrew) => {
 					const dtNow = Date.now();
 					const dtAdded = new Date(crew.date_added);
@@ -169,7 +219,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'captains',
 				name: 'Captain\'s Prerogative',
 				description: 'Captains who have leading roles in their respective shows (i.e. TOS Kirk, TNG Picard, DS9 Sisko, VOY Janeway, ENT Archer, DSC Burnham, or SNW Pike)',
-				keywords: 'variant,series',
+				keywords: ['variant','series'],
 				filter: (crew: IVoyageCrew) => {
 					const captains = [
 						['kirk', 'tos'],
@@ -189,15 +239,47 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'bottomcrew',
 				name: 'Bottom of the Barrel',
 				description: 'Crew who are ranked Tier 10 by Big Book or graded F by CAB',
-				keywords: 'ranking',
+				keywords: ['ranking'],
 				filter: (crew: IVoyageCrew) => crew.bigbook_tier === 10 || crew.cab_ov_grade === 'F'
 			},
 			{
 				key: 'twoskills',
 				name: 'Double Majors',
 				description: 'Crew who have exactly 2 skills',
-				keywords: 'skill',
+				keywords: ['skill'],
 				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
+			},
+			{
+				key: 'state',
+				name: 'Matters of State',
+				description: 'Royalty, Politicians, and Diplomats',
+				keywords: ['trait'],
+				filter: (crew: IVoyageCrew) => crew.traits.some(trait => ["royalty", "diplomat", "politician"].includes(trait))
+			},
+			{
+				key: 'vanity',
+				name: 'Vanity Fair',
+				description: 'Crew who are members of vanity collections',
+				keywords: ['trait'],
+				filter: (crew: IVoyageCrew) => smallerCrew.includes(crew.symbol)
+			},
+			{
+				key: 'multivariant',
+				name: 'Me, and Me, and also Me',
+				description: 'Crew who have five or more legendary variants',
+				keywords: ['trait'],
+				filter: (crew: IVoyageCrew) => {
+					let vartrait = getVariantTraits(crew);
+					let ct = globalContext.core.crew.filter(fcrew => fcrew.max_rarity === 5 && fcrew.traits_hidden.some(th => vartrait.includes(th))).length;
+					return ct >= 5;
+				}
+			},
+			{
+				key: 'gauntlet',
+				name: 'Moonlighting',
+				description: 'Crew who are top-ranked for gauntlet',
+				keywords: ['ranking'],
+				filter: (crew: IVoyageCrew) => crew.ranks.gauntletRank <= 20 || Object.keys(crew.ranks).filter(r => r.startsWith("G_"))?.some(key => crew.ranks[key] <= 20)
 			},
 		] as ICustomTheme[];
 
@@ -206,7 +288,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'meremortals',
 				name: 'Mere Mortals',
 				description: 'Crew who are not fully fused',
-				keywords: 'rarity',
+				keywords: ['rarity'],
 				filter: (crew: IVoyageCrew) => crew.rarity < crew.max_rarity
 			} as ICustomTheme);
 		}
@@ -218,7 +300,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: custom.key,
 				name: custom.name,
 				description: custom.description,
-				keywords: 'trait',
+				keywords: ['custom', ... custom.keywords],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
@@ -352,7 +434,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 		if (themeFilter === 'impossible' && (!theme.collectionCount || theme.collectionCount < 12)) return false;
 		if (query === '') return true;
 		const re = new RegExp(query, 'i');
-		return re.test(theme.name) || re.test(theme.description) || re.test(theme.keywords);
+		return re.test(theme.name) || re.test(theme.description) || theme.keywords.some(kw => re.test(kw));
 	}) as IThemeOption[];
 
 	return (
