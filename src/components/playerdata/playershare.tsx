@@ -158,7 +158,7 @@ export const PlayerShare = (props: PlayerShareProps) => {
 		setShareState(1);
 		
 		let jsonBody = JSON.stringify(strippedPlayerData);
-
+		// this is a comment
 		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
 			method: 'post',
 			headers: {
