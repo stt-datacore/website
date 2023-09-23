@@ -163,6 +163,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 4
 			},
 			{
+				key: 'alien',
+				name: 'Alien Elites',
+				description: 'Non-human legendary crew',
+				keywords: 'trait',
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && crew.traits_hidden.includes('nonhuman') && !crew.traits_hidden.includes('artificial_life')
+			},
+			{
 				key: 'female',
 				name: 'Ladies\' Choice',
 				description: 'Female crew',
