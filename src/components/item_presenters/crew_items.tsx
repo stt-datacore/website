@@ -7,6 +7,7 @@ import { BuffStatTable } from '../../utils/voyageutils';
 import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { navigate } from 'gatsby';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -115,8 +116,10 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
 
         return (<div 
+            onClick={(e) => navigate("/item_info?symbol=" + this.props.equipment?.symbol)}
             title={this.props.equipment?.name}
             style={{
+            cursor: "pointer",
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",            

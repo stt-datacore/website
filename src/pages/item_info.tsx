@@ -192,6 +192,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		
 		const haveCount = this.haveCount(item_data.item.symbol);
 		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const builds = item_data.builds;
 
 		return (
 				<div>
@@ -342,10 +343,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					</div>
 				)}
 
-				{item_data.builds.length > 0 && (
+				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these:</Header>
-						<ProfileItems pageName='item_info' hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>

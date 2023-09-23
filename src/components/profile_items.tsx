@@ -39,6 +39,9 @@ type ProfileItemsProps = {
 	pageName?: string;
 	
 	noRender?: boolean;
+
+	/** Do not run the worker */
+	noWorker?: boolean;
 };
 
 interface ItemSearchOpts {
@@ -71,6 +74,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore; 
+	private lastData: (EquipmentCommon | EquipmentItem)[] | undefined;
 
 	constructor(props: ProfileItemsProps) {
 		super(props);
@@ -145,14 +149,23 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (playerData) {
 			if (playerData.calculatedDemands && this.state.data?.length && this.state.data?.length > 0) return;
 		}
-		else {
-			if (this.state.data?.length && this.state.data?.length > 0) return;
-		}
-		
+
 		const { items } = this.context.core;		
 		if (!items) return;
 		
-		this.runWorker();
+		if (this.state.data?.length && this.lastData === this.state.data) {
+			return;
+		}
+		else {
+			this.lastData = this.state.data;
+		}
+
+		if (!this.props.noWorker) { 
+			this.runWorker();
+		}
+		else if (this.props.data?.length) {
+			this.setState({ ...this.state, data: this.props.data })
+		}
 	}
 
 	private _onChangePage(activePage) {
@@ -228,7 +241,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { playerData } = this.context.player;
 		let bReady: boolean = !!data?.length;
 		if (playerData) {
-			if (!playerData.calculatedDemands) {
+			if (!playerData.calculatedDemands && !this.props.noWorker) {
 				bReady = false;
 			}
 		}
