@@ -309,7 +309,11 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						</div>
 					</Table.Cell>
 					<Table.Cell style={{verticalAlign:"top"}}>
-						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
+						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>						
+						{!!col.combos?.length && (col.combos?.length ?? 0) === 1 && 
+						<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+						{col.combos[0].names.join(" / ")}
+						</div>}
 						{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
 						<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 						<div style={{margin: "0.25em"}}>Variations: </div>

@@ -620,35 +620,54 @@ const CollectionOptimizer = {
                     col.comboCost = map.map(m => m.cost);
                 });	
             }
-    
-            if (byCost && colOptimized?.length) {
-                colOptimized.forEach(col => {
-                    let map = newCostMap.filter(f => f.collection === col.collection.name);
-                    map = map.sort((a, b) => a.cost - b.cost);
-                    col.combos = map.map(m => m.combo);
-                    col.comboCost = map.map(m => m.cost);
-                });
-            
-                colOptimized.sort((a, b) => {
-                    let acost = 0;
-                    let bcost = 0;
-    
-                    if (a.comboCost?.length) {
-                        acost = a.comboCost[0];
-                    }
-                    else {
-                        acost = 0;
-                    }
-                    if (b.comboCost?.length) {
-                        bcost = b.comboCost[0];
-                    }
-                    else {
-                        bcost = 0;
-                    }
-                    return acost - bcost;
-    
-                });	
+
+            if (colOptimized?.length) {
+                if (byCost) {
+                    colOptimized.forEach(col => {
+                        let map = newCostMap.filter(f => f.collection === col.collection.name);
+                        map = map.sort((a, b) => a.cost - b.cost);
+                        col.combos = map.map(m => m.combo);
+                        col.comboCost = map.map(m => m.cost);
+                    });
+                
+                    colOptimized.sort((a, b) => {
+                        let acost = 0;
+                        let bcost = 0;
+        
+                        if (a.comboCost?.length) {
+                            acost = a.comboCost[0];
+                        }
+                        else {
+                            acost = 0;
+                        }
+                        if (b.comboCost?.length) {
+                            bcost = b.comboCost[0];
+                        }
+                        else {
+                            bcost = 0;
+                        }
+                        return acost - bcost;
+        
+                    });	
+                }
+                else {
+                    colOptimized.sort((a, b) => {
+                        let anum = 0;
+                        let bnum = 0;
+                        
+                        if (a.combos?.length) {
+                            anum = a.combos.length;
+                        }
+                        
+                        if (b.combos?.length) {
+                            bnum = b.combos.length;
+                        }
+
+                        return bnum - anum;
+                    })
+                }
             }
+    
     
             let fc = colOptimized.filter((col) => {		
                 if (searches?.length) {
