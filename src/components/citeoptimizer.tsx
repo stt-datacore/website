@@ -605,11 +605,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const confine = [] as string[];
 
-		const engOptions = ['original', 'beta_tachyon_pulse'].map(s => {
+		const engOptions = ['original', 'beta_tachyon_pulse'].map((s, idx) => {
 			return {
 				key: s,
 				value: s,
-				text: appelate(s)
+				text: appelate(s) + (idx === 1 ? " (Experimental)" : "")
 			}
 		});
 
