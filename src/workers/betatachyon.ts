@@ -18,7 +18,7 @@ const amMap = [
     "Borg 		x 	x 	x 		",
     "Brutal 	x 	x 	x 	x 	x 	",
     "Cardassian 	x 		x 		x 	",
-    "Caregiver 					  	x",
+    "Caregiver 					x  	x",
     "Civilian 	x 	x 	x 	x 	x 	x",
     "Communicator 	x 		x 		x 	",
     "Costumed 	x 	x 	x 	x 	x 	",
@@ -43,6 +43,7 @@ const amMap = [
     "Klingon 	x 		x 		x 	",
     "Marksman 			x 			",
     "Maverick 	x 		x 		x 	",
+    "Mirror Universe 	x 	x	x 		x 	",
     "Nurse 					  	x",
     "Physician 		x 			x 	x",
     "Pilot 	x 		x 	x 		",
@@ -80,7 +81,7 @@ const lookupTrait = (trait: string) => {
 
 const BetaTachyon = {        
 
-    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 5) => {
+    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 7.5) => {
         
         return new Promise((resolve, reject) => {
 
@@ -439,7 +440,7 @@ const BetaTachyon = {
                 let anum = (a.voyagesImproved?.length ?? 0) / maxvoy;
                 let bnum = (a.totalEVContribution ?? 0) / maxev;
                 let cnum = 1 - ((a.totalEVRemaining ?? 0) / maxremain);
-                let dnum = 0.1 * ((a.amTraits ?? 0) / maxam);
+                let dnum = 0.5 * ((a.amTraits ?? 0) / maxam);
                 let fnum = (acc[a.symbol].in_portal ? 0 : 1);
                 let gnum = isNever(a) ? 1 : 0;
                 let rare = 5 * (1 / skillOrderCrew[printSkillOrder(a)].length);
