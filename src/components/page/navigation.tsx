@@ -4,15 +4,13 @@ import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, Car
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
-import { PlayerMenu } from "../playerdata/playermenu";
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink } from './util';
 import { useStateWithStorage } from '../../utils/storage';
-import { NavigationSettingsConfig } from './settings';
+import { PlayerMenu } from "./playermenu";
 
 type NavigationProps = {
-	requestPlayerPanel: (panel: string | undefined) => void;
-	requestClearPlayerData: () => void;
+	requestPanel: (target: string, panel: string | undefined) => void;
     sidebarTarget?: React.RefObject<HTMLElement>;
     children: JSX.Element;
 };
@@ -22,7 +20,6 @@ export const Navigation = (props: NavigationProps) => {
 	const context = React.useContext(GlobalContext);
     const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
-	const { requestClearPlayerData, requestPlayerPanel } = props;
 
 	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
 	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
@@ -42,15 +39,10 @@ export const Navigation = (props: NavigationProps) => {
 			}
 		}
 	}
-	const requestPanel = (panel: string | undefined) => {
-		requestPlayerPanel(panel);
-		setOpenBar(false);
-	}
-
-	const requestClear = () => {
-		requestClearPlayerData();
-		setOpenBar(false);
-	}
+	// const requestPanel = (target: string, panel: string | undefined) => {
+	// 	props.requestPanel(target, panel);
+	// 	setOpenBar(false);
+	// }
 
 	const pages = [
 		{
@@ -66,9 +58,9 @@ export const Navigation = (props: NavigationProps) => {
 			checkVisible: (data) => {
 				return !!context.player.playerData;
 			},
-			customAction: (e, data) => props.requestPlayerPanel('input'),
+			customAction: (e, data) => props.requestPanel('player', 'input'),
 			customRender: (data) => {
-				return <Menu.Item key={'customInput'} onClick={() => props.requestPlayerPanel('input')}>
+				return <Menu.Item key={'customInput'} onClick={() => props.requestPanel('player', 'input')}>
 				<img
 					style={{height:"24px", width: "24px"}}
 					src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
@@ -82,7 +74,7 @@ export const Navigation = (props: NavigationProps) => {
 		{
 			src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
 			title: isMobile ? undefined : 'Import Player Data ...',
-			customAction: () => props.requestPlayerPanel('input'),
+			customAction: () => props.requestPanel('player', 'input'),
 			checkVisible: (data) => {
 				return !context.player.playerData;
 			},
@@ -93,21 +85,24 @@ export const Navigation = (props: NavigationProps) => {
 				return !!context.player.playerData && !isMobile;
 			},
 			customRender: (data) => {
-				return (<PlayerMenu key={v4()}
-					navConfig={{
-						current: activeMenu,
-						mobileCurrent: mobileActiveMenu,
-						maxItems: MaxMenuItems,
-						defaultOptions: DefaultOpts,
-						defaultMobileOptions: DefaultOptsMobile,
-						setCurrent: setActiveMenu,
-						setMobileCurrent: setMobileActiveMenu,
-						maxItemsMobile: MaxMobileItems,
-						menu: pages
-					}}
-					requestPanel={requestPanel}
-					requestClearData={requestClear}
-				/>)
+				return (
+					<PlayerMenu key={v4()}
+						navConfig={{
+							current: activeMenu,
+							mobileCurrent: mobileActiveMenu,
+							maxItems: MaxMenuItems,
+							defaultOptions: DefaultOpts,
+							defaultMobileOptions: DefaultOptsMobile,
+							setCurrent: setActiveMenu,
+							setMobileCurrent: setMobileActiveMenu,
+							maxItemsMobile: MaxMobileItems,
+							menu: pages
+						}}
+						requestPanel={
+							props.requestPanel
+						}
+					/>
+				);
 			}
 		},
 		{
@@ -123,8 +118,7 @@ export const Navigation = (props: NavigationProps) => {
 					customRender: (data) => {
 						return (<PlayerMenu key={v4()}
 							vertical
-							requestPanel={props.requestPlayerPanel}
-							requestClearData={props.requestClearPlayerData}
+							requestPanel={props.requestPanel}
 						/>)
 					}
 				}

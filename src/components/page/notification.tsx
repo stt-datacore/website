@@ -1,20 +1,22 @@
 import React from 'react';
 import { Message, Icon, SemanticICONS } from 'semantic-ui-react';
 
-type PlayerMessageProps = {
+type NotificationProps = {
 	header: string;
 	content: JSX.Element;
 	icon?: SemanticICONS;
 	warning?: boolean;
+	negative?: boolean;
 	onClick?: () => void;
 	onDismiss?: () => void;
 };
 
-export const PlayerMessage = (props: PlayerMessageProps) => {
+export const Notification = (props: NotificationProps) => {
 	return (
 		<Message
 			icon={props.icon ? true : undefined}
 			warning={props.warning}
+			negative={props.negative}
 			onClick={() => { if (props.onClick) props.onClick(); }}
 			onDismiss={props.onDismiss ? (e) => { if (props.onDismiss) { props.onDismiss(); e.preventDefault(); e.stopPropagation(); } } : undefined}
 			style={{ cursor: props.onClick ? 'pointer' : 'auto' }}
