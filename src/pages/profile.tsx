@@ -27,6 +27,7 @@ import { PlayerContext } from '../context/playercontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
+import moment from 'moment';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -250,7 +251,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 				<Menu compact>
 					<Menu.Item>
-						{playerData.calc?.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
+						{playerData.calc?.lastModified ? <span>Last updated: {moment(playerData.calc.lastModified).format("llll")}</span> : <span />}
 					</Menu.Item>
 					<Dropdown item text='Download'>
 						<Dropdown.Menu>
