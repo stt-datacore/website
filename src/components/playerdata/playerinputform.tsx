@@ -43,7 +43,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 				</Dimmer>
 				{requestDismiss &&
 					<Label as='a' corner='right' onClick={requestDismiss}>
-						<Icon name='delete' />
+						<Icon name='delete' style={{ cursor: 'pointer' }}/>
 					</Label>
 				}
 				{!isMobile &&
@@ -97,7 +97,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 						onChange={(e, { value }) => setDisplayedInput(value as string)}
 						onPaste={(e) => { return onInputPaste(e) }}
 					/>
-					
+
 				</Form>
 				<Accordion style={{ marginTop: '1em' }}>
 					<Accordion.Title

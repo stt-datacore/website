@@ -16,15 +16,17 @@ export interface PlayerContextData {
 	setInput?: (value: PlayerData | undefined) => void;
 	reset?: () => void;
 	playerData?: PlayerData;
-	ephemeral?: EphemeralData;
+	ephemeral?: IEphemeralData;
 	strippedPlayerData?: PlayerData;
 	playerShips?: Ship[];
 	buffConfig?: BuffStatTable;
 	maxBuffs?: BuffStatTable;
 	dataSource?: string;
+	sessionStates?: ISessionStates;
+	updateSessionState?: (sessionKey: SessionStateKey, sessionValue: number) => void;
 };
 
-export interface EphemeralData {
+export interface IEphemeralData {
 	activeCrew: CompactCrew[];
 	events: GameEvent[];
 	fleetBossBattlesRoot: BossBattlesRoot;
@@ -33,10 +35,24 @@ export interface EphemeralData {
 	voyageDescriptions: VoyageDescription[];
 };
 
+export interface ISessionStates {
+	profileUpload: number;
+	voyageHistoryReconcile: number;
+};
+
+export type SessionStateKey = 'profileUpload' | 'voyageHistoryReconcile';
+
+const defaultSessionStates = {
+	profileUpload: 0,
+	voyageHistoryReconcile: 0
+} as ISessionStates;
+
 export const defaultPlayer = {
 	loaded: false,
 	setInput: () => {},
-	reset: () => {}
+	reset: () => {},
+	sessionStates: defaultSessionStates,
+	updateSessionState: () => {}
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -47,40 +63,18 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const { children } = props;
 
-	const [loaded, setLoaded] = React.useState(false);
-	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
-
+	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
-	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
+	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 
-	const [ephemeral, setEphemeral] = useStateWithStorage<EphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
+	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
-
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
+	const [sessionStates, setSessionStates] = React.useState<ISessionStates | undefined>(defaultSessionStates);
 
-	const reset = (): void => {
-		setStripped(undefined);
-		setEphemeral(undefined);
-		setProfile(undefined);
-		setPlayerShips(undefined);
-		setInput(undefined);
-		setLoaded(false);
-		sessionStorage.clear();
-	};
-
-	const context = {
-		loaded,
-		setInput,
-		reset,
-		playerData: profile,
-		ephemeral,
-		strippedPlayerData: stripped,
-		playerShips,
-		buffConfig,
-		maxBuffs,
-		dataSource: input?.stripped === true ? 'session' : 'input'
-	} as PlayerContextData;
+	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
+	const [loaded, setLoaded] = React.useState(false);
 
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length) return;
@@ -125,7 +119,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
 
-		// stripped is used for any storage purpose, i.e. sharing profile and keeping in session
+		// stripped is used for any storage purpose, i.e. sharing profile
 		//	Ephmeral data is stripped from playerData here
 		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input}) as PlayerData;
 		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
@@ -134,9 +128,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 			setStripped({ ... JSON.parse(JSON.stringify(strippedData)), stripped: true });
 		}
 
-		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
-		//	so other components don't have to keep calculating the same data
-		// Pass playerData.profile as playerData to existing player tools
+		// preparedProfileData is expanded with useful data and helpers for DataCore tools
 		let preparedProfileData = {...strippedData};
 		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported);
 		setProfile(preparedProfileData);
@@ -147,12 +139,45 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 			setPlayerShips(mergedShips);
 		}
 
+		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
 	}, [input, crew, ship_schematics]);
 
+	const reset = (): void => {
+		setStripped(undefined);
+		setEphemeral(undefined);
+		setProfile(undefined);
+		setPlayerShips(undefined);
+		setInput(undefined);
+		setSessionStates(undefined);
+		setLoaded(false);
+		sessionStorage.clear();
+	};
+
+	const providerValue = {
+		loaded,
+		setInput,
+		reset,
+		playerData: profile,
+		ephemeral,
+		strippedPlayerData: stripped,
+		playerShips,
+		buffConfig,
+		maxBuffs,
+		dataSource: input?.stripped === true ? 'session' : 'input',
+		sessionStates,
+		updateSessionState
+	} as PlayerContextData;
+
 	return (
-		<PlayerContext.Provider value={context}>
+		<PlayerContext.Provider value={providerValue}>
 			{children}
 		</PlayerContext.Provider>
 	);
+
+	function updateSessionState(sessionKey: SessionStateKey, sessionValue: number): void {
+		const newSessionStates = sessionStates ?? {} as ISessionStates;
+		newSessionStates[sessionKey] = sessionValue;
+		setSessionStates({...newSessionStates});
+	}
 };

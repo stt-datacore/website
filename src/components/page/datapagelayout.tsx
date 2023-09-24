@@ -1,16 +1,14 @@
 import React from 'react';
-import { Link, withPrefix, StaticQuery, graphql, navigate } from 'gatsby';
+import { withPrefix, StaticQuery, graphql } from 'gatsby';
 import { Helmet } from 'react-helmet';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { ValidDemands } from '../../context/datacontext';
 
-import { PlayerMenu } from '../playerdata/playermenu';
-import PlayerHeader from '../playerdata/playerheader';
-import { Container, Header, Dropdown, Icon, Menu, MenuItem, SemanticICONS } from 'semantic-ui-react';
-import { useOtherPages } from '../otherpages';
-import { v4 } from 'uuid';
+import { Container, Header } from 'semantic-ui-react';
 import { Navigation } from './navigation';
+import Dashboard from './dashboard';
+import PlayerHeader from '../../components/playerdata/playerheader';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -51,7 +49,6 @@ const MainContent = ({ children, narrowLayout }) =>
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { core, player } = globalContext;
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const demands = props.demands ?? [] as ValidDemands[];
@@ -59,14 +56,14 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		if (!demands.includes(required))
 			demands.push(required);
 	});
-	const isReady = !!core.ready && !!core.ready(demands);
+	const isReady = !!globalContext.core.ready && !!globalContext.core.ready(demands);
 
+	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
-	const clearPlayerData = () => { if (player.reset) player.reset(); };
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
-	const mainContent = React.useRef<HTMLDivElement>(null);
+	const contentAnchor = React.useRef<HTMLDivElement>(null);
 	return (
 		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 			<DataPageHelmet
@@ -75,25 +72,37 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			/>
 			<Navigation
 				sidebarTarget={topAnchor}
-				requestPlayerPanel={(panel: string | undefined) => { setPlayerPanel(panel); scrollToTop(panel); }}
-				requestClearPlayerData={clearPlayerData}
+				requestPanel={(target: string, panel: string | undefined) => {
+					if (target === 'player') {
+						setPlayerPanel(panel);
+						if (panel) scrollTo(contentAnchor);
+					}
+					else if (target === 'dashboard') {
+						setDashboardPanel(panel);
+						if (panel) scrollTo(topAnchor);
+					}
+				}}
 			>
-			<div ref={mainContent}>
-			<MainContent narrowLayout={narrowLayout}>
-				{pageTitle && (
-					<React.Fragment>
-						<Header as='h2'>{pageTitle}</Header>
-						{pageDescription && <p>{pageDescription}</p>}
-					</React.Fragment>
-				)}
-				<PlayerHeader
-					promptType={playerPromptType ?? 'none'}
-					activePanel={playerPanel}
-					setActivePanel={setPlayerPanel}
-				/>
-				{renderContents()}
-			</MainContent>
-			</div>
+				<MainContent narrowLayout={narrowLayout}>
+					<Dashboard
+						activePanel={dashboardPanel}
+						setActivePanel={setDashboardPanel}
+					/>
+					<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
+						{pageTitle && (
+							<React.Fragment>
+								<Header as='h2'>{pageTitle}</Header>
+								{pageDescription && <p>{pageDescription}</p>}
+							</React.Fragment>
+						)}
+						<PlayerHeader
+							promptType={playerPromptType ?? 'none'}
+							activePanel={playerPanel}
+							setActivePanel={setPlayerPanel}
+						/>
+						{renderContents()}
+					</div>
+				</MainContent>
 			</Navigation>
 		</div>
 	);
@@ -113,11 +122,9 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		);
 	}
 
-	// Scroll to top of page when player panel changes
-	function scrollToTop(panel: string | undefined): void {
-		if (!panel) return;
-		if (!topAnchor.current) return;
-		topAnchor.current.scrollIntoView({
+	function scrollTo(anchorDiv: React.RefObject<HTMLDivElement>): void {
+		if (!anchorDiv.current) return;
+		anchorDiv.current.scrollIntoView({
 			behavior: 'smooth'
 		});
 	}
