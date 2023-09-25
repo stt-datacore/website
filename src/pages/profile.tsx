@@ -18,12 +18,10 @@ import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { PlayerCrew, PlayerData } from '../model/player';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import Announcement from '../components/announcement';
+import { PlayerData } from '../model/player';
+import { EquipmentCommon } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
-import { PlayerContext } from '../context/playercontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
@@ -70,7 +68,6 @@ export const ProfilePage = (props: ProfilePageProps) => {
 			}
 			{isReady &&
 				<React.Fragment>
-					<Announcement />
 						<GlobalContext.Provider value={{
 							core: coreData,
 							player: {
