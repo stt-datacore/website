@@ -178,6 +178,7 @@ interface ITableViewOption {
 interface IDataPrepared {
 	rosterType: string;
 	rosterCount: number;
+	tableView: TableView;
 	appliedFilters: string[];
 };
 
@@ -238,9 +239,10 @@ const CrewConfigTableMaker = () => {
 		setDataPrepared({
 			rosterType,
 			rosterCount: preparedCrew ? preparedCrew.length : 0,
+			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
-	}, [rosterType, preparedCrew, crewFilters]);
+	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	const tableViews = [
 		{
@@ -348,6 +350,7 @@ const CrewConfigTableMaker = () => {
 
 	const isPreparing = dataPrepared.rosterType !== rosterType ||
 		dataPrepared.rosterCount !== (preparedCrew ? preparedCrew.length : 0) ||
+		dataPrepared.tableView !== tableView ||
 		dataPrepared.appliedFilters.length !== crewFilters.length ||
 		!crewFilters.every(crewFilter => dataPrepared.appliedFilters.includes(crewFilter.id));
 
@@ -382,7 +385,7 @@ const CrewConfigTableMaker = () => {
 						setCrewFilters={setCrewFilters}
 					/>
 					{toggleableFilters.map(filter => filter.available && filter.form)}
-					<div>
+					<div style={{ position: 'absolute', right: '0', alignSelf: 'flex-start' }}>
 						<Loader inline active={isPreparing} />
 					</div>
 				</div>

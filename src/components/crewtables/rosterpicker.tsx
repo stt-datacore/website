@@ -22,8 +22,6 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
-	const [showStepper, setShowStepper] = React.useState(false);
-
 	React.useEffect(() => {
 		setAllCrew(undefined);
 		setMyCrew(undefined);
@@ -52,11 +50,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		}
 	}, [rosterType]);
 
-	React.useEffect(() => {
-		setShowStepper(!!playerData && !!myCrew);
-	}, [playerData, myCrew])
-
-	if (!showStepper)
+	if (!playerData)
 		return (<></>);
 
 	return (
