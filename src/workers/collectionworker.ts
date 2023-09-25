@@ -654,16 +654,28 @@ const CollectionOptimizer = {
                     colOptimized.sort((a, b) => {
                         let anum = 0;
                         let bnum = 0;
-                        
-                        if (a.combos?.length) {
-                            anum = a.combos.length;
-                        }
-                        
-                        if (b.combos?.length) {
-                            bnum = b.combos.length;
+                        let r = 0;
+
+                        if (a.combos?.length && b.combos?.length) {
+
+                            let aneeded = a.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
+                            let bneeded = b.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
+
+                            if (!r && a.comboCost && b.comboCost) {
+                                anum = (a.comboCost[0] / aneeded);
+                                bnum = (b.comboCost[0] / bneeded);
+                                r = anum - bnum;
+                            }
+                            
+                            if (!r) {
+                                anum = (a.collection.needed ?? 0) / aneeded;
+                                bnum = (b.collection.needed ?? 0) / bneeded;
+    
+                                r = anum - bnum;    
+                            }
                         }
 
-                        return bnum - anum;
+                        return r;
                     })
                 }
             }
