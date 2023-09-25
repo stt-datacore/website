@@ -153,7 +153,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 		}
 
 		if (!selectedShip && selectedTriggers?.length) {
-			if (!selectedTriggers.some(st => crew.action.ability?.condition.toString() === st)) return false;
+			if (!selectedTriggers.some(st => (crew.action.ability?.condition ?? 0).toString() === st)) return false;
 		}
 
 		if (selectedBonuses?.length) {
