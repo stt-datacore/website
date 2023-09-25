@@ -56,6 +56,7 @@ export interface Calculation {
     result?: CalcResult;
     trackState?: number;
     confidenceState?: number;
+    errorMessage?: string;
 }
 
 export interface CalcResult {
@@ -146,5 +147,5 @@ export interface EquipmentWorkerConfig {
 }
 
 export interface EquipmentWorkerResults {
-    items: (EquipmentCommon | EquipmentItem)[];    
+    items: (EquipmentCommon | EquipmentItem)[];
 }

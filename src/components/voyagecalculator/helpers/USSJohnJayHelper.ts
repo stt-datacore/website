@@ -36,10 +36,16 @@ export class USSJohnJayHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (message.data.result) {
-				const results = this._messageToResults(message.data.result);
 				this.perf.end = performance.now();
-				this.calcState = CalculatorState.Done;
-				this.resultsCallback(this.id, results, CalculatorState.Done);
+				if (message.data.result.error) {
+					this.calcState = CalculatorState.Error;
+					this.errorCallback(this.id, message.data.result.error);
+				}
+				else {
+					const results = this._messageToResults(message.data.result);
+					this.calcState = CalculatorState.Done;
+					this.resultsCallback(this.id, results, CalculatorState.Done);
+				}
 			}
 		});
 		worker.postMessage(JSON.parse(JSON.stringify(USSJohnJayConfig)));

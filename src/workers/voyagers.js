@@ -129,7 +129,14 @@ const forDataCore = (input, output, chewable) => {
 
 	// Generate lots of unique lineups of potential voyagers
 	const voyagers = new Voyagers(input.roster, config);
-	voyagers.assemble(voyage)
+	const filter = false;	// Roster prefiltered by DataCore
+	const options = {
+		strategy: input.strategy,
+		customBoosts: undefined,	// Not an option for DataCore
+		luckFactor: undefined,	// Not an option for DataCore
+		favorSpecialists: undefined,	// Not an option for DataCore
+	};
+	voyagers.assemble(voyage, filter, options)
 		.then((lineups) => {
 			// Estimate only as many lineups as necessary
 			const estimator = new VoyagersEstimates(voyage, input.bestShip.score, lineups, config);
@@ -153,7 +160,7 @@ const forDataCore = (input, output, chewable) => {
 				});
 		})
 		.catch((error) => {
-			throw(error);
+			output({ error: `${error}` });
 		});
 };
 
@@ -191,6 +198,7 @@ class Voyagers {
 		return new Promise((resolve, reject) => {
 			let boosts = { 'primary': 1, 'secondary': 1, 'other': 1 };
 			const control = self.getBoostedLineup(primedRoster, boosts);
+			if (!control) reject("Critical error: MVAM unable to construct a voyage control lineup!");
 			const controlFactor = self.getPrimeFactor(control.score);
 
 			const deltas = [0, 0.05, -0.05, 0.1, -0.1, 0.15, -0.15, 0.25, -0.25];
@@ -271,6 +279,12 @@ class Voyagers {
 					rTraitSlots[(iSkill*2)+1] = 1;
 				if (skillId == "engineering_skill" || skillId == "science_skill" || skillId == "medicine_skill")
 					bGeneralist = false;
+				if (options.strategy === 'peak-antimatter') {
+					if (rTraitSlots[iSkill*2] === 0) rViableSlots[iSkill*2] = 0;
+					if (rTraitSlots[(iSkill*2)+1] === 0) rViableSlots[(iSkill*2)+1] = 0;
+					if (rTraitSlots[iSkill*2] === 0 && rTraitSlots[(iSkill*2)+1] === 0)
+						rViableSkills[iSkill] = 0;
+				}
 			}
 			if (options.favorSpecialists && bGeneralist)
 				dOtherScore -= dOtherScore/10;
@@ -331,7 +345,7 @@ class Voyagers {
 							if (lineup)
 								resolveLineup(lineup);
 							else
-								rejectLineup("You don't have enough crew for this voyage!");
+								rejectLineup("Warning: MVAM vector failed to construct a valid voyage with the requested boosts.");
 
 							// Stop looking for lineups if vector has generated enough uniques or reached max attempts
 							if ((iAttempts >= minAttempts && iUniques >= minUniques) || iAttempts == maxAttempts) {

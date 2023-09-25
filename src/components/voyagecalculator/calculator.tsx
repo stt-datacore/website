@@ -225,7 +225,8 @@ const CalculatorForm = (props: CalculatorProps) => {
 
 		const helperConfig = {
 			voyageConfig, bestShip, consideredCrew, calcOptions: userPrefs.calcOptions,
-			resultsCallback: handleResults
+			resultsCallback: handleResults,
+			errorCallback: handleError
 		};
 
 		CALCULATORS.helpers.forEach(helper => {
@@ -256,7 +257,6 @@ const CalculatorForm = (props: CalculatorProps) => {
 						if (calcState === CalculatorState.Done) {
 							result.name = formatTime(reqResult.estimate.refills[0].result);
 							result.calcState = CalculatorState.Done;
-							sendTelemetry(requestId, reqResult);
 						}
 						result.result = reqResult;
 					}
@@ -277,29 +277,16 @@ const CalculatorForm = (props: CalculatorProps) => {
 		if (calcState === CalculatorState.Done) scrollToAnchor();
 	}
 
-	function sendTelemetry(requestId: string, result: CalcResult): void {
-		if (rosterType === 'allCrew' || !userPrefs.telemetryOptIn) return;
-		const request = requests.find(r => r.id === requestId);
-		const estimatedDuration = result.estimate.refills[0].result*60*60;
-		try {
-			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
-				method: 'post',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					type: 'voyageCalc',
-					data: {
-						voyagers: result.entries.map((entry) => entry.choice.symbol),
-						estimatedDuration,
-						calculator: request ? request.calculator : ''
-					}
-				})
-			});
-		}
-		catch (err) {
-			console.log('An error occurred while sending telemetry', err);
-		}
+	function handleError(requestId: string, errorMessage: string): void {
+		setResults(prevResults => {
+			const result = prevResults.find(r => r.id === requestId);
+			if (result) {
+				result.name = 'Error!';
+				result.calcState = CalculatorState.Error;
+				result.errorMessage = errorMessage;
+			}
+			return [...prevResults];
+		});
 	}
 };
 
@@ -455,8 +442,18 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	const availableRoster = calculatorContext.crew.filter(c => c.immortal <= 0 && c.active_status !== 2);
 
 	// Compare best values among ALL results
+	interface IBestValues {
+		median: number;
+		minimum: number;
+		moonshot: number;
+		antimatter: number;
+		dilemma: {
+			hour: number;
+			chance: number;
+		};
+	};
 	const bestValues = {
-		estimate: 0,
+		median: 0,
 		minimum: 0,
 		moonshot: 0,
 		antimatter: 0,
@@ -464,12 +461,15 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			hour: 0,
 			chance: 0
 		}
-	};
+	} as IBestValues;
 	results.forEach(result => {
 		if (result.calcState === CalculatorState.Done && result.result) {
 			const values = flattenEstimate(result.result.estimate);
 			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'dilemma') {
+				if (valueKey === 'antimatter') {
+					bestValues.antimatter = Math.max(bestValues.antimatter, result.result?.estimate.antimatter ??  0);
+				}
+				else if (valueKey === 'dilemma') {
 					if (values.dilemma.hour > bestValues.dilemma.hour
 						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
 							bestValues.dilemma = values.dilemma;
@@ -499,17 +499,28 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 
 	const panes = results.map((result, resultIndex) => ({
 		menuItem: { key: result.id, content: renderMenuItem(result.name, analyses[resultIndex]) },
-		render: () => (
-			<ResultPane result={result.result} resultIndex={resultIndex}
-				requests={requests} requestId={result.requestId}
-				calcState={result.calcState} abortCalculation={abortCalculation}
-				analysis={analyses[resultIndex]}
-				trackState={result.trackState ?? 0} trackResult={trackResult}
-				confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
-				dismissResult={dismissResult}
-				roster={availableRoster}
-			/>
-		)
+		render: () => {
+			if (result.calcState === CalculatorState.Error) {
+				return (
+					<ErrorPane
+						errorMessage={result.errorMessage} resultIndex={resultIndex}
+						requests={requests} requestId={result.requestId}
+						dismissResult={dismissResult}
+					/>
+				);
+			}
+			return (
+				<ResultPane result={result.result} resultIndex={resultIndex}
+					requests={requests} requestId={result.requestId}
+					calcState={result.calcState} abortCalculation={abortCalculation}
+					analysis={analyses[resultIndex]}
+					trackState={result.trackState ?? 0} trackResult={trackResult}
+					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
+					dismissResult={dismissResult}
+					roster={availableRoster}
+				/>
+			);
+		}
 	}));
 
 	return (
@@ -533,23 +544,24 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function getRecommendedList(estimate: Estimate, bestValues: any): string[] {
+	function getRecommendedList(estimate: Estimate, bestValues: IBestValues): string[] {
 		const recommended = [] as string[];
 		const values = flattenEstimate(estimate);
 		Object.keys(bestValues).forEach((method) => {
-			if (bestValues[method] === values[method] ||
-				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance))
+			if ((method === 'antimatter' && bestValues.antimatter === estimate.antimatter) ||
+				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance) ||
+				bestValues[method] === values[method])
 					recommended.push(method);
 		});
 		return recommended;
 	};
 
-	function getRecommendedValue(method: string, bestValues: any): string {
-		let sortName = '', sortValue = '';
+	function getRecommendedValue(method: string, bestValues: IBestValues): string {
+		let sortName = '', sortValue: string | number = '';
 		switch (method) {
-			case 'estimate':
+			case 'median':
 				sortName = 'estimated runtime';
-				sortValue = formatTime(bestValues.estimate);
+				sortValue = formatTime(bestValues.median);
 				break;
 			case 'minimum':
 				sortName = 'guaranteed minimum';
@@ -568,7 +580,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 				sortValue = bestValues.antimatter;
 				break;
 		}
-		if (sortValue != '') sortValue = ' ('+sortValue+')';
+		if (sortValue !== '') sortValue = ' ('+sortValue+')';
 		return sortName+sortValue;
 	}
 
@@ -602,6 +614,8 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			result.trackState = idx === resultIndex ? 1 : 0;
 		});
 		setResults([...results]);
+
+		if (userPrefs.telemetryOptIn) sendTelemetry(resultIndex);
 	}
 
 	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
@@ -637,6 +651,32 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	function dismissResult(resultIndex: number): void {
 		results.splice(resultIndex, 1);
 		setResults([...results]);
+	}
+
+	function sendTelemetry(resultIndex: number): void {
+		const result = results[resultIndex];
+		if (!result.result) return;
+		const request = requests.find(r => r.id === result.requestId);
+		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
+		try {
+			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					type: 'voyageCalc',
+					data: {
+						voyagers: result.result.entries.map((entry) => entry.choice.symbol),
+						estimatedDuration,
+						calculator: request ? request.calculator : ''
+					}
+				})
+			});
+		}
+		catch (err) {
+			console.log('An error occurred while sending telemetry', err);
+		}
 	}
 };
 
@@ -781,3 +821,49 @@ const ResultPane = (props: ResultPaneProps) => {
 		</React.Fragment>
 	);
 };
+
+type ErrorPaneProps = {
+	errorMessage?: string;
+	resultIndex: number;
+	requests: Helper[];
+	requestId: string;
+	dismissResult: (resultIndex: number) => void;
+};
+
+const ErrorPane = (props: ErrorPaneProps) => {
+	const { errorMessage, resultIndex, requests, requestId, dismissResult } = props;
+
+	const request = requests.find(r => r.id === requestId);
+	if (!request) return (<></>);
+
+	const renderInputOptions = () => {
+		const inputs = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
+		inputs.unshift('considered crew: '+request.consideredCrew.length);
+		return (<>{inputs.join(', ')}</>);
+	};
+
+	return (
+		<React.Fragment>
+			<Message attached negative>
+				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
+					<div>
+						{errorMessage ?? 'The voyage calculator encountered an error!'}
+					</div>
+					<div>
+						<Button.Group>
+							<Popup position='top center'
+								content={<>Dismiss this recommendation</>}
+								trigger={
+									<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
+								}
+							/>
+						</Button.Group>
+					</div>
+				</div>
+			</Message>
+			<Tab.Pane>
+				<p>The voyage calculator is unable to recommend lineups for the requested options ({renderInputOptions()}). Please try again using different options.</p>
+			</Tab.Pane>
+		</React.Fragment>
+	);
+}
