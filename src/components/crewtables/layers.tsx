@@ -9,7 +9,7 @@ export interface DataField {
 }
 
 export interface FilterLayerProps {
-    ChildComponent?: typeof FilterLayer;
+    ChildComponent?: typeof React.Component & FilterLayer;
     children?: JSX.Element;
     dataSource: any[];
     fields: DataField[];
@@ -48,6 +48,7 @@ export abstract class FilterLayer extends React.Component<FilterLayerProps, Filt
 
     render() { 
         const { ChildComponent, fields, children } = this.props;
+        
         return (<div style={{display:"flex", flexDirection: "column", justifyContent:"center", alignItems:"center"}}>
             {this.renderFilters()}
             {ChildComponent && <ChildComponent fields={fields} dataSource={this.processData()} />}
