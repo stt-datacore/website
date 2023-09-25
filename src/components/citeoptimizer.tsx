@@ -84,6 +84,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			currentCrew: undefined,
 			touchCrew: undefined,
 			touchToggled: false,
+			direction: 'ascending',
 			citeMode: {
 				rarities: [],
 				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
@@ -374,6 +375,82 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	}
 
+	setSort = (key?: string) => {
+		this.setState({ ... this.state, sort: key });
+	}
+
+	setDirection = (key?: 'ascending' | 'descending') => {
+		this.setState({ ...this.state, direction: key });
+	}
+
+	sortcrew = (crew: PlayerCrew[], training: boolean, engine: 'original' | 'beta_tachyon_pulse') => {
+		const { sort, direction } = this.state;
+
+		if (!sort || !direction) return crew;
+			
+		return crew.sort((a, b) => {
+			let r = 0;
+			
+			if (sort === 'pickerId' && a.pickerId && b.pickerId) {
+				r = a.pickerId - b.pickerId;
+			}
+			else if (sort === 'name') {
+				r  = a.name.localeCompare(b.name);
+			}
+			else if (sort === 'rarity') {
+				r = a.max_rarity - b.max_rarity;				
+				if (!r) r = a.rarity - b.rarity;
+			}
+			else if (sort === 'finalEV') {
+				let aev = Math.ceil(training ? (a.addedEV ?? a.totalEVContribution ?? 0) : (a.totalEVContribution ?? 0));
+				let bev = Math.ceil(training ? (b.addedEV ?? b.totalEVContribution ?? 0) : (b.totalEVContribution ?? 0));
+				r = aev - bev;
+			}
+			else if (sort === 'remainingEV' && !training) {
+				r = Math.ceil(a.totalEVRemaining ?? 0) - Math.ceil(b.totalEVRemaining ?? 0);
+			}
+			else if (sort === 'evPer' && !training) {
+				r = Math.ceil(a.evPerCitation ?? 0) - Math.ceil(b.evPerCitation ?? 0);
+			}
+			else if (sort === 'voyages') {
+				r = (a.voyagesImproved?.length ?? 0) - (b.voyagesImproved?.length ?? 0);
+			}
+			else if (sort === 'amTraits' && engine === 'beta_tachyon_pulse') {
+				r = (a.amTraits ?? 0) - (b.amTraits ?? 0);
+			}
+			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
+				let ska = getSkillOrder(a).join("/");
+				let skb = getSkillOrder(b).join("/");
+				r = ska.localeCompare(skb);
+				if (!r) {
+					r = (a.scoreTrip ?? 0) - (b.scoreTrip ?? 0);
+					if (direction === 'ascending') r *= -1;
+				}
+			}
+			else if (sort === 'in_portal') {
+				if (a.in_portal) r--;
+				if (b.in_portal) r++;
+
+				if (!r) r = a.obtained.localeCompare(b.obtained);
+			}
+			else if (sort === 'compare') {
+				if (this.getChecked(a.symbol)) r--;
+				if (this.getChecked(b.symbol)) r++;
+			}
+			
+			if (direction === 'descending') r *= -1;
+			
+			if (!r) {
+				r = (a.pickerId ?? 0) - (b.pickerId ?? 0);
+			}
+			if (!r) {
+				r = a.name.localeCompare(b.name);
+			}			
+			
+			return r;
+		})
+	}
+
 	renderTable(data?: PlayerCrew[], tabName?: string, training = true) {
 		if (!data || !this.context.player.playerData) return <></>;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
@@ -393,29 +470,77 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// }
 		}
 
+		const { sort, direction } = this.state;
+		data = this.sortcrew(data ?? [], training, engine);
+
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell>Rank</Table.HeaderCell>
-						<Table.HeaderCell>Crew</Table.HeaderCell>
-						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Final EV</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'pickerId' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('pickerId')}
+							sorted={sort === 'pickerId' ? direction : undefined}>
+
+							Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'name' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('name')}
+							sorted={sort === 'name' ? direction : undefined}>
+							Crew
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'rarity' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('rarity')}
+							sorted={sort === 'rarity' ? direction : undefined}>
+							Rarity
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
+							sorted={sort === 'finalEV' ? direction : undefined}>
+							Final EV
+						</Table.HeaderCell>
 						{!training &&
 						<React.Fragment>
-							<Table.HeaderCell>Remaining EV</Table.HeaderCell>
-							<Table.HeaderCell>EV Per Citation</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'remainingEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('remainingEV')}
+								sorted={sort === 'remainingEV' ? direction : undefined}>
+								Remaining EV
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'evPer' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('evPer')}
+								sorted={sort === 'evPer' ? direction : undefined}>
+								EV Per Citation
+							</Table.HeaderCell>
 						</React.Fragment>
 						}
-						<Table.HeaderCell>Voyages<br />Improved</Table.HeaderCell>
+						<Table.HeaderCell
+								onClick={(e) => sort === 'voyages' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('voyages')}
+								sorted={sort === 'voyages' ? direction : undefined}>
+							Voyages<br />Improved
+						</Table.HeaderCell>
 						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>
-							<Table.HeaderCell>Antimatter<br />Traits</Table.HeaderCell>
-							<Table.HeaderCell>Skill Order</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
+								sorted={sort === 'amTraits' ? direction : undefined}>
+								Antimatter<br />Traits
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'skillOrder' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('skillOrder')}
+								sorted={sort === 'skillOrder' ? direction : undefined}>
+								Skill Order
+							</Table.HeaderCell>
 							</React.Fragment>
 							}
-						<Table.HeaderCell>In Portal</Table.HeaderCell>
-						<Table.HeaderCell>Compare</Table.HeaderCell>
+						<Table.HeaderCell
+							onClick={(e) => sort === 'in_portal' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('in_portal')}
+							sorted={sort === 'in_portal' ? direction : undefined}>
+							In Portal
+						</Table.HeaderCell>
+						<Table.HeaderCell
+							onClick={(e) => sort === 'compare' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('compare')}
+							sorted={sort === 'compare' ? direction : undefined}>
+							Compare
+						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
