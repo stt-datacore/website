@@ -662,8 +662,8 @@ const CollectionOptimizer = {
                             let bneeded = b.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
 
                             if (!r && a.comboCost && b.comboCost) {
-                                anum = (a.comboCost[0] / aneeded);
-                                bnum = (b.comboCost[0] / bneeded);
+                                anum = a.comboCost[0] * (a.comboCost[0] / aneeded) * ((a.collection.needed ?? 0) / aneeded);
+                                bnum = b.comboCost[0] * (b.comboCost[0] / bneeded) * ((b.collection.needed ?? 0) / bneeded);
                                 r = anum - bnum;
                             }
                             
