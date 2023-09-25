@@ -81,7 +81,7 @@ const lookupTrait = (trait: string) => {
 
 const BetaTachyon = {        
 
-    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 7.5) => {
+    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
         
         return new Promise((resolve, reject) => {
 
