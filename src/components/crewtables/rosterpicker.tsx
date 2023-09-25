@@ -23,31 +23,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
-		setAllCrew(undefined);
-		setMyCrew(undefined);
+		const rosterType = playerData ? 'myCrew' : 'allCrew';
+		initializeRoster(rosterType, true);
+		setRosterType(rosterType);
 	}, [playerData]);
 
 	React.useEffect(() => {
-		let rosterCrew = [] as IRosterCrew[];
-
-		if (rosterType === 'myCrew' && playerData) {
-			if (myCrew) {
-				setRosterCrew([...myCrew]);
-				return;
-			}
-			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
-			setMyCrew([...rosterCrew]);
-			setRosterCrew([...rosterCrew]);
-		}
-		else {
-			if (allCrew) {
-				setRosterCrew([...allCrew]);
-				return;
-			}
-			rosterCrew = rosterizeAllCrew();
-			setAllCrew([...rosterCrew]);
-			setRosterCrew([...rosterCrew]);
-		}
+		initializeRoster(rosterType);
 	}, [rosterType]);
 
 	if (!playerData)
@@ -71,6 +53,29 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			</Step>
 		</Step.Group>
 	);
+
+	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
+		let rosterCrew = [] as IRosterCrew[];
+
+		if (rosterType === 'myCrew' && playerData) {
+			if (myCrew && !forceReload) {
+				setRosterCrew([...myCrew]);
+				return;
+			}
+			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
+			setMyCrew([...rosterCrew]);
+			setRosterCrew([...rosterCrew]);
+		}
+		else if (rosterType === 'allCrew') {
+			if (allCrew && !forceReload) {
+				setRosterCrew([...allCrew]);
+				return;
+			}
+			rosterCrew = rosterizeAllCrew();
+			setAllCrew([...rosterCrew]);
+			setRosterCrew([...rosterCrew]);
+		}
+	}
 
 	function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[]): IRosterCrew[] {
 		const rosterCrew = [] as IRosterCrew[];

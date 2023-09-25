@@ -36,10 +36,6 @@ const IndexPage = (props: IndexPageProps) => {
 		setInitHighlight(initHighlight);
 	}, []);
 
-	React.useEffect(() => {
-		setRosterType(playerData ? 'myCrew' : 'allCrew');
-	}, [playerData]);
-
 	return (
 		<DataPageLayout pageTitle='Crew Stats' playerPromptType='recommend'>
 			<React.Fragment>
