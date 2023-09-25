@@ -17,7 +17,8 @@ import { Helper, HelperProps } from './Helper';
 export enum CalculatorState {
 	NotStarted,
 	InProgress,
-	Done
+	Done,
+	Error
 };
 
 export interface CalculatorHelper {
@@ -71,7 +72,8 @@ export const CALCULATORS = {
 				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
 				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
-				{ key: 'versatile', text: 'Versatile', value: 'versatile' },
+				// { key: 'versatile', text: 'Versatile', value: 'versatile' },
+				{ key: 'peak-antimatter', text: 'Peak antimatter (experimental)', value: 'peak-antimatter' },
 				{ key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
 			default: 'estimate'
