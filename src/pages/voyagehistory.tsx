@@ -13,6 +13,7 @@ import { CrewTable } from '../components/voyagehistory/crewtable';
 import { defaultHistory } from '../components/voyagehistory/utils';
 
 import { ActiveVoyage } from '../components/voyagecalculator/activevoyage';
+import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
 const VoyageHistoryPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -64,6 +65,8 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 	return (
 		<HistoryContext.Provider value={historyContext}>
 			<React.Fragment>
+				<CrewHoverStat targetGroup='voyageLineup' />	
+
 				{activeVoyageId > 0 &&
 					<ActiveVoyage
 						history={historyReady ? history : undefined}
