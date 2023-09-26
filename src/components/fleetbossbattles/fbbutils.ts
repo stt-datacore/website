@@ -1,6 +1,8 @@
-export function getAllCombos(traits: string[], count: number): any[] {
+import { BossCrew, RarityStyle } from "../../model/boss";
+
+export function getAllCombos(traits: string[], count: number): string[][] {
 	if (count === 1) return traits.map(trait => [trait]);
-	const combos = [];
+	const combos = [] as string[][];
 	for (let i = 0; i < traits.length; i++) {
 		for (let j = i+1; j < traits.length; j++) {
 			combos.push([traits[i], traits[j]]);
@@ -9,7 +11,7 @@ export function getAllCombos(traits: string[], count: number): any[] {
 	return combos;
 }
 
-export function getComboIndexOf(combos: any[], combo: string[]): number {
+export function getComboIndexOf(combos: string[][], combo: string[]): number {
 	let combosIndex = -1;
 	for (let i = 0; i < combos.length; i++) {
 		if (combos[i].every(trait => combo.includes(trait))) {
@@ -20,13 +22,14 @@ export function getComboIndexOf(combos: any[], combo: string[]): number {
 	return combosIndex;
 }
 
-export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): void {
+export function removeCrewNodeCombo(crew: BossCrew, nodeIndex: number, combo: string[]): void {
 	const crewMatches = crew.node_matches[`node-${nodeIndex}`];
+	if (!crewMatches) return;
 	const combosIndex = getComboIndexOf(crewMatches.combos, combo);
 	if (combosIndex === -1) return;
 	crewMatches.combos.splice(combosIndex, 1);
 	if (crewMatches.combos.length > 0) {
-		const validTraits = [];
+		const validTraits = [] as string[];
 		crewMatches.combos.forEach(crewCombo => {
 			crewCombo.forEach(trait => {
 				if (!validTraits.includes(trait)) validTraits.push(trait);
@@ -36,13 +39,15 @@ export function removeCrewNodeCombo(crew: any, nodeIndex: number, combo: any): v
 	}
 	else {
 		const crewNodesIndex = crew.nodes.indexOf(nodeIndex);
-		crew.nodes.splice(crewNodesIndex, 1);
-		delete crew.node_matches[`node-${nodeIndex}`];
-		crew.nodes_rarity--;
+		if (crewNodesIndex >= 0) {
+			crew.nodes.splice(crewNodesIndex, 1);
+			delete crew.node_matches[`node-${nodeIndex}`];
+			crew.nodes_rarity--;
+		}
 	}
 }
 
-export function getStyleByRarity(rarity: number): any {
+export function getStyleByRarity(rarity: number): RarityStyle {
 	let background = 'grey', color = 'white';
 	if (rarity === 0) {
 		background = '#000000';
@@ -63,6 +68,10 @@ export function getStyleByRarity(rarity: number): any {
 	}
 	else if (rarity === 5) {
 		background = '#9b9b9b';
+	}
+	else if (rarity > 5) {
+		background = '#ddd';
+		color = '#333';
 	}
 	return { background, color };
 }

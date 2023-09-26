@@ -7,38 +7,107 @@ import CrewStat from '../components/crewstat';
 import CONFIG from '../components/CONFIG';
 
 import { getCoolStats } from '../utils/misc';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, gradeToColor, prettyObtained, printPortalStatus } from '../utils/crewutils';
 import CABExplanation from './cabexplanation';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player';
+import { ShipSkill } from './item_presenters/shipskill';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
-type StatLabelProps = {
+const isWindow = typeof window !== 'undefined';
+
+export type StatLabelProps = {
 	title: string;
-	value: string;
+	value: number | string | JSX.Element;
+	size?: 'small' | 'medium' | 'large' | 'jumbo'
 };
 
 class StatLabel extends Component<StatLabelProps> {
 	render() {
 		const { title, value } = this.props;
 
+		const size = this.props.size ?? 'medium';
+
+		const getPadding = () => {
+			if (isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+				if (size === 'jumbo') {
+					return "0.5em";
+				}
+				return undefined;
+			}
+			else {
+				switch (size) {
+					case "small": 
+						return "0.27em";
+					case "medium":
+						return "0.65em";
+					case "large":
+						return "0.7em";
+					case "jumbo":
+						return "1em";
+					default:
+						return "0.65em";
+				}
+			}
+		}
+
+		const getFontSize = () => {
+			if (isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH) {
+				if (size === 'jumbo') {
+					return "14pt";
+				}
+				return undefined;
+			}
+			else {
+				switch (size) {
+					case "small": 
+						return "10pt";
+					case "medium":
+						return "12pt";
+					case "large":
+						return "14pt";
+					case "jumbo":
+						return "16pt";
+					default:
+						return "12pt";
+				}
+			}
+		}
+
 		return (
-			<Label size="large" style={{ marginBottom: '0.5em' }}>
+			<Label size="large" style={{ 
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					flexDirection: "row", 
+					marginBottom: '0.5em', 
+					width: 'calc(50% - 4px)', 
+					marginLeft: 0, 
+					marginRight: 0, 
+					fontSize: getFontSize(),
+					padding: getPadding(),					
+					marginTop: 0 }}>
 				{title}
-				<Label.Detail>{value}</Label.Detail>
+				<div>
+					<Label.Detail>{<div style={{fontSize: size === 'jumbo' && isWindow && window.innerWidth >= DEFAULT_MOBILE_WIDTH ? '2em' : undefined}}> {value}</div>}</Label.Detail>
+				</div>
 			</Label>
 		);
 	}
 }
 
 type CommonCrewDataProps = {
-	crew: any;
-	markdownRemark: any;
+	crew: CrewMember | PlayerCrew;
+	markdownRemark?: any;
 	compact?: boolean;
+	ultraCompact?: boolean;
 	crewDemands?: any;
-	roster?: any[];
+	roster?: PlayerCrew[];
 };
 
 class CommonCrewData extends Component<CommonCrewDataProps> {
 	render() {
-		const { markdownRemark, crew, compact, crewDemands, roster } = this.props;
+		const { markdownRemark, crew, compact, crewDemands, roster, ultraCompact } = this.props;
 
 		let panels = [
 			{
@@ -61,7 +130,9 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 		return (
 			<React.Fragment>
-				{compact ? (
+				{!ultraCompact &&
+				((compact) ? (
+					<div style={{display:"flex", width: "100%", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center"}}>
 					<Segment>
 						<Grid columns={2}>
 							<Grid.Column width={4}>
@@ -73,13 +144,19 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 									data={crew.base_skills.security_skill}
 									scale={compact ? 0.75 : 1}
 								/>
-								<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat 
+									skill_name="command_skill" 
+									data={crew.base_skills.command_skill} 
+									scale={compact ? 0.75 : 1} />
 								<CrewStat
 									skill_name="diplomacy_skill"
 									data={crew.base_skills.diplomacy_skill}
 									scale={compact ? 0.75 : 1}
 								/>
-								<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
+								<CrewStat 
+									skill_name="science_skill" 
+									data={crew.base_skills.science_skill} 
+									scale={compact ? 0.75 : 1} />
 								<CrewStat
 									skill_name="medicine_skill"
 									data={crew.base_skills.medicine_skill}
@@ -93,20 +170,55 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							</Grid.Column>
 						</Grid>
 					</Segment>
+					</div>
 				) : (
 						<Segment>
-							<CrewStat skill_name="security_skill" data={crew.base_skills.security_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="command_skill" data={crew.base_skills.command_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="diplomacy_skill" data={crew.base_skills.diplomacy_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="science_skill" data={crew.base_skills.science_skill} scale={compact ? 0.75 : 1} />
-							<CrewStat skill_name="medicine_skill" data={crew.base_skills.medicine_skill} scale={compact ? 0.75 : 1} />
+						<div style={{
+								display:"flex", 
+								width: "100%", 
+								flexDirection: isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+								justifyContent: "space-evenly",
+								}}>
+							{crew.base_skills.security_skill && 
+							<CrewStat 
+								skill_name="security_skill" 
+								data={crew.base_skills.security_skill} 
+								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.command_skill && 
+							<CrewStat 
+								skill_name="command_skill" 
+								data={crew.base_skills.command_skill} 
+								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.diplomacy_skill && 
+							<CrewStat 
+								skill_name="diplomacy_skill" 
+								data={crew.base_skills.diplomacy_skill} 
+								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.science_skill && 
+							<CrewStat 
+								skill_name="science_skill" 
+								data={crew.base_skills.science_skill} 
+								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.medicine_skill && 
+							<CrewStat 
+								skill_name="medicine_skill" 
+								data={crew.base_skills.medicine_skill} 
+								scale={compact ? 0.75 : 1} />
+							}
+							{crew.base_skills.engineering_skill && 
 							<CrewStat
 								skill_name="engineering_skill"
 								data={crew.base_skills.engineering_skill}
 								scale={compact ? 0.75 : 1}
 							/>
+							}
+						</div>
 						</Segment>
-					)}
+					))}
 
 				{crew.skill_data && crew.skill_data.length > 0 && (
 					<Accordion
@@ -121,6 +233,14 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 										<Segment.Group raised>
 											{crew.skill_data.map((sk: any, idx: number) => (
 												<Segment key={idx}>
+													<div style={{
+														display:"flex", 
+														width: "100%", 
+														flexDirection: isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", 
+														justifyContent: "space-between",
+														flexWrap: "wrap",								
+														}}>
+													<div style={{display:"block"}}>
 													<Rating
 														defaultRating={sk.rarity}
 														maxRating={crew.max_rarity}
@@ -128,6 +248,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 														size="small"
 														disabled
 													/>
+													</div>
 													<CrewStat skill_name="security_skill" data={sk.base_skills.security_skill} scale={0.75} />
 													<CrewStat skill_name="command_skill" data={sk.base_skills.command_skill} scale={0.75} />
 													<CrewStat skill_name="diplomacy_skill" data={sk.base_skills.diplomacy_skill} scale={0.75} />
@@ -138,6 +259,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 														data={sk.base_skills.engineering_skill}
 														scale={0.75}
 													/>
+													</div>
 												</Segment>
 											))}
 										</Segment.Group>
@@ -150,58 +272,103 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 
 				{crew.flavor && !compact && <p>{crew.flavor}</p>}
 
-				{compact && (
+				{!compact && 
+				
+				<div style={{fontSize: "10pt", marginTop: "1em"}}>
+					<h4 style={{ marginBottom: '.25em' }}>Ship Ability</h4>
+					<hr></hr>
+					<ShipSkill context={crew} />
+				</div>
+
+				}
+
+				{(compact && !ultraCompact) && (
 					<div style={{ textAlign: 'center' }}>
 						<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 						<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
 						<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-						{markdownRemark.frontmatter.events !== null && (
+						{markdownRemark && markdownRemark.frontmatter.events !== null && (
 							<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 						)}
 					</div>
 				)}
-
 				{!compact && (
 					<>
-					<Statistic.Group size="tiny">
-						{markdownRemark.frontmatter.events !== null && (
-							<Statistic>
-								<Statistic.Label>Events</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.events}</Statistic.Value>
-							</Statistic>
-						)}
-						<Statistic>
-							<Statistic.Label>Big Book Tier</Statistic.Label>
-							<Statistic.Value>{formatTierLabel(crew)}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>CAB Rating <CABExplanation /></Statistic.Label>
-							<Statistic.Value>{crew.cab_ov ?? 'None'}</Statistic.Value>
-						</Statistic>
-						{!compact && markdownRemark.frontmatter.in_portal !== null && (
-							<Statistic color={markdownRemark.frontmatter.in_portal ? 'green' : 'red'}>
-								<Statistic.Label>Portal</Statistic.Label>
-								<Statistic.Value>{markdownRemark.frontmatter.in_portal ? 'YES' : 'NO'}</Statistic.Value>
-							</Statistic>
-						)}
-						</Statistic.Group>
-						<Statistic.Group style={{ paddingBottom: '2em' }} size="tiny">
-						<Statistic>
-							<Statistic.Label>CAB Rank <CABExplanation /></Statistic.Label>
-							<Statistic.Value>{crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : 'None'}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>Voyage Rank</Statistic.Label>
-							<Statistic.Value>{rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}</Statistic.Value>
-						</Statistic>
-						<Statistic>
-							<Statistic.Label>Gauntlet Rank</Statistic.Label>
-							<Statistic.Value>{rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}</Statistic.Value>
-						</Statistic>
-					</Statistic.Group>
+					
+						<div style={{
+							display: "flex", 
+							flexDirection: "row", 
+							justifyContent:"space-between", 
+							alignItems: "center",
+							margin: "0.25em",
+							marginBottom: 0,
+							marginRight: 0,
+							marginLeft: 0,
+							flexWrap: "wrap"}}>
+							<StatLabel
+                                title="Big Book Tier"
+								size='jumbo'
+                                value={<div
+                                    style={{
+                                        fontWeight: "bold",
+                                        color: gradeToColor(
+                                            crew.bigbook_tier
+                                        ) ?? undefined,
+                                    }}
+                                >
+                                    {formatTierLabel(crew)}
+                                </div>}
+                            />
+							<StatLabel
+                                title="CAB Grade"
+								size='jumbo'
+                                value={
+                                    <div
+                                        style={{
+                                            fontWeight: "bold",
+                                            color: gradeToColor(
+                                                crew.cab_ov_grade as string
+                                            ) ?? undefined,
+                                        }}
+                                    >
+                                        {crew.cab_ov_grade ?? '?'}
+                                    </div>
+                                }
+                            />
+							<StatLabel title="Voyage Rank"
+								value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
+							<StatLabel title="Gauntlet Rank"
+								value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
+						</div>
+						
+						<div style={{
+							display: "flex", 
+							margin: "0.25em",
+							marginTop: 0,
+							marginRight: 0,
+							marginLeft: 0,
+							flexDirection: "row", 
+							justifyContent:"space-between", 
+							alignItems: "center",
+							flexWrap: "wrap"}}>
+							
+							<StatLabel 
+									title="CAB Rank"
+									value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+									/>
+							<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
+							<StatLabel title="Portal" 
+								value={<>
+									<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+										{printPortalStatus(crew, true, false)}
+									</div>								
+								</>} />
+							{markdownRemark.frontmatter.events !== null && (
+								<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
+							)}
+						</div>
 					</>
 				)}
-
 				{crewDemands && (
 					<p>
 						<b>{crewDemands.factionOnlyTotal}</b>
@@ -231,7 +398,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					{', '}
 					{crew.traits_hidden
 						.map(trait => (
@@ -239,10 +406,10 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 								{trait}
 							</a>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 				</p>
 
-				{crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
+				{crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol && (
 					<p>
 						Can cross-fuse with{' '}
 						<Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
@@ -258,12 +425,12 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 									{col}
 								</Link>
 							))
-							.reduce((prev, curr) => [prev, ', ', curr])}
+							.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					</p>
 				)}
 
 				<p>
-					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{crew.obtained})
+					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{prettyObtained(crew, true)})
 				</p>
 
 				{crew.nicknames && crew.nicknames.length > 0 && (
@@ -273,33 +440,33 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							.map((nick, idx) => (
 							<span key={idx}>{nick.cleverThing}{nick.creator ? <> (coined by <i>{nick.creator}</i>)</> : ''}</span>
 						))
-						.reduce((prev, curr) => [prev, ', ', curr])}
+						.reduce((prev, curr) => <>{prev}, {curr}</>)}
 					</p>
 				)}
 			</React.Fragment>
 		);
 	}
 
-	rosterComparisonTitle(crew, roster) {
+	rosterComparisonTitle(crew: CrewMember, roster: PlayerCrew[]) {
 		let skillCount = Object.entries(crew.base_skills).length;
-		const rankHandler = prefix => {
+		const rankHandler = (prefix: string) => {
 			let [name, rank] = Object.entries(crew.ranks)
-															 .filter(([k, v]) => k.startsWith(prefix))
-															 .map(([k, v]) => [k, roster.filter(c => c.ranks[k] < crew.ranks[k]).length + 1])
-															 .sort(([k1, v1], [k2, v2]) => v1 - v2)[0];
+				.filter(([k, v]) => k.startsWith(prefix))
+				.map(([k, v]) => [k, roster.filter((c) => c.ranks[k] < crew.ranks[k]).length + 1])
+				.sort(([k1, v1], [k2, v2]) => (v1 as number) - (v2 as number))[0];
 			return [
-				name.substr(2).replace('_', '/'),
+				(name as string).slice(2).replace('_', '/'),
 				rank
 			];
 		}
 
 		if (skillCount == 3) {
-			let rank = roster.filter(c =>
-													 c.ranks['voyTriplet'] &&
-													 c.ranks['voyTriplet'].name == crew.ranks['voyTriplet'].name &&
-													 crew.ranks['voyTriplet'].rank > c.ranks['voyTriplet'].rank).length + 1
+			let rank = roster.filter((c) =>
+				c.ranks.voyTriplet &&
+				c.ranks.voyTriplet.name == crew.ranks.voyTriplet?.name &&
+				crew.ranks.voyTriplet.rank > c.ranks.voyTriplet.rank).length + 1
 
-			return `#${rank} ${crew.ranks['voyTriplet'].name} on your roster`;
+			return `#${rank} ${crew.ranks.voyTriplet?.name} on your roster`;
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
@@ -316,26 +483,33 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 		}
 	}
 
-	renderOtherRanks(crew, roster = false) {
-		let v = [];
-		let g = [];
-		let b = [];
+	renderOtherRanks(crew: CrewMember, roster: CrewMember[] | false = false) {
+		let v = [] as JSX.Element[];
+		let g = [] as JSX.Element[];
+		let b = [] as JSX.Element[];
 
-		const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
-		const rankHandler = rank => roster
+
+		const skillName = (shortName: string) => {
+			let ns = CONFIG?.SKILLS_SHORT?.find(c => c.short === shortName)?.name;
+			if (ns) return CONFIG.SKILLS[ns];
+			else return null;
+		}
+
+		const rankHandler = (rank: string) => roster
 			? roster.filter(c => c.ranks[rank] && crew.ranks[rank] > c.ranks[rank]).length + 1
 			: crew.ranks[rank];
-		const tripletHandler = rank => roster
+
+		const tripletHandler = (rank: string) => roster
 			? roster.filter(c => c.ranks[rank] &&
-													 c.ranks[rank].name == crew.ranks[rank].name &&
-													 crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
+			c.ranks[rank].name == crew.ranks[rank].name &&
+			crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
 			: crew.ranks[rank].rank;
 
 		// Need to filter by skills first before sorting by voyage triplet
 		const tripletFilter = crew.ranks.voyTriplet
 								? crew.ranks.voyTriplet.name.split('/')
-									.map(s => 'skill:'+s.trim())
-									.reduce((prev, curr) => prev+' '+curr)
+									.map((s: string) => 'skill:'+s.trim())
+									.reduce((prev: string, curr: string) => prev+' '+curr)
 								: '';
 
 		for (let rank in crew.ranks) {
@@ -343,21 +517,21 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				v.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{skillName(rank.substr(2))}</Statistic.Label>
-						<Statistic.Value>{rankLinker(roster, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.substr(2)).name, 'descending')}</Statistic.Value>
+						<Statistic.Value>{rankLinker(roster !== false, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
 					</Statistic>
 				);
 			}
@@ -378,7 +552,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
 									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
-									<Statistic.Value>{rankLinker(roster, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
+									<Statistic.Value>{rankLinker(roster !== false, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
 							<Divider />
@@ -399,7 +573,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 	}
 }
 
-const rankLinker = (roster: any, rank: number, symbol: string, column: string, direction: string, search: string) => {
+const rankLinker = (roster: boolean, rank: number, symbol: string, column: string, direction: string = 'ascending', search: string | undefined = undefined) => {
 	if (roster) return (<>{rank}</>);
 	const linkState = {
 		search: search ?? '',
@@ -421,7 +595,7 @@ const rankLinker = (roster: any, rank: number, symbol: string, column: string, d
 	);
 
 	// On left clicks, use state instead of URL params because it's a little faster and cleaner
-	function clickLink(e) {
+	function clickLink(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
 		if (e.button === 0) {
 			e.preventDefault();
 			navigate(baseUrl, { state: linkState });
@@ -435,6 +609,7 @@ export const query = graphql`
 	fragment RanksFragment on CrewJson {
 		cab_ov
 		cab_ov_rank
+		cab_ov_grade
 		ranks {
 			voyRank
 			gauntletRank

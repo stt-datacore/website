@@ -1,14 +1,25 @@
 import React from 'react';
-import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message } from 'semantic-ui-react';
+import { Table, Icon, Rating, Dropdown, Form, Button, Checkbox, Header, Modal, Grid, Message, Popup } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
 import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
+import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, KeystoneBase, NumericOptions, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
+import { BaseSkills, CrewMember } from '../model/crew';
+import { CompletionState, CryoCollection, PlayerCrew, PlayerData } from '../model/player';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { calculateBuffConfig } from '../utils/voyageutils';
+import { Energy } from '../model/boss';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+
+const RECURSION_WARN = 1000000;
+const RECURSION_FORBID = 10000000;
 
 const ownedFilterOptions = [
     { key: 'ofo0', value: 'Show all crew', text: 'Show all crew' },
@@ -19,17 +30,14 @@ const ownedFilterOptions = [
 ];
 
 const ownedFilters = {
-    'Show all crew': data => crew => true,
-    'Only show unowned crew': data => crew => !data.some((c) => crew.symbol === c.symbol),
-    'Only show owned crew': data => crew => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
-    'Show all owned crew': data => crew => data.some(c => crew.symbol === c.symbol),
-	'Show all crew not FF': data => crew => !data.some((c) => crew.symbol === c.symbol && c.rarity === c.max_rarity),
+    'Show all crew': _ => _ => true,
+    'Only show unowned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => !data.some((c) => crew.symbol === c.symbol),
+    'Only show owned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => data.some((c) => crew.symbol === c.symbol && c.rarity < c.max_rarity),
+    'Show all owned crew': (data: PlayerCrew[]) => (crew: PlayerCrew) => data.some(c => crew.symbol === c.symbol),
+	'Show all crew not FF': (data: PlayerCrew[]) => (crew: PlayerCrew) => !data.some((c) => crew.symbol === c.symbol && c.rarity === c.max_rarity),
 };
 
-// TODO: Remove duplication
-const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
-
-const rarityOptions = [
+const rarityOptions: RarityOptions[] = [
 	{ key: 'ro0', value: null, text: 'Any rarity' },
 	{ key: 'ro2', value: '2', text: 'Minimum 2*' },
 	{ key: 'ro3', value: '3', text: 'Minimum 3*' },
@@ -37,69 +45,78 @@ const rarityOptions = [
 	{ key: 'ro5', value: '5', text: 'Minimum 5*' }
 ];
 
-const collectionsOptions = [
+const collectionsOptions: RarityOptions[] = [
 	{ key: 'co0', value: null, text: 'None or any' }
 ];
 
-const filterTraits = (polestar, trait) => {
-	if (polestar.filter.type === 'trait') {
+const filterTraits = (polestar: Polestar, trait: string) => {
+	if (polestar.filter?.type === 'trait') {
 		return polestar.filter.trait === trait;
 	}
-	if (polestar.filter.type === 'rarity') {
+	if (polestar.filter?.type === 'rarity') {
 		return `crew_max_rarity_${polestar.filter.rarity}` === trait;
 	}
-	if (polestar.filter.type === 'skill') {
+	if (polestar.filter?.type === 'skill') {
 		return polestar.filter.skill === trait;
 	}
 }
 
 type CrewRetrievalProps = {
-	playerData: any;
-	allCrew: any[];
 };
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
-	const { playerData } = props;
+	const pureData = React.useContext(DataContext);
+	const merged = React.useContext(MergedContext);
 
-	const [allKeystones, setAllKeystones] = React.useState(undefined);
+	const keystonesReady = pureData.ready(['keystones', 'crew']);
+
+	const { playerData } = merged;
+
+	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
+
+	if (!keystonesReady) {
+		return (<><Icon loading name='spinner' /> Loading...</>);
+	}
+	else if (!allKeystones) {
+		let ak = JSON.parse(JSON.stringify(pureData.keystones));
+		ak.forEach(keystone => {
+			const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
+			keystone.quantity = owned ? owned.quantity : 0;
+		});
+		setAllKeystones(ak);
+
+		return (<><Icon loading name='spinner' /> Loading...</>);
+	}
 
 	if (!playerData?.forte_root) {
 		return (
 			<div>
 				<h2>Crew Retrieval Unavailable</h2>
-				<p>Crew retrieval requires a <a href="https://stt.disruptorbeam.com/player?client_api=17">newer version</a> of your player file.
+				<p>Crew retrieval requires a <a href='https://app.startrektimelines.com/player?client_api=20&only_read_state=true' target='_blank'>newer version</a> of your player file.
 				   Please follow the link and copy the correct version to paste.</p>
 			</div>
 		);
 	}
 
-	if (!allKeystones) {
-		fetch('/structured/keystones.json')
-			.then(response => response.json())
-			.then(allkeystones => {
-				allkeystones.forEach(keystone => {
-					const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
-					keystone.quantity = owned ? owned.quantity : 0;
-				});
-				setAllKeystones(allkeystones);
-			});
-		return (<><Icon loading name='spinner' /> Loading...</>);
-	}
-
-	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && k.quantity > 0);
-
-	const allCrew = JSON.parse(JSON.stringify(props.allCrew));
+	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
+	const allCrew = JSON.parse(JSON.stringify(merged.allCrew)) as PlayerCrew[];
 
 	// Calculate highest owned rarities
 	allCrew.forEach(ac => {
 		const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
-		ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
+		if (owned && owned.length) {
+			ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
+		}
+		else {
+			ac.highest_owned_level = 0;
+		}
+
 	});
 
 	let cArr = [...new Set(allCrew.map(a => a.collections).flat())].sort();
 	cArr.forEach(c => {
 		if (!collectionsOptions.find(co => co.value == c)) {
-			let pc = { progress: 'n/a', milestone: { goal: 'n/a' }};
+			let pc: CryoCollection = { progress: 'n/a', milestone: { goal: 'n/a' }, id: 0, name: ""};
 			if (playerData.player.character.cryo_collections) {
 				let matchedCollection = playerData.player.character.cryo_collections.find((pc) => pc.name === c);
 				if (matchedCollection) {
@@ -123,6 +140,7 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		<React.Fragment>
 			<RetrievalEnergy energy={playerData.crew_crafting_root.energy} />
 			<RetrievalForm
+				playerData={playerData}
 				ownedPolestars={ownedPolestars}
 				allCrew={allCrew}
 				allKeystones={allKeystones}
@@ -133,14 +151,14 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 };
 
 type RetrievalEnergyProps = {
-	energy: any;
+	energy: Energy;
 };
 
 const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 	const { energy } = props;
 
 	const qTarget = 900;
-	const qPerFullDay = (24*60*60)/energy.regeneration.seconds; // 48
+	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? 1); // 48
 	const qPerBoost = 50;
 
 	let energyMessage = "You can guarantee a legendary crew retrieval now!";
@@ -162,7 +180,7 @@ const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
-		return ((target-quantity)*energy.regeneration.seconds)+energy.regenerated_at;
+		return ((target-quantity)*(energy.regeneration.seconds ?? 0))+energy.regenerated_at;
 	}
 
 	function formatTime(seconds: number): string {
@@ -175,27 +193,41 @@ const RetrievalEnergy = (props: RetrievalEnergyProps) => {
 };
 
 type RetrievalFormProps = {
-	ownedPolestars: any[];
-	allCrew: any[];
-	allKeystones: undefined | any[];
-	myCrew: any;
+	ownedPolestars: Polestar[];
+	allCrew: PlayerCrew[];
+	allKeystones: KeystoneBase[];
+	myCrew: PlayerCrew[];
+	playerData: PlayerData;
 };
 
 const RetrievalForm = (props: RetrievalFormProps) => {
 	const { ownedPolestars, allCrew, allKeystones, myCrew } = props;
 
-	const [disabledPolestars, setDisabledPolestars] = useStateWithStorage('crewretrieval/disabledPolestars', []);
-	const [addedPolestars, setAddedPolestars] = useStateWithStorage('crewretrieval/addedPolestars', []);
+	const [disabledPolestars, setDisabledPolestars] = useStateWithStorage<number[]>('crewretrieval/disabledPolestars', []);
+	const [addedPolestars, setAddedPolestars] = useStateWithStorage<string[]>('crewretrieval/addedPolestars', []);
 	const [ownedFilter, setOwnedFilter] = useStateWithStorage('crewretrieval/ownedFilter', ownedFilterOptions[0].value);
-	const [minRarity, setMinRarity] = useStateWithStorage('crewretrieval/minRarity', null);
-	const [collection, setCollection] = useStateWithStorage('crewretrieval/collection', null);
+	const [minRarity, setMinRarity] = useStateWithStorage<number | null>('crewretrieval/minRarity', null);
+	const [collection, setCollection] = useStateWithStorage<string | null>('crewretrieval/collection', null);
 
-	const [polestars, setPolestars] = React.useState([]);
-	const [data, setData] = React.useState(null);
+	const [polestars, setPolestars] = React.useState<Polestar[] | null>(null);
+	const [data, setData] = React.useState<PlayerCrew[] | null>(null);
+	const { playerData } = props;
+	const [algo, setAlgo] = React.useState<string>('quick');
+	const algos =
+	[{
+		key: "quick",
+		value:"quick",
+		text:"Simple Exhaustion (Fast)"
+	},
+	{
+		key: "slow",
+		value:"slow",
+		text:"Deep Recursion (Slow)"
+	}];
 
 	// Update polestar list on filter, prospect change
 	React.useEffect(() => {
-		let filtered = JSON.parse(JSON.stringify(ownedPolestars));
+		let filtered = JSON.parse(JSON.stringify(ownedPolestars)) as Polestar[];
 		filtered = filtered.filter((p) => disabledPolestars.indexOf(p.id) === -1);
 		addedPolestars.forEach((prospect) => {
 			let existing = filtered.find(polestar => polestar.symbol === prospect);
@@ -204,11 +236,11 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				existing.quantity++;
 			}
 			else {
-				let keystone = allKeystones.find(k => k.symbol === prospect);
-				filtered.push({...keystone, quantity: 1, loaned: 1});
+				let keystone = allKeystones?.find(k => k.symbol === prospect);
+				filtered.push({...keystone, quantity: 1, loaned: 1} as Polestar);
 			}
 		});
-		setPolestars([...filtered]);
+		if (filtered) setPolestars([...filtered]);
 	}, [disabledPolestars, addedPolestars]);
 
 	// Update dataset on any form change
@@ -216,14 +248,14 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 		let retrievable = allCrew.filter(
 			(crew) => crew.unique_polestar_combos?.some(
 				(upc) => upc.every(
-					(trait) => polestars.some(op => filterTraits(op, trait))
+					(trait) => polestars?.some(op => filterTraits(op, trait))
 				)
 			)
 		);
 
 		retrievable = retrievable.filter(ownedFilters[ownedFilter](myCrew));
 		if (ownedFilterOptions[2].value === ownedFilter) {
-			retrievable = retrievable.filter(crew => crew.max_rarity > crew.highest_owned_rarity);
+			retrievable = retrievable.filter(crew => (crew.max_rarity ?? 0) > (crew?.highest_owned_rarity ?? 0));
 		}
 
 		if (minRarity) {
@@ -233,6 +265,23 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 		if (collection) {
 			retrievable = retrievable.filter((crew) => crew.collections.indexOf(collection) !== -1);
 		}
+		retrievable = JSON.parse(JSON.stringify(retrievable)) as PlayerCrew[];
+		retrievable.forEach(ret => {
+			let mc = myCrew.find(m => m.symbol === ret.symbol);
+			if (mc) {
+				ret.level = mc.level;
+				ret.base_skills = JSON.parse(JSON.stringify(mc.base_skills)) as BaseSkills;
+				ret.rarity = mc.rarity;
+				ret.max_rarity = mc.max_rarity;
+				ret.immortal = mc.immortal;
+			}
+			else {
+				ret.rarity = ret.max_rarity;
+				ret.highest_owned_rarity = 0;
+				ret.highest_owned_level = 0;
+				ret.immortal = CompletionState.DisplayAsImmortalUnowned;
+			}
+		});
 
 		setData([...retrievable]);
 	}, [polestars, ownedFilter, minRarity, collection]);
@@ -267,15 +316,30 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 						value={collection}
 						onChange={(e, { value }) => setCollection(value)}
 					/>
+					<div style={{
+						display: "flex",
+						flexDirection: "column",
+					}}>
+						<h4 style={{marginLeft: "1em" }}>
+							Calculation Method<AlgoExplain />
+						</h4>
+						<Dropdown
+								style={{ marginLeft: '1em' }}
+								options={algos}
+								value={algo}
+								onChange={(e, v) => setAlgo(v.value as string)}
+							/>
+
+					</div>
 				</Form.Group>
 			</Form>
-			<CrewTable data={data} polestars={polestars} />
+		 	{data && polestars && <CrewTable algo={algo} setAlgo={setAlgo} allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
 		</React.Fragment>
 	);
 };
 
 type PolestarFilterModalProps = {
-	ownedPolestars: any[];
+	ownedPolestars: Polestar[];
 	disabledPolestars: number[];
 	updateDisableds: (disabledPolestars: number[]) => void;
 };
@@ -298,17 +362,17 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 	const grouped = [
 		{
 			title: "Rarity",
-			polestars: [],
+			polestars: [] as Polestar[],
 			anyDisabled: false
 		},
 		{
 			title: "Skills",
-			polestars: [],
+			polestars: [] as Polestar[],
 			anyDisabled: false
 		},
 		{
 			title: "Traits",
-			polestars: [],
+			polestars: [] as Polestar[],
 			anyDisabled: false
 		},
 	];
@@ -342,7 +406,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 		</Modal>
 	);
 
-	function filterCheckbox(p: any): JSX.Element {
+	function filterCheckbox(p: Polestar): JSX.Element {
 		return (
 			<Grid.Column key={p.id}>
 				<Checkbox
@@ -350,7 +414,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 					id={`polestar_filter_id_${p.id}`}
 					label={`${p.short_name} (${p.quantity})`}
 					checked={disabledPolestars.indexOf(p.id)===-1}
-					onChange={(e) => checkOne(p.id, e.target.checked)}
+					onChange={(e) => checkOne(p.id, (e.target as HTMLInputElement).checked)}
 				/>
 			</Grid.Column>
 		)
@@ -358,7 +422,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 
 	function filterCheckboxGroupHeader(t: string): JSX.Element {
 		let group = grouped.find(group => group.title === t);
-		let groupLink = group ? (<Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group.anyDisabled)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>): (<></>);
+		let groupLink = (group ? (<Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group?.anyDisabled ?? true)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>) : (<></>));
 		return (
 			<Grid.Column largeScreen={16} mobile={4} key={t}>
 				<strong>{t}</strong> {groupLink}
@@ -367,7 +431,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 	}
 
 	function createFilterCheckboxes(): JSX.Element[] {
-		const checkboxes = [];
+		const checkboxes = [] as JSX.Element[];
 		grouped.map((group) => {
 			if(group.polestars.length > 0) {
 				checkboxes.push(filterCheckboxGroupHeader(group.title));
@@ -386,7 +450,7 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 
 	function checkGroup(t: string, checkAll: boolean): void {
 		let group = grouped.find(group => group.title === t);
-		group.polestars.forEach(p => handleFilterChange(p.id, checkAll));
+		group?.polestars.forEach(p => handleFilterChange(p.id, checkAll));
 		setDisabledPolestars([...disabledPolestars]);
 	}
 
@@ -401,34 +465,34 @@ const PolestarFilterModal = (props: PolestarFilterModalProps) => {
 };
 
 type PolestarProspectModalProps = {
-	ownedPolestars: any[];
-	addedPolestars: any[];
-	allKeystones: undefined | any[];
-	allCrew: any[];
-	updateProspects: (prospects: any[]) => void;
+	ownedPolestars: Polestar[];
+	addedPolestars: string[];
+	allKeystones: KeystoneBase[];
+	allCrew: CrewMember[];
+	updateProspects: (prospects: string[]) => void;
 };
 
 const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	const { ownedPolestars, allCrew, updateProspects } = props;
 
-	const [addedPolestars, setAddedPolestars] = React.useState(props.addedPolestars);
+	const [addedPolestars, setAddedPolestars] = React.useState<string[]>(props.addedPolestars ?? []);
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [activeCrew, setActiveCrew] = React.useState('');
 	const [activeConstellation, setActiveConstellation] = React.useState('');
-	const [activePolestar, setActivePolestar] = React.useState('');
+	const [activePolestar, setActivePolestar] = React.useState<string>('');
 
-	const [allKeystones, setAllKeystones] = React.useState(undefined);
-	const [control, setControl] = React.useState([]);
+	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[]>([]);
+	const [control, setControl] = React.useState([] as CrewMember[]);
 	const [crewCrates, setCrewCrates] = React.useState(0);
-	const [ownedConstellations, setOwnedConstellations] = React.useState([]);
+	const [ownedConstellations, setOwnedConstellations] = React.useState<Constellation[]>([]);
 
 	React.useEffect(() => {
 		if (allKeystones) {
 			// Chances assume you can't get rarity, skill constellations from scans
 			setCrewCrates(allKeystones.filter(k => k.type == 'crew_keystone_crate').length);
-			const owned = allKeystones.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.quantity > 0)
-				.sort((a, b) => a.name.localeCompare(b.name));
+			const owned = allKeystones.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && (k.quantity ?? 0) > 0)
+				.sort((a, b) => a.name.localeCompare(b.name)).map(ks => ks as Constellation);
 			setOwnedConstellations([...owned]);
 		}
 	}, [allKeystones]);
@@ -436,7 +500,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	// Recalculate combos only when modal gets closed
 	React.useEffect(() => {
 		if (!modalIsOpen) {
-			updateProspects([...addedPolestars]);
+			updateProspects([...addedPolestars ?? []]);
 		}
 	}, [modalIsOpen]);
 
@@ -445,7 +509,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			open={modalIsOpen}
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
-			trigger={<Button><Icon name='add' />{addedPolestars.length}</Button>}
+			trigger={<Button><Icon name='add' />{addedPolestars?.length}</Button>}
 			size='large'
 		>
 			<Modal.Header>Add Prospective Polestars</Modal.Header>
@@ -462,7 +526,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	function renderContent(): JSX.Element {
 		if (!modalIsOpen) return (<></>);
 
-		if (!allKeystones) {
+		if (!allKeystones || !allKeystones.length) {
 			calculateKeystoneOdds();
 			calculateControl();
 			return (<></>);
@@ -475,17 +539,20 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 	}
 
 	function calculateKeystoneOdds(): void {
-		const allkeystones = JSON.parse(JSON.stringify(props.allKeystones));
+		const allkeystones = JSON.parse(JSON.stringify(props.allKeystones)) as KeystoneBase[];
+
+		const [constellations, keystones] = categorizeKeystones(allkeystones);
+
 		let totalCrates = 0, totalDrops = 0;
-		allkeystones.forEach(keystone => {
+		constellations.forEach(keystone => {
 			if (keystone.type == 'crew_keystone_crate') {
 				totalCrates++;
 				totalDrops += keystone.keystones.length;
 			}
 		});
-		allkeystones.filter(k => k.type == 'keystone').forEach(polestar => {
-			const crates = allkeystones.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones.includes(polestar.id));
-			const nochance = polestar.filter.type == 'rarity' || polestar.filter.type == 'skill' || crates.length == 0;
+		keystones.filter(k => k.type == 'keystone').forEach(polestar => {
+			const crates = constellations.filter(k => (k.type == 'crew_keystone_crate' || k.type == 'keystone_crate') && k.keystones.includes(polestar.id));
+			const nochance = polestar.filter?.type == 'rarity' || polestar.filter?.type == 'skill' || crates.length == 0;
 			polestar.crate_count = nochance ? 0 : crates.length;
 			//polestar.scan_odds = nochance ? 0 : crates.length/totalDrops; // equal chance of dropping
 			polestar.scan_odds = nochance ? 0 : crates.reduce((prev, curr) => prev + (1/curr.keystones.length), 0)/totalCrates; // conditional probability
@@ -493,12 +560,21 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.quantity, 0);
 			polestar.owned_best_odds = owned.length == 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
 			polestar.owned_total_odds = owned.length == 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.quantity), 1);
-			if (polestar.filter.type === 'rarity')
-				polestar.crew_count = allCrew.filter(c => c.in_portal && c.max_rarity == polestar.filter.rarity).length;
-			else if (polestar.filter.type === 'skill')
-				polestar.crew_count = allCrew.filter(c => c.in_portal && c.base_skills[polestar.filter.skill]).length;
-			else if (polestar.filter.type === 'trait')
-				polestar.crew_count = allCrew.filter(c => c.in_portal && c.traits.some(trait => trait === polestar.filter.trait)).length;
+
+			if (polestar.filter) {
+				if (polestar.filter.type === 'rarity') {
+					polestar.crew_count = allCrew.filter(c => c.in_portal && c.max_rarity == polestar.filter?.rarity).length;
+				}
+				else if (polestar.filter.type === 'skill' && polestar.filter.skill) {
+					polestar.crew_count = allCrew.filter(c => c.in_portal && c.base_skills[polestar.filter?.skill as string]).length;
+				}
+
+				else if (polestar.filter.type === 'trait' && polestar.filter.trait) {
+					polestar.crew_count = allCrew.filter(c => c.in_portal && c.traits.some(trait => trait === polestar.filter?.trait as string)).length;
+				}
+
+			}
+
 		});
 		setAllKeystones([...allkeystones]);
 	}
@@ -526,15 +602,20 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 			});
 
 		// !! Always filter polestars by crew_count to hide deprecated polestars !!
-		let data = allKeystones.filter(k => k.type == 'keystone' && k.crew_count > 0);
+		let [constellations, data] = categorizeKeystones(allKeystones);
 		if (activeCrew != '') {
 			const crew = allCrew.find(c => c.symbol === activeCrew);
-			data = data.filter(k => (k.filter.type == 'trait' && crew.traits.includes(k.filter.trait))
-				|| (k.filter.type == 'rarity' && k.filter.rarity == crew.max_rarity)
-				|| (k.filter.type == 'skill' && k.filter.skill in crew.base_skills));
+			if (crew) {
+				data = data.filter(k => (k.filter?.type == 'trait' && k.filter.trait && crew.traits.includes(k.filter.trait))
+				|| (k.filter?.type == 'rarity' && k.filter.rarity == crew.max_rarity)
+				|| (k.filter?.type == 'skill' && k.filter.skill && crew.base_skills[k.filter.skill] !== undefined));
+			}
+			else {
+				data = [];
+			}
 		}
 		if (activeConstellation != '') {
-			const crewKeystones = allKeystones.find(k => k.symbol === activeConstellation).keystones;
+			const crewKeystones = constellations.find(k => k.symbol === activeConstellation)?.keystones ?? [];
 			data = data.filter(k => crewKeystones.includes(k.id));
 		}
 		data.forEach(p => {
@@ -554,7 +635,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 							clearable
 							options={constellationList}
 							value={activeConstellation}
-							onChange={(e, { value }) => setAsActive('constellation', value) }
+							onChange={(e, { value }) => setAsActive('constellation', value as string) }
 						/>
 					</React.Fragment>
 				)}
@@ -564,7 +645,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 					<SearchableTable
 						data={data}
 						config={polestarTable}
-						renderTableRow={(polestar, idx) => renderPolestarRow(polestar, idx)}
+						renderTableRow={(polestar, idx) => renderPolestarRow(polestar, idx ?? -1)}
 						filterRow={(polestar, filter) => filterText(polestar, filter)}
 						explanation={
 							<div>
@@ -582,7 +663,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function filterText(polestar: any, filters: []): boolean {
+	function filterText(polestar: Polestar, filters: Filter[]): boolean {
 		if (filters.length == 0) return true;
 
 		const matchesFilter = (input: string, searchString: string) =>
@@ -592,9 +673,9 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 
 		for (let filter of filters) {
 			let meetsAllConditions = true;
-			if (filter.conditionArray.length === 0) {
+			if (filter.conditionArray?.length === 0) {
 				// text search only
-				for (let segment of filter.textSegments) {
+				for (let segment of filter.textSegments ?? []) {
 					let segmentResult = matchesFilter(polestar.name, segment.text);
 					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
 				}
@@ -608,7 +689,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		return meetsAnyCondition;
 	}
 
-	function renderPolestarRow(polestar: any, idx: number): JSX.Element {
+	function renderPolestarRow(polestar: Polestar, idx: number): JSX.Element {
 		return (
 			<Table.Row key={polestar.symbol}
 				style={{ cursor: activePolestar != polestar.symbol ? 'zoom-in' : 'zoom-out' }}
@@ -632,9 +713,9 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.crew_count}</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.crate_count/crewCrates*100).toFixed(1)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.scan_odds*100).toFixed(2)}%</Table.Cell>
-				<Table.Cell textAlign='center'>{(polestar.owned_best_odds*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.crate_count ?? 0)/crewCrates*100).toFixed(1)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.scan_odds ?? 0)*100).toFixed(2)}%</Table.Cell>
+					<Table.Cell textAlign='center'>{((polestar.owned_best_odds ?? 0)*100).toFixed(1)}%</Table.Cell>
 				<Table.Cell textAlign='center'>{polestar.quantity}</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
@@ -643,11 +724,11 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function renderCrewMessage(data: any[]): JSX.Element {
+	function renderCrewMessage(data: Polestar[]): JSX.Element {
 		if (activeCrew == '') return (<></>);
 
 		const crew = allCrew.find(c => c.symbol === activeCrew);
-
+		if (!crew) return (<div>error</div>);
 		if (!crew.in_portal)
 			return (<Message>{crew.name} is not available by crew retrieval.</Message>);
 
@@ -658,7 +739,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		if (unownedPolestars.length == 0)
 			return (<Message>You can already retrieve {crew.name} with the polestars in your inventory.</Message>);
 
-		crew.unique_polestar_combos.forEach(upc => {
+		crew.unique_polestar_combos?.forEach(upc => {
 			const needs = unownedPolestars.filter(p => upc.some(trait => filterTraits(p, trait)));
 			needs.forEach(p => {
 				p.useful = p.useful ? p.useful + 1: 1;
@@ -669,10 +750,10 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		// "Useful" polestars are all unowned polestars that unlock retrievals by themselves (i.e. `useful_alone`)
 		//	or other unowned polestars that together unlock retrievals WITHOUT also relying on a `useful_alone` polestar
 		const usefulPolestars = unownedPolestars.filter(p => p.useful_alone ||
-			crew.unique_polestar_combos.filter(upc => !upc.some(trait =>
+			crew.unique_polestar_combos?.filter(upc => !upc.some(trait =>
 				unownedPolestars.filter(p => p.useful_alone).some(p => filterTraits(p, trait))
 			)).some(upc => upc.some(trait => filterTraits(p, trait))))
-			.sort((a, b) => b.useful - a.useful);
+			.sort((a, b) => (b.useful ?? 0) - (a.useful ?? 0));
 
 		const showUsefulPolestars = () => {
 			if (usefulPolestars.length == 0)
@@ -692,7 +773,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 
 		// "Usable" constellations are owned constellations that include useful polestars
 		const showUsableConstellations = () => {
-			const usablePolestars = usefulPolestars.filter(p => p.owned_crate_count > 0);
+			const usablePolestars = usefulPolestars.filter(p => (p.owned_crate_count ?? 0) > 0);
 			if (usablePolestars.length == 0) return (<></>);
 
 			const constellations = ownedConstellations.filter(k => k.keystones.some(kId => usablePolestars.find(p => p.id === kId)));
@@ -701,8 +782,8 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 
 			return usablePolestars.sort((a, b) => {
 					if (b.owned_total_odds == a.owned_total_odds)
-						return b.owned_best_odds - a.owned_best_odds;
-					return b.owned_total_odds - a.owned_total_odds;
+						return (b.owned_best_odds ?? 0) - (a.owned_best_odds ?? 0);
+					return (b.owned_total_odds ?? 0) - (a.owned_total_odds ?? 0);
 				}).map(p =>
 					renderConstellationsWithPolestar(p)
 				);
@@ -716,34 +797,42 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function renderPolestarsInline(polestars: any[]): JSX.Element[] {
-		return polestars.map((p, pdx) => (
+	function renderPolestarsInline(polestars: Polestar[]): JSX.Element[] {
+		var mp = polestars.map((p, pdx) => (
 				<span key={pdx} onClick={() => setActivePolestar(p.symbol) }>
 					<b>{p.short_name}</b>{pdx < polestars.length-1 ? ',' : ''}
 				</span>
-				))
-			.reduce((prev, curr) => [prev, ' ', curr]);
+				));
+
+		let retval: JSX.Element[] = [];
+		let i = 0;
+		for (var cm of mp) {
+			if (i++) retval.push(<> </>);
+			retval.push(cm);
+		}
+
+		return retval;
 	}
 
-	function renderConstellationMessage(data: any[]): JSX.Element {
+	function renderConstellationMessage(data: Polestar[]): JSX.Element {
 		if (activeConstellation == '') return (<></>);
 
-		const constellation = allKeystones.find(k => k.symbol === activeConstellation);
+		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as Constellation | undefined;
 
 		const unownedPolestars = data.filter(p => p.quantity === 0);
 
 		if (unownedPolestars.length == 0)
-			return (<Message>You already own all polestars in the {constellation.name}.</Message>);
+			return (<Message>You already own all polestars in the {constellation?.name}.</Message>);
 
 		return (
 			<Message>
-				{renderPolestarsFromConstellation(constellation, unownedPolestars)}
+				{constellation && renderPolestarsFromConstellation(constellation, unownedPolestars)}
 			</Message>
 		);
 	}
 
 	function renderPolestarDetail(): JSX.Element {
-		const polestar = allKeystones.find(k => k.symbol === activePolestar);
+		const polestar = allKeystones.find(k => k.symbol === activePolestar) as Polestar ?? {} as Polestar;
 		polestar.loaned = addedPolestars.filter(added => added === polestar.symbol).length;
 
 		return (
@@ -764,13 +853,13 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						{renderPolestarRow(polestar, 1)}
 					</Table.Body>
 				</Table>
-				{polestar.owned_crate_count > 0 && (<Message>{renderConstellationsWithPolestar(polestar)}</Message>)}
+				{(polestar.owned_crate_count ?? 0) > 0 && (<Message>{renderConstellationsWithPolestar(polestar)}</Message>)}
 				{renderNewRetrievals(polestar)}
 			</div>
 		);
 	}
 
-	function renderPolestarsFromConstellation(constellation: any, polestars: any[]): JSX.Element {
+	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): JSX.Element {
 		const clarify = activeCrew != '' ? 'a needed' : 'an unowned';
 
 		return (
@@ -792,8 +881,8 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function renderConstellationsWithPolestar(polestar: any): JSX.Element {
-		const constellations = [];
+	function renderConstellationsWithPolestar(polestar: Polestar): JSX.Element {
+		const constellations = [] as Constellation[];
 		ownedConstellations.filter(k => k.keystones.includes(polestar.id))
 			.forEach(k => {
 				for (let i = 0; i < k.quantity; i++) {
@@ -810,15 +899,15 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						<span key={kdx} onClick={() => setAsActive('constellation', k.symbol) }>
 							<b>{k.name}</b> ({(1/k.keystones.length*100).toFixed(1)}%){kdx < constellations.length-1 ? ' or ' : ''}
 						</span>
-					)).reduce((prev, curr) => [prev, ' ', curr])
+					)).reduce((prev, curr) => <>{prev}&nbsp;{curr}</>)
 				}{` `}
 				for a chance of acquiring the <b><span onClick={() => setActivePolestar(polestar.symbol)}>{polestar.name}</span></b>
-				{constellations.length > 1 && (<span>; open all for a <b>{(polestar.owned_total_odds*100).toFixed(1)}%</b> chance</span>)}
+				{constellations.length > 1 && (<span>; open all for a <b>{((polestar.owned_total_odds ?? 0) * 100).toFixed(1)}%</b> chance</span>)}
 			</p>
 		);
 	}
 
-	function renderNewRetrievals(polestar: any): JSX.Element {
+	function renderNewRetrievals(polestar: Polestar): JSX.Element {
 		const ownedPlus = JSON.parse(JSON.stringify(ownedPolestars));
 		ownedPlus.push({...polestar, quantity: 1});
 		const newRetrievables = getRetrievable(control, ownedPlus).filter(c => c.in_portal);
@@ -841,7 +930,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 								src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 								size={64}
 								maxRarity={crew.max_rarity}
-								rarity={crew.highest_owned_rarity}
+								rarity={crew.highest_owned_rarity ?? 0}
 							/>
 							<div>{crew.name}</div>
 						</Grid.Column>
@@ -851,11 +940,11 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 		);
 	}
 
-	function getRetrievable(crewpool: any[], polestars: any[]): any[] {
+	function getRetrievable(crewpool: (CrewMember | PlayerCrew)[], polestars: Polestar[]): PlayerCrew[] {
 		return crewpool.filter(crew =>
 			crew.unique_polestar_combos?.some(upc =>
 				upc.every(trait => polestars.some(op => filterTraits(op, trait)))
-			));
+			))?.map(crew => crew as PlayerCrew) ?? [];
 	}
 
 	function setAsActive(activeType: string, activeValue: string): void {
@@ -881,7 +970,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 };
 
 type CrewPickerProps = {
-	crew: any[];
+	crew: CrewMember[];
 	value: string;
 	updateCrew: (symbol: string) => void;
 }
@@ -889,7 +978,7 @@ type CrewPickerProps = {
 const CrewPicker = (props: CrewPickerProps) => {
 	const { updateCrew } = props;
 
-	const [options, setOptions] = React.useState(undefined);
+	const [options, setOptions] = React.useState<RetrievalOptions | null>(null);
 
 	React.useEffect(() => {
 		if (props.value != '' && options && !options.initialized)
@@ -912,15 +1001,16 @@ const CrewPicker = (props: CrewPickerProps) => {
 			options={options.list}
 			value={props.value}
 			onFocus={() => { if (!options.initialized) populateOptions(); }}
-			onChange={(e, { value }) => updateCrew(value) }
+			onChange={(e, { value }) => updateCrew(value as string) }
 		/>
 	);
 
 	function populatePlaceholders(): void {
-		const options = { initialized: false, list: [] };
+		const options: RetrievalOptions = { initialized: false, list: [] };
 		if (props.value != '') {
 			const c = props.crew.find(c => c.symbol === props.value);
-			options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
+			if (c) options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
+			else options.list = [{ key: 0, value: 0, text: 'Loading...' }];
 		}
 		else {
 			options.list = [{ key: 0, value: 0, text: 'Loading...' }];
@@ -930,11 +1020,13 @@ const CrewPicker = (props: CrewPickerProps) => {
 
 	function populateOptions(): void {
 		let crewList = [...props.crew];
-		options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-			return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
-		});
-		options.initialized = true;
-		setOptions({...options});
+		let newOptions: RetrievalOptions = {
+			list: crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
+				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+			}),
+			initialized: true
+		}
+		setOptions(newOptions);
 	}
 };
 
@@ -969,15 +1061,48 @@ const ProspectInventory = (props: ProspectInventoryProps) => {
 };
 
 type CrewTableProps = {
-	data: any[];
-	polestars: any[];
+	data: PlayerCrew[];
+	polestars: Polestar[];
+	playerData: PlayerData;
+	allCrew: CrewMember[]
+	algo: string;
+	setAlgo: (value: string) => void;
+};
+
+const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
+	const comboCount = props.comboCount;
+	let pt: number | undefined = undefined;
+	let st: string | undefined = undefined;
+
+	if (comboCount){
+		pt = Math.floor(comboCount);
+		st = pt.toLocaleString();
+	}
+
+	const text = (<>
+	<p></p>
+		{comboCount !== undefined && <p>There are up to <span style={{ fontWeight: 'bold', color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)}}>{st}</span> polestar combinations to retrieve this crew, assuming 5 fuses are possible.</p>}
+		<p>There are two different ways to compute possible polestar combinations:</p>
+		<ul>
+		<li style={{marginBottom: '8px'}}><b>Simple exhaustion</b> runs through the number of times you can retrieve each crew member until you are out of polestars.</li>
+		<li><b>Deep recursion</b> calculates <i>every possible</i> polestar combination for a given crew and desired number of fuses.</li>
+		</ul>
+		{(comboCount !== undefined && comboCount >= RECURSION_FORBID) && (<p style={{fontWeight: 'bold', color: 'tomato'}}>The deep recursion method is <b>not available</b> for this crew member.</p>)}
+		{(comboCount !== undefined && comboCount < RECURSION_FORBID && comboCount >= RECURSION_WARN) && (<p style={{fontWeight: 'bold', color: 'orange'}}>Using the deep recursion method is <b>not advised</b> for this crew member.</p>)}
+
+	</>)
+
+	return (<Popup wide size='large' trigger={<Icon name="help" />} header={'Combo Calculations'} content={text}/>)
 };
 
 const CrewTable = (props: CrewTableProps) => {
 	const { data, polestars } = props;
+	const { allCrew, algo, setAlgo } = props;
+	const [activeCrew, setActiveCrew] = React.useState<string | null>(null);
+	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
+	const { playerData } = props;
 
-	const [activeCrew, setActiveCrew] = React.useState(null);
-	const [activeCollections, setActiveCollections] = React.useState(null);
+	const dataContext = React.useContext(MergedContext);
 
 	if (!data) return (<></>);
 
@@ -990,19 +1115,28 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
 		{ width: 1, title: 'Useable Combos' }
 	];
-
+	const buffConfig = calculateBuffConfig(props.playerData.player);
 	return (
+		<>
 		<SearchableTable
 			id={"crewretrieval"}
 			data={data}
 			config={tableConfig}
-			renderTableRow={(crew, idx) => renderTableRow(crew, idx)}
-			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType)}
+			renderTableRow={(crew, idx) => renderTableRow(crew, idx ?? 0, playerData)}
+			filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 			showFilterOptions={true}
 		/>
+		<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='retrievalGroup' />
+
+		</>
 	);
 
-	function renderTableRow(crew: any, idx: number): JSX.Element {
+
+
+	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
+		const buffConfig = dataContext.buffConfig;
+		const [comboCount, ] = getCombos(crew);
+
 		return (
 			<Table.Row key={idx}>
 				<Table.Cell>
@@ -1015,7 +1149,9 @@ const CrewTable = (props: CrewTableProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
+								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
@@ -1031,7 +1167,7 @@ const CrewTable = (props: CrewTableProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 					<b>{crew.cab_ov}</b><br />
-					<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+					<small>{rarityLabels[parseInt(crew.max_rarity?.toString())-1]} #{crew.cab_ov_rank}</small>
 				</Table.Cell>
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'none' : 'table-cell' }}>
 					<b>#{crew.ranks.voyRank}</b><br />
@@ -1046,20 +1182,33 @@ const CrewTable = (props: CrewTableProps) => {
 				<Table.Cell textAlign="center" style={{ display: activeCrew === crew.symbol ? 'table-cell' : 'none' }}
 					colSpan={activeCrew === crew.symbol ? 4 : undefined}
 				>
-					{showCombosForCrew(crew)}
+					{showCombosForCrew(crew, algo)}
 				</Table.Cell>
-				<Table.Cell textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
+				<Table.Cell width='2' textAlign="center" style={{ cursor: activeCrew === crew.symbol ? 'zoom-out' : 'zoom-in' }}
 					onClick={(e) => { setActiveCrew(activeCrew === crew.symbol ? null : crew.symbol); e.stopPropagation(); }}
 				>
-					{activeCrew === crew.symbol ? 'Hide' : 'View'}
+					<div style={{
+						display: "flex",
+						flexDirection:"column",
+						justifyItems: "center"
+					}}>
+
+						<div style={{
+							cursor: "pointer",
+							color: (comboCount >= RECURSION_FORBID) ? 'tomato' : ((comboCount >= RECURSION_WARN) ? 'orange' : undefined)
+							}}
+							>
+							{activeCrew === crew.symbol ? 'Hide' : 'View'}
+							<AlgoExplain comboCount={comboCount} />
+						</div>
+
+						</div>
 				</Table.Cell>
 			</Table.Row>
 		);
 	}
 
-	function showCombosForCrew(crew: any): JSX.Element {
-		if (activeCrew !== crew.symbol) return (<></>);
-
+	function getCombos(crew: CrewMember, returnCombos?: boolean, knownGroups?: number): [number, (Polestar | undefined)[][] | undefined] {
 		let combos = crew.unique_polestar_combos?.filter(
 			(upc) => upc.every(
 				(trait) => polestars.some(op => filterTraits(op, trait))
@@ -1067,18 +1216,178 @@ const CrewTable = (props: CrewTableProps) => {
 		).map((upc) => upc.map((trait) => polestars.find((op) => filterTraits(op, trait))));
 
 		// Exit here if activecrew has 0 combos after changing filters
-		if (combos.length == 0) return (<></>);
+		if (!combos || !(combos?.length)) return [0, combos];
+		/*
+			(n+r-1)!
+			(n-1)! r!
+		*/
+		let dn = combos.length;
 
-		let fuseGroups = groupByFuses(combos, 0, []);
+		let n = combos.length;
+		let r = knownGroups ?? 5;
 
+		let result: number;
+
+		result = factorial(n) / (factorial(n - r) * factorial(r));
+		if (result < n) result = n * 5;
+		return [result, combos];
+	}
+	function factorial(number: number) {
+		let result = 1;
+		for (let i = 1; i <= number; i++) {
+			result *= i;
+		}
+		return result;
+	}
+
+	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
+		if (activeCrew !== crew.symbol) return (<></>);
+
+		let [comboCount, combos] = getCombos(crew, true);
+
+		// Exit here if activecrew has 0 combos after changing filters
+		if (!combos || !(combos?.length)) return (<></>);
+
+		let fuseGroups: FuseGroups;
+
+		if (comboCount < RECURSION_FORBID && algo === 'slow') {
+			fuseGroups = groupByFuses(combos, 0, []);
+		}
+		else {
+			fuseGroups = groupByFusesShort(combos, 0, []);
+		}
 		return (<ComboGrid crew={crew} combos={combos} fuseGroups={fuseGroups} />);
 	}
 
-	function groupByFuses(combos: any[], start: number, group: number[]): any {
-		const fuseGroups = {};
+	interface ComboTrack {
+		id: number,
+		quantity: number,
+		used: number
+	}
+
+	function dingCT(lh: ComboTrack[], rh: ComboTrack[]) {
+		for (let lv of lh) {
+			for (let rv of rh) {
+				if (lv.id === rv.id) {
+					if (lv.used + 1 > lv.quantity) return false;
+					lv.used++;
+					break;
+				}
+			}
+		}
+
+		for (let rv of rh) {
+			if (!lh.some(v => v.id === rv.id)) {
+				lh.push(rv);
+			}
+		}
+
+		return true;
+	}
+
+	// WORK IN PROGRESS, DO NOT DELETE COMMENTED CODE!
+	function groupByFusesShort(combos: (Polestar | undefined)[][], unused: number, unused2: number[]) {
+		let groupTotals: { groupId: number, total: number }[] = [];
+		let x = 0;
+
+		for (let combo of combos) {
+			let map = combo.map(cb => cb?.quantity ?? 0);
+			map.sort((a, b) => a - b);
+			let total = map[0];
+			groupTotals.push({ groupId: x++, total: total });
+		}
+
+		let duplications: number[] = []
+		let seen: boolean[] = [];
+
+		for (let total of groupTotals) {
+			for (let i = 0; i < total.total; i++) {
+				duplications.push(total.groupId);
+			}
+		}
+
+		let comboout: number[][][] = [[], [], [], [], [], []];
+
+		let fn = combos.length < 5 ? combos.length : 5;
+		for (let f = 1; f <= fn; f++) {
+			seen = duplications.map(d => false);
+			let option = 0;
+
+			for (let n = 0; n < duplications.length; n++) {
+				comboout[f].push([duplications[n]]);
+				let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
+
+				let cc = 1;
+				seen[n] = true;
+
+				for (let y = 0; y < duplications.length; y++) {
+					if (seen[y]) continue;
+					let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: z?.quantity, used: 1 } as ComboTrack });
+					if (!dingCT(ps, xs)) continue;
+
+					comboout[f][option].push(duplications[y]);
+					seen[y] = true;
+
+					cc++;
+					if (cc >= f) break;
+				}
+
+				option++;
+			}
+		}
+
+		let result: FuseGroups = {};
+
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			result[key] = [] as number[][];
+
+			for (let res of comboout[f]) {
+				if (res.length === f) {
+					result[key].push(res);
+				}
+			}
+
+			for (let res of result[key]) {
+				res.sort((a, b) => a - b);
+			}
+		}
+
+		for (let f = 1; f <= 5; f++) {
+			let key = "x" + f;
+			let strres = result[key].map(m => JSON.stringify(m));
+			strres = strres.filter((s, i) => strres.indexOf(s) === i);
+
+			let numres = strres.map(s => JSON.parse(s) as number[]);
+			numres.sort((a, b) => {
+				let r = countCombos(a, combos) - countCombos(b, combos);
+				if (r === 0) {
+					for (let i = 0; i < a.length; i++) {
+						r = a[i] - b[i];
+						if (r) return r;
+					}
+				}
+				return r;
+			})
+			result[key] = numres;
+		}
+		return result;
+	}
+
+	function countCombos(keys: number[], combos: (Polestar | undefined)[][]) {
+		let res = 0;
+		for (let key of keys) {
+			res += combos[key].length;
+		}
+		return res;
+	}
+
+	function groupByFuses(combos: (Polestar | undefined)[][], start: number, group: number[]): FuseGroups {
+		const fuseGroups: FuseGroups = {};
 		const consumed = {};
 		group.forEach((comboId) => {
 			combos[comboId].forEach((polestar) => {
+				if (polestar === undefined) return;
 				if (consumed[polestar.symbol])
 					consumed[polestar.symbol]++;
 				else
@@ -1089,7 +1398,8 @@ const CrewTable = (props: CrewTableProps) => {
 			if (comboId >= start) {
 				let consumable = 0;
 				combo.forEach((polestar) => {
-					if (!consumed[polestar.symbol] || polestar.quantity-consumed[polestar.symbol] >= 1)
+					if (polestar === undefined) return;
+					if (consumed[polestar.symbol] === undefined || polestar.quantity-consumed[polestar.symbol] >= 1)
 						consumable++;
 				});
 				if (consumable == combo.length) {
@@ -1115,13 +1425,13 @@ const CrewTable = (props: CrewTableProps) => {
 		return fuseGroups;
 	}
 
-	function showCollectionsForCrew(crew: any): JSX.Element {
+	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
 		if (activeCollections !== crew.symbol || crew.collections.length == 0)
 			return (<b>{crew.collections.length}</b>);
 
 		const formattedCollections = crew.collections.map((c, idx) => (
 			<span key={idx}>{c}{idx < crew.collections.length-1 ? ',' : ''}</span>
-		)).reduce((prev, curr) => [prev, ' ', curr]);
+		)).reduce((prev, curr) => <>{prev} {curr}</>);
 
 		return (
 			<div>
@@ -1132,9 +1442,9 @@ const CrewTable = (props: CrewTableProps) => {
 };
 
 type ComboGridProps = {
-	crew: any;
-	combos: any[];
-	fuseGroups: any;
+	crew: CrewMember;
+	combos: (Polestar | undefined)[][];
+	fuseGroups: FuseGroups;
 };
 
 const ComboGrid = (props: ComboGridProps) => {
@@ -1149,19 +1459,19 @@ const ComboGrid = (props: ComboGridProps) => {
 	}, [fuseIndex]);
 
 	// Reset indices if out of bounds after changing filters
-	if (!fuseGroups['x'+fuseIndex]) fuseIndex = 1;
+	if (fuseGroups['x'+fuseIndex] === undefined) fuseIndex = 1;
 	const groups = fuseGroups['x'+fuseIndex];
-	if (!groups[groupIndex]) groupIndex = 0;
+	if (groups[groupIndex] === undefined) groupIndex = 0;
 
-	const fuseOptions = [];
+	const fuseOptions = [] as NumericOptions[];
 	[1, 2, 3, 4, 5].forEach(fuse => {
-		const fuseId = 'x'+fuse;
+		const fuseId = 'x' + fuse;
 		if (fuseGroups[fuseId] && fuseGroups[fuseId].length > 0) {
 			fuseOptions.push({ key: fuse, value: fuse, text: fuseId });
 		}
 	});
 
-	let groupOptions = [];
+	let groupOptions = [] as NumericOptions[];
 	if (fuseIndex > 1) {
 		combos = groups[groupIndex].map((comboId) => combos[comboId]);
 		groupOptions = groups.map((group, groupId) => {
@@ -1181,7 +1491,7 @@ const ComboGrid = (props: ComboGridProps) => {
 						style={{ marginLeft: '1em' }}
 						options={fuseOptions}
 						value={fuseIndex}
-						onChange={(e, { value }) => setFuseIndex(value)}
+						onChange={(e, { value }) => setFuseIndex(value as number)}
 					/>
 				)}
 				{groupOptions.length > 1 && (
@@ -1189,19 +1499,19 @@ const ComboGrid = (props: ComboGridProps) => {
 						style={{ marginLeft: '1em' }}
 						options={groupOptions}
 						value={groupIndex}
-						onChange={(e, { value }) => setGroupIndex(value)}
+						onChange={(e, { value }) => setGroupIndex(value as number)}
 					/>
 				)}
 			</div>
-			<div className='content'>
+			<div className='content' style={{overflow: "auto", maxHeight: "40em"}}>
 				<Grid columns='equal' onClick={() => cycleGroupOptions()}>
 					{combos.map((combo, cdx) =>
 						<Grid.Row key={'combo'+cdx}>
 							{combo.map((polestar, pdx) => (
 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
-									<br />{polestar.short_name}
-									<br /><small>({polestar.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar.quantity})</small>
+									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.substr(1).replace(/\//g, '_')}`} />
+									<br />{polestar?.short_name}
+									<br /><small>({polestar?.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar?.quantity})</small>
 								</Grid.Column>
 							))}
 						</Grid.Row>

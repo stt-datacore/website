@@ -35,11 +35,11 @@ class DropdownOpts extends PureComponent<DropdownOptsProps, DropdownOptsState> {
 	}
 
 	_onSettingChanged(selected: string) {
-		if (this.state.selectedSettings.indexOf(selected) >= 0) {
-			this.setState({ selectedSettings: this.state.selectedSettings.filter(opt => opt !== selected) });
+		if ((this.state.selectedSettings?.indexOf(selected) ?? -1) >= 0) {
+			this.setState({ selectedSettings: this.state.selectedSettings?.filter(opt => opt !== selected) });
 			this.props.onSettingChange(selected, false);
 		} else {
-			this.setState({ selectedSettings: this.state.selectedSettings.concat([selected]) });
+			this.setState({ selectedSettings: this.state.selectedSettings?.concat([selected]) });
 			this.props.onSettingChange(selected, true);
 		}
 	}
@@ -57,16 +57,16 @@ class DropdownOpts extends PureComponent<DropdownOptsProps, DropdownOptsState> {
 							icon={opt === selected ? 'caret right' : ''}
 							text={opt}
 							key={opt}
-							onClick={(e, { text }) => this._onSelectionChanged(text.toString())}
+							onClick={(e, { text }) => this._onSelectionChanged(text?.toString() ?? "")}
 						/>
 					))}
 					<Dropdown.Divider />
 					{settings.map(opt => (
 						<Dropdown.Item
-							icon={selectedSettings.indexOf(opt) >= 0 ? 'check' : ''}
+							icon={(selectedSettings?.indexOf(opt) ?? -1) >= 0 ? 'check' : ''}
 							text={opt}
 							key={opt}
-							onClick={(e, { text }) => this._onSettingChanged(text.toString())}
+							onClick={(e, { text }) => this._onSettingChanged(text?.toString() ?? "")}
 						/>
 					))}
 				</Dropdown.Menu>

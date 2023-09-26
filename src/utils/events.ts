@@ -1,18 +1,44 @@
 import allEvents from '../../static/structured/event_instances.json';
+import { CrewMember } from '../model/crew';
+import { Content, GameEvent, FeaturedCrew, Phase, PlayerCrew, RankedBracket, SquadronRankedBracket, ThresholdReward } from '../model/player';
 
-export class EventData {
-	symbol: string = '';
-    name: string = '';
-	image: string = '';
-	description: string = '';
-	bonus_text: string = '';
-	content_types: string[] = [];	/* shuttles, gather, etc. */
-    bonus: string[] = [];	/* ALL bonus crew by symbol */
-	featured: string[] = [];	/* ONLY featured crew by symbol */
+export interface EventData extends GameEvent {
+	id: number;
+	rules: string;
+	rewards_teaser: string;
+	shop_layout: string;
+	featured_crew: FeaturedCrew[];
+	threshold_rewards: ThresholdReward[];
+	ranked_brackets: RankedBracket[];
+	squadron_ranked_brackets: SquadronRankedBracket[];
+	content: Content;
+	instance_id: number;
+	status: number;
+	seconds_to_start: number;
+	seconds_to_end: number;
+	phases: Phase[];
+	opened?: boolean | undefined;
+	opened_phase?: number | undefined;
+	victory_points?: number | undefined;
+	bonus_victory_points?: number | undefined;
+	claimed_threshold_reward_points?: number | undefined;
+	unclaimed_threshold_rewards?: any[] | undefined;
+	last_threshold_points?: number | undefined;
+	next_threshold_points?: number | undefined;
+	next_threshold_rewards?: any[] | undefined;
+	symbol: string;
+    name: string;
+	image: string;
+	description: string;
+	bonus_text: string;
+	content_types: string[];	/* shuttles, gather, etc. */
+    bonus: string[];	/* ALL bonus crew by symbol */
+	featured: string[];	/* ONLY featured crew by symbol */
+	bonusGuessed?: boolean;
 };
 
-export function getEventData(activeEvent: any, allCrew: any[] = []): EventData | undefined {
-	const result = new EventData();
+export function getEventData(activeEvent: GameEvent, allCrew: PlayerCrew[] = []): EventData | undefined {
+	const result = {} as EventData;
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
 	result.description = activeEvent.description;
@@ -27,12 +53,15 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
 	const activePhase = Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content;
+	
 	if (!activePhase) return result;
-
+	if (!result.featured) result.featured = [];
+	if (!result.bonus) result.bonus = [];
+	
 	if (activePhase.content_type == 'shuttles') {
 		activePhase.shuttles.forEach((shuttle: any) => {
 			for (let symbol in shuttle.crew_bonuses) {
-				if (result.bonus.indexOf(symbol) < 0) {
+				if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 					result.bonus.push(symbol);
 					if (shuttle.crew_bonuses[symbol] == 3) result.featured.push(symbol);
 				}
@@ -41,7 +70,7 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 	}
 	else if (activePhase.content_type == 'gather') {
 		for (let symbol in activePhase.crew_bonuses) {
-			if (result.bonus.indexOf(symbol) < 0) {
+			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 				result.bonus.push(symbol);
 				if (activePhase.crew_bonuses[symbol] == 10) result.featured.push(symbol);
 			}
@@ -50,7 +79,7 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 	else if (activePhase.content_type == 'skirmish' && activePhase.bonus_crew) {
 		for (let i = 0; i < activePhase.bonus_crew.length; i++) {
 			let symbol = activePhase.bonus_crew[i];
-			if (result.bonus.indexOf(symbol) < 0) {
+			if ((result.bonus?.indexOf(symbol) ?? -1) < 0) {
 				result.bonus.push(symbol);
 				result.featured.push(symbol);
 			}
@@ -59,16 +88,17 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 		if (allCrew.length > 0) {
 			activePhase.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
-				perfectTraits.forEach(crew => {
-					if (!result.bonus.includes(crew.symbol))
+				perfectTraits?.forEach(crew => {
+					if (!result.bonus?.includes(crew.symbol)) {
 						result.bonus.push(crew.symbol);
+					}						
 				});
 			});
 		}
 	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
-	if (result.bonus.length === 0 && allCrew.length > 0) {
+	if (result.bonus && result.bonus.length === 0 && allCrew.length > 0) {
 		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
 		result.bonus = bonus;
 		result.featured = featured;
@@ -79,7 +109,7 @@ export function getEventData(activeEvent: any, allCrew: any[] = []): EventData |
 }
 
 // Current event here refers to an ongoing event, or the next event if none is ongoing
-export function guessCurrentEvent(): EventData {
+export async function guessCurrentEvent(): Promise<EventData> {
 	const { start, end } = getCurrentStartEndTimes();
 
 	// Use penultimate event instance if current time is:
@@ -93,7 +123,7 @@ export function guessCurrentEvent(): EventData {
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = getEventData(json);
+				const activeEvent = getEventData(json) as EventData;
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
@@ -103,7 +133,7 @@ export function guessCurrentEvent(): EventData {
 }
 
 // Get seconds to event start, end from current time
-function getCurrentStartEndTimes(): { start: 0, end: 0 } {
+function getCurrentStartEndTimes(): { start: number, end: number } {
 	const currentTime = new Date();
 	const utcDay = currentTime.getUTCDay(), utcHour = currentTime.getUTCHours();
 
@@ -122,19 +152,20 @@ function getCurrentStartEndTimes(): { start: 0, end: 0 } {
 	startTime.setDate(startTime.getDate()-4);
 
 	let start = 0;
-	const end = Math.floor((endTime-currentTime)/1000);
+	let diff = endTime.getTime() - currentTime.getTime();
+	const end = Math.floor((diff)/1000);
 
 	// Event hasn't started yet
 	if (eventDay < 3) {
-		start = Math.floor((startTime-currentTime)/1000);
+		start = Math.floor((diff)/1000);
 	}
 
 	return { start, end };
 }
 
-function guessBonusCrew(activeEvent: any, allCrew: any[]): { bonus: string[], featured: string[] } {
-	const bonus = [];
-	const featured = [];
+function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
+	const bonus = [] as string[];
+	const featured = [] as string[];
 
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written

@@ -60,7 +60,9 @@ export default class CONFIG {
 		10: 'Honorable citation',
 		11: 'Buff',
 		12: 'Starbase component',
-		13: 'Voyage consumable'
+		13: 'Voyage consumable',
+		14: 'Continuum Buff',
+		15: 'Continuum Container Component'
 	};
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
@@ -71,11 +73,48 @@ export default class CONFIG {
 		3: 'Shield Regeneration'
 	};
 
+	static readonly CREW_SHIP_BATTLE_BONUS_ICON: { [index: number]: string } = {
+		0: 'immediate-damage.png',
+		1: 'evasion-boost.png',
+		2: 'accuracy-boost.png',
+		// These are only for penalty
+		3: 'repair-shields.png'
+	};
+
+	static readonly CREW_SHIP_BATTLE_BONUS_COLORS: { [index: number]: string } = {
+		0: "#d04444",
+		1: "#7eb1e8",
+		2: "#eca50b",
+	}
+
 	static readonly CREW_SHIP_BATTLE_TRIGGER: { [index: number]: string } = {
 		0: 'None',
 		1: 'Position',
 		2: 'Cloak',
-		4: 'Boarding'
+		4: 'Boarding',
+	};
+
+	static readonly SHIP_BATTLE_TRIGGER_ICON: { [index: number]: string } = {
+		0: '',
+		1: 'trigger-position.png',
+		2: 'trigger-cloak.png',
+		4: 'trigger-boarding.png',
+	};
+
+	static readonly SHIP_BATTLE_GRANTS: { [index: number]: string } = {
+		0: 'None',
+		1: 'Position',
+		2: 'Cloaked',
+		4: 'Boarding',
+		16: 'Shields Disruptor'
+	};
+
+	static readonly SHIP_BATTLE_GRANT_DESC: { [index: number]: string } = {
+		0: 'None',
+		1: 'Critical Rating increased',
+		2: 'Ship is untargetable for a time',
+		4: 'Deals gradual damage to enemy hull',
+		16: 'Enemy shields become inoperable for a time'
 	};
 
 	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE: { [index: number]: string } = {
@@ -87,10 +126,64 @@ export default class CONFIG {
 		5: '+%VAL% to Crit Bonus',
 		6: '+%VAL% to Shield Regeneration',
 		7: '+%VAL%% to Attack Speed',
-		8: 'Increases boarding damage by %VAL%%'
+		8: 'Increases boarding damage by %VAL%%',
+		9: 'Resets enemy cooldown timers',
+		10: 'Speeds up cooldown timers by %VAL% seconds',
+		11: 'Decrease incoming hull damage by %VAL%%',
+		12: '%VAL%% of incoming damage also taken by the attacker',
 	};
 
-	static readonly STATS_CONFIG: { [index: number]: any } = {
+	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT: { [index: number]: string } = {
+		0: '+%VAL% to bonus boost',
+		1: '%VAL%% damage',
+		2: '%VAL%% hull repair',
+		3: '%VAL%% shield repair',
+		4: '+%VAL% crit rating',
+		5: '+%VAL% crit bonus',
+		6: '+%VAL% shield regen.',
+		7: '+%VAL%% attack speed',
+		8: '%VAL%% boarding damage',
+		9: 'Resets enemy cooldown timers',
+		10: '+%VAL%s to cooldown timers',
+		11: '-%VAL%% hull damage',
+		12: '%VAL%% reflection damage',
+	};
+
+	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT: { [index: number]: string } = {
+		0: 'Increases Bonus Boost',
+		1: 'Immediate Damage',
+		2: 'Immediately Repairs Hull',
+		3: 'Immediately Repairs Shields',
+		4: '+Crit Rating',
+		5: '+Crit Bonus',
+		6: '+Shield Regeneration',
+		7: '+Attack Speed',
+		8: 'Increases Boarding Damage',
+		9: 'Resets enemy cooldown timers',
+		10: 'Speeds Up Cooldown Timers',
+		11: 'Decrease Incoming Hull Damage',
+		12: 'Reflection Damage',
+	};
+
+
+	static readonly SHIP_BATTLE_ABILITY_ICON: { [index: number]: string } = {
+		0: '',
+		1: 'immediate-damage.png',
+		2: 'repair-hull.png',
+		3: 'repair-shields.png',
+		4: 'crit-rating.png',
+		5: 'crit-bonus.png',
+		6: 'repair-shields.png',
+		7: 'attack-speed.png',
+		8: 'boarding-damage.png',
+		9: 'reset-timers.png',
+		10: 'cooldown-timers.png',
+		11: 'reduce-incoming.png',
+		12: 'reflection-damage.png',
+	};
+
+
+	static readonly STATS_CONFIG: { [index: number]: { symbol: string, skill: string, stat: string } } = {
 		2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
 		3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },
 		4: { symbol: 'engineering_skill_range_max', skill: 'engineering_skill', stat: 'range_max' },

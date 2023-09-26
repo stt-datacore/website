@@ -1,3 +1,12 @@
+import { CrewMember } from "../model/crew";
+import { PlayerCrew } from "../model/player";
+
+export interface SubSort {
+	[key: string]: any;
+	direction?: 'ascending' | 'descending' | null;
+	field?: string;
+}
+
 export interface IConfigSortData {
 	field: string; // can also be a nested object property path like "base_skills.command_skill.core"
 	direction: 'descending' | 'ascending' | null;
@@ -5,7 +14,7 @@ export interface IConfigSortData {
 		field: string;
 		direction: 'descending' | 'ascending' | null;
 	};
-	subsort?: any[]; // rules for tiebreakers e.g. { field, direction }
+	subsort?: SubSort[]; // rules for tiebreakers e.g. { field, direction }
 	rotateFields?: any[];
 	keepSortOptions?: boolean; // if set to true, don't advance direction or rotateFields
 }
@@ -17,7 +26,7 @@ export interface IResultSortDataBy {
 }
 
 export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDataBy {
-	let field = config.field, direction = config.direction, result = data;
+	let field = config.field, direction: 'ascending' | 'descending' = config.direction ?? 'ascending', result = data;
 	let keepSortOptions = config.keepSortOptions || false;
 
 	if(!keepSortOptions && config.rotateFields && config.direction === 'descending') {
@@ -27,7 +36,9 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 		direction = toggleDirection(direction);
 	}
 
-	config.subsort = config.subsort ?? [];
+	if (!config.subsort) {
+		config.subsort = [] as Object[];	
+	}
 
 	// Convert secondary prop to subsort array; try to use subsort instead of secondary from now on
 	if(config.secondary) {
@@ -42,14 +53,20 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 			field === 'bigbook_tier' ? getTier(a, direction) : getValueFromPath(a, field),
 			field === 'bigbook_tier' ? getTier(b, direction) : getValueFromPath(b, field)
 		);
+		
 		let tiebreaker = 0;
+		
+		if (!config.subsort) return sortValue;
+		
 		while (sortValue == 0 && tiebreaker < config.subsort.length) {
 			const nextSort = config.subsort[tiebreaker];
 			const nextFactor = nextSort.direction === 'descending' ? -1 : 1;
-			sortValue = nextFactor*compare(
-				getValueFromPath(a, nextSort.field),
-				getValueFromPath(b, nextSort.field)
-			);
+			if (nextSort && nextSort.field) {
+				sortValue = nextFactor*compare(
+					getValueFromPath(a, nextSort.field),
+					getValueFromPath(b, nextSort.field)			
+				);
+			}
 			tiebreaker++;
 		}
 		return sortValue;
@@ -63,23 +80,23 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 }
 
 // Hack to always move a crew without a tier rating to the back of a tier sort
-function getTier(obj, direction) {
+function getTier(obj: CrewMember, direction: 'ascending' | 'descending') {
 	if (obj.bigbook_tier > 0) return obj.bigbook_tier;
 	return direction === 'ascending' ? 100 : -1;
 }
 
-function getValueFromPath(obj, path) {
+function getValueFromPath(obj: any, path: string) {
 	return path.split('.').reduce((a, b) => (a || {b: 0})[b], obj);
 }
 
-function getNextFieldInRotation(field, rotateFields) {
+function getNextFieldInRotation(field: string, rotateFields: string[]): string {
 	const nextIndex = rotateFields.indexOf(field) + 1; // Will be 0 if previous column was not a pseudocolumn
 	const nextFieldIndex = nextIndex === rotateFields.length ? 0 : nextIndex;
 	const newField = rotateFields[nextFieldIndex];
 	return newField;
 }
 
-function toggleDirection(direction) {
+function toggleDirection(direction: 'ascending' | 'descending'): 'ascending' | 'descending' {
 	return direction === 'ascending' ? 'descending' : 'ascending';
 }
 

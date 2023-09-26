@@ -4,20 +4,26 @@ import { Header, Message, Grid, Icon } from 'semantic-ui-react';
 import ItemDisplay from '../components/itemdisplay';
 import { mergeItems } from '../utils/itemutils';
 import { mergeShips } from '../utils/shiputils';
+import { PlayerData } from '../model/player';
+import { EquipmentCommon } from '../model/equipment';
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 
 type UnneededItemsProps = {
-	playerData: any;
 };
 
 type UnneededItemsState = {
-	fuelschematics: any[];
-	fuelspecific: any[];
-	fuelgeneric: any[];
+	fuelschematics: EquipmentCommon[];
+	fuelspecific: EquipmentCommon[];
+	fuelgeneric: EquipmentCommon[];
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
-	constructor(props) {
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
+	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
 
 		this.state = {
@@ -28,7 +34,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	async componentDidMount() {
-		const { playerData } = this.props;
+		const { playerData } = this.context;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
@@ -38,7 +44,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		const allitems = await itemsResponse.json();
 		const allships = await shipsResponse.json();
 
-		let items = mergeItems(playerData.player.character.items, allitems);
+		let items = mergeItems(playerData.player.character.items as EquipmentCommon[], allitems);
 		let ships = mergeShips(allships, playerData.player.character.ships);
 
 		// Calculate unneeded schematics
@@ -63,7 +69,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let equipmentEquipped = new Set();
 		let equipmentNeeded = new Set();
 		// Handle dupes as either all fully-equipped or as all needing items
-		let crewBySymbol = [];
+		let crewBySymbol = [] as string[];
 		playerData.player.character.crew.forEach(crew => {
 			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
 		});
@@ -71,7 +77,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 			const crewList = playerData.player.character.crew.filter(crew => crew.symbol === crewSymbol);
 			let allFullyEquipped = true;
 			crewList.forEach(crew => {
-				if (crew.level < 99 || crew.equipment.length < 4)
+				if (crew.level < 99 || (crew.equipment && crew.equipment?.length < 4))
 					allFullyEquipped = false;
 			});
 			const crew = crewList[0];
@@ -130,8 +136,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData } = this.props;
-
+		const { playerData, items } = this.context;
+		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items) : undefined;
 		let itemCount = playerData.player.character.items.length;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
@@ -157,16 +163,29 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 					<React.Fragment>
 						<Header as='h4'>Ship Schematics ({this.state.fuelschematics.length})</Header>
 						<p>The following ship schematics are safe to discard as they are used to upgrade <b>ships you have already maxed</b>.</p>
+						<ItemHoverStat targetGroup='unneeded_items' />
 						<Grid columns={5} centered padded>
 							{this.state.fuelschematics.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p>{item.name}</p>
+									<p>{item.name}<br /><i>({item.quantity} Owned)</i></p>
+									
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -180,13 +199,24 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Grid columns={5} centered padded>
 							{this.state.fuelspecific.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
 									/>
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>
@@ -200,13 +230,24 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Grid columns={5} centered padded>
 							{this.state.fuelgeneric.map((item, idx) => (
 								<Grid.Column key={idx} rel={item.archetype_id} textAlign='center'>
+									<div style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "top",
+										alignItems: "center",
+									}}>
 									<ItemDisplay
+										targetGroup='unneeded_items'
+										playerData={playerData}
+										allItems={pitems}
+										itemSymbol={item.symbol}
 										src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
 										size={64}
 										maxRarity={item.rarity}
 										rarity={item.rarity}
-									/>
-									<p><a href={wikiLink(item.name)}>{item.name}</a></p>
+									/>									
+									<p><a href={wikiLink(item.name)}>{item.name}</a><br /><i>({item.quantity} Owned)</i></p>
+									</div>
 								</Grid.Column>
 							))}
 						</Grid>

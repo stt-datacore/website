@@ -119,6 +119,11 @@ const Optimizer = {
       });
     });
   },
+  /**
+   * 
+   * @param {import('../model/player.js').PlayerData} saveData
+   * @param {import('../model/crew.js').CrewMember[]} dataCoreCrew
+   */
   assessCrewRoster(saveData, dataCoreCrew) {
     //Gathers all ids to check against for the full roster extraction
     saveData = saveData;
@@ -141,6 +146,11 @@ const Optimizer = {
     saveData.player.character.stored_immortals.forEach(crew => {
       if (!frozenCrewIDArray.includes(crew.id)) {
         frozenCrewIDArray.push(crew.id);
+      }
+    });
+    saveData.player.character.c_stored_immortals?.forEach(crew => {
+      if (!frozenCrewIDArray.includes(crew)) {
+        frozenCrewIDArray.push(crew);
       }
     });
 
@@ -195,10 +205,14 @@ const Optimizer = {
           fullyLeveled = true;
         }
 
-        if ((crewProgress.level >= 99) && crewProgress.equipment.length == 4) {
+        if ((crewProgress?.level >= 99) && (!crewProgress.equipment || crewProgress.equipment?.length == 4)) {
           fullyEquipped = true;
         }
-
+        // if (!crewProgress.equipment) {
+        //   console.log("Equipment is missing for this crew");
+        //   console.log(crew)
+        //   console.log(crewProgress)
+        // }
         if (crewProgress.rarity == crew.max_rarity) {
           fullyFused = true;
         }

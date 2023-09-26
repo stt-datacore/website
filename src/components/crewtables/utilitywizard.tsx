@@ -4,6 +4,7 @@ import { Modal, Button, Icon, Form, Checkbox, Table, Segment, Header, Rating, St
 import CONFIG from '../../components/CONFIG';
 
 import { useStateWithStorage } from '../../utils/storage';
+import { PlayerCrew, PlayerUtilityRanks } from '../../model/player';
 
 const defaultPrefs = {
 	thresholds: {
@@ -16,10 +17,10 @@ const defaultPrefs = {
 	show_breakdowns: false
 };
 
-const WizardContext = React.createContext();
+const WizardContext = React.createContext<UtilityWizardProps>({} as UtilityWizardProps);
 
 type UtilityWizardProps = {
-	myCrew: any;
+	myCrew: PlayerCrew[];
 	handleWizard: (wizardOutput: any) => void;
 	dbid: string;
 };
@@ -27,7 +28,7 @@ type UtilityWizardProps = {
 const UtilityWizard = (props: UtilityWizardProps) => {
 	const contextData = {
 		myCrew: props.myCrew,
-		handler: props.handleWizard,
+		handleWizard: props.handleWizard,
 		dbid: props.dbid
 	};
 	return (
@@ -36,6 +37,8 @@ const UtilityWizard = (props: UtilityWizardProps) => {
 		</WizardContext.Provider>
 	);
 };
+
+type ColumnTitle = string | JSX.Element;
 
 const UtilityWizardModal = () => {
 	const wizardInput = React.useContext(WizardContext);
@@ -52,7 +55,7 @@ const UtilityWizardModal = () => {
 		if (enabled) {
 			scoreUtility();
 			const columns = [
-				{ width: 1, column: 'utility.thresholds.length', title: <Icon name='cogs' color='green' />, reverse: true, tiebreakers: ['max_rarity'] }
+				{ width: 1, column: 'utility.thresholds.length', title: <Icon name='cogs' color='green' /> as ColumnTitle, reverse: true, tiebreakers: ['max_rarity'] }
 			];
 			if (userPrefs.show_breakdowns ?? defaultPrefs.show_breakdowns) {
 				if (getThreshold('core') + getThreshold('shuttle') > 0)
@@ -62,7 +65,7 @@ const UtilityWizardModal = () => {
 				if (getThreshold('voyage') > 0)
 					columns.push({ width: 1, column: 'utility.counts.voyage', title: 'V', reverse: true, tiebreakers: ['max_rarity'] });
 			}
-			wizardInput.handler(
+			wizardInput.handleWizard(
 				{
 					wizard: 'utility',
 					view: 'base',
@@ -72,7 +75,7 @@ const UtilityWizardModal = () => {
 			);
 		}
 		else {
-			wizardInput.handler(undefined);
+			wizardInput.handleWizard(undefined);
 		}
 	}, [enabled, userPrefs]);
 
@@ -229,7 +232,7 @@ const UtilityWizardModal = () => {
 				.map(crew => crew.id);
 		};
 
-		const ranks = {};
+		const ranks = {} as PlayerUtilityRanks;
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			let firstSkill = CONFIG.SKILLS_SHORT[first].name;
 			ranks[`B_${CONFIG.SKILLS_SHORT[first].short}`] = rankCore(firstSkill);
@@ -244,7 +247,7 @@ const UtilityWizardModal = () => {
 
 		myCrew.forEach(crew => {
 			const myRanks = {};
-			const thresholds = [];
+			const thresholds = [] as string[];
 			Object.keys(ranks).forEach(key => {
 				const myRank = ranks[key].indexOf(crew.id) + 1;
 				myRanks[key] = myRank;
@@ -262,8 +265,8 @@ const UtilityWizardModal = () => {
 				thresholds,
 				counts: {
 					shuttle: thresholds.filter(key => ['B', 'S'].includes(key.substr(0, 1))).length,
-					gauntlet: thresholds.filter(key => key.substr(0, 1) === 'G').length,
-					voyage: thresholds.filter(key => key.substr(0, 1) === 'V').length
+					gauntlet: thresholds.filter(key => key.slice(0, 1) === 'G').length,
+					voyage: thresholds.filter(key => key.slice(0, 1) === 'V').length
 				}
 			};
 		});
@@ -306,7 +309,7 @@ const UtilityWizardModal = () => {
 				return ({
 					key,
 					rank: crew.utility.ranks[key],
-					skills: shorts.map(short => CONFIG.SKILLS_SHORT.find(s => s.short === short).name)
+					skills: shorts.map(short => CONFIG.SKILLS_SHORT.find(s => s.short === short)?.name)
 				});
 			})
 			.sort((a, b) => { if (a.skills.length === b.skills.length) return a.key.localeCompare(b.key); return a.skills.length - b.skills.length; });
@@ -351,7 +354,7 @@ const RanksModal = (props: RanksModalProps) => {
 			open={modalIsOpen}
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
-			trigger=<Button content={crew.utility.thresholds.length} />
+			trigger={<Button content={crew.utility.thresholds.length} />}
 			size='tiny'
 		>
 			<Modal.Header>
@@ -373,18 +376,25 @@ const RanksModal = (props: RanksModalProps) => {
 
 	// Adaptation of renderOtherRanks from commoncrewdata.tsx
 	function renderRanks(): JSX.Element {
-		const v = [];
-		const g = [], g1 = [];
-		const b = [];
-		const s = [];
+		const v = [] as JSX.Element[];
+		const g = [] as JSX.Element[], g1 = [] as JSX.Element[];
+		const b = [] as JSX.Element[];
+		const s = [] as JSX.Element[];
 
-		const skillName = short => CONFIG.SKILLS[CONFIG.SKILLS_SHORT.find(c => c.short === short).name];
+		const skillName = short => {
+			
+			let conf = CONFIG.SKILLS_SHORT.find(c => c.short === short)?.name;
+			if (conf) {
+				return CONFIG.SKILLS[conf];
+			}
+			return ""
+		} 
 
 		for (let rank in crew.utility.ranks) {
 			const utility = crew.utility.ranks[rank];
 			if (rank.startsWith('V_')) {
 				v.push(
-					<Statistic key={rank} color={utility > 0 && utility <= getThreshold('voyage') ? 'green' : undefined}>
+					<Statistic key={rank} color={(utility > 0 && utility <= getThreshold('voyage')) ? 'green' : undefined}>
 						<Statistic.Label>{rank.substr(2).replace('_', ' / ')}</Statistic.Label>
 						<Statistic.Value>{utility > 0 ? utility : ''}</Statistic.Value>
 					</Statistic>

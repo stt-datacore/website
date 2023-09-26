@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { AcceptedMission, CadetMission } from '../model/player';
 
 type ProfileOtherProps = {
-	playerData: any;
 };
 
 type ProfileOtherState = {
@@ -10,6 +11,9 @@ type ProfileOtherState = {
 };
 
 class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
 	constructor(props: ProfileOtherProps) {
 		super(props);
 
@@ -19,12 +23,15 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	}
 
 	componentDidMount() {
+
+		const { playerData } = this.context;
+
 		fetch('/structured/missions.json')
 			.then(response => response.json())
-			.then(missionData => {
-				let missions = [];
-				this.props.playerData.player.character.accepted_missions
-					.concat(this.props.playerData.player.character.dispute_histories)
+			.then((missionData: AcceptedMission[]) => {
+				let missions = [] as AcceptedMission[];
+				playerData.player.character.accepted_missions
+					.concat(playerData.player.character.dispute_histories.map(d => d as AcceptedMission))
 					.forEach(mission => {
 						let quest = missionData.find(m => m.symbol === mission.symbol);
 						if (quest && quest.episode_title) {
@@ -32,7 +39,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 							mission.episode_title = quest.episode_title;
 							mission.cadet = quest.cadet;
 
-							if (mission.episode > 0) {
+							if (mission.episode ?? 0 > 0) {
 								mission.name = `Episode ${mission.episode} : ${mission.episode_title}`;
 							} else {
 								mission.name = mission.episode_title;
@@ -42,14 +49,13 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 						}
 					});
 
-				missions = missions.sort((a, b) => (a.episode > b.episode ? 1 : b.episode > a.episode ? -1 : 0));
-
+				missions = missions.sort((a, b) => ((a.episode ?? 0) > (b.episode ?? 0) ? 1 : (b.episode ?? 0) > (a.episode ?? 0) ? -1 : 0));
 				this.setState({ missions });
 			});
 	}
 
 	render() {
-		const { playerData } = this.props;
+		const { playerData } = this.context;
 		const { missions } = this.state;
 
 		return (

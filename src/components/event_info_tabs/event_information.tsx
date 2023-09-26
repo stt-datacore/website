@@ -1,10 +1,13 @@
 import React from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
-
+import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { getEventData } from '../../utils/events';
-import CrewCard from './crew_card';
+import { EventData, getEventData } from '../../utils/events';
+import CrewCard, { CrewCardBrief } from './crew_card';
+import { CompactCrew, PlayerCrew } from '../../model/player';
+import { MergedContext } from '../../context/mergedcontext';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -19,7 +22,7 @@ function getEventType(contentTypes: string[]) {
 	return [...items].join(' / ');
 }
 
-function sortCrew(crewArray) {
+function sortCrew(crewArray: PlayerCrew[]) {
 	let groups = [
 		[],
 		[], // common
@@ -27,7 +30,7 @@ function sortCrew(crewArray) {
 		[], // rare
 		[], // very rare
 		[]  // legendary
-	];
+	] as PlayerCrew[][];
 	// organize each crew into rarity buckets
 	crewArray.forEach(crew => {
 		groups[crew.max_rarity].push(crew);
@@ -40,7 +43,12 @@ function sortCrew(crewArray) {
 	return groups.flat();
 }
 
-function EventInformationTab({ eventData }) {
+function EventInformationTab(props: { eventData: EventData | GameEvent }) {
+	const { eventData } = props;
+	const context = React.useContext(MergedContext);
+
+	const { allCrew, items, playerData } = context;
+
 	const { crewJson } = useStaticQuery(graphql`
 		query {
 			crewJson: allCrewJson {
@@ -78,8 +86,8 @@ function EventInformationTab({ eventData }) {
 			}
 		}
 	`);
-	const crewData = crewJson.edges.map(edge => edge.node);
-	const crewMap = {};
+	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
+	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
 		crewMap[crew.symbol] = crew;
 	})
@@ -91,11 +99,16 @@ function EventInformationTab({ eventData }) {
 		content_types,
 	} = eventData;
 
-	const { bonus, featured } = getEventData(eventData, crewData);
-	const featuredCrewData = featured.map(symbol => {
+	const currEvent = getEventData(eventData, crewData);
+
+	const bonus = currEvent?.bonus;
+	const featured = currEvent?.featured;
+
+	const featuredCrewData = featured?.map(symbol => {
 		const crew = crewMap[symbol];
 		return {
 			key: `crew_${crew.symbol}`,
+			symbol: crew.symbol,
 			name: crew.name,
 			image: getIconPath({file: crew.imageUrlPortrait}),
 			rarity: crew.max_rarity,
@@ -107,9 +120,9 @@ function EventInformationTab({ eventData }) {
 					imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
 				})),
 			traits: crew.traits_named,
-		};
+		} as CrewCardBrief;
 	});
-	const bonusCrew = crewData.filter(crew => bonus.includes(crew.symbol) && !featured.includes(crew.symbol));
+	const bonusCrew = crewData.filter(crew => bonus?.includes(crew.symbol) && !featured?.includes(crew.symbol));
 
 	return (
 		<>
@@ -125,8 +138,8 @@ function EventInformationTab({ eventData }) {
 			</Card>
 			<Header as="h3">Featured Crew</Header>
 			<Card.Group>
-				{featuredCrewData.map(crew => (
-					<CrewCard key={crew.key} crew={crew} />
+				{featuredCrewData?.map(crew => (
+					<CrewCard key={crew.key} crew={crew} sysCrew={crewMap[crew.symbol]} />
 				))}
 			</Card.Group>
 			<Header as="h3">Bonus Crew</Header>
@@ -135,17 +148,19 @@ function EventInformationTab({ eventData }) {
 			)}
 			{sortCrew(bonusCrew).map(crew => (
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
+					<CrewTarget targetGroup='event_info' inputItem={crewMap[crew.symbol]}>
 					<Image
-						src={getIconPath({ file: crew.imageUrlPortrait })}
-						size="massive"
+						src={getIconPath({ file: crew.imageUrlPortrait })}						
 						inline
 						spaced="right"
 						bordered
 						style={{
+							height: "48px",
 							borderColor: getRarityColor(crew.max_rarity)
 						}}
 						alt={crew.name}
 					/>
+					</CrewTarget>
 					{crew.name}
 				</Label>
 			))}

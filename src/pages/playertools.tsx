@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header, Message, Tab, Icon, Dropdown, Menu, Button, Form, TextArea, Checkbox, Modal, Progress, Popup } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 
@@ -20,121 +20,189 @@ import UnneededItems from '../components/unneededitems';
 import FleetBossBattles from '../components/fleetbossbattles';
 
 import { exportCrew, downloadData, prepareProfileData } from '../utils/crewutils';
-import { stripPlayerData, doShareProfile } from '../utils/playerutils';
+import { stripPlayerData } from '../utils/playerutils';
 import { useStateWithStorage } from '../utils/storage';
+import { CompactCrew, GameEvent, PlayerEquipmentItem, PlayerCrew, PlayerData, Voyage, VoyageDescription, VoyageInfo } from '../model/player';
+import { BossBattlesRoot } from '../model/boss';
+import { ShuttleAdventure } from '../model/shuttle';
+import ShipProfile from '../components/ship_profile';
+import { Schematics, Ship } from '../model/ship';
+import { EventData } from '../utils/events';
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { mergeShips } from '../utils/shiputils';
+import { Archetype17, Archetype20, ArchetypeBase } from '../model/archetype';
+import { DataContext, DefaultCore } from '../context/datacontext';
+import { PlayerContext, PlayerContextData } from '../context/playercontext';
+import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { populateItemCadetSources } from '../utils/itemutils';
 
-export const playerTools = {
+export interface PlayerTool {
+	title: string;
+	render: (props: { crew?: PlayerCrew, ship?: string, location?: any }) => JSX.Element;
+	noMenu?: boolean;
+}
+
+export interface PlayerTools {
+	[key: string]: PlayerTool;
+}
+
+export const playerTools: PlayerTools = {
 	'voyage': {
 		title: 'Voyage Calculator',
-		render: ({playerData, allCrew}) => <VoyageCalculator playerData={playerData} allCrew={allCrew} />
+		render: () => <VoyageCalculator />
 	},
 	'event-planner': {
 		title: 'Event Planner',
-		render: ({playerData, allCrew}) => <EventPlanner playerData={playerData} allCrew={allCrew} />
+		render: () => <EventPlanner />
 	},
 	'crew': {
 		title: 'Crew',
-		render: ({playerData, allCrew, location}) => <ProfileCrew playerData={playerData} isTools={true} allCrew={allCrew} location={location} />
+		render: ({ location }) => <ProfileCrew isTools={true} location={location} />
 	},
 	'crew-mobile': {
 		title: 'Crew (mobile)',
-		render: ({playerData}) => <ProfileCrewMobile playerData={playerData} isMobile={false} />
+		render: () => <ProfileCrewMobile isMobile={false} />
 	},
 	'crew-retrieval': {
 		title: 'Crew Retrieval',
-		render: ({playerData, allCrew}) => <CrewRetrieval playerData={playerData} allCrew={allCrew} />
+		render: () => <CrewRetrieval />
 	},
 	'cite-optimizer': {
 		title: 'Citation Optimizer',
-		render: ({playerData, allCrew}) => <CiteOptimizer playerData={playerData} allCrew={allCrew} />
+		render: () => <CiteOptimizer />
 	},
 	'collections': {
 		title: 'Collections',
-		render: ({playerData, allCrew}) => <CollectionsTool playerData={playerData} allCrew={allCrew} />
+		render: () => <CollectionsTool />
 	},
 	'fleetbossbattles': {
 		title: 'Fleet Boss Battles',
-		render: ({playerData, allCrew}) => <FleetBossBattles playerData={playerData} allCrew={allCrew} />
+		render: () => <FleetBossBattles />
 	},
 	'ships': {
 		title: 'Ships',
-		render: ({playerData}) => <ProfileShips playerData={playerData} />
+		render: () => <ProfileShips />
+	},
+	'ship': {
+		title: 'Ship Details',
+		render: () => <ShipProfile />,
+		noMenu: true
 	},
 	'factions': {
 		title: 'Factions',
-		render: ({playerData}) => <FactionInfo
-							factionInfo={playerData.player.character.factions}
-							shuttleBays={playerData.player.character.shuttle_bays}
-						/>
+		render: () => <FactionInfo />
 	},
 	'items': {
 		title: 'Items',
-		render: ({playerData}) => <ProfileItems playerData={playerData} />
+		render: () => <ProfileItems />
 	},
 	'unneeded': {
 		title: 'Unneeded Items',
-		render: ({playerData}) => <UnneededItems playerData={playerData} />
+		render: () => <UnneededItems />
 	},
 	'other': {
 		title: 'Other',
-		render: ({playerData}) => <ProfileOther playerData={playerData} />
+		render: () => <ProfileOther />
 	},
 	'charts': {
 		title: 'Charts & Stats',
-		render: ({playerData}) => <ProfileCharts playerData={playerData} />
+		render: () => <ProfileCharts />
+	},
+	'fwdgaunt': {
+		title: "Gauntlets",
+		render: () => <>{navigate("/gauntlets")}</>,
+		noMenu: true
 	}
 };
 
-const PlayerToolsPage = (props: any) =>  {
-	const [playerData, setPlayerData] = React.useState(undefined);
-	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 
-	// allCrew will always be set and can be passed as a prop to subcomponents that need it, saving a fetch to crew.json
-	// allItems is NOT always set; it can be passed to subcomponents but requires a check to see if defined
-	const [allCrew, setAllCrew] = React.useState(undefined);
-	const [allItems, setAllItems] = React.useState(undefined);
+const PlayerToolsPage = (props: any) => {
+	const coreData = React.useContext(DataContext);
+	const playerData = React.useContext(PlayerContext);
+	const isReady = coreData.ready ? coreData.ready(['ship_schematics', 'crew', 'items', 'skill_bufs', 'cadet']) : false;
 
-	const [strippedPlayerData, setStrippedPlayerData] = useStateWithStorage('tools/playerData', undefined);
-	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
-	const [eventData, setEventData] = useStateWithStorage('tools/eventData', undefined);
-	const [fleetbossData, setFleetbossData] = useStateWithStorage('tools/fleetbossData', undefined);
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
-	const [activeShuttles, setActiveShuttles] = useStateWithStorage('tools/activeShuttles', undefined);
+	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
-	const [dataSource, setDataSource] = React.useState(undefined);
+	if (isReady && cadetforitem?.length) {
+		populateItemCadetSources(coreData.items, cadetforitem);
+	}
+
+	return (
+		<>
+			{!isReady &&
+				<Layout title='Player tools'>
+					<></>
+					<div className='ui medium centered text active inline loader'>Loading data...</div>
+				</Layout>
+			}
+			{isReady &&
+				<React.Fragment>
+					<PlayerToolsComponent location={props.location} coreData={coreData} playerData={playerData} />
+				</React.Fragment>
+			}
+		</>
+	);
+};
+
+export interface PlayerToolsProps {
+	location: any;
+	coreData: DefaultCore;
+	playerData: PlayerContextData;
+}
+
+const PlayerToolsComponent = (props: PlayerToolsProps) => {
+
+	// The context above	
+	const dataContext = props.coreData;
+	const { strippedPlayerData, setStrippedPlayerData, buffConfig, maxBuffs } = props.playerData;
+
+	// All things playerData
+
+	const [inputPlayerData, setInputPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const [playerData, setPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const [playerShips, setPlayerShips] = React.useState<Ship[]>([]);
+	const [dataSource, setDataSource] = React.useState<string | undefined>(undefined);
+
+	// These are all the static assets loaded from DataContext
+	const { crew: allCrew, items: allItems, ships: allShips, ship_schematics: schematics, items } = dataContext;
+
+	// These are all sessionStorage or localStorage values
+	const [fleetbossData, setFleetbossData] = useStateWithStorage<BossBattlesRoot | undefined>('tools/fleetbossData', undefined);
+	const [, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
+	const [, setEventData] = useStateWithStorage<GameEvent[] | undefined>('tools/eventData', undefined);
+	const [, setActiveCrew] = useStateWithStorage<CompactCrew[] | undefined>('tools/activeCrew', undefined);
+	const [, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
+
 	const [showForm, setShowForm] = React.useState(false);
 
 	// Profile data ready, show player tool panes
-	if (playerData && !showForm) {
+	if (playerData && !showForm && dataSource && fleetbossData && playerShips) {
 		return (<PlayerToolsPanes
-					playerData={playerData}
-					strippedPlayerData={strippedPlayerData}
-					voyageData={voyageData}
-					eventData={eventData}
-					fleetbossData={fleetbossData}
-					activeCrew={activeCrew}
-					dataSource={dataSource}
-					allCrew={allCrew}
-					allItems={allItems}
-					requestShowForm={setShowForm}
-					requestClearData={clearPlayerData}
-					location={props.location}
-				/>);
+			maxBuffs={maxBuffs}
+			items={items}
+			playerData={playerData}
+			buffConfig={buffConfig}
+			strippedPlayerData={strippedPlayerData}
+			dataSource={dataSource}
+			allCrew={allCrew}
+			allShips={allShips}
+			fleetBossData={fleetbossData}
+			playerShips={playerShips}
+			requestShowForm={setShowForm}
+			requestClearData={clearPlayerData}
+			location={props.location}
+			data={schematics}
+		/>);
 	}
 
 	// Preparing profile data, show spinner
 	if ((inputPlayerData || strippedPlayerData) && !showForm) {
 		if (inputPlayerData) {
-			if (allCrew && allItems)
-				prepareProfileDataFromInput();
-			else if (!allItems)
-				fetchAllItemsAndCrew();
+			prepareProfileDataFromInput();
 		}
 		else {
-			if (allCrew)
-				prepareProfileDataFromSession();
-			else
-				fetchAllCrew();
+			prepareProfileDataFromSession();
 		}
 		return (<PlayerToolsLoading />);
 	}
@@ -142,31 +210,10 @@ const PlayerToolsPage = (props: any) =>  {
 	// No data available, show input form
 	return (<PlayerToolsForm setValidInput={setValidInput} />);
 
-	function setValidInput(inputData : any) {
+	function setValidInput(inputData: PlayerData) {
 		setPlayerData(undefined);
 		setInputPlayerData(inputData);
 		setShowForm(false);
-	}
-
-	async function fetchAllItemsAndCrew() {
-		const [itemsResponse, crewResponse] = await Promise.all([
-			fetch('/structured/items.json'),
-			fetch('/structured/crew.json')
-		]);
-		const [allitems, allcrew] = await Promise.all([
-			itemsResponse.json(),
-			crewResponse.json()
-		]);
-		setAllItems(allitems);
-		setAllCrew(allcrew);
-	}
-
-	// Only crew data is needed if loading profile from session
-	//	Does this really save any time, or should we just use fetchAllItemsAndCrew every time playertools is loaded?
-	async function fetchAllCrew() {
-		const crewResponse = await fetch('/structured/crew.json');
-		const allcrew = await crewResponse.json();
-		setAllCrew(allcrew);
 	}
 
 	function prepareProfileDataFromInput() {
@@ -175,7 +222,23 @@ const PlayerToolsPage = (props: any) =>  {
 
 		// Active crew, active shuttles, voyage data, and event data will be stripped from playerData,
 		//	so store a copy for player tools (i.e. voyage calculator, event planner)
-		let activeCrew = [];
+		if (!inputPlayerData) return false;
+		if (inputPlayerData.item_archetype_cache) {
+			inputPlayerData.version = 17;
+		}
+		else if (inputPlayerData.archetype_cache) {
+			inputPlayerData.version = 20;
+			inputPlayerData.item_archetype_cache = {
+				archetypes: inputPlayerData.archetype_cache.archetypes.map((a: Archetype20) => {
+					return {
+						...a as ArchetypeBase,
+						type: a.item_type,
+					} as Archetype17;
+				})
+			}
+		}
+
+		let activeCrew = [] as CompactCrew[];
 		inputPlayerData.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
@@ -184,7 +247,7 @@ const PlayerToolsPage = (props: any) =>  {
 		if ("item_archetype_cache" in inputPlayerData){
 			inputPlayerData.version = 17;
 		}
-		else if ("archetype_cache" in inputPlayerData) {
+		else if ("archetype_cache" in inputPlayerData && inputPlayerData.archetype_cache) {
 			inputPlayerData.version = 20;
 			inputPlayerData.item_archetype_cache = {
 				archetypes: inputPlayerData.archetype_cache.archetypes.map((a) => {
@@ -198,35 +261,59 @@ const PlayerToolsPage = (props: any) =>  {
 			}
 		}
 		let voyageData = {
-			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions],
-			voyage: [...inputPlayerData.player.character.voyage],
+			voyage_descriptions: [...inputPlayerData.player.character.voyage_descriptions ?? []],
+			voyage: [...inputPlayerData.player.character.voyage ?? []],
 		}
 		setVoyageData(voyageData);
-		setEventData([...inputPlayerData.player.character.events]);
+		setEventData([...inputPlayerData.player.character.events ?? []]);
 		setFleetbossData(inputPlayerData.fleet_boss_battles_root);
 		setActiveCrew(activeCrew);
-		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures]);
+
+		if (inputPlayerData.player.character.shuttle_adventures) {
+			inputPlayerData.player.character.crew
+				.filter(crew => crew.active_status === 2)
+				.forEach(crew => {
+					let shuttle = inputPlayerData.player.character.shuttle_adventures?.find(x => x.shuttles[0].id === crew.active_id);
+					if (shuttle) {
+						shuttle.shuttles[0].slots[crew.active_index].crew_symbol = crew.symbol;
+					}
+				});
+		}
+
+		setActiveShuttles([...inputPlayerData.player.character.shuttle_adventures ?? []]);
 
 		let dtImported = new Date();
 
 		// strippedPlayerData is used for any storage purpose, i.e. sharing profile and keeping in session
-		let strippedData = stripPlayerData(allItems, {...inputPlayerData});
+		let strippedData = stripPlayerData(allItems ?? [], { ...inputPlayerData });
 		strippedData.calc = { 'lastImported': dtImported };
 		setStrippedPlayerData(JSON.parse(JSON.stringify(strippedData)));
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore and hopefully generated once
 		//	so other components don't have to keep calculating the same data
 		// After this point, playerData should always be preparedProfileData, here and in all components
-		let preparedProfileData = {...strippedData};
-		prepareProfileData(allCrew, preparedProfileData, dtImported);
+		let preparedProfileData = JSON.parse(JSON.stringify(strippedData));
+		prepareProfileData("prepareProfileDataFromInput", allCrew ?? [], preparedProfileData, dtImported);
 		setPlayerData(preparedProfileData);
+
+		if (preparedProfileData && schematics) {
+			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
+			setPlayerShips(data);
+		}
+
 		setDataSource('input');
 	}
 
 	function prepareProfileDataFromSession() {
-		let preparedProfileData = {...strippedPlayerData};
-		prepareProfileData(allCrew, preparedProfileData, new Date(Date.parse(strippedPlayerData.calc.lastImported)));
+		let preparedProfileData = JSON.parse(JSON.stringify(strippedPlayerData));
+		prepareProfileData("prepareProfileDataFromSession", allCrew ?? [], preparedProfileData, new Date(Date.parse(strippedPlayerData?.calc?.lastImported as string)));
 		setPlayerData(preparedProfileData);
+
+		if (preparedProfileData && schematics) {
+			let data = mergeShips(schematics, preparedProfileData.player.character.ships);
+			setPlayerShips(data);
+		}
+
 		setDataSource('session');
 	}
 
@@ -238,37 +325,55 @@ const PlayerToolsPage = (props: any) =>  {
 }
 
 type PlayerToolsPanesProps = {
-	playerData: any;
-	strippedPlayerData: any;
-	voyageData: any;
-	eventData: any;
-	activeCrew: string[];
+	playerData: PlayerData;
+	strippedPlayerData?: PlayerData;
 	dataSource: string;
-	allCrew: any[];
-	allItems?: any;
+	allCrew: PlayerCrew[];
+	allShips: Ship[];
+	playerShips: Ship[];
+	fleetBossData: BossBattlesRoot;
+	buffConfig?: BuffStatTable;
+	maxBuffs?: BuffStatTable;
+	items?: EquipmentItem[];
+
 	requestShowForm: (showForm: boolean) => void;
 	requestClearData: () => void;
+
 	location: any;
+	data: any;
 };
 
 const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
-	const { playerData, strippedPlayerData, voyageData, eventData, activeCrew, dataSource,
-			allCrew, allItems, requestShowForm, requestClearData } = props;
+	const { playerData,
+		buffConfig,
+		maxBuffs,
+		strippedPlayerData,
+		dataSource,
+		allCrew,
+		allShips,
+		playerShips,
+		fleetBossData,
+		items,
+		requestShowForm,
+		requestClearData,
+		data
+	} = props;
 
 	const [showIfStale, setShowIfStale] = useStateWithStorage('tools/showStale', true);
 
-	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid+'/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
-	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid+'/tools/profileAutoUpdate', false, { rememberForever: true });
+	const [showShare, setShowShare] = useStateWithStorage(playerData.player.dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: variableReady });
+	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(playerData.player.dbid + '/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [profileUploaded, setProfileUploaded] = React.useState(false);
 	const [profileUploading, setProfileUploading] = React.useState(false);
 	const [profileShared, setProfileShared] = useStateWithStorage('tools/profileShared', false);
 
 	const [varsReady, setVarsReady] = React.useState(false);
 	const [activeTool, setActiveTool] = React.useState('voyage');
+	const [selectedShip, setSelectedShip] = useStateWithStorage<string | undefined>('tools/selectedShip', undefined);
 
 	React.useEffect(() => {
 		if (dataSource == 'input' && profileAutoUpdate && !profileUploaded) {
-			console.log('Uploading profile');
+			// console.log('Uploading profile');
 			shareProfile();
 		}
 	}, [profileAutoUpdate, strippedPlayerData]);
@@ -276,13 +381,20 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	const tools = playerTools;
 	React.useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('tool') && tools[urlParams.get('tool')])
-			setActiveTool(urlParams.get('tool'));
+		if (urlParams.has('tool') && tools[urlParams.get('tool') as string])
+			setActiveTool(urlParams.get('tool') as string);
+
+		if (urlParams.has('ship')) {
+			setSelectedShip(urlParams.get('ship') ?? undefined);
+		}
+		else {
+			setSelectedShip(undefined);
+		}
 	}, [window.location.search]);
 
 	const StaleMessage = () => {
 		const STALETHRESHOLD = 3;	// in hours
-		if (showIfStale && new Date().getTime()-playerData.calc.lastModified.getTime() > STALETHRESHOLD*60*60*1000) {
+		if (showIfStale && new Date().getTime() - (playerData.calc?.lastModified?.getTime() ?? 0) > STALETHRESHOLD * 60 * 60 * 1000) {
 			return (
 				<Message
 					warning
@@ -303,6 +415,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 
 		// The option to auto-share profile only appears after a profile is uploaded or if previously set to auto-update
 		const bShowUploaded = profileUploaded || profileAutoUpdate;
+		
+		const profileUrl = (typeof window !== 'undefined') ? window.location.origin + "/" : process.env.GATSBY_DATACORE_URL;
 
 		return (
 			<Message icon onDismiss={() => setShowShare(false)}>
@@ -315,13 +429,13 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 								Click here to{' '}
 								<Button size='small' color='green' onClick={() => shareProfile()}>
 									{profileUploading && <Icon loading name='spinner' />}share your profile
-									</Button>{' '}
-									and unlock more tools and export options for items and ships. More details:
+								</Button>{' '}
+								and unlock more tools and export options for items and ships. More details:
 							</p>
 							<Message.List>
 								<Message.Item>
 									Once shared, the profile will be publicly accessible, will be accessible by your DBID link, and linked on related pages (such as fleet pages & event pages)
-									</Message.Item>
+								</Message.Item>
 								<Message.Item>
 									There is no private information included in the player profile; information being shared is limited to:{' '}
 									<b>captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships.</b>
@@ -334,8 +448,8 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 							<p>
 								Your profile was uploaded. Share the link:{' '}
 								<a
-									href={`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}
-									target='_blank'>{`${process.env.GATSBY_DATACORE_URL}profile/?dbid=${playerData.player.dbid}`}</a>
+									href={`${profileUrl}profile/?dbid=${playerData.player.dbid}`}
+									target='_blank'>{`${profileUrl}profile/?dbid=${playerData.player.dbid}`}</a>
 							</p>
 							<Form.Field
 								control={Checkbox}
@@ -358,13 +472,22 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 		const currentValue = playerData.player.character.xp - playerData.player.character.xp_for_current_level;
 		const percent = (currentValue / endingValue) * 100;
 		return (
-		  <Progress
-			percent={percent.toPrecision(3)}
-			label={`Level ${playerData.player.character.level}: ${playerData.player.character.xp} / ${playerData.player.character.xp_for_next_level}`}
-			progress
-		  />
+			<Progress
+				percent={percent.toPrecision(3)}
+				label={`Level ${playerData.player.character.level}: ${playerData.player.character.xp} / ${playerData.player.character.xp_for_next_level}`}
+				progress
+			/>
 		);
-	 };
+	};
+
+	let tt: string | undefined = undefined;
+
+	if (tools[activeTool].title === 'Ship Page' && selectedShip) {
+		let s = playerShips?.find((sp) => sp.symbol === selectedShip);
+		if (s) {
+			tt = s.name;
+		}
+	}
 
 	return (
 		<Layout title='Player tools'>
@@ -373,7 +496,7 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 			<StaleMessage />
 			<Menu compact stackable>
 				<Menu.Item>
-					Last imported: {playerData.calc.lastModified.toLocaleString()}
+					Last imported: {playerData.calc?.lastModified?.toLocaleString()}
 				</Menu.Item>
 				<Dropdown item text='Profile options'>
 					<Dropdown.Menu>
@@ -382,22 +505,34 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 						<Dropdown.Item onClick={() => requestClearData()}>Clear player data</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
-			  <Dropdown item text='Export'>
-				<Dropdown.Menu>
-					<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
-						<Dropdown.Item onClick={() => exportCrewTool()} content='Download CSV...' />
-					} />
-					<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
-						<Dropdown.Item onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
-					} />
-				</Dropdown.Menu>
-			</Dropdown>
+				<Dropdown item text='Export'>
+					<Dropdown.Menu>
+						<Popup basic content='Download crew data as traditional comma delimited CSV file' trigger={
+							<Dropdown.Item onClick={() => exportCrewTool()} content='Download CSV...' />
+						} />
+						<Popup basic content='Copy crew data to clipboard in Google Sheets format' trigger={
+							<Dropdown.Item onClick={() => exportCrewToClipboard()} content='Copy to clipboard' />
+						} />
+					</Dropdown.Menu>
+				</Dropdown>
 			</Menu>
 
 			<React.Fragment>
 				<ShareMessage />
-				<Header as='h3'>{tools[activeTool].title}</Header>
-				{tools[activeTool].render(props)}
+				<Header as='h3'>{tt ? tt : tools[activeTool].title}</Header>
+				<MergedContext.Provider value={{
+					allCrew: allCrew,
+					allShips: allShips,
+					playerData: playerData,
+					playerShips: playerShips,
+					bossData: fleetBossData,
+					buffConfig: buffConfig,
+					maxBuffs: maxBuffs,
+					items: items,
+					data
+				}}>
+					{tools[activeTool].render(props)}
+				</MergedContext.Provider>
 			</React.Fragment>
 		</Layout>
 	);
@@ -429,12 +564,12 @@ const PlayerToolsPanes = (props: PlayerToolsPanesProps) => {
 	}
 
 	function exportCrewTool() {
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
+		let text = playerData.player.character.unOwnedCrew ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew)) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	function exportCrewToClipboard() {
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t');
+		let text = playerData.player.character.unOwnedCrew ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew), '\t') : "";
 		navigator.clipboard.writeText(text);
 	}
 }
@@ -451,9 +586,9 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 	const [inputPlayerData, setInputPlayerData] = React.useState(undefined);
 	const [fullInput, setFullInput] = React.useState('');
 	const [displayedInput, setDisplayedInput] = React.useState('');
-	const [errorMessage, setErrorMessage] = React.useState(undefined);
+	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
-	let inputUploadFile = null;
+	let inputUploadFile: HTMLInputElement | null = null;
 
 	if (fullInput != "")
 		parseInput();
@@ -475,12 +610,12 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					Open this page in your browser:{' '}
 					<a href={PLAYERLINK} target='_blank'>
 						{PLAYERLINK}
-						</a>
+					</a>
 				</li>
 				<li>
 					Log in if asked, then wait for the page to finish loading. It should start with:{' '}
 					<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-					</li>
+				</li>
 				<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
 				<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
 				<li>Click the 'Import data' button</li>
@@ -490,8 +625,8 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				<TextArea
 					placeholder='Paste your player data here'
 					value={displayedInput}
-					onChange={(e, { value }) => setDisplayedInput(value)}
-					onPaste={(e) => { return onInputPaste(e) }}
+					onChange={(e, { value }) => setDisplayedInput(value as string)}
+					onPaste={(e: ClipboardEvent) => { return onInputPaste(e) }}
 				/>
 				<input
 					type='file'
@@ -500,7 +635,6 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 					ref={e => inputUploadFile = e}
 				/>
 			</Form>
-
 			<Button
 				onClick={() => parseInput()}
 				style={{ marginTop: '1em' }}
@@ -519,9 +653,9 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			<p style={{ marginTop: '2em' }}>To circumvent the long text copy limitations on mobile devices, download{' '}
 				<a href={PLAYERLINK} target='_blank'>
 					your player data
-						</a>
+				</a>
 				{' '}to your device, then click the 'Upload data file' button.
-					</p>
+			</p>
 			<p>
 				<Modal
 					trigger={<a href="#">Click here for detailed instructions for Apple iOS devices.</a>}
@@ -530,7 +664,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 						<li>Go to your player data using the link provided, logging in if asked.</li>
 						<li>Wait for the page to finish loading. It should start with:{' '}
 							<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","player":'}</span> ...
-								</li>
+						</li>
 						<li>Press the share icon while viewing the page.</li>
 						<li>Tap 'options' and choose 'Web Archive', tap 'save to files', choose a location and save.</li>
 						<li>Come back to this page (DataCore.app player tools).</li>
@@ -541,7 +675,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			</p>
 
 			<Button
-				onClick={() => inputUploadFile.click()}
+				onClick={() => inputUploadFile?.click()}
 				content='Upload data file'
 				icon='file'
 				labelPosition='right'
@@ -561,7 +695,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 			if (testData) {
 				// Test for playerData array glitch
 				if (Array.isArray(testData)) {
-					testData = {...testData[0]};
+					testData = { ...testData[0] };
 				}
 				if (testData.player && testData.player.display_name) {
 					if (testData.player.character && testData.player.character.crew && (testData.player.character.crew.length > 0)) {
@@ -590,8 +724,8 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		setFullInput('');
 	}
 
-	function onInputPaste(event) {
-		let paste = event.clipboardData || window.clipboardData;
+	function onInputPaste(event: ClipboardEvent) {
+		let paste = event.clipboardData;
 		if (paste) {
 			let fullPaste = paste.getData('text');
 			setFullInput(fullPaste);
@@ -606,7 +740,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 		// use FileReader to read file content in browser
 		const fReader = new FileReader();
 		fReader.onload = (e) => {
-			let data = e.target.result.toString();
+			let data = e.target?.result?.toString() ?? "";
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.

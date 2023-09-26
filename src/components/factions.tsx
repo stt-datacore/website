@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table, Image, Dropdown } from 'semantic-ui-react'
+import { Faction } from '../model/player';
+import { MergedContext } from '../context/mergedcontext';
 
 const factionImageLocations = [
   'federation',
@@ -21,17 +23,17 @@ const factionImageLocations = [
 
 const oddsValues = [14].concat(Array.from({length: 9}, (_, i) => (i+3)*5));
 
-
 type ShuttleInfoProps =  {
-  factionInfo: object;
-  shuttleBays: number;
 };
 
-type SuttleInfoState = {
+type ShuttleInfoState = {
   successOdds: number;
 };
 
-class FactionInfo extends PureComponent<ShuttleInfoProps> {
+class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
+  static contextType = MergedContext;
+  context!: React.ContextType<typeof MergedContext>;
+
   constructor(props) {
     super(props);
 
@@ -81,16 +83,16 @@ class FactionInfo extends PureComponent<ShuttleInfoProps> {
   }
 
   render() {
-    const { factionInfo, shuttleBays } = this.props;
+    const { factions: factionInfo, shuttle_bays: shuttleBays } = this.context.playerData.player.character;
     const { successOdds } = this.state;
-    const updateSuccessOdds = odds => this.setState({successOdds: odds});
+    const updateSuccessOdds = (odds: number) => this.setState({successOdds: odds});
 
     return (
       <>
         <p><span>Running shuttles at average odds of </span>
           <Dropdown text={`${successOdds}%`}>
             <Dropdown.Menu>
-              {oddsValues.map(val => (<Dropdown.Item onClick={(e, { value }) => updateSuccessOdds(value)} text={`${val}%`} value={val} />))}
+              {oddsValues.map(val => (<Dropdown.Item onClick={(e, { value }) => updateSuccessOdds(value as number)} text={`${val}%`} value={val} />))}
             </Dropdown.Menu>
           </Dropdown>
           <p>(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)</p>

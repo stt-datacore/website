@@ -8,6 +8,8 @@ import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
+import { PlayerCrew } from '../../model/player';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -23,8 +25,8 @@ const userDefaults = {
 };
 
 type ChainSolverProps = {
-	chain: any;
-	allCrew: string[];
+	chain: Chain;
+	allCrew: PlayerCrew[];
 	dbid: string;
 };
 
@@ -33,8 +35,8 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 	const [userPrefs, setUserPrefs] = useStateWithStorage(props.dbid+'/fbb/prefs', userDefaults, { rememberForever: true });
 
-	const [solver, setSolver] = React.useState(undefined);
-	const [spotter, setSpotter] = useStateWithStorage(`fbb/${chain.id}/spotter`,
+	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
+	const [spotter, setSpotter] = useStateWithStorage<Spotter>(`fbb/${chain.id}/spotter`,
 		{
 			id: chain.id,
 			solves: [],
@@ -46,12 +48,12 @@ const ChainSolver = (props: ChainSolverProps) => {
 	React.useEffect(() => {
 		if (!chain) return;
 
-		const solverNodes = [];
-		const solverTraits = [];
-		const traitsConsumed = [];
+		const solverNodes = [] as SolverNode[];
+		const solverTraits = [] as SolverTrait[];
+		const traitsConsumed = [] as string[];
 
 		chain.nodes.forEach((node, nodeIndex) => {
-			const givenTraitIds = [];
+			const givenTraitIds = [] as number[];
 			node.open_traits.forEach((trait, traitIndex) => {
 				const instance = solverTraits.filter(t => t.trait === trait).length + 1;
 				const id = solverTraits.length;
@@ -85,7 +87,8 @@ const ChainSolver = (props: ChainSolverProps) => {
 				hiddenLeft,
 				open: hiddenLeft > 0,
 				spotSolve: !!spotSolve,
-				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a))[0]
+				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0],
+				oneHandTest: chain.difficultyId === 6 || (chain.difficultyId === 5 && nodeIndex > 0)
 			});
 		});
 
@@ -111,24 +114,24 @@ const ChainSolver = (props: ChainSolverProps) => {
 					traitsConsumed.push(trait);
 					const instanceCount = traitsConsumed.filter(t => t === trait).length;
 					const consumed = solverTraits.find(t => t.trait === trait && t.instance === instanceCount);
-					consumed.consumed = true;
+					if (consumed) consumed.consumed = true;
 				}
 			});
 		});
 
 		// Update trait pool to filter out consumed traits
-		const traitPool = [];
+		const traitPool = [] as string[];
 		solverTraits.filter(t => t.source === 'pool').forEach(t => {
 			if (!traitPool.includes(t.trait) && !t.consumed && !spotter.ignoredTraits.includes(t.trait))
 				traitPool.push(t.trait);
 		});
 
-		const allMatchingCrew = [];
-		const allComboCounts = [];
+		const allMatchingCrew = [] as BossCrew[];
+		const allComboCounts = [] as ComboCount[];
 		props.allCrew.forEach(crew => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
-				const nodes = [];
-				const matchesByNode = {};
+				const nodes = [] as number[];
+				const matchesByNode = {} as NodeMatches;
 				solverNodes.filter(node => node.open).forEach(node => {
 					// Crew must have every known trait
 					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
@@ -157,7 +160,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 					}
 				});
 				if (nodes.length > 0) {
-					const matchedCrew = JSON.parse(JSON.stringify(crew));
+					const matchedCrew = JSON.parse(JSON.stringify(crew)) as BossCrew;
 					matchedCrew.nodes = nodes;
 					matchedCrew.nodes_rarity = nodes.length;
 					matchedCrew.node_matches = matchesByNode;
@@ -166,8 +169,8 @@ const ChainSolver = (props: ChainSolverProps) => {
 			}
 		});
 
-		const ignoredCombos = [];
-		const ignoreCombo = (nodeIndex, combo) => {
+		const ignoredCombos = [] as IgnoredCombo[];
+		const ignoreCombo = (nodeIndex: number, combo: string[]) => {
 			if (!ignoredCombos.find(ignored => ignored.index === nodeIndex && ignored.combo.every(trait => combo.includes(trait))))
 				ignoredCombos.push({ index: nodeIndex, combo });
 		};
@@ -176,18 +179,20 @@ const ChainSolver = (props: ChainSolverProps) => {
 		//	1) Crew used to solve other nodes
 		//	2) Attempted crew
 		const confirmedSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
-			.map(node => props.allCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id).symbol);
+			.map(node => props.allCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id)?.symbol);
 		[confirmedSolves, spotter.attemptedCrew].forEach(group => {
-			group.forEach(attempt => {
+			group?.forEach(attempt => {
 				const crew = props.allCrew.find(ac => ac.symbol === attempt);
-				solverNodes.filter(node => node.open).forEach(node => {
-					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
-						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
-						const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
-						const combos = getAllCombos(traitsMatched, node.hiddenLeft);
-						combos.forEach(combo => ignoreCombo(node.index, combo));
-					}
-				});
+				if (crew) {
+					solverNodes.filter(node => node.open).forEach(node => {
+						if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
+							const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
+							const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
+							const combos = getAllCombos(traitsMatched, node.hiddenLeft);
+							combos.forEach(combo => ignoreCombo(node.index, combo));
+						}
+					});
+				}
 			});
 		});
 
@@ -203,21 +208,37 @@ const ChainSolver = (props: ChainSolverProps) => {
 					removeCrewNodeCombo(crew, ignored.index, ignored.combo);
 			});
 		});
+
 		const validatedCrew = allMatchingCrew.filter(crew => crew.nodes_rarity > 0);
 
+		// Annotate remaining exceptions to unofficial rules (i.e. alpha, one hand)
 		validatedCrew.forEach(crew => {
-			// Annotate remaining exceptions to alpha rule
-			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] };
+			crew.alpha_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as Rule;
+			crew.onehand_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as Rule;
 			Object.values(crew.node_matches).forEach(node => {
-				let combosCompliant = node.combos.length;
-				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index).alphaTest;
+				let alphaCompliant = node.combos.length, oneHandCompliant = node.combos.length;
+				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index)?.alphaTest;
 				node.combos.forEach(combo => {
-					if (!combo.every(trait => trait.localeCompare(alphaTest) === 1)) {
-						crew.alpha_rule.exceptions.push({ index: node.index, combo });
-						combosCompliant--;
+					if (alphaTest) {
+						if (!combo.every(trait => trait.localeCompare(alphaTest, 'en') === 1)) {
+							crew.alpha_rule.exceptions.push({ index: node.index, combo });
+							alphaCompliant--;
+						}
+					}
+					if (solverNodes.find(n => n.index === node.index)?.oneHandTest) {
+						const comboCount = allComboCounts.find(cc =>
+							cc.index === node.index
+								&& cc.combo.length === combo.length
+								&& cc.combo.every(trait => combo.includes(trait))
+						);
+						if (comboCount && comboCount.portals > 5) {
+							crew.onehand_rule.exceptions.push({ index: node.index, combo });
+							oneHandCompliant--;
+						}
 					}
 				});
-				if (combosCompliant === 0) crew.alpha_rule.compliant--;
+				if (alphaCompliant === 0) crew.alpha_rule.compliant--;
+				if (oneHandCompliant === 0) crew.onehand_rule.compliant--;
 			});
 		});
 

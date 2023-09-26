@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 
-type ErrorBoundaryProps = {};
+type ErrorBoundaryProps = {
+	children: JSX.Element;
+};
 
 type ErrorBoundaryState = {
 	hasError: boolean;
-	error: Error;
+	error: Error | undefined;
 };
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-	constructor(props) {
+	constructor(props: ErrorBoundaryProps | Readonly<ErrorBoundaryProps>) {
 		super(props);
 
 		this.state = {
@@ -17,11 +19,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 		};
 	}
 
-	static getDerivedStateFromError(error) {
+	static getDerivedStateFromError(error: any) {
 		return { hasError: true, error };
 	}
 
-	componentDidCatch(error, info) {
+	componentDidCatch(error: any, info: any) {
 		this.setState({ error });
 	}
 

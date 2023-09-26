@@ -2,11 +2,12 @@ import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
 type ChainTraitsProps = {
-	solver: any;
-	spotter: any;
-	updateSpotter: (spotter: any) => void;
+	solver: Solver;
+	spotter: Spotter;
+	updateSpotter: (spotter: Spotter) => void;
 };
 
 const ChainTraits = (props: ChainTraitsProps) => {
@@ -23,25 +24,24 @@ const ChainTraits = (props: ChainTraitsProps) => {
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
 		const solves = spotter.solves;
-		let solve = solves.find(solve => solve.node === nodeIndex);
+		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
 		}
 		else {
-			solve = solver.nodes[nodeIndex].solve;
-			spotter.solves.push({ node: nodeIndex, traits });
+			solves.push({ node: nodeIndex, traits });
 		}
-		updateSpotter({...spotter, solves: spotter.solves});
+		updateSpotter({...spotter, solves});
 	}
 };
 
-const traitNameInstance = (trait: any) => {
+const traitNameInstance = (trait: SolverTrait) => {
 	if (trait.poolCount > 1) return `${trait.name} (${trait.instance})`;
 	return trait.name;
 };
 
 type TraitsProgressProps = {
-	solver: any;
+	solver: Solver;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 };
 
@@ -68,7 +68,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 		</div>
 	);
 
-	function renderRow(node: any, nodeIndex: number): JSX.Element {
+	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
 		const { givenTraitIds, solve } = node;
 
 		return (
@@ -84,7 +84,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 								<TraitPicker key={`${solver.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
 									traitPool={traitPool} readonly={!node.open && !node.spotSolve}
-									trait={trait} setTrait={onTraitChange}
+									trait={trait} setTrait={onTraitSolve}
 								/>
 							)}
 						</Form.Group>
@@ -94,7 +94,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 		);
 	}
 
-	function onTraitChange(nodeIndex: number, traitIndex: number, newTrait: string): void {
+	function onTraitSolve(nodeIndex: number, traitIndex: number, newTrait: string): void {
 		const solve = solver.nodes[nodeIndex].solve;
 		solve[traitIndex] = newTrait !== '' ? newTrait : '?';
 		props.solveNode(nodeIndex, solve);
@@ -104,10 +104,10 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 type TraitPickerProps = {
 	nodeIndex: number;
 	traitIndex: number;
-	traitPool: any[];
+	traitPool: SolverTrait[];
 	readonly: boolean;
 	trait: string;
-	setTrait: (newTrait: string) => void;
+	setTrait: (nodeIndex: number, traitIndex: number, newTrait: string) => void;
 };
 
 const TraitPicker = (props: TraitPickerProps) => {
@@ -117,13 +117,13 @@ const TraitPicker = (props: TraitPickerProps) => {
 		setActiveTrait(props.trait);
 	}, [props.trait]);
 
-	const traitOptions = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
+	const traitOptions: TraitOption[] = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
 		.map(t => {
 			return {
 				key: t.id,
 				value: t.trait,
 				text: t.name
-			};
+			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
@@ -135,7 +135,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 				selection
 				options={traitOptions}
 				value={activeTrait}
-				onChange={(e, { value }) => onTraitChange(value)}
+				onChange={(e, { value }) => onTraitChange(value as string)}
 				closeOnChange
 			/>
 		</Form.Field>
@@ -148,7 +148,7 @@ const TraitPicker = (props: TraitPickerProps) => {
 };
 
 type TraitsPossibleProps = {
-	solver: any;
+	solver: Solver;
 };
 
 const TraitsPossible = (props: TraitsPossibleProps) => {
@@ -173,15 +173,15 @@ const TraitsPossible = (props: TraitsPossibleProps) => {
 };
 
 type TraitsChecklistProps = {
-	solver: any;
-	spotter: any;
-	updateSpotter: (spotter: any) => void;
+	solver: Solver;
+	spotter: Spotter;
+	updateSpotter: (spotter: Spotter) => void;
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
 	const { solver, spotter, updateSpotter } = props;
 
-	const traits = [];
+	const traits = [] as string[];
 	solver.traits.forEach(t => {
 		if (!traits.includes(t.trait)) traits.push(t.trait);
 	});
@@ -190,7 +190,7 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 				key: trait,
 				value: trait,
 				text: allTraits.trait_names[trait]
-			};
+			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
@@ -206,14 +206,14 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 				selection
 				options={traitOptions}
 				value={spotter.ignoredTraits}
-				onChange={(e, { value }) => updateSpotter({...spotter, ignoredTraits: value})}
+				onChange={(e, { value }) => updateSpotter({...spotter, ignoredTraits: value as string[]})}
 			/>
 		</div>
 	);
 };
 
 type TraitsExporterProps = {
-	solver: any;
+	solver: Solver;
 };
 
 const TraitsExporter = (props: TraitsExporterProps) => {
@@ -236,7 +236,7 @@ const TraitsExporter = (props: TraitsExporterProps) => {
 					output += traits[node.givenTraitIds[m]].name;
 				if (m == 0) output += '\n';
 			}
-			output += '\t\t' + node.solvedTraitIds.length + '\n';
+			output += '\t\t' + node.solve.length + '\n';
 		}
 		output += '\n';
 		traits.filter(t => t.source === 'pool').forEach(t => {

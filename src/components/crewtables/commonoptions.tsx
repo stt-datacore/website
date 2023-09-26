@@ -1,16 +1,26 @@
 import React from 'react';
-import { Form, Dropdown } from 'semantic-ui-react';
+import { Form, Dropdown, Icon } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { isImmortal } from '../../utils/crewutils';
+import { CompletionState, PlayerCrew } from '../../model/player';
+
+export interface TraitOptions {
+	key: string;
+	value: string;
+	text: string;
+}
 
 type CrewRarityFilterProps = {
 	rarityFilter: number[];
-	setFilterRarity: (rarityFilter: number[]) => void;
+	setRarityFilter: (rarityFilter: number[]) => void;
+	altTitle?: string;
+	multiple?: boolean;
 };
 
-export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
+export const RarityFilter = (props: CrewRarityFilterProps) => {
 	const rarityFilterOptions = [
 		{ key: '1*', value: 1, text: '1* Common' },
 		{ key: '2*', value: 2, text: '2* Uncommon' },
@@ -22,13 +32,13 @@ export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder='Filter by rarity'
+				placeholder={props.altTitle ?? 'Filter by rarity'} 
 				clearable
-				multiple
+				multiple={props.multiple ?? true}
 				selection
 				options={rarityFilterOptions}
-				value={props.rarityFilter}
-				onChange={(e, { value }) => props.setRarityFilter(value)}
+				value={ props.multiple === false ? (props.rarityFilter?.length ? props.rarityFilter[0] : '') : props.rarityFilter}
+				onChange={(e, { value }) => props.setRarityFilter(props.multiple === false ? (value === '' ? [] : [ value as number ]) : value as number[])}
 				closeOnChange
 			/>
 		</Form.Field>
@@ -43,7 +53,7 @@ type CrewTraitFilterProps = {
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
-	const [traitOptions, setTraitOptions] = React.useState(undefined);
+	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		const options = Object.keys(allTraits.trait_names).map(trait => {
@@ -51,7 +61,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				key: trait,
 				value: trait,
 				text: allTraits.trait_names[trait]
-			};
+			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
 	}, []);
@@ -75,7 +85,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 					selection
 					options={traitOptions}
 					value={props.traitFilter}
-					onChange={(e, { value }) => props.setTraitFilter(value)}
+					onChange={(e, { value }) => props.setTraitFilter(value as string[])}
 					closeOnChange
 				/>
 			</Form.Field>
@@ -86,10 +96,74 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 						selection
 						options={minMatchOptions.filter(option => option.value > 0)}
 						value={props.minTraitMatches}
-						onChange={(e, { value }) => props.setMinTraitMatches(value)}
+						onChange={(e, { value }) => props.setMinTraitMatches(value as number)}
 					/>
 				</Form.Field>
 			)}
 		</React.Fragment>
 	);
 };
+
+
+export function descriptionLabel(crew: PlayerCrew, showOwned?: boolean): JSX.Element {
+	const immortal = isImmortal(crew);
+	const counts = [
+		{ name: 'event', count: crew.events },
+		{ name: 'collection', count: crew.collections.length }
+	];
+	const formattedCounts = counts.map((count, idx) => (
+		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
+			{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
+		</span>
+	)).reduce((prev, curr) => <>{prev}&nbsp;{curr}</>);
+	return (
+		<div>
+			<React.Fragment>
+				{showOwned && <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>}
+				{crew.favorite && <Icon name='heart' />}
+			</React.Fragment>
+			{immortal &&
+				<React.Fragment>
+					{crew.immortal > 0 && <span><Icon name='snowflake' />{crew.immortal} frozen</span>}
+					{crew.immortal === CompletionState.Immortalized && <span>Immortalized, {formattedCounts}</span>}
+				</React.Fragment>
+			}
+			{!immortal &&
+				<React.Fragment>
+					{crew.prospect && <Icon name='add user' />}
+					{crew.active_status > 0 && <Icon name='space shuttle' />}
+					<span>Level {crew.level}, </span>
+					{formattedCounts}
+				</React.Fragment>
+			}
+		</div>
+	);
+}
+
+type CrewPortalFilterProps = {
+	portalFilter?: boolean;
+	setPortalFilter: (portalFilter: boolean | undefined) => void;
+	altTitle?: string;
+};
+
+export const PortalFilter = (props: CrewPortalFilterProps) => {
+	const portalFilterOptions = [
+		{ key: 'true', value: true, text: 'In Portal' },
+		{ key: 'false', value: false, text: 'Not In Portal' },
+	];
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Filter by portal status'} 
+				clearable
+				selection
+				options={portalFilterOptions}
+				value={props.portalFilter}
+				onChange={(e, { value }) => props.setPortalFilter(value === '' ? undefined : value as boolean)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+

@@ -6,6 +6,7 @@ import ItemSources from '../components/itemsources';
 
 import { calculateCrewDemands } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
+import { MergedContext } from '../context/mergedcontext';
 
 type CrewFullEquipTreeProps = {
 	visible: boolean;
@@ -15,8 +16,12 @@ type CrewFullEquipTreeProps = {
 };
 
 class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
 	render() {
 		const { crew, items } = this.props;
+		const { playerData } = this.context;
 
 		if (!crew || !this.props.visible) {
 			return <span />;
@@ -64,6 +69,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					</p>
 					<Grid columns={3} centered padded>
 						{demands.map((entry, idx) => (
+							entry.equipment &&
 							<Grid.Column key={idx}>
 								<Popup
 									trigger={
@@ -71,6 +77,11 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
 												<ItemDisplay
+													playerData={playerData}
+													allItems={items}
+													itemSymbol={entry.equipment.symbol}
+													targetGroup='crew_page_items'
+													style={{marginRight: "0.5em"}}
 													src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 													size={48}
 													maxRarity={entry.equipment.rarity}
@@ -108,9 +119,12 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 		function copyItems(): void {
 			let output = 'Item,Rarity,Needed,Symbol';
 			demands.sort((a, b) => {
+				if (!a.equipment) return 1;
+				else if (!b.equipment) return -1;
 				if (a.equipment.name === b.equipment.name) return b.equipment.rarity - a.equipment.rarity;
 				return a.equipment.name.localeCompare(b.equipment.name);
 			}).forEach(entry => {
+				if (!entry.equipment) return;
 				if (output !== '') output += '\n';
 				output += `${entry.equipment.name},${entry.equipment.rarity},${entry.count},${entry.equipment.symbol}`;
 			});

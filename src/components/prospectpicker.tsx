@@ -1,11 +1,15 @@
 import React from 'react';
-import { Table, Rating, Dropdown, Button } from 'semantic-ui-react';
+import { Table, Rating, Dropdown, Button, StrictCheckboxProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
+import { CrewMember } from '../model/crew';
+import { CompactCrew, PlayerCrew } from '../model/player';
+import { AvatarIcon, LockedProspect } from '../model/game-elements';
+import { DropDownItem } from '../utils/misc';
 
 type ProspectPickerProps = {
-	pool: any[];
-	prospects: any[];
-	setProspects: (prospects: any[]) => void;
+	pool: (CrewMember | PlayerCrew)[];
+	prospects: LockedProspect[];
+	setProspects: (prospects: LockedProspect[]) => void;
 };
 
 const ProspectPicker = (props: ProspectPickerProps) => {
@@ -14,13 +18,13 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 	enum OptionsState {
 		Uninitialized,
 		Initializing,
-		Ready
+		Initialized,
 	};
 
 	const [selection, setSelection] = React.useState('');
 	const [options, setOptions] = React.useState({
 		state: OptionsState.Uninitialized,
-		list: []
+		list: [] as DropDownItem[]
 	});
 
 	if (pool.length == 0) return (<></>);
@@ -34,7 +38,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 				options={options.list}
 				value={selection}
 				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
-				onChange={(e, { value }) => setSelection(value)}
+				onChange={(e, { value }) => setSelection(value as string)}
 			/>
 			<Button compact icon='add user' color='green' content='Add Crew' onClick={() => { addProspect(); }} style={{ marginLeft: '1em' }} />
 			<Table celled striped collapsing unstackable compact="very">
@@ -45,7 +49,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 							<Table.Cell><Link to={`/crew/${p.symbol}/`}>{p.name}</Link></Table.Cell>
 							<Table.Cell>
 								<Rating size='large' icon='star' rating={p.rarity} maxRating={p.max_rarity}
-									onRate={(e, {rating, maxRating}) => { fuseProspect(prospectNum, rating); }} />
+									onRate={(e, {rating, maxRating}) => { fuseProspect(prospectNum, rating as number); }} />
 							</Table.Cell>
 							<Table.Cell>
 								<Button compact icon='trash' color='red' onClick={() => deleteProspect(prospectNum)} />
@@ -64,14 +68,14 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 		});
 		// Populate inside a timeout so that UI can update with a "Loading" placeholder first
 		setTimeout(() => {
-			const populatePromise = new Promise((resolve, reject) => {
+			const populatePromise = new Promise<DropDownItem[]>((resolve, reject) => {
 				const poolList = pool.map((c) => (
 					{
 						key: c.symbol,
 						value: c.symbol,
 						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
 						text: c.name
-					}
+					} as DropDownItem
 				));
 				resolve(poolList);
 			});
@@ -93,13 +97,14 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 				name: valid.name,
 				imageUrlPortrait: valid.imageUrlPortrait,
 				rarity: valid.max_rarity,
-				max_rarity: valid.max_rarity
-			};
+				max_rarity: valid.max_rarity,
+			} as LockedProspect;
 			prospects.push(prospect);
 			setProspects([...prospects]);
 		};
 		setSelection('');
 	}
+
 
 	function fuseProspect(prospectNum: number, rarity: number): void {
 		if (rarity == 0) return;

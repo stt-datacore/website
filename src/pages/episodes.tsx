@@ -8,6 +8,9 @@ import { getEpisodeName } from '../utils/episodes';
 
 class EpisodesPage extends PureComponent {
 	render() {
+		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
+
+		const foreColor = theme === 'dark' ? 'white' : 'black';
 		return (
 			<StaticQuery
 				query={graphql`
@@ -34,6 +37,7 @@ class EpisodesPage extends PureComponent {
 				`}
 				render={data => (
 					<Layout title='Episodes'>
+						<></>
 						<Item.Group>
 							{data.allEpisodesJson.edges.map(({ node }, index) => (
 								<Item key={index}>
@@ -49,7 +53,7 @@ class EpisodesPage extends PureComponent {
 										<Item.Header as="a" onClick={() => navigate(`/episode${node.fields.slug}`)}>
 											{getEpisodeName(node)}
 										</Item.Header>
-										<Item.Meta>Total stars: {node.total_stars}</Item.Meta>
+										<Item.Meta><span style={{color:foreColor}}>Total stars: {node.total_stars}</span></Item.Meta>
 										<Item.Description>
 											<p>{node.description}</p>
 										</Item.Description>

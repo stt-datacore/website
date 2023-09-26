@@ -5,16 +5,20 @@ import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
 import RankedRewardsTab from './event_info_tabs/ranked_rewards';
 import LeaderboardTab from './event_info_tabs/leaderboard';
+import { GameEvent } from '../model/player';
+import { EventData } from '../utils/events';
+import { CrewHoverStat } from './hovering/crewhoverstat';
 
 type EventInfoModalProps = {
 	instanceId: number,
 	image: string,
-	hasDetails: boolean,
+	hasDetails?: boolean,
 	leaderboard: Array<object>,
 }
 
-function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoModalProps) {
-	const [eventData, setEventData] = React.useState(null);
+function EventInfoModal(props: EventInfoModalProps) {
+	const {instanceId, image, hasDetails, leaderboard} = props;
+	const [eventData, setEventData] = React.useState<GameEvent | EventData | null>(null);
 
 	React.useEffect(() => {
 		async function fetchEventData() {
@@ -33,7 +37,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Event Information',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<EventInformationTab eventData={eventData} />
+					{eventData ? <EventInformationTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},
@@ -41,7 +45,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Threshold Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<ThresholdRewardsTab eventData={eventData} />
+					{eventData ? <ThresholdRewardsTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},
@@ -49,7 +53,7 @@ function EventInfoModal({instanceId, image, hasDetails, leaderboard}: EventInfoM
 			menuItem: 'Ranked Rewards',
 			render: () => (
 				<Tab.Pane attached={false}>
-					<RankedRewardsTab eventData={eventData} />
+					{eventData ? <RankedRewardsTab eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},

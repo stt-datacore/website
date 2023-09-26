@@ -11,34 +11,36 @@ import { VoyageStats } from '../components/voyagecalculator/voyagestats';
 
 import { mergeShips } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
+import { CompletionState, PlayerCrew, PlayerData, Voyage, VoyageBase, VoyageInfo, VoyageSkills } from '../model/player';
+import { Schematics, Ship } from '../model/ship';
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { CrewMember } from '../model/crew';
+import { CrewHoverStat } from './hovering/crewhoverstat';
+import { crewCopy } from '../utils/crewutils';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
-const AllDataContext = React.createContext();
+export const VoyageContext = React.createContext<MergedData>({} as MergedData);
 
-type VoyageCalculatorProps = {
-	playerData: any;
-	allCrew: any;
-};
+const VoyageCalculator = () => {
+	const { playerData, allCrew, items } = React.useContext(MergedContext);
 
-const VoyageCalculator = (props: VoyageCalculatorProps) => {
-	const { playerData, allCrew } = props;
-
-	const [activeCrew, setActiveCrew] = useStateWithStorage('tools/activeCrew', undefined);
-	const [allShips, setAllShips] = React.useState(undefined);
-
+	const [activeCrew, setActiveCrew] = useStateWithStorage<PlayerCrew[] | undefined>('tools/activeCrew', undefined);
+	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
+	
 	if (!allShips) {
 		fetchAllShips();
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
 	// Create fake ids for active crew based on rarity, level, and equipped status
-	const activeCrewIds = activeCrew.map(ac => {
+	const activeCrewIds = activeCrew?.map(ac => {
 		return {
 			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
 			active_status: ac.active_status
 		};
 	});
 
-	const myCrew = JSON.parse(JSON.stringify(playerData.player.character.crew));
+	const myCrew = crewCopy(playerData.player.character.crew) as PlayerCrew[];
 	myCrew.forEach((crew, crewId) => {
 		crew.id = crewId+1;
 
@@ -56,9 +58,9 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 		// Voyage roster generation looks for active_status property
 		crew.active_status = 0;
-		if (crew.immortal === 0) {
+		if (crew.immortal <= 0) {
 			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
-			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			const active = activeCrewIds?.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crew.active_status = active.active_status;
 				active.id = '';	// Clear this id so that dupes are counted properly
@@ -71,24 +73,24 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		return (<Message>Sorry, but you can't voyage just yet!</Message>);
 
 	const allData = {
-		allCrew, allShips, playerData
-	};
+		allCrew, allShips, playerData, items
+	} as MergedData;
 
 	return (
-		<AllDataContext.Provider value={allData}>
+		<VoyageContext.Provider value={allData}>
 			<VoyageMain myCrew={myCrew} />
-		</AllDataContext.Provider>
+		</VoyageContext.Provider>
 	);
 
 	async function fetchAllShips() {
-		const [shipsResponse] = await Promise.all([
+		const [shipsResponse ] = await Promise.all([
 			fetch('/structured/ship_schematics.json')
 		]);
-		const allships = await shipsResponse.json();
+		const allships = await shipsResponse.json() as Schematics[];
 		const ships = mergeShips(allships, playerData.player.character.ships);
 
 		const ownedCount = playerData.player.character.ships.length;
-		playerData.player.character.ships.sort((a, b) => a.archetype_id - b.archetype_id).forEach((ship, idx) => {
+		playerData.player.character.ships.sort((a, b) => (a?.archetype_id ?? 0) - (b?.archetype_id ?? 0)).forEach((ship, idx) => {
 			// allShips is missing the default ship for some reason (1* Constellation Class), so manually add it here from playerData
 			if (ship.symbol === 'constellation_ship') {
 				const constellation = {
@@ -100,7 +102,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 					icon: { file: '/ship_previews_fed_constellationclass' },
 					traits: ['federation','explorer'],
 					owned: true
-				};
+				} as Ship;
 				ships.push(constellation);
 			}
 			const myShip = ships.find(s => s.symbol === ship.symbol);
@@ -118,14 +120,14 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 };
 
 type VoyageMainProps = {
-	myCrew: any[];
+	myCrew: PlayerCrew[];
 };
 
 const VoyageMain = (props: VoyageMainProps) => {
 	const { myCrew } = props;
 
-	const [voyageData, setVoyageData] = useStateWithStorage('tools/voyageData', undefined);
-	const [voyageConfig, setVoyageConfig] = React.useState(undefined);
+	const [voyageData, setVoyageData] = useStateWithStorage<VoyageInfo | undefined>('tools/voyageData', undefined);
+	const [voyageConfig, setVoyageConfig] = React.useState<VoyageBase | undefined>(undefined);
 	const [showInput, setShowInput] = React.useState(true);
 
 	if (!voyageConfig) {
@@ -142,7 +144,7 @@ const VoyageMain = (props: VoyageMainProps) => {
 		}
 		else {
 			// voyageData not found in cache, config will be blank voyage
-			setVoyageConfig({ skills: {} });
+			setVoyageConfig({ skills: {} as VoyageSkills} as VoyageBase);
 		}
 		return (<></>);
 	}
@@ -157,10 +159,11 @@ const VoyageMain = (props: VoyageMainProps) => {
 };
 
 const VoyageActiveCard = (props: any) => {
-	const { allShips } = React.useContext(AllDataContext);
+	const { allShips } = React.useContext(VoyageContext);
 	const { voyageConfig, showInput, setShowInput } = props;
 
-	const ship = allShips.find(s => s.id === voyageConfig.ship_id);
+	const ship = allShips?.find(s => s.id === voyageConfig.ship_id);
+	if (!ship) return <></>
 	const msgTypes = {
 		started: 'has been running for',
 		failed: 'failed at',
@@ -172,7 +175,7 @@ const VoyageActiveCard = (props: any) => {
 	return (
 		<Card fluid>
 			<Card.Content>
-				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
+				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 				<Card.Header>{voyageConfig.ship_name}{ship.name !== voyageConfig.ship_name ? ` (${ship.name})` : ''}</Card.Header>
 				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', rowGap: '1em' }}>
 					<div>
@@ -203,37 +206,45 @@ const VoyageActiveCard = (props: any) => {
 };
 
 type VoyageActiveProps = {
-	voyageConfig: any;
-	myCrew: any[];
+	voyageConfig: VoyageBase;
+	myCrew: PlayerCrew[];
 };
 
 const VoyageActive = (props: VoyageActiveProps) => {
-	const { allShips, playerData } = React.useContext(AllDataContext);
+	const { allShips, playerData, allCrew, items } = React.useContext(VoyageContext);
 	const { voyageConfig, myCrew } = props;
+
+	if (!allShips) return <></>;
 
 	return (
 		<React.Fragment>
 			<VoyageStats
-				voyageData={voyageConfig}
+				voyageData={voyageConfig as Voyage}
 				ships={allShips}
 				showPanels={voyageConfig.state === 'started' ? ['estimate'] : ['rewards']}
 				playerItems={playerData.player.character.items}
 				roster={myCrew}
 				dbid={playerData.player.dbid}
+				allCrew={allCrew}
+				allItems={items}
+				playerData={playerData}
 			/>
 			{voyageConfig.state !== 'pending' && <CIVASMessage voyageConfig={voyageConfig} />}
+			<CrewHoverStat targetGroup='voyageRewards_crew' />
+			<ItemHoverStat targetGroup='voyageRewards_item' />
+			
 		</React.Fragment>
 	)
 };
 
 type VoyageInputProps = {
-	voyageConfig: any;
-	myCrew: any[];
+	voyageConfig: VoyageBase;
+	myCrew: PlayerCrew[];
 };
 
 const VoyageInput = (props: VoyageInputProps) => {
-	const { allCrew, allShips, playerData } = React.useContext(AllDataContext);
-	const [voyageConfig, setVoyageConfig] = React.useState(JSON.parse(JSON.stringify(props.voyageConfig)));
+	const { allCrew, allShips, playerData } = React.useContext(VoyageContext);
+	const [voyageConfig, setVoyageConfig] = React.useState<Voyage>(JSON.parse(JSON.stringify(props.voyageConfig)));
 	const allData = {
 		allCrew, allShips, playerData
 	};

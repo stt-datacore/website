@@ -4,6 +4,9 @@ import { ShuttleSeat } from './shuttleutils';
 
 import ItemDisplay from '../../components/itemdisplay';
 import allFactions from '../../../static/structured/factions.json';
+import { MergedContext } from '../../context/mergedcontext';
+import { PlayerCrew } from '../../model/player';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const ShuttleFactionView = (props: { factionId: number, size: number }) => {
 	const faction = allFactions.find(af => af.id === props.factionId);
@@ -27,19 +30,24 @@ export const SeatSkillView = (props: { seat: ShuttleSeat }) => {
 	);
 };
 
-export const SeatCrewView = (props: { crew: any }) => {
+export const SeatCrewView = (props: { crew: PlayerCrew }) => {
 	const { crew } = props;
-	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+	// const context = React.useContext(MergedContext);
+	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 	return (
-		<React.Fragment>
+		<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : undefined }}>
 			<ItemDisplay
+				// itemSymbol={crew.symbol}
+				// allCrew={context.allCrew}
+				// allItems={context.items}
+				// playerData={context.playerData}
+				// targetGroup='eventTarget'
 				src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 				size={32}
 				maxRarity={crew.max_rarity}
 				rarity={crew.rarity}
-				style={{ verticalAlign: 'middle' }}
 			/>
 			<span style={{ padding: '0 .5em' }}>{crew.name}</span>
-		</React.Fragment>
+		</div>
 	);
 };

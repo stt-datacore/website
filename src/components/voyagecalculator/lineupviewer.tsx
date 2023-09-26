@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button, Table, Popup, Icon, Card, Label } from 'semantic-ui-react';
+import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
 import CONFIG from '../CONFIG';
 import allTraits from '../../../static/structured/translation_en.json';
@@ -7,29 +7,46 @@ import allTraits from '../../../static/structured/translation_en.json';
 import ItemDisplay from '../itemdisplay';
 
 import { useStateWithStorage } from '../../utils/storage';
+import { Ship } from '../../model/ship';
+import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
+import { CrewMember, Skill } from '../../model/crew';
+import { HoverStat } from '../hovering/hoverstat';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { MergedContext } from '../../context/mergedcontext';
 
 const POPUP_DELAY = 500;
-const voyScore = v => v.core + (v.range_min + v.range_max)/2;
+const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
 
 type LineupViewerProps = {
-	voyageData: any;
-	ship: any;
-	roster: any;
+	voyageData: Voyage;
+	ship: Ship;
+	roster: PlayerCrew[];
 	dbid: string;
 };
 
 const LineupViewer = (props: LineupViewerProps) => {
 	const { voyageData, ship, roster, dbid } = props;
 
-	const getBestRank = (crew, seatSkill) => {
+	const getBestRank = (crew: PlayerCrew, seatSkill: string) => {
 		const best = {
 			skill: 'None',
 			rank: 1000
 		};
 		Object.keys(crew.skills).forEach(crewSkill => {
-			const rank = skillRankings.find(sr => sr.skill === crewSkill)
-				.roster.filter(c => Object.keys(c.skills).includes(seatSkill) && !usedCrew.includes(c.id))
-				.map(c => c.id).indexOf(crew.id) + 1;
+			let skr = skillRankings.find(sr => sr.skill === crewSkill);
+
+			// null check not necessary from code perspective but VS Code
+			// is still linting:
+
+			// const rank = skr?.roster.filter(c => Object.keys(c.skills)
+			// 	.includes(seatSkill) && !usedCrew.includes(c.id))
+			// 	.map(c => c.id).indexOf(crew.id) + 1;
+
+			// proposed fix:
+			const rank = (skr?.roster?.filter(c => Object.keys(c.skills)
+				.includes(seatSkill) && !usedCrew.includes(c.id))
+				?.map(c => c.id)?.indexOf(crew.id) ?? -1) + 1;
+
 			// Prefer seat skill if no scrolling is necessary
 			const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
 			const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
@@ -70,13 +87,14 @@ const LineupViewer = (props: LineupViewerProps) => {
 				return vs2 - vs1;
 			})
 	}));
-	const usedCrew = [];
+
+	const usedCrew = [] as number[];
 	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
-		const { crew, name, trait, skill } = Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry);
+		const { crew, name, trait, skill } = (Object.values(voyageData.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
 		const bestRank = getBestRank(crew, skill);
 		if (!crew.imageUrlPortrait)
 			crew.imageUrlPortrait =
-				`${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+				`${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		usedCrew.push(crew.id);
 		return {
 			crew, name, trait, skill, bestRank
@@ -91,9 +109,10 @@ const LineupViewer = (props: LineupViewerProps) => {
 	};
 
 	if (ship) {
+		if (!ship.index) ship.index = { left: 0, right: 0 };
 		shipData.direction = ship.index.right < ship.index.left ? 'right' : 'left';
 		shipData.index = ship.index[shipData.direction] ?? 0;
-		shipData.shipBonus = ship.traits.includes(voyageData.ship_trait) ? 150 : 0;
+		shipData.shipBonus = ship.traits?.includes(voyageData.ship_trait) ? 150 : 0;
 		shipData.crewBonus = voyageData.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
@@ -101,9 +120,9 @@ const LineupViewer = (props: LineupViewerProps) => {
 };
 
 type ViewPickerProps = {
-	voyageData: any;
-	ship: any;
-	shipData: any;
+	voyageData: Voyage;
+	ship: Ship;
+	shipData: {direction: string, index: number, shipBonus: number, crewBonus: number };
 	assignments: any[];
 	dbid: string;
 };
@@ -137,7 +156,7 @@ const ViewPicker = (props: ViewPickerProps) => {
 type ViewProps = {
 	layout: string;
 	voyageData: any;
-	ship: any;
+	ship: Ship;
 	shipData: any;
 	assignments: any[];
 };
@@ -175,14 +194,14 @@ const TableView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}` as SemanticICONS} />{shipData.index}
 										</span>
 									} />
 								</span>
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageData.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
@@ -207,7 +226,7 @@ const TableView = (props: ViewProps) => {
 								<Table.Cell width={5}>{name}</Table.Cell>
 								<Table.Cell width={8}>
 									<Popup mouseEnterDelay={POPUP_DELAY} trigger={
-										<div style={{ cursor: 'help' }}>
+										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 											{!compact &&
 												<span style={{ paddingRight: '.3em' }}>
 													<ItemDisplay
@@ -219,7 +238,7 @@ const TableView = (props: ViewProps) => {
 													/>
 												</span>
 											}
-											<span style={{ fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
+											<span style={{ marginLeft: "0.25em", fontSize: `${compact ? '1em' : '1.1em'}`, fontWeight: 'bolder' }}>{crew.name}</span>
 										</div>
 									}>
 										<Popup.Content>
@@ -252,12 +271,17 @@ const GridView = (props: ViewProps) => {
 	const { layout, voyageData, ship, shipData, assignments } = props;
 
 	return (
-		<React.Fragment>
+		<React.Fragment>			
+			
+
 			{ship && renderShip()}
 			{layout === 'grid-cards' &&
-				<Grid columns={6} doubling centered>
-					{renderCards()}
-				</Grid>
+				<div>
+					<CrewHoverStat useBoundingClient={true} targetGroup='voyageLineup' />
+					<Grid columns={6} doubling centered>
+						{renderCards()}
+					</Grid>
+				</div>
 			}
 			{layout === 'grid-icons' &&
 				<Grid doubling centered textAlign='center'>
@@ -284,14 +308,14 @@ const GridView = (props: ViewProps) => {
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
-											<Icon name={`arrow ${shipData.direction}`} />{shipData.index}
+											<Icon name={`arrow ${shipData.direction}` as SemanticICONS} />{shipData.index}
 										</span>
 									} />
 								</span>
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits.includes(voyageData.ship_trait) &&
+							{ship.traits?.includes(voyageData.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
@@ -302,7 +326,7 @@ const GridView = (props: ViewProps) => {
 			</Table>
 		);
 	}
-
+	
 	function renderCards(): JSX.Element {
 		return (
 			<React.Fragment>
@@ -463,6 +487,9 @@ type AssignmentCardProps = {
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 	const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replaceAll('/', '_')}.png`;
+	
+	const context = React.useContext(MergedContext);
+
 	return (
 		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
 			{showFinder &&
@@ -472,6 +499,10 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			}
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
+					allCrew={context.allCrew}
+					playerData={context.playerData}
+					targetGroup='voyageLineup'
+					itemSymbol={crew.symbol}					
 					src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 					size={96}
 					maxRarity={crew.max_rarity}
@@ -507,7 +538,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			<React.Fragment>
 				{Object.keys(crew.skills).map(skill =>
 					<Label key={skill}>
-						{CONFIG.SKILLS_SHORT.find(c => c.name === skill).short}{` `}
+						{CONFIG.SKILLS_SHORT.find(c => c.name === skill)?.short}{` `}
 						{Math.floor(voyScore(crew.skills[skill]))}
 					</Label>
 				)}
@@ -549,13 +580,13 @@ const CrewFinder = (props: CrewFinderProps) => {
 	if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
-			trigger: <Icon name='snowflake' />
+			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='snowflake' /></div>
 		};
 	}
 	else if (crew.active_status === 2) {
 		popup = {
 			content: 'On shuttle',
-			trigger: <Icon name='space shuttle' />
+			trigger: <div style={{textAlign: "center", marginTop: "-0.6em" }}><Icon name='space shuttle' /></div>
 		};
 	}
 	return (

@@ -6,9 +6,12 @@ import CONFIG from '../../components/CONFIG';
 import { formatTierLabel } from '../../utils/crewutils';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { PlayerCrew } from '../../model/player';
+import { CrewMember } from '../../model/crew';
+import * as moment from  'moment';
 
 type CrewCellProps = {
-	crew: any;
+	crew: PlayerCrew | CrewMember;
 };
 
 export const CrewTraitMatchesCell = (props: any) => {
@@ -56,7 +59,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b>{crew.cab_ov}</b><br />
-				<small>{rarityLabels[parseInt(crew.max_rarity)-1]} #{crew.cab_ov_rank}</small>
+				<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b>#{crew.ranks.voyRank}</b><br />
@@ -73,6 +76,9 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					<Table.Cell key={skill.name} />
 				)
 			)}
+			<Table.Cell textAlign='center'>
+				{moment(crew.date_added).format("MMMM Do YYYY")}
+			</Table.Cell>
 		</React.Fragment>
 	);
 };
@@ -95,6 +101,9 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.initial_cooldown >= 0 && <><b>{crew.action.initial_cooldown}</b>s</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
+				{crew.action.cooldown >= 0 && <><b>{crew.action.cycle_time}</b>s</>}
+			</Table.Cell>
+			<Table.Cell textAlign='center'>
 				{crew.action.cooldown >= 0 && <><b>{crew.action.cooldown}</b>s</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
@@ -107,7 +116,7 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.ability && <>{crew.action.ability_text}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.ability && <>{crew.action.ability_trigger}</>}
+				{crew.action.ability && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</> || <>None</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{crew.action.charge_phases && <>{crew.action.charge_text}</>}

@@ -2,7 +2,9 @@ import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Input, Icon } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
+const FLAG_ONEHAND = '\u03A8';
 const FLAG_ALPHA = '\u03B1';
 const FLAG_UNIQUE = '\u00B5';
 const FLAG_NONOPTIMAL = '\u03B9';
@@ -17,10 +19,11 @@ export const exportDefaults = {
 	coverage_format: 'italic',
 	crew_traits: 'show',
 	duplicates: 'number',
+	flag_onehand: FLAG_ONEHAND,
 	flag_alpha: FLAG_ALPHA,
 	flag_unique: FLAG_UNIQUE,
 	flag_nonoptimal: FLAG_NONOPTIMAL
-};
+} as ExportPreferences;
 
 const exportCompact = {
 	header: 'hide',
@@ -32,12 +35,13 @@ const exportCompact = {
 	coverage_format: 'none',
 	crew_traits: 'hide',
 	duplicates: 'ignore',
+	flag_onehand: '',
 	flag_alpha: '',
 	flag_unique: '',
 	flag_nonoptimal: ''
-};
+} as ExportPreferences;
 
-const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPrefs: any) => {
+const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: ExportPreferences) => {
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -48,7 +52,8 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 		const comps = [compareTraits, compareNotesAsc, compareCrew, compareScore];
 		let test = 0;
 		while (comps.length > 0 && test === 0) {
-			test = comps.shift()(a, b);
+			let shtest = comps.shift();
+			test = shtest ? shtest(a, b) : 0;
 		}
 		return test;
 	};
@@ -63,14 +68,14 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 					name += ` ${needed}`;
 				}
 			}
-			if (alphaTest !== '' && trait.localeCompare(alphaTest) < 0)
+			if (alphaTest !== '' && trait.localeCompare(alphaTest, 'en') < 0)
 				name += `-${prefValue(exportPrefs, 'flag_alpha')}`;
 			return name;
 		};
 		return traits.map(t => traitNameInstance(t)).sort((a, b) => a.localeCompare(b)).join(', ');
 	};
 
-	const formatCrewName = (crew: any) => {
+	const formatCrewName = (crew: BossCrew) => {
 		let name = prefValue(exportPrefs, 'delimiter') === ',' ? crew.name.replace(/[,\.\(\)\[\]"“”]/g, '') : crew.name;
 		if (crew.nodes_rarity > 1) name = formatValue(prefValue(exportPrefs, 'coverage_format'), name);
 		return name;
@@ -88,6 +93,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 			else if (prefValue(exportPrefs, 'bullet') === 'simple')
 				groupList += `-`;
 			if (row.notes.nonOptimal) groupList += prefValue(exportPrefs, 'flag_nonoptimal');
+			if (row.notes.oneHandException) groupList += prefValue(exportPrefs, 'flag_onehand');
 			if (row.notes.alphaException) groupList += prefValue(exportPrefs, 'flag_alpha');
 			if (row.notes.uniqueCrew) groupList += prefValue(exportPrefs, 'flag_unique');
 			if (groupList !== '') groupList += ' ';
@@ -114,7 +120,7 @@ const exportNodeGroups = (node: any, nodeGroups: any, traitData: any[], exportPr
 	return output;
 };
 
-const prefValue = (prefs: any, field: string) => {
+const prefValue = (prefs: ExportPreferences, field: string) => {
 	return prefs[field] ?? exportDefaults[field];
 };
 
@@ -127,7 +133,7 @@ const formatValue = (format: string, value: string) => {
 	return formattedValue;
 };
 
-const nodeTraits = (node: any) => {
+const nodeTraits = (node: SolverNode) => {
 	const traitName = (trait: string, index: number) => {
 		let name = allTraits.trait_names[trait];
 		if (node.spotSolve && index >= node.givenTraitIds.length)
@@ -140,10 +146,10 @@ const nodeTraits = (node: any) => {
 };
 
 type CrewNodeExporterProps = {
-	node: any;
-	nodeGroups: any;
-	traits: any[];
-	exportPrefs: any;
+	node: SolverNode;
+	nodeGroups: FilteredGroup[];
+	traits: SolverTrait[];
+	exportPrefs: ExportPreferences;
 };
 
 export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
@@ -168,10 +174,10 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 };
 
 type CrewFullExporterProps = {
-	solver: any;
-	optimizer: any;
-	exportPrefs: any;
-	setExportPrefs: (prefs: any) => void;
+	solver: Solver;
+	optimizer: Optimizer;
+	exportPrefs: ExportPreferences;
+	setExportPrefs: (prefs: ExportPreferences) => void;
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
@@ -188,7 +194,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		solver.nodes.forEach(node => {
 			let nodeList = '';
 			if (node.open) {
-				nodeList = exportNodeGroups(node, optimizer.filtered.groups[`node-${node.index}`], solver.traits, exportPrefs);
+				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], solver.traits, exportPrefs);
 			}
 			else {
 				if (prefValue(exportPrefs, 'solve') === 'always' || (prefValue(exportPrefs, 'solve') === 'spot' && node.spotSolve)) {
@@ -224,8 +230,8 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 };
 
 type ExportOptionsProps = {
-	prefs: any;
-	updatePrefs: (prefs: any) => void;
+	prefs: ExportPreferences;
+	updatePrefs: (prefs: ExportPreferences) => void;
 };
 
 const ExportOptions = (props: ExportOptionsProps) => {
@@ -286,7 +292,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 					index={1}
 					onTitleClick={() => setIsActive(!isActive)}
 					title={{ content: 'Customize Export', icon: `caret ${isActive ? 'down' : 'right'}` }}
-					content={renderPrefsForm}
+					content={{ children: () => renderPrefsForm() }}
 				/>
 			</Accordion>
 		</div>
@@ -308,7 +314,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={formatOptions}
 									value={prefs.node_format ?? exportDefaults.node_format}
-									onChange={(e, { value }) => updatePrefs({...prefs, node_format: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, node_format: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
@@ -316,7 +322,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={showOptions}
 									value={prefs.node_traits ?? exportDefaults.node_traits}
-									onChange={(e, { value }) => updatePrefs({...prefs, node_traits: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, node_traits: value as ShowHideValue})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -327,21 +333,28 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={bulletOptions}
 									value={prefs.bullet ?? exportDefaults.bullet}
-									onChange={(e, { value }) => updatePrefs({...prefs, bullet: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, bullet: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
 								<label>Non-optimal</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_nonoptimal ?? exportDefaults.flag_nonoptimal}
-									onChange={(e, { value }) => updatePrefs({...prefs, flag_nonoptimal: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_nonoptimal: value as string})}
+								/>
+							</Form.Field>
+							<Form.Field>
+								<label>One hand exception</label>
+								<Input style={{ width: '5em' }}
+									value={prefs.flag_onehand ?? exportDefaults.flag_onehand}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_onehand: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
 								<label>Alpha exception</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_alpha ?? exportDefaults.flag_alpha}
-									onChange={(e, { value }) => updatePrefs({...prefs, flag_alpha: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, flag_alpha: value as string})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -351,7 +364,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={delimiterOptions}
 									value={prefs.delimiter ?? exportDefaults.delimiter}
-									onChange={(e, { value }) => updatePrefs({...prefs, delimiter: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, delimiter: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
@@ -359,7 +372,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={formatOptions}
 									value={prefs.coverage_format ?? exportDefaults.coverage_format}
-									onChange={(e, { value }) => updatePrefs({...prefs, coverage_format: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, coverage_format: value as string})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -369,7 +382,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={showOptions}
 									value={prefs.crew_traits ?? exportDefaults.crew_traits}
-									onChange={(e, { value }) => updatePrefs({...prefs, crew_traits: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, crew_traits: value as ShowHideValue})}
 								/>
 							</Form.Field>
 							<Form.Field>
@@ -377,7 +390,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={duplicatesOptions}
 									value={prefs.duplicates ?? exportDefaults.duplicates}
-									onChange={(e, { value }) => updatePrefs({...prefs, duplicates: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, duplicates: value as string})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -388,7 +401,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={headerOptions}
 									value={prefs.header ?? exportDefaults.header}
-									onChange={(e, { value }) => updatePrefs({...prefs, header: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, header: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
@@ -396,7 +409,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								<Select
 									options={solveOptions}
 									value={prefs.solve ?? exportDefaults.solve}
-									onChange={(e, { value }) => updatePrefs({...prefs, solve: value})}
+									onChange={(e, { value }) => updatePrefs({...prefs, solve: value as string})}
 								/>
 							</Form.Field>
 						</Form.Group>
@@ -415,7 +428,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		);
 	}
 
-	function setPresets(presetPrefs: any): void {
+	function setPresets(presetPrefs: ExportPreferences): void {
 		updatePrefs({...presetPrefs});
 	}
 };

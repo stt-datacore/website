@@ -12,19 +12,21 @@ import CONFIG from '../components/CONFIG';
 
 import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
-import { sortedStats, insertInStatTree } from '../utils/statutils';
-import { demandsPerSlot, IDemand } from '../utils/equipment';
+import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
+import { DemandCounts, demandsPerSlot, IDemand } from '../utils/equipment';
+import { PlayerCrew, PlayerEquipmentItem } from '../model/player'
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 
 type ProfileChartsProps = {
-	playerData: any;
 };
 
 type ProfileChartsState = {
-	allcrew: any[];
-	items: any[];
+	allcrew?: PlayerCrew[];
+	items?: EquipmentItem[];
 	data_ownership: any[];
-	skill_distribution: any;
-	flat_skill_distribution: any[];
+	skill_distribution: StatTreeNode;
+	flat_skill_distribution: StatTreeNode[];
 	includeTertiary: boolean;
 	r4_stars: any[];
 	r5_stars: any[];
@@ -32,7 +34,7 @@ type ProfileChartsState = {
 	radar_skill_rarity_owned: any[];
 	demands: IDemand[];
 	excludeFulfilled: boolean;
-	honordebt: {
+	honordebt?: {
 		ownedStars: number[];
 		totalStars: number[];
 		craftCost: number;
@@ -40,6 +42,9 @@ type ProfileChartsState = {
 };
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
 	constructor(props: ProfileChartsProps) {
 		super(props);
 
@@ -49,7 +54,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			demands: [],
 			data_ownership: [],
 			flat_skill_distribution: [],
-			skill_distribution: {},
+			skill_distribution: {} as StatTreeNode,
 			includeTertiary: false,
 			r4_stars: [],
 			r5_stars: [],
@@ -79,7 +84,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
 
-		const { playerData } = this.props;
+		const { playerData } = this.context;
 		const { allcrew, includeTertiary, items } = this.state;
 
 		let r4owned = [0, 0, 0, 0];
@@ -109,9 +114,9 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let demands: IDemand[] = [];
 		let dupeChecker = new Set<string>();
 
-		let skill_distribution = [];
-		for (let crew of allcrew) {
-			let pcrew = undefined;
+		let skill_distribution = [] as StatTreeNode[];
+		for (let crew of allcrew ?? []) {
+			let pcrew: PlayerCrew | undefined = undefined;
 
 			// If multiple copies, find the "best one"
 			let pcrewlist = playerData.player.character.crew.filter((bc) => bc.symbol === crew.symbol);
@@ -129,7 +134,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			for (const skill in crew.base_skills) {
 				if (crew.base_skills[skill].core > 0) {
 					let rsr = radar_skill_rarity.find((r) => r.name === CONFIG.SKILLS[skill]);
-					rsr[CONFIG.RARITIES[crew.max_rarity].name]++;
+					if (rsr) rsr[CONFIG.RARITIES[crew.max_rarity].name]++;
 				}
 			}
 
@@ -150,12 +155,12 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				for (const skill in pcrew.base_skills) {
 					if (pcrew.base_skills[skill].core > 0) {
 						let rsro = radar_skill_rarity_owned.find((r) => r.name === CONFIG.SKILLS[skill]);
-						rsro[CONFIG.RARITIES[pcrew.max_rarity].name]++;
+						if (rsro) rsro[CONFIG.RARITIES[pcrew.max_rarity].name]++;
 					}
 				}
 
 				let startLevel = pcrew.max_level ? pcrew.max_level - 10 : pcrew.level - (pcrew.level % 10);
-				if (pcrew.equipment.length < 4) {
+				if (pcrew.equipment?.length < 4) {
 					// If it's not fully equipped for this level band, we include the previous band as well
 					startLevel = Math.max(1, startLevel - 10);
 				}
@@ -164,7 +169,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				crew.equipment_slots
 					.filter((es) => es.level >= startLevel)
 					.forEach((es) => {
-						craftCost += demandsPerSlot(es, items, dupeChecker, demands);
+						craftCost += demandsPerSlot(es, items ?? [], dupeChecker, demands);
 					});
 			} else {
 				if (crew.in_portal) {
@@ -177,10 +182,10 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		for (let demand of demands) {
 			let item = playerData.player.character.items.find((it) => it.symbol === demand.symbol);
-			demand.have = item ? item.quantity : 0;
+			demand.have = item ? (item.quantity ?? 0) : 0;
 		}
 
-		let flat_skill_distribution = [];
+		let flat_skill_distribution = [] as any[];
 		skill_distribution.forEach((sec) => {
 			sec.loc = 0;
 			sec.children.forEach((tri) => {
@@ -214,7 +219,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			});
 		}
 
-		let data_ownership = [];
+		let data_ownership = [] as any[];
 		for (let i = 0; i < 5; i++) {
 			data_ownership.push({
 				rarity: CONFIG.RARITIES[i + 1].name,
@@ -231,7 +236,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity_owned,
 			demands,
 			honordebt: { ownedStars, totalStars, craftCost },
-			skill_distribution: { name: 'Skills', children: skill_distribution },
+			skill_distribution: { name: 'Skills', children: skill_distribution, value: 0, valueGauntlet: 0, loc: 0 } as StatTreeNode,
 			r4_stars: r4owned.map((v, i) => ({ label: `${i + 1} / 4`, id: `${i + 1} / 4`, value: v })).filter((e) => e.value > 0),
 			r5_stars: r5owned.map((v, i) => ({ label: `${i + 1} / 5`, id: `${i + 1} / 5`, value: v })).filter((e) => e.value > 0),
 		});
@@ -279,13 +284,13 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		}
 
 		let totalChronCost = 0;
-		let factionRec = [];
+		let factionRec = [] as DemandCounts[];
 		demands.forEach((entry) => {
-			let cost = entry.equipment.item_sources.map((its: any) => its.avg_cost).filter((cost) => !!cost);
+			let cost = entry.equipment?.item_sources.map((its: any) => its.avg_cost).filter((cost) => !!cost);
 			if (cost && cost.length > 0) {
 				totalChronCost += Math.min(...cost) * entry.count;
 			} else {
-				let factions = entry.equipment.item_sources.filter((e) => e.type === 1);
+				const factions = entry.equipment?.item_sources.filter((e) => e.type === 1);
 				if (factions && factions.length > 0) {
 					let fe = factionRec.find((e: any) => e.name === factions[0].name);
 					if (fe) {
@@ -310,6 +315,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		return (
 			<ErrorBoundary>
+				<>
 				<h3>Owned vs. Not Owned crew per rarity</h3>
 				<div style={{ height: '320px' }}>
 					<ResponsiveBar
@@ -440,6 +446,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					/>
 					<Grid columns={3} centered padded>
 						{demands.map((entry, idx) => (
+							entry?.equipment &&
 							<Grid.Column key={idx}>
 								<Popup
 									trigger={
@@ -462,7 +469,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 									on='click'
 									wide
 								/>
-							</Grid.Column>
+							</Grid.Column> || <></>
 						))}
 					</Grid>
 				</div>
@@ -495,8 +502,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							fillOpacity={0.25}
 							blendMode='multiply'
 							animate={true}
-							motionStiffness={90}
-							motionDamping={15}
+							//motionStiffness={90}
+							//motionDamping={15}
 							isInteractive={true}
 							legends={[
 								{
@@ -547,8 +554,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							fillOpacity={0.25}
 							blendMode='multiply'
 							animate={true}
-							motionStiffness={90}
-							motionDamping={15}
+							//motionStiffness={90}
+							//motionDamping={15}
 							isInteractive={true}
 							legends={[
 								{
@@ -587,7 +594,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							cornerRadius={2}
 							borderWidth={1}
 							animate={false}
-							slicesLabelsTextColor='#333333'
+							//slicesLabelsTextColor='#333333'
 							legends={[
 								{
 									anchor: 'bottom',
@@ -620,7 +627,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							cornerRadius={2}
 							borderWidth={1}
 							animate={false}
-							slicesLabelsTextColor='#333333'
+							//slicesLabelsTextColor='#333333'
 							legends={[
 								{
 									anchor: 'bottom',
@@ -645,7 +652,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					</div>
 				</div>
 
-				<h3>Skill distribution for owned crew (number of characters per skill combos Primary > Secondary)</h3>
+				<h3>Skill distribution for owned crew (number of characters per skill combos Primary &gt; Secondary)</h3>
 				<Checkbox label='Include tertiary skill' onChange={() => this._onIncludeTertiary()} checked={this.state.includeTertiary} />
 				<div>
 					<div style={{ height: '420px', width: '50%', display: 'inline-block' }}>
@@ -653,7 +660,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							data={skill_distribution}
 							theme={themes.dark}
 							margin={{ top: 40, right: 20, bottom: 20, left: 20 }}
-							identity='name'
+							//identity='name'
 							value='loc'
 							cornerRadius={2}
 							borderWidth={1}
@@ -661,8 +668,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							colors={{ scheme: 'nivo' }}
 							childColor={{ from: 'color' }}
 							animate={true}
-							motionStiffness={90}
-							motionDamping={15}
+							//motionStiffness={90}
+							//motionDamping={15}
 							isInteractive={true}
 						/>
 					</div>
@@ -709,6 +716,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						/>
 					</div>
 				</div>
+				</>
 			</ErrorBoundary>
 		);
 	}

@@ -37,8 +37,25 @@ const voyageEstimate = (config, progress) => {
   });
 };
 
+/**
+ * 
+ * @param {import('../model/player.js').PlayerData} playerData 
+ * @param {import('../model/crew.js').CrewMember[]} allCrew 
+ * @returns 
+ */
 const citeOptimizer = (playerData, allCrew) => {
+  /**
+   * @param {import('../model/player.js').PlayerCrew} c 
+   */
+  const isImmortal = (c) => {
+    return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;    
+  }
   return new Promise((resolve, reject) => {
+    if (playerData.citeMode && playerData.citeMode.rarities?.length) {
+      playerData = JSON.parse(JSON.stringify(playerData));
+      playerData.player.character.crew = playerData.player.character.crew
+        .filter((crew) => playerData.citeMode.rarities.includes(crew.max_rarity));
+    }
     Optimizer.assessCrewRoster(playerData, allCrew);
     Optimizer.sortVoyageRankings();
     Optimizer.findCurrentBestCrew();

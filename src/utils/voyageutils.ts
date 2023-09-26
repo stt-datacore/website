@@ -1,6 +1,8 @@
 /* All relevant voyage utils have been moved to voyagehelpers.ts. The few things that remain here should find a new place to live! */
 
 import CONFIG from '../components/CONFIG';
+import { CrewMember } from '../model/crew';
+import { AllBuffsCapHash, CompactCrew, Player, PlayerCrew, PlayerData } from '../model/player';
 
 /* TODO: move IBuffStat, calculateBuffConfig to crewutils.ts (currently not used by voyage calculator) */
 export interface IBuffStat {
@@ -8,11 +10,49 @@ export interface IBuffStat {
 	percent_increase: number;
 }
 
-export function calculateBuffConfig(playerData: any): { [index: string]: IBuffStat } {
+export interface BuffStatTable {
+	[key: string]: IBuffStat;
+}
+
+export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
+	let result: BuffStatTable = {};
+
+	const parseBuff = (value: string) => {
+		let i = value.indexOf(",");
+		if (i !== -1) {
+			let skill = value.slice(0, i);
+			let type =  value.slice(i+1);
+
+			return {
+				skill,
+				type
+			};
+		}
+		return undefined;
+	};
+
+	Object.keys(allBuffs)
+		.filter(z => z.includes("skill"))
+		.forEach(buff => {
+			let p = parseBuff(buff);			
+			if (p) result[p.skill] = {} as IBuffStat;
+			if (p && p.type === 'percent_increase') {
+				result[p.skill].multiplier = 1;
+				result[p.skill].percent_increase = allBuffs[buff];
+			}
+			else if (p && p.type === 'multiplier') {
+				result[p.skill].multiplier = allBuffs[buff];
+			}
+		});
+
+	return result;
+}
+
+export function calculateBuffConfig(playerData: Player): BuffStatTable {
 	const skills = ['command_skill', 'science_skill', 'security_skill', 'engineering_skill', 'diplomacy_skill', 'medicine_skill'];
 	const buffs = ['core', 'range_min', 'range_max'];
 
-	const buffConfig: { [index: string]: IBuffStat } = {};
+	const buffConfig: BuffStatTable = {};
 
 	for (let skill of skills) {
 		for (let buff of buffs) {
@@ -45,14 +85,14 @@ const remapSkills = skills =>
 		.map(([key, value]) =>
 			[{core: 'core', min: 'range_min', max: 'range_max'}[key], value]));
 
-export function formatCrewStats(crew: any, use_base:boolean = false): string {
+export function formatCrewStats(crew: PlayerCrew, use_base:boolean = false): string {
 	let result = '';
 
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = use_base ? crew.base_skills[skillName] : crew.skills[skillName];
 
 		if (skill && skill.core && (skill.core > 0)) {
-			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
+			result += `${CONFIG.SKILLS_SHORT.find(c => c.name === skillName)?.short} (${Math.floor(skill.core + (skill.range_min + skill.range_max) / 2)}) `;
 		}
 	}
 	return result;

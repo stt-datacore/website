@@ -25,8 +25,8 @@ export class ShuttleSeat {
 };
 
 export class CrewScores {
-	skillsets: any = {};
-	ranked: any[] = [];
+	skillsets: ICrewSkillSets = {};
+	ranked: ICrewScore[] = [];
 	constructor () {}
 };
 
@@ -40,3 +40,34 @@ export function getSkillSetId(seat: ShuttleSeat): string {
 		skills = [skillA];
 	return seat.operand+','+skills.sort((a, b)=>a.localeCompare(b));
 }
+
+export interface ISeatAssignment {
+	shuttleId: string;
+	seatNum: number;
+	ssId: string;
+	assignedId: number;
+	assignedSymbol: string;
+	seatScore: number;
+	locked: boolean;
+};
+
+export interface ICrewSkillSets {
+	[key: string]: ICrewScore[];
+}
+
+export interface ICrewScore {
+	id: number;
+	symbol: string;
+	name: string;
+	score: number;
+	ssId: string;
+};
+
+export interface IShuttleScores {
+	[key: string]: IShuttleScore;
+};
+
+export interface IShuttleScore {
+	chance: number;
+	scores: number[];
+};

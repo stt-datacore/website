@@ -1,21 +1,22 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Message, Table, Label, Icon, Grid } from 'semantic-ui-react';
+import { Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
 
 import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
 
-const FinderContext = React.createContext();
-
-type CrewGroupsProps = {
-	solver: any;
-	optimizer: any;
+interface CrewGroupsProps {
+	solver: Solver;
+	optimizer: Optimizer;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
-	exportPrefs: any;
+	exportPrefs: ExportPreferences;
 };
+
+const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
@@ -23,30 +24,30 @@ const CrewGroups = (props: CrewGroupsProps) => {
 	const openNodes = solver.nodes.filter(node => node.open);
 
 	return (
-		<FinderContext.Provider value={props}>
+		<CrewGroupsContext.Provider value={{ ...props }}>
 			{openNodes.map(node =>
 				<NodeGroups key={node.index} node={node} />
 			)}
-		</FinderContext.Provider>
+		</CrewGroupsContext.Provider>
 	);
 };
 
 type NodeGroupsProps = {
-	node: any;
+	node: SolverNode;
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
-	const finderData = React.useContext(FinderContext);
+	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
 	const formattedOpen = node.traitsKnown.map((trait, idx) => (
 		<span key={idx}>
 			{idx > 0 ? <> + </> : <></>}{allTraits.trait_names[trait]}
 		</span>
-	)).reduce((prev, curr) => [prev, curr], []);
+	)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
 
-	const nodeGroups = finderData.optimizer.filtered.groups[`node-${node.index}`];
+	const nodeGroups = groupsContext.optimizer.groups[`node-${node.index}`];
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
@@ -57,7 +58,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>Node {node.index+1}</p>
 					</div>
 					<div>
-						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={finderData.solver.traits} exportPrefs={finderData.exportPrefs} />
+						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={groupsContext.solver.traits} exportPrefs={groupsContext.exportPrefs} />
 					</div>
 				</div>
 			</Message>
@@ -72,12 +73,12 @@ const NodeGroups = (props: NodeGroupsProps) => {
 };
 
 type GroupTableProps = {
-	node: any;
-	data: any[];
+	node: SolverNode;
+	data: FilteredGroup[];
 };
 
 const GroupTable = (props: GroupTableProps) => {
-	const finderData = React.useContext(FinderContext);
+	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -100,13 +101,6 @@ const GroupTable = (props: GroupTableProps) => {
 	];
 	if (!hasNotes) tableConfig.splice(1, 1);
 
-	const traitNameInstance = (trait: string) => {
-		const instances = finderData.solver.traits.filter(t => t.trait === trait);
-		if (instances.length === 1) return allTraits.trait_names[trait];
-		const needed = instances.length - instances.filter(t => t.consumed).length;
-		return `${allTraits.trait_names[trait]} (${needed})`;
-	};
-
 	return (
 		<Table sortable celled selectable striped>
 			<Table.Header>
@@ -115,7 +109,7 @@ const GroupTable = (props: GroupTableProps) => {
 						<Table.HeaderCell key={idx}
 							sorted={column === cell.column ? direction : null}
 							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
-							width={cell.width} textAlign={cell.center ? 'center' : 'left'}
+							width={cell.width as SemanticWIDTHS} textAlign={cell.center ? 'center' : 'left'}
 						>
 							{cell.title}
 						</Table.HeaderCell>
@@ -126,13 +120,14 @@ const GroupTable = (props: GroupTableProps) => {
 				{data.map((row, idx) => (
 					<Table.Row key={idx}>
 						<Table.Cell textAlign='center'>
-							<MarkGroup node={node} traits={row.traits} solver={finderData.solver} optimizer={finderData.optimizer} solveNode={finderData.solveNode} />
+							<MarkGroup node={node} traits={row.traits} solver={groupsContext.solver} optimizer={groupsContext.optimizer} solveNode={groupsContext.solveNode} />
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
+								{row.notes.oneHandException && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
 								{row.notes.alphaException && <Label color='orange'>Alpha exception</Label>}
 								{row.notes.uniqueCrew && <Label style={{ background: '#fdd26a', color: 'black' }}>Unique</Label>}
-								{row.notes.nonPortal && <Label color='grey'>Non-portal</Label>}
+								{row.notes.nonPortal && <Label style={{ background: '#000000', color: '#fdd26a' }}>Non-portal</Label>}
 								{row.notes.nonOptimal && <Label color='grey'>Non-optimal</Label>}
 							</Table.Cell>
 						}
@@ -177,23 +172,25 @@ const GroupTable = (props: GroupTableProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
-		const sortBy = (comps) => {
+	function firstSort(data: FilteredGroup[], column: string, reverse: boolean = false): void {
+		const sortBy = (comps: ((a: FilteredGroup, b: FilteredGroup) => number)[]) => {
 			data.sort((a, b) => {
 				const tests = comps.slice();
 				let test = 0;
 				while (tests.length > 0 && test === 0) {
-					test = tests.shift()(a, b);
+					let shtest = tests.shift();
+					test = shtest ? shtest(a, b) : 0;
 				}
 				return test;
 			});
 		};
-		const noteScore = (row) => Object.values(row.notes).filter(note => !!note).length;
-		const compareTraits = (a, b) => b.traits.length - a.traits.length;
-		const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
-		const compareScore = (a, b) => b.score - a.score;
-		const compareNotes = (a, b) => noteScore(b) - noteScore(a);
-		const compareNotesAsc = (a, b) => noteScore(a) - noteScore(b);
+
+		const noteScore = (row: FilteredGroup) => Object.values(row.notes).filter(note => !!note).length;
+		const compareTraits = (a: FilteredGroup, b: FilteredGroup) => b.traits.length - a.traits.length;
+		const compareCrew = (a: FilteredGroup, b: FilteredGroup) => b.crewList.length - a.crewList.length;
+		const compareScore = (a: FilteredGroup, b: FilteredGroup) => b.score - a.score;
+		const compareNotes = (a: FilteredGroup, b: FilteredGroup) => noteScore(b) - noteScore(a);
+		const compareNotesAsc = (a: FilteredGroup, b: FilteredGroup) => noteScore(a) - noteScore(b);
 
 		if (column === 'crew') {
 			sortBy([compareCrew, compareNotesAsc, compareTraits, compareScore]);
@@ -211,31 +208,44 @@ const GroupTable = (props: GroupTableProps) => {
 };
 
 type GroupCrewProps = {
-	crewList: any[];
+	crewList: BossCrew[];
 };
 
 const GroupCrew = (props: GroupCrewProps) => {
-	const finderData = React.useContext(FinderContext);
-	const { crewList } = props;
+	const groupsContext = React.useContext(CrewGroupsContext);
 
 	const [showCrew, setShowCrew] = React.useState(false);
 
+	const usable = groupsContext.optimizer.prefs.solo.usable;
+	const crewList = props.crewList.filter(crew =>
+		(usable !== 'owned' || (crew.highest_owned_rarity ?? 0) > 0)
+			&& (usable !== 'thawed' || ((crew.highest_owned_rarity ?? 0) > 0 && !crew.only_frozen))
+	);
+
+	if (!showCrew) {
+		return (
+			<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
+				onChange={(inView, entry) => { if (inView) setShowCrew(true); }}
+			>
+				<Icon loading name='spinner' />
+				<br />Loading...
+			</InView>
+		);
+	}
+
 	return (
 		<React.Fragment>
-			{!showCrew &&
-				<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
-					onChange={(inView, entry) => { if (inView) setShowCrew(true); }}
-				>
-					<Icon loading name='spinner' />
-					<br />Loading...
-				</InView>
+			{crewList.length === 0 &&
+				<Message>
+					You have no {usable === 'thawed' ? 'unfrozen' : ''} crew with this group of traits. Change your availability user preference to see more options.
+				</Message>
 			}
-			{showCrew &&
+			{crewList.length > 0 &&
 				<Grid doubling columns={3} textAlign='center'>
 					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
 						<MarkCrew key={crew.symbol} crew={crew} trigger='card'
-							solver={finderData.solver} optimizer={finderData.optimizer}
-							solveNode={finderData.solveNode} markAsTried={finderData.markAsTried}
+							solver={groupsContext.solver} optimizer={groupsContext.optimizer}
+							solveNode={groupsContext.solveNode} markAsTried={groupsContext.markAsTried}
 						/>
 					)}
 				</Grid>

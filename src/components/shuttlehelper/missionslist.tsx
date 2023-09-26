@@ -2,7 +2,8 @@ import React from 'react';
 import { Header, Table, Icon, Dropdown, Input, Button, Grid, Modal, Divider } from 'semantic-ui-react';
 
 import { ShuttleFactionView, SeatSkillView } from './views';
-import { Shuttlers, Shuttle, ShuttleSeat, getSkillSetId } from './shuttleutils';
+import { Shuttlers, Shuttle, ShuttleSeat } from './shuttleutils';
+import { ShuttleAdventure } from '../../model/shuttle';
 
 import allFactions from '../../../static/structured/factions.json';
 
@@ -12,19 +13,21 @@ type MissionsListProps = {
 	recommendShuttlers: () => void;
 	shuttlers: Shuttlers;
 	setShuttlers: (shuttlers: Shuttlers) => void;
-	activeShuttles: any[];
+	activeShuttles: ShuttleAdventure[];
 };
 
 const MissionsList = (props: MissionsListProps) => {
 	const { groupId, shuttlers, setShuttlers, activeShuttles } = props;
 
-	const [editMission, setEditMission] = React.useState(undefined);
+	const [editMission, setEditMission] = React.useState<Shuttle | undefined>(undefined);
+
 	const [state, dispatch] = React.useReducer(reducer, {
 		data: shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId),
 		column: null,
 		direction: null
 	});
-	const { data, column, direction } = state;
+	const { column, direction } = state;
+	const data: Shuttle[] = state.data;
 
 	React.useEffect(() => {
 		dispatch({ type: 'UPDATE_DATA', data: shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId), column, direction });
@@ -33,9 +36,15 @@ const MissionsList = (props: MissionsListProps) => {
 	const CheckDropdown = () => {
 		if (data.length === 0) return (<></>);
 
-		const checkOptions = [];
+		interface ICheckOption {
+			key: string;
+			text: string;
+			ids: string[];
+		};
 
-		const threeSeaters = [], fourSeaters = [];
+		const checkOptions: ICheckOption[] = [];
+
+		const threeSeaters = [] as string[], fourSeaters = [] as string[];
 		data.forEach(shuttle => {
 			if (shuttle.seats.length <= 4)
 				fourSeaters.push(shuttle.id);
@@ -52,7 +61,7 @@ const MissionsList = (props: MissionsListProps) => {
 			checkOptions.push({ key: `open-adventures`, text: `Select only open in-game (${openIds.length})`, ids: openIds });
 		}
 
-		const factions = [];
+		const factions = [] as number[];
 		data.forEach(shuttle => {
 			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
 		});
@@ -60,7 +69,7 @@ const MissionsList = (props: MissionsListProps) => {
 			factions.forEach(factionId => {
 				const ids = data.filter(shuttle => shuttle.faction === factionId).map(shuttle => shuttle.id);
 				const faction = allFactions.find(af => af.id === factionId);
-				checkOptions.push({ key: `faction-${factionId}`, text: `Select only ${faction.name} (${ids.length})`, ids });
+				checkOptions.push({ key: `faction-${factionId}`, text: `Select only ${faction?.name} (${ids.length})`, ids });
 			});
 		}
 
@@ -83,7 +92,15 @@ const MissionsList = (props: MissionsListProps) => {
 		);
 	};
 
-	const tableConfig = [
+	interface ITableConfig {
+		title: string | JSX.Element;
+		align?: 'left' | 'right' | 'center';
+		column?: string;
+		span?: number;
+		reverse?: boolean;
+	};
+
+	const tableConfig: ITableConfig[] = [
 		{ title: <CheckDropdown />, align: 'center' },
 		{ column: 'name', title: 'Mission' },
 		{ column: 'faction', title: 'Faction', align: 'center' },
@@ -93,7 +110,7 @@ const MissionsList = (props: MissionsListProps) => {
 	];
 
 	const MissionEditor = (props: { shuttle: Shuttle }) => {
-		const [shuttle, setShuttle] = React.useState(JSON.parse(JSON.stringify(props.shuttle)));
+		const [shuttle, setShuttle] = React.useState<Shuttle>(JSON.parse(JSON.stringify(props.shuttle)));
 
 		const factionOptions = allFactions.sort((a, b) => a.name.localeCompare(b.name)).map(faction => {
 			return { key: faction.id, value: faction.id, text: (<span style={{ whiteSpace: 'nowrap' }}>{faction.name}</span>) };
@@ -120,7 +137,7 @@ const MissionsList = (props: MissionsListProps) => {
 							selection
 							options={skillOptions}
 							value={seat.skillA}
-							onChange={(e, { value }) => updateMissionSeat(seatNum, 'skillA', value)}
+							onChange={(e, { value }) => updateMissionSeat(seatNum, 'skillA', value as string)}
 						/>
 					</Grid.Column>
 					<Grid.Column>
@@ -138,7 +155,7 @@ const MissionsList = (props: MissionsListProps) => {
 							clearable
 							options={skillOptions}
 							value={seat.skillB}
-							onChange={(e, { value }) => updateMissionSeat(seatNum, 'skillB', value)}
+							onChange={(e, { value }) => updateMissionSeat(seatNum, 'skillB', value as string)}
 						/>
 					</Grid.Column>
 				</Grid>
@@ -162,7 +179,7 @@ const MissionsList = (props: MissionsListProps) => {
 			</Modal>
 		);
 
-		function renderContent(): void {
+		function renderContent(): JSX.Element {
 			return (
 				<React.Fragment>
 					<Grid columns={2} divided stackable>
@@ -186,7 +203,7 @@ const MissionsList = (props: MissionsListProps) => {
 									selection
 									options={factionOptions}
 									value={shuttle.faction}
-									onChange={(e, { value }) => updateFaction(value)}
+									onChange={(e, { value }) => updateFaction(value as number)}
 								/>
 							</div>
 						</Grid.Column>
@@ -367,7 +384,7 @@ const MissionsList = (props: MissionsListProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): any[] {
+	function firstSort(data: any[], column: string, reverse: boolean = false): void {
 		data.sort((a, b) => {
 			if (column === 'name') return a.name.localeCompare(b.name);
 			let aValue = column.split('.').reduce((prev, curr) => prev.hasOwnProperty(curr) ? prev[curr] : undefined, a);
@@ -418,6 +435,7 @@ const MissionsList = (props: MissionsListProps) => {
 
 	function toggleMissionStatus(shuttleId: string): void {
 		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
+		if (!shuttle) return;
 		shuttle.priority = shuttle.priority === 0 ? missionsSelected+1 : 0;
 		updateShuttlers();
 	}

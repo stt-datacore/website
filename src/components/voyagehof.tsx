@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Table, Icon, Rating, Pagination, Dropdown, Form, Button, Checkbox, Header, Modal, Grid } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { getCoolStats } from '../utils/misc';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew } from '../model/player';
 
 type VoyageHOFProps = {
 };
@@ -17,7 +19,7 @@ type VoyageHOFState = {
     lastSevenDays: VoyageStatEntry[];
     lastThirtyDays: VoyageStatEntry[];
   };
-  allCrew: any;
+  allCrew?: (CrewMember | PlayerCrew)[];
   errorMessage?: string;
 };
 
@@ -27,8 +29,14 @@ const niceNamesForPeriod = {
   lastThirtyDays: 'last 30 days',
 };
 
-const VoyageStatsForPeriod = ({ period, stats, allCrew }) => {
-  const rankedCrew = stats.map((s) => {
+export interface VoyageStatsProps {
+  period: "allTime" | "lastSevenDays" | "lastThirtyDays";
+  allCrew: (PlayerCrew | CrewMember)[];
+  stats: VoyageStatEntry[];
+}
+
+const VoyageStatsForPeriod = ({ period, stats, allCrew }: VoyageStatsProps) => {
+  const rankedCrew = stats?.map((s) => {
     const crew = allCrew.find((c) => c.symbol === s.crewSymbol);
     if (!crew) {
       return undefined;
@@ -37,7 +45,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew }) => {
       ...s,
       ...crew
     }
-  }).filter((s) => s).sort((a, b) => b.crewCount - a.crewCount).slice(0,100);
+  }).filter((s) => s).sort((a, b) => (b?.crewCount ?? 0) - (a?.crewCount ?? 0)).slice(0,100);
   const rowColors = {
     '0': '#AF9500',
     '1': '#B4B4B4',
@@ -69,11 +77,11 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew }) => {
 										}}
 									>
                     <div style={{ gridArea: 'icon' }}>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}/${crew.imageUrlPortrait}`} />
+											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}/${crew?.imageUrlPortrait}`} />
 										</div>
 										<div style={{ gridArea: 'name' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew.name}</span>
-                      <Header as='h3' style={{marginTop: '10px'}}>{crew.crewCount} voyages</Header>
+											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{crew?.name}</span>
+                      <Header as='h3' style={{marginTop: '10px'}}>{crew?.crewCount} voyages</Header>
 										</div>
 									</div>
               </Table.Cell>
@@ -123,13 +131,13 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 				<Grid columns={3} divided>
           <Grid.Row>
             <Grid.Column>
-              <VoyageStatsForPeriod period='allTime' stats={voyageStats.allTime} allCrew={allCrew} />
+              <VoyageStatsForPeriod period='allTime' stats={voyageStats?.allTime ?? []} allCrew={allCrew ?? []} />
             </Grid.Column>
             <Grid.Column>
-              <VoyageStatsForPeriod period='lastSevenDays' stats={voyageStats.lastSevenDays} allCrew={allCrew} />
+              <VoyageStatsForPeriod period='lastSevenDays' stats={voyageStats?.lastSevenDays ?? []} allCrew={allCrew ?? []} />
             </Grid.Column>
             <Grid.Column>
-              <VoyageStatsForPeriod period='lastThirtyDays' stats={voyageStats.lastThirtyDays} allCrew={allCrew} />
+              <VoyageStatsForPeriod period='lastThirtyDays' stats={voyageStats?.lastThirtyDays ?? []} allCrew={allCrew ?? []} />
             </Grid.Column>
           </Grid.Row>
         </Grid>

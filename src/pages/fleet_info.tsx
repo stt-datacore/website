@@ -3,6 +3,7 @@ import { Header, Label, Message, Icon, Table, Item, Image } from 'semantic-ui-re
 import { Link } from 'gatsby';
 
 import Layout from '../components/layout';
+import { PlayerData } from '../model/player';
 
 type FleetInfoPageProps = {};
 

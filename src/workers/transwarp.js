@@ -4,9 +4,19 @@
 /* eslint-disable */
 
 function getEstimate(config, reportProgress = () => true) {
-    // required input (starting numbers)
+    /**
+     * required input (starting numbers)
+     * @type {number}
+     */
     var ps = config.ps;
+    /**
+     * required input (starting numbers)
+     * @type {number}
+     */
     var ss = config.ss;
+    
+    if (!config.others) config.others = [0,0,0,0];
+
     var o1 = config.others[0];
     var o2 = config.others[1];
     var o3 = config.others[2];
@@ -23,7 +33,10 @@ function getEstimate(config, reportProgress = () => true) {
     // optional input (simulations)
     var numSims = config.numSims ?? 5000;
   
-    // returned estimate
+    /**
+     * returned estimate
+     * @type {import("../model/worker").Estimate}
+     */
     var estimate = {};
   
     // output
@@ -63,7 +76,15 @@ function getEstimate(config, reportProgress = () => true) {
     const num20hourSims = Math.min(maxNum20hourSims, numSims);
     const maxCostPerHazard = ticksPerHazard+hazAmFail-1;
   
+    /**
+     * 
+     * @param {boolean} finished 
+     * @returns {import("../model/worker").Estimate}
+     */
     const formatResults = (finished) => {
+      /**
+       * @type {import("../model/worker").Refill[]}
+       */
       var refills = [];
   
       // calculate and display results
@@ -83,6 +104,9 @@ function getEstimate(config, reportProgress = () => true) {
         const lastDilemma = Math.max(Math.floor(elapsedSeconds/7200)*2+2, Math.round(voyTime/2)*2);
         const lastDilemmaSuccesses = exResults.filter(r => r >= lastDilemma).length;
   
+        /**
+         * @type {import("../model/worker").Refill}
+         */
         var refill = {
            'all': exResults,
            'result': voyTime,
@@ -101,8 +125,8 @@ function getEstimate(config, reportProgress = () => true) {
   
       // calculate 20hr results
       var num20hrSims = deterministic ? 1 : num20hourSims;
-      estimate['20hrdil'] = Math.ceil(results20hrCostTotal/num20hrSims);
-      estimate['20hrrefills'] = Math.round(results20hrRefillsTotal/num20hrSims);
+      estimate['dilhr20'] = Math.ceil(results20hrCostTotal/num20hrSims);
+      estimate['refillshr20'] = Math.round(results20hrRefillsTotal/num20hrSims);
   
       estimate['final'] = finished;
       estimate['deterministic'] = deterministic;
@@ -159,7 +183,7 @@ function getEstimate(config, reportProgress = () => true) {
       const skillChance = 
         skill => Math.max(0, Math.min(1, ((skill.core+skill.range_max)-hazardScore)/(skill.range_max-skill.range_min)));
       const probaility = [psChance*skillChance(ps), ssChance*skillChance(ss), 
-                          ...config.others.map(s => osChance*skillChance(s))].reduce((all, p) => all + p, 0);
+                          ...config.others?.map(s => osChance*skillChance(s))].reduce((all, p) => all + p, 0);
       //console.log(probaility);
       return config.vfast ? () => probaility*(hazAmFail+hazAmPass) 
                           : () => (Math.random() < probaility) ? hazAmFail+hazAmPass : 0;
@@ -169,7 +193,13 @@ function getEstimate(config, reportProgress = () => true) {
     if (deterministic)
       numSims = 1;   // With no more skill checks there can only be one voyage length
   
+    /**
+     * @type {number[][]}
+     */
     var results = [];
+    /**
+     * @type {number[]}
+     */
     var resultsRefillCostTotal = [];
     for (var iExtend = 0; iExtend <= numExtends; ++iExtend) {
       results.push([]);

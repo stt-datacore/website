@@ -5,22 +5,30 @@ import * as TinyColor from 'tinycolor2';
 import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
-import { formatTierLabel } from '../utils/crewutils';
+import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
+import { BuffStatTable } from '../utils/voyageutils';
+import { EquipmentItem } from '../model/equipment';
 
 type VaultCrewProps = {
+	playerData?: PlayerData;
+	buffs?: BuffStatTable;
 	size: number;
 	style?: React.CSSProperties;
-	crew: any;
+	crew: PlayerCrew;
 	itemsReady: boolean;
+	items?: EquipmentItem[];
+	allCrew?: CrewMember[];
 };
 
-function formatCrewStats(crew: any): JSX.Element {
-	let skills = [];
+function formatCrewStats(crew: PlayerCrew, playerData?: PlayerData, allCrew?: CrewMember[], buffs?: BuffStatTable): JSX.Element {
+	let skills = [] as JSX.Element[];
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = crew[skillName];
 
 		if (skill && skill.core && skill.core > 0) {
-			let skillShortName = CONFIG.SKILLS_SHORT.find(c => c.name === skillName).short;
+			let skillShortName = CONFIG.SKILLS_SHORT.find(c => c.name === skillName)?.short;
 			skills.push(
 				<p key={skillShortName}>
 					<span>{skillShortName}</span> <b>{skill.core}</b>{' '}
@@ -43,7 +51,7 @@ function formatCrewStats(crew: any): JSX.Element {
 
 class VaultCrew extends PureComponent<VaultCrewProps> {
 	render() {
-		const { crew, itemsReady } = this.props;
+		const { allCrew, playerData, buffs, crew, itemsReady, items } = this.props;
 		const SZ = (scale: number) => (this.props.size * scale).toFixed(2);
 		let borderColor = new TinyColor(CONFIG.RARITIES[crew.max_rarity].color);
 
@@ -57,7 +65,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			paddingRight: SZ(0.4) + 'em'
 		};
 
-		let rarity = [];
+		let rarity = [] as JSX.Element[];
 		for (let i = 0; i < crew.rarity; i++) {
 			rarity.push(<img key={i} src={star_reward} style={iconStyle} />);
 		}
@@ -65,9 +73,9 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			rarity.push(<img key={i} src={star_reward_inactive} style={iconStyle} />);
 		}
 
-		let skillicons = [];
-		let skills_sorted = Object.entries(crew.base_skills)
-			.sort((a, b) => { a[1].core - b[1].core });
+		let skillicons = [] as JSX.Element[];
+		let skills_sorted: [string, Skill][] = Object.entries(crew.base_skills)
+			.sort((a, b) => (a[1] as Skill).core - (b[1] as Skill).core);
 		skills_sorted.forEach((s) => {
 			let skillName = s[0];
 			skillicons.push(<img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={iconStyle} />);
@@ -144,7 +152,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 		//	Assume at the start of next range unless has multiple equips
 		let startlevel = Math.floor(crew.level / 10) * 4;
 		if (crew.level % 10 == 0 && crew.equipment.length > 1) startlevel = startlevel - 4;
-		let eqimgs = [];
+		let eqimgs = [] as string[];
 		if (!crew.equipment_slots[startlevel] || !itemsReady) {
 			//console.error(`Missing equipment slots information for crew '${crew.name}'`);
 			//console.log(crew);
@@ -155,17 +163,24 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 				'items_equipment_box02_icon.png'
 			];
 		} else {
+			for (let i = startlevel; i < startlevel + 4; i++) {
+				let found = items?.find((item) => item.symbol === crew.equipment_slots[i].symbol);
+				if (found) {
+					crew.equipment_slots[i] ??= {} as EquipmentSlot;
+					crew.equipment_slots[i].imageUrl = found.imageUrl;
+				}
+			}
 			eqimgs = [
-				crew.equipment_slots[startlevel].imageUrl,
-				crew.equipment_slots[startlevel + 1].imageUrl,
-				crew.equipment_slots[startlevel + 2].imageUrl,
-				crew.equipment_slots[startlevel + 3].imageUrl
+				crew.equipment_slots[startlevel].imageUrl ?? "",
+				crew.equipment_slots[startlevel + 1].imageUrl ?? "",
+				crew.equipment_slots[startlevel + 2].imageUrl ?? "",
+				crew.equipment_slots[startlevel + 3].imageUrl ?? ""
 			];
 		}
 
 		if (crew.equipment) {
 			[0, 1, 2, 3].forEach(idx => {
-				if (crew.equipment.indexOf(idx) < 0) {
+				if ((crew.equipment as number[]).indexOf(idx) < 0) {
 					eqimgs[idx] = 'items_equipment_box02_icon.png';
 				}
 			});
@@ -188,7 +203,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 					<Popup
 						on="click"
 						header={crew.name}
-						content={formatCrewStats(crew)}
+						content={formatCrewStats(crew, playerData, allCrew, buffs)}
 						trigger={<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ width: '100%' }} />}
 					/>
 

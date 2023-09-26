@@ -18,24 +18,88 @@ import { mergeItems, exportItems, exportItemFields } from '../utils/itemutils';
 import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
+import { CrewMember } from '../model/crew';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import Announcement from '../components/announcement';
+import { DataContext } from '../context/datacontext';
+import { MergedContext } from '../context/mergedcontext';
+import { PlayerContext } from '../context/playercontext';
+import { calculateBuffConfig } from '../utils/voyageutils';
+import { v4 } from 'uuid';
 
-type ProfilePageProps = {};
+const isWindow = typeof window !== 'undefined';
+
+type ProfilePageProps = {
+	setPlayerData?: (value?: PlayerData) => void;
+	setLastModified?: (value?: Date) => void;
+};
 
 type ProfilePageState = {
 	dbid?: string;
 	errorMessage?: string;
-	playerData?: any;
+	lastModified?: Date;
 	mobile: boolean;
 };
 
-class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
-	constructor(props: ProfilePageProps) {
+
+export const ProfilePage = (props: ProfilePageProps) => {
+	const coreData = React.useContext(DataContext);
+	const isReady = coreData.ready ? coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']) : false;
+
+	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
+	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+
+	let profData: PlayerData | undefined = undefined;
+
+	if (isReady && strippedPlayerData && strippedPlayerData?.stripped !== false) {
+		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
+		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified);
+		
+		let data = mergeShips(coreData.ship_schematics, profData.player.character.ships);
+		profData.player.character.ships = data;
+	}
+
+	return (
+		<Layout>
+			{!isReady &&
+				<div className='ui medium centered text active inline loader'>Loading data...</div>
+			}
+			{isReady &&
+				<React.Fragment>
+					<Announcement />
+						<MergedContext.Provider value={{
+							allCrew: coreData.crew,
+							playerData: profData ?? {} as PlayerData,
+							buffConfig: buffConfig,							
+							allShips: coreData.ships,
+							items: coreData.items,
+							playerShips: profData?.player.character.ships,							
+						}}>
+							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
+						</MergedContext.Provider>
+				</React.Fragment>
+			}
+		</Layout>
+	);
+}
+
+interface ProfilePageComponentProps {
+	props: ProfilePageProps;
+}
+
+class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfilePageState> {
+	static contextType? = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+
+	constructor(props: ProfilePageComponentProps) {
 		super(props);
 
 		this.state = {
 			dbid: undefined,
 			errorMessage: undefined,
-			playerData: undefined,
+			lastModified: undefined,
 			mobile: false
 		};
 	}
@@ -46,7 +110,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			this.setState({ mobile: true });
 		}
 		if (urlParams.has('dbid')) {
-			this.setState({ dbid: urlParams.get('dbid') });
+			this.setState({ dbid: urlParams.get('dbid') as string });
 		} else if (urlParams.has('discord') && window.location.hash !== '') {
 			let discordUsername = urlParams.get('discord');
 			let discordDiscriminator = window.location.hash.replace('#', '');
@@ -65,73 +129,96 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		}
 	}
 
-	componentDidUpdate() {
-		const { dbid, playerData, errorMessage } = this.state;
-		if (dbid && !playerData && !errorMessage) {
-			let lastModified = undefined;
+	
+	private initing = false;
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/` + dbid)
+	componentDidUpdate() {
+		const { dbid, errorMessage } = this.state;
+		const { playerData } = this.context;
+
+		const me = this;
+		if (me.initing) return;
+		
+		me.initing = true;
+
+		if (dbid && !playerData?.player && !errorMessage) {
+			let lastModified: Date | undefined = undefined;
+			let hash = v4();
+
+			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/${dbid}?hash=${hash}`)
 				.then(response => {
-					lastModified = new Date(Date.parse(response.headers.get('Last-Modified')));
+					let lmstr = response.headers.get('Last-Modified');
+					if (lmstr) lastModified = new Date(Date.parse(lmstr));
 
 					return response.json();
 				})
 				.then(playerData => {
-					fetch('/structured/crew.json')
-						.then(response => response.json())
-						.then(allcrew => {
-							// Do some computation on the data to avoid doing it on every render
-							prepareProfileData(allcrew, playerData, lastModified);
 
-							this.setState({ playerData });
-						});
+					if (isWindow) window.setTimeout(() => {
+						if (me.props.props.setPlayerData) {
+							me.props.props.setPlayerData(playerData);
+							me.setState({... this.state, lastModified : lastModified });
+							if (me.props.props.setLastModified) {
+								me.props.props.setLastModified(lastModified);
+							}
+						}
+					});
 				})
 				.catch(err => {
-					this.setState({ errorMessage: err });
+					me.setState({ errorMessage: err });
+				})
+				.finally(() => {
+					me.initing = false;
 				});
 		}
 	}
 
 	renderDesktop() {
-		const { playerData } = this.state;
-
+		
+		const { playerData } = this.context ?? { playerData: undefined };
+		
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => <ProfileCrew playerData={this.state.playerData} />
+				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} isTools={true} location={location} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
-				render: () => <ProfileCrewMobile playerData={this.state.playerData} isMobile={false} />
+				render: () => <ProfileCrewMobile isMobile={false} />
 			},
 			{
 				menuItem: 'Ships',
-				render: () => <ProfileShips playerData={this.state.playerData} />
+				render: () => playerData && <ProfileShips /> || <></>
 			},
 			{
 				menuItem: 'Items',
-				render: () => <ProfileItems playerData={this.state.playerData} />
+				render: () => <ProfileItems />
 			},
 			{
 				menuItem: 'Other',
-				render: () => <ProfileOther playerData={this.state.playerData} />
+				render: () => <ProfileOther />
 			},
 			{
 				menuItem: 'Charts & Stats',
-				render: () => <ProfileCharts playerData={this.state.playerData} />
+				render: () => <ProfileCharts />
 			}
 		];
 
+		console.log("Avatar Debug");
+		console.log(playerData?.player?.character?.crew_avatar);
+
+		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
+			? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
+			: 'crew_portraits_cm_empty_sm.png'}`;
+
 		return (
-			<Layout title={playerData.player.character.display_name}>
+			playerData?.player &&
+			(<>
 				<Item.Group>
 					<Item>
 						<Item.Image
 							size='tiny'
-							src={`${process.env.GATSBY_ASSETS_URL}${playerData.player.character.crew_avatar
-									? playerData.player.character.crew_avatar.portrait
-									: 'crew_portraits_cm_empty_sm.png'
-								}`}
+							src={avatar}
 						/>
 
 						<Item.Content>
@@ -139,7 +226,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							<Item.Meta>
 								<Label>VIP {playerData.player.vip_level}</Label>
 								<Label>Level {playerData.player.character.level}</Label>
-								<Label>{playerData.calc.numImmortals} crew</Label>
+								<Label>{playerData.calc?.numImmortals} crew</Label>
 								<Label>{playerData.player.character.shuttle_bays} shuttles</Label>
 							</Item.Meta>
 							<Item.Description>
@@ -159,7 +246,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 
 				<Menu compact>
 					<Menu.Item>
-						{playerData.calc.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
+						{playerData.calc?.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
 					</Menu.Item>
 					<Dropdown item text='Download'>
 						<Dropdown.Menu>
@@ -171,12 +258,12 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 					</Dropdown>
 				</Menu>
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
-			</Layout>
-		);
+			</>
+		)) || <></>;
 	}
 
 	async _exportExcel() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		let response = await fetch('/structured/items.json');
 		let items = await response.json();
@@ -185,10 +272,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 		let ship_schematics = await response.json();
 
 		response = await fetch('/structured/crew.json');
-		let allcrew = await response.json();
+		let allcrew = await response.json() as CrewMember[];
 
-		let itemdata = mergeItems(playerData.player.character.items, items);
-		let shipdata = mergeShips(ship_schematics, playerData.player.character.ships);
+		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
+		let shipdata = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : undefined;
 
 		let crewFields = exportCrewFields();
 		let shipFields = exportShipFields();
@@ -212,7 +299,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let crew of playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew)) {
+		for (let crew of playerData?.player.character.crew.concat(playerData.player.character?.unOwnedCrew ?? []) ?? []) {
 			let row = {};
 			for (let field of crewFields) {
 				row[field.label] = field.value(crew);
@@ -232,7 +319,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let item of itemdata) {
+		for (let item of itemdata ?? []) {
 			let row = {};
 			for (let field of itemFields) {
 				row[field.label] = field.value(item);
@@ -252,7 +339,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			key: field.label
 		}));
 
-		for (let item of shipdata) {
+		for (let item of shipdata ?? []) {
 			let row = {};
 			for (let field of shipFields) {
 				row[field.label] = field.value(item);
@@ -267,9 +354,9 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			views: [{ state: 'frozen', ySplit: 1 }]
 		});
 
-		let allRows = [];
+		let allRows = [] as { startLevel: number, craftCost: number, crew: string }[];
 		let allDemandItems = new Set<string>();
-		for (let crew of playerData.player.character.crew) {
+		for (let crew of playerData?.player.character.crew ?? []) {
 			let acrew = allcrew.find(c => c.symbol === crew.symbol);
 
 			let startLevel = crew.level - (crew.level % 10);
@@ -285,10 +372,10 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 			let demands: IDemand[] = [];
 			let dupeChecker = new Set<string>();
 			// all levels past crew.level
-			acrew.equipment_slots
+			acrew?.equipment_slots
 				.filter(es => es.level >= startLevel)
 				.forEach(es => {
-					craftCost += demandsPerSlot(es, items, dupeChecker, demands);
+					craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 				});
 
 			for (let elem of dupeChecker) {
@@ -342,46 +429,47 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 	}
 
 	_exportCrew() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
-		let text = exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew));
+		let text = playerData ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	_exportShips() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
 			.then(ship_schematics => {
-				let data = mergeShips(ship_schematics, playerData.player.character.ships);
+				let data = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : [];
 				let text = exportShips(data);
 				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'ships.csv');
 			});
 	}
 
 	_exportItems() {
-		const { playerData } = this.state;
+		const { playerData } = this.context;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
 			.then(items => {
-				let data = mergeItems(playerData.player.character.items, items);
+				let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [] as EquipmentCommon[];
 				let text = exportItems(data);
 				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 			});
 	}
 
 	renderMobile() {
-		return <ProfileCrewMobile playerData={this.state.playerData} isMobile={true} />;
+		return <ProfileCrewMobile isMobile={true} />;
 	}
 
 	render() {
-		const { dbid, errorMessage, playerData, mobile } = this.state;
+		const { dbid, errorMessage, mobile } = this.state;
+		const { playerData } = this.context;
 
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Player profile'>
+				<>
 					<Header as='h4'>Player profile</Header>
 					{errorMessage && (
 						<Message negative>
@@ -402,7 +490,7 @@ class ProfilePage extends Component<ProfilePageProps, ProfilePageState> {
 							<Icon loading name='spinner' /> Loading...
 						</div>
 					)}
-				</Layout>
+				</>
 			);
 		}
 

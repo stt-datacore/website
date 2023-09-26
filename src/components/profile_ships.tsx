@@ -1,20 +1,32 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
 
-import { mergeShips } from '../utils/shiputils';
+import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { Ship, Schematics, Ability, ShipBonus, BattleStation } from '../model/ship';
+import { PlayerData } from '../model/player';
+import CONFIG from './CONFIG';
+import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
+import { useStateWithStorage } from '../utils/storage';
+import { MergedData, MergedContext } from '../context/mergedcontext';
+import { navigate } from 'gatsby';
+import { RarityFilter } from './crewtables/commonoptions';
+import { TriggerPicker } from './crewtables/shipoptions';
 
 type ProfileShipsProps = {
-	playerData: any;
 };
 
 type ProfileShipsState = {
-	column: any;
+	column: string | null;
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
-	data: any[];
+	data: Ship[];
+	originals: Ship[];
 	pagination_rows: number;
 	pagination_page: number;
+	activeShip?: Ship | null;
+	rarityFilter?: number[];
+	grantFilter?: string[];
 };
 
 const pagingOptions = [
@@ -24,7 +36,13 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
+
+	static contextType = MergedContext;
+	context!: React.ContextType<typeof MergedContext>;
+	inited: boolean;
+
 	constructor(props: ProfileShipsProps) {
 		super(props);
 
@@ -34,17 +52,25 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
-			data: []
+			data: [],
+			originals: []
 		};
 	}
 
 	componentDidMount() {
-		fetch('/structured/ship_schematics.json')
-			.then(response => response.json())
-			.then(ship_schematics => {
-				let data = mergeShips(ship_schematics, this.props.playerData.player.character.ships);
-				this.setState({ data });
-			});
+		this.initData();
+	}
+
+	componentDidUpdate(prevProps: Readonly<ProfileShipsProps>, prevState: Readonly<ProfileShipsState>, snapshot?: any): void {
+		this.initData();
+	}
+
+	initData() {
+		if (!this.context.playerShips?.length) return;
+		if (this.inited) return;		
+		
+		this.inited = true;
+		this.setState({ ... this.state, data: this.context.playerShips });
 	}
 
 	_onChangePage(activePage) {
@@ -57,90 +83,163 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		const sortConfig: IConfigSortData = {
 			field: clickedColumn,
-			direction: clickedColumn === column ? direction : (clickedColumn === 'name' ? null : 'ascending')
+			direction: clickedColumn === column ? direction : (direction === 'descending' ? 'ascending' : 'descending')
 		};
+		
+		let sorted = {} as IResultSortDataBy;
 
 		if(sortConfig.field === 'max_level') {
-			sortConfig.secondary = {
-				field: 'level',
-				direction: 'descending' //sortConfig.direction
-			};
-		}
+			sortConfig.direction = clickedColumn !== column ? direction : (direction === 'descending' ? 'ascending' : 'descending');
+			const newdata = [...data];
+			newdata.sort((a, b) => {
+				let r = 0;
+				r = (a.max_level ?? 0) - (b.max_level ?? 0);
+				if (r) {
+					return sortConfig.direction === 'descending' ? -r : r;
+				}		
+				r = (a.level ?? 0) - (b.level ?? 0);
 
-		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+				if (this.state.rarityFilter?.length === 1) {
+					return sortConfig.direction === 'descending' ? -r : r;
+				}
+				else {
+					return -r;
+				}				
+			});
+			sorted = {
+				field: 'max_level',
+				direction: sortConfig.direction ?? 'ascending',
+				result: newdata
+			}
+		}
+		else {
+			sorted = sortDataBy(data, sortConfig);
+		}
+		
+		const sortResult = sorted;
+
 		this.setState({
-			column: sorted.field,
-			direction: sorted.direction,
+			column: sortResult.field,
+			direction: sortResult.direction,
 			pagination_page: 1,
-			data: sorted.result
+			data: sortResult.result
 		});
 	}
 
+	private readonly setRarityFilter = (filter: number[] | undefined) => {
+		window.setTimeout(() => {
+			this.setState({...this.state, rarityFilter: filter});
+		});
+		
+	}
+	private readonly setGrantFilter = (filter: string[] | undefined) => {
+		window.setTimeout(() => {
+			this.setState({...this.state, grantFilter: filter});
+		})
+		
+	}
+
 	render() {
-		const { column, direction, pagination_rows, pagination_page } = this.state;
-		let { data } = this.state;
+		const { grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		
+		const dataContext = this.context;
+		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
+
+		let prefiltered = this.state.data;
+		
+		let data = prefiltered.filter((ship) => {
+			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
+			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
+
+			return true;
+		})
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
+		const setActiveShip = (ship: Ship | null | undefined) => {
+			this.setState({...this.state, activeShip: ship});
+		}
+	
+		const navToShip = (ship: Ship) => {
+			navigate('/playertools?tool=ship&ship='+ship.symbol);
+		}
+
 		// Pagination
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+		
+		return (<div>	
 
-		return (
+			<div style={{
+				display: "flex",
+				flexDirection: "row"
+			}}>
+
+				<RarityFilter
+					altTitle='Filter ship rarity'
+					rarityFilter={rarityFilter ?? []}
+					setRarityFilter={this.setRarityFilter}
+				/>
+				<div style={{
+					marginLeft: "0.5em"
+				}}>
+					<TriggerPicker grants={true} altTitle='Filter ship grants' selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+				</div>
+			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
 							width={3}
-							sorted={column === 'name' ? direction : null}
+							sorted={column === 'name' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('name')}
 						>
 							Ship
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'antimatter' ? direction : null}
+							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('antimatter')}
 						>
 							Antimatter
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'accuracy' ? direction : null}
+							sorted={column === 'accuracy' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('accuracy')}
 						>
 							Accuracy
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'attack' ? direction : null}
+							sorted={column === 'attack' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('attack')}
 						>
 							Attack
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'evasion' ? direction : null}
+							sorted={column === 'evasion' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('evasion')}
 						>
 							Evasion
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'hull' ? direction : null}
+							sorted={column === 'hull' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('hull')}
 						>
 							Hull
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
-							sorted={column === 'shields' ? direction : null}
+							sorted={column === 'shields' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('shields')}
 						>
 							Shields
 						</Table.HeaderCell>
 						<Table.HeaderCell
-							width={1}
-							sorted={column === 'max_level' ? direction : null}
+							width={1}							
+							sorted={column === 'max_level' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('max_level')}
 						>
 							Level
@@ -159,13 +258,15 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 										gridGap: '1px'
 									}}
 								>
-									<div style={{ gridArea: 'icon' }}>
-										<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon.file.substr(1).replace('/', '_')}.png`} />
+									<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
+										<ShipTarget inputItem={ship} targetGroup='ships'>
+											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+										</ShipTarget>
 									</div>
-									<div style={{ gridArea: 'stats' }}>
+									<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 									</div>
-									<div style={{ gridArea: 'description' }}>{ship.traits_named.join(', ')}</div>
+									<div style={{ gridArea: 'description' }}>{ship.traits_named?.join(', ')}</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{ship.antimatter}</Table.Cell>
@@ -193,7 +294,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									options={pagingOptions}
 									value={pagination_rows}
 									onChange={(event, { value }) =>
-										this.setState({ pagination_page: 1, pagination_rows: value as number })
+										this.setState({ ... this.state, pagination_page: 1, pagination_rows: value as number })
 									}
 								/>
 							</span>
@@ -201,8 +302,11 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-		);
+			<ShipHoverStat targetGroup='ships' />
+			</div>);
 	}
 }
+
+
 
 export default ProfileShips;

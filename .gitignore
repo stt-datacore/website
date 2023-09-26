@@ -1,13 +1,15 @@
 .DS_Store
 .env
 .yarn-integrity
+.config/
+.vscode/
 yarn-debug.log
 yarn-error.log
 
 node_modules/
-typings/
+# typings/
 .scripts/
-
+.prettierrc
 # Gatsby files
 .cache/
 public
