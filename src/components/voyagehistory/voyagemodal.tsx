@@ -9,6 +9,7 @@ import CONFIG from '../../components/CONFIG';
 import { LineupViewer } from '../../components/voyagecalculator/lineupviewer';
 
 import { HistoryContext } from './context';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type VoyageModalProps = {
 	voyage: ITrackedVoyage;
@@ -34,6 +35,8 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				{CONFIG.SKILLS[voyage.skills.primary_skill]} / {CONFIG.SKILLS[voyage.skills.secondary_skill]} / {allTraits.ship_trait_names[voyage.ship_trait]} <span style={{ marginLeft: '2em' }}>({dtCreated.toLocaleDateString()})</span>
 			</Modal.Header>
 			<Modal.Content scrolling>
+				<CrewHoverStat targetGroup='voyageLineup' modalPositioning={true} />	
+
 				{renderLineup()}
 				{props.onRemove && (
 					<div style={{ marginTop: '3em' }}>
