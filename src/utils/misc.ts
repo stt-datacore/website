@@ -144,9 +144,10 @@ function iOS() {
   }
 
 
-  export function makeAllCombos<T>(source: T[], current?: T[][], index?: number): T[][] {
+  export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[][], index?: number): T[][] {
 	current ??= [];
 	index ??= 0;
+	maxResults ??= 1000;
 
 	let i = 0;
 	let c = current.length;
@@ -159,9 +160,10 @@ function iOS() {
 	}
 	
 	current = newc;
-	
+	if (current.length >= maxResults) return current;
+
 	if (index < source.length - 1) {
-		current = makeAllCombos(source, current, index + 1);
+		current = makeAllCombos(source, maxResults, current, index + 1);		
 	}
 
 	return current;

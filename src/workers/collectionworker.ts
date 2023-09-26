@@ -365,7 +365,7 @@ const CollectionOptimizer = {
                 const createCombos = (col: CollectionGroup): ColComboMap[] => {
                     const names = col.maps.map((c) => c.collection.name);
                     let result = makeAllCombos(names);
-                    
+
                     const colNeeded = col.collection.needed ?? 0;
 
                     let exact = [] as ColComboMap[];
