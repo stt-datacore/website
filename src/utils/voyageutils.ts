@@ -1,8 +1,26 @@
-/* All relevant voyage utils have been moved to voyagehelpers.ts. The few things that remain here should find a new place to live! */
-
 import CONFIG from '../components/CONFIG';
-import { CrewMember } from '../model/crew';
-import { AllBuffsCapHash, CompactCrew, Player, PlayerCrew, PlayerData } from '../model/player';
+import { AllBuffsCapHash, Player, PlayerCrew } from '../model/player';
+import { Estimate } from '../model/worker';
+
+export const formatTime = (time: number): string => {
+	let hours = Math.floor(time);
+	let minutes = Math.floor((time-hours)*60);
+	return hours+"h " +minutes+"m";
+};
+
+export const flattenEstimate = (estimate: Estimate): any => {
+	const extent = estimate.refills[0];
+	const flatEstimate = {
+		median: extent.result,
+		minimum: extent.saferResult,
+		moonshot: extent.moonshotResult,
+		dilemma: {
+			hour: extent.lastDil,
+			chance: extent.dilChance
+		}
+	};
+	return flatEstimate;
+};
 
 /* TODO: move IBuffStat, calculateBuffConfig to crewutils.ts (currently not used by voyage calculator) */
 export interface IBuffStat {
@@ -34,7 +52,7 @@ export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
 	Object.keys(allBuffs)
 		.filter(z => z.includes("skill"))
 		.forEach(buff => {
-			let p = parseBuff(buff);			
+			let p = parseBuff(buff);
 			if (p) result[p.skill] = {} as IBuffStat;
 			if (p && p.type === 'percent_increase') {
 				result[p.skill].multiplier = 1;

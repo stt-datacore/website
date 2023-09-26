@@ -1,25 +1,23 @@
-import React, { useRef, useState } from 'react';
-import { Dropdown, Grid, Header, Table, Icon, Rail, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input } from 'semantic-ui-react';
+import React from 'react';
+import { Dropdown, Grid, Table, Icon, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input } from 'semantic-ui-react';
 import { Link } from 'gatsby';
-import Layout from '../components/layout';
-import CONFIG from './CONFIG';
-import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
-import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
-import { useStateWithStorage } from '../utils/storage';
+import { calculateBuffConfig } from '../utils/voyageutils';
+
+import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
-import CommonCrewData, { StatLabelProps } from './commoncrewdata';
-import marked from 'marked';
-import CrewStat from './crewstat';
-import { formatTierLabel, navToCrewPage, printPortalStatus } from '../utils/crewutils';
+
+import { StatLabelProps } from '../components/statlabel';
+import { getSkillOrder, navToCrewPage, printPortalStatus } from '../utils/crewutils';
 import { CrewMember } from '../model/crew';
-import { CiteMode, PlayerCrew, PlayerData, VoyageInfo } from '../model/player';
+import { CiteEngine, CiteMode, PlayerCrew } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
 import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
+import { TinyStore } from '../utils/tiny';
 
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
@@ -53,7 +51,7 @@ type CiteOptimizerState = {
 	touchToggled: boolean;
 	citeMode?: CiteMode;
 	sort?: string;
-	direction?: 'ascending' | 'descending';	
+	direction?: 'ascending' | 'descending';
 	checks?: SymCheck[];
 };
 
@@ -70,9 +68,10 @@ export class StatLabel extends React.Component<StatLabelProps> {
 	}
 }
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private lastCiteMode: CiteMode | undefined = undefined;
+	private tiny = TinyStore.getStore('citeOptimizer');
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
@@ -85,8 +84,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			currentCrew: undefined,
 			touchCrew: undefined,
 			touchToggled: false,
+			direction: 'ascending',
 			citeMode: {
-				rarities: []
+				rarities: [],
+				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
 			}
 		};
 	}
@@ -103,6 +104,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 	}
 
+	readonly setEngine = (engine: CiteEngine) => {
+		if (this.state.citeMode?.engine !== engine) {
+			this.tiny.setValue('engine', engine, true);
+			this.setState({ ... this.state, citeMode: { ... this.state.citeMode, engine: engine }, citeData: null });
+		}
+	}
+
 	readonly setChecked = (crew: PlayerCrew | string, value?: boolean) => {
 		const fpros = this.state.checks ?? [] as SymCheck[];
 		let fi: SymCheck | null = null;
@@ -113,7 +121,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		else {
 			fi = fpros.find(z => z.symbol === crew.symbol) ?? null;
 		}
-		
+
 		if (fi) {
 			fi.checked = value ?? false;
 		}
@@ -124,7 +132,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			}
 			fpros.push(fi);
 		}
-		
+
 		this.setState({ ... this.state, checks: fpros });
 	}
 
@@ -144,15 +152,21 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
-		const { playerData, allCrew } = this.context;
+		const { playerData, buffConfig } = this.context.player;
+		const allCrew = this.context.core.crew;
 
-		playerData.citeMode = citeMode;
+		const engine = this.state.citeMode?.engine ?? "original";
+		if (playerData) playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
+
+		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
+
 		worker.postMessage({
-			worker: 'citeOptimizer',
+			worker: workerName,
 			playerData,
-			allCrew
+			allCrew,
+			buffs: buffConfig
 		});
 	}
 
@@ -166,9 +180,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	renderVoyageGroups(data: CiteData, confine?: string[]) {
 		const voyages = [] as VoyageImprovement[];
 		let currVoy: string = '';
-		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const { playerData } = this.context.player;
 
-		const voyageData = JSON.parse(sessionStorage.getItem('tools/voyageData') ?? "{}") as VoyageInfo;
+		const voyageData = this.context.player.ephemeral;
+		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 
 		if (voyageData?.voyage?.length) {
 			let v = voyageData.voyage[0];
@@ -180,7 +195,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
-				const findcrew = this.context.playerData.player.character.crew.find((c) => c.name === voycrew.name);
+				const findcrew = playerData?.player.character.crew.find((c) => c.name === voycrew.name);
 
 				if (!findcrew) continue;
 
@@ -200,7 +215,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					}
 					return value;
 				});
-				
+
 				crew.voyagesImproved = voycrew.voyagesImproved;
 				crew.evPerCitation = voycrew.evPerCitation;
 				crew.addedEV = voycrew.addedEV;
@@ -218,9 +233,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
 						voyages.push(currvoy);
 					}
-	
+
 					let test = currvoy.crew.find((c) => c.name === crew.name);
-	
+
 					if (!test) {
 						currvoy.crew.push(crew);
 					}
@@ -232,7 +247,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 			let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
 			let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
-			
+
 			if (!a.maxEV) a.maxEV = ma;
 			if (!b.maxEV) b.maxEV = mb;
 
@@ -246,23 +261,23 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			else if (b.voyage === currentVoyage) return 1;
 
 			let r = mb - ma;
-		
+
 			if (r) return r;
-			
+
 			r = ra - rb;
 
 			if (r) return r;
 
 			ma = a.crew.map(ac => ac.pickerId ?? 0).reduce((prev, curr) => prev + curr);
 			mb = b.crew.map(bc => bc.pickerId ?? 0).reduce((prev, curr) => prev + curr);
-			
+
 			r = ma - mb;
-			
+
 			if (r) return r;
-			
+
 			r = b.crew.length - a.crew.length;
 			if (!r) r = a.voyage.localeCompare(b.voyage);
-		
+
 			return r;
 		});
 
@@ -277,7 +292,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				else {
 					return a.name.localeCompare(b.name);
 				}
-				
+
 			})
 		})
 
@@ -296,11 +311,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					if (citeMode?.secSkills?.length) {
 						if (!citeMode.secSkills.includes(sp[1])) return (<></>);
 					}
-					
+
 
 					return (<Table.Row key={"voy" + idx}>
 						<Table.Cell style={{backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined,}}>
-							<div style={{								
+							<div style={{
 								display: "flex",
 								flexDirection: "column",
 								justifyContent: "center",
@@ -315,23 +330,23 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							</div>
 						</Table.Cell>
 						<Table.Cell>
-							
+
 						<Grid doubling columns={3} textAlign='center'>
 								{voyage.crew.map((crew) => (
 									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-									<ItemDisplay 
+									<ItemDisplay
 										size={64}
 										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 										rarity={crew.rarity}
 										maxRarity={crew.max_rarity}
 										targetGroup='citationTarget'
 										itemSymbol={crew.symbol}
-										allCrew={this.context.allCrew}
-										playerData={this.context.playerData}
+										allCrew={this.context.core.crew}
+										playerData={this.context.player.playerData}
 										/>
 										<b onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
 											style={{
-											cursor: "pointer", 
+											cursor: "pointer",
 											margin:"0.5em 0 0 0",
 											textDecoration: "underline"
 											}}
@@ -340,7 +355,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												{crew.name} ({crew.pickerId})
 										</b>
 										<i style={{margin:"0"}} >
-											<span 
+											<span
 											title={"Click to see only voyages involving this crew member"}
 											style={{cursor: "pointer", margin:"0", textDecoration: "underline"}}
 											 onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
@@ -360,16 +375,93 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	}
 
+	setSort = (key?: string) => {
+		this.setState({ ... this.state, sort: key });
+	}
+
+	setDirection = (key?: 'ascending' | 'descending') => {
+		this.setState({ ...this.state, direction: key });
+	}
+
+	sortcrew = (crew: PlayerCrew[], training: boolean, engine: 'original' | 'beta_tachyon_pulse') => {
+		const { sort, direction } = this.state;
+
+		if (!sort || !direction) return crew;
+			
+		return crew.sort((a, b) => {
+			let r = 0;
+			
+			if (sort === 'pickerId' && a.pickerId && b.pickerId) {
+				r = a.pickerId - b.pickerId;
+			}
+			else if (sort === 'name') {
+				r  = a.name.localeCompare(b.name);
+			}
+			else if (sort === 'rarity') {
+				r = a.max_rarity - b.max_rarity;				
+				if (!r) r = a.rarity - b.rarity;
+			}
+			else if (sort === 'finalEV') {
+				let aev = Math.ceil(training ? (a.addedEV ?? a.totalEVContribution ?? 0) : (a.totalEVContribution ?? 0));
+				let bev = Math.ceil(training ? (b.addedEV ?? b.totalEVContribution ?? 0) : (b.totalEVContribution ?? 0));
+				r = aev - bev;
+			}
+			else if (sort === 'remainingEV' && !training) {
+				r = Math.ceil(a.totalEVRemaining ?? 0) - Math.ceil(b.totalEVRemaining ?? 0);
+			}
+			else if (sort === 'evPer' && !training) {
+				r = Math.ceil(a.evPerCitation ?? 0) - Math.ceil(b.evPerCitation ?? 0);
+			}
+			else if (sort === 'voyages') {
+				r = (a.voyagesImproved?.length ?? 0) - (b.voyagesImproved?.length ?? 0);
+			}
+			else if (sort === 'amTraits' && engine === 'beta_tachyon_pulse') {
+				r = (a.amTraits ?? 0) - (b.amTraits ?? 0);
+			}
+			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
+				let ska = getSkillOrder(a).join("/");
+				let skb = getSkillOrder(b).join("/");
+				r = ska.localeCompare(skb);
+				if (!r) {
+					r = (a.scoreTrip ?? 0) - (b.scoreTrip ?? 0);
+					if (direction === 'ascending') r *= -1;
+				}
+			}
+			else if (sort === 'in_portal') {
+				if (a.in_portal) r--;
+				if (b.in_portal) r++;
+
+				if (!r) r = a.obtained.localeCompare(b.obtained);
+			}
+			else if (sort === 'compare') {
+				if (this.getChecked(a.symbol)) r--;
+				if (this.getChecked(b.symbol)) r++;
+			}
+			
+			if (direction === 'descending') r *= -1;
+			
+			if (!r) {
+				r = (a.pickerId ?? 0) - (b.pickerId ?? 0);
+			}
+			if (!r) {
+				r = a.name.localeCompare(b.name);
+			}			
+			
+			return r;
+		})
+	}
+
 	renderTable(data?: PlayerCrew[], tabName?: string, training = true) {
-		if (!data) return <></>;
+		if (!data || !this.context.player.playerData) return <></>;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
-		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');		
+		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
+		const engine = this.state.citeMode?.engine ?? 'original';
 
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
-		const buffConfig = calculateBuffConfig(this.context.playerData.player);
+		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		tabName ??= "";
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -377,29 +469,83 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-		
+
+		const { sort, direction } = this.state;
+		data = this.sortcrew(data ?? [], training, engine);
+
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell>Rank</Table.HeaderCell>
-						<Table.HeaderCell>Crew</Table.HeaderCell>
-						<Table.HeaderCell>Rarity</Table.HeaderCell>
-						<Table.HeaderCell>Final EV</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'pickerId' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('pickerId')}
+							sorted={sort === 'pickerId' ? direction : undefined}>
+
+							Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'name' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('name')}
+							sorted={sort === 'name' ? direction : undefined}>
+							Crew
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'rarity' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('rarity')}
+							sorted={sort === 'rarity' ? direction : undefined}>
+							Rarity
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
+							sorted={sort === 'finalEV' ? direction : undefined}>
+							Final EV
+						</Table.HeaderCell>
 						{!training &&
 						<React.Fragment>
-							<Table.HeaderCell>Remaining EV</Table.HeaderCell>
-							<Table.HeaderCell>EV Per Citation</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'remainingEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('remainingEV')}
+								sorted={sort === 'remainingEV' ? direction : undefined}>
+								Remaining EV
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'evPer' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('evPer')}
+								sorted={sort === 'evPer' ? direction : undefined}>
+								EV Per Citation
+							</Table.HeaderCell>
 						</React.Fragment>
 						}
-						<Table.HeaderCell>Voyages Improved</Table.HeaderCell>
-						<Table.HeaderCell>In Portal</Table.HeaderCell>
-						<Table.HeaderCell>Compare</Table.HeaderCell>
+						<Table.HeaderCell
+								onClick={(e) => sort === 'voyages' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('voyages')}
+								sorted={sort === 'voyages' ? direction : undefined}>
+							Voyages<br />Improved
+						</Table.HeaderCell>
+						{engine === 'beta_tachyon_pulse' &&
+							<React.Fragment>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
+								sorted={sort === 'amTraits' ? direction : undefined}>
+								Antimatter<br />Traits
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'skillOrder' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('skillOrder')}
+								sorted={sort === 'skillOrder' ? direction : undefined}>
+								Skill Order
+							</Table.HeaderCell>
+							</React.Fragment>
+							}
+						<Table.HeaderCell
+							onClick={(e) => sort === 'in_portal' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('in_portal')}
+							sorted={sort === 'in_portal' ? direction : undefined}>
+							In Portal
+						</Table.HeaderCell>
+						<Table.HeaderCell
+							onClick={(e) => sort === 'compare' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('compare')}
+							sorted={sort === 'compare' ? direction : undefined}>
+							Compare
+						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
-						const crew = this.context.playerData.player.character.crew.find(c => c.name == row.name);
+						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
 
 						return (crew &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
@@ -435,7 +581,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
 								<Table.Cell>
-									{Math.ceil(training ? (row.addedEV ?? 0) : (row.totalEVContribution ?? 0))}
+									{Math.ceil(training ? (row.addedEV ?? row.totalEVContribution ?? 0) : (row.totalEVContribution ?? 0))}
 								</Table.Cell>
 								{
 									!training &&
@@ -451,6 +597,57 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
 								</Table.Cell>
+								{engine === 'beta_tachyon_pulse' &&
+									<React.Fragment>
+
+										<Table.Cell>{row.amTraits}</Table.Cell>
+										<Table.Cell width={2}>
+										<div style={{
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "flex-start",
+												alignItems: "left"
+											}}>
+
+											<div style={{
+												display: "flex",
+												flexDirection: "column",
+												justifyContent: "center",
+												alignItems: "center"
+											}}>
+												<div style={{
+													display: "flex",
+													flexDirection: "row",
+													justifyContent: "space-evenly",
+													alignItems: "center"
+												}}>
+												{getSkillOrder(row).map((mskill, idx) => (
+												<img
+													title={appelate(mskill)}
+													key={"skimage"+idx+mskill}
+													src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`}
+													style={{
+														maxHeight: "1.5em",
+														maxWidth: "1.5em",
+														margin: "0.5em",
+													}}
+
+												/>))}
+												</div>
+
+												<i style={{
+													fontSize: "0.75em",
+													fontWeight: "bold",
+													color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
+													}}>{Math.floor(100 * (row?.scoreTrip ?? 0)) / 10}</i>
+
+											</div>
+										</div>
+										</Table.Cell>
+									</React.Fragment>
+
+									}
+
 								<Table.Cell>
 									<span title={printPortalStatus(crew, true, true)}>
 									{printPortalStatus(crew, true, true)}
@@ -465,7 +662,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={9}>
+						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 11 : 9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={paginationPage}
@@ -514,20 +711,32 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 
 	render() {
-
-		const buffConfig = calculateBuffConfig(this.context.playerData.player);
+		if (!this.context.player.playerData) return <></>;
+		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const { engine } = citeMode;
+
 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
-		
+
 		let compact = true;
-		let workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
+		const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
 
 		workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
+
 		let pri: string[] = [];
 		let sec: string[] = [];
 		let seat: string[] = [];
+
 		const confine = [] as string[];
+
+		const engOptions = ['original', 'beta_tachyon_pulse'].map((s, idx) => {
+			return {
+				key: s,
+				value: s,
+				text: appelate(s) + (idx === 1 ? " (Experimental)" : "")
+			}
+		});
 
 		if (workset) {
 			let ac = workset.crewToCite.concat(workset.crewToTrain);
@@ -564,14 +773,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
 		}
-		
+
 		if (workset && citeMode?.secSkills?.length) {
 			workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 			workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(vi => citeMode.secSkills?.some(ci => vi.endsWith(ci.toLowerCase()))));
 		}
-		
+
 		if (workset && citeMode?.seatSkills?.length) {
-			const { playerData } = this.context;
+			const { playerData } = this.context.player;
 
 			workset.crewToCite = workset.crewToCite
 				.map(crew => {
@@ -594,9 +803,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				.filter((crew) => citeMode.seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
 		}
 
-		if (workset && citeMode?.portal !== undefined && this.context?.playerData?.player?.character?.crew?.length) {
-			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
-			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.playerData.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+		if (workset && citeMode?.portal !== undefined && this.context?.player?.playerData?.player?.character?.crew?.length) {
+			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
 		}
 
 		if (workset && citeMode?.nameFilter) {
@@ -621,12 +830,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(citeMode.nameFilter?.toLowerCase() ?? ""));
 			}
 		}
-		
+
 		const citeData = workset;
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-		
-		return (	
+
+		return (
 			<>
 				<Accordion
 					defaultActiveIndex={-1}
@@ -658,6 +867,24 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					]}
 				/>
 				<Segment>
+					<h3>Engine</h3>
+					<div style={{
+						display: "flex",
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+					}}>
+						<Dropdown
+							multiple={false}
+							options={engOptions}
+							placeholder={"Select Engine"}
+							value={engine}
+							onChange={(e, { value }) => {
+								this.setEngine(value as CiteEngine);
+							}}
+							/>
+
+					</div>
+				</Segment>
+				<Segment>
 					<h3>Filters</h3>
 					<div style={{
 						display: "flex",
@@ -676,36 +903,36 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
 							<PortalFilter
 								portalFilter={citeMode?.portal}
-								setPortalFilter={(data) => {									
+								setPortalFilter={(data) => {
 									setCiteMode({ ... citeMode ?? {}, portal: data });
 								}}
 								/>
 						</div>
 						<div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
-							<Input		
-														
+							<Input
+
 								label={"Search"}
 								value={citeMode.nameFilter}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
 								/>
-							<i className='delete icon'								
-								title={"Clear Searches and Comparison Marks"} 							    
+							<i className='delete icon'
+								title={"Clear Searches and Comparison Marks"}
 								style={{
-									cursor: "pointer", 
+									cursor: "pointer",
 									marginLeft: "0.75em"
-								}} 								
+								}}
 								onClick={(e) => {
-										setCiteMode({ ... citeMode ?? {}, nameFilter: '' }); 
+										setCiteMode({ ... citeMode ?? {}, nameFilter: '' });
 										window.setTimeout(() => {
-											this.setState({ ...this.state, checks: undefined }); 
+											this.setState({ ...this.state, checks: undefined });
 										});
-										
-									} 
-								} 
+
+									}
+								}
 						 	/>
 
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={priSkills}
 								multiple
@@ -715,7 +942,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, priSkills: value as string[] })}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={secSkills}
 								multiple
@@ -725,7 +952,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
 								/>
 						</div>
-						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>							
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
 							<Dropdown
 								options={seatSkills}
 								multiple
@@ -750,14 +977,14 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<>
 						<Tab
 						 	panes={[
-								{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
-								{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
-								{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
+							{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+							{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
+							{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
 						</>
 					}
 				</Segment>
-				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.playerData.player.character.crew, buffConfig)}  targetGroup='citationTarget' />
+				<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, this.context.player.playerData?.player.character.crew, buffConfig)}  targetGroup='citationTarget' />
 
 			</>
 		);

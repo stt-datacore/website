@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
-import Layout from '../components/layout';
 import VoyageHOF from '../components/voyagehof';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type HallOfFamePageProps = {};
 
@@ -12,9 +12,9 @@ class HallOfFamePage extends PureComponent<HallOfFamePageProps, HallOfFamePageSt
 
 	render() {
 			return (
-				<Layout title='Hall of Fame'>
+				<DataPageLayout pageTitle='Hall of Fame'>
 					<VoyageHOF />
-				</Layout>
+				</DataPageLayout>
 			);
 	}
 }

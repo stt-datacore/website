@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Button, Input } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -8,10 +8,11 @@ import { PlayerData } from '../model/player';
 import CONFIG from './CONFIG';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { useStateWithStorage } from '../utils/storage';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
 import { TriggerPicker } from './crewtables/shipoptions';
+import { isMobile } from 'react-device-detect';
 
 type ProfileShipsProps = {
 };
@@ -27,6 +28,7 @@ type ProfileShipsState = {
 	activeShip?: Ship | null;
 	rarityFilter?: number[];
 	grantFilter?: string[];
+	textFilter?: string;
 };
 
 const pagingOptions = [
@@ -39,8 +41,8 @@ const pagingOptions = [
 
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
 
 	constructor(props: ProfileShipsProps) {
@@ -66,16 +68,18 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	initData() {
-		if (!this.context.playerShips?.length) return;
+		if (!this.context.player.playerShips?.length) return;
 		if (this.inited) return;		
 		
 		this.inited = true;
-		this.setState({ ... this.state, data: this.context.playerShips });
+		this.setState({ ... this.state, data: this.context.player.playerShips });
 	}
 
 	_onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
+
+	
 
 	_handleSort(clickedColumn) {
 		const { column, direction } = this.state;
@@ -135,22 +139,28 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	private readonly setGrantFilter = (filter: string[] | undefined) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, grantFilter: filter});
-		})
-		
+		})		
 	}
-
+	private readonly setTextFilter = (filter?: string) => {
+		this.setState({ ...this.state, textFilter: filter });
+	}
 	render() {
-		const { grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { textFilter, grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
-		if (!dataContext || !dataContext.allShips || !dataContext.playerShips) return <></>;
+		if (!dataContext || !dataContext.core.ships || !dataContext.player.playerShips) return <></>;
 
 		let prefiltered = this.state.data;
 		
 		let data = prefiltered.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
-
+			if (textFilter?.length) {
+				const usearch = textFilter.toLocaleUpperCase();
+				if (!ship.name?.toLocaleUpperCase().includes(usearch) 
+					&& !ship.traits?.some(t => t.toLocaleUpperCase().includes(usearch)) 
+					&& !ship.traits_hidden?.some(t => t.toLocaleUpperCase().includes(textFilter))) return false;
+			} 
 			return true;
 		})
 
@@ -161,7 +171,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		}
 	
 		const navToShip = (ship: Ship) => {
-			navigate('/playertools?tool=ship&ship='+ship.symbol);
+			navigate('/ship_info?ship='+ship.symbol);
 		}
 
 		// Pagination
@@ -173,6 +183,18 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				display: "flex",
 				flexDirection: "row"
 			}}>
+				<Input
+					style={{ width: isMobile ? '100%' : '50%' }}
+					iconPosition="left"
+					placeholder="Search by name or trait..."
+					value={textFilter}
+					onChange={(e, { value }) => this.setTextFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => this.setTextFilter('')} >
+							<Icon name='delete' />
+						</Button>
+				</Input>
 
 				<RarityFilter
 					altTitle='Filter ship rarity'

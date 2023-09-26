@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import Layout from '../components/layout';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
@@ -10,7 +9,7 @@ import { Demand, PlayerCrew, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
@@ -21,6 +20,7 @@ import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import DataPageLayout from '../components/page/datapagelayout';
 import { getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
 
@@ -34,7 +34,8 @@ export interface EquipmentItemData {
 interface ItemInfoPageProps {};
 
 interface ItemInfoComponentProps {
-	isReady: boolean;
+	setHeader: (value: string) => void;	
+	isReady?: boolean;
 };
 
 interface ItemInfoComponentState {
@@ -44,59 +45,23 @@ interface ItemInfoComponentState {
 };
 
 const ItemInfoPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics', 'cadet']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
 	
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
-
-	if (isReady && cadetforitem?.length) {
-		populateItemCadetSources(coreData.items, cadetforitem);
-	}
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("ITEM_INFO", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
+	const isReady = true;
+	const [header, setHeader] = React.useState<string | undefined>('');
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items,
-						allShips: coreData.ships
-					}}>
-						<ItemInfoComponent isReady={isReady} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
+		<DataPageLayout demands={['all_buffs', 'crew', 'items', 'cadet']}>
+			<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
+		</DataPageLayout>
 
-		</Layout>
 	);
 
 }
 
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	
 	private inited: boolean = false;
 
@@ -112,15 +77,13 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		};
 	}
 	componentDidUpdate() {
-		if (this.props.isReady && !this.inited) {
+		if (!this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady) {
-			this.initData();
-		}
+		this.initData();
 	}
 	
 	private changeComponent(symbol: string) {
@@ -131,7 +94,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 	private initData(symbol?: string) {
 		let urlParams = new URLSearchParams(window.location.search);
-		const { allCrew: allcrew, items } = this.context;
+		const { crew: allcrew, items } = this.context.core;
 		let item_symbol = symbol;
 		if (!symbol && urlParams.has('symbol')) {
 			item_symbol = urlParams.get('symbol') ?? undefined;
@@ -165,6 +128,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				this.inited = true;
 			} else {
 				this.setState({ item_data: { item, crew_levels, builds } });
+				this.props.setHeader(item.name);
 				this.inited = true;
 			}				
 		}
@@ -172,17 +136,18 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 	
 	private haveCount(symbol: string) {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
 	}
 
 	render() {
 		const { errorMessage, item_data } = this.state;
-		const { items, playerData } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Item information'>
+				<>
 					<Header as="h3">Item information</Header>
 					{errorMessage && (
 						<Message negative>
@@ -195,7 +160,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							<Icon loading name="spinner" /> Loading...
 						</div>
 					)}
-				</Layout>
+				</>
 			);
 		}
 
@@ -226,7 +191,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		
 		
 		const haveCount = this.haveCount(item_data.item.symbol);
-		const ship = item_data.item.type === 8 ? this.context.allShips?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const builds = item_data.builds;
 
 		return (
 				<div>
@@ -271,13 +237,13 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						</div>
 					
 					</div>
-					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
+					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
 				<br />
 
 				{item_data.item.type === 8 && !!ship &&
 					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
 						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
-							<Link to={`/playertools?tool=ship&ship=${ship.symbol}`}>
+							<Link to={`/ship_info?ship=${ship.symbol}`}>
 								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
 								<ItemDisplay 
 									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
@@ -307,7 +273,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													<ItemDisplay
 														playerData={playerData}
 														itemSymbol={entry.equipment.symbol}
-														allItems={this.context.items}
+														allItems={this.context.core.items}
 														targetGroup='item_info_items'
 														style={{ marginRight: "0.5em"}}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
@@ -357,8 +323,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 											<div style={{marginRight:"0.5em"}}>
 											<ItemDisplay
 												targetGroup='item_info'
-												allCrew={this.context.allCrew}
-												playerData={this.context.playerData}						
+												allCrew={this.context.core.crew}
+												playerData={this.context.player.playerData}						
 												itemSymbol={entry.crew.symbol}											
 												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
 												size={60}
@@ -377,10 +343,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					</div>
 				)}
 
-				{item_data.builds.length > 0 && (
+				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these:</Header>
-						<ProfileItems pageName='item_info' hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 						{/* <Grid columns={3} padded>
 							{item_data.builds.map((entry, idx) => (
 								<Grid.Column key={idx}>

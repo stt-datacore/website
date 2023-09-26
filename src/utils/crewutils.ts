@@ -217,7 +217,9 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 }
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
+	if (!buffConfig) return;
 	const getMultiplier = (skill: string, stat: string) => {
+		if (!(`${skill}_${stat}` in buffConfig)) return 0;
 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 	};
 
@@ -665,8 +667,11 @@ export const emptySkill = {
 	range_min: 0
 } as Skill;
 
-export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number): Skill[][] | undefined {
+export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number, minMult?: number, maxMult?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 0;
+	
+	minMult ??= 1;
+	maxMult ??= 1;
 	
 	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
 
@@ -684,7 +689,9 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
 
 			skillObj.range_min *= (1 + multi);
+			skillObj.range_min *= minMult;
 			skillObj.range_max *= (1 + multi);
+			skillObj.range_max *= maxMult;
 		}
 		if (skills.length > 1) skills.sort((a, b) => ((b.range_max + b.range_min) / 2) - ((a.range_max + a.range_min) / 2));
 
@@ -957,6 +964,15 @@ export function dynamicRangeColor(grade: number, max: number, min: number): stri
 
 
 export function gradeToColor(grade: string | number): string | null {
+
+	if (typeof grade === 'number' && grade < 1) {
+		if (grade >= 0.9) return 'lightgreen';
+		else if (grade >= 0.8) return 'aquamarine';
+		else if (grade >= 0.7) return 'yellow';
+		else if (grade >= 0.6) return 'orange';
+		else if (grade < 0.6) return 'tomato';
+	}
+	
 	switch(grade) {
 		case "A":
 		case "A-":
@@ -1024,6 +1040,9 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 }
 
+export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
+	return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
+}
 export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
 	
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
@@ -1040,7 +1059,7 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 		/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 	];
 	const variantTraits = [] as string[];
-
+	
 	if ("length" in subject) {
 		subject.forEach(trait => {
 			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
@@ -1438,10 +1457,39 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	return tiers ?? {};
 }
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
+export function getSkillOrder(crew: PlayerCrew | CrewMember) {
+	const sk = [] as ComputedBuff[];
+	let x = 0;
+	for (let skill of Object.keys(CONFIG.SKILLS)) {
+		if (skill in crew) {
+			sk.push({ ...crew[skill], skill: skill });
+		}
+		x++;
+	}
 
+	sk.sort((a, b) => b.core - a.core);                
+	const output = [] as string[];
+
+	if (sk.length > 0 && sk[0].skill) {
+		output.push(sk[0].skill);
+	}
+	if (sk.length > 1 && sk[1].skill) {
+		output.push(sk[1].skill);
+	}
+	if (sk.length > 2 && sk[2].skill) {
+		output.push(sk[2].skill);
+	}
+
+	return output;
+}
+
+export function printSkillOrder(crew: PlayerCrew | CrewMember) {
+	return getSkillOrder(crew).join("/");
+}
+
+
+export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	long ??= false;
-	
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 

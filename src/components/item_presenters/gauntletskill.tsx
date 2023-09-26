@@ -1,5 +1,5 @@
 import React from "react";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember, Skill } from "../../model/crew";
 import { Gauntlet } from "../../model/gauntlets";
 import { PlayerCrew } from "../../model/player";
@@ -18,8 +18,8 @@ export interface GauntletSkillsState extends PresenterPluginState {
 }
 
 export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, GauntletSkillProps, GauntletSkillsState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
     props!: Readonly<GauntletSkillProps>;
     
     constructor(props: GauntletSkillProps) {

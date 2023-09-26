@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CrewMember, SkillData } from "../../model/crew";
+import { CrewMember, Skill, SkillData } from "../../model/crew";
 import { CompletionState, PlayerCrew } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
@@ -13,12 +13,12 @@ import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
-import { StatLabelProps } from "../commoncrewdata";
+import { StatLabelProps } from "../statlabel";
 import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewItemsView } from "./crew_items";
 import {
     PlayerBuffMode,
@@ -109,17 +109,17 @@ export interface CollectionDisplayProps {
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
-    const tinyCol = TinyStore.getStore('collections');    
+    const tinyCol = TinyStore.getStore('collections');
     const dispClick = (e, col: string) => {
-        tinyCol.setValue('selectedCollection', col);
-        navigate("/playertools/?tool=collections");
+        
+        navigate("/collections?select=" + encodeURIComponent(col));
     }
 
     const { crew, style } = props;
     if (!crew.collections?.length) return <></>;
     return (<div style={{
-        ... (style ?? {}),  
-        cursor: "pointer"      
+        ... (style ?? {}),
+        cursor: "pointer"
     }}>
         {crew.collections?.map((col, idx) => (
             <a onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
@@ -346,8 +346,8 @@ export class CrewPresenter extends React.Component<
     CrewPresenterProps,
     CrewPresenterState
 > {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
@@ -469,7 +469,7 @@ export class CrewPresenter extends React.Component<
         var me = this;
 
         const availstates = getAvailableBuffStates(
-            this.context.playerData,
+            this.context.player.playerData,
             this.context.maxBuffs
         );
 
@@ -524,7 +524,7 @@ export class CrewPresenter extends React.Component<
         const nextBuff = (e) => {
             me.playerBuffMode = nextBuffState(
                 me.playerBuffMode,
-                me.context.playerData,
+                me.context.player.playerData,
                 me.context.maxBuffs
             );
             if (this.props.onBuffToggle) {
@@ -568,17 +568,20 @@ export class CrewPresenter extends React.Component<
 
         let immo = me.immortalMode;
         let sd = JSON.parse(JSON.stringify(crew)) as SkillData;
-
+        let sc = 0;
         getSkills(crew).forEach((skill) => {
             if (!(skill in crew)) return;
+            if (!crew[skill].core) return;
             sd.base_skills[skill] = {
                 core: crew[skill].core,
                 range_min: crew[skill].min,
                 range_max: crew[skill].max,
             };
+            sc++;
         });
 
         const skillData = sd;
+        const skillCount = sc;
 
         const getStars = () => {
             if (me.immortalMode === "min") return 1;
@@ -617,6 +620,7 @@ export class CrewPresenter extends React.Component<
                     display: "flex",
                     flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
                     width: hover ? undefined : width,
+                    textAlign: 'left'
                 }}
             >
                 <div
@@ -866,64 +870,25 @@ export class CrewPresenter extends React.Component<
                             flexWrap: "wrap",
                             fontSize: hover ? "1.2em" : "0.9em",
                             flexDirection: isMobile ? "column" : "row",
-                            justifyContent: "space-evenly",
+                            justifyContent: skillCount < 3 ? "flex-start" : 'space-evenly',
                             marginTop: "4px",
                             marginBottom: "2px",
                         }}
                     >
-                        {skillData.base_skills.security_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="security_skill"
-                                data={skillData.base_skills.security_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
+                        {Object.entries(skillData.base_skills).sort(([akey, askill], [bkey, bskill]) => {
+                            return (bskill as Skill).core - (askill as Skill).core;
+                            
+                        }).map(([key, skill]) => {
 
-                        {skillData.base_skills.command_skill && (
-                            <CrewStat
+                            return <CrewStat
+                                key={"crewpresent_skill_" + key}
                                 proficiencies={proficiencies}
-                                skill_name="command_skill"
-                                data={skillData.base_skills.command_skill}
+                                skill_name={key}
+                                data={skill}
                                 scale={hover ? 0.75 : 1}
                             />
-                        )}
+                        })}
 
-                        {skillData.base_skills.diplomacy_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="diplomacy_skill"
-                                data={skillData.base_skills.diplomacy_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.science_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="science_skill"
-                                data={skillData.base_skills.science_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.medicine_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="medicine_skill"
-                                data={skillData.base_skills.medicine_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.engineering_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="engineering_skill"
-                                data={skillData.base_skills.engineering_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
                         <div style={{ width: "4px" }} />
                     </div>
                     <div

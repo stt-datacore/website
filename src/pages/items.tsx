@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Header, Table, Icon } from 'semantic-ui-react';
+import { Header, Table, Icon, Step } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import Layout from '../components/layout';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import CONFIG from '../components/CONFIG';
@@ -12,58 +11,59 @@ import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import ItemDisplay from '../components/itemdisplay';
+import DataPageLayout from '../components/page/datapagelayout';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import { populateItemCadetSources } from '../utils/itemutils';
+import { binaryLocate, populateItemCadetSources } from '../utils/itemutils';
+import { useStateWithStorage } from '../utils/storage';
+import ProfileItems from '../components/profile_items';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'cadet']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
 	
-	let maxBuffs: BuffStatTable | undefined;
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
+	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
+	const context = React.useContext(GlobalContext);
 
-	if (isReady && cadetforitem?.length) {
-		populateItemCadetSources(coreData.items, cadetforitem);
-	}
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	} 
+	const hasPlayer = !!context.player.playerData;
+	const allActive = activeTabIndex === 0 || !hasPlayer;
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: strippedPlayerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items
-					}}>
-						<ItemsComponent isReady={isReady} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-		</Layout>
+
+		<DataPageLayout pageTitle='Items' demands={['all_buffs', 'crew', 'items', 'cadet']}>
+			<React.Fragment>
+			
+			<Step.Group>
+				<Step active={allActive} onClick={() => setActiveTabIndex(0)}>
+					<Step.Content>
+						<Step.Title>All Items</Step.Title>
+						<Step.Description>Overview of all items in the game.</Step.Description>
+					</Step.Content>
+				</Step>
+
+				{hasPlayer && <Step active={!allActive} onClick={() => setActiveTabIndex(1)}>
+					<Step.Content>
+						<Step.Title>Owned Items</Step.Title>
+						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
+					</Step.Content>
+				</Step>}
+			</Step.Group>
+
+			<ItemsComponent noRender={!allActive} />
+			<ProfileItems noRender={allActive} />
+
+			</React.Fragment>
+		</DataPageLayout>
 	);
 };
 
 
 
 interface ItemsComponentProps {
-	isReady: boolean;
+	noRender?: boolean;
 };
 
 interface ItemsComponentState {
@@ -80,8 +80,8 @@ const tableConfig: ITableConfigRow[] = [
 ];
 
 class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private inited: boolean;
 
 	constructor(props: ItemsComponentProps) {
@@ -94,49 +94,20 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	componentDidUpdate(prevProps: Readonly<ItemsComponentProps>, prevState: Readonly<ItemsComponentState>, snapshot?: any): void {
-		if (this.props.isReady && !this.inited) {
+		if (!this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady) this.initData();
-	}
-	
-	private binaryLocate(symbol: string, items: EquipmentItem[]) : EquipmentItem | undefined {
-		let lo = 0, hi = items.length - 1;
-
-		while (true)
-		{
-			if (lo > hi) break;
-
-			let p = Math.floor((hi + lo) / 2);
-			let elem = items[p];
-
-			let c = symbol.localeCompare(items[p].symbol);
-
-			if (c == 0)
-			{
-				return elem;
-			}
-			else if (c < 0)
-			{
-				hi = p - 1;
-			}
-			else
-			{
-				lo = p + 1;
-			}
-		}
-
-		return undefined;
-	}
+		this.initData();
+	}	
 
 	private initData() {
 
-		const { items: origItems, allCrew: origCrew } = this.context;
+		const { items: origItems, crew: origCrew } = this.context.core;
 		let crew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew[];
-		let items = JSON.parse(JSON.stringify(origItems)) as EquipmentItem[];
+		let items = JSON.parse(JSON.stringify(origItems.filter(f => !f.isReward))) as EquipmentItem[];
 		items = items.filter(item => item.imageUrl && item.imageUrl !== '');
 		let origpos = items.map(item => item.symbol);
 
@@ -147,23 +118,6 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					// Most likely a galaxy item
 					item.flavor = 'Unused or Galaxy Event item';
 				}
-
-				// let crew_levels = new Set();
-				// crew.forEach(cr => {
-				// 	cr.equipment_slots.forEach(es => {
-				// 		if (es.symbol === item.symbol) {
-				// 			crew_levels.add(cr.name);
-				// 		}
-				// 	});
-				// });
-
-				// if (crew_levels.size > 0) {
-				// 	if (crew_levels.size > 5) {
-				// 		item.flavor = `Equippable by ${crew_levels.size} crew`;
-				// 	} else {
-				// 		item.flavor = 'Equippable by: ' + [...crew_levels].join(', ');
-				// 	}
-				// }
 			}
 		});
 		
@@ -173,7 +127,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 		
 		crew.forEach(cr => {
 			cr.equipment_slots.forEach(es => {
-				let item = this.binaryLocate(es.symbol, items);
+				let item = binaryLocate(es.symbol, items);
 				if (item) {
 					crewLevels[es.symbol] ??= new Set();
 					crewLevels[es.symbol].add(cr.name);
@@ -183,7 +137,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 
 		for (let symbol in crewLevels) {
 			if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
-				let item = this.binaryLocate(symbol, items);
+				let item = binaryLocate(symbol, items);
 				if (item) {
 					if (crewLevels[symbol].size > 5) {
 						item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
@@ -197,8 +151,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 		let itemsFinal = [] as EquipmentItem[];
 
 		for (let symbol of origpos) {
-			let item = this.binaryLocate(symbol, items);
-			if (item) itemsFinal.push(item);
+			let item = binaryLocate(symbol, items);
+			if (item) itemsFinal.push(item as EquipmentItem);
 		}
 
 		items = itemsFinal.filter(item => (item.type !== 2) || item.flavor);
@@ -234,7 +188,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	renderTableRow(item: any): JSX.Element {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.state;
 
 		return (
 			<Table.Row key={item.symbol}>
@@ -251,7 +206,8 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 							<ItemDisplay
 								playerData={playerData}
 								itemSymbol={item.symbol}
-								allItems={this.context.items}
+								allItems={items}
+								allCrew={this.context.core.crew}
 								targetGroup='items_page'
 								rarity={item.rarity}
 								maxRarity={item.rarity}
@@ -281,6 +237,7 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	}
 
 	render() {
+		if (this.props.noRender) return <></>
 		return (<>
 				<Header as="h2">Items</Header>
 

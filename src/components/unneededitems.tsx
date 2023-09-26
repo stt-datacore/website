@@ -6,7 +6,7 @@ import { mergeItems } from '../utils/itemutils';
 import { mergeShips } from '../utils/shiputils';
 import { PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 
 
@@ -20,8 +20,8 @@ type UnneededItemsState = {
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
@@ -34,7 +34,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	async componentDidMount() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
@@ -44,8 +44,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		const allitems = await itemsResponse.json();
 		const allships = await shipsResponse.json();
 
-		let items = mergeItems(playerData.player.character.items as EquipmentCommon[], allitems);
-		let ships = mergeShips(allships, playerData.player.character.ships);
+		let items = mergeItems((playerData?.player.character.items ?? []) as EquipmentCommon[], allitems);
+		let ships = mergeShips(allships, playerData?.player.character.ships ?? []);
 
 		// Calculate unneeded schematics
 		let maxedShips = ships.filter(
@@ -70,11 +70,11 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let equipmentNeeded = new Set();
 		// Handle dupes as either all fully-equipped or as all needing items
 		let crewBySymbol = [] as string[];
-		playerData.player.character.crew.forEach(crew => {
+		playerData?.player.character.crew.forEach(crew => {
 			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
 		});
 		crewBySymbol.forEach(crewSymbol => {
-			const crewList = playerData.player.character.crew.filter(crew => crew.symbol === crewSymbol);
+			const crewList = playerData?.player.character.crew.filter(crew => crew.symbol === crewSymbol) ?? [];
 			let allFullyEquipped = true;
 			crewList.forEach(crew => {
 				if (crew.level < 99 || (crew.equipment && crew.equipment?.length < 4))
@@ -136,9 +136,10 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData, items } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
 		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items) : undefined;
-		let itemCount = playerData.player.character.items.length;
+		let itemCount = playerData?.player.character.items.length ?? 0;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
 		//	We should get this from playerData.player.character.item_limit, but it's not in preparedProfileData

@@ -1,44 +1,39 @@
 import * as React from 'react';
 
 import { CrewMember, EquipmentSlot } from "../../model/crew";
-import { PlayerCrew, PlayerData } from "../../model/player"
-import { DataContext } from '../../context/datacontext';
-import { PlayerContext } from '../../context/playercontext';
-import { MergedContext } from '../../context/mergedcontext';
+import { PlayerCrew } from "../../model/player"
+import { GlobalContext } from '../../context/globalcontext';
 import { BuffStatTable } from '../../utils/voyageutils';
-import Announcement from '../announcement';
-import Layout from '../layout';
 import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { navigate } from 'gatsby';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
     flexDirection?: 'row' | 'column';
     mobileWidth?: number;
+    itemSize?: number;
+    mobileSize?: number;
 }
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
-	const coreData = React.useContext(DataContext);
-	const itemsReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
+	const context = React.useContext(GlobalContext);
+	const playerContext = context.player;
+    
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
     const crew = props.crew as PlayerCrew;
 	let maxBuffs: BuffStatTable | undefined;
 
-	maxBuffs = playerContext.maxBuffs;
-    
-    if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && itemsReady) {
-		maxBuffs = coreData.all_buffs;
-	}     
+	maxBuffs = playerContext?.maxBuffs ?? context.core?.all_buffs;
+    crew.equipment ??= [];
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
     let eqimgs = [] as string[];
     let equip = [] as EquipmentItem[];
 
-    if (!crew.equipment_slots[startlevel] || !itemsReady) {
+    if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
         //console.error(`Missing equipment slots information for crew '${crew.name}'`);
         //console.log(crew);
         eqimgs = [
@@ -57,7 +52,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             eq = crew.equipment_slots[i];
             
             if (eq) {
-                let ef = coreData.items.find(item => item.symbol === eq.symbol);
+                let ef = context.core.items.find(item => item.symbol === eq.symbol);
                 if (ef) {
                     equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
                 }
@@ -84,10 +79,9 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         });
     }
 	return (
-        !itemsReady &&
+        !context.core.items?.length &&
             <div className='ui medium centered text active inline loader'>Loading data...</div>
-        ||
-        itemsReady &&
+        ||context.core.items?.length &&
             <div style={{
                 display: "flex",
                 flexDirection: "row",
@@ -97,7 +91,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 padding: 0
             }}>
             {equip.map((item, idx) => (
-                    <CrewItemDisplay key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
+                    <CrewItemDisplay itemSize={props.itemSize} mobileSize={props.mobileSize} key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
                 ))}
             </div>
         || <></>
@@ -107,6 +101,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
+    itemSize?: number;
+    mobileSize?: number;
 }
 
 export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
@@ -114,11 +110,16 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         super(props);
     }
 
+
     render() {
         const entry = this.props;
+        const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
+
         return (<div 
+            onClick={(e) => navigate("/item_info?symbol=" + this.props.equipment?.symbol)}
             title={this.props.equipment?.name}
             style={{
+            cursor: "pointer",
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",            
@@ -126,7 +127,7 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         }}>
             <ItemDisplay
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
-                size={window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? 24 : 32}
+                size={itemSize}
                 maxRarity={entry?.equipment?.rarity ?? 0}
                 rarity={entry?.equipment?.rarity ?? 0}                
             />

@@ -6,8 +6,8 @@ import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
 import RankedRewardsTab from './event_info_tabs/ranked_rewards';
 import LeaderboardTab from './event_info_tabs/leaderboard';
 import { GameEvent } from '../model/player';
-import { EventData } from '../utils/events';
 import { CrewHoverStat } from './hovering/crewhoverstat';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 
 type EventInfoModalProps = {
 	instanceId: number,
@@ -18,7 +18,7 @@ type EventInfoModalProps = {
 
 function EventInfoModal(props: EventInfoModalProps) {
 	const {instanceId, image, hasDetails, leaderboard} = props;
-	const [eventData, setEventData] = React.useState<GameEvent | EventData | null>(null);
+	const [eventData, setEventData] = React.useState<GameEvent | null>(null);
 
 	React.useEffect(() => {
 		async function fetchEventData() {
@@ -89,6 +89,8 @@ function EventInfoModal(props: EventInfoModalProps) {
 				panes={panes}
 				renderActiveOnly
 			/>
+			<CrewHoverStat targetGroup='event_info' modalPositioning={true}  />
+			<ItemHoverStat targetGroup='event_info_items' modalPositioning={true} />
 		</Container>
 	);
 }

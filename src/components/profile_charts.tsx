@@ -15,7 +15,7 @@ import themes from './nivo_themes';
 import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
 import { DemandCounts, demandsPerSlot, IDemand } from '../utils/equipment';
 import { PlayerCrew, PlayerEquipmentItem } from '../model/player'
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 
 type ProfileChartsProps = {
@@ -42,8 +42,8 @@ type ProfileChartsState = {
 };
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileChartsProps) {
 		super(props);
@@ -84,7 +84,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
 
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		const { allcrew, includeTertiary, items } = this.state;
 
 		let r4owned = [0, 0, 0, 0];
@@ -119,7 +119,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			let pcrew: PlayerCrew | undefined = undefined;
 
 			// If multiple copies, find the "best one"
-			let pcrewlist = playerData.player.character.crew.filter((bc) => bc.symbol === crew.symbol);
+			let pcrewlist = playerData?.player.character.crew.filter((bc) => bc.symbol === crew.symbol) ?? [];
 			if (pcrewlist.length === 1) {
 				pcrew = pcrewlist[0];
 			} else if (pcrewlist.length > 1) {
@@ -169,7 +169,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				crew.equipment_slots
 					.filter((es) => es.level >= startLevel)
 					.forEach((es) => {
-						craftCost += demandsPerSlot(es, items ?? [], dupeChecker, demands);
+						craftCost += demandsPerSlot(es, items ?? [], dupeChecker, demands, crew.symbol);
 					});
 			} else {
 				if (crew.in_portal) {
@@ -181,7 +181,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		demands = demands.sort((a, b) => b.count - a.count);
 
 		for (let demand of demands) {
-			let item = playerData.player.character.items.find((it) => it.symbol === demand.symbol);
+			let item = playerData?.player.character.items.find((it) => it.symbol === demand.symbol);
 			demand.have = item ? (item.quantity ?? 0) : 0;
 		}
 

@@ -136,6 +136,7 @@ export interface ComputedBuff {
   core: number
   min: number
   max: number
+  skill?: string;
 }
 
 export interface SkillData {
@@ -221,3 +222,7 @@ export interface CrewConstellation {
   crew_archetype_id: number
 }
 
+export interface RewardsGridNeed {
+	symbol: string;
+	quantity: number;
+}

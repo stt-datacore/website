@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { AcceptedMission, CadetMission } from '../model/player';
 
 type ProfileOtherProps = {
@@ -11,8 +11,8 @@ type ProfileOtherState = {
 };
 
 class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileOtherProps) {
 		super(props);
@@ -24,13 +24,13 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 
 	componentDidMount() {
 
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		fetch('/structured/missions.json')
 			.then(response => response.json())
 			.then((missionData: AcceptedMission[]) => {
 				let missions = [] as AcceptedMission[];
-				playerData.player.character.accepted_missions
+				playerData?.player.character.accepted_missions
 					.concat(playerData.player.character.dispute_histories.map(d => d as AcceptedMission))
 					.forEach(mission => {
 						let quest = missionData.find(m => m.symbol === mission.symbol);
@@ -55,7 +55,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	}
 
 	render() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		const { missions } = this.state;
 
 		return (
@@ -69,7 +69,7 @@ class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{playerData.player.character.daily_activities.map((da, idx) =>
+						{playerData?.player.character.daily_activities.map((da, idx) =>
 							(da.status && da.lifetime !== 0) ? (
 								<Table.Row key={idx}>
 									<Table.Cell>{da.name}</Table.Cell>

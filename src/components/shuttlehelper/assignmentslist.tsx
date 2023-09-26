@@ -5,12 +5,14 @@ import { ShuttleFactionView, SeatSkillView, SeatCrewView } from './views';
 import { Shuttlers, ShuttleSeat, CrewScores, getSkillSetId, ISeatAssignment, IShuttleScores } from './shuttleutils';
 import { PlayerCrew } from '../../model/player';
 
+import { IRosterCrew } from '../../components/eventplanner/model';
+
 interface IActiveAssignment {
 	shuttleId: string;
 	seatNum: number;
 };
 
-interface IAssignableCrew extends PlayerCrew {
+interface IAssignableCrew extends IRosterCrew {
 	ssId: string;
 	score: number;
 };
@@ -43,7 +45,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 	const SeatAssignmentRow = (props: { shuttleId: string, seatNum: number, seat: ShuttleSeat }) => {
 		const { shuttleId, seatNum, seat } = props;
 
-		let assignedCrew = undefined as PlayerCrew | undefined;
+		let assignedCrew = undefined as IRosterCrew | undefined;
 		const seated = assigned.find(seat => seat.shuttleId === shuttleId && seat.seatNum === seatNum);
 		if (seated) {
 			assignedCrew = myCrew.find(crew => crew.id === seated.assignedId && crew.symbol === seated.assignedSymbol);
@@ -65,7 +67,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 					{assignedCrew && (
 						<React.Fragment>
 							{assignedCrew.immortal > 0 && (<Icon name='snowflake' />)}
-							{assignedCrew.prospect && (<Icon name='add user' />)}
+							{assignedCrew.statusIcon && <Icon name={assignedCrew.statusIcon} />}
 						</React.Fragment>
 					)}
 				</Table.Cell>
@@ -193,7 +195,7 @@ const AssignmentsList = (props: AssignmentsListProps) => {
 					<Table.Cell><SeatCrewView crew={crew} /></Table.Cell>
 					<Table.Cell>
 						{crew.immortal > 0 && (<Icon name='snowflake' />)}
-						{crew.prospect && (<Icon name='add user' />)}
+						{crew.statusIcon && (<Icon name={crew.statusIcon} />)}
 					</Table.Cell>
 					<Table.Cell textAlign='center'>
 						{renderScoreChange(shuttleId, seatNum, crew.score)}

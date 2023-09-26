@@ -1,0 +1,487 @@
+import CONFIG from "../components/CONFIG";
+import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { PlayerCrew, PlayerData } from "../model/player";
+import { BuffStatTable } from "../utils/voyageutils";
+
+interface CoreSkill {
+    core: number;
+    skill: string;
+}
+interface CrewSkill {
+    crew: PlayerCrew | CrewMember;
+    skills: CoreSkill[];
+}
+const amSkillOrder = ["command_skill", "science_skill", "security_skill", "engineering_skill", "diplomacy_skill", "medicine_skill"];
+const amMap = [
+    "Astrophysicist 	x 	x 		x 	x 	",
+    "Bajoran 	x 		x 		x 	",
+    "Borg 		x 	x 	x 		",
+    "Brutal 	x 	x 	x 	x 	x 	",
+    "Cardassian 	x 		x 		x 	",
+    "Caregiver 					x  	x",
+    "Civilian 	x 	x 	x 	x 	x 	x",
+    "Communicator 	x 		x 		x 	",
+    "Costumed 	x 	x 	x 	x 	x 	",
+    "Crafty 	x 	x 	x 		x 	",
+    "Cultural Figure 	x 		x 		x 	",
+    "Cyberneticist 		x 		x 		",
+    "Desperate 	x 	x 	x 	x 	x 	",
+    "Diplomat 	x 		x 		x 	",
+    "Duelist 	x 		x 		x 	",
+    "Exobiology 		x 				",
+    "Explorer 	x 		x 	x 		",
+    "Federation 	x 	x 	x 	x 	x 	x",
+    "Ferengi 					x 	",
+    "Gambler 	x 		x 		x 	",
+    "Hero 	x 		x 		x 	",
+    "Hologram 	x 	x 			x 	x",
+    "Human 	x 	x 	x 	x 	x 	x",
+    "Hunter 	x 		x 			",
+    "Innovator 	x 	x 		x 		",
+    "Inspiring 	x 		x 		x 	",
+    "Jury Rigger 	x 		x 	x 		",
+    "Klingon 	x 		x 		x 	",
+    "Marksman 			x 			",
+    "Maverick 	x 		x 		x 	",
+    "Mirror Universe 	x 	x	x 		x 	",
+    "Nurse 					  	x",
+    "Physician 		x 			x 	x",
+    "Pilot 	x 		x 	x 		",
+    "Prodigy 		x 		x 		",
+    "Resourceful 	x 	x 	x 	x 	x 	",
+    "Romantic 	x 	x 	x 	x 	x 	",
+    "Romulan 			x 		x 	",
+    "Saboteur 	x 		x 			",
+    "Scoundrel 	x 		x 		x 	",
+    "Starfleet 	x 	x 	x 	x 	x 	x",
+    "Survivalist 	x 		x 		x 	",
+    "Tactician 	x 	x 	x 	x 	x 	",
+    "Telepath 	x 	x 	x 		x 	",
+    "Undercover Operative 	x 	x 	x 		x 	",
+    "Veteran 	x 		x 		x 	",
+    "Villain 	x 		x 		x 	",
+    "Vulcan 	x 	x 	x 		x 	"
+];
+
+const lookupTrait = (trait: string) => {
+    const oma = [] as string[];
+    for (let ln of amMap) {
+        if (ln.startsWith(trait)) {
+            let parts = ln.split("\t");
+            let c = parts.length;
+            for (let i = 1; i < c; i++) {
+                if (parts[i].includes("x")) {
+                    oma.push(amSkillOrder[i - 1]);
+                }
+            }
+        }
+    }
+    return oma;
+}
+
+const BetaTachyon = {        
+
+    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
+        
+        return new Promise((resolve, reject) => {
+
+
+            function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
+                const getMultiplier = (skill: string, stat: string) => {
+                    return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+                };
+            
+                for (let skill in CONFIG.SKILLS) {
+                    crew[skill] = { core: 0, min: 0, max: 0 };
+                }
+                let bs = {} as BaseSkills;
+                // Apply buffs
+                for (let skill in crew.base_skills) {
+                    let core = 0;
+                    let min = 0;
+                    let max = 0;
+            
+                    core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+                    min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+                    max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+            
+                    if (nowrite !== true) {
+                        crew[skill] = {
+                            core: core,
+                            min: min,
+                            max: max
+                        };	
+                    }
+                    bs[skill] = {
+                        core: core,
+                        range_min: min,
+                        range_max: max
+                    };
+                }
+                return bs;
+            }
+            
+            function isNever(crew: PlayerCrew | CrewMember) {
+                let ob = crew.obtained.toLowerCase();	
+                return (ob.includes("bossbattle") || ob.includes("honor") || ob.includes("gauntlet") || ob.includes("voyage") || ob.includes("collection"));
+            }
+           
+            const skills = ["command_skill", "diplomacy_skill", "science_skill", "engineering_skill", "security_skill", "medicine_skill"];
+            const shortskills = ["CMD", "DIP", "SCI", "ENG", "SEC", "MED"];
+            const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
+            const skillPairs = [] as string[][];
+            const skillTriplets = [] as string[][];
+
+            for (let s1 of skills) {
+                for (let s2 of skills) {
+                    if (s2 === s1) continue;
+                    skillPairs.push([s1, s2]);
+                }
+            }            
+
+            for (let s1 of skills) {
+                for (let s2 of skills) {
+                    for (let s3 of skills) {
+                        if (s3 === s2 || s3 === s1 || s2 === s1) continue;
+                        skillTriplets.push([s1, s2, s3]);
+                    }
+                }
+            }            
+
+            function getAMSeats(crew: PlayerCrew | CrewMember) {
+                
+                return crew.traits_named.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core)).length;
+            }
+
+            function countSkills(crew: PlayerCrew) {
+                let x = 0;
+                for (let skill of skills) {
+                    if (skill in crew && crew[skill].core) {
+                        x++;
+                    }
+                }
+                return x;
+            }
+            
+            function getSkillOrder(crew: PlayerCrew | CrewMember) {
+                const sk = [] as ComputedBuff[];
+                let x = 0;
+                for (let skill of skills) {
+                    if (skill in crew) {
+                        sk.push({ ...crew[skill], skill: voyskills[x] });
+                    }
+                    x++;
+                }
+
+                sk.sort((a, b) => b.core - a.core);                
+                const output = [] as string[];
+
+                if (sk.length > 0 && sk[0].skill) {
+                    output.push(sk[0].skill);
+                }
+                if (sk.length > 1 && sk[1].skill) {
+                    output.push(sk[1].skill);
+                }
+                if (sk.length > 2 && sk[2].skill) {
+                    output.push(sk[2].skill);
+                }
+
+                return output;
+            }
+            
+            function printSkillOrder(crew: PlayerCrew | CrewMember) {
+                return getSkillOrder(crew).join("/");
+            }
+
+            function getSortedSkills(crew: PlayerCrew | CrewMember) {
+                const sk = [] as ComputedBuff[];
+                let x = 0;
+                for (let skill of skills) {
+                    if (skill in crew) {
+                        sk.push({ ...crew[skill], skill: voyskills[x] });
+                    }
+                    x++;
+                }
+                sk.sort((a, b) => b.core - a.core);
+                const output = {
+                    crew: crew,
+                    skills: [],
+                } as CrewSkill;
+                if (sk.length > 0 && sk[0].skill) {
+                    output.skills.push({ core: sk[0].core, skill: sk[0].skill });
+                }
+                if (sk.length > 1 && sk[1].skill) {
+                    output.skills.push({ core: sk[1].core, skill: sk[1].skill });
+                }
+                if (sk.length > 2 && sk[2].skill) {
+                    output.skills.push({ core: sk[2].core, skill: sk[2].skill });
+                }
+
+                return output;
+            }
+
+            function makeVoys(crew: PlayerCrew) {
+                const ovoys = [] as string[];
+                if (!crew.voyScores) return [];
+                
+                Object.keys(crew.voyScores).forEach((sk) => {
+                    if (crew.voyScores && crew.voyScores[sk]) {
+                        let b = sk.split("/");
+                        let voy = `${b[0].replace("_skill", "")}/${b[1].replace("_skill", "")}`;
+                        if (!ovoys.includes(voy)) ovoys.push(voy);
+                    }
+                });
+                return ovoys;
+            }
+
+            const findBest = (crew: PlayerCrew[], skills: string[], top: number) => {
+                
+                if (skills.length === 2) {                
+                    const skillcrew = crew.filter(crew => skills[0] in crew && crew[skills[0]].core && skills[1] in crew && crew[skills[1]].core)
+                        .sort((a, b) => {
+                            return (b[skills[0]].core + b[skills[1]].core) - (a[skills[0]].core + a[skills[1]].core);                                
+                        });
+                    return skillcrew.slice(0, top);
+                }
+                else {
+                    const skillcrew = crew.filter(crew => skills[0] in crew && crew[skills[0]].core && skills[1] in crew && crew[skills[1]].core && skills[2] in crew && crew[skills[2]].core)
+                        .sort((a, b) => {
+                            return (b[skills[0]].core + b[skills[1]].core + b[skills[2]].core) - (a[skills[0]].core + a[skills[1]].core + a[skills[2]].core);                                
+                        });
+                    return skillcrew.slice(0, top);
+                }
+            };
+            
+            const acc = {} as { [key: string]: CrewMember };
+
+            const compareCrew = (crewSymbol: string, skills: string[], allCrew: CrewMember[], best: (PlayerCrew | CrewMember)[], buffs: BuffStatTable) => {
+            
+                if (!(crewSymbol in acc)) {
+                    let cfe = allCrew.find(c => c.symbol === crewSymbol);
+                    if (!cfe) return -1;
+                    acc[crewSymbol] = cfe;    
+                }
+
+                let cf = acc[crewSymbol];            
+                if (!cf) return -1;                
+                const crew = cf;
+        
+                let core = crew[skills[0]].core + crew[skills[1]].core + ((skills.length > 2 && skills[2] in crew) ? crew[skills[2]].core : 0) as number;
+                if (skills.length > 2 && (!(skills[2] in crew) || !(crew[skills[2]].core))) {
+                    let so = getSortedSkills(crew);
+                    core += so.skills[2].core * 0.75;
+                }
+
+                let c = best.length;
+                let v = -1;
+        
+                for (let i = 0; i < c; i++) {
+                    let comp = best[i][skills[0]].core + best[i][skills[1]].core + ((skills.length > 2 && skills[2] in best[i]) ? best[i][skills[2]].core : 0) as number;                    
+                    if (core > comp) v = i;
+                    else if (core < comp) v = i + 1;
+                    else v = i;
+                }
+                
+                return v;
+            };
+
+            const isImmortal = (c) => {
+                return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;    
+            }
+
+            if (playerData.citeMode && playerData.citeMode.rarities?.length) {
+                playerData = JSON.parse(JSON.stringify(playerData));
+                playerData.player.character.crew = playerData.player.character.crew
+                .filter((crew) => playerData.citeMode?.rarities?.includes(crew.max_rarity));
+            }
+
+            const getDistanceFromTop = (item: CrewMember, topCrew: { [key: string]: CrewMember | CrewMember[] }) => {
+                let skp = printSkillOrder(item);
+                let sko = getSortedSkills(item);  
+                let lvls = [] as number[]
+                sko.skills.forEach(skv => {
+                    let sm = skv.skill + "_skill";
+                    if (skp in topCrew && "length" in topCrew[skp]) {
+                        lvls.push(item[sm].core / topCrew[skp][0][sm].core);
+                    }
+                    else {
+                        lvls.push(item[sm].core / topCrew[sm][sm].core);
+                    }                    
+                });                
+                return lvls.reduce((p, n) => p + n, 0) / 3;
+            };
+
+            const evalCrew = playerData.player.character.crew.filter((crew) => !isImmortal(crew) && countSkills(crew) === 3);
+
+            const skillbest = {} as { [key: string]: PlayerCrew[] };
+            const besttrips = {} as { [key: string]: PlayerCrew[] };
+            const skillout = {} as { [key: string]: PlayerCrew[] };
+
+            let immo1 = playerData.player.character.crew.filter(c => isImmortal(c));
+            
+            const immoCrew = immo1?.length ? immo1 : playerData.player.character.crew;
+
+            skillPairs.forEach((sk) => {
+                skillbest[`${sk[0]}/${sk[1]}`] = findBest(immoCrew, sk, magic);
+            });
+
+            skillTriplets.forEach((sk) => {
+                besttrips[`${sk[0]}/${sk[1]}/${sk[2]}`] = findBest(immoCrew, sk, magic * 2);
+            });
+
+            const glitch = {} as { [key: string]: number };
+
+            const allCrew = JSON.parse(JSON.stringify(inputCrew)) as CrewMember[];
+
+            const topCrew = {} as { [key: string]: CrewMember };
+            const skillOrderCrew = {} as { [key: string]: CrewMember[] };
+
+            allCrew.forEach((f) => {
+                f.date_added = new Date(f.date_added);
+                applyCrewBuffs(f, buffs);
+            });
+            
+            const uniqueSkillOrders = [] as string[];
+
+            allCrew.forEach(ac => {
+                let csk = printSkillOrder(ac);
+                if (!uniqueSkillOrders.includes(csk)) {
+                    uniqueSkillOrders.push(csk);
+                }
+            })
+
+            Object.keys(CONFIG.SKILLS).forEach((skill) => {
+                const fcrew = allCrew.filter(fc => skill in fc && !!fc[skill].core).sort((a, b) => b[skill].core - a[skill].core);
+                if (fcrew?.length) {
+                    topCrew[skill] = fcrew[0];
+                }                
+            });
+
+            uniqueSkillOrders.forEach((sko) => {
+                const ccrew = allCrew.filter(fc => printSkillOrder(fc) === sko);
+                const skills = sko.split("/").map(z => z + "_skill");
+                ccrew.sort((a, b) => {
+                    let askill1 = a[skills[0]].core;
+                    let askill2 = a[skills[1]].core;
+                    let askill3 = a[skills[2]].core;
+
+                    let bskill1 = b[skills[0]].core;
+                    let bskill2 = b[skills[1]].core;
+                    let bskill3 = b[skills[2]].core;
+
+                    return (bskill1 + bskill2 + bskill3) - (askill1 + askill2 + askill3);
+                });
+                skillOrderCrew[sko] = ccrew;
+            });
+
+            Object.keys(skillbest).forEach(skill => {                
+                const skp = skill.split("/");                                
+                skillout[skill] ??= [];
+                const triplets = [] as string[];
+                Object.keys(besttrips).forEach(trip => {
+                    if (trip.includes(skill)) {
+                        triplets.push(trip);
+                    }
+                });
+
+                evalCrew.forEach((crew) => {
+                    let c = compareCrew(crew.symbol, skp, allCrew, skillbest[skill], buffs);
+                    if (c >= 0 && c < magic) {                        
+                        skillout[skill].push(crew);
+                        crew.voyScores ??= {};
+                        crew.voyScores[skill] ??= 0;
+                        crew.voyScores[skill]++;
+        
+                    }                    
+        
+                    for (let t of triplets) {
+                        let d = compareCrew(crew.symbol, t.split("/"), allCrew, besttrips[t], buffs);
+                        if (d >= 0 && d < 1) {
+                            crew.voyScores ??= {};
+                            let vt = t.split("/").slice(0, 2).reduce((a, b) => a + "/" + b);
+                            crew.voyScores[vt] ??= 0;
+                            crew.voyScores[vt]++;
+                        }
+                    }
+    
+                });
+
+                skillout[skill] = skillout[skill].filter(c => !isImmortal(c));
+            });
+           
+            const rc1 = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c);
+            const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.symbol === fc.symbol) === idx);
+
+            for (let crew of resultCrew) {
+                let cf = allCrew.find(c => c.symbol === crew.symbol);
+                if (!cf) return -1;                
+
+                let so = getSortedSkills(cf);
+                crew.voyagesImproved = makeVoys(crew);   
+
+                let evibe = ((so.skills[0].core * 0.35) + (so.skills[1].core * 0.25) + (so.skills[2].core * 0.15)) / 2.5;
+
+                crew.totalEVContribution = evibe;
+                crew.evPerCitation = evibe / crew.max_rarity;
+                crew.totalEVRemaining = crew.evPerCitation * (crew.max_rarity - crew.rarity);
+                crew.amTraits = getAMSeats(crew);
+                crew.score = getDistanceFromTop(cf, topCrew);
+                crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);                
+            }
+
+            const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxam = resultCrew.map(c => c.amTraits ?? 0).reduce((a, b) => a > b ? a : b);
+            
+            resultCrew.sort((a, b) => {
+                let r = 0; // (b.amTraits ?? 0) - (a.amTraits ?? 0);
+
+                let anum = (a.voyagesImproved?.length ?? 0) / maxvoy;
+                let bnum = (a.totalEVContribution ?? 0) / maxev;
+                let cnum = 1 - ((a.totalEVRemaining ?? 0) / maxremain);
+                let dnum = 0.5 * ((a.amTraits ?? 0) / maxam);
+                let fnum = (acc[a.symbol].in_portal ? 0 : 1);
+                let gnum = isNever(a) ? 1 : 0;
+                let rare = 5 * (1 / skillOrderCrew[printSkillOrder(a)].length);
+
+                let fanum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
+                
+                let adist = a.score ? (a.score) : 1;
+                let adist2 = a.scoreTrip ? (a.scoreTrip) : 1;
+
+                fanum *= ((adist + adist2) / 2);
+                
+
+                anum = (b.voyagesImproved?.length ?? 0) / maxvoy;
+                bnum = (b.totalEVContribution ?? 0) / maxev;
+                cnum = 1 - ((b.totalEVRemaining ?? 0) / maxremain);
+                dnum = 0.1 * ((b.amTraits ?? 0) / maxam);  
+                fnum = (acc[b.symbol].in_portal ? 0 : 1);
+                gnum = isNever(a) ? 1 : 0;
+
+                rare = 5 * (1 / skillOrderCrew[printSkillOrder(b)].length);
+
+                let fbnum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
+                
+                let bdist = b.score ? (b.score) : 1;
+                let bdist2 = b.scoreTrip ? (b.scoreTrip) : 1;
+                
+                fbnum *= ((bdist + bdist2) / 2);
+                
+
+                r = fbnum - fanum;
+
+                return r;
+            });
+            
+            resolve({
+                crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => JSON.parse(JSON.stringify(nc))),
+                crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc)))
+            });
+        });
+    },
+    
+}
+
+export default BetaTachyon;

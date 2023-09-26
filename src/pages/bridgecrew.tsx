@@ -3,9 +3,8 @@ import { Header, Dropdown, Grid, Rating, Divider, Form, Segment, Image } from 's
 import { Link } from 'gatsby';
 import marked from 'marked';
 
-import Layout from '../components/layout';
-import CommonCrewData from '../components/commoncrewdata';
 import { CrewMember } from '../model/crew';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type BridgeCrewPageProps = {
 };
@@ -53,17 +52,17 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 	render() {
 		if (this.state.allcrew.length === 0) {
 			return (
-				<Layout title='Bridge crew assembly'>
+				<DataPageLayout pageTitle='Bridge crew assembly'>
 					<div className='ui medium centered text active inline loader'>Loading data...</div>
-				</Layout>
+				</DataPageLayout>
 			);
 		}
 
 		let peopleToShow = [...this.state.peopleList];
 
 		return (
-			<Layout title='Bridge crew assembly'>
-				<Header as='h4'>Bridge crew assembly</Header>
+			<DataPageLayout pageTitle='Bridge crew assembly'>
+				<React.Fragment>
 				<p>Assemble your bridge crew.</p>
 				<Form>
 					<Form.Group>
@@ -91,7 +90,8 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 							<img src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
-			</Layout>
+				</React.Fragment>
+			</DataPageLayout>
 		);
 	}
 

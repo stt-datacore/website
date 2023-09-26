@@ -6,7 +6,7 @@ import { EquipmentItem } from "../../model/equipment";
 import { ItemPresenter } from "../item_presenters/item_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { mergeItems } from "../../utils/itemutils";
 
 const isWindow = typeof window !== 'undefined';
@@ -29,8 +29,8 @@ export interface ItemTargetState extends HoverStatTargetState {
 }
 
 export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemTargetProps, ItemTargetState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ItemTargetProps){
         super(props);        
@@ -50,11 +50,12 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: EquipmentItem | undefined): EquipmentItem | undefined {
-        const { playerData, items } = this.context;
+        const { playerData } = this.context.player;
+        const { items } = this.context.core;
         
         let dataOut: EquipmentItem | undefined = dataIn;
 
-        if (playerData?.player?.character?.items?.length && dataIn) {
+        if (playerData?.player?.character?.items?.length && dataIn && !dataIn.isReward) {
             const fi = playerData?.player?.character?.items?.find(f => f.symbol === dataIn?.symbol);
             const ci = items?.find(f => f.symbol === dataIn.symbol);
             if (fi && ci) {                
@@ -92,8 +93,8 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 }
 
 export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, ItemHoverStatState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ItemHoverStatProps) {
         super(props);        
@@ -108,7 +109,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         const { boxStyle } = this.state;
 
         if (item) {
-            let mr = item.rarity;
+            let mr = item.rarity ?? 0;
             let clr = CONFIG.RARITIES[mr].color ?? 'gray';
             if (boxStyle.borderColor !== clr) {
                 if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});

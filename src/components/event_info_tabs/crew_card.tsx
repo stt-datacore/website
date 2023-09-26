@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Image } from 'semantic-ui-react';
 import { getRarityColor } from '../../utils/assets';
 import { PlayerCrew } from '../../model/player';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewTarget } from '../hovering/crewhoverstat';
 
 function getRarityStars(rarity: number) {
@@ -29,10 +29,10 @@ export interface CrewCardProps {
 }
 
 function CrewCard(props: CrewCardProps) {
-    const context = React.useContext(MergedContext);
+    const context = React.useContext(GlobalContext);
     const { crew } = props;
 
-    const sysCrew = props.sysCrew ?? context.allCrew?.find(f => f.symbol === crew.symbol);
+    const sysCrew = props.sysCrew ?? context.core.crew?.find(f => f.symbol === crew.symbol);
     
     return (
         <Card>

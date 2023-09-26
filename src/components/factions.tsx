@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table, Image, Dropdown } from 'semantic-ui-react'
 import { Faction } from '../model/player';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 
 const factionImageLocations = [
   'federation',
@@ -31,8 +31,8 @@ type ShuttleInfoState = {
 };
 
 class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
-  static contextType = MergedContext;
-  context!: React.ContextType<typeof MergedContext>;
+  static contextType = GlobalContext;
+  context!: React.ContextType<typeof GlobalContext>;
 
   constructor(props) {
     super(props);
@@ -83,7 +83,8 @@ class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
   }
 
   render() {
-    const { factions: factionInfo, shuttle_bays: shuttleBays } = this.context.playerData.player.character;
+    if (!this.context.player.playerData) return <></>;
+    const { factions: factionInfo, shuttle_bays: shuttleBays } = this.context.player.playerData.player.character;
     const { successOdds } = this.state;
     const updateSuccessOdds = (odds: number) => this.setState({successOdds: odds});
 

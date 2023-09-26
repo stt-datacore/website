@@ -4,7 +4,6 @@ import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
 
-import Layout from '../components/layout';
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
 import ProfileShips from '../components/profile_ships';
@@ -19,14 +18,14 @@ import { demandsPerSlot, IDemand } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { PlayerCrew, PlayerData } from '../model/player';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import Announcement from '../components/announcement';
+import { PlayerData } from '../model/player';
+import { EquipmentCommon } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
-import { PlayerContext } from '../context/playercontext';
+import { GlobalContext } from '../context/globalcontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
+import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
+import moment from 'moment';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -62,26 +61,29 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	}
 
 	return (
-		<Layout>
+		<DataPageLayout>
+			<React.Fragment>
 			{!isReady &&
 				<div className='ui medium centered text active inline loader'>Loading data...</div>
 			}
 			{isReady &&
 				<React.Fragment>
-					<Announcement />
-						<MergedContext.Provider value={{
-							allCrew: coreData.crew,
-							playerData: profData ?? {} as PlayerData,
-							buffConfig: buffConfig,							
-							allShips: coreData.ships,
-							items: coreData.items,
-							playerShips: profData?.player.character.ships,							
+						<GlobalContext.Provider value={{
+							core: coreData,
+							player: {
+								loaded: !!profData,
+								playerData: profData,
+								buffConfig: buffConfig,							
+								playerShips: profData?.player.character.ships	
+							},
+							maxBuffs: coreData.all_buffs
 						}}>
 							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
-						</MergedContext.Provider>
+						</GlobalContext.Provider>
 				</React.Fragment>
 			}
-		</Layout>
+			</React.Fragment>
+		</DataPageLayout>
 	);
 }
 
@@ -90,8 +92,8 @@ interface ProfilePageComponentProps {
 }
 
 class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfilePageState> {
-	static contextType? = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType? = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfilePageComponentProps) {
 		super(props);
@@ -134,7 +136,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	componentDidUpdate() {
 		const { dbid, errorMessage } = this.state;
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		const me = this;
 		if (me.initing) return;
@@ -175,12 +177,12 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	renderDesktop() {
 		
-		const { playerData } = this.context ?? { playerData: undefined };
+		const { playerData } = this.context.player ?? { playerData: undefined };
 		
 		const panes = [
 			{
 				menuItem: 'Crew',
-				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} isTools={true} location={location} /> || <></>
+				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} /> || <></>
 			},
 			{
 				menuItem: 'Crew (mobile)',
@@ -246,7 +248,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 				<Menu compact>
 					<Menu.Item>
-						{playerData.calc?.lastModified ? <span>Last updated: {playerData.calc.lastModified.toLocaleString()}</span> : <span />}
+						{playerData.calc?.lastModified ? <span>Last updated: {moment(playerData.calc.lastModified).format("llll")}</span> : <span />}
 					</Menu.Item>
 					<Dropdown item text='Download'>
 						<Dropdown.Menu>
@@ -263,7 +265,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	}
 
 	async _exportExcel() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		let response = await fetch('/structured/items.json');
 		let items = await response.json();
@@ -429,14 +431,14 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	}
 
 	_exportCrew() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		let text = playerData ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	_exportShips() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		fetch('/structured/ship_schematics.json')
 			.then(response => response.json())
@@ -448,7 +450,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	}
 
 	_exportItems() {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		fetch('/structured/items.json')
 			.then(response => response.json())
@@ -465,7 +467,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	render() {
 		const { dbid, errorMessage, mobile } = this.state;
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		if (playerData === undefined || dbid === undefined || errorMessage !== undefined) {
 			return (

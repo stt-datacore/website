@@ -6,6 +6,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   type: number
   name: string
   flavor: string
+  flavorContext?: JSX.Element;
   rarity: number
   short_name?: string
   imageUrl: string
@@ -21,6 +22,7 @@ export interface EquipmentItem extends EquipmentCommon {
   type: number
   name: string
   flavor: string
+  flavorContext?: JSX.Element;
   rarity: number
   short_name?: string
   imageUrl: string
@@ -33,6 +35,7 @@ export interface EquipmentItem extends EquipmentCommon {
   recipe?: EquipmentRecipe
 
   empty?: boolean;
+  isReward?: boolean;
 
 }
 

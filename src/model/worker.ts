@@ -1,10 +1,9 @@
-import React from "react";
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, Skill } from "./crew";
-import { PlayerCrew, PlayerData, VoyageDescription } from "./player";
+import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
-import { EquipmentItem } from "./equipment";
+import { EquipmentCommon, EquipmentItem } from "./equipment";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -23,13 +22,9 @@ export interface VoyageStatsConfig {
 }
 
 export interface GameWorkerOptions {
-    initialized: boolean;
-    list?: GameWorkerOptionsList[];
     strategy?: string;
     searchDepth?: number;
     extendsTarget?: number;
-    // roster?: PlayerCrew[];
-    // voyage_description?: VoyageDescription;
 }
 
 export interface CalculatorProps {
@@ -39,7 +34,7 @@ export interface CalculatorProps {
 
 export interface AllData extends CalculatorProps {
     allShips?: Ship[];
-    playerShips?: Ship[];    
+    playerShips?: Ship[];
     useInVoyage?: boolean;
     bossData?: BossBattlesRoot;
     buffConfig?: BuffStatTable;
@@ -50,6 +45,7 @@ export interface VoyageConsideration {
     score: number;
     traited: boolean;
     bestIndex: number;
+    archetype_id: number;
 }
 
 export interface Calculation {
@@ -58,7 +54,9 @@ export interface Calculation {
     name: string;
     calcState: number;
     result?: CalcResult;
-    compared?: string;
+    trackState?: number;
+    confidenceState?: number;
+    errorMessage?: string;
 }
 
 export interface CalcResult {
@@ -66,7 +64,6 @@ export interface CalcResult {
     entries: CalcResultEntry[];
     aggregates: Aggregates;
     startAM: number;
-    confidence: number;
 }
 
 export interface Estimate {
@@ -141,4 +138,14 @@ export interface ExportCrew {
     traitBitMask: number;
     max_rarity: number;
     skillData: number[];
+}
+
+export interface EquipmentWorkerConfig {
+    items: EquipmentItem[];
+    playerData: PlayerData;
+    addNeeded?: boolean;
+}
+
+export interface EquipmentWorkerResults {
+    items: (EquipmentCommon | EquipmentItem)[];
 }

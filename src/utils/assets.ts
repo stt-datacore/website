@@ -5,7 +5,7 @@ type IconObject = {
     atlas_info?: string,
 }
 
-export function getIconPath(icon: IconObject) {
+export function getIconPath(icon: IconObject, relative?: boolean) {
     let file = icon.file
         .replace(/^\//, '') // remove leading slash if present
         .replace(/\//g, '_') // convert all slashes to underscores
@@ -19,7 +19,13 @@ export function getIconPath(icon: IconObject) {
     }
 
     // asset host specified in the env
-    return `${process.env.GATSBY_ASSETS_URL}${file}`;
+    if (!!relative) {
+        return file;
+    }
+    else {
+        return `${process.env.GATSBY_ASSETS_URL}${file}`;
+    }
+    
 }
 
 export function getRarityColor(rarity: number) {

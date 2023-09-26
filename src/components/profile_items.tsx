@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Input, Checkbox } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import { exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
+
+import '../typings/worker';
+import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+
+import { binaryLocate, exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
@@ -14,6 +18,7 @@ import { TinyStore } from '../utils/tiny';
 import { downloadData } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewHoverStat } from './hovering/crewhoverstat';
+import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -32,19 +37,30 @@ type ProfileItemsProps = {
 	addNeeded?: boolean;
 
 	pageName?: string;
+	
+	noRender?: boolean;
+
+	/** Do not run the worker */
+	noWorker?: boolean;
 };
+
+interface ItemSearchOpts {
+	filterText?: string;
+	itemType?: number[];
+	rarity?: number[];
+}
 
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
 	data?: (EquipmentCommon | EquipmentItem)[];
 	filteredData?: (EquipmentCommon | EquipmentItem)[];
-	filterText?: string;
+	searchOpts?: ItemSearchOpts;
 	pagination_rows: number;
 	pagination_page: number;
 	
 	/** Add needed but unowned items to list */
-	addNeeded?: boolean;
+	addNeeded?: boolean;	
 };
 
 const pagingOptions = [
@@ -55,9 +71,10 @@ const pagingOptions = [
 ];
 
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore; 
+	private lastData: (EquipmentCommon | EquipmentItem)[] | undefined;
 
 	constructor(props: ProfileItemsProps) {
 		super(props);
@@ -66,7 +83,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.state = {
 			column: null,
 			direction: null,
-			filterText: this.tiny.getValue('filterText', '') ?? '',
+			searchOpts: this.tiny.getValue('searchOptions'),
 			pagination_rows: 10,
 			pagination_page: 1,
 			data: props.data,
@@ -74,84 +91,81 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		};
 	}
 
+	private runWorker() {
+		const worker = new UnifiedWorker();
+		const { playerData } = this.context.player;
+
+		const items = this.context.core.items;
+		const { addNeeded } = this.state;
+		
+		var me = this;
+
+		if (playerData?.calculatedDemands?.length) {
+			let data = [ ... playerData.calculatedDemands ];
+
+			if (addNeeded) {
+				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				me.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+			}
+			else {
+				me.setState({ ... this.state, data });	
+			}			
+			return;
+		}
+
+		worker.addEventListener('message', (message: { data: { result: EquipmentWorkerResults } }) => {						
+			if (playerData) playerData.calculatedDemands = message.data.result.items as EquipmentItem[];
+			let data = [ ... message.data.result.items ];
+			
+			if (addNeeded) {
+				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
+				me.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+			}
+			else {
+				me.setState({ ... this.state, data });	
+			}			
+		});
+
+		worker.postMessage({
+			worker: 'equipmentWorker',
+			config: { 
+				playerData,
+				items,
+				addNeeded: this.state.addNeeded			
+				} as EquipmentWorkerConfig
+		});
+	}
 	componentDidMount() {
 		this.initData();
 	}
-	componentDidUpdate() {
-		this.initData();
+
+	componentDidUpdate(prevProps: Readonly<ProfileItemsProps>, prevState: Readonly<ProfileItemsState>, snapshot?: any): void {		
+		this.initData();	
 	}
 
 	initData() {
-		if (this.state.data?.length && this.state.data?.length > 0) return;
-		const { playerData, items } = this.context;
+		const { playerData } = this.context.player;
 		
+		if (playerData) {
+			if (playerData.calculatedDemands && this.state.data?.length && this.state.data?.length > 0) return;
+		}
+
+		const { items } = this.context.core;		
 		if (!items) return;
-		window.setTimeout(() => {		
-			let data = mergeItems(this.context.playerData.player.character.items, items);
+		
+		if (this.state.data?.length && this.lastData === this.state.data) {
+			return;
+		}
+		else {
+			this.lastData = this.state.data;
+		}
 
-			let { hideOwnedInfo } = this.props;
-
-			if (!hideOwnedInfo && !!playerData?.player?.character?.crew?.length && !!data?.length){
-				const demandos = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
-				for (let item of data) {
-					if (item.type === 8) {
-						let scheme = playerData.player.character.ships.find(f => f.symbol + "_schematic" === item.symbol);
-						if (scheme && scheme.schematic_gain_cost_next_level && scheme.schematic_gain_cost_next_level > 0) {
-							item.needed = scheme.schematic_gain_cost_next_level;
-							item.factionOnly = false;
-						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
-							if ("demandCrew" in item) delete item.demandCrew;
-						}
-					}
-					else if (item.type === 2 || item.type === 3) {
-						const fitem = demandos?.demands?.find(f => f.symbol === item.symbol);
-						if (fitem) {
-							item.needed = fitem.count;
-							item.factionOnly = fitem.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-							item.demandCrew ??= []
-							for (let sym of fitem.crewSymbols) {
-								if (sym && !item.demandCrew.find(f => f === sym)) {
-									item.demandCrew.push(sym);
-								}
-							}
-						}
-						else {
-							item.needed = 0;
-							item.factionOnly = false;
-							item.demandCrew = [];
-						}
-					}
-				}
-				if (demandos?.demands.length && this.state.addNeeded === true) {
-					for (let item of demandos.demands) {
-						if (!data.find(f => f.symbol === item.symbol) && this.context.items) {
-							item.equipment = this.context.items.find(f => f.symbol === item.symbol);
-							if (item.equipment){
-								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
-								eq.needed = item.count;
-								eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
-								eq.quantity = 0;
-								eq.demandCrew = [ ... item.crewSymbols ];
-								data.push(eq);
-							}
-						}
-					}
-				}
-			}
-			window.setTimeout(() => {
-				if (this.state.addNeeded) {
-					data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-					this.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
-				}
-				else {
-					this.setState({ ... this.state, data });	
-				}
-			});
-		});
-
+		if (!this.props.noWorker) { 
+			this.runWorker();
+		}
+		else if (this.props.data?.length) {
+			this.setState({ ...this.state, data: this.props.data })
+		}
 	}
 
 	private _onChangePage(activePage) {
@@ -188,31 +202,84 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private _handleFilter = (text: string | undefined) => {
-		this.tiny.setValue('filterText', text ?? '');
-		this.setState({ ...this.state, filterText: text ?? '' });
+		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: text ?? '' };
+		this.tiny.setValue('searchOptions', searchOpts);
+
+		this.setState({ ...this.state, searchOpts });
 	}
+
+	private _handleItemType = (values: number[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), itemType: values };
+		this.tiny.setValue('searchOptions', searchOpts);
+		this.setState({ ...this.state, searchOpts });
+	}
+
+	private _handleRarity = (values: number[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), rarity: values };
+		this.tiny.setValue('searchOptions', searchOpts);		
+		this.setState({ ...this.state, searchOpts });
+	}
+
 
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
+		const { playerData } = this.context.player;
+
+		if (playerData) {
+			delete playerData.calculatedDemands;
+		}
+
 		this.tiny.setValue('addNeeded', value ?? false);
-		this.setState({ ... this.state, data: [], addNeeded: value ?? false });
+		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
 	}
 
 	render() {
 		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
-		const filterText = this.state.filterText?.toLocaleLowerCase();
-
+		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
+		const { rarity, itemType } = this.state.searchOpts ?? {};
+		const { playerData } = this.context.player;
+		let bReady: boolean = !!data?.length;
+		if (playerData) {
+			if (!playerData.calculatedDemands && !this.props.noWorker) {
+				bReady = false;
+			}
+		}
 		const { hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
+		let cit = data?.map(d => d.type);
+		cit = cit?.filter((i, idx) => cit?.indexOf(i) === idx);
+		const presentTypes = cit;
+
 		if (data?.length) {
-			if (filterText && filterText !== '') {
-				data = data.filter(f => f.name?.toLowerCase().includes(filterText) || 
-					f.short_name?.toLowerCase().includes(filterText) ||
-					f.flavor?.toLowerCase().includes(filterText) ||
-					CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
-					CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText)
-					);
+			
+			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length) {
+				
+				data = data.filter(f => {
+					let textPass = true;
+					let rarePass = true;
+					let itemPass = true;
+
+					if (filterText && filterText !== '') {
+						textPass = f.name?.toLowerCase().includes(filterText) || 
+						f.short_name?.toLowerCase().includes(filterText) ||
+						f.flavor?.toLowerCase().includes(filterText) ||
+						CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+						CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);
+					}
+
+					if (!!rarity?.length) {
+						rarePass = rarity?.some(r => f.rarity == r);
+					}
+					if (!!itemType?.length) {
+						itemPass = itemType?.some(t => f.type == t);
+					}
+
+					return textPass && rarePass && itemPass;
+				});
+			}
+			if (rarity?.length) {
+
 			}
 
 			totalPages = Math.ceil(data.length / this.state.pagination_rows);
@@ -220,6 +287,28 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			// Pagination
 			data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 		}		
+
+		const rewardFilterOpts = [] as DropdownItemProps[];
+		const rarities = [] as DropdownItemProps[];
+
+		Object.keys(presentTypes ?? CONFIG.REWARDS_ITEM_TYPE).forEach((rk) => {
+			if (rk === '1') return;
+			rewardFilterOpts.push({ 
+				key: Number.parseInt(rk),
+				value: Number.parseInt(rk),
+				text: CONFIG.REWARDS_ITEM_TYPE[rk]
+			});
+		});
+
+		Object.keys(CONFIG.RARITIES).forEach((rk) => {
+			rarities.push({ 
+				key: Number.parseInt(rk),
+				value: Number.parseInt(rk),
+				text: CONFIG.RARITIES[rk].name
+			});
+		});
+
+		if (this.props.noRender) return <></>
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -241,14 +330,33 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							} 
 						} 
 					/>
-
+					<div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by item type"}
+							multiple
+							clearable
+							options={rewardFilterOpts}
+							value={itemType}
+							onChange={(e, { value }) => this._handleItemType(value as number[] | undefined)}
+						/>
+					</div>
+					<div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by rarity"}
+							multiple
+							clearable
+							options={rarities}
+							value={rarity}
+							onChange={(e, { value }) => this._handleRarity(value as number[] | undefined)}
+						/>
+					</div>
 				</div>}
 				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
 			</div>
-			{!(data?.length) && <div className='ui medium centered text active inline loader'>{"Loading data..."}</div>}
-			{!!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
+			{(!data || !bReady) && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
+			{bReady && !!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
@@ -272,7 +380,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('needed')}
 						>
 							Needed
-						</Table.HeaderCell>}
+						</Table.HeaderCell>}						
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'type' ? direction ?? undefined : undefined}
@@ -294,7 +402,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('factionOnly')}
 						>
 							Faction Only
-						</Table.HeaderCell>}
+						</Table.HeaderCell>}						
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -316,7 +424,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										style={{
 											opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
 										}}
-										playerData={this.context.playerData}
+										playerData={this.context.player.playerData}
 										itemSymbol={item.symbol}
 										allItems={this.state.data}
 										rarity={item.rarity}
@@ -372,9 +480,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				</Table.Footer>
 			</Table>}
 			<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
-			<CrewHoverStat targetGroup='profile_items_crew' useBoundingClient={true} />
+			<CrewHoverStat targetGroup='profile_items_crew' />
 			<br />
-				{!hideOwnedInfo && !!(data?.length) &&
+				{!hideOwnedInfo && !!(data?.length) && bReady &&
 					<div style={{
 						display: "flex",
 						flexDirection: "row",
@@ -402,7 +510,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 	
 	_exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 
 		let text = exportItemsAlt(data);
 		if (clipboard){

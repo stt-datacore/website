@@ -60,12 +60,13 @@ export interface SearchableTableProps {
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
 
-	toolCaption?: string;
 
+	checkCaption?: string;
 	checkableValue?: boolean;
 	checkableEnabled?: boolean;
 	setCheckableValue?: (value?: boolean) => void;
 
+	toolCaption?: string;
 	dropDownChoices?: string[];
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
@@ -225,7 +226,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const columnConfig = props.config.find(col => col.column === sortColumn);
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
-			const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
 			return { field: subfield, direction: subdirection };
 		});
 	}
@@ -269,7 +270,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
-	const { toolCaption: caption, checkableEnabled, checkableValue, setCheckableValue } = props;
+	const { toolCaption: caption, checkCaption, checkableEnabled, checkableValue, setCheckableValue } = props;
 
 	return (
 		<div>
@@ -307,53 +308,62 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				header={'Advanced search'}
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "flex-end",
+				alignItems: "center"
+			}}>
+			
 
-			{caption && setCheckableValue !== undefined && (
-				<div style={{
-					margin: "0.5em",
-					display:"flex",
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					alignSelf: "flex-end"
-				}}>
-					<Checkbox
-						onChange={(e, d) => setCheckableValue(d.checked)}
-						checked={checkableValue}
-						disabled={!checkableEnabled} />
-					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
-				</div>
-			)}
+				{caption && props.dropDownChoices?.length && (
+					<div style={{
+						margin: "0.5em",
+						display:"flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						alignSelf: "flex-end",
+						height: "2em"
+					}}>
 
-			{caption && props.dropDownChoices?.length && (
-				<div style={{
-					margin: "0.5em",
-					display:"flex",
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					alignSelf: "flex-end"
-				}}>
-
-					<span style={{ paddingLeft: '2em' }}>
-						<Dropdown inline
-							options={props.dropDownChoices.map((c) => {return {
-								content: c,
-								value: c
-							}})}
-							value={props.dropDownValue}
-							onChange={(event, {value}) => {
-								if (props.setDropDownValue) {
-									props.setDropDownValue(value as string);
-								}
-							}}
-						/>
-					</span>
-					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
-				</div>
-			)}
-
+						<span style={{ paddingLeft: '2em' }}>
+							<Dropdown inline
+								placeholder={caption}
+								options={props.dropDownChoices.map((c) => {return {
+									content: c,
+									value: c,text: c
+								}})}
+								value={props.dropDownValue}
+								onChange={(event, {value}) => {
+									if (props.setDropDownValue) {
+										props.setDropDownValue(value as string);
+									}
+								}}
+							/>
+						</span>
+						{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
+					</div>
+				)}
+				{!!checkCaption && !!setCheckableValue && (
+					<div style={{
+						margin: "0.5em",
+						display:"flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						alignSelf: "flex-end",
+						height: "2em"
+					}}>
+						<Checkbox
+							onChange={(e, d) => setCheckableValue(d.checked)}
+							checked={checkableValue}
+							disabled={!checkableEnabled} />
+						<div style={{margin: "0.5em"}} className="ui text">{checkCaption}</div>
+					</div>
+				)}
 			</div>
+		</div>
 
 			<div>
 				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
@@ -475,11 +485,11 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 };
 
 export const prettyCrewColumnTitle = (column: string) => {
-	if (column.substr(0, 6) == 'ranks.') {
+	if (column.slice(0, 6) == 'ranks.') {
 		let title = column.replace('ranks.', '');
-		if (title.substr(-4) == 'Rank') {
+		if (title.slice(-4) == 'Rank') {
 			title = title.replace('Rank', '');
-			title = title.substr(0, 1).toUpperCase() + title.substr(1);
+			title = title.slice(0, 1).toUpperCase() + title.slice(1);
 			return title;
 		}
 		else {

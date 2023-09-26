@@ -2,9 +2,8 @@ import React, { PureComponent } from 'react';
 import { Item } from 'semantic-ui-react';
 import { StaticQuery, navigate, graphql } from 'gatsby';
 
-import Layout from '../components/layout';
-
 import { getEpisodeName } from '../utils/episodes';
+import DataPageLayout from '../components/page/datapagelayout';
 
 class EpisodesPage extends PureComponent {
 	render() {
@@ -36,15 +35,14 @@ class EpisodesPage extends PureComponent {
 					}
 				`}
 				render={data => (
-					<Layout title='Episodes'>
-						<></>
+					<DataPageLayout pageTitle='Episodes'>
 						<Item.Group>
 							{data.allEpisodesJson.edges.map(({ node }, index) => (
 								<Item key={index}>
 									<Item.Image
 										size="tiny"
 										src={`${process.env.GATSBY_ASSETS_URL}${node.episode_portrait
-												? node.episode_portrait.file.substr(1).replace('/', '_') + '.png'
+												? node.episode_portrait.file.slice(1).replace('/', '_') + '.png'
 												: 'crew_full_body_cm_empty_full.png'
 											}`}
 									/>
@@ -61,7 +59,7 @@ class EpisodesPage extends PureComponent {
 								</Item>
 							))}
 						</Item.Group>
-					</Layout>
+					</DataPageLayout>
 				)}
 			/>
 		);

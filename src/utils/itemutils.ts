@@ -1,14 +1,16 @@
 import CONFIG from '../components/CONFIG';
 import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { ISymbol, SymbolName } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { PlayerEquipmentItem } from '../model/player';
-import { simplejson2csv, ExportField } from './misc';
+import { AtlasIcon, BuffBase, PlayerCollection, PlayerEquipmentItem, Reward } from '../model/player';
+import { getIconPath } from './assets';
+import { simplejson2csv, ExportField, getImageName } from './misc';
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
-		let itemEntry = items.find(i => i.symbol === item.symbol);
+		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
 			data.push({
 				... itemEntry,
@@ -182,4 +184,63 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
         bonusText,
         bonuses
     };
+}
+
+
+
+export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T | undefined {
+	let lo = 0, hi = items.length - 1;
+
+	while (true)
+	{
+		if (lo > hi) break;
+
+		let p = Math.floor((hi + lo) / 2);
+		let elem = items[p];
+
+		let c = symbol.localeCompare(items[p].symbol);
+
+		if (c == 0)
+		{
+			return elem;
+		}
+		else if (c < 0)
+		{
+			hi = p - 1;
+		}
+		else
+		{
+			lo = p + 1;
+		}
+	}
+
+	return undefined;
+}
+
+export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
+	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
+		let seeditem = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
+
+		items.push({
+			... seeditem,
+			...reward,
+			name: reward.name ?? "",
+			symbol: reward.symbol ?? "",
+			flavor: reward.flavor ?? "",
+			bonuses: {},
+			quantity: !!needed ? 0 : reward.quantity,
+			needed: !needed ? 0 : reward.quantity,
+			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
+			item_sources: [],
+			archetype_id: reward.id,
+			isReward: !needed
+		});
+	}
+}
+
+
+export function getCollectionRewards(playerCollections: PlayerCollection[]) {
+	return playerCollections.map((col) => {
+		return  ((col?.totalRewards ?? 0) > 0) ? col?.milestone.buffs?.map(b => b as BuffBase).concat(col?.milestone.rewards ?? []) as Reward[] : [];
+	}).flat();
 }

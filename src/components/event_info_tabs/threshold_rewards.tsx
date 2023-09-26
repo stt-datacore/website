@@ -2,15 +2,18 @@ import React from 'react';
 import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { GameEvent } from '../../model/player';
+import { AtlasIcon, GameEvent } from '../../model/player';
 import { EventData } from '../../utils/events';
 import ItemDisplay from '../itemdisplay';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
+import { getImageName } from '../../utils/misc';
+import { checkReward } from '../../utils/itemutils';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 	const {threshold_rewards} = props.eventData;
-	const context = React.useContext(MergedContext);
-
+	const context = React.useContext(GlobalContext);
+	const { items } = context.core;
+	
 	return (
 		<Table celled striped compact='very'>
 			<Table.Body>
@@ -18,7 +21,9 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={row.points}>
 						<Table.Cell>{row.points}</Table.Cell>
 						<Table.Cell>
-							{row.rewards.map(reward => (
+							{row.rewards.map(reward => {								
+								checkReward(items, reward);								
+								return (
 								reward && reward.icon &&
 								<Label
 									key={`reward_${reward.id}`} color="black" title={reward.full_name}>
@@ -29,13 +34,14 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 										alignItems: "center"
 									}}>
 									<ItemDisplay
+										quantity={reward.quantity}
 										src={getIconPath(reward.icon)}
 										size={48}
 										rarity={reward.rarity}
 										maxRarity={reward.rarity}		
-										allCrew={context.allCrew}
-										allItems={context.items}
-										playerData={context.playerData}
+										allCrew={context.core.crew}
+										allItems={context.core.items}
+										playerData={context.player.playerData}
 										itemSymbol={reward.symbol}
 										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
 										style={{
@@ -52,7 +58,8 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 									</div>
 								</Label>
-							))}
+							)}
+						)}
 						</Table.Cell>
 					</Table.Row>
 				))}

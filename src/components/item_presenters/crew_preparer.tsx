@@ -3,8 +3,7 @@ import { CrewMember } from "../../model/crew";
 import { PlayerData, PlayerCrew, CompletionState } from "../../model/player";
 import { prepareOne, applyCrewBuffs, getSkills } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-import { MergedContext, MergedData } from "../../context/mergedcontext";
-
+import { IDefaultGlobal } from "../../context/globalcontext";
 
 export type PlayerBuffMode = 'none' | 'player' | 'max';
 
@@ -141,10 +140,10 @@ export class CrewPreparer {
         dataIn: PlayerCrew | CrewMember | undefined,
         buffMode: PlayerBuffMode,
         immortalMode: PlayerImmortalMode,
-        context: MergedData
+        context: IDefaultGlobal
     ): [PlayerCrew | CrewMember | undefined, PlayerImmortalMode[] | undefined] {
 
-        const { buffConfig, maxBuffs, playerData } = context;
+        const { buffConfig, maxBuffs, playerData } = context.player;
         const hasPlayer = !!playerData?.player?.character?.crew?.length;
 
         let immoMode: PlayerImmortalMode[] | undefined = undefined;
@@ -165,13 +164,13 @@ export class CrewPreparer {
             
             if (immortalMode !== 'owned' || (buffMode !== 'none')) {
                 let cm: CrewMember | undefined = undefined;
-                cm = context.allCrew.find(c => c.symbol === dataIn.symbol);
+                cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
                         item = applyImmortalState(immortalMode, cm, undefined, buffConfig ?? maxBuffs);
                     }
                     else {
-                        item = applyImmortalState(immortalMode, cm, context.playerData, buffConfig ?? maxBuffs);
+                        item = applyImmortalState(immortalMode, cm, context.player.playerData, buffConfig ?? maxBuffs);
                     }
                     
                     if ((maxBuffs && Object.keys(maxBuffs)?.length) && ((!hasPlayer && buffMode != 'none') || (buffMode === 'max'))) {

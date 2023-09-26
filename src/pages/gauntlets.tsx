@@ -1,32 +1,29 @@
-import React, { PureComponent } from 'react';
-import { Item, Image, Grid, Pagination, PaginationProps, Table, Tab, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownProps, DropdownItemProps, SemanticWIDTHS } from 'semantic-ui-react';
-import { Link, navigate } from 'gatsby';
+import React from 'react';
+import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step } from 'semantic-ui-react';
+import { Link } from 'gatsby';
 import * as moment from 'moment';
-import Layout from '../components/layout';
-
+import { AllTraits } from '../model/traits';
 import allTraits from '../../static/structured/translation_en.json';
-const traits = allTraits; // as AllTraits;
+const traits = allTraits as AllTraits;
 
 
-import CONFIG from '../components/CONFIG';
-import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
-import { PlayerContext } from '../context/playercontext';
-import { CiteMode, CompletionState, PlayerCrew, PlayerData } from '../model/player';
-import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
+import { randomCrew } from '../context/datacontext';
+import { GlobalContext } from '../context/globalcontext';
+import { CompletionState, PlayerCrew } from '../model/player';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, navToCrewPage, prepareOne, prepareProfileData, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
-import { BuffSelector, CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { BuffNames, CrewPreparer, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
+import { CrewPresenter } from '../components/item_presenters/crew_presenter';
+import { BuffNames, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
-
+import DataPageLayout from '../components/page/datapagelayout';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
+import GauntletSettingsPopup, { GauntletSettings, defaultSettings } from '../components/gauntlet/settings';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -42,45 +39,12 @@ export const SKILLS = {
 	diplomacy_skill: 'DIP',
 	medicine_skill: 'MED'
 };
-const GauntletsPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'gauntlets', 'items']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
 
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("GAUNTLETS", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
-
+const GauntletsPage = () => {	
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						gauntlets: coreData.gauntlets
-					}}>
-						<GauntletsPageComponent />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-
-		</Layout>
+		<DataPageLayout playerPromptType='recommend' demands={['gauntlets', 'all_buffs', 'crew', 'items']}>
+			<GauntletsPageComponent />
+		</DataPageLayout>
 	);
 
 }
@@ -143,6 +107,9 @@ export interface GauntletsPageState {
 	hideOpponents?: boolean;
 
 	loading?: boolean;
+	settingsOpen: boolean;
+
+	gauntletSettings: GauntletSettings;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -150,20 +117,16 @@ const DEFAULT_FILTER_PROPS = {
 	maxResults: 10
 } as FilterProps;
 
-const crit65 = 2;
-const crit45 = 1.85;
-const crit25 = 1.45;
-const crit5 = 1;
+export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
+	let atrait = gauntlet?.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+	settings ??= defaultSettings;
 
-export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet: Gauntlet, apairs?: Skill[][] | Skill[]) {
-	let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
-
-	if (atrait >= 3) atrait = crit65;
-	else if (atrait >= 2) atrait = crit45;
-	else if (atrait >= 1) atrait = crit25;
-	else atrait = crit5;
+	if (atrait >= 3) atrait = settings.crit65;
+	else if (atrait >= 2) atrait = settings.crit45;
+	else if (atrait >= 1) atrait = settings.crit25;
+	else atrait = settings.crit5;
 	
-	apairs ??= getPlayerPairs(a, atrait);
+	apairs ??= getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
 	
 	let cn = 0;
 	let w = 0;
@@ -202,8 +165,8 @@ const GauntletTabCount = 5;
 
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
-	static contextType?= MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType?= GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('gauntlets');
 
@@ -221,7 +184,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const rbpair = [] as string[];
 		const ptab = [] as number[];
 		const ipage = [] as number[];
-
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
@@ -237,6 +199,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			ipage.push(10);
 		}
 
+		const settings = this.tiny.getValue<GauntletSettings>('gauntletSettings', defaultSettings) ?? defaultSettings;
 		const liveJson = this.tiny.getValue<string | undefined>('liveGauntlet', undefined);
 		let lg: Gauntlet | undefined = undefined;
 
@@ -281,7 +244,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			uniques: [],
 			filterProps: fprops,			
 			activeTabIndex: activeTabIndex,
-			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false)
+			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false),
+			gauntletSettings: settings,
+			settingsOpen: false
+		}
+	}
+	readonly getSettingsOpen = () => {
+		return this.state.settingsOpen;
+	}
+	readonly setSettingsOpen = (value: boolean) => {
+		this.setState({ ... this.state, settingsOpen: value });
+	}
+
+	readonly setSettings = (value: GauntletSettings) => {
+		if (JSON.stringify(value) !== JSON.stringify(this.state.gauntletSettings)) {
+			this.setState({ ... this.state, loading: true });
+			window.setTimeout(() => {
+				this.inited = false;
+				this.tiny.setValue('gauntletSettings', value, true);
+				this.setState({ ...this.state, gauntletSettings: value });
+			});
 		}
 	}
 
@@ -481,7 +463,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.state.lastPlayerDate !== this.context.playerData?.calc?.lastModified) {
+		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified) {
 			this.inited = false;
 		}
 		window.setTimeout(() => this.initData());
@@ -516,6 +498,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	readonly getPairGroups = (crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, featuredSkill?: string, top?: number, maxResults?: number) => {
+		featuredSkill ??= gauntlet.contest_data?.featured_skill;
 		const pairs = this.discoverPairs(crew, featuredSkill);
 		const { onlyActiveRound, hideOpponents } = this.state;
 		const featRank = skillToRank(featuredSkill ?? "") ?? "";
@@ -536,6 +519,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let pjoin = srank.join();
 			
 			const hapres = rpairs.map(z => rankToSkill(z)).sort().join();
+			const { gauntletSettings: settings } = this.state;
 
 			pairGroups.push({
 				pair: rpairs,
@@ -561,20 +545,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
 						let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
 
-						if (atrait >= 3) atrait = crit65;
-						else if (atrait >= 2) atrait = crit45;
-						else if (atrait >= 1) atrait = crit25;
-						else atrait = crit5;
+						if (atrait >= 3) atrait = settings.crit65;
+						else if (atrait >= 2) atrait = settings.crit45;
+						else if (atrait >= 1) atrait = settings.crit25;
+						else atrait = settings.crit5;
 
-						if (btrait >= 3) btrait = crit65;
-						else if (btrait >= 2) btrait = crit45;
-						else if (btrait >= 1) btrait = crit25;
-						else btrait = crit5;
+						if (btrait >= 3) btrait = settings.crit65;
+						else if (btrait >= 2) btrait = settings.crit45;
+						else if (btrait >= 1) btrait = settings.crit25;
+						else btrait = settings.crit5;
 
 						let r = 0;
 						
-						let apairs = getPlayerPairs(a, atrait);
-						let bpairs = getPlayerPairs(b, btrait);
+						let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+						let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
 
 						if (apairs && bpairs) {
 							let amatch = [] as Skill[];
@@ -610,8 +594,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								}
 							});
 
-							const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch) : getBernardsNumber(a, gauntlet, apairs);
-							const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch) : getBernardsNumber(b, gauntlet, bpairs);
+							const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
+							const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
 	
 							updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
 							updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
@@ -701,8 +685,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const rmax = range_max ?? 500;
 
-		const { buffConfig, maxBuffs } = this.context;		
-		const { allCrew } = this.context;		
+		const { buffConfig, maxBuffs } = this.context.player;		
+		const { crew: allCrew } = this.context.core;		
 
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
@@ -710,7 +694,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
-				const nfcrew = this.context.allCrew.find((cf) => cf.symbol === ocrew.archetype_symbol);
+				const nfcrew = this.context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
 				if (nfcrew) {
 					const fcrew = JSON.parse(JSON.stringify(nfcrew)) as PlayerCrew;
 					for (let skname of Object.keys(fcrew.base_skills)) {
@@ -748,7 +732,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const buffMode = this.getBuffState(availBuffs);
 
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 
 		const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 		gauntlet.prettyTraits = prettyTraits;
@@ -763,8 +747,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		delete gauntlet.pairMax;
 		delete gauntlet.pairMin;
 
+		const { gauntletSettings: settings } = this.state;
+
 		const matchedCrew1 =
-			allCrew.concat(oppo).filter(e => e.max_rarity > 3 && (
+			allCrew.concat(oppo).map(z => z as PlayerCrew).filter(e => e.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in e.ranks)) &&
 				(Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) || !!e.isOpponent) ||
 				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
@@ -780,7 +766,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					let c = this.context.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+					let c = this.context.player.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
 
 					if (!crew.isOpponent && c) {
 						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
@@ -891,25 +877,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let atrait = prettyTraits.filter(t => a.traits_named.includes(t)).length;
 					let btrait = prettyTraits.filter(t => b.traits_named.includes(t)).length;
 
-					if (atrait >= 3) atrait = crit65;
-					else if (atrait >= 2) atrait = crit45;
-					else if (atrait >= 1) atrait = crit25;
-					else atrait = crit5;
+					if (atrait >= 3) atrait = settings.crit65;
+					else if (atrait >= 2) atrait = settings.crit45;
+					else if (atrait >= 1) atrait = settings.crit25;
+					else atrait = settings.crit5;
 
-					if (btrait >= 3) btrait = crit65;
-					else if (btrait >= 2) btrait = crit45;
-					else if (btrait >= 1) btrait = crit25;
-					else btrait = crit5;
+					if (btrait >= 3) btrait = settings.crit65;
+					else if (btrait >= 2) btrait = settings.crit45;
+					else if (btrait >= 1) btrait = settings.crit25;
+					else btrait = settings.crit5;
 
-					let ap = getPlayerPairs(a, atrait);
-					let bp = getPlayerPairs(b, btrait);
+					let ap = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+					let bp = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
 
 					if (!a.score) {
-						a.score = getBernardsNumber(a, gauntlet, ap);
+						a.score = getBernardsNumber(a, gauntlet, ap, settings);
 					}
 
 					if (!b.score) {
-						b.score = getBernardsNumber(b, gauntlet, bp);
+						b.score = getBernardsNumber(b, gauntlet, bp, settings);
 					}
 
 					r = r = Math.round(b.score) - Math.round(a.score);;
@@ -917,17 +903,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!r) r = a.name.localeCompare(b.name);
 					return r;
 				});
-				
-		let matchedResult: PlayerCrew[] | undefined = undefined;
+		
+		let matchedResults: PlayerCrew[] | undefined = undefined;
 
-		if (gauntlet?.prettyTraits?.length) {
+		if (gauntlet.prettyTraits?.length) {
 			const maxpg = 10;
 			let pgs = this.getPairGroups(matchedCrew1, gauntlet, undefined, 100, maxpg);
 		
 			const incidence = {} as { [key: string]: number };
 			const avgidx = {} as { [key: string]: number };
-			const featuredavgidx = {} as { [key: string]: number };
-			const featureds = {} as { [key: string]: number };
 	
 			for(let pg of pgs) {
 				let idx = 1;
@@ -935,16 +919,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				for (let pgcrew of pg.crew) {
 					incidence[pgcrew.symbol] ??= 0;				
 					incidence[pgcrew.symbol]++;
-					featureds[pgcrew.symbol] ??= 0;				
-					featuredavgidx[pgcrew.symbol] ??= 0;				
-					let opairs = pg.pair.map(c => rankToSkill(c));
-					if (opairs.includes(gauntlet.contest_data?.featured_skill)) {
-						featureds[pgcrew.symbol]++;
-						featuredavgidx[pgcrew.symbol] += idx;
-					}
-	
+
 					avgidx[pgcrew.symbol] ??= 0;
 					avgidx[pgcrew.symbol] += idx;
+
 					idx++;
 				}
 			}
@@ -953,25 +931,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				avgidx[key] /= incidence[key];
 			});
 	
-			Object.keys(featuredavgidx).forEach(key => {
-				featuredavgidx[key] /= featureds[key];
-			});
-	
-			matchedResult = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+			matchedResults = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
 				let r = 0;
 				let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
 				let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
-	
+
 				r = bnum - anum;
 				return r;
 			});
-
 		}
 		else {
-			matchedResult = matchedCrew1;
+			matchedResults = matchedCrew1;
 		}
 
-		const matchedCrew = matchedResult;
+		const matchedCrew = matchedResults;
 
 		gauntlet.matchedCrew = matchedCrew;
 		gauntlet.origRanks = {};
@@ -997,8 +970,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { allCrew, gauntlets: gauntsin } = this.context;
-		const { playerData } = this.context;
+		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
+		const { playerData } = this.context.player;
 
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
@@ -1106,7 +1079,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				browsingGauntlet: uniques[0],
 				today,
 				yesterday,
-				lastPlayerDate: this.context.playerData?.calc?.lastModified,
+				lastPlayerDate: this.context.player.playerData?.calc?.lastModified,
 				activePrevGauntlet,
 				uniques,
 				loading: false
@@ -1127,7 +1100,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	private readonly crewInFilter = (crew: PlayerCrew, filter: FilterProps): boolean => {
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 		if (!filter.rarity || crew.rarity === filter.rarity) {
 			if (filter.skillPairs?.length) {
 				if (!filter.skillPairs.some((sp) => {
@@ -1523,7 +1496,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
 
-		const buffConfig = this.context.buffConfig;
+		const buffConfig = this.context.player.buffConfig;
 
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -1652,8 +1625,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
 
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
-		const { maxBuffs, buffConfig } = this.context;
-		const hasPlayer = !!(this.context.playerData?.player?.character?.crew?.length ?? 0);
+		const { maxBuffs, buffConfig } = this.context.player;
+		const hasPlayer = !!(this.context.player.playerData?.player?.character?.crew?.length ?? 0);
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
 
@@ -1661,11 +1634,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			if (this.state.uniques?.length) gauntletIn = this.state.uniques[0];
 		}
 
-		const featuredCrew = this.context.allCrew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
+		const featuredCrew = this.context.core.crew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
 		let jp = [] as CrewMember[];
 		
 		if (idx === 3) {
-			jp = this.context.allCrew.filter((crew) => {
+			jp = this.context.core.crew.filter((crew) => {
 				return (crew.obtained.toLowerCase().includes("gauntlet"));
 			})
 			.sort((a, b) => {
@@ -1673,12 +1646,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			});
 		}
 		else if (idx === 4 && gauntletIn) {
-			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
+			let pc = gauntletIn.contest_data?.selected_crew?.map(c => this.context.player.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
 			if (pc) jp = pc;
 		}
 
 		const jackpots = jp;
-
+		//const oppocrew = (gauntletIn?.opponents?.map(o => o.crew_contest_data.crew ?? [])?.flat() ?? []);
+		
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
@@ -1790,7 +1764,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlet.unavailable_msg) {
 			return (
 				<Message icon>
-					{this.randomQ()}
+					{randomCrew("q_jdl")}
 					<Message.Content>
 						<Message.Header>{gauntlet.unavailable_msg}</Message.Header>
 						{gauntlet.unavailable_desc_msg}
@@ -1830,8 +1804,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								maxRarity={featuredCrew.max_rarity}
 								rarity={featuredCrew.max_rarity}
 								src={`${process.env.GATSBY_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
-								allCrew={this.context.allCrew}
-								playerData={this.context.playerData}
+								allCrew={this.context.core.crew}
+								playerData={this.context.player.playerData}
 								targetGroup='gauntletsHover'
 								itemSymbol={featuredCrew?.symbol}
 							/>
@@ -1877,8 +1851,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 														maxRarity={jcrew.max_rarity}
 														rarity={jcrew.max_rarity}
 														src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-														allCrew={this.context.allCrew}
-														playerData={this.context.playerData}
+														allCrew={this.context.core.crew}
+														playerData={this.context.player.playerData}
 														targetGroup='gauntletsHover'
 														itemSymbol={jcrew?.symbol}
 													/>
@@ -1949,8 +1923,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 																maxRarity={jcrew.max_rarity}
 																rarity={jcrew.max_rarity}
 																src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-																allCrew={this.context.allCrew}
-																playerData={this.context.playerData}
+																allCrew={this.context.core.crew}
+																playerData={this.context.player.playerData}
 																targetGroup='gauntletsHover'
 																itemSymbol={jcrew?.symbol}
 															/>
@@ -1964,7 +1938,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										}
 									}]}
 								/>}
-
+								
 						</div>
 
 						<div style={{
@@ -2119,7 +2093,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Skills &amp; Pairs</b></h4>
 							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
 								<Dropdown
-									title={"Filter by skill pairs"}
+									title={"Filter by skills or pairs"}
 									placeholder="Skills & Pairs"										
 									clearable
 									compact
@@ -2403,8 +2377,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
 		const isOpponent = "isOpponent" in crew && crew.isOpponent;
 		let tempicon = "";
-		if (inMatch && this.context.playerData) {
-			tempicon = this.context.playerData.player.character.crew_avatar.portrait.file;
+		if (inMatch && this.context.player.playerData) {
+			tempicon = this.context.player.playerData.player.character.crew_avatar.portrait.file;
 		}
 		const myIcon = tempicon;
 		let tempoppo: Opponent | undefined = undefined;
@@ -2506,11 +2480,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								display:"flex",
 								flexDirection:"row", 
 								alignItems:"center"}}>
-									{this.context.playerData?.player.display_name}
+									{this.context.player.playerData?.player.display_name}
 									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
 							</div>
 							<span>
-								[{this.context.playerData?.player.character.level}]
+								[{this.context.player.playerData?.player.character.level}]
 							</span>
 						</>}
 
@@ -2547,10 +2521,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>
 					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
 						<ItemDisplay
-							playerData={this.context.playerData}
+							playerData={this.context.player.playerData}
 							itemSymbol={crew.symbol}
 							targetGroup='gauntletsHover'
-							allCrew={this.context.allCrew}
+							allCrew={this.context.core.crew}
 							src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 							rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
 							maxRarity={crew.max_rarity}
@@ -2684,8 +2658,41 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 
 			this.inited = false;
+			// TODO: Dormant Code to merge previous rounds!
+			// 
+			// let json = this.tiny.getValue<string>('liveGauntlet');
+			
+			// const prevGauntlet = json ? JSON.parse(json) as Gauntlet : {} as Gauntlet;
+			// const curroppos = [ ... gauntlet.opponents ?? [] ];
+			// const prevoppos = [ ... prevGauntlet?.opponents ?? [] ];
+
+			// for (let oppo of curroppos) {
+			// 	let po = prevoppos.find(fo => fo.player_id === oppo.player_id);
+			// 	if (po) {
+			// 		const crewdata = [ ... po.crew_contest_data.crew ];
+			// 		for (let pcrew of crewdata) {
+			// 			let fo = oppo.crew_contest_data.crew.find(foppo => foppo.archetype_symbol === pcrew.archetype_symbol);
+			// 			if (fo) {
+			// 				let pcopy = [ ... pcrew.skills, ...fo.skills];
+			// 				pcopy = pcopy.filter((pf, idx) => pcopy.findIndex(t => t.skill === pf.skill) === idx);
+			// 				pcrew.skills = pcopy;
+			// 			}
+			// 			else {
+			// 				po.crew_contest_data.crew.push(pcrew);
+			// 			}
+			// 		}
+			// 	}
+			// 	else {
+			// 		prevoppos.push(oppo);
+			// 	}
+			// }
+			
+			// gauntlet.opponents = prevoppos;
+
+			//this.tiny.setValue('liveGauntlet', JSON.stringify(gauntlet), false);
 			this.tiny.setValue('liveGauntlet', gauntletJson, false);
 			this.tiny.setValue('activeTabIndex', 4);
+
 			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: gauntlet, activeTabIndex: 4 });			
 		}
 		catch {
@@ -2694,10 +2701,70 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 	}
 
+	
+
+	renderCopyPaste(): JSX.Element {
+		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
+		const { liveGauntlet, gauntletJson } = this.state;
+
+		return (
+			<React.Fragment>
+				<Header icon>
+					<Icon name='paste' />
+					Copy and Paste
+				</Header>
+				<p>
+					Copy the contents of
+					{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						your player data
+					</a>,
+					<br />then paste everything into the text box below.
+				</p>
+				<Form>
+				<TextArea
+						placeholder='Paste a gauntlet, here'
+						id='__zzpp'
+						value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson ?? ''}
+						onChange={(e, { value }) => this.setState({ ... this.state, gauntletJson: value as string })}
+						onPaste={(e: ClipboardEvent) => this.parseGauntlet(e.clipboardData?.getData('text') as string)}
+					/>
+				</Form>
+				<Accordion style={{ marginTop: '1em' }}>
+					<Accordion.Title
+						
+					>
+						<Icon name={'caret down'} />
+						Post, Update or Clear Live Gauntlet Data (Click Here)
+					</Accordion.Title>
+					<Accordion.Content style={{ textAlign: 'left' }}>
+						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<ul>
+							<li>
+								Open this page in your browser:{' '}
+								<a href={PLAYERLINK} target='_blank'>
+									{PLAYERLINK}
+								</a>
+							</li>
+							<li>
+								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
+								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","character":'}</span> ...
+							</li>
+							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
+							<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
+							<li>Click the 'Import data' button</li>
+						</ul>
+						<p>If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts.</p>
+					</Accordion.Content>
+				</Accordion>
+			</React.Fragment>
+		);
+	}
+
+
 	render() {
 		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-		const hasPlayer = !!this.context.playerData?.player?.character?.crew?.length;
+		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 
 		if (!gauntlets) return <></>
 
@@ -2706,35 +2773,45 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const tabPanes = [
 			{
 				menuItem: isMobile ? "Today" : "Today's Gauntlet",
-				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>,
+				description: "Today's gauntlet"
 			},
 			{
 				menuItem: isMobile ? "Yesterday" : "Yesterday's Gauntlet",
-				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>,
+				description: "Yesterday's gauntlet"
 			},
 			{
 				menuItem: isMobile ? "Previous" : "Previous Gauntlets",
-				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage()}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage()}</div>,
+				description: "Browse previous gauntlets by date"
 			},
 			{
 				menuItem: isMobile ? "Browse" : "Browse Gauntlets",
-				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage(true, true)}</div>
+				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage(true, true)}</div>,
+				description: "Browse through all known gauntlets"
 			}
 		]
 
 		if (liveGauntlet && hasPlayer){
 			tabPanes.push({
 					menuItem: isMobile ? "Live" : "Live Gauntlet",
-					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>
+					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>,
+					description: "Live gauntlet round"
 				},
 			)
 		}
 
+		if (activeTabIndex !== undefined && (activeTabIndex < 0 || activeTabIndex >= tabPanes.length)) {
+			this.setActiveTabIndex(0);
+			return this.context.core.spin();
+		}
 
 		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
 
 		return (
 			<>
+			{/* {hasPlayer && this.renderCopyPaste()} */}
 			{hasPlayer && <Accordion
 				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
 				panels={[{
@@ -2793,47 +2870,38 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</Form></>
 					}
 				}]}
-				/> || <div>
-					{/* Live gauntlet upload is not available. There is no player data loaded, right now. <Link to='/playertools?tool=fwdgaunt'>Click Here to upload it.</Link> */}
-					</div>}
+				/>}
 				<div style={{margin: "1em 0"}}>
-					{isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
+					<Step.Group fluid>
+						{tabPanes.map((pane, idx) => {
+							return (
+								<Step active={(activeTabIndex ?? 0) === idx} onClick={() => this.setActiveTabIndex(idx)}>
+									
+									<Step.Content>
+										<Step.Title>{pane.menuItem}</Step.Title>
+										<Step.Description>{pane.description}</Step.Description>
+									</Step.Content>
+								</Step>
+							)
+						})}						
+					</Step.Group>
+					{tabPanes[activeTabIndex ?? 0].render()}
+					{/* {isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
 						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)}  menu={{ attached: false }} panes={tabPanes} />
-					}
+					} */}
+					<GauntletSettingsPopup 
+						isOpen={this.state.settingsOpen}
+						setIsOpen={this.setSettingsOpen}
+						config={{
+							current: this.state.gauntletSettings,
+							setCurrent: this.setSettings,
+							defaultOptions: defaultSettings
+							}} />
 				</div>
 				<CrewHoverStat targetGroup='gauntletsHover' />
 			</>
 		)
-	}
-
-	randomQ() {
-		const { allCrew } = this.context;
-		if (!allCrew?.length) {
-			return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
-		}
-
-		const qcrew_pass1 = allCrew.filter((a) => a.traits_hidden.includes("q_jdl") && a.max_rarity >= 4);
-		const qcrew = [] as CrewMember[];
-		
-		for (let qc of qcrew_pass1) {
-			let max = 0;
-			for (let sk of Object.values(qc.base_skills)) {
-				max += sk.range_max;
-			}
-			if (max >= 800) {
-				qcrew.push(qc);
-			}
-		}
-		// qcrew_pass1.filter(q1 => (Object.values(q1.base_skills).reduce((p: Skill, n: Skill) => (p?.range_max ?? 0) + (n?.range_max ?? 0)) >= 300));
-
-		const idx = Math.floor(Math.random() * (qcrew.length - 1));
-		const q = qcrew[idx];
-		const img = q.imageUrlFullBody;
-		const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
-
-		return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
-
 	}
 }
 

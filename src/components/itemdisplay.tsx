@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
 
 import CONFIG from './CONFIG';
-import { MergedData } from '../context/mergedcontext';
 import { CompletionState, PlayerCrew, PlayerData, PlayerEquipmentItem } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
-import { VoyageContext } from './voyagecalculator';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { ItemTarget } from './hovering/itemhoverstat';
 import { mergeItems } from '../utils/itemutils';
@@ -22,11 +20,12 @@ type ItemDisplayProps = {
 	playerData?: PlayerData;
 	allCrew?: CrewMember[];
 	allItems?: EquipmentCommon[];		
+	quantity?: number;
 };
 
 class ItemDisplay extends PureComponent<ItemDisplayProps> {
 	render() {
-		const { playerData, allCrew, allItems, targetGroup, itemSymbol } = this.props;
+		const { quantity, playerData, allCrew, allItems, targetGroup, itemSymbol } = this.props;
 
 		let borderWidth = Math.ceil(this.props.size / 34);
 		let starSize = Math.floor(this.props.size / 6);
@@ -89,8 +88,11 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 
 		if (allItems && itemSymbol && targetGroup) {
 			let pitem = playerData?.player?.character?.items?.find(item => item.symbol === itemSymbol) as PlayerEquipmentItem | undefined;
-			let citem = allItems.find(crew => crew.symbol === itemSymbol) as EquipmentItem | undefined;				
-			if (pitem && citem) {
+			
+			let citem = allItems.find(item => item.symbol === itemSymbol && item.quantity === quantity && (item as EquipmentItem).isReward) as EquipmentItem | undefined;				
+			if (!citem) citem = allItems.find(item => item.symbol === itemSymbol) as EquipmentItem | undefined;				
+
+			if (pitem && citem && !citem.isReward) {
 				item = mergeItems([pitem], [citem])[0] as EquipmentItem;
 			}
 			else if (citem){

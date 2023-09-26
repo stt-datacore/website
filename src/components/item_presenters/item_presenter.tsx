@@ -7,7 +7,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { EquipmentItem } from "../../model/equipment";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
@@ -61,8 +61,8 @@ export interface ItemPresenterState {
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 
@@ -88,10 +88,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
-        const { playerData, items } = this.context;
+        const { playerData } = this.context.player;
+        const { items } = this.context.core;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
-        const roster = playerData?.player?.character?.crew;
+        const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
         if (!item) {
@@ -167,7 +168,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         <ItemDisplay
                             targetGroup={this.props.crewTargetGroup}
                             playerData={playerData}
-                            allCrew={this.context.allCrew}
+                            allCrew={this.context.core.crew}
                             itemSymbol={sym}
                             rarity={crew.rarity}
                             maxRarity={crew.max_rarity}
@@ -187,6 +188,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         return (<div style={{ 
                         fontSize: "12pt", 
                         display: "flex", 
+                        textAlign: 'left',
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
                         
@@ -209,7 +211,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
                             {!!item.quantity && !!item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
-                            {!!item.quantity && !item.needed && <div>{item.quantity} Owned</div>}
+                            {!!item.quantity && !item.needed && !!item.isReward && <div>{item.quantity} Rewarded</div>}
+                            {!!item.quantity && !item.needed && !item.isReward && <div>{item.quantity} Owned</div>}
                             {!item.quantity && !!item.needed && <div>{item.needed} Needed</div>}                                                    
                         </div>
                     </div>
@@ -249,7 +252,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                             marginBottom: "4px",
                         }}
                     >
-                       <i>{item.flavor}</i>
+                       <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
                     </div>
                     <div>
                     {!!((item.item_sources?.length ?? 0) > 0) && (
