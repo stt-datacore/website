@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Vic’s above average mix of base and trait count has been useful in spurts and should continue to be, but leaves him susceptible to stretches of irrelevance. Luckily for him, Vic's picked up a few stat-boosting collections to make him an attractive behold choice for players who don't need any day to day contributions from their super rares. He should maintain or grow in value as he approaches the value ceiling offered by his traits.
+Vic’s above average mix of Base and Trait count has been useful in spurts and should continue to be, but leaves him susceptible to stretches of irrelevance. Luckily for him, Vic's picked up a few Stat-boosting Collections to make him an attractive Behold choice for players who don't need any day to day contributions from their Super Rares. He should maintain or grow in value as he approaches the value ceiling offered by his Traits.

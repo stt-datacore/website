@@ -3,7 +3,7 @@ name: Brainless Spock
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 49
 in_portal: true
 date: 04/12/2019
