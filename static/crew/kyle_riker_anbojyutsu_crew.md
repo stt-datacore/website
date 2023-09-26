@@ -3,7 +3,7 @@ name: Anbo-jyutsu Kyle Riker
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 10
 in_portal:
 date: 16/05/2023

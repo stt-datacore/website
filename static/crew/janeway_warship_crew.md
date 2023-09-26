@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Janeway's event tally is substantial; combining Hologram and Janeway variant weekends, but with bases so poor that she may not make the thaw list for many rosters. Not as traity as some other Janeway counterparts, she'll need the long ballyhooed Hologram or Villain traits to achieve collection status before established players will give her a second look.
+Janeway's Event tally is substantial; combining Hologram and Janeway variant weekends, but with Bases so poor that she may not make the thaw list for many rosters. Not as Traity as some other Janeway counterparts, she'll need the long ballyhooed Hologram or Villain Traits to achieve Collection status before established players will give her a second look.

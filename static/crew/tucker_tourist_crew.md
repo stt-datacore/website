@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Stripped and tied up in a basement by a coupla dudes? That's tier 10.
+Stripped and tied up in a basement by a coupla dudes? That's low tier.
 
-Trip wasted his shore leave, but at least he's squeezing the most out of his limited trait set thanks to the Resourceful collection. To say his value is scant would be an understatement, but he does have the possibility to end up as a triple collection crew with a few events per year, which is about all you can ask for from 2-skillers who are a few years old. Keep an eye on that collection counter and budget your behold capital accordingly.
+Trip wasted his shore leave, but at least he's squeezing the most out of his limited Trait set thanks to having three viable ones. To say his value is scant would be an understatement, but he does have the possibility to end up as a triple Collection crew with a few Events per year, which is about all you can ask for from 2-Skillers who are a few years old. Keep an eye on that Collection counter before choosing in a Legendary Behold.

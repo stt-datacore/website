@@ -3,7 +3,7 @@ name: Mok'bara Crusher
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 25
 in_portal: true
 date: 20/10/2020
