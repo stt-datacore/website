@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Slash fiction writers be praised, it's the handsome Kirk I've - I mean - you've been waiting for! Born to voyage, Kirk can still perform there, even a few years removed from his debut metrics. His plus skill set and a few rare-for-ENG traits like Romantic should last him perhaps four to five years after his release.
+We won’t bury the lede here - for Fleet Boss Battles, you need Hull Repair crew and Laborer Kirk is a must have. Best-in-class at a 25% Hull Repair with a 20s Cycle time, he pairs well with an Attack Boost Hull Repair crew like Dereth or First Officer Chekov along with one or two Instant Damage or Crit Bonus crew in the current meta.
 
-Laborer's event count, like his Shatner-esque colleagues, is in excellent standing. Even with very little help from traits so far, he's still churned out faction bonus after faction bonus and could stay atop the Kirk ENG charts for a long time. If you've been mulling starring up another ENG crew to bolster voyages or shuttles, Kirk's event pedigree guarantees Laborer to be a strong investment.
+Outside of this obvious need if you are going to compete in FBB, Laborer Kirk is first and foremost a Kirk, so count on variant Event bonuses regularly, even though he has an ENG Primary Skill. A few more Traits should pay off on Collections, giving him a ceiling of four or five when all is said and done.

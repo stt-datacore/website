@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Bev has never been (and likely will never be) a big event player - even Whizz kid Wes almost doubles mom's event tally. Still, she does own competent bases, a few non-HFS traits, and theoretical bridge crew status to make her a probable thaw candidate some time in the future when you least expect it. A collection in hand and two in the bush offers a little something to help boost the rest of your roster if you're not big on faction events.
+Bev has never been (and likely will never be) a big Event player, but still, she does own competent Bases, a few viable Traits, and main cast crew status to make her a probable Thaw candidate some time in the future when you least expect it. Two Collections in hand and one in the bush offers a little something to help boost the rest of your roster if you're not big on Faction Events.
