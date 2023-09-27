@@ -30,11 +30,11 @@ const CollectionsTool = () => {
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
 
-	if (!playerData) return <CollectionsOverviewComponent />;
-
 	if (!context.core.ready(['collections'])) {	
 		return context.core.spin ? context.core.spin() : <></>;
 	}
+
+	if (!playerData) return <CollectionsOverviewComponent />;
 	// ... etc ...
 
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
@@ -175,7 +175,6 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 			<CollectionFilterProvider pageId='collectionTool' playerCollections={playerCollections}>
 				<CollectionsViews 
 					filterCrewByCollection={filterCrewByCollection}
-					playerData={props.playerData} 
 					allCrew={allCrew} 
 					playerCollections={playerCollections} 
 					collectionCrew={collectionCrew} />
@@ -324,13 +323,17 @@ export interface CrewViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
-	playerData: PlayerData;
 	filterCrewByCollection: (collectionId: number) => void;
 };
 
 const CollectionsViews = (props: CrewViewsProps) => {
+
 	const context = React.useContext(GlobalContext);
 	const colContext = React.useContext(CollectionFilterContext);
+
+	const { playerData } = context.player;
+	if (!playerData) return <></>;
+
 	const [workerRunning, setWorkerRunning] = React.useState(false);
 	const [colGroups, setColGroups] = React.useState<CollectionMap[]>([]);
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
@@ -439,7 +442,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 		});
 	}
 	
-	const buffConfig = calculateBuffConfig(props.playerData.player);
+	const buffConfig = calculateBuffConfig(playerData.player);
 
 	const renderTable = (workerRunning: boolean) => {		
 		if (workerRunning) return context.core.spin("Calculating Crew...");
@@ -610,7 +613,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 				</div>
 			</React.Fragment>}
 				{tabPanes[tabIndex ?? 0].render(workerRunning)}	
-			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, props.playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);
