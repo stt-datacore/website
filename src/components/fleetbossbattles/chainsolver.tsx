@@ -1,15 +1,14 @@
 import React from 'react';
 import { Step, Icon, Message } from 'semantic-ui-react';
 
+import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
+import { useStateWithStorage } from '../../utils/storage';
+
+import { UserContext } from './context';
 import ChainCrew from './crew';
 import ChainTraits from './traits';
 import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
-
-import { useStateWithStorage } from '../../utils/storage';
-
-import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
-import { PlayerCrew } from '../../model/player';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -20,20 +19,14 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
-const userDefaults = {
-	view: 'crewgroups'
-};
-
 type ChainSolverProps = {
 	chain: Chain;
-	allCrew: PlayerCrew[];
-	dbid: string;
 };
 
 const ChainSolver = (props: ChainSolverProps) => {
+	const userContext = React.useContext(UserContext);
+	const { bossCrew, userPrefs, setUserPrefs } = userContext;
 	const { chain } = props;
-
-	const [userPrefs, setUserPrefs] = useStateWithStorage(props.dbid+'/fbb/prefs', userDefaults, { rememberForever: true });
 
 	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
 	const [spotter, setSpotter] = useStateWithStorage<Spotter>(`fbb/${chain.id}/spotter`,
@@ -128,7 +121,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 		const allMatchingCrew = [] as BossCrew[];
 		const allComboCounts = [] as ComboCount[];
-		props.allCrew.forEach(crew => {
+		bossCrew.forEach(crew => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
 				const nodes = [] as number[];
 				const matchesByNode = {} as NodeMatches;
@@ -179,10 +172,10 @@ const ChainSolver = (props: ChainSolverProps) => {
 		//	1) Crew used to solve other nodes
 		//	2) Attempted crew
 		const confirmedSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
-			.map(node => props.allCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id)?.symbol);
+			.map(node => bossCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id)?.symbol);
 		[confirmedSolves, spotter.attemptedCrew].forEach(group => {
 			group?.forEach(attempt => {
-				const crew = props.allCrew.find(ac => ac.symbol === attempt);
+				const crew = bossCrew.find(ac => ac.symbol === attempt);
 				if (crew) {
 					solverNodes.filter(node => node.open).forEach(node => {
 						if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
@@ -283,7 +276,6 @@ const ChainSolver = (props: ChainSolverProps) => {
 			{(userPrefs.view === 'crewgroups' || userPrefs.view === 'crewtable') && openNodes > 0 &&
 				<ChainCrew view={userPrefs.view}
 					solver={solver} spotter={spotter} updateSpotter={setSpotter}
-					allCrew={props.allCrew} dbid={props.dbid}
 				/>
 			}
 			{(userPrefs.view === 'traits' || openNodes === 0) &&

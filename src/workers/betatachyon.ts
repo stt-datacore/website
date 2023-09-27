@@ -1,5 +1,6 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { Collection } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -81,7 +82,7 @@ const lookupTrait = (trait: string) => {
 
 const BetaTachyon = {        
 
-    scanCrew: (playerData: PlayerData, inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
+    scanCrew: (playerData: PlayerData, collections: Collection[], inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
         
         return new Promise((resolve, reject) => {
 
@@ -329,8 +330,6 @@ const BetaTachyon = {
                 besttrips[`${sk[0]}/${sk[1]}/${sk[2]}`] = findBest(immoCrew, sk, magic * 2);
             });
 
-            const glitch = {} as { [key: string]: number };
-
             const allCrew = JSON.parse(JSON.stringify(inputCrew)) as CrewMember[];
 
             const topCrew = {} as { [key: string]: CrewMember };
@@ -421,6 +420,14 @@ const BetaTachyon = {
 
                 let evibe = ((so.skills[0].core * 0.35) + (so.skills[1].core * 0.25) + (so.skills[2].core * 0.15)) / 2.5;
 
+                let icols = playerData.player.character.cryo_collections.filter(f => {
+                    return !!f.claimable_milestone_index && 
+                        crew.collections.includes(f.name)
+                });
+                
+                let mcols = icols.map(ic => collections.find(fc => fc.name == ic.name));
+                mcols = mcols.filter(col => col?.milestones?.some(m => !!m.buffs?.length));
+                crew.collectionsIncreased = mcols.length;
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;
                 crew.totalEVRemaining = crew.evPerCitation * (crew.max_rarity - crew.rarity);
@@ -433,19 +440,21 @@ const BetaTachyon = {
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxcols = resultCrew.map(c => c.collectionsIncreased ?? 0).reduce((a, b) => a > b ? a : b);
             
             resultCrew.sort((a, b) => {
                 let r = 0; // (b.amTraits ?? 0) - (a.amTraits ?? 0);
 
-                let anum = (a.voyagesImproved?.length ?? 0) / maxvoy;
+                let anum = (a.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1);
                 let bnum = (a.totalEVContribution ?? 0) / maxev;
                 let cnum = 1 - ((a.totalEVRemaining ?? 0) / maxremain);
                 let dnum = 0.5 * ((a.amTraits ?? 0) / maxam);
                 let fnum = (acc[a.symbol].in_portal ? 0 : 1);
                 let gnum = isNever(a) ? 1 : 0;
+                let hnum = 2 * ((a.collectionsIncreased ?? 0) / (maxcols ? maxcols : 1));
                 let rare = 5 * (1 / skillOrderCrew[printSkillOrder(a)].length);
 
-                let fanum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
+                let fanum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum + hnum)) / 8;
                 
                 let adist = a.score ? (a.score) : 1;
                 let adist2 = a.scoreTrip ? (a.scoreTrip) : 1;
@@ -459,10 +468,11 @@ const BetaTachyon = {
                 dnum = 0.1 * ((b.amTraits ?? 0) / maxam);  
                 fnum = (acc[b.symbol].in_portal ? 0 : 1);
                 gnum = isNever(a) ? 1 : 0;
+                hnum = 2 * ((b.collectionsIncreased ?? 0) / (maxcols ? maxcols : 1));
 
                 rare = 5 * (1 / skillOrderCrew[printSkillOrder(b)].length);
 
-                let fbnum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum)) / 7;
+                let fbnum = (100 * (rare + anum + bnum + cnum + dnum + fnum + gnum + hnum)) / 8;
                 
                 let bdist = b.score ? (b.score) : 1;
                 let bdist2 = b.scoreTrip ? (b.scoreTrip) : 1;
