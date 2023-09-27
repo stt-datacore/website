@@ -158,6 +158,10 @@ export interface Chain {
 	description: string;
 }
 
+export interface UserPreferences {
+	view: string;
+}
+
 export interface SpotterPreferences {
 	onehand: string;
 	alpha: string;
@@ -294,6 +298,8 @@ export interface RuleException {
 }
 
 export interface BossCrew extends PlayerCrew {
+	highest_owned_rarity: number;
+	only_frozen: boolean;
 	nodes: number[];
 	nodes_rarity: number;
 	node_matches: NodeMatches;
