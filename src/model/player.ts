@@ -482,13 +482,6 @@ export interface Player {
     /** If this crew can be fused with other crew */
     cross_fuse_targets: CrossFuseTarget;
     cap_achiever: CapAchiever
-    addedEV?: number;
-    totalEVContribution?: number;
-    totalEVRemaining?: number;
-    evPerCitation?: number;
-    voyagesImproved?: string[];
-    amTraits?: number;
-    voyScores?: { [key: string]: number };
 
     /** Highest rarity from out of all copies of crew owned by the player */
     highest_owned_rarity?: number;
@@ -545,6 +538,25 @@ export interface Player {
     /** Used internally. Not part of source data.  */
     variants?: string[];
 
+
+    /** Citation Optimizer */
+    
+    /** Used internally. Not part of source data.  */
+    addedEV?: number;
+    /** Used internally. Not part of source data.  */
+    totalEVContribution?: number;
+    /** Used internally. Not part of source data.  */
+    totalEVRemaining?: number;
+    /** Used internally. Not part of source data.  */
+    evPerCitation?: number;
+    /** Used internally. Not part of source data.  */
+    voyagesImproved?: string[];
+    /** Used internally. Not part of source data.  */
+    amTraits?: number;
+    /** Used internally. Not part of source data.  */
+    voyScores?: { [key: string]: number };
+    /** Used internally. Not part of source data.  */
+    collectionsIncreased?: number;
 
     /** Used internally. Not part of source data.  */
     ssId?: string;
