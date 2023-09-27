@@ -426,7 +426,14 @@ const BetaTachyon = {
                 });
                 
                 let mcols = icols.map(ic => collections.find(fc => fc.name == ic.name));
-                mcols = mcols.filter(col => col?.milestones?.some(m => !!m.buffs?.length));
+                mcols = mcols.filter((col, idx) => {
+                    if (icols[idx].claimable_milestone_index) {
+                        return col?.milestones?.slice(icols[idx].claimable_milestone_index).some(m => !!m.buffs?.length);
+                    }
+                    else {
+                        return false;
+                    }
+                });
                 crew.collectionsIncreased = mcols.length;
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;
