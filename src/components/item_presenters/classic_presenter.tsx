@@ -337,16 +337,18 @@ export const Skills = (props: SkillsProps) => {
 
 	return (
 		<Segment compact textAlign='center'>
-			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '.5em' }}>
+			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', alignItems: 'center' }}>
 				{baseSkills.map(baseSkill => (
-					<div key={baseSkill[0]}>
-						<CrewStat
+					<div key={baseSkill[0]} style={{margin: "0.25em 0"}}>
+						<CrewStat							
 							skill_name={baseSkill[0]}
 							data={baseSkill[1]}
 							scale={compact ? .85 : 1}
 						/>
 					</div>
 				))}
+			</div>
+			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', marginTop: "0.5em" }}>
 				{buffConfig &&
 					<div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<Icon name='arrow alternate circle up' size='small' style={{ color: 'lightgreen' }} />
