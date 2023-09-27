@@ -6,7 +6,7 @@ import CiteOptimizer from '../components/citeoptimizer';
 
 const CiteOptimizerPage = () => {
 
-    return <DataPageLayout pageTitle='Citation Optimizer'>
+    return <DataPageLayout pageTitle='Citation Optimizer' demands={['collections']}>
         <CiteOptimizer />
     </DataPageLayout>
 }

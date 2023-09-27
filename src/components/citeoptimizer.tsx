@@ -154,6 +154,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const worker = new UnifiedWorker();
 		const { playerData, buffConfig } = this.context.player;
 		const allCrew = this.context.core.crew;
+		const collections = this.context.core.collections;
 
 		const engine = this.state.citeMode?.engine ?? "original";
 		if (playerData) playerData.citeMode = citeMode;
@@ -166,6 +167,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			worker: workerName,
 			playerData,
 			allCrew,
+			collections,
 			buffs: buffConfig
 		});
 	}
@@ -418,6 +420,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			else if (sort === 'amTraits' && engine === 'beta_tachyon_pulse') {
 				r = (a.amTraits ?? 0) - (b.amTraits ?? 0);
 			}
+			else if (sort === 'colIncreased' && engine === 'beta_tachyon_pulse') {
+				r = (a.collectionsIncreased ?? 0) - (b.collectionsIncreased ?? 0);
+			}
 			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
 				let ska = getSkillOrder(a).join("/");
 				let skb = getSkillOrder(b).join("/");
@@ -508,7 +513,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<Table.HeaderCell
 								onClick={(e) => sort === 'evPer' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('evPer')}
 								sorted={sort === 'evPer' ? direction : undefined}>
-								EV Per Citation
+								EV Per<br />Citation
 							</Table.HeaderCell>
 						</React.Fragment>
 						}
@@ -523,6 +528,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
 								sorted={sort === 'amTraits' ? direction : undefined}>
 								Antimatter<br />Traits
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'colIncreased' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('colIncreased')}
+								sorted={sort === 'colIncreased' ? direction : undefined}>
+								Stat-Boosting<br />Collections
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								onClick={(e) => sort === 'skillOrder' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('skillOrder')}
@@ -601,6 +611,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									<React.Fragment>
 
 										<Table.Cell>{row.amTraits}</Table.Cell>
+										<Table.Cell>{row.collectionsIncreased}</Table.Cell>
 										<Table.Cell width={2}>
 										<div style={{
 												display: "flex",
