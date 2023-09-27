@@ -39,7 +39,7 @@ const VoyagePage = () => {
 			demands={['collections']}
 		>
 			<React.Fragment>
-				<CrewHoverStat targetGroup='voyageLineup' />	
+				<CrewHoverStat targetGroup='voyageLineup' />
 
 				{playerData &&
 					<PlayerActiveVoyage
@@ -118,7 +118,6 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 
 	React.useEffect(() => {
 		getDefaultConfig();
-		setRosterType(playerData ? 'myCrew' : 'allCrew');
 		getEvents();
 	}, [playerData]);
 
