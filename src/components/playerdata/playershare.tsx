@@ -87,7 +87,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 
     if (!playerData) return (<></>);
 
-	const profileLink = getProfileLink(`${dbid}`);
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + `/profile?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -104,7 +104,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						<p>You can upload your profile to DataCore to more easily share some data with other players. Once shared, your public profile will be accessible by anyone with this link:</p>
 						<p style={{ margin: '1.25em 0', textAlign: 'center' }}>
 							<span style={{ fontWeight: 'bold', fontSize: '1.25em', marginRight: '1em' }}>
-								<Link to={`/profile?dbid=${dbid}`}>{profileLink}</Link>
+								<Link to={`/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
 							</span>
 							<Popup
 								content='Copied!'
@@ -175,7 +175,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	);
 
 	function copyProfileLink(): void {
-		navigator.clipboard.writeText(profileLink);
+		navigator.clipboard.writeText(PROFILE_LINK);
 	}
 
 	function exportCrewTool(): void {
@@ -209,11 +209,10 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
 	React.useEffect(() => {
+		if (!strippedPlayerData) return;
 		if (uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate)
 			uploadProfile();
-	}, [uploadState]);
-
-	const profileLink = getProfileLink(`${dbid}`);
+	}, [uploadState, strippedPlayerData]);
 
 	const showSuccess = uploadState === ProfileUploadState.Success && showResponse;
 	const showFailure = uploadState === ProfileUploadState.Failed && showResponse;
@@ -279,7 +278,3 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 		});
 	}
 };
-
-function getProfileLink(dbid: string): string {
-	return typeof window !== 'undefined' ? window.location.origin + `/profile?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
-}

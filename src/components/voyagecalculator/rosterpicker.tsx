@@ -26,16 +26,47 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [myShips, setMyShips] = React.useState<Ship[] | undefined>(undefined);
 
 	React.useEffect(() => {
+		const rosterType = playerData ? 'myCrew' : 'allCrew';
+		initializeRoster(rosterType, true);
+		setRosterType(rosterType);
+	}, [playerData]);
+
+	React.useEffect(() => {
+		initializeRoster(rosterType);
+	}, [rosterType]);
+
+	if (!playerData)
+		return (<></>);
+
+	return (
+		<Step.Group fluid widths={2}>
+			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
+				<Icon name='users' />
+				<Step.Content>
+					<Step.Title>Owned Crew</Step.Title>
+					<Step.Description>Only consider your owned crew</Step.Description>
+				</Step.Content>
+			</Step>
+			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
+				<Icon name='fire' />
+				<Step.Content>
+					<Step.Title>Best Possible Voyage</Step.Title>
+					<Step.Description>Consider all ships and crew in the game</Step.Description>
+				</Step.Content>
+			</Step>
+		</Step.Group>
+	);
+
+	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
 		let rosterCrew = [] as IVoyageCrew[];
 		let rosterShips = [] as Ship[];
 
 		if (rosterType === 'myCrew' && playerData) {
-			if (myCrew && myShips) {
+			if (myCrew && myShips && !forceReload) {
 				setRosterCrew([...myCrew]);
 				setRosterShips([...myShips]);
 				return;
 			}
-
 			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
 			setMyCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
@@ -44,8 +75,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			setMyShips([...rosterShips]);
 			setRosterShips([...rosterShips]);
 		}
-		else {
-			if (allCrew && allShips) {
+		else if (rosterType === 'allCrew') {
+			if (allCrew && allShips && !forceReload) {
 				setRosterCrew([...allCrew]);
 				setRosterShips([...allShips]);
 				return;
@@ -101,29 +132,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			setAllShips([...rosterShips]);
 			setRosterShips([...rosterShips]);
 		}
-	}, [rosterType]);
-
-	if (!playerData || !myCrew)
-		return (<></>);
-
-	return (
-		<Step.Group fluid widths={2}>
-			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
-				<Icon name='users' />
-				<Step.Content>
-					<Step.Title>Owned Crew</Step.Title>
-					<Step.Description>Only consider your owned crew</Step.Description>
-				</Step.Content>
-			</Step>
-			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
-				<Icon name='fire' />
-				<Step.Content>
-					<Step.Title>Best Possible Voyage</Step.Title>
-					<Step.Description>Consider all ships and crew in the game</Step.Description>
-				</Step.Content>
-			</Step>
-		</Step.Group>
-	);
+	}
 };
 
 export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[]): IVoyageCrew[] {

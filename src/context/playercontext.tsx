@@ -71,7 +71,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
-	const [sessionStates, setSessionStates] = React.useState<ISessionStates | undefined>(defaultSessionStates);
+	const [sessionStates, setSessionStates] = useStateWithStorage<ISessionStates | undefined>('sessionStates', defaultSessionStates);
 
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 	const [loaded, setLoaded] = React.useState(false);
