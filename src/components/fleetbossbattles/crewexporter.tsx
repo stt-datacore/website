@@ -1,30 +1,11 @@
 import React from 'react';
-import { Header, Button, Popup, Message, Accordion, Form, Select, Input, Icon } from 'semantic-ui-react';
+import { Header, Button, Popup, Message, Accordion, Form, Select, Input } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, Solver, SolverNode, SolverTrait } from '../../model/boss';
-import * as lz from 'lz-string';
 
-const FLAG_ONEHAND = '\u03A8';
-const FLAG_ALPHA = '\u03B1';
-const FLAG_UNIQUE = '\u00B5';
-const FLAG_NONOPTIMAL = '\u03B9';
-
-export const exportDefaults = {
-	header: 'always',
-	solve: 'hide',
-	node_format: 'bold',
-	node_traits: 'show',
-	bullet: 'simple',
-	delimiter: ',',
-	coverage_format: 'italic',
-	crew_traits: 'show',
-	duplicates: 'number',
-	flag_onehand: FLAG_ONEHAND,
-	flag_alpha: FLAG_ALPHA,
-	flag_unique: FLAG_UNIQUE,
-	flag_nonoptimal: FLAG_NONOPTIMAL
-} as ExportPreferences;
+import { UserContext } from './context';
+import { exportDefaults } from './fbbdefaults';
 
 const exportCompact = {
 	header: 'hide',
@@ -150,11 +131,12 @@ type CrewNodeExporterProps = {
 	node: SolverNode;
 	nodeGroups: FilteredGroup[];
 	traits: SolverTrait[];
-	exportPrefs: ExportPreferences;
 };
 
 export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
-	const { node, nodeGroups, traits, exportPrefs } = props;
+	const userContext = React.useContext(UserContext);
+	const { exportPrefs } = userContext;
+	const { node, nodeGroups, traits } = props;
 
 	const copyNode = () => {
 		const output = exportNodeGroups(node, nodeGroups, traits, exportPrefs);
@@ -177,13 +159,12 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 type CrewFullExporterProps = {
 	solver: Solver;
 	optimizer: Optimizer;
-	exportPrefs: ExportPreferences;
-	setExportPrefs: (prefs: ExportPreferences) => void;
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const { solver, optimizer, exportPrefs } = props;
-
+	const userContext = React.useContext(UserContext);
+	const { exportPrefs, setExportPrefs } = userContext;
+	const { solver, optimizer } = props;
 
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
@@ -214,10 +195,10 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	// const copyFullPermalink = () => {
 	// 	const { solver } = props;
 
-		
+
 	// 	let json = JSON.stringify(solver);
 	// 	let b64 = lz.compressToBase64(json);
-		
+
 	// }
 
 	return (
@@ -225,7 +206,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 			<Message.Content>
 				<Message.Header>Export Crew Lists</Message.Header>
 				<p>Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.</p>
-				<ExportOptions prefs={exportPrefs} updatePrefs={props.setExportPrefs} />
+				<ExportOptions prefs={exportPrefs} updatePrefs={setExportPrefs} />
 				<Popup
 					content='Copied!'
 					on='click'
