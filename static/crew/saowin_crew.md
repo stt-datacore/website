@@ -14,4 +14,4 @@ published: true
 
 Listen, if you are going up against George Costanza you had better have the power to back it up with. Blue meanie is routinely stomped like a late harvest Gewürztraminer (Hail, Corkmaster!) at every turn, but at least he has a few of PeeWee's secret word: Traits!
 
-Culminating in an impressive zero events to date, Saowin's lineup of large and nebulous traits could either mean absolutely nothing in the future or result in some 200+ crew collections in which we'll all be scrambling for those purples who appear in several of them. With Resourceful as the first crack in that dam, Saowin may see his value improve long term, but remains a zero for daily work.
+Culminating in an impressive zero Events to date, Saowin's lineup of large and nebulous Traits could either mean absolutely nothing in the future or result in some 200+ crew Collections in which we'll all be scrambling for those Super Rares who appear in several of them. Saowin may see his value improve long term, but remains a zero for daily work.
