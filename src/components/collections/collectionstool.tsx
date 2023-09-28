@@ -540,13 +540,11 @@ const CollectionsViews = (props: CrewViewsProps) => {
 
 	return (
 		<React.Fragment>
-			
 			<div style={{margin: "1em 0"}}>
 				<Step.Group fluid>
 					{tabPanes.map((pane, idx) => {
 						return (
-							<Step active={(tabIndex ?? 0) === idx} onClick={() => setTabIndex(idx)}>
-								
+							<Step active={(tabIndex === idx)} onClick={() => setTabIndex(idx)}>								
 								<Step.Content>
 									<Step.Title>{pane.menuItem}</Step.Title>
 									<Step.Description>{pane.description}</Step.Description>
