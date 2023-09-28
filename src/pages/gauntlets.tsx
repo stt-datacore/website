@@ -2809,6 +2809,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
 
+		if (typeof window !== 'undefined' && hasPlayer) {
+			window["gauntletDataSetter"] = (value: string) => {
+				this.parseGauntlet(value);
+			}
+		}
+
 		return (
 			<>
 			{/* {hasPlayer && this.renderCopyPaste()} */}
