@@ -88,13 +88,9 @@ const CrewRetrieval = (props: CrewRetrievalProps) => {
 		return (<><Icon loading name='spinner' /> Loading...</>);
 	}
 
-	if (!playerData?.forte_root) {
+	if (!playerData) {
 		return (
-			<div>
-				<h2>Crew Retrieval Unavailable</h2>
-				<p>Crew retrieval requires a <a href='https://app.startrektimelines.com/player?client_api=20&only_read_state=true' target='_blank'>newer version</a> of your player file.
-				   Please follow the link and copy the correct version to paste.</p>
-			</div>
+			<></>
 		);
 	}
 

@@ -4,7 +4,7 @@ import CrewRetrieval from '../components/crewretrieval';
 
 const CrewRetrievalPage = () => {
 
-    return <DataPageLayout pageTitle='Crew Retrieval'>
+    return <DataPageLayout playerPromptType='require' pageTitle='Crew Retrieval'>
         <CrewRetrieval />
     </DataPageLayout>
 }

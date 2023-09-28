@@ -20,7 +20,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 	const [details, setDetails] = React.useState<string | undefined>(undefined);
 	const [loadState, setLoadState] = React.useState(0);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
-
+	
 	React.useEffect(() => {
 		if (inputPlayerData) {
 			setValidInput(inputPlayerData);

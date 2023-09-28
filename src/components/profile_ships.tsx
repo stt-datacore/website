@@ -44,6 +44,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
+	hasPlayer: boolean;
 
 	constructor(props: ProfileShipsProps) {
 		super(props);
@@ -68,11 +69,21 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 
 	initData() {
-		if (!this.context.player.playerShips?.length) return;
-		if (this.inited) return;		
+		const hp = !!this.context.player.playerData;
+		if (hp !== this.hasPlayer) {
+			this.inited = false;
+			this.hasPlayer = hp;
+		}
+		if (this.inited) return;
 		
 		this.inited = true;
-		this.setState({ ... this.state, data: this.context.player.playerShips });
+		if (this.context.player.playerShips?.length) {
+			this.setState({ ... this.state, data: this.context.player.playerShips });
+		}
+		else {
+			this.setState({ ... this.state, data: this.context.core.ships });
+		}
+		
 	}
 
 	_onChangePage(activePage) {
@@ -148,7 +159,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		const { textFilter, grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
-		if (!dataContext || !dataContext.core.ships || !dataContext.player.playerShips) return <></>;
+		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
 
 		let prefiltered = this.state.data;
 		
@@ -297,7 +308,18 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 							<Table.Cell>{ship.evasion}</Table.Cell>
 							<Table.Cell>{ship.hull}</Table.Cell>
 							<Table.Cell>{ship.shields} (regen {ship.shield_regen})</Table.Cell>
-							<Table.Cell>{ship.level} / {ship.max_level}</Table.Cell>
+							<Table.Cell> 
+								{ship.level && <>
+									{ship.level} / {ship.max_level}
+								</>
+								||
+								<>
+								{(ship.max_level ?? 0) + 1}
+								</>
+								}
+								
+								
+								</Table.Cell>
 						</Table.Row>
 					))}
 				</Table.Body>

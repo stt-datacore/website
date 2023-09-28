@@ -30,6 +30,13 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 		}
 	};
 
+	if (typeof window !== 'undefined') {
+		// for potential thin clients
+		window["playerDataSetter"] = (text: string) => {
+			receiveInput(JSON.parse(text));
+		}
+	}
+
 	const enforceInput = !playerData && promptType === 'require';
 	const showRequireMessage = enforceInput;
 
