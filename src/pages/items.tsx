@@ -33,9 +33,9 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	return (
 
-		<DataPageLayout pageTitle='Items' demands={['all_buffs', 'crew', 'items', 'cadet']}>
+		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
-			
+			{hasPlayer &&
 			<Step.Group>
 				<Step active={allActive} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
@@ -50,7 +50,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
 					</Step.Content>
 				</Step>}
-			</Step.Group>
+			</Step.Group>}
 
 			<ItemsComponent noRender={!allActive} />
 			<ProfileItems noRender={allActive} />
@@ -239,8 +239,6 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 	render() {
 		if (this.props.noRender) return <></>
 		return (<>
-				<Header as="h2">Items</Header>
-
 				{!this.state.items && (
 					<div>
 						<Icon loading name="spinner" /> Loading...

@@ -4,7 +4,7 @@ import ProfileShips from '../components/profile_ships';
 
 const ShipsPage = () => {
 
-    return <DataPageLayout pageTitle='Ships'>
+    return <DataPageLayout playerPromptType='recommend' pageTitle='Ships'>
         <ProfileShips />
     </DataPageLayout>
 }
