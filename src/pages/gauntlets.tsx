@@ -2028,7 +2028,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>Show Top Crew</b></h4>
 
 							<Dropdown
-								title="Filter Crew by Big Book Rank"
+								title="Filter Crew by Rank"
 								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? "Top " + o : "No Limit", key: o, value: o } })}
 								value={tops[idx]}
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
