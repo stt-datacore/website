@@ -418,10 +418,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				r = (a.voyagesImproved?.length ?? 0) - (b.voyagesImproved?.length ?? 0);
 			}
 			else if (sort === 'amTraits' && engine === 'beta_tachyon_pulse') {
-				r = (a.amTraits ?? 0) - (b.amTraits ?? 0);
+				r = (a.amTraits?.length ?? 0) - (b.amTraits?.length ?? 0);
 			}
 			else if (sort === 'colIncreased' && engine === 'beta_tachyon_pulse') {
-				r = (a.collectionsIncreased ?? 0) - (b.collectionsIncreased ?? 0);
+				r = (a.collectionsIncreased?.length ?? 0) - (b.collectionsIncreased?.length ?? 0);
 			}
 			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
 				let ska = getSkillOrder(a).join("/");
@@ -610,8 +610,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
 
-										<Table.Cell>{row.amTraits}</Table.Cell>
-										<Table.Cell>{row.collectionsIncreased}</Table.Cell>
+										<Table.Cell>
+											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.join(', ')} />
+										</Table.Cell>
+										<Table.Cell>
+											<Popup trigger={<b>{row.collectionsIncreased?.length}</b>} content={row.collectionsIncreased?.join(' / ')} />
+										</Table.Cell>
 										<Table.Cell width={2}>
 										<div style={{
 												display: "flex",
