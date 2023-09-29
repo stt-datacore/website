@@ -343,14 +343,21 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.have = true;
 		}
 		if (crew.immortal > 0) {
-			 inroster.push(crew);
-			 crew = templateCrew;
+ 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
+ 			crew.highest_owned_level = crew.max_level ?? 100;
+			inroster.push(crew);
+			crew = templateCrew;
 		}		
 	}
 
 	inroster = inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
-		
+
+	let maxowned = crew.highest_owned_rarity as number | undefined;
+	let maxlevel = crew.highest_owned_level as number | undefined;
+
 	for (let owned of inroster ?? []) {
+		if (!maxowned || owned.rarity > maxowned) maxowned = owned.rarity;
+		if (!maxlevel || owned.level > maxlevel) maxlevel = owned.level;
 		if (inroster.length > 1) {
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
@@ -448,7 +455,12 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	if (crew.immortal === undefined) {
 		crew.immortal = playerData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 	}
-
+	
+	outputcrew.forEach(f => {
+		f.highest_owned_rarity = maxowned;
+		f.highest_owned_level = maxlevel;
+	});
+	
 	return outputcrew;
 }
 

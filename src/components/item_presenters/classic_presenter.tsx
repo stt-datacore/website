@@ -9,6 +9,9 @@ import { applyCrewBuffs, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
+import { OwnedLabel } from '../crewtables/commonoptions';
+import { CrewItemsView } from './crew_items';
+import { PlayerCrew } from '../../model/player';
 
 type ValidField =
 	'collections' |
@@ -310,15 +313,16 @@ type SkillsProps = {
 	crew: CrewMember;
 	rarity: number;
 	compact?: boolean;
+	playerLevels?: boolean;	
 };
 
 export const Skills = (props: SkillsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { buffConfig } = globalContext.player;
-	const { crew, rarity, compact } = props;
-
-	let skills = crew.base_skills;
-	if (rarity !== crew.max_rarity) {
+	const { playerLevels, crew, rarity, compact } = props;
+	const owned = globalContext.player.playerData?.player.character.crew.find(f => f.symbol === crew.symbol);
+	let skills = playerLevels ? owned?.skills ?? crew.base_skills : crew.base_skills;
+	if (rarity !== crew.max_rarity && !playerLevels) {
 		const skillData = crew.skill_data.find(sk => sk.rarity === rarity);
 		if (skillData) skills = skillData.base_skills;
 	}
@@ -336,6 +340,7 @@ export const Skills = (props: SkillsProps) => {
 		.sort((a, b) => b[1].core - a[1].core);
 
 	return (
+		<React.Fragment>
 		<Segment compact textAlign='center'>
 			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', alignItems: 'center' }}>
 				{baseSkills.map(baseSkill => (
@@ -356,7 +361,15 @@ export const Skills = (props: SkillsProps) => {
 					</div>
 				}
 			</div>
+			{(!playerLevels || !owned) && <div style={{marginTop:"0.5em"}}>
+				{owned && <OwnedLabel statsPopup={true} crew={owned} />}
+			</div> ||
+			<div className='ui segment'>
+				{!!owned?.immortal && <>{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} Frozen</> : <><Icon name='check' color='green' /> Immortalized</>}</> ||  <>Level {owned?.level}</>}
+				<CrewItemsView crew={owned as PlayerCrew} />
+			</div>}
 		</Segment>
+		</React.Fragment>
 	);
 };
 
