@@ -47,7 +47,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 
 	let header = '';
 	if (voyageConfig.ship_name) header = voyageConfig.ship_name;
-	if (ship?.name && header !== '') header += ` $(ship.name)`
+	if (ship?.name && header !== '') header += ` (${ship.name})`
 	else if (ship?.name) header = ship.name;
 
 	const msgTypes = {
