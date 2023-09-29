@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Sort of a textbook behold option in the late game, Frank is generally shunned by the players who would benefit from him the most. Of course his stats aren't great as a 2016 card, but his skills line up for ideal shuttle seating and Data's household name brand will never hurt for event bonuses.
+Sort of a textbook Behold option in the late game, Frank is generally shunned by the players who would benefit from him the most. Of course his stats aren't great as a 2016 card, but his Skills line up for ideal Shuttle seating and Data's household name brand will never hurt for Event bonuses.
 
-Hollander's delectable non-HFS trait set offers him a great collection ceiling (with a vanity in tow) and has given his event history a buffer of regularity that many crew would be jealous of. While his slow arena damage may be the only attribute of his to unlock at lower star counts, his payoff at immortalization is better than his reputation may suggest.
+Hollander's delectable Trait set offers him a great Collection ceiling (with a Vanity in tow) and has given his Event history a buffer of regularity that many crew would be jealous of, and his payoff at Immortalization is better than his reputation may suggest.

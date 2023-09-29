@@ -3,7 +3,7 @@ name: Federation President Rillak
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 38
 in_portal: true
 date: 19/04/2022

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Like big brother Borgi La Forge, Geordi has plus versatility, but is lacking in power these days. Plus event chances and bad bases are an odd couple pairing that not every roster will be able to utilize, but his profile looks up from there.
+Like big brother Borgi La Forge, Geordi has plus versatility, but is lacking in power these days. Plus Event chances and bad Bases are an odd couple pairing that not every roster will be able to utilize, but his profile looks up from there.
 
-Still playable in the gauntlet thanks to a hefty ENG proficiency that's as good as it gets for beholdable options, Geordi doesn't have a ton of crit gauntlets, but certainly enough to get by, including an ENG featured 45% set. Lower level voyage ability and moderate collection value gives him a puncher's chance in almost every area and makes him a much better starter crew than late game must-have.
+Still playable in the Gauntlet in the early game thanks to a hefty ENG Proficiency, Geordi doesn't have a ton of Crit Gauntlets, but certainly enough to get by, including an ENG featured 45% set. Above-average current and future Collection value gives him a puncher's chance in almost every area and makes him a much better starter crew than late game must-have.

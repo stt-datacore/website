@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-All the best commanders kill their charges, just ask Teska. Drug lord Goran'Agar's best usability is indeed his CMD base, which has been called upon in more events than most one-offs ever see. His traits also translate into a reasonable collection profit and make him a fine delayed-value piece for players who aren't looking for immediate use out of their super rare beholds.
+All the best commanders kill their charges, just ask Teska. Drug lord Goran'Agar's best usability is indeed his CMD base, which has been called upon in more Events than most one-offs ever see. His Traits also translate into a reasonable Collection profit and make him a fine delayed-value piece for players who aren't looking for immediate use out of their Super Rare Beholds.
