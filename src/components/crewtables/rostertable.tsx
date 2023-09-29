@@ -266,7 +266,7 @@ const CrewConfigTableMaker = () => {
 			id: 'g_ranks',
 			available: true,
 			optionText: 'Show gauntlet ranks',
-			form: <p>Rankings determined by BigBook.app. For specific advice on crew to use, consult <Link to='/gauntlets'>Gauntlets</Link>.</p>,
+			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult <Link to='/gauntlets'>Gauntlets</Link>.</p>,
 			tableConfig: getRanksTableConfig('gauntlet'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='G_' />
 		},
@@ -274,7 +274,7 @@ const CrewConfigTableMaker = () => {
 			id: 'v_ranks',
 			available: true,
 			optionText: 'Show voyage ranks',
-			form: <p>Rankings determined by BigBook.app. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
