@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-One Ron Canada (what a name) brought to life this virtuous Malon from Voyager who unfortunately is only a collection popsicle stick. The lure of otherwise useful arena evasion is shot down by an attack handicap leaving his best chance at usability residing in the bowels of a Romantic/Inspiring mega where he’s a reasonable ENG option for those traits. Vets will love Fesek, new players can afford to beam him aboard at a later date.
+One Ron Canada (what a name) brought to life this virtuous Malon from Voyager who unfortunately has little to offer outside a trio of Collections in hand and one more sizable Trait just waiting for a Valentine’s Mega Event or Collection. Best Malon in the game, I say!
