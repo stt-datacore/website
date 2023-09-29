@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-He can move some hot Rolexes, but he’s not capable of helping out your roster very much. Sulu’s averaging a fraction of an event per year and has maybe two eventable traits if you squint. With lackluster metrics at every turn, the best that can be said of him is about his three collection-viable traits and cheap cost to equip.
+He can move some hot Rolexes, but he’s not capable of helping out your roster very much. Sulu’s averaging a fraction of an Event per year and has maybe three viable Traits if you squint. With lackluster metrics at every turn, the best that can be said of him is about his three Collection-viable traits and cheap cost to equip.

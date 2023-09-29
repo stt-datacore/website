@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Offering at least a little bit of something in all corners except the gauntlet, Mayweather is a crew who really needs all four stars to measure up to his overall rating. Driven mostly by base and voyage metrics, if you're looking at him as a behold choice, consider if what he offers will still be relevant for you by the time you finish him.
-
-If you do fuse him early, however, there's enough juice for fringe daily use spanning shuttles, arena, and voyages with his more lasting contributions coming on weekend shuttles and his thin but tangible collection value.
+The little brother to Fleet Boss Battles rockstar TACO Mayweather, Mirror Mayweather is less than a pale approximation. A strong SEC Base for Shuttles when he is summoned to weekend duty, he also has a four Collection ceiling to go with a decent Ship Ability, giving an Attack Boost at a slow 10s Activation,

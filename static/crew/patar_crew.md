@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-To boil things down to brass tacks, just as Patar would want it, this card has strong voyage and base metrics with a collection attached. A galaxy event was the right place to debut her and new players will benefit most from her four copies, while established rosters will take the perfunctory notch on the Vulcan collection for their weekend efforts.
+To boil things down to brass tacks, just as Patar would want it, this card is an Event/Collection combo with strong Bases to contribute when Traits call her name on the weekend. Anywhere from three to five could be her Collection cap.
