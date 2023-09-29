@@ -20,10 +20,10 @@ import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { TinyStore } from '../utils/tiny';
 
 const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
+	{ key: '0', value: 10, text: '10' },
+	{ key: '1', value: 25, text: '25' },
+	{ key: '2', value: 50, text: '50' },
+	{ key: '3', value: 100, text: '100' }
 ];
 
 type CiteOptimizerProps = {
@@ -79,7 +79,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,
-			paginationRows: 20,
+			paginationRows: this.tiny.getValue<number>('paginationRows', 25) ?? 25,
 			citeData: undefined,
 			currentCrew: undefined,
 			touchCrew: undefined,
@@ -174,9 +174,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	cc = false;
 
-	private createStateAccessors<T>(name): [T, (value: T) => void] { return [
+	private createStateAccessors<T>(name: string, persist?: boolean): [T, (value: T) => void] { return [
 		this.state[name],
-		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
+		persist ? 
+		(value: T) => {
+			this.tiny.setValue(name, value, true);
+			this.setState((prevState) => { prevState[name] = value; return prevState; });
+		} 
+		:
+		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })	
 	] };
 
 	renderVoyageGroups(data: CiteData, confine?: string[]) {
@@ -460,7 +466,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (!data || !this.context.player.playerData) return <></>;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
-		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows');
+		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows', true);
 		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
 		const engine = this.state.citeMode?.engine ?? 'original';
 
@@ -678,13 +684,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 12 : 9}>
+							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+
 							<Pagination
 								totalPages={totalPages}
 								activePage={paginationPage}
 								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
 							/>
-							<span style={{ paddingLeft: '2em' }}>
-								Rows per page:{' '}
+							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+								
+								<div style={{marginRight:"0.5em"}}>Rows per page:</div>
 								<Dropdown
 									inline
 									options={pagingOptions}
@@ -695,7 +704,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										setPaginationRows(value as number);
 									}}
 								/>
-							</span>
+							</div>
+							</div>
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
