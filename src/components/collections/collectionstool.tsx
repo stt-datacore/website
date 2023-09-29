@@ -73,7 +73,7 @@ const CollectionsTool = () => {
 	});
 
 	const playerCollections = allCollections.map(ac => {
-		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0 };
+		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0, milestones: ac.milestones };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
 			if (pc) collection = { ...collection, ...JSON.parse(JSON.stringify(pc)) };

@@ -2480,7 +2480,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								display:"flex",
 								flexDirection:"row", 
 								alignItems:"center"}}>
-									{this.context.player.playerData?.player.display_name}
+									{this.context.player.playerData?.player.character.display_name}
 									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
 							</div>
 							<span>
