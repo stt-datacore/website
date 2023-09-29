@@ -333,7 +333,7 @@ export const Skills = (props: SkillsProps) => {
 		if (!debasedCrew.base_skills[skill])
 			delete debasedCrew.base_skills[skill];
 	});
-	const buffedSkills = buffConfig ? applyCrewBuffs(debasedCrew, buffConfig) : undefined;
+	const buffedSkills = (!!buffConfig && !playerLevels) ? applyCrewBuffs(debasedCrew, buffConfig) : undefined;
 
 	const baseSkills = Object.entries(buffedSkills ?? skills)
 		.filter(base_skills => !!base_skills[1])
