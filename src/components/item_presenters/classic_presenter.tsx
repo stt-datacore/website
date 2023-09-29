@@ -319,8 +319,11 @@ type SkillsProps = {
 export const Skills = (props: SkillsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { buffConfig } = globalContext.player;
-	const { playerLevels, crew, rarity, compact } = props;
+	const { crew, rarity, compact } = props;
 	const owned = globalContext.player.playerData?.player.character.crew.find(f => f.symbol === crew.symbol);
+
+	const playerLevels = !!props.playerLevels && !!owned;
+
 	let skills = playerLevels ? owned?.skills ?? crew.base_skills : crew.base_skills;
 	if (rarity !== crew.max_rarity && !playerLevels) {
 		const skillData = crew.skill_data.find(sk => sk.rarity === rarity);
