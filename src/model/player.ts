@@ -552,11 +552,11 @@ export interface Player {
     /** Used internally. Not part of source data.  */
     voyagesImproved?: string[];
     /** Used internally. Not part of source data.  */
-    amTraits?: number;
+    amTraits?: string[];
     /** Used internally. Not part of source data.  */
     voyScores?: { [key: string]: number };
     /** Used internally. Not part of source data.  */
-    collectionsIncreased?: number;
+    collectionsIncreased?: string[];
 
     /** Used internally. Not part of source data.  */
     ssId?: string;
