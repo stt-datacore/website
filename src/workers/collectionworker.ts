@@ -34,7 +34,7 @@ const CollectionOptimizer = {
                 let fstep1 =
                     playerData?.player?.character.crew
                         .concat(
-                            mapFilter?.collectionsFilter?.length
+                            (!!mapFilter?.collectionsFilter?.length || !!searches?.length)
                                 ? playerData?.player?.character.unOwnedCrew ?? []
                                 : []
                         )
@@ -83,7 +83,7 @@ const CollectionOptimizer = {
                                 let fr = crew.collections.some((fc) => fc == col);
 
                                 if (fr) {
-                                    if (mapFilter?.collectionsFilter?.length) {
+                                    if (!!mapFilter?.collectionsFilter?.length || !!searches?.length) {
                                         if (ownedFilter === "unowned" && !!crew.have) return false;
                                         if (ownedFilter.slice(0, 5) === "owned" && !crew.have)
                                             return false;
@@ -99,7 +99,7 @@ const CollectionOptimizer = {
                         } as CollectionMap;
                     })
                     .filter((fc) => {
-                        if (fc.crew.length < (fc.collection.needed ?? 0)) return false;
+                        if (fc.crew.length < (fc.collection.needed ?? 0) && !searchFilter?.length) return false;
                         if (!fc.collection.milestone.goal) return false;
                         return true;
                     });
@@ -108,7 +108,7 @@ const CollectionOptimizer = {
                     col.crew.forEach((a) => {
                         let acount =
                             a.collections.filter((afc) =>
-                                playerCollections.find((cmf) => cmf.needed && cmf.name === afc)
+                                playerCollections.find((cmf) => !!cmf.needed && cmf.name === afc && cmf.claimable_milestone_index !== undefined)
                             )?.length ?? 1;
                         a.pickerId = acount;
                     });

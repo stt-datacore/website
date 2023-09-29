@@ -63,7 +63,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{!mapFilter?.collectionsFilter?.length && 
+			{!mapFilter?.collectionsFilter?.length && !searchFilter?.length &&
 				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 					The grouped collection view shows only owned crew if the collections list is not filtered.
 				</i>}
