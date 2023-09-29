@@ -1,9 +1,10 @@
 import React from 'react';
-import { Form, Dropdown, Icon, Label, Rating } from 'semantic-ui-react';
+import { Form, Dropdown, Icon, Label, Rating, Popup } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
 import { CompletionState, PlayerCrew } from '../../model/player';
 import { IRosterCrew } from './model';
+import { Skills } from '../item_presenters/classic_presenter';
 
 export interface TraitOptions {
 	key: string;
@@ -179,8 +180,8 @@ export const PortalFilter = (props: CrewPortalFilterProps) => {
 	);
 };
 
-export const OwnedLabel = (props: { crew: IRosterCrew }) => {
-	const { crew } = props;
+export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) => {
+	const { statsPopup, crew } = props;
 
 	if (crew.any_immortal) {
 		return (
@@ -192,9 +193,19 @@ export const OwnedLabel = (props: { crew: IRosterCrew }) => {
 	}
 
 	return (
+		<>{statsPopup && 
+		<Popup trigger={
+			<Label style={{ whiteSpace: 'nowrap' }}>
+				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
+				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
+			</Label>
+			} 
+			content={<Skills playerLevels={true} compact crew={crew} rarity={crew.rarity} />} 
+		/> ||
 		<Label style={{ whiteSpace: 'nowrap' }}>
-			Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
-			{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
-		</Label>
+				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
+				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
+			</Label>
+		}</>
 	);
 };
