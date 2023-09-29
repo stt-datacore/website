@@ -298,16 +298,16 @@ const BetaTachyon = {
             }
 
             const getDistanceFromTop = (item: CrewMember, topCrew: { [key: string]: CrewMember | CrewMember[] }) => {
-                let skp = printSkillOrder(item);
-                let sko = getSortedSkills(item);  
+                let printedOrder = printSkillOrder(item);
+                let ordered = getSortedSkills(item);  
                 let lvls = [] as number[]
-                sko.skills.forEach(skv => {
-                    let sm = skv.skill + "_skill";
-                    if (skp in topCrew && "length" in topCrew[skp]) {
-                        lvls.push(skillScore(item[sm]) / skillScore(topCrew[skp][0][sm]));
+                ordered.skills.forEach(skv => {
+                    let skill = skv.skill + "_skill";
+                    if (printedOrder in topCrew && "length" in topCrew[printedOrder]) {
+                        lvls.push(skillScore(item[skill]) / skillScore(topCrew[printedOrder][0][skill]));
                     }
                     else {
-                        lvls.push(skillScore(item[sm]) / skillScore(topCrew[sm][sm]));
+                        lvls.push(skillScore(item[skill]) / skillScore(topCrew[skill][skill]));
                     }                    
                 });                
                 return lvls.reduce((p, n) => p + n, 0) / 3;
@@ -458,7 +458,7 @@ const BetaTachyon = {
                     // Base Power Score
                     power: 2,
                     // Effort To Max
-                    evRemaining: 0.75,
+                    citeEffort: 0.75,
                     // Antimatter Traits
                     antimatter: 0.1,
                     // In Portal Now
@@ -477,17 +477,17 @@ const BetaTachyon = {
 
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
                 let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
-                let remp = multConf.evRemaining * (1 - ((crew.totalEVRemaining ?? 0) / maxremain));
+                let effort = multConf.citeEffort * ((crew.rarity / crew.max_rarity));
                 let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
                 let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
                 let nscore = isNever(crew) ? multConf.never : 0;
                 let ciscore = multConf.collections * ((crew.collectionsIncreased?.length ?? 0) / (maxcols ? maxcols : 1));
                 let skrare = multConf.skillRare * (1 / skillOrderCrew[printSkillOrder(crew)].length);
 
-                let fin = (100 * (skrare + improve + totalp + remp + pscore + nscore + ciscore)) / 7;
+                let fin = (100 * (skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 7;
                 
-                let adist = crew.score ? (crew.score * multConf.score) : 1;
-                let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
+                let adist = crew.score ? (crew.score / multConf.score) : 1;
+                let adist2 = crew.scoreTrip ? (crew.scoreTrip / multConf.triplet) : 1;
 
                 fin += (amscore * fin);
                 fin *= ((adist + adist2) / 2);
