@@ -7,8 +7,8 @@ import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 
 import { StatLabelProps } from '../components/statlabel';
-import { getSkillOrder, navToCrewPage, printPortalStatus } from '../utils/crewutils';
-import { CrewMember } from '../model/crew';
+import { getSkillOrder, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { CrewMember, Skill } from '../model/crew';
 import { CiteEngine, CiteMode, PlayerCrew } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
@@ -19,7 +19,8 @@ import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { TinyStore } from '../utils/tiny';
 import BetaTachyonSettingsPopup, { defaultSettings } from './optimizer/btsettings';
-import { BetaTachyonSettings } from '../model/worker';
+import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
+import CONFIG from './CONFIG';
 
 const pagingOptions = [
 	{ key: '0', value: 10, text: '10' },
@@ -31,17 +32,6 @@ const pagingOptions = [
 type CiteOptimizerProps = {
 };
 
-export interface VoyageImprovement {
-	voyage: string;
-	crew: PlayerCrew[];
-	maxEV: number;
-	remainingEV: number;
-}
-
-export interface CiteData {
-	crewToCite: PlayerCrew[];
-	crewToTrain: PlayerCrew[];
-}
 interface SymCheck { symbol: string, checked: boolean };
 
 type CiteOptimizerState = {
@@ -58,6 +48,8 @@ type CiteOptimizerState = {
 	checks?: SymCheck[];
 	settingsOpen: boolean;
 	betaTachyonSettings: BetaTachyonSettings;
+	skoMap: { [key: string]: SkillOrderRarity }
+	crewSkills: { [key: string]: string };
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -81,7 +73,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
-
+		
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,
@@ -96,7 +88,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
 			},
 			settingsOpen: false,
-			betaTachyonSettings: this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings
+			betaTachyonSettings: this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings,
+			skoMap: {},
+			crewSkills: {}
 		};
 	}
 
@@ -120,7 +114,21 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	componentDidMount() {
 		const { citeMode } = this.state;
-		this.runWorker(citeMode);
+		if (!this.lastCiteMode) {
+			const crewsk = {} as { [key: string]: string };
+			for (let crew of this.context.core.crew) {
+				let sko = printSkillOrder(crew).replace(/_skill/g, '');
+				crewsk[crew.symbol] = sko;
+				
+			}
+			this.setState({ ... this.state, crewSkills: crewsk });
+			window.setTimeout(() => {
+				this.runWorker(citeMode);
+			});
+		}
+		else {
+			this.runWorker(citeMode);
+		}
 	}
 
 	componentDidUpdate(prevProps: Readonly<CiteOptimizerProps>, prevState: Readonly<CiteOptimizerState>, snapshot?: any): void {
@@ -185,18 +193,44 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const engine = this.state.citeMode?.engine ?? "original";
 		if (playerData) playerData.citeMode = citeMode;
 
-		worker.addEventListener('message', (message: { data: { result: any; }; }) => this.setState({ citeData: message.data.result }));
+		worker.addEventListener('message', (message: { data: { result: any; }; }) => {
+			const result = message.data.result as CiteData;
+
+			if (engine === 'beta_tachyon_pulse') {
+				let skmap = {} as { [key: string]: SkillOrderRarity };		
+				result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
+				this.setState({ citeData: result, skoMap: skmap });	
+			}
+			else {
+				this.setState({ citeData: result });	
+			}
+
+		});
 
 		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
 
-		worker.postMessage({
-			worker: workerName,
-			playerData,
-			allCrew,
-			collections,
-			buffs: buffConfig,
-			settings: this.state.betaTachyonSettings
-		});
+		if (engine === 'original') {
+			worker.postMessage({
+				worker: workerName,
+				playerData,
+				allCrew,
+				collections,
+				buffs: buffConfig
+			});
+		}
+		else {
+			worker.postMessage({
+				worker: workerName,
+				config: { 
+					playerData,
+					inputCrew: allCrew,
+					collections,
+					buffs: buffConfig,
+					settings: this.state.betaTachyonSettings	
+				} as BetaTachyonRunnerConfig
+			});	
+		}
+
 	}
 
 	cc = false;
@@ -419,10 +453,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	}
 
 	sortcrew = (crew: PlayerCrew[], training: boolean, engine: 'original' | 'beta_tachyon_pulse') => {
-		const { sort, direction } = this.state;
+		const { crewSkills, sort, direction, skoMap } = this.state;
 
 		if (!sort || !direction) return crew;
-			
+
 		return crew.sort((a, b) => {
 			let r = 0;
 			
@@ -457,9 +491,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				r = (a.collectionsIncreased?.length ?? 0) - (b.collectionsIncreased?.length ?? 0);
 			}
 			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
-				let ska = getSkillOrder(a).join("/");
-				let skb = getSkillOrder(b).join("/");
-				r = ska.localeCompare(skb);
+				let ska = crewSkills[a.symbol];
+				let skb = crewSkills[b.symbol];
+				r = skoMap[ska].count - skoMap[skb].count;
 				if (!r) {
 					r = (a.scoreTrip ?? 0) - (b.scoreTrip ?? 0);
 					if (direction === 'ascending') r *= -1;
@@ -496,7 +530,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows', true);
 		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
 		const engine = this.state.citeMode?.engine ?? 'original';
-
+		const skoMap = this.state.skoMap;
 		const baseRow = (paginationPage - 1) * paginationRows;
 		const totalPages = Math.ceil(data.length / paginationRows);
 		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
@@ -590,7 +624,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
 						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
 
-						return (crew &&
+						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
+						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
+
+						return (crew && sko && skp &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
 
 								<Table.Cell>{row.pickerId}</Table.Cell>
@@ -669,26 +706,52 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 													justifyContent: "space-evenly",
 													alignItems: "center"
 												}}>
-												{getSkillOrder(row).map((mskill, idx) => (
-												<img
-													title={appelate(mskill)}
-													key={"skimage"+idx+mskill}
-													src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`}
-													style={{
-														maxHeight: "1.5em",
-														maxWidth: "1.5em",
-														margin: "0.5em",
-													}}
+													{getSkillOrder(row).map((mskill, idx) => (
+													<img
+														title={appelate(mskill)}
+														key={"skimage"+idx+mskill}
+														src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${mskill}.png`}
+														style={{
+															maxHeight: "1.5em",
+															maxWidth: "1.5em",
+															margin: "0.5em",
+														}}
 
-												/>))}
+													/>))}
 												</div>
 
-												<i style={{
-													fontSize: "0.75em",
-													fontWeight: "bold",
-													color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
-													}}>{Math.floor(100 * (row?.scoreTrip ?? 0)) / 10}</i>
-
+												<div>
+													<Popup trigger={
+														<div style={{textAlign:'center'}}>
+															<hr style={{width: "100px", height:"2px", borderRadius:"2px"}} color={CONFIG.RARITIES[skoMap[skp].rarity].color} />
+															<i style={{
+																fontSize: "0.75em",
+																fontWeight: "bold",
+																color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
+																}}>
+																{Math.floor(100 * (row?.scoreTrip ?? 0)) / 10} / 10
+															</i>
+														</div>
+														//<Rating icon='star' size='mini' style={{color: CONFIG.RARITIES[skoMap[skp].rarity].color}} disabled rating={skoMap[skp].rarity} maxRating={5} />
+														} 
+														content={
+															<div>
+																<b>Skill Order:</b><br/>
+																<b style={{color: CONFIG.RARITIES[skoMap[skp].rarity].color}}>{CONFIG.RARITIES[skoMap[skp].rarity].name}</b>
+																{skoMap[skp].skills.map((sk, idx) => <div key={sk+idx.toString()}>{idx+1}. {appelate(sk)}</div>)}
+																<hr />
+																<div>Crew Rank: <i style={{																
+																	fontWeight: "bold",
+																	color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
+																	}}>
+																	{Math.floor(100 * (row?.scoreTrip ?? 0)) / 10} / 10
+																	</i>
+																</div>
+																<div>Total Crew: <b>{skoMap[skp].count}</b></div>
+															</div>
+														} />
+													
+												</div>
 											</div>
 										</div>
 										</Table.Cell>

@@ -1,9 +1,10 @@
 import { BossBattlesRoot } from "./boss";
-import { BaseSkills, Skill } from "./crew";
+import { BaseSkills, CrewMember, Skill } from "./crew";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
+import { Collection } from "./game-elements";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -173,4 +174,33 @@ export interface BetaTachyonSettings {
     triplet: number,
     // Magic number
     magic: number
+}
+
+export interface SkillOrderRarity {
+    skillorder: string;
+    skills: string[];
+    rarity: number;
+    count: number;
+}
+
+export interface BetaTachyonRunnerConfig {
+    playerData: PlayerData;
+    collections: Collection[];
+    inputCrew: CrewMember[];
+    buffs: BuffStatTable;
+    settings: BetaTachyonSettings;
+}
+
+
+export interface VoyageImprovement {
+	voyage: string;
+	crew: PlayerCrew[];
+	maxEV: number;
+	remainingEV: number;
+}
+
+export interface CiteData {
+	crewToCite: PlayerCrew[];
+	crewToTrain: PlayerCrew[];
+    skillOrderRarities: SkillOrderRarity[];
 }
