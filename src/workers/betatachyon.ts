@@ -2,7 +2,7 @@ import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { Collection } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
-import { BetaTachyonSettings } from "../model/worker";
+import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
 import { BuffStatTable } from "../utils/voyageutils";
 
 interface CrewSkill {
@@ -79,13 +79,14 @@ const lookupTrait = (trait: string) => {
 
 const BetaTachyon = {        
 
-    scanCrew: (playerData: PlayerData, collections: Collection[], inputCrew: CrewMember[], buffs: BuffStatTable, settings: BetaTachyonSettings) => {
-        
+    scanCrew: (config: BetaTachyonRunnerConfig) => {
+
+        const { collections, inputCrew, buffs, settings } = config;        
         const magic = settings.magic;
 
-        return new Promise((resolve, reject) => {
+        let { playerData } = config;
 
-
+        return new Promise<CiteData>((resolve, reject) => {
             function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
                 const getMultiplier = (skill: string, stat: string) => {
                     return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
@@ -345,13 +346,37 @@ const BetaTachyon = {
             });
             
             const uniqueSkillOrders = [] as string[];
+            const skillRare = [] as SkillOrderRarity[];
 
             allCrew.forEach(ac => {
                 let csk = printSkillOrder(ac);
                 if (!uniqueSkillOrders.includes(csk)) {
                     uniqueSkillOrders.push(csk);
                 }
-            })
+                let fo = skillRare.find(sr => sr.skillorder === csk);
+                if (!fo) {
+                    skillRare.push({
+                        skillorder: csk,
+                        skills: getSkillOrder(ac),
+                        rarity: 0,
+                        count: 1
+                    });
+                }
+                else {
+                    fo.count++;
+                }
+            });
+
+            skillRare.sort((a, b) => a.count - b.count);
+
+            let max = skillRare.reduce((p, n) => Math.max(p ?? 0, n?.count ?? 0), 0);
+            let min = skillRare.reduce((p, n) => Math.min(p ?? 0, n?.count ?? 0), allCrew.length);
+
+            // let median = skillRare[Math.floor((skillRare.length - 1) / 2)].count;
+
+            skillRare.forEach((sr) => {
+                sr.rarity = Math.ceil((1 - ((sr.count - min) / (max - min))) * 5);
+            });
 
             Object.keys(CONFIG.SKILLS).forEach((skill) => {
                 const fcrew = allCrew.filter(fc => skill in fc && !!fc[skill].core).sort((a, b) => skillScore(b[skill]) - skillScore(a[skill]));
@@ -509,8 +534,9 @@ const BetaTachyon = {
             
             resolve({
                 crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => JSON.parse(JSON.stringify(nc))),
-                crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc)))
-            });
+                crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc))),
+                skillOrderRarities: skillRare
+            } as CiteData);
         });
     },
     
