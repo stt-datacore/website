@@ -2509,15 +2509,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
-						alignItems: "center",
-						cursor: "pointer"
+						alignItems: "center"
 					}}>
-						<a
-							style={{color: foreColor, textDecoration: "underline"}}
-							target='_blank'
-							href={`https://www.bigbook.app/ratings/gauntlet?search=${encodeURI(crew.name)}`}
-							title={`Big Book Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
-						>{rnk}</a>
+						<div
+							style={{color: foreColor}}
+							title={`Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
+						>{rnk}</div>
 					</div>
 					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
 						<ItemDisplay
