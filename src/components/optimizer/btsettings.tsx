@@ -112,7 +112,8 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 		>
 			<Modal.Header>
                 <React.Fragment>
-                    Calculator Settings
+                    Beta Tachyon Pulse Settings Tweaker<br />
+                    <sub style={{fontStyle:'italic'}}>(The number indicates the weight applied to each characteristic)</sub>
                 </React.Fragment>
 			</Modal.Header>
 			<Modal.Content scrolling>
@@ -176,7 +177,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             maxHeight: '15em'
         }}>
                 <div style={rowStyle}>
-                    <div style={textStyle}>Measure Limit:</div>
+                    <div style={textStyle}>Measure Limit<br />(Magic Number):</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
