@@ -13,7 +13,7 @@ import { CiteEngine, CiteMode, PlayerCrew } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { GlobalContext } from '../context/globalcontext';
-import { PortalFilter, RarityFilter } from './crewtables/commonoptions';
+import { PortalFilter, RarityFilter, descriptionLabel } from './crewtables/commonoptions';
 import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
@@ -617,7 +617,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'stats' }}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 										</div>
-
+										<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, false)}</div>
 									</div>
 								</Table.Cell>
 								<Table.Cell>
