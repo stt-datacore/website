@@ -18,7 +18,7 @@ self.addEventListener('message', message => {
       postResult(estimate, false)
     ),
     'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
-    'ironywrit': () => BetaTachyon.scanCrew(message.data.playerData, message.data.collections, message.data.allCrew, message.data.buffs).then(data => postResult(data, false)),
+    'ironywrit': () => BetaTachyon.scanCrew(message.data.playerData, message.data.collections, message.data.allCrew, message.data.buffs, message.data.settings).then(data => postResult(data, false)),
     'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
     'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
     'iampicard': () => voymod().then(mod => {
