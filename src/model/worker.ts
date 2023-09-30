@@ -149,3 +149,28 @@ export interface EquipmentWorkerConfig {
 export interface EquipmentWorkerResults {
     items: (EquipmentCommon | EquipmentItem)[];
 }
+
+export interface BetaTachyonSettings {
+    // Voyages Improved
+    improved: number,
+    // Base Power Score
+    power: number,
+    // Effort To Max
+    citeEffort: number,
+    // Antimatter Traits
+    antimatter: number,
+    // Not In Portal Now
+    portal: number,
+    // In Portal Ever
+    never: number,
+    // Stat-Boosting Collections Increased
+    collections: number,
+    // Skill-Order Rarity
+    skillRare: number,
+    // Overall Roster Power Rank
+    score: number,
+    // Power Rank Within Skill Order
+    triplet: number,
+    // Magic number
+    magic: number
+}

@@ -18,6 +18,8 @@ import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { TinyStore } from '../utils/tiny';
+import BetaTachyonSettingsPopup, { defaultSettings } from './optimizer/btsettings';
+import { BetaTachyonSettings } from '../model/worker';
 
 const pagingOptions = [
 	{ key: '0', value: 10, text: '10' },
@@ -41,6 +43,7 @@ export interface CiteData {
 	crewToTrain: PlayerCrew[];
 }
 interface SymCheck { symbol: string, checked: boolean };
+
 type CiteOptimizerState = {
 	citePage: number;
 	trainingPage: number;
@@ -53,6 +56,8 @@ type CiteOptimizerState = {
 	sort?: string;
 	direction?: 'ascending' | 'descending';
 	checks?: SymCheck[];
+	settingsOpen: boolean;
+	betaTachyonSettings: BetaTachyonSettings;
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -67,6 +72,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 		);
 	}
 }
+
 class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
@@ -88,8 +94,28 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			citeMode: {
 				rarities: [],
 				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
-			}
+			},
+			settingsOpen: false,
+			betaTachyonSettings: this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings
 		};
+	}
+
+	readonly getSettingsOpen = () => {
+		return this.state.settingsOpen;
+	}
+	readonly setSettingsOpen = (value: boolean) => {
+		this.setState({ ... this.state, settingsOpen: value });
+	}
+
+	readonly setSettings = (value: BetaTachyonSettings) => {
+		if (JSON.stringify(value) !== JSON.stringify(this.state.betaTachyonSettings)) {
+			this.tiny.setValue('betaTachyonSettings', value, true);
+			this.setState({ ...this.state, betaTachyonSettings: value, citeData: undefined });
+			window.setTimeout(() =>{
+				const { citeMode } = this.state;
+				this.runWorker(citeMode);
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -168,7 +194,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			playerData,
 			allCrew,
 			collections,
-			buffs: buffConfig
+			buffs: buffConfig,
+			settings: this.state.betaTachyonSettings
 		});
 	}
 
@@ -895,6 +922,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					<h3>Engine</h3>
 					<div style={{
 						display: "flex",
+						alignItems: "center",
+						gap: "1em",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
 					}}>
 						<Dropdown
@@ -907,6 +936,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							}}
 							/>
 
+						{engine === 'beta_tachyon_pulse' && 
+						
+						<BetaTachyonSettingsPopup
+							isOpen={this.state.settingsOpen}
+							setIsOpen={this.setSettingsOpen}
+							config={{
+								current: this.state.betaTachyonSettings,
+								setCurrent: this.setSettings,
+								defaultOptions: defaultSettings
+								}} />}
 					</div>
 				</Segment>
 				<Segment>

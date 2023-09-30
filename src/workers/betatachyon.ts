@@ -2,6 +2,7 @@ import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { Collection } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
+import { BetaTachyonSettings } from "../model/worker";
 import { BuffStatTable } from "../utils/voyageutils";
 
 interface CrewSkill {
@@ -78,8 +79,10 @@ const lookupTrait = (trait: string) => {
 
 const BetaTachyon = {        
 
-    scanCrew: (playerData: PlayerData, collections: Collection[], inputCrew: CrewMember[], buffs: BuffStatTable, magic: number = 10) => {
+    scanCrew: (playerData: PlayerData, collections: Collection[], inputCrew: CrewMember[], buffs: BuffStatTable, settings: BetaTachyonSettings) => {
         
+        const magic = settings.magic;
+
         return new Promise((resolve, reject) => {
 
 
@@ -452,45 +455,43 @@ const BetaTachyon = {
             
             const scoreCrew = (crew: PlayerCrew) => {
 
-                let multConf = {
-                    // Voyages Improved
-                    improved: 1,
-                    // Base Power Score
-                    power: 2,
-                    // Effort To Max
-                    citeEffort: 0.75,
-                    // Antimatter Traits
-                    antimatter: 0.1,
-                    // In Portal Now
-                    portal: 1.5,
-                    // In Portal Ever
-                    never: 3,
-                    // Stat-Boosting Collections Increased
-                    collections: 2,
-                    // Skill-Order Rarity
-                    skillRare: 5,
-                    // Overall Roster Power Rank
-                    score: 1,
-                    // Power Rank Within Skill Order
-                    triplet: 3
-                }
+                let multConf = settings;
 
+                // more gives weight
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
-                let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
-                let effort = multConf.citeEffort * ((crew.rarity / crew.max_rarity));
-                let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
-                let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
-                let nscore = isNever(crew) ? multConf.never : 0;
-                let ciscore = multConf.collections * ((crew.collectionsIncreased?.length ?? 0) / (maxcols ? maxcols : 1));
-                let skrare = multConf.skillRare * (1 / skillOrderCrew[printSkillOrder(crew)].length);
-
-                let fin = (100 * (skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 7;
                 
-                let adist = crew.score ? (crew.score / multConf.score) : 1;
-                let adist2 = crew.scoreTrip ? (crew.scoreTrip / multConf.triplet) : 1;
+                // more gives weight
+                let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
+                
+                // less gives weight
+                let effort = multConf.citeEffort * (1 - ((crew.max_rarity - crew.rarity) / crew.max_rarity));
+                
+                // more gives weight    
+                let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
+                
+                // not in portal gives weight
+                let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
+                
+                // never gives weight
+                let nscore = isNever(crew) ? multConf.never : 0;
 
-                fin += (amscore * fin);
-                fin *= ((adist + adist2) / 2);
+                // more gives weight
+                let ciscore = multConf.collections * ((crew.collectionsIncreased?.length ?? 0) / (maxcols ? maxcols : 1));
+                
+                // less gives weight
+                let skrare = multConf.skillRare * (1 / skillOrderCrew[printSkillOrder(crew)].length);
+                
+                // more gives weight
+                let adist = crew.score ? (crew.score * multConf.score) : 1;
+
+                // more gives weight
+                let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
+
+                let fin = (100 * (amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 10;
+
+                //fin *= ((adist + adist2) / 2);
+
+                //fin += (amscore * fin);
 
                 return fin;
             }
