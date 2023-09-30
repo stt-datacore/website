@@ -210,6 +210,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 
 	React.useEffect(() => {
 		if (!strippedPlayerData) return;
+		if (globalContext.player.dataSource === 'session') return;
 		if (uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate)
 			uploadProfile();
 	}, [uploadState, strippedPlayerData]);
