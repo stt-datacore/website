@@ -46,7 +46,7 @@ export const defaultSettings = {
     // Voyages Improved
     improved: 1,
     // Base Power Score
-    power: 2,
+    power: 3,
     // Effort To Max
     citeEffort: 0.75,
     // Antimatter Traits
@@ -58,7 +58,7 @@ export const defaultSettings = {
     // Stat-Boosting Collections Increased
     collections: 2,
     // Skill-Order Rarity
-    skillRare: 5,
+    skillRare: 2,
     // Overall Roster Power Rank
     score: 1,
     // Power Rank Within Skill Order
