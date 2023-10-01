@@ -428,7 +428,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											title={"Click to see only voyages involving this crew member"}
 											style={{cursor: "pointer", margin:"0", textDecoration: "underline"}}
 											 onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
-											>{crew.voyagesImproved?.length} Voyages Improved, </span>
+											>{crew.voyagesImproved?.length} Voyages, </span>
 											{Math.ceil(crew.totalEVContribution ?? 0)} Total EV
 										</i>
 									</div>
@@ -587,7 +587,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.HeaderCell
 								onClick={(e) => sort === 'voyages' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('voyages')}
 								sorted={sort === 'voyages' ? direction : undefined}>
-							Voyages<br />Improved
+							Voyage<br />Groups
 						</Table.HeaderCell>
 						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>

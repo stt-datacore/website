@@ -169,7 +169,7 @@ const BetaTachyon = {
                 return x;
             }
             
-            function getSkillOrder(crew: PlayerCrew | CrewMember) {
+            function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
                 const sk = [] as ComputedBuff[];
                 let x = 0;
                 for (let skill of skills) {
@@ -192,14 +192,14 @@ const BetaTachyon = {
                     output.push(sk[2].skill);
                 }
 
-                return output;
+                return forceTwo ? output.slice(0, 2) : output;
             }
             
-            function printSkillOrder(crew: PlayerCrew | CrewMember) {
-                return getSkillOrder(crew).join("/");
+            function printSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
+                return getSkillOrder(crew, forceTwo).join("/");
             }
 
-            function getSortedSkills(crew: PlayerCrew | CrewMember) {
+            function getSortedSkills(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
                 const sk = [] as ComputedBuff[];
                 let x = 0;
                 for (let skill of skills) {
@@ -219,9 +219,9 @@ const BetaTachyon = {
                 if (sk.length > 1 && sk[1].skill) {
                     output.skills.push({ ... sk[1] });
                 }
-                if (sk.length > 2 && sk[2].skill) {
+                if (!forceTwo && (sk.length > 2 && sk[2].skill)) {
                     output.skills.push({ ... sk[2] });
-                }
+                }                
 
                 return output;
             }
@@ -240,9 +240,9 @@ const BetaTachyon = {
                 return ovoys;
             }
 
-            const findBest = (crew: PlayerCrew[], skills: string[], top: number) => {
+            const findBest = (crew: PlayerCrew[], skills: string[], top: number, forceTwo?: boolean) => {
                 
-                if (skills.length === 2) {                
+                if (skills.length === 2 || forceTwo) {                
                     const skillcrew = crew.filter(crew => skills[0] in crew && crew[skills[0]].core && skills[1] in crew && crew[skills[1]].core)
                         .sort((a, b) => {
                             return (skillScore(b[skills[0]]) + skillScore(b[skills[1]])) - (skillScore(a[skills[0]]) + skillScore(a[skills[1]]));                                
@@ -346,16 +346,23 @@ const BetaTachyon = {
             });
             
             const uniqueSkillOrders = [] as string[];
-            const skillRare = [] as SkillOrderRarity[];
+            const uniqueTwoSkills = [] as string[];
+            const tripleRare = [] as SkillOrderRarity[];
+            const doubleRare = [] as SkillOrderRarity[];
 
             allCrew.forEach(ac => {
                 let csk = printSkillOrder(ac);
+                let dsk = printSkillOrder(ac, true);
                 if (!uniqueSkillOrders.includes(csk)) {
                     uniqueSkillOrders.push(csk);
                 }
-                let fo = skillRare.find(sr => sr.skillorder === csk);
+                if (!uniqueTwoSkills.includes(dsk)) {
+                    uniqueTwoSkills.push(dsk);
+                }
+
+                let fo = tripleRare.find(sr => sr.skillorder === csk);
                 if (!fo) {
-                    skillRare.push({
+                    tripleRare.push({
                         skillorder: csk,
                         skills: getSkillOrder(ac),
                         rarity: 0,
@@ -365,16 +372,35 @@ const BetaTachyon = {
                 else {
                     fo.count++;
                 }
+
+                fo = doubleRare.find(sr => sr.skillorder === dsk);
+                if (!fo) {
+                    doubleRare.push({
+                        skillorder: dsk,
+                        skills: getSkillOrder(ac, true),
+                        rarity: 0,
+                        count: 1
+                    });
+                }
+                else {
+                    fo.count++;
+                }
             });
 
-            skillRare.sort((a, b) => a.count - b.count);
+            tripleRare.sort((a, b) => a.count - b.count);
+            doubleRare.sort((a, b) => a.count - b.count);
 
-            let max = skillRare.reduce((p, n) => Math.max(p ?? 0, n?.count ?? 0), 0);
-            let min = skillRare.reduce((p, n) => Math.min(p ?? 0, n?.count ?? 0), allCrew.length);
+            let max = tripleRare.reduce((p, n) => Math.max(p ?? 0, n?.count ?? 0), 0);
+            let min = tripleRare.reduce((p, n) => Math.min(p ?? 0, n?.count ?? 0), allCrew.length);
 
-            // let median = skillRare[Math.floor((skillRare.length - 1) / 2)].count;
+            tripleRare.forEach((sr) => {
+                sr.rarity = Math.ceil((1 - ((sr.count - min) / (max - min))) * 5);
+            });
 
-            skillRare.forEach((sr) => {
+            max = doubleRare.reduce((p, n) => Math.max(p ?? 0, n?.count ?? 0), 0);
+            min = doubleRare.reduce((p, n) => Math.min(p ?? 0, n?.count ?? 0), allCrew.length);
+
+            doubleRare.forEach((sr) => {
                 sr.rarity = Math.ceil((1 - ((sr.count - min) / (max - min))) * 5);
             });
 
@@ -503,9 +529,25 @@ const BetaTachyon = {
                 // more gives weight
                 let ciscore = multConf.collections * ((crew.collectionsIncreased?.length ?? 0) / (maxcols ? maxcols : 1));
                 
-                // less gives weight
-                let skrare = multConf.skillRare * (1 / skillOrderCrew[printSkillOrder(crew)].length);
-                
+                let sko = printSkillOrder(crew);
+                let skd = printSkillOrder(crew, true);
+
+                let tr = tripleRare.find(f => f.skillorder === sko);
+                let db = doubleRare.find(f => f.skillorder === skd);
+
+                let skrare = 0;
+                let trrare = 0;
+                let dbrare = 0;
+
+                if (tr && db) {
+                    // less gives weight
+                    trrare = multConf.skillRare * (1 / tr.count);
+                    
+                    // less gives weight
+                    dbrare = multConf.skillRare * (db.count / 100);
+                    skrare = trrare - dbrare;
+                }
+
                 // more gives weight
                 let adist = crew.score ? (crew.score * multConf.score) : 1;
 
@@ -535,7 +577,7 @@ const BetaTachyon = {
             resolve({
                 crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => JSON.parse(JSON.stringify(nc))),
                 crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc))),
-                skillOrderRarities: skillRare
+                skillOrderRarities: tripleRare
             } as CiteData);
         });
     },
