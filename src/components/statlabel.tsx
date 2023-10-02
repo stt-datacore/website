@@ -6,7 +6,7 @@ import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 const isWindow = typeof window !== 'undefined';
 
 export type StatLabelProps = {
-	title: string;
+	title: string | JSX.Element;
 	value: number | string | JSX.Element;
 	size?: 'small' | 'medium' | 'large' | 'jumbo'
 };
