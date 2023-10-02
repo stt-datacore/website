@@ -4,7 +4,7 @@ import { ShipAction } from "./ship";
 
 export interface BossBattlesRoot {
 	env: BossConfig
-	statuses: FleetBoss[]
+	statuses: Status[]
 	fleet_boss_battles_energy: Energy
 	groups: BossGroup[]
 }
@@ -14,7 +14,7 @@ export interface BossConfig {
 	battle_start_restricted_by_rank: boolean
 }
 
-export interface FleetBoss {
+export interface Status {
 	desc_id: number
 	symbol: string
 	group: string
@@ -149,17 +149,25 @@ export interface BossGroup {
 
 /** Boss Battle Engine Models Start Here */
 
+export interface BossBattle {
+	id: number;	// equivalent to ephemeral/fbbRoot/statuses/id
+	fleetId: number;
+	bossGroup: string;
+	difficultyId: number;
+	chainIndex: number;
+	chain: Chain;
+	description: string;	// Boss, Difficulty
+};
+
 export interface Chain {
 	id: string;
-	source: string;
-	difficultyId: number;
 	traits: string[];
 	nodes: ComboNode[];
-	description: string;
 }
 
 export interface UserPreferences {
 	view: string;
+	pollInterval: number;
 }
 
 export interface SpotterPreferences {
@@ -243,7 +251,6 @@ export interface Solve {
 
 export interface Solver {
 	id: string;
-	description: string;
 	nodes: SolverNode[];
 	traits: SolverTrait[];
 	crew: BossCrew[];
@@ -265,6 +272,7 @@ export interface Spotter {
 	id: string;
 	solves: Solve[];
 	attemptedCrew: string[];
+	pendingCrew: string[];
 	ignoredTraits: string[];
 }
 
@@ -347,3 +355,21 @@ export interface RarityStyle {
 	background: string;
 	color: string;
 }
+
+export interface Collaboration {
+	bossBattleId: number;	// Same as bossBattle.id
+	fleetId: number;
+	bossGroup: string;
+	difficultyId: number;
+	chainIndex: number;
+	chain: Chain;
+	description: string;
+	roomCode: string;
+	solves: Solve[];
+	trials: CrewTrial[];
+};
+
+export interface CrewTrial {
+	crewSymbol: string;
+	trialType: string;
+};

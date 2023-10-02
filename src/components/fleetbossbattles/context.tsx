@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BossCrew, ExportPreferences, SoloPreferences, SpotterPreferences, UserPreferences } from '../../model/boss';
+import { BossBattle, BossCrew, ExportPreferences, SoloPreferences, Spotter, SpotterPreferences, UserPreferences } from '../../model/boss';
 
 export interface IUserContext {
 	userType: 'player' | 'nonplayer';
@@ -16,3 +16,16 @@ export interface IUserContext {
 };
 
 export const UserContext = React.createContext<IUserContext>({} as IUserContext);
+
+export interface ISolverContext {
+	bossBattleId: number;
+	bossBattle: BossBattle;
+	spotter: Spotter;
+	setSpotter: (spotter: Spotter) => void;
+	collaboration?: {
+		roomCode: string;
+		userRole: 'player' | 'anonymous';
+	};
+};
+
+export const SolverContext = React.createContext<ISolverContext>({} as ISolverContext);

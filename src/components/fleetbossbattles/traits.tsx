@@ -4,6 +4,8 @@ import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popu
 import allTraits from '../../../static/structured/translation_en.json';
 import { Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
+import { SolverContext } from './context';
+
 type ChainTraitsProps = {
 	solver: Solver;
 	spotter: Spotter;
@@ -11,13 +13,14 @@ type ChainTraitsProps = {
 };
 
 const ChainTraits = (props: ChainTraitsProps) => {
+	const { collaboration } = React.useContext(SolverContext);
 	const { solver, spotter, updateSpotter } = props;
 
 	return (
 		<React.Fragment>
 			<TraitsProgress solver={solver} solveNode={onNodeSolved} />
 			<TraitsPossible solver={solver} />
-			<TraitsChecklist solver={solver} spotter={spotter} updateSpotter={updateSpotter} />
+			{!collaboration && <TraitsChecklist solver={solver} spotter={spotter} updateSpotter={updateSpotter} />}
 			<TraitsExporter solver={solver} />
 		</React.Fragment>
 	);
@@ -46,6 +49,7 @@ type TraitsProgressProps = {
 };
 
 const TraitsProgress = (props: TraitsProgressProps) => {
+	const { collaboration } = React.useContext(SolverContext);
 	const { solver } = props;
 
 	const traitPool = solver.traits.filter(t => t.source === 'pool');
@@ -70,7 +74,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 
 	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
 		const { givenTraitIds, solve } = node;
-
+		const readonly = !!collaboration || (!node.open && !node.spotSolve);
 		return (
 			<Table.Row key={nodeIndex}>
 				<Table.Cell>
@@ -83,7 +87,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 							{solve.map((trait, traitIndex) =>
 								<TraitPicker key={`${solver.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
-									traitPool={traitPool} readonly={!node.open && !node.spotSolve}
+									traitPool={traitPool} readonly={readonly}
 									trait={trait} setTrait={onTraitSolve}
 								/>
 							)}

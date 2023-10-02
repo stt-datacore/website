@@ -1,7 +1,8 @@
 import { ExportPreferences, SoloPreferences, SpotterPreferences, UserPreferences } from '../../model/boss';
 
 export const userDefaults = {
-	view: 'crewgroups'
+	view: 'crewgroups',
+	pollInterval: 0
 } as UserPreferences;
 
 export const spotterDefaults = {
