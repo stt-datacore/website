@@ -7,7 +7,7 @@ import { PlayerCrew } from '../../model/player';
 import CONFIG from '../../components/CONFIG';
 import { StatLabel } from '../../components/statlabel';
 import { getCoolStats } from '../../utils/misc';
-import { formatTierLabel, gradeToColor, printPortalStatus } from '../../utils/crewutils';
+import { formatTierLabel, gradeToColor, prettyObtained, printPortalStatus } from '../../utils/crewutils';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -31,7 +31,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			</div>
 		);
 	}
-
+	
+	const isNever = printPortalStatus(crew) === 'Never';
+	
 	return (
 		<React.Fragment>
 			<div style={{
@@ -96,12 +98,37 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
 						/>
 				<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
-				<StatLabel title="Portal"
-					value={<>
-						<div style={{color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-							{printPortalStatus(crew, true, false)}
-						</div>
-					</>} />
+				
+				{!isNever && <>
+					{crew.in_portal && !!crew.unique_polestar_combos?.length && 
+						<StatLabel 
+							title={<>
+								<div style={{ width:"100%", textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+									Uniquely Retrievable
+								</div>
+							</>}
+						value="" />
+							||
+						<StatLabel 
+							title="Portal"
+							value={<>
+								<div style={{ color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
+									{printPortalStatus(crew, true, false)}
+								</div>
+							</>} 
+					/>}
+				</>}
+				{isNever && <StatLabel 
+							title={<>
+								<div style={{ width:"100%", color: CONFIG.RARITIES[5].color, textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold'}}>
+									{prettyObtained(crew, true)}
+								</div>
+							</>}
+						value="" />
+
+
+				}
+
 				{crew.events && <StatLabel title="Events" value={crew.events} />}
 				{markdownRemark.frontmatter.events !== null && (
 					<StatLabel title="Events" value={markdownRemark.frontmatter.events} />

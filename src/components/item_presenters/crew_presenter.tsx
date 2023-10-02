@@ -7,6 +7,7 @@ import {
     formatTierLabel,
     getSkills,
     gradeToColor,
+    prettyObtained,
     printPortalStatus,
 } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
@@ -37,6 +38,7 @@ import {
 } from "./presenter_plugin";
 import { Ship } from "../../model/ship";
 import { navigate } from "gatsby";
+import CONFIG from "../CONFIG";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -82,7 +84,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
     render() {
         const { title, value } = this.props;
 
-        return (
+        return (            
             <Label
                 size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"}
                 style={{
@@ -610,6 +612,7 @@ export class CrewPresenter extends React.Component<
 
         const portalText = pt;
         const noPortalText = npt;
+        const isNever = printPortalStatus(crew) === 'Never';
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
@@ -1025,12 +1028,32 @@ export class CrewPresenter extends React.Component<
                                     title="Gauntlet Rank"
                                     value={"" + crew.ranks.gauntletRank}
                                 />
-                                <span title={printPortalStatus(crew, true, true, true)}>
+
+                                {!isNever && 
+                                <>
+                                {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                    
                                     <StatLabel
+                                        title=""
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>Uniquely Retrievable</span>}
+                                    />
+                                    </span> 
+                                    ||
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>
+                                    <StatLabel                                        
                                         title="In Portal"
                                         value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
                                     />
-                                </span>
+                                   </span>
+                                }
+                                </>}
+                                {isNever && 
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                  
+                                    <StatLabel
+                                        title="Obtained"
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew)}</span>}                                        
+                                    />
+                                </span>}
                             </div>
                         </div>
                     )}

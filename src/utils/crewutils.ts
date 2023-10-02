@@ -1529,20 +1529,28 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	return obstr;
 }
 
-export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean) {
+export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
 	showNever ??= true;	
 	long ??= false;
 	obtainedIfNo ??= false;
 
 	if (!showNever && !obtainedIfNo) return crew.in_portal ? "Yes" : "No";
-	let obstr =  obtainedIfNo ? prettyObtained(crew, long) : "";
+	let obstr = "";
+	if (obtainedIfNo) {
+		if (!crew.in_portal) {
+			obstr = prettyObtained(crew, long);
+		}
+		else {
+			obstr = (crew.unique_polestar_combos?.length ? "Uniquely Retrievable" : "<100% Retrieval");
+		}
+	}
 
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained.toLowerCase();
 	
-	if (ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection")) {
-		return `Never${obstr}`;		
+	if (showNever && (ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
+		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;		
 	}
 
-	return `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+	return (withPortal ? "In Portal: " : "") + `${crew.in_portal ? "Yes" : "No"}${obstr}`;
 }
