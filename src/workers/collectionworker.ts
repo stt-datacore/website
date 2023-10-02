@@ -139,10 +139,10 @@ const CollectionOptimizer = {
 
                         let asearch =
                             !searchFilter?.length ||
-                            searches.some((search) => a.name.includes(search));
+                            searches.some((search) => a.name === search);
                         let bsearch =
                             !searchFilter?.length ||
-                            searches.some((search) => b.name.includes(search));
+                            searches.some((search) => b.name === search);
 
                         if (asearch !== bsearch) {
                             if (asearch) r = -1;
@@ -218,7 +218,7 @@ const CollectionOptimizer = {
 
                 if (searchFilter?.length && bPass) {
                     bPass &&= x.crew?.some((csf) =>
-                        searches.some((search) => csf.name.includes(search))
+                        searches.some((search) => csf.name === search)
                     );
                 }
 
