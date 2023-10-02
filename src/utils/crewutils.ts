@@ -1519,7 +1519,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
 		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
 		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		else if (obstr === 'Collection') obstr = 'Collection Theshold Reward';
+		else if (obstr === 'Collection') obstr = 'Collection Milestone Reward';
 	}
 	else {
 		if (obstr === 'BossBattle') obstr = 'Bridge';
