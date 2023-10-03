@@ -4,7 +4,7 @@ rarity: 5
 series: ds9
 memory_alpha:
 bigbook_tier: 7
-events: 10
+events: 11
 in_portal: true
 date: 15/03/2017
 obtained: Pack

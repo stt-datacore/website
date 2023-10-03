@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 7
-events: 6
+events: 7
 in_portal: true
 date: 07/12/2021
 obtained: Pack
@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-The WinnebagoChair Deluxe with custom wood paneling has a tailpipe about this long...this thick. And it makes Jameson one hell of a voyager.
+The WinnebagoChair Deluxe with custom wood paneling has a tailpipe about this long...this thick. Unfortunately it has since broken down and is leaking oil all over the place, as his Voyage rankings have crashed and burned via Power Creep™.
 
-If not for mega recurring Lt. Sahil or 6-packer Fencing Picard released mere minutes before ol' Mark here, Jameson would have been quite the prize. He still debuts as an elite voyager with a little collection value and is more than fans of Michael Pataki-adjacent characters could have hoped for.
-
-No events to his name as of his release meant that ground floor buyers knew what they were getting themselves into. As long as Mr. Button is still a top 50ish voyager by the time you come to him, he'll be a reasonable investment for TNG sentimentalists - just beware the sharp fall off in value once he ages himself out of the big chair.
+With extremely limited Event chances due to no variants and only two viable Traits, both of which have already found Collections, Jameson is as about as decrepit as a card as he looks in his art.
