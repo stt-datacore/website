@@ -3,7 +3,7 @@ name: Age of Sail Troi
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 22
 in_portal: true
 date: 27/02/2020

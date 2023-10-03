@@ -3,8 +3,8 @@ name: Farragut Kirk
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 4
-events: 33
+bigbook_tier: 3
+events: 34
 in_portal:
 date: 27/07/2023
 obtained: Giveaway

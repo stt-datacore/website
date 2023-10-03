@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Sullivan's been a dud since his inception, but if you answered yes to Mikey's arena quote, then you've surely glommed onto the fact that five of his six traits have the possibility to be 'something'; collections or events.
+Sullivan's been a dud since his inception, but if you answered yes to Mikey's Ship Ability quote, then you've surely glommed onto the fact that five of his six Traits have the possibility to be 'something'; Collections or Events.
 
-While his mediocre bases may not be worth the thaw for everyone, we could certainly see him become a multi-collection piece before too long. If you believe that when the sun goes down the King of the Faeries reclaims the collections, then be a lad and give him fair haven in your cryostasis vault.
+While his mediocre Bases may not be worth the thaw for everyone, we could certainly see him become a multi-Collection piece before too long. If you believe that when the sun goes down the King of the Faeries reclaims the Collections, then be a lad and give him fair haven in your Cryostasis Vault.

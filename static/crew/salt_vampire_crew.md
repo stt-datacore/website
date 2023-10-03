@@ -3,8 +3,8 @@ name: M-113 Creature
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
-events: 13
+bigbook_tier: 7
+events: 14
 in_portal: true
 date: 21/08/2017
 obtained: Pack

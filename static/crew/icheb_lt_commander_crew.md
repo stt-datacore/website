@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Itchy's surface level numbers weren't great on release and thus he's aged faster than the sort of crew you'd feel good about investing in. Now in his twilight years (or months) as a voyager, he at least offers a smattering of event and collection possibilities with mid-range value.
+Itchy's surface level numbers weren't great on release and thus he's aged faster than the sort of crew you'd feel good about investing in. No longer viable as a Voyager, he at least offers a smattering of Event and Collection possibilities with mid-range value.
 
-Strong arena evasion is another blip of utility if you take Icheb to max for his time-travel-done-right episode or if you're anticipating a killer bridge crew photo alongside Adult Wesley in the future.
+Strong Evasion on Ships is another blip of utility if you take Icheb to max for his time-travel-done-right episode or if you're anticipating a killer bridge crew photo alongside Adult Wesley in the future.

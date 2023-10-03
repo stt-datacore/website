@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha: tng
 bigbook_tier: 10
-events: 4
+events: 5
 in_portal:
 date: 26/02/2019
 obtained: Fuse
