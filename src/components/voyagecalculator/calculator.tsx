@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
@@ -110,7 +110,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([] as IVoyageCrew[]);
 
 	const [requests, setRequests] = React.useState<Helper[]>([] as Helper[]);
-	const [results, setResults] = React.useState<Calculation[]>([] as Calculation[]);
+	const [results, setResults] = useStateWithStorage<Calculation[]>('voyageCalc/voyageCalculations', [] as Calculation[], { compress: true });
 
 	React.useEffect(() => {
 		const consideredShips = [] as VoyageConsideration[];
