@@ -3,7 +3,7 @@ name: Icheb
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 29
 in_portal: true
 date: 22/05/2017

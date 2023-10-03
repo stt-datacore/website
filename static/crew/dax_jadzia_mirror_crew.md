@@ -3,8 +3,8 @@ name: Mirror Jadzia Dax
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
-events: 40
+bigbook_tier: 4
+events: 41
 in_portal: true
 date: 11/12/2017
 obtained: Event

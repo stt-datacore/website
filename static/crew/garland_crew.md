@@ -3,7 +3,7 @@ name: Nurse Faith Garland
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 4
 in_portal: true
 date: 15/03/2018
