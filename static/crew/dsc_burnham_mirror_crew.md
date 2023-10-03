@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A "solid" super rare Burnham - stop me if you've heard this one before. Her overstuffed skill set goes a long way toward neutralizing a usable on-paper voyage rank, but the DIP primary is not a lost cause for shuttles and will find plenty of open seats for Burnham's (many) future events.
+A "solid" Super Rare Burnham - stop me if you've heard this one before. Her all-too-common Skill set goes a long way towards letting her cash in on variant and Trait-related bonus Events.
 
-In addition to incrementally more interesting traits than your typical Burnham variant, the best element of this crew for newer players is a +9 attack boost on ships which comes online at six seconds and is an excellent medium-term Skirmish and Arena asset attached to a crew who you'd have to thaw regularly anyway.
+In addition to incrementally more interesting Traits than your typical Burnham variant, the best element of this crew for newer players is a +9 Attack boost on Ships which comes online at six seconds and is an excellent medium-term Skirmish and Arena asset attached to a crew who you'd have to thaw regularly anyway.

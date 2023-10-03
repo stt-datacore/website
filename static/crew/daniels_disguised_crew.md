@@ -3,7 +3,7 @@ name: Disguised Daniels
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 11
 in_portal:
 date: 31/05/2023
