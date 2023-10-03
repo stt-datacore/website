@@ -110,7 +110,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([] as IVoyageCrew[]);
 
 	const [requests, setRequests] = React.useState<Helper[]>([] as Helper[]);
-	const [results, setResults] = useStateWithStorage<Calculation[]>('voyageCalc/voyageCalculations', [] as Calculation[], { compress: true });
+	const [results, setResults] = React.useState<Calculation[]>([] as Calculation[]);
 
 	React.useEffect(() => {
 		const consideredShips = [] as VoyageConsideration[];
