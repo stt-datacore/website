@@ -3,8 +3,8 @@ name: Mok'bara Sito Jaxa
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
-events: 15
+bigbook_tier: 5
+events: 16
 in_portal: true
 date: 11/05/2022
 obtained: Event

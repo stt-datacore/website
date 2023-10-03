@@ -3,7 +3,7 @@ name: Charlene
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 26
 in_portal:
 date: 20/09/2023

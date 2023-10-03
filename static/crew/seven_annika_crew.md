@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Annika was, at launch, one of just two voyage-capable Seven (of Nine) variants. With time having ravaged her metrics since then, the former MMMBop sensation is on thin ice elsewhere. 
+Annika was, at launch, one of just two Voyage-capable Seven (of Nine) variants. With time having ravaged her metrics since then, the former MMMBop sensation is on thin ice elsewhere.
 
-Events are something of a (lumpy) cushion for her, although between lacking in traits and with more than one dud year on her résumé, she's more in the pleasant surprise territory of weekend shuttle names. A 'win with your favorites' level of arena ability is there for fans who want her as a leadoff option on ships, but those without a sentimental attachment are advised to look elsewhere for just about everything Annika offers.
+Events are something of a (lumpy) cushion for her, although between lacking in Traits and with more than one dud year on her résumé, she's more in the pleasant surprise territory of weekend Shuttle names. Still a zero on the Collections tab, at least she has a low ceiling of two.

@@ -3,8 +3,8 @@ name: Amal Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
-events: 10
+bigbook_tier: 5
+events: 11
 in_portal: true
 date: 01/04/2021
 obtained: Event

@@ -12,10 +12,4 @@ mega: false
 published: true
 ---
 
-Similarly Jack of all trade-y to his mentor Surak, Syrran covers ground in essentially every area of the game except daily shuttles. 
-
-Debuting just on the edge of a double digit voyage score rank, Syrran seesaws between a skill set that's a hinderance and some less common anti-matter traits to ultimately produce a slightly disappointing voyage option for a new release, but one that you may be able to squeeze a year or two out of.
-
-Those same traits have produced a burgeoning event portfolio and multiple collections - both of which don't seem to be tapped out yet and will cushion his descent from daily use admirably. 
-
-Syrran's pair of good-not-great proficiency rolls also make him a gauntlet option for early-to-midgame rosters, but tops out at 25% crit and shouldn't pierce the rotation of more complete rosters. A huge damage ability concealed behind a cloak trigger and activating a bit slowly wraps a big neon bow on this crew that reads New Players Welcome, while his trait-driven attributes offer value for established rosters as well.
+A victim of power creep just like Syrran was a victim of desert electrical charges(?) in The Forge, Syrran, who is notedly not a Syrranite, remains an Event/Collection wildcard with a puff of Gauntlet use. A ceiling of six Collections and the Trait events that go with them, plus 25% Crit in almost twenty Gauntlets makes him a safe investment in Beholds or Crew Retrieval.

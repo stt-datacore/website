@@ -4,7 +4,7 @@ rarity: 5
 series: tas
 memory_alpha:
 bigbook_tier: 2
-events: 24
+events: 25
 in_portal:
 date: 17/05/2022
 obtained: Gauntlet
