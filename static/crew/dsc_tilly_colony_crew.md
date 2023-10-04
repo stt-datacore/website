@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Three years of waiting for Tilly's first super rare variant has borne rotten fruit. No perks in the way of collections, arena, or gauntlet and the base/voyage power numbers belong to a 2017 crew.
+Tilly is holding up her hand as if to say “Present” to the question of “Where is a boring Super Rare variant?”
 
-Her pair of eventable traits, Explorer and Undercover Operative, will both need to hit to keep afloat a character in Tilly who has only averaged one event per year outside of the protective covering of Discovery megas and the upper limit to her collection value is readily apparent.
+Tilly does enjoy some Event chances with the remote possibility of further Discovery Mega Events (no they’re not dead, at least not entirely), variant Events, as well as a trio of viable Trait-based options. A quartet of possible Collections also gives her some enduring value.

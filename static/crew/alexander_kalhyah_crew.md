@@ -14,6 +14,6 @@ published: true
 
 Good ol' Tie-one-on Alexander was properly soused on bloodwine for his Pops' wedding, and perhaps while on duty on the Rotarran - it's as good an explanation as any for why deck twelve smells like toasted Targ.
 
-His stats reek too, DaiMon Solok-lookin' fool. Nearly dead on arrival for daily use (because you only play the game for collections now, rube), he has a tiny gauntlet niche at one star if you can somehow dodge walls of The Red Angel (I refreshed into back to back walls today) to utilize his Okona-but-worse set of proficiencies when he catches elevated crit.
+His Stats reek too, DaiMon Solok-lookin' fool. Without any daily use (because you only play the game for Collections now, rube), he has a tiny Gauntlet niche at one star if you can somehow dodge walls of The Red Angel to utilize his Okona-but-worse set of Proficiencies when he catches elevated Crit.
 
-We can't complain too loudly, though, that this bumbling character isn't a top notch power player. He at least comes out of the box with a set of collections and even though he's near his ceiling there, he's an acceptable low-end gold option between that stat-boosting help and the occasional event where I've heard they sometimes have a shuttle DIP seat or two.
+We can't complain too loudly, though, that this bumbling character isn't a top notch power player. He at least comes out of the box with a set of Collections and even though he's near his ceiling there, he's an acceptable low-end Legendary option between that Stat-boosting help and the occasional Event where I've heard they sometimes have a Shuttle DIP seat or two.

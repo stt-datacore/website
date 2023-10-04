@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-nIb'poH, Spiderman pointing meme, lazy dev work...whatever you want to call it, we have Doug Jones space Ent redux here with a near clone of Saru's previous 2020 gold version Vahar'ai. They're nearly identical with two key differences.
+Is he a butler or is he the main course? Why not both?
 
-A voyage power refresh which is nice in the shorter term and will likely keep him afloat for an extra year or two over his variant contemporary. And a trait list augmented with a bit more substance than his counterpart. Aside from debuting as one of the better mirror options to immortalize, Saru should snag a few more collections if this crazy game of ours lasts long enough.
+Mirror Saru joins the ranks of decrepit Mirror Universe crew that have little to no additional use outside of Trait-based Event bonuses, but at least Saru can count on main cast variant status for weekend work. A sizable DIP Base helps with Shuttle seating there, plus this Saru has an above-average Collection ceiling.
