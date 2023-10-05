@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Oh man, this guy's got everything. He has, uh, bases...and and he's got...traits. Just about everything you need in a crew. 
+Oh man, this guy's got everything. He has, uh, Bases...and and he's got...Traits. Just about everything you need in a crew.
 
-In truth, the lack of a third skill doesn't hurt too much for crew who don't voyage or gauntlet anyways, so despite missing a little shuttle flexibility, Elnor (which is Elvish for 'jumped the shark') floats among dozens if not hundreds of low end behold options who will fill an event shuttle with a bonus or tick a few collection boxes.
+In truth, the lack of a third Skill doesn't hurt too much for crew who don't Voyage or Gauntlet anyways, so despite missing a little Shuttle flexibility, Elnor (which is Elvish for 'jumped the shark') floats among dozens if not hundreds of low-end Behold options who will fill an Event Shuttle with a bonus or tick a few Collection boxes.
 
-Shuttle friendly bases even give him a better chance to ride shotgun on the weekend than an equivalent power ENG or MED option and future show bonuses aren't entirely outside the realm of possibility. A longtime punchline among Timelines elitists (hey, that's us!), take solace in knowing that Elnor has his uses, even if he's a card that you're generally forced into taking.
+Shuttle-friendly Bases even give him a better chance to ride shotgun on the weekend than an equivalent power ENG or MED option and future show bonuses aren't entirely outside the realm of possibility. A longtime punchline among Timelines elitists (hey, that's us!), take solace in knowing that Elnor has his uses, even if he's a card that you're generally forced into taking.
