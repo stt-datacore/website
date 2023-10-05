@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Over thirty events for an Archer?! What is this, the Mirror Universe? Actually, yea. 
+Over thirty events for an Archer?! What is this, the Mirror Universe? Actually, yea.
 
-Even though some might consider certain traits 'tapped' for future megas, M’Archer does have a few viable traits he can call on down the line to “highlight” a pair of flaccid bases for your requisition shuttles. He’s not close to daily use and may not even merit a thaw for many users, but minor collection value gives him universal appeal and CMD/SEC dominates event seating.
+Even though some might consider certain Traits 'tapped' for future Mega Events, M’Archer does have a few viable Traits he can call on down the line to “highlight” a pair of flaccid Bases for your requisition Shuttles. He’s not close to daily use and may not even merit a thaw for many users, but minor Collection value gives him universal appeal and CMD/SEC dominates Event seating.
