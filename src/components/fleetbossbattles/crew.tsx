@@ -4,7 +4,7 @@ import { Header, Form, Dropdown, Checkbox, Icon, Message } from 'semantic-ui-rea
 import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solver, SolverNode, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
 import { crewCopy } from '../../utils/crewutils';
 
-import { UserContext } from './context';
+import { UserContext, SolverContext } from './context';
 import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
@@ -19,8 +19,8 @@ type ChainCrewProps = {
 };
 
 const ChainCrew = (props: ChainCrewProps) => {
-	const userContext = React.useContext(UserContext);
-	const { spotterPrefs, setSpotterPrefs, soloPrefs, setSoloPrefs } = userContext;
+	const { userType, spotterPrefs, setSpotterPrefs, soloPrefs, setSoloPrefs } = React.useContext(UserContext);
+	const { collaboration } = React.useContext(SolverContext);
 	const { view, solver, spotter, updateSpotter } = props;
 
 	const [optimizer, setOptimizer] = React.useState<Optimizer | undefined>(undefined);
@@ -119,15 +119,17 @@ const ChainCrew = (props: ChainCrewProps) => {
 						</Form.Group>
 						<Form.Group grouped>
 							<Header as='h4'>User Preferences</Header>
-							<Form.Field
-								placeholder='Filter by availability'
-								control={Dropdown}
-								clearable
-								selection
-								options={usableFilterOptions}
-								value={soloPrefs.usable}
-								onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
-							/>
+							{userType === 'player' &&
+								<Form.Field
+									placeholder='Filter by availability'
+									control={Dropdown}
+									clearable
+									selection
+									options={usableFilterOptions}
+									value={soloPrefs.usable}
+									onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
+								/>
+							}
 							<Form.Field
 								control={Checkbox}
 								label='Show ship ability'
@@ -310,7 +312,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		const solves = spotter.solves;
+		const solves = [...spotter.solves];
 		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
@@ -330,6 +332,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function updateCrewAttempts(attemptedCrew: string[]): void {
+		if (!!collaboration) return;
 		updateSpotter({...spotter, attemptedCrew});
 	}
 };

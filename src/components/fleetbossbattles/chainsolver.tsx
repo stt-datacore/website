@@ -1,11 +1,10 @@
 import React from 'react';
-import { Step, Icon, Message } from 'semantic-ui-react';
+import { Header, Step, Icon, Message } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, Chain, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
-import { useStateWithStorage } from '../../utils/storage';
+import { BossCrew, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
-import { UserContext } from './context';
+import { UserContext, SolverContext } from './context';
 import ChainCrew from './crew';
 import ChainTraits from './traits';
 import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
@@ -19,24 +18,11 @@ const MAX_RARITY_BY_DIFFICULTY = {
 	6: 5
 };
 
-type ChainSolverProps = {
-	chain: Chain;
-};
-
-const ChainSolver = (props: ChainSolverProps) => {
-	const userContext = React.useContext(UserContext);
-	const { bossCrew, userPrefs, setUserPrefs } = userContext;
-	const { chain } = props;
+export const ChainSolver = () => {
+	const { bossCrew, userPrefs, setUserPrefs } = React.useContext(UserContext);
+	const { bossBattle: { difficultyId, chainIndex, chain }, spotter, setSpotter } = React.useContext(SolverContext);
 
 	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
-	const [spotter, setSpotter] = useStateWithStorage<Spotter>(`fbb/${chain.id}/spotter`,
-		{
-			id: chain.id,
-			solves: [],
-			attemptedCrew: [],
-			ignoredTraits: []
-		}
-	);
 
 	React.useEffect(() => {
 		if (!chain) return;
@@ -81,7 +67,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 				open: hiddenLeft > 0,
 				spotSolve: !!spotSolve,
 				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0],
-				oneHandTest: chain.difficultyId === 6 || (chain.difficultyId === 5 && nodeIndex > 0)
+				oneHandTest: difficultyId === 6 || (difficultyId === 5 && nodeIndex > 0)
 			});
 		});
 
@@ -122,7 +108,7 @@ const ChainSolver = (props: ChainSolverProps) => {
 		const allMatchingCrew = [] as BossCrew[];
 		const allComboCounts = [] as ComboCount[];
 		bossCrew.forEach(crew => {
-			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[chain.difficultyId]) {
+			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[difficultyId]) {
 				const nodes = [] as number[];
 				const matchesByNode = {} as NodeMatches;
 				solverNodes.filter(node => node.open).forEach(node => {
@@ -237,7 +223,6 @@ const ChainSolver = (props: ChainSolverProps) => {
 
 		setSolver({
 			id: chain.id,
-			description: chain.description,
 			nodes: solverNodes,
 			traits: solverTraits,
 			crew: validatedCrew,
@@ -247,9 +232,13 @@ const ChainSolver = (props: ChainSolverProps) => {
 	if (!solver) return (<></>);
 
 	const openNodes = solver.nodes.filter(node => node.open).length;
+	const unlockedNodes = chain.nodes.length-openNodes;
 
 	return (
 		<React.Fragment>
+			<Header as='h3'>
+				Chain #{chainIndex+1} <span style={{ marginLeft: '1em' }}>({unlockedNodes}/{chain.nodes.length} solved)</span>
+			</Header>
 			<Step.Group fluid>
 				<Step active={userPrefs.view === 'crewgroups' && openNodes > 0} onClick={() => setUserPrefs({...userPrefs, view: 'crewgroups'})}>
 					<Icon name='object group' />
@@ -291,5 +280,3 @@ const ChainSolver = (props: ChainSolverProps) => {
 		</React.Fragment>
 	);
 };
-
-export default ChainSolver;

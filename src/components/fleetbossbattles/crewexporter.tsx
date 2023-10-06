@@ -4,7 +4,7 @@ import { Header, Button, Popup, Message, Accordion, Form, Select, Input } from '
 import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
-import { UserContext } from './context';
+import { UserContext, SolverContext } from './context';
 import { exportDefaults } from './fbbdefaults';
 
 const exportCompact = {
@@ -162,15 +162,15 @@ type CrewFullExporterProps = {
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const userContext = React.useContext(UserContext);
-	const { exportPrefs, setExportPrefs } = userContext;
+	const { exportPrefs, setExportPrefs } = React.useContext(UserContext);
+	const { bossBattle: { description, chainIndex } } = React.useContext(SolverContext);
 	const { solver, optimizer } = props;
 
 	const copyFull = () => {
 		const openNodes = solver.nodes.filter(node => node.open);
 		let header = '';
 		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solver.nodes.length-openNodes.length === 0)) {
-			header += `${solver.description} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
+			header += `${description}, Chain #${chainIndex+1} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
 			header += '\n\n';
 		}
 		let output = '';
