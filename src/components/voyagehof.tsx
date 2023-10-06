@@ -18,6 +18,11 @@ import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 import { CrewHoverStat, CrewTarget } from "./hovering/crewhoverstat";
 import { TinyStore } from "../utils/tiny";
+import { GlobalContext } from "../context/globalcontext";
+import { Skills } from "./item_presenters/classic_presenter";
+import { OwnedLabel } from "./crewtables/commonoptions";
+import { IRosterCrew } from "./crewtables/model";
+import { gradeToColor } from "../utils/crewutils";
 
 type VoyageHOFProps = {};
 
@@ -55,33 +60,50 @@ export interface VoyageStatsProps {
 }
 
 const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsProps) => {
+    
+    const context = React.useContext(GlobalContext);
+    
+    const myCrew = context.player.playerData?.player.character.crew ?? [];
+
     const rankedCrew = stats
         ?.map((s) => {
             const crew = allCrew.find((c) => c.symbol === s.crewSymbol);
             if (!crew) {
                 return undefined;
             }
+            
             return {
                 ...s,
                 ...crew,
+                ...(myCrew.find(fc => fc.symbol === crew.symbol) ?? {})
             };
         })
         .filter((s) => s)
         .sort((a, b) => rankBy === 'voyages' ? (b?.crewCount ?? 0) - (a?.crewCount ?? 0) : (b?.averageDuration ?? 0) - (a?.averageDuration ?? 0))
-        .slice(0, 100);
+        .slice(0, 100) as (PlayerCrew & VoyageStatEntry)[];
     const rowColors = {
         "0": "#AF9500",
         "1": "#B4B4B4",
         "2": "#AD8A56",
     };
 
-    const formatDuration = (duration: number) => {
+    const maxDuration = rankedCrew.map(rc => rc?.averageDuration ?? 0).reduce((p, n) => p > n ? p : n, 0);
+    const maxVoy = rankedCrew.map(rc => rc?.crewCount ?? 0).reduce((p, n) => p > n ? p : n, 0);
+
+    const formatNumber = (value: number, max: number, mult?: number, suffix?: string) => {
         let s = "";
-
-        duration = Math.round((duration / (60 * 60)) * 10) / 10;
-
-        return duration.toLocaleString() + " h";
+        mult ??= 1;
+        if (suffix) suffix = " " + suffix;
+        else suffix = "";
+        let fmt = Math.round((value * mult) * 10) / 10;
+        return (
+        <span style={{color: gradeToColor(value/max) ?? undefined}}>
+        {fmt.toLocaleString() + suffix}
+        </span>
+        );
     };
+
+
 
     return (
         <>
@@ -97,7 +119,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                 </Table.Header>
                 <Table.Body>
                     {rankedCrew.map((crew, index) => (
-                        <Table.Row>
+                        <Table.Row key={crew?.symbol + "_" + period}>
                             <Table.Cell>
                                 <Header
                                     as="h2"
@@ -129,14 +151,16 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                                             {crew?.name}
                                         </span>
                                         <Header as="h4" style={{ marginTop: "10px" }}>
-                                            {crew?.crewCount?.toLocaleString()} voyages
+                                                Voyage Count:{" "}
+                                                {formatNumber(crew.crewCount, maxVoy, 1)}
                                         </Header>
                                         {crew?.averageDuration && (
                                             <Header as="h4" style={{ marginTop: "10px" }}>
                                                 Average Duration:{" "}
-                                                {formatDuration(crew?.averageDuration)}
+                                                {formatNumber(crew.averageDuration, maxDuration, 1/3600, "h")}
                                             </Header>
                                         )}
+                                        {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}
                                     </div>
                                 </div>
                             </Table.Cell>
