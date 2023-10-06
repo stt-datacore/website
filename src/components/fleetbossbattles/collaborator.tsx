@@ -7,7 +7,7 @@ import { UserContext, ISolverContext, SolverContext } from './context';
 import { ChainSolver } from './chainsolver';
 
 const API_URL = process.env.GATSBY_DATACORE_URL;
-const SIMULATE_API = true;
+const SIMULATE_API = false;
 
 interface IDetectedChanges {
 	newChain: boolean;
