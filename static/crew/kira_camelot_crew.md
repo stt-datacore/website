@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-There are a couple avenues for Guinevere to excel; as a pair of shuttle friendly bases for Kira's reliable event history, as some arena damage tucked behind a benign trigger, or as a nice set of non-HFS traits.
+There are a couple avenues for Guinevere to excel; as a pair of Shuttle-friendly Bases for Kira's reliable Event history, as some Instant Damage on Ships tucked behind a benign Trigger, or as a nice set of viable Traits.
 
-Despite not owning an eye-popping base rank, CMD and SEC are always in fashion for event seating and Kira is the most stable character in Timelines when it comes to variant bonuses. Her traits haven't even inflated her event history as much as they could in the future, making her a safe option there as well as a pretty strong speculative collection grab with a few having already materialized.
+Despite not owning an eye-popping Base rank, CMD and SEC are always in fashion for Event seating and Kira is the most stable character in Timelines when it comes to variant bonuses. Her Traits haven't even inflated her Event history as much as they could in the future, making her a safe option there as well as a pretty strong speculative Collection grab with a few having already materialized.
 
-The aforementioned arena damage may be her only route to daily use, but she's still on the well rounded side for a 2-skill crew and worth a dart throw in low end beholds.
+The aforementioned Shipboard Instant Damage may be her only route to daily use, but she's still on the well-rounded side for a 2-Skill crew and worth a dart throw in low-end Beholds.
