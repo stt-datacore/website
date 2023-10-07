@@ -12,6 +12,6 @@ mega: true
 published: true
 ---
 
-Corny was the prototypical powerhouse MED crew and songs are still sung of her deeds, but "Eyes open, Veer" when approaching her as a project from the ground up. Voyages remain her best area of contribution - despite a raw score rank now in the triple digits, her MED-led skill set will outperform the surface numbers.
+Corny was the prototypical powerhouse MED crew and songs are still sung of her deeds, but "Eyes open, Veer" when approaching her as a project from the ground up. No longer a viable Voyager, resist the temptation of overvaluing an old Mega Event Recurring Legendary crew.
 
-The rest of this card doesn't offer us terribly much, though, and probably won't live up to the heroics she performed at 5/5 on rosters back in 2018. Corny's modest combination of immediate and potential collections can be matched by most crew and her bases don't stand out in any regard. A reasonable crew to take behold stars on thanks to her strong debut power, but not a card who should be eating citations when power creep is printing plainly stronger cards.
+Corny's modest combination of immediate and potential Collections can be matched by most crew and her Bases don't stand out in any regard. A reasonable crew to take Behold stars on thanks to her strong debut power, but not a card who should be eating Citations when Power Creep™ is printing plainly stronger cards.
