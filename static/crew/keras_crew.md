@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Keras was an early adopter to the collection bonanza, but his limited reach in that area could have him falling further behind over time. With very little to offer elsewhere, feel free to pass on him in beholds if you're a newcomer to the game; his only beneficial attributes unlock post-cryo.
+Keras was an early adopter to the Collection bonanza, but his limited reach in that area could have him falling further behind over time. With very little to offer elsewhere, feel free to pass on him in Beholds if you're a newcomer to the game; his only beneficial attributes unlock post-Immortalization.
