@@ -9,6 +9,8 @@ import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, M
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 
+const windowGlobal = typeof globalThis.window !== undefined ? globalThis.window : undefined;
+
 type NavigationProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
     sidebarTarget?: React.RefObject<HTMLElement>;
@@ -18,19 +20,19 @@ type NavigationProps = {
 
 export const Navigation = (props: NavigationProps) => {
 	const context = React.useContext(GlobalContext);
-    const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
+    const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
 
 	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
 	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
 
-	if (!!context.player.playerData && typeof window !== 'undefined' && !!window.location.search?.length) {
-		let parm = new URLSearchParams(window.location.search);
+	if (!!context.player.playerData && typeof windowGlobal !== 'undefined' && !!windowGlobal.location.search?.length) {
+		let parm = new URLSearchParams(windowGlobal.location.search);
 		if (parm.has('pmc')) {
 			let result = parsePermalink(parm.get("pmc") ?? '');
 			if (result) {
 				const res = result;
-				window.setTimeout(() => {
+				windowGlobal.setTimeout(() => {
 					if (JSON.stringify(res) !== JSON.stringify([activeMenu, mobileActiveMenu])) {
 						setActiveMenu(res[0]);
 						setMobileActiveMenu(res[1]);
