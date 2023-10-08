@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Three traits
-Two skills
+Three Traits
+Two Skills
 One airlock

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-An often overlooked arena option, Raffi is the only super rare instant damage with a +8 or better attack boost, making her mini-Killy in that respect and headlines the offerings from this card. Her other attributes are more ethereal, however.
+An often-overlooked option for Ships, Raffi is among the top Super Rare Instant Damage crew with a +8 or better Attack Boost, making her mini-Killy in that respect and headlines the offerings from this card. Her other attributes are more ethereal, however.
 
-Workable shuttle bases are yearning for some help via trait or show bonuses, as her introductory event is her lone weekend multiplier to date. Communicator kicking off her collection value ascent is very welcome as well, considering her remaining viable traits are gambler and a few other huge ones that may take a while before WRG calls on them. Raffi's usable in a few areas, but you may have to look for ways to utilize her rather than her being a natural fit like some cards.
+Workable Shuttle Bases are yearning for some help via Trait or show bonuses, and her Trait list is almost certainly tapped out at a pair of Collections. Raffi's usable in a few areas, but you may have to look for ways to utilize her rather than her being a natural fit like some cards.
