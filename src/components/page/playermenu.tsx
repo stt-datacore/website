@@ -79,7 +79,7 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	if (props.vertical) {
 		return (
 			<React.Fragment>
-				{playerMenu.filter(item => item.checkVisible && !item.checkVisible(item)).map((item) => {
+				{playerMenu.filter(item => item.checkVisible && item.checkVisible(item)).map((item) => {
 					return item.customRender ? item.customRender(item) : renderSubmenuItem(item);
 				})}
 			</React.Fragment>
