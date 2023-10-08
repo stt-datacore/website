@@ -9,7 +9,7 @@ import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, M
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 
-const windowGlobal = typeof globalThis.window !== undefined ? globalThis.window : undefined;
+const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 
 type NavigationProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
