@@ -4,7 +4,7 @@ import { TinyStore } from "../../utils/tiny";
 
 const isWindow = typeof window !== 'undefined';
 
-export const DEFAULT_MOBILE_WIDTH = 512;
+export const DEFAULT_MOBILE_WIDTH = 1024;
 
 export interface Coord {
     x: number;
