@@ -309,9 +309,9 @@ export const Navigation = (props: NavigationProps) => {
 		sidebarItems.push(createSubMenu('About', about, true));
 	}
 
-	if (typeof window !== 'undefined') {
-		window.addEventListener('resize', (e) => {
-			setIsMobile(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
+	if (typeof windowGlobal !== 'undefined') {
+		windowGlobal.addEventListener('resize', (e) => {
+			setIsMobile(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
 		});
 	}
 
