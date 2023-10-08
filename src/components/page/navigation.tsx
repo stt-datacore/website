@@ -9,7 +9,6 @@ import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, M
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 
-const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 
 type NavigationProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
@@ -19,6 +18,8 @@ type NavigationProps = {
 
 
 export const Navigation = (props: NavigationProps) => {
+	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
+
 	const context = React.useContext(GlobalContext);
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
