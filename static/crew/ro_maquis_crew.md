@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-A decrepit super rare, this Ro card might be remembered for having beamed aboard three prior big bonus features, but her best days could be ahead of her.
+A decrepit Super Rare, this Ro card might be remembered for having THREE featured Events, but her best days could be ahead of her.
 
-For a bit player, Ro's event history is reasonable and she should continue living trait event to trait event with megas sprinkled in. On top of which, an expansion of collection value seems inevitable. Aside from the large pool of desperate crew, it's easy to see Ro in three or four collections before too long, which will mark the first time that a player is legitimately happy to behold this card.
+For a bit player, Ro's Event history is reasonable and she should continue living Trait event to Trait event with Mega Events sprinkled in. On top of which, an expansion of Collection value seems inevitable. Aside from the large pool of Desperate crew, it's easy to see Ro in three or four Collections before too long, which will mark the first time that a player is legitimately happy to see this card.
