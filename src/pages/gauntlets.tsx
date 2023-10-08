@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step } from 'semantic-ui-react';
+import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step, Input } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import * as moment from 'moment';
 import { AllTraits } from '../model/traits';
@@ -96,6 +96,8 @@ export interface GauntletsPageState {
 	viewModes: GauntletViewMode[];
 	lastPlayerDate?: Date;
 
+	textFilter: string[];
+
 	sortKey: string[];
 	sortDirection: SortDirection[];
 
@@ -114,7 +116,7 @@ export interface GauntletsPageState {
 
 const DEFAULT_FILTER_PROPS = {
 	ownedStatus: 'any',
-	maxResults: 10
+	maxResults: 10,
 } as FilterProps;
 
 export function getBernardsNumber(a: PlayerCrew | CrewMember, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
@@ -184,11 +186,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const rbpair = [] as string[];
 		const ptab = [] as number[];
 		const ipage = [] as number[];
+		const tf = [] as string[];
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
-			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);
+			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);			
 			fprops.push(this.tiny.getValue('gauntletFilter_' + i, DEFAULT_FILTER_PROPS) ?? DEFAULT_FILTER_PROPS);
+			tf.push(this.tiny.getValue('textFilter_' + i, '') ?? '');
 
 			skeys.push('');
 			sdir.push(undefined);
@@ -246,7 +250,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			activeTabIndex: activeTabIndex,
 			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false),
 			gauntletSettings: settings,
-			settingsOpen: false
+			settingsOpen: false,
+			textFilter: tf
 		}
 	}
 	readonly getSettingsOpen = () => {
@@ -679,18 +684,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return pairGroups;
 	}
-
-	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string, range_max?: number, filter?: FilterProps) => {
+	
+	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string, range_max?: number, filter?: FilterProps, textFilter?: string) => {
 		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
 
 		const rmax = range_max ?? 500;
+		const search = textFilter;
 
 		const { buffConfig, maxBuffs } = this.context.player;		
 		const { crew: allCrew } = this.context.core;		
 
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
-
+	
 		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
@@ -749,11 +755,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const { gauntletSettings: settings } = this.state;
 
+		const matchesCrew = (crew: PlayerCrew, value?: string) => {
+			if (value !== '' && value !== undefined) {
+				let ltf = value.toLowerCase();
+				if (crew.name.toLowerCase().includes(ltf)) return true;
+				if (crew.symbol.includes(ltf)) return true;
+				if (crew.traits.some(t => t.toLowerCase().includes(ltf))) return true;
+				if (crew.traits_hidden.some(t => t.toLowerCase().includes(ltf))) return true;
+				if (crew.traits_named.some(t => t.toLowerCase().includes(ltf))) return true;
+				return false;
+			}
+			return true;
+		}
+	
+
 		const matchedCrew1 =
-			allCrew.concat(oppo).map(z => z as PlayerCrew).filter(e => e.max_rarity > 3 && (
-				(!rankByPair || (rankByPair in e.ranks)) &&
-				(Object.keys(e.base_skills).some(k => e.base_skills[k].range_max >= rmax) || !!e.isOpponent) ||
-				prettyTraits.filter(t => e.traits_named.includes(t)).length > 1))
+			allCrew.concat(oppo).map(crewObj => crewObj as PlayerCrew).filter(crew => crew.max_rarity > 3 && (
+				(!rankByPair || (rankByPair in crew.ranks)) &&
+				(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
+				prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 
@@ -840,7 +860,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					crew.pairs = getPlayerPairs(crew);					
 					return crew;
 				})
-				.filter((crew) => !filter || this.crewInFilter(crew, filter))
+				.filter((crew) => (!filter || this.crewInFilter(crew, filter)) && matchesCrew(crew, search))
 				.map((crew) => { 
 					if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 						if ((crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
@@ -972,6 +992,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	initData() {
 		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
 		const { playerData } = this.context.player;
+		const { textFilter } = this.state;
 
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
@@ -1027,13 +1048,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		gauntlets.slice(0, 3).forEach((node, index) => {
 			let rmax = this.state.ranges[index];
-			this.getGauntletCrew(node, undefined, rmax, this.state.filterProps[index]);
+			this.getGauntletCrew(node, undefined, rmax, this.state.filterProps[index], textFilter[index]);
 		});
 
-		this.getGauntletCrew(uniques[0], undefined, this.state.ranges[3], this.state.filterProps[3]);
+		this.getGauntletCrew(uniques[0], undefined, this.state.ranges[3], this.state.filterProps[3], textFilter[3]);
 
 		if (liveGauntlet){
-			this.getGauntletCrew(liveGauntlet, undefined, this.state.ranges[4], this.state.filterProps[4]);
+			this.getGauntletCrew(liveGauntlet, undefined, this.state.ranges[4], this.state.filterProps[4], textFilter[4]);
 		}
 
 		if (!this.state.gauntlets?.length || !this.inited) {
@@ -1183,13 +1204,33 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		});	
 	}
 
-	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string) => {
-		const { filterProps, today, yesterday, activePrevGauntlet, liveGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
+	private readonly setTextFilter = (value: string, idx: number) => {
+		let filters = this.state.textFilter;
+		filters[idx] = value;
+
+		this.tiny.setValue('textFilter', filters);
+
+		//this.setState({... this.state, textFilter: value });
+		this.updatePaging(false, undefined, undefined, idx, undefined, filters);
+	}
+
+	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string, textFilter?: string[]) => {
+		const { activeTabIndex, filterProps, today, yesterday, activePrevGauntlet, liveGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
 
 		let newBrowseGauntlet: Gauntlet | undefined = undefined;
 		let newToday: Gauntlet | undefined = undefined;
 		let newYesterday: Gauntlet | undefined = undefined;
 		let live: Gauntlet | undefined = undefined;
+
+		if (textFilter && replaceIndex !== undefined && replaceGauntlet === undefined) {
+			if (replaceIndex === 0) replaceGauntlet = today;
+			else if (replaceIndex === 1) replaceGauntlet = yesterday;
+			else if (replaceIndex === 2) replaceGauntlet = activePrevGauntlet;
+			else if (replaceIndex === 3) replaceGauntlet = browsingGauntlet;
+			else if (replaceIndex === 4) replaceGauntlet = liveGauntlet ?? undefined;				
+		}
+
+		textFilter ??= ['', '', '', '', ''];
 
 		if (replaceIndex === 0) newToday = replaceGauntlet;
 		else if (replaceIndex === 1) newYesterday = replaceGauntlet;
@@ -1202,16 +1243,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			rmax = this.state.ranges[replaceIndex];
 		}
 		if (!preSorted && newSelGauntlet) {
-			this.getGauntletCrew(newSelGauntlet, replaceRank, rmax, filterProps[2]);
+			this.getGauntletCrew(newSelGauntlet, replaceRank, rmax, filterProps[2], textFilter[2]);
 		}
 		else if (!preSorted && newBrowseGauntlet) {
-			this.getGauntletCrew(newBrowseGauntlet, replaceRank, rmax, filterProps[3]);
+			this.getGauntletCrew(newBrowseGauntlet, replaceRank, rmax, filterProps[3], textFilter[3]);
 		}
 		else if (!preSorted && live) {
-			this.getGauntletCrew(live, replaceRank, rmax, filterProps[4]);
+			this.getGauntletCrew(live, replaceRank, rmax, filterProps[4], textFilter[4]);
 		}
 		else if (!preSorted && replaceGauntlet) {
-			this.getGauntletCrew(replaceGauntlet, replaceRank, rmax, replaceIndex !== undefined ? filterProps[replaceIndex] : undefined);
+			this.getGauntletCrew(replaceGauntlet, replaceRank, rmax, replaceIndex !== undefined ? filterProps[replaceIndex] : undefined, replaceIndex !== undefined ? textFilter[replaceIndex] : undefined);
 		}
 
 		let apidx = this.state.activePageIndexTab;
@@ -1256,7 +1297,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			browsingGauntlet: replaceIndex === 3 ? replaceGauntlet : newBrowseGauntlet ?? browsingGauntlet,
 			liveGauntlet: replaceIndex === 4 ? replaceGauntlet : live ?? liveGauntlet,
 			sortKey: [...sortKey],
-			sortDirection: [...sortDirection]
+			sortDirection: [...sortDirection],
+			textFilter: textFilter ?? ''
 		});
 	}
 
@@ -1490,13 +1532,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
 		if (!data) return <></>;
 
-		const { totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
+		const { textFilter, totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
 		const filter = filterProps[idx];
+		
 		const pageIdx = idx;
 		let pp = this.state.activePageIndexTab[idx] - 1;
 		pp *= this.state.itemsPerPageTab[idx];
-
-		const buffConfig = this.context.player.buffConfig;
 
 		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
 			console.log("imageClick");
@@ -1506,8 +1547,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		const prettyTraits = gauntlet.prettyTraits;
+		const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 		return (<div style={{ overflowX: "auto" }}>
+			<Input
+				style={{ width: isMobile ? '100%' : '50%' }}
+				iconPosition="left"
+				placeholder="Search..."
+				value={textFilter[idx]}
+				onChange={(e, { value }) => this.setTextFilter(value, idx)}>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => this.setTextFilter('', idx)} >
+						<Icon name='delete' />
+					</Button>
+			</Input>
+
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
