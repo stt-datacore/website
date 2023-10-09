@@ -110,7 +110,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
             <Header textAlign="center">
                 Voyage stats for {niceNamesForPeriod[period]}
             </Header>
-            <Table>
+            <Table striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Rank</Table.HeaderCell>
