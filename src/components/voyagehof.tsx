@@ -36,6 +36,7 @@ type VoyageStatEntry = {
 type VoyageHOFState = {
     voyageStats?: {
         allTime?: VoyageStatEntry[];
+        lastYear?: VoyageStatEntry[];
         lastSixMonths?: VoyageStatEntry[];
         lastSevenDays: VoyageStatEntry[];
         lastThirtyDays: VoyageStatEntry[];
@@ -50,10 +51,13 @@ const niceNamesForPeriod = {
     lastSevenDays: "Last 7 days",
     lastThirtyDays: "Last 30 days",
     lastSixMonths: "Last 6 Months",
+    lastYear: "Last Year",
 };
 
+export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastYear";
+
 export interface VoyageStatsProps {
-    period: "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths";
+    period: VoyageHOFPeriod;
     allCrew: (PlayerCrew | CrewMember)[];
     stats: VoyageStatEntry[];
     rankBy: RankMode;
@@ -258,6 +262,17 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                                     rankBy={rankBy}
                                     period="allTime"
                                     stats={voyageStats?.allTime ?? []}
+                                    allCrew={allCrew ?? []}
+
+                                />
+                            </Grid.Column>
+                        )}
+                        {voyageStats?.lastYear && (
+                            <Grid.Column>
+                                <VoyageStatsForPeriod
+                                    rankBy={rankBy}
+                                    period="lastYear"
+                                    stats={voyageStats?.lastYear ?? []}
                                     allCrew={allCrew ?? []}
 
                                 />
