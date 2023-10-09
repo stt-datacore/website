@@ -3,7 +3,7 @@ name: Axum
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 11
 in_portal:
 date: 13/04/2023
