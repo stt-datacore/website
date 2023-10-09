@@ -3,7 +3,7 @@ name: Captain T'Pol
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 41
 in_portal: true
 date: 26/06/2017

@@ -3,7 +3,7 @@ name: Tevrin Krit
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 28
 in_portal: true
 date: 19/10/2021
