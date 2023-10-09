@@ -23,7 +23,7 @@ import { Skills } from "./item_presenters/classic_presenter";
 import { OwnedLabel } from "./crewtables/commonoptions";
 import { IRosterCrew } from "./crewtables/model";
 import { gradeToColor } from "../utils/crewutils";
-
+ 
 type VoyageHOFProps = {};
 
 type VoyageStatEntry = {
