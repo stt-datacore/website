@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 2
-events: 17
+events: 18
 in_portal:
 date: 27/02/2018
 obtained: Gauntlet

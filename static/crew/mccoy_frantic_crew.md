@@ -4,7 +4,7 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 1
-events: 34
+events: 35
 in_portal:
 date: 12/07/2022
 obtained: BossBattle
