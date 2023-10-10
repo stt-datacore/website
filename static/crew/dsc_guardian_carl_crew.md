@@ -1,11 +1,11 @@
 ---
 name: Carl, Guardian of Forever
 rarity: 5
-series: tos
+series: dsc
 memory_alpha:
 bigbook_tier: 6
 events: 36
-in_portal:
+in_portal: true
 date: 13/05/2021
 obtained: Event
 mega: false

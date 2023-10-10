@@ -5,7 +5,7 @@ series: low
 memory_alpha:
 bigbook_tier: 4
 events: 21
-in_portal:
+in_portal: true
 date: 20/09/2022
 obtained: WebStore
 mega: false

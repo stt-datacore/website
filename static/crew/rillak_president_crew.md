@@ -5,7 +5,7 @@ series: dsc
 memory_alpha:
 bigbook_tier: 6
 events: 38
-in_portal:
+in_portal: true
 date: 19/04/2022
 obtained: Campaign
 mega: false
