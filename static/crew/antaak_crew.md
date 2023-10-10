@@ -5,7 +5,7 @@ series: ent
 memory_alpha:
 bigbook_tier: 6
 events: 27
-in_portal:
+in_portal: true
 date: 08/09/2016
 obtained: Post-Launch
 mega: false

@@ -5,7 +5,7 @@ series: voy
 memory_alpha:
 bigbook_tier: 7
 events: 19
-in_portal:
+in_portal: true
 date: 11/07/2022
 obtained: Campaign
 mega: false
