@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 6
 events: 40
-in_portal: true
+in_portal:
 date: 25/11/2019
 obtained: Campaign
 mega: false

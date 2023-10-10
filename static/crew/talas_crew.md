@@ -5,7 +5,7 @@ series: ent
 memory_alpha:
 bigbook_tier: 9
 events: 19
-in_portal: true
+in_portal:
 date: 24/12/2019
 obtained: Pack
 mega: false
