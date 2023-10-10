@@ -5,7 +5,7 @@ series: ds9
 memory_alpha:
 bigbook_tier: 3
 events: 17
-in_portal: true
+in_portal:
 date: 23/01/2023
 obtained: Campaign
 mega: false

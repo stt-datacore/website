@@ -3,9 +3,9 @@ name: Cadet Sito Jaxa
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 17
-in_portal: true
+in_portal:
 date: 01/01/2016
 obtained: Launch
 mega: false

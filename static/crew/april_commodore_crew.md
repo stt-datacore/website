@@ -1,11 +1,11 @@
 ---
 name: Commodore Robert April
 rarity: 5
-series: tas
+series: tos
 memory_alpha:
 bigbook_tier: 10
 events: 2
-in_portal: true
+in_portal:
 date: 07/11/2018
 obtained: Pack
 mega: false
