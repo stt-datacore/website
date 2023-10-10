@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 9
 events: 9
-in_portal:
+in_portal: true
 date: 16/09/2016
 obtained: Post-Launch
 mega: false

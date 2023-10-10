@@ -5,7 +5,7 @@ series: original
 memory_alpha:
 bigbook_tier: 3
 events: 31
-in_portal:
+in_portal: true
 date: 11/01/2023
 obtained: Mega
 mega: true
