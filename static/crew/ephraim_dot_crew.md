@@ -1,11 +1,11 @@
 ---
 name: Ephraim and Dot
 rarity: 5
-series:
+series: dsc
 memory_alpha:
 bigbook_tier: 7
 events: 30
-in_portal:
+in_portal: true
 date: 12/10/2021
 obtained: Pack
 mega: false

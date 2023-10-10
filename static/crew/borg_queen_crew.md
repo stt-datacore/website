@@ -1,11 +1,11 @@
 ---
 name: Borg Queen
 rarity: 5
-series:
+series: pic
 memory_alpha:
 bigbook_tier: 4
 events: 44
-in_portal:
+in_portal: true
 date: 15/05/2017
 obtained: Mega
 mega: true
