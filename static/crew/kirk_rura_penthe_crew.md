@@ -3,9 +3,9 @@ name: Rura Penthe Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 50
-in_portal: true
+in_portal:
 date: 25/09/2017
 obtained: Pack
 mega: false

@@ -5,17 +5,11 @@ series: ent
 memory_alpha:
 bigbook_tier: 6
 events: 23
-in_portal: true
+in_portal:
 date: 11/01/2022
 obtained: Pack
 mega: false
 published: true
 ---
 
-Tale as old as time
-They’ll nickel and dime
-Six-packs and voyage Beasts
-
-Voyage ability is the headline for Kov who debuts as a top five name in that area with all of his traits triggering anti-matter bonuses as well. There’s a premium price to pay for acquiring six-pack crew and he does come on the heels of other competent options in his skill set such as Quarren and Badge Linus, but hey, we don’t judge how you got ‘em. What happens in six-packs, stays in six-packs.
-
-The rest of his worth hinges on a short, but potentially fruitful trait set. The game’s first Maverick Vulcan has received event help from both of those traits already and, as we keep pointing to Resourceful for, any trait aside from Human, Federation, or Starfleet could be “viable”, giving him a reasonable collection count ceiling if WRG does indeed push the envelope with more of the larger groupings.
+A limited Event/Collection crew is what you have in this off-the-beaten-path Vulcan from Enterprise; up to five possible Collections and the Trait-based Events that go with them will be his enduring value. If you’ve come upon a Fully-Fused Kov in the early game he may still go on a Voyage or three, but only until you’ve found Legendary crew to pass the Voyage baton to.

@@ -5,7 +5,7 @@ series: pic
 memory_alpha:
 bigbook_tier: 4
 events: 21
-in_portal: true
+in_portal:
 date: 22/03/2022
 obtained: Campaign
 mega: false
