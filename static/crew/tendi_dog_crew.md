@@ -5,7 +5,7 @@ series: low
 memory_alpha:
 bigbook_tier: 7
 events: 10
-in_portal: true
+in_portal:
 date: 03/08/2022
 obtained: Event
 mega: false
