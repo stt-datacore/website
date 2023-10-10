@@ -3,9 +3,9 @@ name: Breen Disguise Kira
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 events: 28
-in_portal: true
+in_portal:
 date: 29/09/2020
 obtained: Pack
 mega: false

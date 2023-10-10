@@ -5,7 +5,7 @@ series: snw
 memory_alpha:
 bigbook_tier: 4
 events: 19
-in_portal: true
+in_portal:
 date: 12/12/2022
 obtained: Pack
 mega: false
