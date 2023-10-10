@@ -5,7 +5,7 @@ series: pic
 memory_alpha:
 bigbook_tier: 9
 events: 21
-in_portal:
+in_portal: true
 date: 16/02/2022
 obtained: Event
 mega: false

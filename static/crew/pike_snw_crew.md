@@ -5,7 +5,7 @@ series: snw
 memory_alpha:
 bigbook_tier: 5
 events: 12
-in_portal:
+in_portal: true
 date: 01/06/2022
 obtained: Giveaway
 mega: false

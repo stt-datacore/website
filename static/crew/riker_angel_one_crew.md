@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 8
 events: 30
-in_portal:
+in_portal: true
 date: 25/07/2016
 obtained: Event
 mega: false
