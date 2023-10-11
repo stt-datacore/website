@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-Suspiria never bothered to give Tanis his VIP pass to the “later losers” section of top voyage power, so he’s fallen faster and farther than a nice skill set like his should have. Primarily suitable for new players who can acquire multiple stars at once, Tanis will often get credit for potential that goes unrealized in practice.
+Suspiria never bothered to give Tanis his VIP pass to the “later losers” section of top Voyage power, so he’s fallen faster and farther than a nice Skill set like his should have. 
 
-But what about that huge MED base? Why did the Big Book jokers make his scorecard so red? Your beef is with WRG, dear reader, who saw fit to give MED less than 8% appearance on daily shuttles (and not much better for events) compared to, say, 26% CMD for daily shuttles or ~32% SEC in events.
+But what about that huge MED Base? Why did the Big Book jokers make his scorecard so red? Your beef is with WRG, dear reader, who saw fit to give MED less than 8% appearance on daily Shuttles (and not much better for Events) compared to, say, 26% CMD for daily Shuttles or ~32% SEC in Events.
 
-The two conflicting interests here are that while Tanis is powerful in areas and MED can be an extremely scarce resource in the early game depending on how new releases go, It’s also nigh impossible to fuse super rares in time to utilize their voyage ability unless they have top shelf power and MED bases lack for opportunity far more so than the other skills.
+A very thin Trait list has only borne the fruit of a single Collection as it stands, and unless some very large Traits find themselves aligned to future releases, with one he shall stay.
 
 As far as being a sociopath, cocky narcissist, and handing over a starship's complement of crew like lambs to the slaughter purely to satisfy the revenge bloodlust of his evil god/mother/overlord... Well, nobody's perfect.
