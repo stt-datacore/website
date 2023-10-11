@@ -174,7 +174,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             alignItems: "center",
             textAlign: 'left',
             overflowY: 'auto',
-            maxHeight: '15em'
+            maxHeight: '40em'
         }}>
                 <div style={rowStyle}>
                     <div style={textStyle}>Measure Limit<br />(Magic Number):</div>
