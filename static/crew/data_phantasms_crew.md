@@ -3,11 +3,11 @@ name: Phantasms Data
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 3
-events: 38
+bigbook_tier: -1
+events: 0
 in_portal:
-date: 03/10/2023
-obtained: Giveaway
+date:
+obtained:
 mega: false
 published: true
 ---
