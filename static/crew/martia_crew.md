@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Move over B'Elanna, we have a new definition of volatile. Martia erupted for three consecutive mega events in mid-2019 to tredecuple (I looked it up) her event count and has historically been an all or nothing event option from year to year.
-
-Her trait mélange, which should include Brutal for the build cost, may have room for even more, but with aged bases, this Brady Bunch star is almost purely a collection consideration. Everything but Chamelod is on the table and a six collection ceiling is absolutely peachy for mid-to-late game players utilizing dead end beholds as an opportunity to work on stacking skill boosts to pump up their legendary pieces.
+The best Chameloid in the game, Martia lives and dies by the Traits. Incredibly, they’ve given her a solid Event history with several Mega Event bonuses, and her serviceable Bases have allowed her to chip in on Faction Shuttles during those Event types. A six Collection ceiling makes her a solid choice for Beholds, even if her build cost is Brutal when it comes time to Equip her.

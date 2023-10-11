@@ -12,9 +12,6 @@ mega: false
 published: true
 ---
 
-Any discussion of Dahj that doesn't involve her footwear choices or Kid Vid glasses has to start with her voyage ability, where she’s one of the few notable SEC/SCI primary/secondary options for that perennially scarce combo. Her overall skill set isn’t all that rare and her anti-matter seat options are average at best, but her skill order will produce chances for use in a skill pair that can be tough to stack.
+Any discussion of Dahj that doesn't involve her footwear choices or Kid Vid glasses has to start with her Trait list, which at this point in the game is the sole thing to pay attention to about a crew without viable Voyage power, Gauntlet prowess, or Ship Ability.
 
-In the brave new world of WRG event “planning”, where no show or cast bonuses can be counted on, our crystal ball is cloudier than ever. The precedent of Lore/B4 not counting for Data events dictates that variant bonuses for Dahj won’t be frequent. Her strong base metrics will most often be relegated to daily shuttles, but her disruptor will be able to bully its way onto almost any faction event she snags a bonus for.
-
-
-It’s fair to question the longevity of crew who are mainly voyage options, but there’s still plenty of daily use to be had here and the full book on Picard show crew hasn’t been written yet.
+Already having cashed in both of her most likely Traits for Collections, Dahj is left with a few bloated options which are unlikely at best to provide more Collections or bonuses on the weekend. Without all but a slim possibility for other variants, her Event chances rely on her Trait list, which as mentioned is not rife with bonus options. If you come across her in a Behold, know you are getting a crew with slim value in the Event/Collection bonus era.
