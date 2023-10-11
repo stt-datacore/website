@@ -5,6 +5,7 @@ import { OptionsBase } from '../base/optionsmodal_base';
 import { BetaTachyonSettings } from '../../model/worker';
 
 interface InternalSettings {
+    name?: string,
     // Voyages Improved
     improved: number | string,
     // Base Power Score
@@ -42,6 +43,65 @@ export interface BetaTachyonSettingsProps {
 	isOpen: boolean;
 };
 
+export function settingsToPermalink(settings: BetaTachyonSettings) {
+    let params = new URLSearchParams();
+    params.set("imp", settings.improved.toString());
+    params.set("pow", settings.power.toString());
+    params.set("cite", settings.citeEffort.toString());
+    params.set("am", settings.antimatter.toString());
+    params.set("portal", settings.portal.toString());
+    params.set("never", settings.never.toString());
+    params.set("col", settings.collections.toString());
+    params.set("rare", settings.skillRare.toString());
+    params.set("score", settings.score.toString());
+    params.set("tri", settings.triplet.toString());
+    params.set("magic", settings.magic.toString());
+
+    if (settings.name) {
+        params.set('name', settings.name);
+    }
+
+    let host = "";
+
+    if (!globalThis.window) host = (process.env.GATSBY_DATACORE_URL ?? "") as string;
+    else host = globalThis.window.location.origin + "/";
+
+    return `${host}cite-opt?${params.toString()}`;
+}
+
+export function permalinkToSettings() {
+    if (!globalThis.window) return undefined;
+    let params = new URLSearchParams(globalThis.window.location.search);    
+    if (!params.size) return undefined;
+
+    let newConfig = {
+        ... defaultSettings,
+        improved: Number.parseFloat(params.get("imp") ?? ""),
+        power: Number.parseFloat(params.get("pow") ?? ""),
+        citeEffort: Number.parseFloat(params.get("cite") ?? ""),
+        antimatter: Number.parseFloat(params.get("am") ?? ""),
+        portal: Number.parseFloat(params.get("portal") ?? ""),
+        never: Number.parseFloat(params.get("never") ?? ""),
+        collections: Number.parseFloat(params.get("col") ?? ""),
+        skillRare: Number.parseFloat(params.get("rare") ?? ""),
+        score: Number.parseFloat(params.get("score") ?? ""),
+        triplet: Number.parseFloat(params.get("tri") ?? ""),
+        magic: Number.parseFloat(params.get("magic") ?? ""),
+    } as BetaTachyonSettings;
+
+    Object.keys(newConfig).forEach(k => {
+        if (k !== 'name') {
+            if (newConfig[k] === undefined || Number.isNaN(newConfig[k])) {
+                newConfig[k] = defaultSettings[k];
+            }    
+        }
+    });
+
+    newConfig.name = params.get("name") ?? undefined;
+
+    return newConfig;
+}
+
 export const defaultSettings = {
     // Voyages Improved
     improved: 1,
@@ -77,7 +137,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>(config.current);
 
     const [showCopied, setShowCopied] = React.useState(false);
-
+    
     if (typeof window !== 'undefined' && document.location.search) {
         let parm = new URLSearchParams();
         if (parm.get("pmc")?.length) {
@@ -107,7 +167,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 			onClose={closeModal}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
-			size='mini'
+			size='tiny'
 			closeIcon
 		>
 			<Modal.Header>
@@ -122,12 +182,13 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 			<Modal.Actions>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    {/* <Button 
+                    <Button 
                             style={{alignSelf: "flex-start"}}
                             content={`Permalink`}
-                            icon='chain'
+                            icon={showCopied ? 'green chain' : 'chain'}
+                            
                             onClick={() => copyPermalink()} />
-                            {showCopied && <div style={{margin: "0 0.5em"}}>Link copied to clipboard!</div>} */}
+                            
                         <Button style={{alignSelf: "flex-end"}} content='Load Defaults' onClick={() => setCurrent(defaultSettings)} />
                         </div>
                     <div>
@@ -154,8 +215,8 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
         } as React.CSSProperties;
 
         const textStyle = {
-            width: "100px",
-            textAlign: 'left',
+            width: "110px",
+            textAlign: 'right',
             margin: "0.5em",
             marginLeft: 0
         } as React.CSSProperties;
@@ -174,8 +235,18 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             alignItems: "center",
             textAlign: 'left',
             overflowY: 'auto',
-            maxHeight: '15em'
+            maxHeight: '40em'
         }}>
+                <div style={rowStyle}>
+                    <div style={textStyle}>Settings Name<br />(Optional):</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.name}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, name: value })}>
+                    </Input>                        
+                </div>
+               
                 <div style={rowStyle}>
                     <div style={textStyle}>Measure Limit<br />(Magic Number):</div>
                     <Input
@@ -289,12 +360,8 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             </div>
     }
 
-    function settingsToPermalink(value: BetaTachyonSettings): string {
-        return "";
-    }
-
     function copyPermalink() {
-        let url = settingsToPermalink(workConf.current);
+        let url = settingsToPermalink(innerSettingsToSettings());
         if (typeof navigator !== 'undefined') {
             navigator.clipboard.writeText(url);
             setShowCopied(true);
@@ -316,9 +383,9 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
         </Button>
 		);
 	}
-
-	function confirmSelection(): void {		
-		config.setCurrent({
+    function innerSettingsToSettings() {
+        return {
+            name: innerSettings.name,
             improved: Number.parseFloat(innerSettings.improved as string),
             power: Number.parseFloat(innerSettings.power as string),
             citeEffort: Number.parseFloat(innerSettings.citeEffort as string),
@@ -330,7 +397,10 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             score: Number.parseFloat(innerSettings.score as string),
             triplet: Number.parseFloat(innerSettings.triplet as string),
             magic: Number.parseFloat(innerSettings.magic as string)
-        });
+        } as BetaTachyonSettings;
+    }
+	function confirmSelection(): void {		
+		config.setCurrent(innerSettingsToSettings());
         setModalIsOpen(false);
 	}
 };
