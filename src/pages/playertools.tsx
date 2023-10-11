@@ -641,6 +641,7 @@ const PlayerToolsForm = (props: PlayerToolsFormProps) => {
 				content='Import data'
 				icon='paste'
 				labelPosition='right'
+				id='importData'
 			/>
 
 			{errorMessage && (
