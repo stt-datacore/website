@@ -18,7 +18,7 @@ import { appelate } from '../utils/misc';
 import ItemDisplay from './itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import { TinyStore } from '../utils/tiny';
-import BetaTachyonSettingsPopup, { defaultSettings } from './optimizer/btsettings';
+import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
 import CONFIG from './CONFIG';
 
@@ -73,7 +73,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	constructor(props: CiteOptimizerProps) {
 		super(props);
-		
+		let plink = permalinkToSettings();
+		if (plink) {
+			this.tiny.setValue<BetaTachyonSettings>('betaTachyonSettings', plink);
+		}
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,

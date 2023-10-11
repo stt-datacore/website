@@ -152,6 +152,7 @@ export interface EquipmentWorkerResults {
 }
 
 export interface BetaTachyonSettings {
+    name?: string,
     // Voyages Improved
     improved: number,
     // Base Power Score
