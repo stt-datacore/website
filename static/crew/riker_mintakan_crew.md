@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-His event history is rock solid on paper - ever-present SEC seating for Riker events with a fistful of eventable traits. Considering his dreary voyage, gauntlet, and arena power, he's best thought of as a luxury choice for late game players with more gas in the tank for weekends and reasonable collection value.
+His Event history is rock solid on paper - ever-present SEC seating for Riker Events with a fistful of viable Traits for bonuses. Considering his dreary Voyage, Gauntlet, and Ship Ability power, he's best thought of as a luxury choice for late game players with more gas in the tank for weekends and reasonable Collection value.

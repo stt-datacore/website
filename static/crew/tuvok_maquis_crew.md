@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Maquis Tuvok might make the cut on a personal list of crew who deserve a power refresh, considering the dearth of great Tuvok golds and baffling lack of love for Tuvok events. A SEC primary is great for events and SEC/SCI is a fine stack to target to upgrade your voyages, but due to either a lack of power or opportunity, this Tuvok ain’t the guy to help you do that.
+The prior version of this note referenced a dearth of great Legendary Tuvoks, and lo and behold Mirror Tuvok entered the Faction Store. What does this have to do with decrepit ol’ Maquis Tuvok? Nothing, really.
 
-The clutch ingredient that could help spur his redemption arc, however, is a pretty quality list of traits. They’ve provided the bulk of this variant’s event chances as well as some collection value with just a third of them pitching in. Should the rest of his trait lineup awaken, his value could be on the upswing as a low end behold or retrieval option.
+MaqVok does have a pretty quality list of Traits. They’ve provided the bulk of this variant’s Event chances as well as some Collection, and should the rest of his Trait lineup awaken, his value could be on the upswing as a solid Behold or Crew Retrieval choice, but until then, he may be a “choice of last resort” when he pops up in a trio of options.
