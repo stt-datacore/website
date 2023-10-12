@@ -173,8 +173,8 @@ const BetaTachyon = {
                 const sk = [] as ComputedBuff[];
                 let x = 0;
                 for (let skill of skills) {
-                    if (skill in crew) {
-                        sk.push({ ...crew[skill], skill: voyskills[x] });
+                    if (skill in crew.base_skills) {
+                        sk.push({ ...crew.base_skills[skill], skill: voyskills[x] });
                     }
                     x++;
                 }
