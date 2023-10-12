@@ -1471,21 +1471,10 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 
 export function getSkillOrder(crew: PlayerCrew | CrewMember) {
 	const sk = [] as ComputedBuff[];
-	let x = 0;
-	let y = 0;
+
 	for (let skill of Object.keys(CONFIG.SKILLS)) {
-		if (skill in crew) {
-			sk.push({ ...crew[skill], skill: skill });
-			y++;
-		}
-		x++;
-	}
-	if (y === 0) {
-		for (let skill of Object.keys(CONFIG.SKILLS)) {
-			if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
-				sk.push({ ...crew.base_skills[skill], skill: skill });
-				y++;
-			}
+		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
+			sk.push({ ...crew.base_skills[skill], skill: skill });
 		}
 	}
 	
