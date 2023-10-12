@@ -23,6 +23,7 @@ import { Skills } from "./item_presenters/classic_presenter";
 import { OwnedLabel } from "./crewtables/commonoptions";
 import { IRosterCrew } from "./crewtables/model";
 import { gradeToColor } from "../utils/crewutils";
+import ItemDisplay from "./itemdisplay";
  
 type VoyageHOFProps = {};
 
@@ -142,13 +143,23 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                                         gridGap: "1px",
                                     }}
                                 >
-                                    <div style={{ gridArea: "icon" }}>
-                                        <CrewTarget inputItem={crew} targetGroup="voyagehof">
-                                            <img
-                                                width={48}
-                                                src={`${process.env.GATSBY_ASSETS_URL}/${crew?.imageUrlPortrait}`}
+                                    <div style={{ gridArea: "icon", display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                        <ItemDisplay
+                                            itemSymbol={crew.symbol}
+                                            src={`${process.env.GATSBY_ASSETS_URL}/${crew?.imageUrlPortrait}`}
+                                            allCrew={context.core.crew}
+                                            rarity={context.player.playerData ? crew.rarity : crew.max_rarity}
+                                            maxRarity={crew.max_rarity}
+                                            targetGroup="voyagehof"
+                                            playerData={context.player.playerData}
+                                            size={64}
                                             />
-                                        </CrewTarget>
+                                        {/* <CrewTarget inputItem={crew} targetGroup="voyagehof">
+                                             <img
+                                                 width={48}
+                                                 src={`${process.env.GATSBY_ASSETS_URL}/${crew?.imageUrlPortrait}`}
+                                             />
+                                        </CrewTarget> */}
                                     </div>
                                     <div style={{ gridArea: "name" }}>
                                         <span style={{ fontWeight: "bolder", fontSize: "1.25em" }}>
