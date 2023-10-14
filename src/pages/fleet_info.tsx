@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Header, Label, Message, Icon, Table, Item, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import DataPageLayout from '../components/page/datapagelayout';
+import { GlobalContext } from '../context/globalcontext';
 
 type FleetInfoPageProps = {};
 
@@ -9,18 +10,23 @@ type FleetInfoPageState = {
 	fleet_id?: string;
 	fleet_data?: any;
 	errorMessage?: string;
+	errorTitle?: string;
 	factions?: any;
 	events?: any;
 };
-
+//
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	constructor(props: FleetInfoPageProps) {
 		super(props);
 
 		this.state = {
 			fleet_id: undefined,
 			fleet_data: undefined,
-			errorMessage: "Due to changes by the game developers, DataCore can no longer load fleet info."
+			errorTitle: "Fleet Info Returning Soon!!",
+			errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
 	}
 
@@ -39,7 +45,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('fleetid') && false) {
-			let fleet_id = urlParams.get('fleetid');
+			let fleet_id = urlParams.get('fleetid') ?? undefined;
 			this.setState({ fleet_id });
 
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info?fleetid=` + fleet_id)
@@ -54,15 +60,15 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	render() {
-		const { fleet_id, errorMessage, fleet_data, factions, events } = this.state;
+		const { fleet_id, errorMessage, errorTitle, fleet_data, factions, events } = this.state;
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
 				<DataPageLayout pageTitle='Fleet information'>
 					<React.Fragment>
 					{errorMessage && (
-						<Message negative>
-							<Message.Header>Unable to load fleet profile</Message.Header>
+						<Message style={{backgroundColor: 'darkorange'}}>
+							<Message.Header>{errorTitle}</Message.Header>
 							<pre>{errorMessage.toString()}</pre>
 						</Message>
 					)}
@@ -72,8 +78,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						</div>
 					)}
 					<p>
-						Are you looking to share your player profile? Go to the <Link to={`/playertools`}>Player Tools page</Link> to
-							upload your player.json and access other useful player tools.
+						Go back to <Link to={`/profile/?dbid=${this.context.player.playerData?.player.dbid}`}>Your Profile</Link>
 						</p>
 					</React.Fragment>
 				</DataPageLayout>
