@@ -71,8 +71,8 @@ export const Collaborator = (props: CollaboratorProps) => {
 		spotter: {
 			id: control.chain.id,
 			solves: control.solves,
-			attemptedCrew: control.trials.filter(trial => trial.trialType === 'attempted').map(trial => trial.crewSymbol),
-			pendingCrew: control.trials.filter(trial => trial.trialType === 'pending').map(trial => trial.crewSymbol),
+			attemptedCrew: control.trials.filter(trial => trial.trialType === 'attemptedCrew').map(trial => trial.crewSymbol),
+			pendingCrew: control.trials.filter(trial => trial.trialType === 'pendingCrew').map(trial => trial.crewSymbol),
 			ignoredTraits: [] as string[]
 		},
 		setSpotter,
@@ -234,7 +234,6 @@ export const Collaborator = (props: CollaboratorProps) => {
 		}
 
 		const route = `${API_URL}api/getBossBattle?id=${bossBattleId}`;
-		//const route = '/structured/fbb_bossbattles.json';
 		return fetch(route)
 			.then((response: Response) => response.json())
 			.then((result: Collaboration[]) => {
@@ -257,7 +256,7 @@ export const Collaborator = (props: CollaboratorProps) => {
 				collaboration.trials.forEach(trial => {
 					const existing = validatedTrials.find(existing => existing.crewSymbol === trial.crewSymbol);
 					if (existing) {
-						if (trial.trialType === 'attempted') existing.trialType = 'attempted';	// Assume attempt is more accurate on duplicate trial
+						if (trial.trialType === 'attemptedCrew') existing.trialType = 'attemptedCrew';	// Assume attempt is more accurate on duplicate trial
 					}
 					else {
 						validatedTrials.push(trial);
@@ -402,8 +401,8 @@ export const Collaborator = (props: CollaboratorProps) => {
 					const existing = control.trials.find(existing => existing.crewSymbol === trial.crewSymbol && existing.trialType === trial.trialType);
 					if (!existing) newTrials.push(trial);
 				});
-				const attemptedCrew = newTrials.filter(trial => trial.trialType === 'attempted').map(trial => trial.crewSymbol);
-				const pendingCrew = newTrials.filter(trial => trial.trialType === 'pending').map(trial => trial.crewSymbol);
+				const attemptedCrew = newTrials.filter(trial => trial.trialType === 'attemptedCrew').map(trial => trial.crewSymbol);
+				const pendingCrew = newTrials.filter(trial => trial.trialType === 'pendingCrew').map(trial => trial.crewSymbol);
 				setDetectedChanges({
 					newChain, newSolves, attemptedCrew, pendingCrew
 				});
