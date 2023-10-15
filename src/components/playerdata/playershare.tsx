@@ -20,13 +20,15 @@ type PlayerShareNotificationsProps = {
 	dbid: string;
 	activePanel: string | undefined;
 	setActivePanel: (activePanel: string | undefined) => void;
+	setDbidHash: (value?: string) => void;
+	dbidHash?: string;
 };
 
 export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
-	const { dbid, activePanel, setActivePanel } = props;
+	const { dbid, activePanel, setActivePanel, dbidHash, setDbidHash } = props;
 
 	const [nagPrefLoaded, setNagPrefLoaded] = React.useState(false);
 	const [showShareNagPref, setShowShareNagPref] = useStateWithStorage(dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: () => setNagPrefLoaded(true) });
@@ -63,6 +65,7 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 			}
 			<PlayerProfileUploader
 				dbid={dbid}
+				setDbidHash={setDbidHash}
 				activePanel={activePanel}
 				setActivePanel={setActivePanel}
 			/>
@@ -72,14 +75,15 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 
 type PlayerSharePanelProps = {
 	requestDismiss: () => void;
+	dbidHash?: string;
 };
 
 export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
-	const { requestDismiss } = props;
-
+	const { requestDismiss, dbidHash } = props;
+	
     const dbid = playerData?.player.dbid ?? '';
 
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(dbid + '/tools/profileAutoUpdate', false, { rememberForever: true });
@@ -87,7 +91,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 
     if (!playerData) return (<></>);
 
-	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + `/profile?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?dbidhash=${dbidHash}` : `/profile?dbid=${dbid}`) : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -197,6 +201,7 @@ type PlayerProfileUploaderProps = {
 	dbid: string;
 	activePanel: string | undefined;
 	setActivePanel: (activePanel: string | undefined) => void;
+	setDbidHash: (value: string) => void;
 };
 
 const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
@@ -204,7 +209,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const { strippedPlayerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
 	const { dbid, activePanel, setActivePanel } = props;
-
+	const { setDbidHash } = props;
 	const [showResponse, setShowResponse] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
@@ -266,9 +271,15 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 				'Content-Type': 'application/json'
 			},
 			body: jsonBody
-		}).then(() => {
+
+		})
+		.then((response) => response.json())		
+		.then((data) => {
 			// if (uploadState === ProfileUploadState.ManualUpdate)
 			// 	if (typeof window !== 'undefined') window.open(profileLink, '_blank');
+			if (data.dbidhash && !!setDbidHash) {
+				setDbidHash(data.dbidhash as string);
+			}
 			if (updateSessionState) updateSessionState('profileUpload', ProfileUploadState.Success);
 			setErrorMessage(undefined);
 		}).catch((error: any) => {

@@ -15,12 +15,15 @@ const Dashboard = (props: DashboardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { activePanel, setActivePanel } = props;
+	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 
 	return (
 		<React.Fragment>
 			<Announcement />
 			{playerData &&
 				<PlayerShareNotifications
+					dbidHash={dbidHash}
+					setDbidHash={setDbidHash}
 					dbid={`${playerData.player.dbid}`}
 					activePanel={activePanel}
 					setActivePanel={setActivePanel}
@@ -29,6 +32,7 @@ const Dashboard = (props: DashboardProps) => {
 
 			{activePanel === 'share' &&
 				<PlayerSharePanel
+					dbidHash={dbidHash}
 					requestDismiss={() => { setActivePanel(undefined); }}
 				/>
 			}
