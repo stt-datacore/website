@@ -277,8 +277,8 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 		.then((data) => {
 			// if (uploadState === ProfileUploadState.ManualUpdate)
 			// 	if (typeof window !== 'undefined') window.open(profileLink, '_blank');
-			if (data.dbidhash && !!setDbidHash) {
-				setDbidHash(data.dbidhash as string);
+			if (data.dbidHash && !!setDbidHash) {
+				setDbidHash(data.dbidHash as string);
 			}
 			if (updateSessionState) updateSessionState('profileUpload', ProfileUploadState.Success);
 			setErrorMessage(undefined);
