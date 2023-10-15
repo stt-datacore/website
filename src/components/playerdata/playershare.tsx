@@ -91,7 +91,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 
     if (!playerData) return (<></>);
 
-	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?dbidhash=${dbidHash}` : `/profile?dbid=${dbid}`) : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${process.env.GATSBY_DATACORE_URL}profile/?hash=${dbidHash}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`);
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -108,7 +108,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						<p>You can upload your profile to DataCore to more easily share some data with other players. Once shared, your public profile will be accessible by anyone with this link:</p>
 						<p style={{ margin: '1.25em 0', textAlign: 'center' }}>
 							<span style={{ fontWeight: 'bold', fontSize: '1.25em', marginRight: '1em' }}>
-								<Link to={`/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
+								<Link to={!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
 							</span>
 							<Popup
 								content='Copied!'

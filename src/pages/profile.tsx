@@ -36,6 +36,7 @@ type ProfilePageProps = {
 
 type ProfilePageState = {
 	dbid?: string;
+	dbidHash?: string;
 	errorMessage?: string;
 	lastModified?: Date;
 	mobile: boolean;
@@ -113,7 +114,11 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		}
 		if (urlParams.has('dbid')) {
 			this.setState({ dbid: urlParams.get('dbid') as string });
-		} else if (urlParams.has('discord') && window.location.hash !== '') {
+		}
+		else if (urlParams.has('hash')) {
+			this.setState({ dbidHash: urlParams.get('hash') as string });
+		}
+		else if (urlParams.has('discord') && window.location.hash !== '') {
 			let discordUsername = urlParams.get('discord');
 			let discordDiscriminator = window.location.hash.replace('#', '');
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
@@ -135,7 +140,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	private initing = false;
 
 	componentDidUpdate() {
-		const { dbid, errorMessage } = this.state;
+		const { dbidHash, dbid, errorMessage } = this.state;
 		const { playerData } = this.context.player;
 
 		const me = this;
@@ -143,11 +148,19 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		
 		me.initing = true;
 
-		if (dbid && !playerData?.player && !errorMessage) {
+		if ((dbid || dbidHash) && !playerData?.player && !errorMessage) {
 			let lastModified: Date | undefined = undefined;
 			let hash = v4();
+			let url: string;
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&hash=${hash}`)
+			if (dbidHash) {
+				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?hash=${dbidHash}&h=${hash}`
+			}
+			else {
+				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
+			}
+			
+			fetch(url)
 				.then(response => {
 					return response.json();
 				})
