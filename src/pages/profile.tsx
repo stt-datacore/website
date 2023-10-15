@@ -160,19 +160,19 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
 			}
 
-			fetch(url)
-				.then(response => {
-					return response.json();
-				})
+			const fetchUrl = url;
+
+			fetch(fetchUrl)
+				.then(response => response.json())
 				.then(serverResponse => {					
 					let lmstr = serverResponse.timeStamp as string;
 					if (lmstr) lastModified = new Date(Date.parse(lmstr));
-					let playerData = serverResponse.playerData;
+					let playerData: PlayerData = serverResponse.playerData;
 
 					if (isWindow) window.setTimeout(() => {
 						if (me.props.props.setPlayerData) {
 							me.props.props.setPlayerData(playerData);
-							me.setState({... this.state, lastModified : lastModified });
+							me.setState({... this.state, lastModified : lastModified, dbid: serverResponse.dbid.toString() });
 							if (me.props.props.setLastModified) {
 								me.props.props.setLastModified(lastModified);
 							}
