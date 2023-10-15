@@ -53,6 +53,21 @@
 		}
 	},
 	{
+		"title": "A Tense Temporal Conundrum",
+		"choiceA": {
+			"text": "Tell him a palatable version of the truth.",
+			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+		},
+		"choiceB": {
+			"text": "Lie to him.",
+			"reward": ["100 :honor:", "75 :chrons:", "500 :honor:"]
+		},
+		"choiceC": {
+			"text": "Contact the DTI.",
+			"reward": ["100 :honor:", "75 :chrons:", "900 :honor:"]
+		}
+	},
+	{
 		"title": "Blood-Red Tide",
 		"choiceA": {
 			"text": "Avoid taking sides in the rebellion.",
@@ -162,6 +177,21 @@
 		"choiceC": { "text": "Ignore the distress call.", "reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"] }
 	},
 	{
+		"title": "Dangerous Whispers",
+		"choiceA": {
+			"text": "Tip the captain off.",
+			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+		},
+		"choiceB": {
+			"text": "Try to persuade the crew plotting a potential mutiny.",
+			"reward": ["600 :honor:", "75 :chrons:"]
+		},
+		"choiceC": {
+			"text": "Inform Starfleet.",
+			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+		}
+	},
+	{
 		"title": "First Author",
 		"choiceA": {
 			"text": "Allow the researcher to claim the doctor's work.",
@@ -234,6 +264,28 @@
 		}
 	},
 	{
+		"title": "Lost Among the Stars",
+		"choiceA": {
+			"text": "Search for the ship or any other survivors.",
+			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+		},
+		"choiceB": {
+			"text": "Tell the survivor I cannot take the risk.",
+			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+		}
+	},
+	{
+		"title": "Mystery Haul",
+		"choiceA": {
+			"text": "Retrieve it.",
+			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+		},
+		"choiceB": {
+			"text": "Leave it.",
+			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+		}
+	},
+	{
 		"title": "Next Stop Absolution",
 		"choiceA": {
 			"text": "Take the stowaway to see his family.",
@@ -291,6 +343,21 @@
 		"choiceB": {
 			"text": "Give the mining rights to the Ferengi company, who found the deposit.",
 			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+		}
+	},
+	{
+		"title": "Reality Unwound",
+		"choiceA": {
+			"text": "Use patience and empathy to get through to him.",
+			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+		},
+		"choiceB": {
+			"text": "Take the officer back to the ship by force.",
+			"reward": ["600 :honor:", "75 :chrons:"]
+		},
+		"choiceC": {
+			"text": "Turn the situation over to Starfleet higher-ups.",
+			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
 		}
 	},
 	{
