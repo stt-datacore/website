@@ -154,12 +154,12 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			let url: string;
 
 			if (dbidHash) {
-				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?hash=${dbidHash}&h=${hash}`
+				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
 			}
 			else {
 				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
 			}
-			
+
 			fetch(url)
 				.then(response => {
 					return response.json();
