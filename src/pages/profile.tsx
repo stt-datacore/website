@@ -147,7 +147,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			let lastModified: Date | undefined = undefined;
 			let hash = v4();
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}/profiles/${dbid}&hash=${hash}`)
+			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/${dbid}&hash=${hash}`)
 				.then(response => {
 					return response.json();
 				})
