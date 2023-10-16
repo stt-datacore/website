@@ -266,10 +266,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 
 	
 	function uploadProfile(): void {
-		let jsonBody = JSON.stringify({
-			dbid: strippedPlayerData?.player.dbid,
-			player_data: strippedPlayerData
-		});
+		let jsonBody = JSON.stringify(strippedPlayerData);
 
 		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
 			method: 'post',
