@@ -3,8 +3,8 @@ name: Vice Admiral Dougherty
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 10
-events: 12
+bigbook_tier: 9
+events: 13
 in_portal: true
 date: 11/12/2018
 obtained: Pack

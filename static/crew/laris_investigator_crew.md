@@ -3,7 +3,7 @@ name: Investigator Laris
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 19
 in_portal: true
 date: 08/07/2021

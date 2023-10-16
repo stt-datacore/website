@@ -3,8 +3,8 @@ name: Combat Medic Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
-events: 25
+bigbook_tier: 7
+events: 26
 in_portal: true
 date: 06/03/2017
 obtained: Event

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Lucky to have debuted with any semblance of usability at all, that has begun drying up for Fisher. A part time voyager with reasonable anti-matter chances, Fisher’s subpar raw power has seen him drop from use there on many rosters while almost any new crew approximating his skill set should offer better stats.
+Lucky to have debuted with any semblance of usability at all, that has begun drying up for Fisher. Once a part-time Voyager with reasonable Anti-matter chances, Fisher’s subpar raw power has seen him drop from use there on many rosters while almost any new crew approximating his Skill set should offer better stats.
 
-With a very tenuous link to relevance via traits, this is a card to safely avoid in beholds unless you have several stars gathered on him already.
+With a very tenuous link to relevance via Traits, this is a card to safely avoid in Beholds unless you have several stars gathered on him already.
