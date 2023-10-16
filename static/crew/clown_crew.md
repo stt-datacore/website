@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 22
+events: 23
 in_portal:
 date: 20/12/2017
 obtained: Voyage

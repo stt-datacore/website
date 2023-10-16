@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 10
-events: 13
+events: 14
 in_portal: true
 date: 02/10/2017
 obtained: Event
