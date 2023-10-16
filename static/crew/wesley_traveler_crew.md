@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A brutally bad card, Vestley (great nickname) was done dirty by being released with stats three years older than he was. The only path to redemption here is his trait list. A few of his entries are extremely small, niche traits while civilian is huge, but with collections numbering in the dozens, as long as they’re not Human, Federation, or Starfleet, we can only assume they’ll have their day. Freeze and forget, or better yet - don’t let him aboard.
+A brutally bad card, Vestley (great nickname) was done dirty by being released with Stats three years older than he was. The only path to redemption here is his Trait list. A few of his entries are extremely small, niche traits while Civilian is huge, but with Collections numbering in the dozens, as long as they’re not Human, Federation, or Starfleet, we can only assume they’ll have their day. Freeze and forget, or better yet - don’t let him aboard.

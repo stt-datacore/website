@@ -3,8 +3,8 @@ name: Keyla Terrana
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
-events: 23
+bigbook_tier: 5
+events: 24
 in_portal: true
 date: 01/03/2022
 obtained: Pack
