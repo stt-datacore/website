@@ -267,7 +267,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	function uploadProfile(): void {
 		const jsonBody = JSON.stringify(strippedPlayerData);
 
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/post_profile`, {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
