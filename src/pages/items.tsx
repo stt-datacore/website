@@ -33,7 +33,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	return (
 
-		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'crew', 'items', 'cadet']}>
+		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
 			{hasPlayer &&
 			<Step.Group>
