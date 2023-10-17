@@ -188,7 +188,7 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 				ignoredTraits: []
 			});
 		}
-	}, [bossBattleId]);
+	}, [ephemeral, bossBattleId]);
 
 	if (!bossBattle ||!spotter) return <></>;
 
