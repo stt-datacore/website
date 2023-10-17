@@ -50,7 +50,7 @@ const ItemInfoPage = () => {
 	const [header, setHeader] = React.useState<string | undefined>('');
 
 	return (
-		<DataPageLayout demands={['all_buffs', 'crew', 'items', 'cadet']}>
+		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
 		</DataPageLayout>
 
