@@ -152,8 +152,8 @@ const CollectionOptimizer = {
                         if (!r) r = a.max_rarity - b.max_rarity;
                         if (!r)
                             r =
-                                b.rarity / (b.highest_owned_rarity ?? b.max_rarity) -
-                                a.rarity / (a.highest_owned_rarity ?? a.max_rarity);
+                                (b.rarity / (b.highest_owned_rarity ?? b.max_rarity)) -
+                                (a.rarity / (a.highest_owned_rarity ?? a.max_rarity));
                         if (!r) r = b.level - a.level;
                         if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
                         if (!r) r = bcount - acount;
@@ -571,9 +571,6 @@ const CollectionOptimizer = {
                 let seengroups = {} as { [key: string]: ComboCostMap };            
                 col.comboCost = [];		
 
-                if (col.collection.name === "Elysian Kingdom") {
-                    console.log("break here");
-                }
                 for(let combo of col.combos ?? []) {
                     let comboname = combo.names.join(" / ");
                     let crew = getOptCrew(col, costMode, searches, comboname);
