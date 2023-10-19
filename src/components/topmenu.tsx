@@ -96,6 +96,9 @@ const useMainMenuItems = (verticalLayout: boolean) => {
 		</Menu.Item>,
 		<Menu.Item key='/behold' onClick={() => navigate('/behold')}>
 			Behold
+		</Menu.Item>,
+		<Menu.Item key='/mulehunter' onClick={() => navigate('/mulehunter')}>
+			Mule hunter
 		</Menu.Item>
 	];
 
