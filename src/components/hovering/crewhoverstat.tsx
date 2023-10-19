@@ -39,34 +39,62 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
     
     protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
+        let key = "buffmode";
+        let def = "max" as PlayerBuffMode;
+        if (this.context.player.playerData) {
+            key += "_player";
+            def = 'player';
+        }
+
+        return this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
-        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+        let key = "buffmode";
+        if (this.context.player.playerData) key += "_player";
+        this.tiny.setValue<PlayerBuffMode>(key, value, true);
     }
 
     protected get immortalMode(): PlayerImmortalMode {
+        let key = "immomode";
+        let mode = "full" as PlayerImmortalMode;
+
+        if (this.context.player.playerData) {
+            key += "_player";
+            mode = 'owned';
+        }
+
         let value: PlayerImmortalMode;
         if (this.props.inputItem) {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, 'owned') ?? 'owned';
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(
+                    key + "/" + this.props.inputItem.symbol,
+                    mode
+                ) ?? mode;
+        } else {
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(key, mode) ?? mode;
         }
-        else {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
-        }
-             
+
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
+        let key = "immomode";
+        if (this.context.player.playerData) key += "_player";
+
         if (value == this.immortalMode) return;
         if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }       
+            this.tiny.setValue<PlayerImmortalMode>(
+                key + "/" + this.props.inputItem.symbol,
+                value,
+                true
+            );
+        } else {
+            this.tiny.setValue<PlayerImmortalMode>(key, value, true);
+        }        
     }
+
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
