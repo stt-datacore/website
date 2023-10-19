@@ -3,7 +3,7 @@ name: All Good Things La Forge
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 34
 in_portal: true
 date: 28/11/2022

@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-I would invite you to flip back and forth between Torres’ crew page and that of Sergey and Helena Rozhenko. Not the most promising first impression, but she does have a couple perks to help her escape obscurity.
-
-There's a huge gulf between her DIP base and the next best Torres option (not you, mom), even at 1/5. Unfortunately, you won't be able to stretch that equity as far as you'd like since this version comes without the Klingon tag, whose bonus pool she’d also do well amongst.
-
-Her handful of viable traits are about as likely as any for future collection and event bonuses, leaving her future value a game of chance set in WRG’s hands. Just don’t expect anything resembling consistent usage, even once fully fused.
+We almost never reference a crew’s tier in their note as it’s such a variable metric which can render the note out of date. But in order for WRG to make this one look foolish, Torres is going to need to hit on several collections in succession to escape the sludge of tier ten. Brute Force Isn’t Going To Do It as her bases are fitting of the 2019 two-skiller that she is and Torres has always been a second (or third) level event name. If you’re forced into selecting her in a behold, take solace in that she hasn’t yet hit her collection ceiling.

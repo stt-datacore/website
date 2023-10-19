@@ -3,7 +3,7 @@ name: Lieutenant Tarah
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 17
 in_portal: true
 date: 01/02/2018

@@ -3,7 +3,7 @@ name: Tawi'Yan Alexander
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 13
 in_portal: true
 date: 30/12/2021

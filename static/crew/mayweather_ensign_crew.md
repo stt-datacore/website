@@ -4,7 +4,7 @@ rarity: 1
 series: ent
 memory_alpha:
 bigbook_tier: 9
-events: 18
+events: 19
 in_portal: true
 date: 03/01/2016
 obtained: Launch

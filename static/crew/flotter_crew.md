@@ -3,7 +3,7 @@ name: Flotter
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 27
 in_portal: true
 date: 29/10/2019
