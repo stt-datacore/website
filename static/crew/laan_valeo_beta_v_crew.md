@@ -4,7 +4,7 @@ rarity: 5
 series: snw
 memory_alpha:
 bigbook_tier: 3
-events: 14
+events: 15
 in_portal:
 date: 04/10/2023
 obtained: Mega

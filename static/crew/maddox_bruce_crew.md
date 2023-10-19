@@ -3,7 +3,7 @@ name: Bruce Maddox
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 19
 in_portal:
 date: 04/05/2023

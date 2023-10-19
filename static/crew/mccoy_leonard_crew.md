@@ -3,7 +3,7 @@ name: Dr. Leonard McCoy
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 events: 26
 in_portal:
 date: 05/09/2018

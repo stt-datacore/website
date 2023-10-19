@@ -3,7 +3,7 @@ name: Sarina Douglas
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 9
 in_portal: true
 date: 14/06/2018

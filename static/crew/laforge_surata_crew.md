@@ -3,7 +3,7 @@ name: Surata IV La Forge
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 33
 in_portal: true
 date: 08/06/2022

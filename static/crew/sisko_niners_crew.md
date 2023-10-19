@@ -3,8 +3,8 @@ name: Niners Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 39
+bigbook_tier: 7
+events: 40
 in_portal: true
 date: 20/11/2017
 obtained: Pack

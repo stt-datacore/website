@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 2
-events: 21
+events: 22
 in_portal:
 date: 25/07/2023
 obtained: Gauntlet

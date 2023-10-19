@@ -3,7 +3,7 @@ name: Dress Uniform Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 31
 in_portal: true
 date: 13/11/2019
