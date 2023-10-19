@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-There are so few legendary MED/CMD crew that veteran players know them by heart. And in the same vein as Reverend Phlox, Pollard’s current value is very much tied to the simple lack of competition in her best areas.
+If you are an elderly player, you remember how clutch Dr. Pollard and Reverend Phlox were for your MED/CMD Voyages for literally YEARS. If you are a new player, asking in your fleet Discord, “Should I take a Dr. Pollard in this Legendary Behold?”, please take a look at this crew note first and don’t listen to the elderly players who are looking back at her with a rose-colored VISOR.
 
-Pollard’s raw voyage power is a big Oof these days and would be about two years out of service if she were wearing CMD/DIP/SEC colors. But although her usage in that area is narrow, there are a few skill combos for which she’s still guaranteed to ride. The ability to boost everybody’s weakest voyages is a siren’s call to many players and even though it’s rarely the best long term return on citation investment, Pollard is still an option.
+Yes, Pollard has a fantastic Skill set, one that if she were released again today with 2023 numbers, she would be an instacite and maybe dupe candidate. However, her Skill set no longer matters much with 2019 Voyage power, and she’s left as the sum of her Traits. 
 
-In a post-Disco event world, Pollard is stranded on an island and trying to rub her two viable traits together to start a fire. Again, due to a lack of proper MED/CMD options and considering strong base metrics for her skill set, Pollard is more of a non-bonus option than it might first appear. Tapped out on collectable traits yet having grabbed at least a pair of collections, Doc Tracy is doing a highwire act to maintain value and a few well placed crew additions could send her tumbling.
+A trio of Collections is all she’s likely to ever get, and while those Traits we mentioned do include the hidden “dsc” Trait that gave her so many Mega Event bonuses, it’s unlikely to ever reach the 2017-2019 heights, despite a resurrection in December 2022. You can safely take her from a Legendary Behold if your other options are very bad, and don’t let your elderly player peers say “Back in my day, Pollard was the best blah blah blah…”

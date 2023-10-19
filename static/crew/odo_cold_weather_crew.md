@@ -3,8 +3,8 @@ name: Stranded Odo
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
-events: 29
+bigbook_tier: 7
+events: 30
 in_portal: true
 date: 27/03/2017
 obtained: Event

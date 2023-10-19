@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Two skill MED options have it rough, rough, rough. MED is the skill that shines on voyages while being hamstrung by terrible shuttle seating. In this case, Linnis hasn’t gotten to do very much of either.
+If Linnis Paris has popped up in your Legendary Behold, don’t even resist the urge to defenestrate your device while saying “Dammit, I’ve been Linnissed!”
 
-Despite a respectable trait count, Linnis has had several dud years with zero bonuses and her base certainly wouldn’t play on event shuttles without one. And with Ocampa unlikely to ever provide any value of note, her collection profile is average at best. New players could possibly utilize her in her 45% or 65% gauntlets, but if you’re forced into beholding her that early in your gameplay, you may as well torch the account and re-roll for a better RNG seed.
+Two skill MED options have it rough, rough, rough. MED is the Skill that shines on Voyages while being hamstrung by terrible Shuttle seating. In this case, Linnis hasn’t gotten to do very much of either.
+
+New players could possibly utilize her in her 45% or 65% Gauntlets, but if you somehow end up with Linnis as the best option in a very bad Legendary Behold, you can at least hope one of her Traits might give her a weekend bonus in an Event that features MED or SCI bonus crew, or that she ends up at her maximum likely Collection ceiling of three.

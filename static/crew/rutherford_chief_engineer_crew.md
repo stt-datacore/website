@@ -3,7 +3,7 @@ name: Chief Engineer Rutherford
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 21
 in_portal:
 date: 20/03/2023

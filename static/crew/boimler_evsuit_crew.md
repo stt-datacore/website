@@ -4,7 +4,7 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 4
-events: 22
+events: 23
 in_portal: true
 date: 20/09/2022
 obtained: WebStore
