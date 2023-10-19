@@ -1483,6 +1483,36 @@
     },
     {
         "symbol": "shrike_ship",
-        "battle_stations": []
+        "battle_stations": [
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "science_skill"
+            }
+        ]
+    },
+    {
+        "symbol": "gorn_destroyer_ship",
+        "battle_stations": [
+            {
+                "skill": "engineering_skill"
+            },
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "science_skill"
+            }
+        ]
     }
 ]
