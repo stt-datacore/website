@@ -3,7 +3,7 @@ name: Keevan
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 17
 in_portal: true
 date: 26/05/2016

@@ -4,7 +4,7 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 8
-events: 26
+events: 27
 in_portal: true
 date: 17/09/2020
 obtained: Event
@@ -14,6 +14,6 @@ published: true
 
 You'd think 'The Father of the Transporter' would be a more remarkable crew in Timelines. After all, Commander Trip "Charles" Tucker used to read his biography as a boy.
 
-As he stands, no pun intended, Emory isn't much more than a voyager. As a former campaign crew, a lot of players were probably able to realize that potential with four stars available in one go. If you’re looking at a ground floor investment, however, factor in the amount of time it would take to immortalize Del Paxton and if he’d still be useful in that area by the time you get there.
+As he stands, no pun intended, Emory wasn’t much more than a Voyager on debut, and no pun intended, that ship has now sailed. As a former Campaign crew, a lot of players were probably able to realize that potential with four stars available in one go, so remember to look forward and not back when considering crew potential on Voyages.
 
-Blunted bases aren't a huge concern given his lack of consistent event work and the low Faction ratio provided by living mega to mega, but his stat distribution doesn't translate into enough proficiency for much gauntlet play beyond the early game either. Emory could voyage for a while on some rosters, but with so few peripheral perks, you'll need to star him up early on to utilize him on voyages while you still can.
+With a shallow Trait list, he’s been lucky to capture the three Collections he has, and that Trait list does him no favors when it comes to possible Trait-based weekend bonuses. Maybe use him when he has a 45% Gauntlet for fun? I dunno.

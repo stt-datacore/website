@@ -3,8 +3,8 @@ name: Dejaren
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
-events: 23
+bigbook_tier: 4
+events: 24
 in_portal: true
 date: 08/01/2020
 obtained: Event

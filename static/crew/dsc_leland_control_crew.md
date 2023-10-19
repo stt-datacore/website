@@ -3,7 +3,7 @@ name: Control Leland
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 32
 in_portal: true
 date: 28/01/2020

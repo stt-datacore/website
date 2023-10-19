@@ -3,7 +3,7 @@ name: Tendi and The Dog
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 10
 in_portal: true
 date: 03/08/2022

@@ -3,7 +3,7 @@ name: Durango Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 32
 in_portal: true
 date: 03/04/2017
