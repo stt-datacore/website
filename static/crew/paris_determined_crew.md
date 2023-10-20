@@ -3,7 +3,7 @@ name: Determined Paris
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 45
 in_portal: true
 date: 21/05/2020
