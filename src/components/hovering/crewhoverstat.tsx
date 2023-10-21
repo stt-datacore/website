@@ -120,7 +120,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
     protected propertyChanged = (key: string) => {
         if (key === 'cancelled') return;
-        if (key === 'buffmode' || key.startsWith('immomode/') || key === 'immomode') {
+        if (key === 'buffmode' || key === 'buffmode_player' || key.startsWith('immomode/') || key.startsWith('immomode_player/') || key === 'immomode') {
             const { targetId } = this.state;
             if (this.current === targetId) {
                 this.tiny.setRapid('displayItem', this.prepareDisplayItem(this.props.inputItem ?? undefined));
@@ -194,33 +194,60 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
     }
    
     protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
+        let key = "buffmode";
+        let def = "max" as PlayerBuffMode;
+        if (this.context.player.playerData) {
+            key += "_player";
+            def = 'player';
+        }
+
+        return this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
-        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+        let key = "buffmode";
+        if (this.context.player.playerData) key += "_player";
+        this.tiny.setValue<PlayerBuffMode>(key, value, true);
     }
 
     protected get immortalMode(): PlayerImmortalMode {
+        let key = "immomode";
+        let mode = "full" as PlayerImmortalMode;
+
+        if (this.context.player.playerData) {
+            key += "_player";
+            mode = 'owned';
+        }
+
         let value: PlayerImmortalMode;
         if (this.state.displayItem) {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, 'owned') ?? 'owned';
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(
+                    key + "/" + this.state.displayItem.symbol,
+                    mode
+                ) ?? mode;
+        } else {
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(key, mode) ?? mode;
         }
-        else {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
-        }
-             
+
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
+        let key = "immomode";
+        if (this.context.player.playerData) key += "_player";
+
         if (value == this.immortalMode) return;
         if (this.state.displayItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }
+            this.tiny.setValue<PlayerImmortalMode>(
+                key + "/" + this.state.displayItem.symbol,
+                value,
+                true
+            );
+        } else {
+            this.tiny.setValue<PlayerImmortalMode>(key, value, true);
+        }        
     }
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
