@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Arex’s only daily value is good arena evasion with fine passive stats, but it only comes online once you’ve been pulverized into space dust. Sporting poor numbers everywhere else, this is merely future collection fodder who won’t make his way out of the freezer for any event bonuses.
+Arex’s only daily value is good Evasion on Ships with fine Passive Stats, but it only comes online once you’ve been pulverized into space dust. Sporting poor numbers everywhere else, this is merely future Collection fodder who won’t make his way out of Cryostasis for any Event bonuses.
