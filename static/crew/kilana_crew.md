@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-The anti-Swiss army knife, Kilana is known for her Dominion/DIP node unlock and can then be frozen for a few future Dominion/trait events. She's had a few mega-fueled years, but with the likes of Clone and Vorta as her untapped traits, she's riding an event pace that's sure to slow dramatically.
+The anti-Swiss army knife, Kilana is known for her Dominion/DIP Node unlock and can then be frozen for a few future Dominion/Trait events. With five Traits, a ceiling of four Collections is not out of the realm of possibility. Acquire for the Node unlock, keep for the Collections.
