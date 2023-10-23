@@ -24,7 +24,7 @@ const IndexPage = (props: IndexPageProps) => {
 
 	const [rosterType, setRosterType] = React.useState<RosterType>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
-	const [searchExtra, setSearchExtra] = React.useState("");
+	const [searchExtra, setSearchExtra] = React.useState<string | undefined>(undefined);
 
 	const tiny = TinyStore.getStore("index");
 
@@ -40,7 +40,7 @@ const IndexPage = (props: IndexPageProps) => {
 	
 	React.useEffect(() => {
 		// Check for custom initial table options from URL or <Link state>
-		const initOptions = initSearchableOptions(props.location);
+		const initOptions = initSearchableOptions(props.location, searchExtra);
 		// Check for custom initial index options from URL or <Link state>
 		const initHighlight = initCustomOption(props.location, 'highlight', '');
 		// Clear history state now so that new stored values aren't overriden by outdated parameters

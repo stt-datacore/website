@@ -446,11 +446,11 @@ const LockButtons = (props: LockButtonsProps) => {
 };
 
 // Check for custom initial table options from URL or <Link state>
-export const initSearchableOptions = (location: any) => {
+export const initSearchableOptions = (location: any, search?: string) => {
 	let initOptions: InitialOptions | undefined = undefined;
 	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
 
-	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
+	const urlParams = search ? new URLSearchParams("?search=" + search) : (location.search ? new URLSearchParams(location.search) : undefined);
 	const linkState = location.state;
 
 	for(let option of OPTIONS) {
