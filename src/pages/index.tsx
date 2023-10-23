@@ -30,9 +30,11 @@ const IndexPage = (props: IndexPageProps) => {
 
 	tiny.subscribe((name) => {
 		if (name === "search") {			
-			let search = tiny.getRapid<string>('search') ?? '';
-			navigate("/?search=" +  search)
-			setSearchExtra(search);
+			let search = tiny.getRapid<string>('search') ?? '';			
+			history.pushState({}, "", "/?search=" + search);
+			window.setTimeout(() => {
+				setSearchExtra(search);
+			});			
 		}
 	});
 	
