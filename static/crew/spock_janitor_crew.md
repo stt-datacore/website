@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-What an absurd trait and collection list. The number of blue links beneath this note are costing us a fortune in hosting fees. 
+What an absurd Trait and Collection list. The number of blue links beneath this note are costing us a fortune in hosting fees.
 
-Two-skillers are notoriously shat upon for their lack of utility, but Spock bucks that trend with the aforementioned traits boosting his event and collection profiles to tremendous heights and premium shipboard evasion that ticks all the right boxes. Fast initialization time, high boost, even a thick layer of shield repair on top. When you immortalize him for his other talents, give him a spin in the arena.
+Two-Skillers are notoriously shat upon for their lack of utility, but Spock bucks that trend with the aforementioned Traits boosting his Event and Collection profiles to tremendous heights and premium Shipboard Evasion that ticks all the right boxes. Fast Initialization time, high Boost, even a thick layer of Shield Repair on top. When you Immortalize him for his other talents, give him a spin in the Arena.
 
-As always with Spock variants, his event history is rock freakin’ solid. Two skills or ten, he will ride shuttles several times per year for any roster. Even though he didn’t win the sprint to five collections, he may win the marathon to eight or nine. Despite the zeroes in daily use realms, late game players will absolutely want to stack stars through retrieval and beholds to unlock his stat boosting goodness in the collections tab.
+As always with Spock variants, his Event history is rock freakin’ solid. Two Skills or ten, he will ride shuttles several times per year for any roster. Even though he didn’t win the sprint to five Collections, he may win the marathon to eight or nine. Despite the zeroes in daily use realms, late game players will absolutely want to stack stars through Crew Retrieval and Beholds to unlock his Stat-boosting goodness in the Collections tab.

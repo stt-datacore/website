@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-The fact that she has "variants" now predisposes Lily to the possibility of future events, but two events in six years tells you all you need to know about that. A weak ENG primary that hurts for event seating also diminishes the chance of her even making it out of cryo for a sudden uptick in trait events.
-
-The highlight, and justifiable reason to behold her, is her strong set of collections. There’s even theoretical room for expansion, though most of it hinges on another WRG ‘oopsie’ that would bring us the likes of Desperate or Civilian megacollections.
+Lily Sloane is absolutely a crew in this game. Little more than the sum of her Collections and Traits, as many Super Rares from 2016 are, Lily holds a trio of Collections and has room for perhaps one or two more, and she finally picked up a Mega Event in October 2023 with a surprise “Desperate” bonus. Bases are pretty anemic though, so don’t expect her to pitch in much even when her bonus number is called.

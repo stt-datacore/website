@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Nope. She used to get credit for her ENG base, but in which events will you use it? The best way to frame Lal is that she might double her collection value if Prodigy ever has its month in the limelight.
+Nope. She used to get credit for her ENG Base, but in which Events will you use it? Lot of red on this scorecard, and for good reason.
