@@ -8,6 +8,8 @@ import { initSearchableOptions, initCustomOption } from '../components/searchabl
 import { IRosterCrew, RosterType } from '../components/crewtables/model';
 import { RosterPicker } from '../components/crewtables/rosterpicker';
 import { RosterTable } from '../components/crewtables/rostertable';
+import { TinyStore } from '../utils/tiny';
+import { navigate } from 'gatsby';
 
 type IndexPageProps = {
 	location: any;
@@ -22,7 +24,18 @@ const IndexPage = (props: IndexPageProps) => {
 
 	const [rosterType, setRosterType] = React.useState<RosterType>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
+	const [searchExtra, setSearchExtra] = React.useState("");
 
+	const tiny = TinyStore.getStore("index");
+
+	tiny.subscribe((name) => {
+		if (name === "search") {			
+			let search = tiny.getRapid<string>('search') ?? '';
+			navigate("/?search=" +  search)
+			setSearchExtra(search);
+		}
+	});
+	
 	React.useEffect(() => {
 		// Check for custom initial table options from URL or <Link state>
 		const initOptions = initSearchableOptions(props.location);
@@ -34,7 +47,7 @@ const IndexPage = (props: IndexPageProps) => {
 
 		setInitOptions(initOptions);
 		setInitHighlight(initHighlight);
-	}, []);
+	}, [searchExtra]);
 
 	return (
 		<DataPageLayout pageTitle='Crew Stats' playerPromptType='recommend'>

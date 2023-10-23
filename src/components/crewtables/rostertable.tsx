@@ -399,7 +399,7 @@ const CrewConfigTableMaker = () => {
 					rosterCrew={preparedCrew}
 					crewFilters={crewFilters}
 					tableConfig={view?.tableConfig ?? getBaseTableConfig()}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells crew={crew} />}
+					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells crew={crew} pageId={pageId} />}
 					lockableCrew={lockableCrew}
 					loading={isPreparing}
 				/>

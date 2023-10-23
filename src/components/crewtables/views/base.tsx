@@ -6,7 +6,9 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../../components/cabexplanation';
-import { formatTierLabel, printPortalStatus } from '../../../utils/crewutils';
+import { formatTierLabel, getSkillOrder, printPortalStatus, skillToRank } from '../../../utils/crewutils';
+import { navigate } from 'gatsby';
+import { TinyStore } from '../../../utils/tiny';
 
 export const getBaseTableConfig = () => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -31,12 +33,19 @@ export const getBaseTableConfig = () => {
 };
 
 type CrewCellProps = {
+	pageId: string;
 	crew: IRosterCrew;
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew } = props;
+	const { crew, pageId } = props;
 	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+	const tiny = TinyStore.getStore("index");
+	
+	const navToSearch = (crew: IRosterCrew) => {
+		let sko = getSkillOrder(crew).map(sk => skillToRank(sk)).join("/").toUpperCase();
+		tiny.setRapid("search", "skill_order:" + sko);
+	};
 
 	return (
 		<React.Fragment>
@@ -48,8 +57,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<b>#{crew.ranks.voyRank}</b><br />
-				{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)}>
+					<b>#{crew.ranks.voyRank}</b><br />
+					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+				</div>
 			</Table.Cell>
 			{CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
