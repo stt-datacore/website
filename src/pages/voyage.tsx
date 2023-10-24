@@ -68,7 +68,7 @@ type PlayerActiveVoyageProps = {
 const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: () => setHistoryReady(true) } );
 	const [historyReady, setHistoryReady] = React.useState(false);
-	const [telemetryOptIn, ] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
+	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
 
 	const actionButtons = [
 		<Button key='toggler'
@@ -93,6 +93,7 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 		<React.Fragment>
 			{props.activeVoyageId > 0 &&
 				<ActiveVoyage
+					setTelemetryOptIn={setTelemetryOptIn}
 					telemetryOptIn={telemetryOptIn}
 					history={historyReady ? history : undefined}
 					setHistory={setHistory}
