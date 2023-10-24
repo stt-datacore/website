@@ -15,19 +15,23 @@ import { CIVASMessage } from './civas';
 import { VoyageStats } from './voyagestats';
 import { rosterizeMyCrew } from './rosterpicker';
 
-import { getRuntime, estimateTrackedVoyage, createCheckpoint, addVoyageToHistory, addCrewToHistory } from '../../components/voyagehistory/utils';
+import { getRuntime, estimateTrackedVoyage, createCheckpoint, addVoyageToHistory, addCrewToHistory, getRemoteHistory } from '../../components/voyagehistory/utils';
 
 type ActiveVoyageProps = {
 	history?: IVoyageHistory;
 	setHistory: (history: IVoyageHistory) => void;
 	showDetails: boolean;
 	actionButtons: JSX.Element[];
+	telemetryOptIn: boolean;
+	setTelemetryOptIn: (value: boolean) => void;
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
 	const { showDetails, actionButtons } = props;
+	const { telemetryOptIn, setTelemetryOptIn } = props;
+	const dbid = playerData?.player.dbid;
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 
@@ -35,6 +39,9 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 		if (!playerData || !ephemeral) return;
 		const rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew ?? []);
 		setMyCrew([...rosterCrew]);
+		if (telemetryOptIn && dbid) {
+			getRemoteHistory(undefined, dbid).then((history) => (!!history && !!props.setHistory) ? props.setHistory(history) : null);
+		}
 	}, []);
 
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
@@ -84,6 +91,8 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 								Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>.
 								{props.history && ship &&
 									<ActiveVoyageTracker
+										setTelemetryOptIn={setTelemetryOptIn}
+										telemetryOptIn={telemetryOptIn}
 										history={props.history} setHistory={props.setHistory}
 										voyageConfig={voyageConfig} shipSymbol={ship.symbol}
 									/>
@@ -123,11 +132,16 @@ type ActiveVoyageTrackerProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	voyageConfig: Voyage;
 	shipSymbol: string;
+	telemetryOptIn: boolean;
+	setTelemetryOptIn: (value: boolean) => void;
 };
 
 export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { history, setHistory, voyageConfig, shipSymbol } = props;
+	const { playerData } = globalContext.player;
+	const { history, setHistory, voyageConfig, shipSymbol, telemetryOptIn, setTelemetryOptIn } = props;
+
+	const dbid = playerData?.player.dbid;
 
 	const [voyageReconciled, setVoyageReconciled] = React.useState(false);
 
@@ -199,14 +213,15 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 		// Add to history with both initial and checkpoint estimates
 		estimateTrackedVoyage(voyageConfig, 0, voyageConfig.max_hp).then((initial: Estimate) => {
 			createCheckpoint(voyageConfig).then((checkpoint: ITrackedCheckpoint) => {
-				const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, initial);
-				addCrewToHistory(history, newTrackerId, voyageConfig);
+				const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, initial, telemetryOptIn, dbid);
+				addCrewToHistory(history, newTrackerId, voyageConfig, telemetryOptIn, dbid);
 				const trackedVoyage = history.voyages.find(voyage => voyage.tracker_id === newTrackerId);
 				if (trackedVoyage) {
 					trackedVoyage.voyage_id = voyageConfig.id;
 					trackedVoyage.created_at = Date.parse(voyageConfig.created_at);
 					trackedVoyage.checkpoint = checkpoint;
 					setHistory({...history});
+					setTelemetryOptIn(true);
 				}
 			}).catch(e => console.log('initializeTracking', e));
 		});

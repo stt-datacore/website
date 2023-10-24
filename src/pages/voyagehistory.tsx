@@ -36,6 +36,7 @@ type PlayerVoyageHistoryProps = {
 };
 
 const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
+
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
 
@@ -43,13 +44,19 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 	const [historyReady, setHistoryReady] = React.useState(false);
 	const [activeVoyageId, setActiveVoyageId] = React.useState(0);
 
+	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
+
 	React.useEffect(() => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
 	}, [playerData]);
 
 	const historyContext = {
-		history, setHistory, activeVoyageId
+		history, 
+		setHistory, 
+		activeVoyageId,
+		dbid: props.dbid ? Number.parseInt(props.dbid) : undefined,
+		telemetryOptIn
 	} as IHistoryContext;
 
 	const actionButtons = [
@@ -66,6 +73,8 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 			<React.Fragment>
 				{activeVoyageId > 0 &&
 					<ActiveVoyage
+						telemetryOptIn={telemetryOptIn}
+						setTelemetryOptIn={setTelemetryOptIn}
 						history={historyReady ? history : undefined}
 						setHistory={setHistory}
 						showDetails={false}

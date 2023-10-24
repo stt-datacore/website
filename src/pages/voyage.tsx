@@ -24,7 +24,7 @@ const VoyagePage = () => {
 
 	const [activeVoyageId, setActiveVoyageId] = React.useState(0);
 	const [showCalculator, setShowCalculator] = React.useState(false);
-
+			
 	React.useEffect(() => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
@@ -68,6 +68,7 @@ type PlayerActiveVoyageProps = {
 const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: () => setHistoryReady(true) } );
 	const [historyReady, setHistoryReady] = React.useState(false);
+	const [telemetryOptIn, ] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
 
 	const actionButtons = [
 		<Button key='toggler'
@@ -92,6 +93,7 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 		<React.Fragment>
 			{props.activeVoyageId > 0 &&
 				<ActiveVoyage
+					telemetryOptIn={telemetryOptIn}
 					history={historyReady ? history : undefined}
 					setHistory={setHistory}
 					showDetails={!props.showCalculator}

@@ -86,3 +86,23 @@ export interface ITrackedCrewMember extends PlayerCrew {
 		created_at: number
 	};
 };
+
+export interface ITrackedVoyageRecord {
+    dbid: number;
+    trackerId: number;
+    voyage: ITrackedVoyage;
+    timeStamp: Date;
+}
+
+export interface ITrackedCrewRecord {
+    dbid: number;
+    crew: string;
+    trackerId: number;
+    assignment: ITrackedAssignment;
+    timeStamp: Date; 
+}
+
+export interface ITrackedDataRecord {
+    voyages: ITrackedVoyageRecord[];
+    crew: ITrackedCrewRecord[];
+}

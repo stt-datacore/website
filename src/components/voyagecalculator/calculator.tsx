@@ -427,6 +427,11 @@ type ResultsGroupProps = {
 };
 
 const ResultsGroup = (props: ResultsGroupProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	
+	const dbid = playerData?.player.dbid;
+
 	const calculatorContext = React.useContext(CalculatorContext);
 	const userPrefs = React.useContext(UserPrefsContext);
 	const { requests, results, setResults } = props;
@@ -605,9 +610,9 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		// Remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
 		if (trackerId > 0) removeVoyageFromHistory(userPrefs.history, trackerId);
-
-		const newTrackerId = addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate);
-		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig);
+		
+		const newTrackerId = addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, userPrefs.telemetryOptIn, dbid);
+		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig, userPrefs.telemetryOptIn, dbid);
 		userPrefs.setHistory({...userPrefs.history});
 		setTrackerId(newTrackerId);
 		results.forEach((result, idx) => {
