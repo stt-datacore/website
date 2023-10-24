@@ -8,6 +8,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { exportCrew, downloadData } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
+const ShareText = "You can post your profile to the DataCore server to utilize personalized features of the discord bot, and let other users see your crew, ships, and items.";
+
 enum ProfileUploadState {
 	Idle,
 	AutoUpdate,
@@ -51,8 +53,8 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 						header='Share Your Player Profile'
 						content={
 							<p>
-								{activePanel !== 'share' && <>You can upload your profile to DataCore to more easily share some data with other players. Tap here to learn more.</>}
-								{activePanel === 'share' && <>Follow the instructions below to start sharing your player profile.</>}
+								{activePanel !== 'share' && <>{ShareText} Tap here to learn more.</>}
+								{activePanel === 'share' && <>Follow the instructions below to post your player profile to the DataCore server.</>}
 							</p>
 						}
 						icon='share alternate'
@@ -101,7 +103,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						Share Profile
 					</Card.Header>
 					<div style={{ margin: '1em 0' }}>
-						<p>You can upload your profile to DataCore to more easily share some data with other players. Once shared, your public profile will be accessible by anyone with this link:</p>
+						<p>{ShareText} Once shared, your public profile will be accessible by anyone with this link:</p>
 						<p style={{ margin: '1.25em 0', textAlign: 'center' }}>
 							<span style={{ fontWeight: 'bold', fontSize: '1.25em', marginRight: '1em' }}>
 								<Link to={`/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
@@ -131,7 +133,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 							color='blue'
 						>
 							<Icon name='share alternate' />
-							Share your profile
+							Post Profile
 						</Button>
 					)}
 					{uploadState === ProfileUploadState.Success && (
@@ -139,7 +141,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 							<Form>
 								<Form.Field
 									control={Checkbox}
-									label='Automatically share profile when importing player data'
+									label='Automatically post profile when importing player data'
 									checked={profileAutoUpdate}
 									onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
 								/>
