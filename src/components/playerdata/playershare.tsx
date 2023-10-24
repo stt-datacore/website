@@ -100,7 +100,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						<Icon name='delete' style={{ cursor: 'pointer' }} />
 					</Label>
 					<Card.Header>
-						Share Profile
+						Post Profile to DataCore
 					</Card.Header>
 					<div style={{ margin: '1em 0' }}>
 						<p>{ShareText} Once shared, your public profile will be accessible by anyone with this link:</p>
