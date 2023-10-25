@@ -8,6 +8,7 @@ import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutil
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
+import { TranslationSet } from '../model/traits';
 
 export type ValidDemands =
 	'all_buffs' |
@@ -26,7 +27,11 @@ export type ValidDemands =
 	'missions' |
 	'quests' |
 	'ship_schematics' |
-	'skill_bufs';
+	'skill_bufs' |
+	'translation_en' |
+	'translation_de' |
+	'translation_fr' |
+	'translation_sp';
 
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -45,6 +50,7 @@ export interface ICoreData {
 	missions: Mission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
+	translation: TranslationSet;
 };
 
 export interface ICoreContext extends ICoreData {
@@ -71,6 +77,7 @@ const defaultData = {
 	missions: [] as Mission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
+	translation: {} as TranslationSet
 } as ICoreData;
 
 export const defaultCore = {
@@ -129,6 +136,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
+			'translation_en',
+			'translation_de',
+			'translation_sp',
+			'translation_fr'
 		] as ValidDemands[];
 
 		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
@@ -141,9 +152,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 			// this is a hack because BB uses all buffs but we don't always have player data
 			// and our skill_bufs does not yet match BB data. So for now, we're ignoring them.
 			if (demand === 'skill_bufs') demand = 'all_buffs';
-
 			if (valid.includes(demand)) {
-				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
+				console.log(demand);
+				if (demand.startsWith('translation_')) {
+					if (!Object.keys(data.translation).length) {
+						unsatisfied.push(demand);
+					}					
+				}
+				else if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -185,7 +201,13 @@ export const DataProvider = (props: DataProviderProperties) => {
 					// 	newData.skill_bufs = processSkillBufs(result.json);
 					// 	break;
 					default:
-						newData[result.demand] = result.json;
+
+						if (result.demand.startsWith("translation_")) {
+							newData.translation = result.json;	
+						}
+						else {
+							newData[result.demand] = result.json;
+						}
 						break;
 				}
 			});
@@ -196,6 +218,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
 				postProcessCadetItems(newData);
+			}
+			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
+				postProcessCrewTranslations(newData);
 			}
 
 			setData({...newData});
@@ -243,6 +268,17 @@ export const DataProvider = (props: DataProviderProperties) => {
 	// 	}
 	// 	return sks;
 	// }
+
+	function postProcessCrewTranslations(data: ICoreData): void {
+		if (data.crew.length && data.translation.crew_archetypes) {
+			data.crew.forEach((crew) => {
+				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
+				crew.name = arch?.name ?? crew.name;
+				crew.short_name = arch?.short_name ?? crew.short_name;
+			});
+		}
+	}
 
 	function postProcessShipBattleStations(data: ICoreData): void {
 		if (data.battle_stations.length && data.ship_schematics.length) {

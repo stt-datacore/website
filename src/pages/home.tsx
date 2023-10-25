@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
 import { Grid } from 'semantic-ui-react';
-import allTraits from '../../static/structured/translation_en.json';
-import { AllTraits } from '../model/traits';
 import { SKILLS } from './gauntlets';
 import ItemDisplay from '../components/itemdisplay';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
-import { Link, navigate } from 'gatsby';
+import { navigate } from 'gatsby';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-const traits = allTraits as AllTraits;
 
 const HomePage = () => {
 
@@ -47,7 +44,7 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
     render() {
 
         const { playerData } = this.context.player;
-        const { gauntlets, items, crew, ships } = this.context.core;
+        const { translation: allTraits, gauntlets, items, crew, ships } = this.context.core;
 
         const exclusive = crew.find(f => f.symbol === gauntlets[0].jackpot_crew);
         let crs = [ ... crew].sort((a, b) => b.date_added.getTime() - a.date_added.getTime())[0];

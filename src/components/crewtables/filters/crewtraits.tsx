@@ -1,9 +1,9 @@
 import React from 'react';
 import { Table, Label } from 'semantic-ui-react';
 
-import allTraits from '../../../../static/structured/translation_en.json';
 import { IRosterCrew, ICrewFilter, ICrewMarkup } from '../../../components/crewtables/model';
 import { CrewTraitFilter } from '../../../components/crewtables/commonoptions';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type CrewTraitsFilterProps = {
 	pageId: string;
@@ -67,6 +67,8 @@ type CrewTraitMatchesCellProps = {
 export const CrewTraitMatchesCell = (props: CrewTraitMatchesCellProps) => {
 	const { crew } = props;
 	const traitList = crew.markup?.traits_matched;
+	const globalContext = React.useContext(GlobalContext);
+	const { translation: allTraits } = globalContext.core;
 	if (!traitList) return (<Table.Cell />);
 	return (
 		<Table.Cell textAlign='center'>

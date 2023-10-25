@@ -159,13 +159,18 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		}
 
 		const { comments } = this.state;
-
+		const { translation } = this.context.core;
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
 		const userName = this._getCurrentUsername();
 
 		const crew = crewJson.edges[0].node as PlayerCrew;
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
+
+		let arch = translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+		crew.traits_named = crew.traits.map(t => translation.trait_names[t]);
+		crew.name = arch?.name ?? crew.name;
+		crew.short_name = arch?.short_name ?? crew.short_name;
 
 		if (this.ownedCrew) {
 			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);

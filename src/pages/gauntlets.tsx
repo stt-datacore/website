@@ -2,10 +2,7 @@ import React from 'react';
 import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step, Input } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import * as moment from 'moment';
-import { AllTraits } from '../model/traits';
-import allTraits from '../../static/structured/translation_en.json';
-const traits = allTraits as AllTraits;
-
+import { TranslationSet } from '../model/traits';
 
 import { randomCrew } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
@@ -692,7 +689,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const search = textFilter;
 
 		const { buffConfig, maxBuffs } = this.context.player;		
-		const { crew: allCrew } = this.context.core;		
+		const { crew: allCrew, translation: allTraits } = this.context.core;		
 
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
@@ -990,7 +987,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
+		const { crew: allCrew, gauntlets: gauntsin, translation: allTraits } = this.context.core;
 		const { playerData } = this.context.player;
 		const { textFilter } = this.state;
 
@@ -1681,6 +1678,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context.player;
+		const { translation: allTraits} = this.context.core;
 		const hasPlayer = !!(this.context.player.playerData?.player?.character?.crew?.length ?? 0);
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
@@ -2359,7 +2357,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderBrowsableGauntletPage(browsing?: boolean, searching?: boolean) {
 		const { activePrevGauntlet, browsingGauntlet, gauntlets, uniques } = this.state;
-
+		const { translation: allTraits } = this.context.core;
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 

@@ -1,4 +1,4 @@
-export interface AllTraits {
+export interface TranslationSet {
     trait_names: TraitNames
     ship_trait_names: ShipTraitNames
     crew_archetypes: CrewArchetype[]
