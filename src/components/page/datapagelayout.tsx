@@ -9,6 +9,7 @@ import { Container, Header } from 'semantic-ui-react';
 import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
+import { useStateWithStorage } from '../../utils/storage';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -47,12 +48,26 @@ const MainContent = ({ children, narrowLayout }) =>
 		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
 	);
 
+const getNavigatorLanguage = () => {
+	let lang = 'en';	
+	if (typeof navigator !== 'undefined') {
+		lang = navigator.language.slice(0, 2).toLowerCase();
+		if (lang === 'es') lang = 'sp';
+	}
+	if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
+	return lang;
+}
+
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
+	//const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
+	const currentLanguage = 'fr'
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const demands = props.demands ?? [] as ValidDemands[];
-	(['crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+	const i18nDemand = 'translation_' + currentLanguage;
+
+	([i18nDemand, 'crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 		if (!demands.includes(required))
 			demands.push(required);
 	});
