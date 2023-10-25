@@ -213,16 +213,16 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 		// Add to history with both initial and checkpoint estimates
 		estimateTrackedVoyage(voyageConfig, 0, voyageConfig.max_hp).then((initial: Estimate) => {
 			createCheckpoint(voyageConfig).then((checkpoint: ITrackedCheckpoint) => {
-				const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, initial, telemetryOptIn, dbid);
-				addCrewToHistory(history, newTrackerId, voyageConfig, telemetryOptIn, dbid);
+				const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, initial, true, dbid);
+				addCrewToHistory(history, newTrackerId, voyageConfig, true, dbid);
 				const trackedVoyage = history.voyages.find(voyage => voyage.tracker_id === newTrackerId);
 				if (trackedVoyage) {
 					trackedVoyage.voyage_id = voyageConfig.id;
 					trackedVoyage.created_at = Date.parse(voyageConfig.created_at);
 					trackedVoyage.checkpoint = checkpoint;
 					setHistory({...history});
-					setTelemetryOptIn(true);
 				}
+				setTelemetryOptIn(true);
 			}).catch(e => console.log('initializeTracking', e));
 		});
 	}
