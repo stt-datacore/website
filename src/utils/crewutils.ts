@@ -495,31 +495,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			}
 			else {
 				unOwnedCrew.push(newcrew);
-			}
-						
-			// for (let skill of Object.keys(newcrew.base_skills)) {
-				
-			// 	let sktest: BaseSkills | undefined = undefined;
-
-			// 	if (buffConfig) {
-			// 		sktest = applyCrewBuffs(newcrew, buffConfig, true);					
-			// 	}
-
-			// 	if (sktest && skill in sktest) {
-			// 		if ("skills" in newcrew) {
-			// 			if (sktest[skill].core !== newcrew.skills[skill].core) {
-			// 				console.log(newcrew.name);
-			// 				console.log("Calculated stats for " + skill);
-			// 				console.log(sktest[skill]);
-			// 				console.log("Game stats for " + skill);
-			// 				console.log(newcrew.skills[skill]);
-			// 			}
-			// 			else {
-			// 				console.log("Skills Match for " + newcrew.name)
-			// 			}
-			// 		}					
-			// 	}
-			// }
+			}			
 		}
 	}
 	

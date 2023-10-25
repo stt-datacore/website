@@ -1,10 +1,10 @@
 import React from 'react';
 import { Form, Dropdown, Icon, Label, Rating, Popup } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { CompletionState, PlayerCrew } from '../../model/player';
 import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
+import { GlobalContext } from '../../context/globalcontext';
 
 export interface TraitOptions {
 	key: string;
@@ -53,7 +53,9 @@ type CrewTraitFilterProps = {
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
-
+	const globalContext = React.useContext(GlobalContext);
+	const allTraits = globalContext.core.translation;
+	
 	React.useEffect(() => {
 		const options = Object.keys(allTraits.trait_names).map(trait => {
 			return {
