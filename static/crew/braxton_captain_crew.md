@@ -12,10 +12,10 @@ mega: false
 published: true
 ---
 
-Of course his numbers are powerful, he's from the future! Bruce McGill’s Braxton may go down as the game’s greatest Undisputed Heavyweight Voyage Champion of all time thanks to his three year reign at the top of the charts
+For a very long time, Captain Braxton stood alone atop the Voyage ranks, despite disparaging words from a certain silken-haired Big Book of Behold Advice contributor. Alas, time and Power Creep comes for them all, even this noted Temporal Agent. Does that make it ironic? Poetic justice? Who knows.
 
-Having his spot there foiled by Fencing Picard has stolen about ninety percent of his luster in the eyes of many, but that’s an overreaction. Still with monstrous power and a strong anti-matter trait set, his work on voyages is safe for several more years, even if he’s not making more runs than the rest of your roster combined.
+No longer the juggernaut that would appear on 75% of your Voyages due to overwhelming power, Brax still has the legs to make at least some of them; Voyage viable for the majority of players, you may not want to start him from scratch because by the time you have him finished, he may no longer be Voyage viable at all.
 
-The (only) other area of interest here is in the gauntlet where again Braxton has been brutalized by a Picard. The former owner of the top CMD/ENG gauntlet pair is now second place to EV Suit Picard and so Braxton’s lack of 45%+ gauntlet sets stings a little more. Still an occasionally viable dice roller when used with elevated crit, this offering is shifting more toward something for newer players rather than a 1B to his Voyage main course.
+However, at one star he can still find himself on a few Gauntlet teams when Crit aligns; WRG still hasn’t printed a large number of crew in his Skill set that are “good at Gauntlet”. His Traits are also mostly untapped as of this writing; look for Braxton to hit a Collection ceiling of four while you slowly add stars to him via Behold or Crew Retrieval. 
 
-Ranging from mediocre to poor elsewhere, the two shots leveled at his longtime #1 ranks have certainly hurt more than any other card losing a single rank in some other area, but Braxton doesn’t have either foot or even a toe in the grave yet. Behold, retrieve, cite…all options remain in play for this top voyage cog who has years left to benefit your team.
+#StarsWasRight?

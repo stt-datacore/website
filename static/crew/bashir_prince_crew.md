@@ -18,21 +18,21 @@ Say hey, it's Prince Bashir!
 Hey! Clear the way in the Celestial Bazaar
 Hey you, let us through
 We’ll be adding stars
-Oh, come be the first in your fleet to behold this guy
+Oh, come be the first in your Fleet to Behold this guy
 Make way, here he comes
 Ring bells, bang the drums
-Ride the collection high!
+Ride the Collection high!
 
-Prince Bashir, fabulous gear, worth an event thaw
-With respect to the gauntlet
+Prince Bashir, fabulous gear, worth an Event thaw
+With respect to the Gauntlet
 He’s guaranteed
 To pair MED rolls with his COM
 And like Doran say, “Salaam”
-But feel free to skip his shipboard attack speed
+But feel free to skip his Shipboard Attack Speed
 
 Prince Bashir, he’s Engineered, kinda like Khan was
 Strong as ten regular men and gentlemanly
-He’s won collection awards
+He’s won Collection awards
 And stacks up VP rewards
-Who boasts the best gauntlet scores?
+Who boasts the best Gauntlet scores?
 Why, Prince Bashir!
