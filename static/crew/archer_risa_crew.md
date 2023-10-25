@@ -12,8 +12,10 @@ mega: false
 published: true
 ---
 
-Apparently the last incarnation of this note went on for five paragraphs. Man, we really love hearing ourselves talk, ‘cause this card certainly doesn’t merit that.
+Alert: This is not the better of the two Archos! They are not camping!
 
-The CMD/DIP/SEC skill set simply requires huge raw power and/or a smattering of niche anti-matter traits to gain any sort of serious traction as a wise voyage investment. As a former campaign crew, some rosters will report in with tales of occasional usage for a crew who likely had a star advantage for them, but he simply cannot boast a strong return on investment profile by the numbers.
+The CMD/DIP/SEC Skill set simply requires huge raw power and/or a smattering of niche Anti-matter traits to gain any sort of serious traction as a wise Voyage investment. This duo has neither as it stands.
 
-If voyages are off the table for your hefty roster, then the value narrows considerably. A collection ceiling low enough for Balok to bump his head on meets an event history that breathes in and out along with WRG affectations of care for the black sheep ENT series captain. You certainly will use his competent bases from time to time, but really a glance at the trait and skill sets is an accurate enough summary of Arthos and Porcher’s usability in this case.
+As a former Campaign crew, some rosters (and elderly players in your Fleet Discord) will report in with tales of occasional usage for a crew who likely had a star advantage for them, but they simply cannot boast a strong return on investment profile by the numbers.
+
+Without Voyages, their value narrows considerably. A Collection ceiling low enough for Balok to bump his head on meets an Event history that breathes in and out along with WRG affectations of care for the black sheep Star Trek: Enterprise series Captain. You certainly will use his competent Bases from time to time, but really a glance at the Trait and Skill sets is an accurate enough summary of Arthos and Porcher’s usability in this case.
