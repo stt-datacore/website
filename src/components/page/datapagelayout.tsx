@@ -60,8 +60,8 @@ const getNavigatorLanguage = () => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	//const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
-	const currentLanguage = 'fr'
+	const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
+	//const currentLanguage = 'fr'
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const demands = props.demands ?? [] as ValidDemands[];
