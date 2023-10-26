@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Just wretched. This isn’t a B I G B A S E Bones situation where one skill is all you need - Chapel is bereft of usability in almost every instance. A reasonable proficiency roll might look tempting to new players, but be aware that there are plenty of other strong super rare MED gauntlet options out there, not to mention legendaries too. Chapel should only be selected in a behold when flanked by two fully fused options.
+Just wretched. This isn’t a B I G B A S E Bones situation where one Skill is all you need - Chapel is bereft of usability in almost every instance. A reasonable Proficiency roll might look tempting to new players, but be aware that there are plenty of other strong Super Rare MED Gauntlet options out there, not to mention Legendaries too. Chapel should only be selected in a Behold when flanked by two Fully Fused options.
