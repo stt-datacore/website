@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-As Tawny Travers would say, “I have one seat on this lousy voyage…it’s stupid, but I’m gonnna use it!”
+Say it with me.
 
-MED/DIP generally doesn’t hurt for options on voyages and Travers, sandwiched between more available names like Cornwell and Bartender Guinan, doesn’t have a ton of room to maneuver as her unboosted score rank plummets. An exception, the saboteur anti-matter trait, should continue to win the favor of voyage calculators for a while longer, but as an investment from the ground up, you can surely find better power options.
+A-LEE-CEE-A TRAY-VERS
 
-With scant utility otherwise and a primary skill that rarely gets ample event seating, Alicia’s value will fall fast and fall hard once she stops pitching in on your voyages.
+Ok, that’s about it. Her plus Skill set which could be a boss on Voyages is dead due to Power Creep™, and when her name is called for Trait bonus Events, her Skill set is led by MED, which is the lowest propensity seat on Shuttles. If absolutely necessary, grab her for Collections, where she’ll likely end up in four at most, with a trio already baked in as it stands.
