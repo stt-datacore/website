@@ -38,10 +38,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
 		const rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew ?? []);
-		setMyCrew([...rosterCrew]);
-		if (telemetryOptIn && dbid) {
-			getRemoteHistory(undefined, dbid).then((history) => (!!history && !!props.setHistory) ? props.setHistory(history) : null);
-		}
+		setMyCrew([...rosterCrew]);		
 	}, []);
 
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)

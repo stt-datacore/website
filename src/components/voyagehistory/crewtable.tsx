@@ -38,7 +38,7 @@ export const CrewTable = () => {
 		});
 
 		const crewData = [] as ITrackedCrewMember[];
-		Object.keys(history.crew).forEach(crewSymbol => {
+		if (history?.crew) Object.keys(history.crew).forEach(crewSymbol => {
 			// TODO: Get crew from playerData instead of coreData
 			const crew = globalContext.core.crew.find(crew => crew.symbol === crewSymbol) as PlayerCrew;
 			if (crew) {

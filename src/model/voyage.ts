@@ -104,5 +104,5 @@ export interface ITrackedCrewRecord {
 
 export interface ITrackedDataRecord {
     voyages: ITrackedVoyageRecord[];
-    crew: ITrackedCrewRecord[];
+    assignments: ITrackedCrewRecord[];
 }

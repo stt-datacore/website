@@ -1,8 +1,9 @@
 import { Voyage } from '../../model/player';
-import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedDataRecord } from '../../model/voyage';
+import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedDataRecord, ITrackedAssignmentsByCrew } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
+import '../../typings/worker';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 export const defaultHistory = {
@@ -23,22 +24,31 @@ export async function getRemoteHistory(trackerId?: string, dbid?: number): Promi
 		return undefined;
 	}
 
-	let response = await fetch(`${process.env.GATSBY_DATACORE_URL}${url}`);
+	let response = await fetch(`${url}}`);
 	
 	if (response.ok) {
-		let result = {} as IVoyageHistory;
+		let resultcrew = {} as ITrackedAssignmentsByCrew;
+		let resultvoyages = [] as ITrackedVoyage[];
+
 		let hist = await response.json() as ITrackedDataRecord;
-		if (hist.crew) {
-			for (let crew of hist.crew) {
-				result.crew[crew.crew] ??= [];
-				result.crew[crew.crew].push(crew.assignment);
+		
+		if (hist.assignments) {
+			for (let crew of hist.assignments) {				
+				resultcrew[crew.crew] ??= [];
+				resultcrew[crew.crew].push(crew.assignment);
 			}
 		}
+		
 		if (hist.voyages) {
-			result.voyages = hist.voyages.map(histVoy => histVoy.voyage);
+			resultvoyages = hist.voyages.map(histVoy => histVoy.voyage);			
 		}
 		
-		return result;
+		let result = {
+			voyages: resultvoyages,
+			crew: resultcrew
+		} as IVoyageHistory;
+		
+		return result;		
 	}
 	else {
 		return undefined;
