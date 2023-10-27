@@ -1514,5 +1514,19 @@
                 "skill": "science_skill"
             }
         ]
+    },
+    {
+        "symbol": "dove_ship",
+        "battle_stations": [
+            {
+                "skill": "diplomacy_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]
