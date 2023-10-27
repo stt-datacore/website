@@ -12,12 +12,12 @@ mega: false
 published: true
 ---
 
-Mirror Phlox is a tier one crew and if that ever changes, we’ll change the rank sorting to start with tier two.
+Mirror Phlox is a Tier 1 crew and if that ever changes, we’ll change the rank sorting to start with Tier 2.
 
-The best two-skill crew ever released in Timelines, Phlox is, or has been, potent in every area of the game. A brief aside for the sake of thoroughness for a crew who deserves it; a MED base now outside the top ten won’t find much MED seating in daily shuttles. And although once a surprisingly effective voyager thanks to his outrageous voyage MED and rare skill stack, we can’t sanction clinging to his poor overall power any longer.
+The best two-Skill crew ever released in Timelines, Phlox is, or has been, potent in every area of the game. A brief aside for the sake of thoroughness for a crew who deserves it; a MED Base now outside the top ten won’t find much MED seating in daily Shuttles. And although once a surprisingly effective Voyager thanks to his outrageous Voyage MED and rare Skill stack, we can’t sanction clinging to his poor overall power any longer.
 
-That being said, he’s still rangy without those attributes. A whopping six different traits have popped up as weekend event bonuses and they’ve also provided him an above average collection profile. He’s also one of the few MED crew with instant damage, which is handy considering his ship passives are the best out of any such crew.
+That being said, he’s still rangy without those attributes. A whopping six different Traits have popped up as weekend Event bonuses and they’ve also provided him an above-average Collection profile. He’s also one of the few MED crew with Instant Damage, which is handy considering his Ship Passives are the best out of any such crew.
 
-The lede, buried here in paragraph four, is his gauntlet ability. The Big Book’s top rated super rare gauntleteer gets it done with just two skills. The number two MED proficiency in the game, rare skill pair which offer no walls of overpowered gauntlet exclusives, and healthy number of elevated crit gauntlets all combine to make him a more effective option than his drawbacks would suggest. 
+The lede, buried here in paragraph four, is his Gauntlet ability. The Big Book’s top rated Super Rare Gauntleteer gets it done with just two Skills. The number two MED Proficiency in the game, rare Skill pair which offer no walls of overpowered Gauntlet Exclusives, and healthy number of elevated Crit Gauntlets all combine to make him a more effective option than his drawbacks would suggest.
 
-Making a case for the most well-rounded super rare in the game, Phlox is an automatic behold choice, especially early on when he can single-handedly establish your gauntlet lineup and start to collect wins for your squad.
+Making a case for the most well-rounded Super Rare in the game, Phlox is an automatic Behold choice, especially early on when he can single-handedly establish your Gauntlet lineup and start to collect wins for your squad.

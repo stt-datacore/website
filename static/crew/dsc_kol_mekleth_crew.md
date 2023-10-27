@@ -3,7 +3,7 @@ name: Kol of House Kor
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 42
 in_portal: true
 date: 31/01/2019

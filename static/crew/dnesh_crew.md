@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-Is there any green girl that Kirk *won't* sleep with? We might just find out as the icy depths of tier 10 welcomes its third Orion slave. Even 'Bound' contemporary crew Maras has a leg up on D'Nesh thanks to a far more common shuttle skill pairing, leaving collection potential as D'Nesh’s best and perhaps only asset.
-
-An admittedly tempting trait list hasn’t hit on any collections as of this note, but would seem to be a lock for a handful of them down the line. If she’s sitting on a few by the time you’re reading this, we won’t scoff at a bit of behold capital thrown at her. Just keep in mind that no tangible work is assured for D’Nesh and that trait megas are a fickle mistress.
-
-Unless you're that dweeb Commander Kelby, don't look directly into this sorcerer's eyes and save your behold and retrieval capital for someone with better power or utility. You shouldn’t have to look far.
+One of the “Bound” Girls, not to be confused with Bond Girls, D’Nesh took a long time to get going in the game, but her Trait list is finally paying off. She’s rode the elevator almost halfway to the penthouse of her seven Collection ceiling, and she’s starting to parlay those Traits into more-than-occasional weekend work, where her DIP base will shine. She’s a long term investment, but one that is starting to pay off.

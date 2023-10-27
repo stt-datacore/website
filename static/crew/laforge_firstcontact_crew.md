@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Unfortunately, the most notable thing about this Geordi is a dead last voyage total among 3-skill crew. A variant-best SCI and workable ENG gives him event consideration a few times per year, but those are just about the only times he should see the outside of the cryostasis vault.
+Unfortunately, the most notable thing about this Geordi is a dead last Voyage total among 3-Skill crew. A variant-best SCI and workable ENG gives him Event consideration a few times per year, but those are just about the only times he should see the outside of the Cryostasis Vault.

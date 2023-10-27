@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-As Ooby Dooby Riker would say, "Oh, they're blended alright." In this case, the perfect blend of uniqueness and power. This fusion crew plays host to a monster event portfolio headlined by a reliability that you won't see from crew who depend more on traits to provide you with regular weekend support.
+As Ooby Dooby Riker would say, "Oh, they're blended alright." In this case, the perfect blend of uniqueness and power. This Fusion crew plays host to a monster Event portfolio headlined by a reliability that you won't see from crew who depend more on Traits to provide you with regular weekend support. This is the second crew to be created via the Fusion of a Super Rare and a Legendary, Anxious Kirk and Fal-Tor-Pan Spock respectively.
 
-Jim Kirk has a runaway lead for both Faction and total events, while Spock brings his own brand name and Vulcan trait to the table. In concert with their huge SCI base and a CMD secondary to supplement two characters strangely lacking in CMD options, RSK (or Spork, if you prefer) is a shoo-in for permanent Faction work.
+Jim Kirk has a runaway lead for both Faction and total Events, while Spock brings his own brand name and Vulcan Trait to the table. In concert with their huge SCI Base and a CMD Secondary to supplement two characters strangely lacking in CMD options, RSK (or Spork, if you prefer) is a shoo-in for permanent Faction work.
 
-The other area they impress in is voyages. Common skill set, sure, but RSK sidesteps a low value over replacement with raw "later losers" power and seven anti-matter traits. If you're looking for even more value from your investments, a few peripherals of note - triple collections and a handful of 45% gauntlets to go with proficiencies which are new player only. But don't you want to brighten your gauntlet opponent's day with Kirk's smiling face?
+The other area they impress in is Voyages. Common Skill set, sure, but RSK sidesteps a low value over replacement with raw "later losers" power and seven Anti-matter Traits. If you're looking for even more value from your investments, a few peripherals of note - triple Collections and a handful of 45% Gauntlets to go with Proficiencies which are new player only. But don't you want to brighten your Gauntlet opponent's day with Kirk's smiling face?

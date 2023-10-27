@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-In a time when SEC/SCI options consisted of Admiral Janeway and Maquis Tuvok, Laas was actually a reasonable voyage option for that tricky stack. Things have changed and power creep has left him with merely stop-and-start event chances and, more importantly, some unrealized collection value.
+The most interesting thing about Laas is that he was played by J. G. Hertzler.
 
-As of this writing, Laas only ticks the Survivalist box, but more are sure to follow and if you won’t use what’s offered by the behold options flanking Laas, he’s a fine low end dart throw who may grow in post-cryo value over time.
+Other than that, feel free to slowly build him via Fuse for the possible payoff of four or five Collections from his Traits, and the Events that come from those same Traits.

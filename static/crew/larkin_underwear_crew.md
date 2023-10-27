@@ -3,7 +3,7 @@ name: Underwear Larkin
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 35
 in_portal: true
 date: 05/08/2021

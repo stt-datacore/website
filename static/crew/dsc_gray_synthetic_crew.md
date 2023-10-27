@@ -3,7 +3,7 @@ name: Second Chance Gray
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 33
 in_portal: true
 date: 22/03/2022

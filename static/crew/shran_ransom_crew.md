@@ -4,7 +4,7 @@ rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 6
-events: 26
+events: 27
 in_portal: true
 date: 27/08/2020
 obtained: Event
@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-I’m going to tell my kids this is the Mayor of Smurf Village. 
+If you’ve arrived at this crew page looking for a variant of Jack Ransom or Rudolph Ransom, you took a wrong turn. If you’ve arrived at this page looking for a thinly-Traited Andorian played by Jeff Combs, you’re in the right place! 
 
-Co-headlining the “Let it Snow” campaign a mere three months after his debut might have been Shran’s notable high point thus far. Providing usable base and voyage metrics at the time, Shran has aged out of voyages by now due to skill set and is hopefully near the low point in terms of value. 
-
-While his bases will never be better than they are now, a rosy future forecast could compensate for stat droopage with a few more collections and continued smattering of megas. Shran’s only a bit player, even for a super rare, but has the right skills to warrant the thaw for events and has a reasonable collection outlook for crew on the short end of tiers.
+The good news is that this Shran from the episode of Star Trek: Enterprise that doesn’t exist (it ended with “Terra Prime”, dammit!) has parlayed those four Traits (and one hidden one) into a trio of Collections with room for perhaps two more tucked into that fur coat. Along with those Collections, Shran has Events in scads, including two Featured events, one of which that has been Rerun, and big enough Bases for a Super Rare to pitch in.
