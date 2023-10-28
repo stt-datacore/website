@@ -1,7 +1,8 @@
 import { RewardsGridNeed } from "../model/crew";
 import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProps, ComboCostMap } from "../model/collectionfilter";
-import { PlayerCollection, PlayerCrew } from "../model/player";
+import { BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
+import { EquipmentItem } from "../model/equipment";
 
 export const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {
     let result = false;
@@ -68,7 +69,12 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
 export const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
 
 
-export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew, combo?: string) => {
+export interface CiteInventory { 
+    quantity: number, 
+    cost: number 
+}
+
+export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew, combo?: string, inventory?: CiteInventory[]) => {
     const gridneed = [] as RewardsGridNeed[];
     
     if ("rarity" in item) {
@@ -84,13 +90,37 @@ export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew
 
     item.neededStars.forEach((star, idx) => {
         if (idx >= 2 && idx <= 5 && star) {
-            gridneed.push({
+            let newobj = {
                 symbol: citeSymbols[idx],
                 quantity: star
-            });
+            } as RewardsGridNeed;
+            if (inventory) {
+                newobj.owned = inventory[idx].quantity;
+            }
+            gridneed.push(newobj);
         }	
     });
     return gridneed;
+}
+
+export const getOwnedCites = (items: BuffBase[], sale?: boolean) => {
+    const ownedCites = [
+        { quantity: 0, cost: 0 },
+        { quantity: 0, cost: 0 },
+        { quantity: 0, cost: 500 },
+        { quantity: 0, cost: 4500 },
+        { quantity: 0, cost: 18000 },
+        { quantity: 0, cost: !!sale ? 40000 : 50000 }                
+    ] as CiteInventory[];
+
+    items.forEach((item) => {
+        if (item.symbol?.startsWith('honorable_citation_quality')) {
+            let rare = Number.parseInt(item.symbol.slice(-1))
+            ownedCites[rare].quantity += item.quantity ?? 0;
+        }
+    });
+    ownedCites.forEach((cite) => cite.cost *= cite.quantity);
+    return ownedCites;
 }
 
 

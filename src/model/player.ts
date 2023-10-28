@@ -1153,6 +1153,7 @@ export interface BuffBase {
     item_type?: number
     bonuses?: Bonuses
     faction_id?: number
+    owned?: number
   }
 
   export interface MilestoneBuff extends BuffBase {

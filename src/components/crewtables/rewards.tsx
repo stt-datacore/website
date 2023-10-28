@@ -54,7 +54,8 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 			if (found) {
 				items.push({
 					... JSON.parse(JSON.stringify(found)),
-					needed: need.quantity
+					needed: need.quantity,
+					quantity: need.owned ?? 0
 				});
 			}
 		}
@@ -68,6 +69,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 				id: i.id ?? 0,
 				full_name : i.name ?? i.symbol,
 				quantity: i.needed ?? 0,
+				owned: i.quantity ?? 0,
 				icon: { atlas_info: '', file: i.imageUrl }
 			});
 		}
@@ -77,9 +79,9 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	}
 
 
-	const quantityLabel = (quantity?: number, neg?: boolean) => {
+	const quantityLabel = (quantity?: number, neg?: boolean, owned?: number) => {
 
-		if (quantity === undefined) return 0;
+		if (quantity === undefined) return '0';
 		if (quantity === 0){
 			if (neg) {
 				return <Icon name='close' style={{margin: 0, padding: 0, textAlign: 'center', color:'gray', height:'24px'}} />
@@ -88,9 +90,16 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 				return <Icon name='check circle' style={{margin: 0, padding: 0, textAlign: 'center', color:'lightgreen', height:'24px'}} />
 			}
 		}
+		let qstr = "";
+		
 		if (quantity >= 10000)
-			return quantity/1000+'K';
-		return quantity;
+			qstr = Math.round(quantity/1000)+'K';
+		
+			qstr = quantity + '';
+		if (owned) {
+			qstr = `${owned}/${qstr}`;
+		}
+		return qstr;
 	};
 	
 	const { negative } = props;
@@ -148,7 +157,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										rarity={reward.rarity}
 									/>
 									
-									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative)}</small></div>)}</span>
+									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</span>
 									</div>
 								</Grid.Column>
 							);

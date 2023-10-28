@@ -225,4 +225,5 @@ export interface CrewConstellation {
 export interface RewardsGridNeed {
 	symbol: string;
 	quantity: number;
+  owned?: number;
 }
