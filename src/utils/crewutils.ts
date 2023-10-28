@@ -2,9 +2,8 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
-import { BaseSkills, ComputedBuff, CrewMember, IntermediateSkillData, Skill } from '../model/crew';
-import { TinyStore } from "./tiny";
+import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData } from '../model/player';
+import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { navigate } from 'gatsby';
