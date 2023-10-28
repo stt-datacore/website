@@ -12,7 +12,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { appelate } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
 import { ColComboMap, CollectionGroup, CollectionMap, ComboCostMap, CollectionMatchMode } from '../../model/collectionfilter';
-import { findColGroupsCrew, getOptCols, getOptCrew, makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
+import { findColGroupsCrew, getOptCols, getOptCrew, getOwnedCites, makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
+import { CollectionCard } from './collectioncard';
 
 export interface CollectionOptimizerProps {
     colOptimized: CollectionGroup[];
@@ -42,6 +43,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const [optPageCount, setOptPageCount] = React.useState(1);	
 	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[]>([]);
+
+	const ownedCites = getOwnedCites(context.player.playerData?.player.character.items ?? [], costMode === 'sale');
 
 	const setShort = (value: boolean) => {
 		if (value !== short) {
@@ -233,80 +236,24 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					window.setTimeout(() => {
 						setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
 					});						
-					return <></>
+					return <> </>
 				}
 				const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
 				collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
+				collection.needed = comboCrew.length;
 				col.neededStars = neededStars(comboCrew);
 				if (!collection?.totalRewards || !collection.milestone) return <></>;
-				const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
-				
-				const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
-				const crewhave = (collection?.owned ?? 0);
 
 				return (<Table.Row key={"colgroup" + idx} >
 					<Table.Cell width={4} style={{verticalAlign:"top"}}>
-						<div style={{								
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
-							height: "100%",
-							margin: "1em"
-						}}>
-						
-						<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
-							style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
-							title={collection.name}
-						/>
-						<h2 
-							onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
-							style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
-						<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
-						<hr style={{width: "16em"}}></hr>
-						<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
-						<div style={{margin: "0.5em 0 0.5em 0"}}>
-							<RewardsGrid wrap={true} rewards={rewards} />
-						</div>
-						<i style={{fontSize: "0.9em"}}>{collection.owned} / {collection.crew?.length} Owned</i>
-						<i style={{fontSize: "0.9em"}}>Progress to next: {(typeof collection?.milestone?.goal === 'number' && collection?.milestone?.goal > 0) ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</i>
-						
-						{(crewhave >= crewneed && !!collection.neededCost) && 
-							(<div style={{marginTop:"0.5em"}}>
-							<i style={{fontSize: "0.9em"}}>
-								Citation cost to next: 
-								<img
-								src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
-								style={{width : '16px', verticalAlign: 'text-bottom'}}
-								/> 
-								{collection.neededCost.toLocaleString()}
-							</i>
-							<div style={{marginTop:"0.5em"}}>
-							<RewardsGrid kind={'need'} needs={makeCiteNeeds(col)} />
-							<Progress 
-								value={context.player.playerData?.player.honor} total={collection.neededCost} 
-								label={
-									<div style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent: "center"}}>
-										<img
-											src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
-											style={{width : '16px', verticalAlign: 'text-bottom', margin:"0 0.5em"}}
-											/>
-										{context.player.playerData?.player.honor.toLocaleString()} / {collection.neededCost.toLocaleString()}
-										{(context.player.playerData?.player.honor ?? 0) > (collection.neededCost ?? 0) && <Icon name='check' size='small' color='green' style={{margin:"0 0.5em"}} />}
-									</div>}
-						
-								/>
-							</div>
-							</div>)}
-							{(crewhave >= crewneed && !collection.neededCost && <i style={{ fontSize: "0.9em", textAlign: "center", color: 'lightgreen'}}>
-								All crew required to reach the next milestone are already fully fused.
-								</i>)}
-							
-						{crewhave < crewneed && 
-							<i className='ui segment' style={{color:'salmon', textAlign: 'center', margin: "0.5em"}}>
-								You need to recruit {crewneed - crewhave} more crew to reach the next goal.
-							</i>}
-						</div>
+					<CollectionCard
+						ownedCites={ownedCites} 
+						mapFilter={mapFilter}
+						setMapFilter={setMapFilter}
+						searchFilter={searchFilter}
+						setSearchFilter={setSearchFilter}
+						collection={{ ...col, collection }} />
+
 					</Table.Cell>
 					<Table.Cell style={{verticalAlign:"top"}}>
 						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>						
@@ -338,36 +285,19 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						<div style={{display:'flex', flexDirection:'column'}}>
 							<Grid doubling columns={3} textAlign='center'>								
 								{getOptCols(col, optCombo).map((c) => {
-										const collection = c.collection;
-										if (!collection?.totalRewards || !collection.milestone) return <></>;
-										const rewards = collection.totalRewards > 0 ? collection.milestone.buffs?.map(b => b as BuffBase).concat(collection.milestone.rewards ?? []) as Reward[] : [];
-										
-										const crewneed = (collection?.milestone?.goal === 'n/a' ? 0 : collection?.milestone?.goal ?? 0);
-										const crewhave = (collection?.owned ?? 0);
+									const collection = c.collection;
+									if (!collection?.totalRewards || !collection.milestone) return <></>;
 
-									return <div style={{								
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "center",
-										alignItems: "center",
-										height: "100%",
-										margin: "1em",
-										maxWidth: "325px"
-									}}>
-									
-									<Image size='medium' src={`${process.env.GATSBY_ASSETS_URL}${collection.image?.replace("/collection_vault/", 'collection_vault_')}.png`}
-										style={{ margin: "0.5em 0", border: '1px solid #7f7f7f7f', borderRadius: '6px'}}
-										title={collection.name}
-									/>
-									<h2 
-										onClick={(e) => { setSearchFilter(''); setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection.id]})}}
-										style={{textDecoration: "underline",marginBottom: 0, textAlign: "center", margin: '0.5em 0', cursor: "pointer"}}>{collection.name}</h2>
-									<i>{formatColString(collection.description ?? "", { textAlign: 'center' })}</i>
-									<hr style={{width: "16em"}}></hr>
-									<i style={{fontSize: "0.9em"}}>{collection.needed} needed for rewards:</i>
-									<div style={{margin: "0.5em 0 0.5em 0"}}>
-										<RewardsGrid wrap={true} rewards={rewards} />
-									</div></div>
+									return (
+										<CollectionCard
+											ownedCites={ownedCites} 
+											style={{width: "350px"}}
+											brief={true}
+											mapFilter={mapFilter}
+											setMapFilter={setMapFilter}
+											searchFilter={searchFilter}
+											setSearchFilter={setSearchFilter}
+											collection={c} />)
 								})}
 						</Grid>
 					</div>

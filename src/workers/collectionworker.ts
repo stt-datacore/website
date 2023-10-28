@@ -574,8 +574,7 @@ const CollectionOptimizer = {
                 for(let combo of col.combos ?? []) {
                     let comboname = combo.names.join(" / ");
                     let crew = getOptCrew(col, costMode, searches, comboname);
-                    let grouped = crew.map(c => c.symbol).sort().join(",");
-                    
+                    let grouped = crew.map(c => c.symbol).sort().join(",");                    
                     let cm = {
                         collection: col.collection.name,
                         combo: combo,
