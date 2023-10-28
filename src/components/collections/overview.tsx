@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { Item, Icon, Dropdown, Label } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import Layout from '../layout';
 import { CrewMember } from '../../model/crew';
 import { Collection } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
