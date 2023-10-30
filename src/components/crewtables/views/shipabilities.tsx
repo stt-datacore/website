@@ -43,7 +43,9 @@ type CrewCellProps = {
 
 export const CrewShipCells = (props: CrewCellProps) => {
 	const { crew } = props;
-
+	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
+		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
+	}
 	return (
 		<React.Fragment>
 			<Table.Cell textAlign='center'>
