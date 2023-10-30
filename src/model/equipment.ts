@@ -21,6 +21,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   traits_requirement_operator?: string; // "and" | "or" | "not" | "xor";
   traits_requirement?: string[];  
   kwipment?: boolean;
+  kwipment_id?: number | string;
 }
 
 export interface EquipmentItem extends EquipmentCommon {

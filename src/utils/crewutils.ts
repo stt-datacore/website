@@ -7,6 +7,7 @@ import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { navigate } from 'gatsby';
+import { ItemBonusInfo } from './itemutils';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -215,7 +216,7 @@ export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): 
 	return simplejson2csv(crew, exportCrewFields(), delimeter);
 }
 
-export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
+export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean, itemBonuses?: ItemBonusInfo[]) {
 	if (!buffConfig) return;
 	const getMultiplier = (skill: string, stat: string) => {
 		if (!(`${skill}_${stat}` in buffConfig)) return 0;
@@ -235,6 +236,14 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 		core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
 		min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
 		max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+
+		if (itemBonuses?.length) {
+			itemBonuses.filter(f => skill in f.bonuses).forEach((bonus) => {
+				core += bonus.bonuses[skill].core ?? 0;
+				min += bonus.bonuses[skill].range_min ?? 0;
+				max += bonus.bonuses[skill].range_max ?? 0;
+			});
+		}
 
 		if (nowrite !== true) {
 			crew[skill] = {
@@ -368,7 +377,30 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew.base_skills = workitem.base_skills;
 			if (rarity === undefined) crew.level = workitem.level;
 			crew.equipment = workitem.equipment;
+			crew.q_bits = workitem.q_bits;
+			crew.kwipment_slots = workitem.kwipment_slots;
+			crew.kwipment = [0, 0, 0, 0];
+			crew.kwipment_expiration = [0, 0, 0, 0];
+			if (workitem.kwipment?.length) {
+				if (workitem.kwipment?.length && workitem.kwipment[0] && typeof workitem.kwipment[0] !== 'number') {
+					let qp = workitem.kwipment as number[][];
+					let qe = workitem.kwipment_expiration as number[][];
+	
+					for (let nums of qp) {
+						crew.kwipment[nums[0]] = nums[1];
+					}
+					for (let nums of qe) {
+						crew.kwipment_expiration[nums[0]] = nums[1];
+					}				
+				}
+				else {
+					crew.kwipment = workitem.kwipment;
+					crew.kwipment_expiration = workitem.kwipment_expiration;					
+				}
+			}
+
 			if (workitem.ship_battle && rarity === undefined) crew.ship_battle = workitem.ship_battle;
+
 			if (typeof rarity === 'number') {
 				crew.action.bonus_amount -= (crew.max_rarity - rarity);
 			}

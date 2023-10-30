@@ -62,6 +62,11 @@ const ownedGreenStyle: React.CSSProperties = {
     color: "lightgreen",
 };
 
+const ownedBlueStyle: React.CSSProperties = {
+    ...activeStyle,
+    color: "orange",
+};
+
 const completeStyle: React.CSSProperties = {
     background: "transparent",
     color: "lightgreen",
@@ -189,6 +194,22 @@ function drawBuff(
                     title="Player Boosts Applied"
                     style={{
                         ...ownedGreenStyle,
+                        fontSize: "0.8em",
+                        marginRight: "0.5em",
+                    }}
+                />
+                {BuffNames[data]}
+            </div>
+        );
+    } else if (data === "quipment") {
+        return (
+            <div key={key} style={{ display: "inline-flex" }}>
+                <i
+                    onClick={(e) => buffclick(e, "player")}
+                    className="arrow alternate circle up icon"
+                    title="Quipment Boosts Applied"
+                    style={{
+                        ...ownedBlueStyle,
                         fontSize: "0.8em",
                         marginRight: "0.5em",
                     }}
@@ -387,7 +408,10 @@ export class CrewPresenter extends React.Component<
             def = 'player';
         }
 
-        return this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.props.crew as PlayerCrew)?.immortal) result = 'player';
+
+        return result;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
@@ -492,7 +516,8 @@ export class CrewPresenter extends React.Component<
 
         const availstates = getAvailableBuffStates(
             this.context.player.playerData,
-            this.context.maxBuffs
+            this.context.maxBuffs,
+            inputCrew as PlayerCrew
         );
 
         if (availstates?.includes(me.playerBuffMode) !== true) {
@@ -547,7 +572,9 @@ export class CrewPresenter extends React.Component<
             me.playerBuffMode = nextBuffState(
                 me.playerBuffMode,
                 me.context.player.playerData,
-                me.context.maxBuffs
+                me.context.maxBuffs,
+                undefined,
+                crew
             );
             if (this.props.onBuffToggle) {
                 this.props.onBuffToggle(me.playerBuffMode);
@@ -728,6 +755,7 @@ export class CrewPresenter extends React.Component<
                     </div>
                     {!compact && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em" }}>
+                            {!!crew.immortal && <CrewItemsView crew={crew} quipment={true} />}
                             <CrewItemsView crew={crew} />
                         </div>
                     )}
