@@ -451,8 +451,10 @@ export interface Player {
      */
     equipment: number[][] | number[]
 
-    kwipment: number[][]
-    kwipment_expiration: number[]
+    kwipment: number[][] | number[]
+    kwipment_expiration: number[] | number[][]
+    kwipment_slots?: EquipmentSlot[];
+
     q_bits: number
 
     icon: Icon

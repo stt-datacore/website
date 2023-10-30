@@ -15,12 +15,13 @@ export interface CrewItemsViewProps {
     mobileWidth?: number;
     itemSize?: number;
     mobileSize?: number;
+    quipment?: boolean;
 }
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
-    
+    const quip = !!props.quipment;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
     const crew = props.crew as PlayerCrew;
@@ -33,40 +34,80 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     let eqimgs = [] as string[];
     let equip = [] as EquipmentItem[];
 
-    if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
-        //console.error(`Missing equipment slots information for crew '${crew.name}'`);
-        //console.log(crew);
-        eqimgs = [
-            'items_equipment_box02_icon.png',
-            'items_equipment_box02_icon.png',
-            'items_equipment_box02_icon.png',
-            'items_equipment_box02_icon.png'
-        ];
-        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-    } else {
-        
-        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-
-        for (let i = startlevel; i < startlevel + 4; i++) {
-            let eq: EquipmentSlot;
-            eq = crew.equipment_slots[i];
+    if (!quip) {
+        if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
+            //console.error(`Missing equipment slots information for crew '${crew.name}'`);
+            //console.log(crew);
+            eqimgs = [
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png'
+            ];
+            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+        } else {
             
-            if (eq) {
-                let ef = context.core.items.find(item => item.symbol === eq.symbol);
-                if (ef) {
-                    equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
+            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+    
+            for (let i = startlevel; i < startlevel + 4; i++) {
+                let eq: EquipmentSlot;
+                eq = crew.equipment_slots[i];
+                
+                if (eq) {
+                    let ef = context.core.items.find(item => item.symbol === eq.symbol);
+                    if (ef) {
+                        equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
+                    }
                 }
+                
             }
-            
-        }
+    
+            eqimgs = [
+                equip[0].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[1].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[2].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[3].imageUrl ?? "items_equipment_box02_icon.png"
+            ];
+        }    
+    
+    }
+    else {
+        if (!crew.kwipment?.length || !context.core.items?.length) {
+            //console.error(`Missing equipment slots information for crew '${crew.name}'`);
+            //console.log(crew);
+            eqimgs = [
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png',
+                'items_equipment_box02_icon.png'
+            ];
+            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+        } else {
+            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+    
+            for (let i = 0; i < 4; i++) {
+                let eq: number;
+                eq = crew.kwipment[i] as number;
+                
+                if (eq) {
+                    let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
+                    if (ef) {
+                        equip[i] = (JSON.parse(JSON.stringify(ef)));
+                    }
+                }
+                
+            }
+    
+            eqimgs = [
+                equip[0].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[1].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[2].imageUrl ?? "items_equipment_box02_icon.png",
+                equip[3].imageUrl ?? "items_equipment_box02_icon.png"
+            ];
+        }    
+    
+    }
 
-        eqimgs = [
-            equip[0].imageUrl ?? "items_equipment_box02_icon.png",
-            equip[1].imageUrl ?? "items_equipment_box02_icon.png",
-            equip[2].imageUrl ?? "items_equipment_box02_icon.png",
-            equip[3].imageUrl ?? "items_equipment_box02_icon.png"
-        ];
-    }    
 
     if (crew.equipment) {
         [0, 1, 2, 3].forEach(idx => {
