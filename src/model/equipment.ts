@@ -15,6 +15,12 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   needed?: number;
   factionOnly?: boolean;
   demandCrew?: string[];
+
+  duration?: number;
+  max_rarity_requirement?: number;
+  traits_requirement_operator?: string; // "and" | "or" | "not" | "xor";
+  traits_requirement?: string[];
+  kwipment?: boolean;
 }
 
 export interface EquipmentItem extends EquipmentCommon {
@@ -36,7 +42,6 @@ export interface EquipmentItem extends EquipmentCommon {
 
   empty?: boolean;
   isReward?: boolean;
-
 }
 
 export interface EquipmentItemSource {
