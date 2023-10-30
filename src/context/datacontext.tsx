@@ -197,6 +197,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'gauntlets':
 						newData.gauntlets = processGauntlets(result.json);
 						break;
+					case 'items':
+						newData.items = processItems(result.json);
+						break;
 					// case 'skill_bufs':
 					// 	newData.skill_bufs = processSkillBufs(result.json);
 					// 	break;
@@ -251,6 +254,16 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
 		result?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+		return result ?? [];
+	}
+
+	function processItems(result: EquipmentItem[] | undefined): EquipmentItem[] {
+		result?.forEach((item) => {
+			if ("item_type" in item) {
+				item.type = (item["item_type"] as number);
+				delete item["item_type"];
+			}
+		})
 		return result ?? [];
 	}
 
