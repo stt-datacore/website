@@ -20,6 +20,7 @@ import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { binaryLocate, populateItemCadetSources } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import ProfileItems from '../components/profile_items';
+import { appelate } from '../utils/misc';
 
 export interface ItemsPageProps {}
 
@@ -119,8 +120,49 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 					item.flavor = 'Unused or Galaxy Event item';
 				}
 			}
+			if (item.kwipment && (item.traits_requirement?.length || item.max_rarity_requirement)) {
+				let found: PlayerCrew[] | null = null;
+				
+				if (item.traits_requirement_operator === "and") {
+					found = crew.filter((crew) => {
+						return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+					});					
+				}
+				else {
+					found = crew.filter((crew) => {
+						return (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+					});					
+				}
+
+				if (found?.length) {
+					if (item.max_rarity_requirement) {
+						found = found.filter(f => f.max_rarity === item.max_rarity_requirement);
+					}
+					item.flavor ??= "";
+					if (item.flavor?.length) {
+						item.flavor += "\n";
+					}
+					if (found.length > 5) {
+						if (item.traits_requirement?.length) {
+							if (item.max_rarity_requirement) {
+								item.flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+							}
+							else {
+								item.flavor += `Equippable by crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+							}
+						}
+						else if (item.max_rarity_requirement) {
+							item.flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew`;
+						}
+						else {
+							item.flavor += `Equippable by ${found.length} crew.`;
+						}
+					} else {
+						item.flavor += 'Equippable by: ' + [...found.map(f => f.name)].join(', ');
+					}
+				}
+			}
 		});
-		
 		
 		items.sort((a, b) => a.symbol.localeCompare(b.symbol));
   		let crewLevels: { [key: string]: Set<string>; } = {};
@@ -139,10 +181,12 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 			if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
 				let item = binaryLocate(symbol, items);
 				if (item) {
+					item.flavor ??= "";
+					if (item.flavor?.length) item.flavor += "\n";
 					if (crewLevels[symbol].size > 5) {
-						item.flavor = `Equippable by ${crewLevels[symbol].size} crew`;
+						item.flavor += `Equippable by ${crewLevels[symbol].size} crew`;
 					} else {
-						item.flavor = 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
+						item.flavor += 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
 					}
 				}
 			}
@@ -231,9 +275,19 @@ class ItemsComponent extends Component<ItemsComponentProps, ItemsComponentState>
 				</Table.Cell>
 				<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type] ?? item.type}</Table.Cell>
 				<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
-				<Table.Cell>{item.flavor}</Table.Cell>
+				<Table.Cell>{this.formatFlavor(item.flavor)}</Table.Cell>
 			</Table.Row>
 		);
+	}
+
+	formatFlavor(value: string) {
+		let values = value.split("\n");
+		let output = [] as JSX.Element[];
+
+		for (let value of values) {
+			output.push(<div>{value}</div>);
+		}
+		return output.reduce((p, n) => <>{p}{n}</>, <></>);
 	}
 
 	render() {
