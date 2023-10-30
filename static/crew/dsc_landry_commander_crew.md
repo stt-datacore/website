@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-A total non-entity to veteran players, Landry is a crew who will only find work for fresh rosters. A big SEC proficiency headlines her offerings, but with awful supplementary rolls she won’t make many gauntlets past the mid-game, even at 45% crit.
-
-Her other notable attribute is a quick-activating attack boost on ships. It doesn’t last for long and so may not play well with auto battles, but if you manage to snag multiple copies at once and fuse her up, that can be a consideration.
+Ellen Landry: unalived by thicc tardigrade boi Ripper, and early game Gauntlet at a single star. If you can forecast her picking up Collections to align with all four of her viable Traits, and the Events that might go along with them, invest your Behold choices in her. Otherwise, other selections are likely better.

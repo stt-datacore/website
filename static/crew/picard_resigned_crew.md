@@ -3,7 +3,7 @@ name: Resigned Picard
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 31
 in_portal: true
 date: 15/06/2021

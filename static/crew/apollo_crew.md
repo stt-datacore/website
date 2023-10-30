@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-An old and lower power option for years, Apollo is one of few crew to do a serious value rebirth thanks to the trait era. A handful of megas have given him several cracks at driving requisition shuttles while his collection portfolio has begun to bloom and looks to have a greater ceiling than most.
+An old and lower power option for years, Apollo is one of few crew to do a serious value rebirth thanks to the “Trait Era”. A handful of Mega Events have given him several cracks at driving requisition Shuttles while the seeds of his Collection garden have begun to bloom and look to have a greater ceiling than most.
 
-His viable MED proficiency roll and fistful of elevated crit gauntlets work well with an overall uncommon skill pair to give new players some value right from star one. With veteran players already targeting him for his collection value, Apollo is a fine behold snag at any stage of the game.
+His viable MED Proficiency roll and fistful of elevated Crit Gauntlets work well with an overall uncommon Skill pair to give new players some value right from star one. With veteran players already targeting him for his Collection value, Apollo is a fine Behold snag at any stage of the game.

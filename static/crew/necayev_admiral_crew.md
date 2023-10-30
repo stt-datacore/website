@@ -14,4 +14,4 @@ published: true
 
 Shoutout to whomever mentioned years ago that Nechayev is giving off that naughty schoolmarm vibe. That brain worm isn't going anywhere any time soon and her art pose certainly doesn't help.
 
-The Admiral is a one star behold proposition thanks to a top ten gauntlet pair and occasional 45% crit trait set, but you’ll find that Balok pops her balloon more often than not. Don't let her double collections (or hand on hip) tempt you into more stars; you'll never make it to 5/5.
+The Admiral is a one star Behold proposition thanks to a top ten Gauntlet pair and occasional 45% Crit Trait set, but you’ll find that Balok pops her balloon more often than not. Don't let her three Collection ceiling (or hand on hip) tempt you into more stars; you'll never make it to 5/5.

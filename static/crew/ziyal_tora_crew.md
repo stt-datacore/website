@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Two 'usable' bases (when bonus) puts her near the top of a couple different traits' 'best of' lists. If/when they crop up, she'll be a valuable weekend resource, but until then Ziyal is almost a total dud of an investment.
+Two 'usable' Bases (when bonus) puts her near the top of a couple different Traits' 'best of' lists. If/when they crop up, she'll be a valuable weekend resource, but until then Ziyal is almost a total dud of an investment.
 
-Something in the four to five collection range is firmly within her possible outcomes and it would be hard to catch *fewer* events going forward, but as you’ve probably guessed, Ziyal is far more theoretical value than realized potential.
+Something in the four to five Collection range is firmly within her possible outcomes and it would be hard to catch *fewer* Events going forward, but as you’ve probably guessed, Ziyal is far more theoretical value than realized potential.

@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-The WWF champ is here to lay the smackdown on all your candy asses! The Big Gold belt and Ric Flair’s robe combine to provide some mystical CMD/MED power for voyages where Kelis has been getting mostly positive reviews by players, despite a flaccid unboosted score rank.
+The WWE champ is here to lay the smackdown on all your candy asses! The Big Gold belt and Ric Flair’s robe combine to provide some mystical CMD/MED power for Voyages, but unfortunately the stories told of his Voyage viability have drifted into the realm of myths and legends.
 
-Diving into a voyage investment here from star one may be rash considering the capital needed for Kelis to pay dividends, but if you’re only a star or two away from immortalization, voyages are still an attribute you can unlock. A handful of anti-matter traits and plus skill set may not reach Dr. Pollard levels of endurance, but should give him a lengthier shelf life there than most crew.
-
-An interesting trait list for collection futures (along with Costumed if they ever get to that goddamned trait audit) hasn’t moved the needed much for event bonuses, but if they trigger down the line, Kelis’ shuttle-friendly CMD/DIP stack should have no trouble finding work.
+His Trait milkshake is bringing all the elderly players to the yard though; a ceiling of five Collections from his sextet of Traits is a solid conversion rate, and with a trio already in the bag, he’s a reasonable investment for both current and future value in those regards.

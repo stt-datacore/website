@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The nattily dressed Admiral generally elicits crestfallen anti-cipation from players who are forced to behold him, but when snorkeling the murky waters of lower tiers, grabbing a crew who you can use several times per year is better than a thumb to the eye.
+The nattily dressed Admiral generally elicits crestfallen anti-cipation from players who are forced to choose him from a bottom barrel Behold, but when snorkeling the murky waters of lower Tiers, grabbing a crew who you can use several times per year is better than a thumb to the eye.
 
-A quartet of viable traits have only begun unfurling their event and collection value and though he’ll never regain his old top ten base form, you’ll undoubtedly be fine with seating the Admiral on several Kirk and assorted trait event shuttles while waiting for the rest of his collections to roll in.
+A quartet of viable Traits have only begun unfurling their Event and Collection value and though he’ll never regain his old top ten Base form, you’ll undoubtedly be fine with seating the Admiral on several Kirk and assorted Trait Event Shuttles while waiting for the rest of his Collections to roll in.

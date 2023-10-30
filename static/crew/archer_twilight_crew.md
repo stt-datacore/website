@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-We’d like to quibble about a tertiary skill that should be ENG to fit this particular crew, but it really doesn’t matter as elevating his skill set for voyages would still be met with a depressing debut power level that sits where good crew generally end up in their fourth or fifth year after release.
+We’d like to quibble about a Tertiary Skill that should be ENG to fit this particular crew, but it really doesn’t matter since he’s dead on Voyages anyways, as dead as Earth was in this particular timeline. (oops, spoilers for a 20 year old show)
 
-Average at best in most other respects, Archer’s strength sits at the helm of shuttles. Great base metrics and seat availability give him plenty of work straight out of the box, but with a DIP primary rank that is guaranteed to sink like a stone, you will, like Twilight Archer, soon forget why you bothered to fuse him up in the first place.
+Average at best in most other respects, Archer’s strength sits at the helm of Shuttles. Great Base metrics and seat availability give him plenty of work straight out of the box, but with a DIP Primary rank that is guaranteed to sink like a stone, you will, like Twilight Archer, soon forget why you bothered to Fuse him up in the first place.

@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-Fairly similar to the last Honor Hall entry, Borg Queen Seven, Kal’Hyah Worf is a fine crew, but not exactly a stand out in an area of the game which deserves them.
+Worf is holding one half of a pugil stick from American Gladiators™ and ready to thwap O’Brien, Bashir, Sisko, Martok, and Alexander with it. WRG also thwapped players with this Honor Hall release in February 2022, and thwapped us greatly they did. 
 
-The go-to comparison for all Honor hall crew seems to be Kahless who was a voyage and gauntlet monster on release and is still serviceable in both areas. It’s a shame Worf couldn’t do his best Molor impression and snag competing proficiencies considering his traits support plenty of elevated crit gauntlets and his skill set would face less resistance than Kahless’. Alas, Worf is only an option there for a roster’s first few months before we look elsewhere for usage.
+Worf debuted with a decent Skill set and the power to use it (after being shamed for only having four Traits on debut), but has aged quickly and is no longer worth his salt on Voyages. Left as a Collection and Event crew, he easily will find himself Faction Shuttle seating with his CMD and SEC bases given the propensity of Faction Missions to include those Skills, and Worf is evergreen for Events, Trait bonuses notwithstanding. 
 
-Worf (just barely) snags top fifty Big Book ratings for voyages and events on debut with enough traits to see both his event and collection rates climb in the future. He lacks a knockout punch in any one area, but should offer plenty of utility for his first few years in service.
-
-Is that enough value to ask for 100,000 honor and four hard citations when event crew of similar power levels come along frequently? We couldn’t possibly presume to tell you how to spend your resources, dear reader.
+On the Collections front, a trio of inclusions as it stands plus up to three more in contention for future WRG content updates™ gives Kal’Hyah Worf consideration from Collectionphiles everywhere… but with similar crew available in the Time Portal, is he worth 100,000 Honor and four Legendary Citations?
