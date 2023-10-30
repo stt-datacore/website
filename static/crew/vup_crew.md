@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Stupid Sexy Vup is a meathead who’s just kinda there, like his bully bouncer role in Picard. CMD/DIP/SUCK never had a snowball’s chance in hell of impacting your voyages very much, but at least those skills will excel for event seating…if he ever gets any of ‘em. 
-
-It’s a similar story for his collections future as he has the tools to snag several spots down the line, but is a dud as of this writing. Feel free to pass on Brutus Beefcake in beholds until his traits show more signs of life, but don’t be surprised if and when he takes multiple jumps in value in the future.
+Stupid Sexy Vup is a meathead who’s just kinda there, like his bully bouncer role in Picard. Vuppy’s got a chance to pitch in on your weekend Shuttles if one of his Traits hits, given Bases on the right power level and in the right Skills, and a Collection ceiling of five is not one to sneeze at. A fine Behold choice in the Super Rare category, and a snazzy dresser too.

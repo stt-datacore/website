@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-If only the numbers were as great as his episode. Geordi's skill set is usually a boon for voyages (note: he's a CMD primary despite what the behold screen says), but with a stat total sitting next to the 2-skillers, he's far from a sure thing.
+So, it was cool to see Geordi on Star Trek: Voyager.
 
-In fact, his only notable strength is a variant-best CMD base. Multiple event features is typically a great attribute but his feature and subsequent re-run were Expeditions, which have all but been phased out. With woeful daily contributions, you'll want him as a luxury event pick only.
+This card is really bad though. Voyages and Bases indicative of his 2016 launch date, no utility on Ships or in the Gauntlet, and only two viable Traits for Collections or bonus Events. At least Geordi is a decent Event name on his own, so you might find yourself using his CMD Base on some requisition Shuttles.

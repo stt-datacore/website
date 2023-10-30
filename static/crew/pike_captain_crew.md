@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Well, it happened. Anson Mounted a Pike comeback, resulting in several Pike event bumps since his introduction in Discovery season two. With the silver fox locked in for another Trek series, this OG pike variant will have his chances to sword-n-board his way onto a few more weekend shuttles, despite bad bases.
+Well, it happened. Anson Mounted a Pike comeback, resulting in several Pike Event bumps since his introduction in Star Trek: Discovery, Season Two. With the silver fox locked in for another Trek series, this Jeff Hunter Pike variant will have his chances to sword-n-board his way onto a few more weekend Shuttles, despite bad Bases.
 
-His usage/power is too poor otherwise except in the arena. A combination of +10 attack and fast activation is not particularly common and would be fine for ship battles if the cost to fuse him wasn't so high.
+His usage/power is too poor otherwise except on Ships. A combination of +10 Attack and fast Activation is not particularly common and would be fine for Ship Battles if the opportunity cost to Fuse him wasn't so high.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Searching “Captain Sisko” and finding him buried on the second page should give you a hint about his daily usability. A repugnant combination of skill set and limp stat total has him sitting with the worst voyagers among golds, but there is life in him yet thanks to the typical Sisko trait lineup.
+Searching “Captain Sisko” and finding him buried on the second page should give you a hint about his daily usability. A repugnant combination of Skill set and limp stat total has him sitting with the worst Voyagers among Legendaries, but there is life in him yet thanks to the typical Sisko Trait lineup.
 
-Plenty of variant events and two scoops of traits will activate Ben a few weekends per year on your shuttles and grant him a better collection floor and ceiling than most crew. This isn’t a crew you want to consider until you’ve got pretty much all the areas of day to day usefulness on lockdown, but for endgame players, he’s an alright addition.
+Plenty of variant Events and two scoops of Traits will activate Ben a few weekends per year on your Shuttles and grant him a better Collection floor and ceiling than most crew. This isn’t a crew you want to consider until you’ve got pretty much all the areas of day to day usefulness on lockdown, but for endgame players, he’s an alright addition.
