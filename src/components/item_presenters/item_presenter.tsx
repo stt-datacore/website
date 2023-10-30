@@ -254,6 +254,19 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     >
                        <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
                     </div>
+                    {!!item.kwipment && !!item.traits_requirement?.length &&
+                    <div
+                        style={{
+                            textAlign: "left",
+                            fontStyle: "italic",
+                            fontSize: "0.85em",
+                            marginTop: "2px",
+                            marginBottom: "4px",
+                        }}
+                        >
+                        <div><b>Required Traits:</b></div>
+                        <i>{item.traits_requirement?.map(t => appelate(t)).join(` ${item.traits_requirement_operator} `)}</i>
+                    </div>}
                     <div>
                     {!!((item.item_sources?.length ?? 0) > 0) && (
                             <div style={{fontSize: "8pt",marginRight: "1em"}}>

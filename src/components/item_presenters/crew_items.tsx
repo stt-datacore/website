@@ -21,29 +21,25 @@ export interface CrewItemsViewProps {
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
-    const quip = !!props.quipment;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
     const crew = props.crew as PlayerCrew;
-	let maxBuffs: BuffStatTable | undefined;
+    const quip = !!props.quipment;
+
+    const maxqIdx = (!quip ? 0 : (crew ? ((crew.q_bits ?? 0) / 100) : 0)) - 1;
+
+    let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = playerContext?.maxBuffs ?? context.core?.all_buffs;
     crew.equipment ??= [];
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
-    let eqimgs = [] as string[];
     let equip = [] as EquipmentItem[];
 
     if (!quip) {
         if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
             //console.error(`Missing equipment slots information for crew '${crew.name}'`);
             //console.log(crew);
-            eqimgs = [
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png'
-            ];
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
         } else {
             
@@ -61,26 +57,11 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 }
                 
             }
-    
-            eqimgs = [
-                equip[0].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[1].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[2].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[3].imageUrl ?? "items_equipment_box02_icon.png"
-            ];
         }    
     
     }
     else {
         if (!crew.kwipment?.length || !context.core.items?.length) {
-            //console.error(`Missing equipment slots information for crew '${crew.name}'`);
-            //console.log(crew);
-            eqimgs = [
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png',
-                'items_equipment_box02_icon.png'
-            ];
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
         } else {
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
@@ -88,31 +69,30 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             for (let i = 0; i < 4; i++) {
                 let eq: number;
                 eq = crew.kwipment[i] as number;
-                
+                equip[i] ??= {} as EquipmentItem;                
+
                 if (eq) {
                     let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
                     if (ef) {
                         equip[i] = (JSON.parse(JSON.stringify(ef)));
                     }
                 }
-                
+                else {
+                    if (maxqIdx < i) {
+                        equip[i].name = "Quipment slot is locked.";
+                        // equip[i].imageUrl = "atlas/minus_round_icon.png";
+                    }
+                    else {
+                        equip[i].name = "Quipment slot is unequipped.";
+                    }
+                }
             }
-    
-            eqimgs = [
-                equip[0].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[1].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[2].imageUrl ?? "items_equipment_box02_icon.png",
-                equip[3].imageUrl ?? "items_equipment_box02_icon.png"
-            ];
         }    
-    
     }
 
-
-    if (crew.equipment) {
+    if (!quip && !!crew.equipment) {
         [0, 1, 2, 3].forEach(idx => {
-            if ((crew.equipment as number[]).indexOf(idx) < 0) {
-                eqimgs[idx] = 'items_equipment_box02_icon.png';
+            if ((crew.equipment as number[]).indexOf(idx) < 0) {                
                 equip[idx].imageUrl = "items_equipment_box02_icon.png"
                 equip[idx].empty = true;
                 equip[idx].rarity = 0;
@@ -132,7 +112,14 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 padding: 0
             }}>
             {equip.map((item, idx) => (
-                    <CrewItemDisplay itemSize={props.itemSize} mobileSize={props.mobileSize} key={item.symbol + "_equip" + idx} mobileWidth={mobileWidth} crew={crew} equipment={item} />
+                    <CrewItemDisplay                       
+                        style={(quip && maxqIdx < idx) ? { opacity: "0.25"} : undefined} 
+                        itemSize={props.itemSize} 
+                        mobileSize={props.mobileSize} 
+                        key={item.symbol + "_equip" + idx} 
+                        mobileWidth={mobileWidth} 
+                        crew={crew} 
+                        equipment={item} />
                 ))}
             </div>
         || <></>
@@ -144,6 +131,7 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
     itemSize?: number;
     mobileSize?: number;
+    style?: React.CSSProperties;
 }
 
 export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
@@ -164,7 +152,8 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",            
-            margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em"
+            margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+            ...this.props.style
         }}>
             <ItemDisplay
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
