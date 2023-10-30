@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-A former “meh” power giveaway crew, Sarek has somewhat been the gift that keeps on giving. He probably hasn’t sniffed much daily use for anyone in years, but the trait era has been good to him, providing prodigious event and collection value that should abide for a while longer.
+A former “meh” power Giveaway crew, Sarek has somewhat been the gift that keeps on giving. He probably hasn’t sniffed much daily use for anyone in years, but the Trait Era™ has been good to him, providing prodigious Event and Collection value that should abide for a while longer.
 
-Still afloat on the weekends in a post-Disco world, Sarek’s trait and event his variants should be good for at least a couple events yearly with the odd mega power spike from time to time. And his quartet of collections could potentially double in count if players call WRG’s bluff and see just how committed they are to maintaining monthly collections.
+Still afloat on the weekends despite the tapering off of his show Mega Events, Sarek’s Traits and even his variants should be good for at least a couple Events yearly with the odd Mega Event power spike from time to time. And his sextet of Collections could potentially add a trio more depending on what Traits get the love from WRG.
 
-With some very usable triggerless arena damage available at one star, Sarek offers value via some non-traditional avenues, even if he’s best enjoyed by late game, established rosters.
+With some very usable Instant Damage without a Trigger available at one star, Sarek offers value via some non-traditional avenues, even if he’s best enjoyed by late game, established rosters.

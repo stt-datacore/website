@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-An arena attack boost at four seconds never gets a mention thanks to its accuracy handicap, leaving a reasonable SEC base and smattering of traits as the talking points.
+An Attack Boost on Ships at four seconds never gets a mention thanks to its Accuracy handicap, leaving a reasonable SEC Base and smattering of Traits as the talking points.
 
-Andorian is the eye-catching trait, accounting for most of her events and first collection, but she has a couple others which are in the bonus pool range for off-the-wall mega events and further late game stat boost hunting. If the Plakson faithful want her, you’re taking Tarah on the back of a gun and a prayer for a future mega to justify thawing her.
+A few of the Traits so far have borne Collection fruit including her hidden show tag, and look for a ceiling of five to be hit before long. If the Plakson faithful want her, you’re taking Tarah on the back of a gun and a prayer for future Events to justify thawing her.

@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Time’s been rough to not-Brent. Of course most crew get worse over time, but Soong seems ahead of the curve in that regard. A trio of event features (in three different events) haven’t been re-run and a nice skill set on the behold screen has zero power to back it up in any section of the game. His few niche traits should see him joining the collection crowd sooner or later, but even his ceiling there is lower than most.
+Time’s been rough to not-Brent. Of course most crew get worse over time, but Soong seems ahead of the curve in that regard. A trio of Event features (in three different Events) haven’t been Re-run and a nice Skill set on the Behold screen has zero power to back it up in any section of the game. His few niche Traits should see him joining the Collection crowd sooner or later, but even his ceiling there is lower than most.

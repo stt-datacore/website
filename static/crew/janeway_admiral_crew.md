@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Repulsive bases and traits leave "Admiral Jane" with but one Life Line - the arena. Lightning fast evasion (with nice passives) is a future-proof option against another Polywater Yar scenario as players race for faster and faster ship battles and her ability lasts long enough to guard against all the big names.
+Repulsive Bases and Traits leave "Admiral Jane" with but one Life Line - the Arena. Lightning fast Evasion (with nice Passives) is a future-proof option against another Polywater Yar scenario as players race for faster and faster Ship Battles and her Ship Ability lasts long enough to guard against all the big names.
 
-Then again, if you're a player who only does his five arena battles for the dailies, the Admiral leaves you with a super rare-esque voyage score and bases no better than fourth among variants, despite a sterling Faction rate.
+Then again, if you're a player who only does his five Arena battles for the dailies, the Admiral leaves you with a Super Rare-esque Voyage score and Bases no better than fourth among variants, despite a sterling Faction rate.

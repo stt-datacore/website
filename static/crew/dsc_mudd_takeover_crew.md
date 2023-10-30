@@ -12,8 +12,4 @@ mega: false
 published: true
 ---
 
-Mudd’s last note had him with one foot in the grave, but then he said “Oh, you thought” and pulled out a fistful of big bonus event features while puffing up his collection count, which still has room to grow.
-
-Anyone who’s seen me buzzing around players seeking behold advice has probably heard the phrase “bet on traits” and they’re paying off in spades for Mudd. Besides WRG’s fascination with this particular variant, his traits give him a strong collection profile and have acquitted him well in a post-Disco landscape, even if his bases aren’t exactly top of the line.
-
-Mostly bereft of daily usefulness, don’t feel squeezed to level him before all four stars are in, but he should continue to pay off after immortalization.
+Time Loop Mudd is everything you might want in a Super Rare if you’re out of the early game; a strong Trait buffet and the Events to go with them. A quartet of Collections as it stands and a few more untapped to bring his prospective grand total to seven or more, he’s often the Dwight choice in a Super Rare Behold these days.

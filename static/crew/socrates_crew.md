@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-Socrates' primary selling point (aside from gorgeous art reminiscent of a classical chess piece carved from ivory) is a hefty voyage score. And though he is not now that strength which in old days moved earth and heaven, that which he is, he is.
+Socrates' primary selling point (aside from gorgeous art reminiscent of a classical chess piece carved from ivory) was once a hefty voyage score, but now this Greek philosopher is getting as old as the culture from which he spawned. Take heart though, as it’s not all bad news for ol’ So-crates…
 
-Having fallen out of the top ten, Socrates’ ugly and overstuffed skill set will come home to roost on voyages over time. He outworks and will outlast many of the names in his skill set, but with slimmer value over replacement than other skills can offer, the improvement may be marginal for advanced rosters. Nevertheless, as his highlight, the time to acquire and fuse for voyage work is now, if ever.
-
-WRG has shown tremendous favoritism to Socrates’ traits, giving him a strong event history for a one-off name and a reasonable collection portfolio as well. A small perk slanted toward newer players; five different 45% gauntlets. Mediocre proficiency power limits him to affection choice in most cases, but there are worse crew arts to display proudly. Those attributes generally sum up to garnish for his daily voyage contributions, but can help soften his value tumble when displaced from voyages.
+WRG has shown tremendous favoritism to Socrates’ Traits, giving him a strong Event history for a one-off name and a reasonable Collection portfolio as well. A small perk slanted toward newer players; five different 45% Gauntlets. Mediocre Proficiency power limits him to affection choice in most cases, but there are worse crew arts to display proudly. His Event/Collection one-two combination and that niche Gauntlet utility combine to soften the blow as he tumbles ever so gracefully from Voyage viability.
