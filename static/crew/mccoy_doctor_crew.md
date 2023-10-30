@@ -12,7 +12,7 @@ mega: false
 published: true
 ---
 
-If you were in the Big Book lounge during this crew's release, you may have heard muttered a few, "Fuck if I know"s, and boy were they earned. Bones only has one Skill, but it's bloody enormous. He's dominated the MED metrics with ease aside from some pesky Culber interference and should retain value in the realm of Shuttles much longer than, say, a Voyage-centric option would.
+If you were in the Big Book lounge during this crew's release, you may have heard muttered a few, "Hell if I know"s, and boy were they earned. Bones only has one Skill, but it's bloody enormous. He's dominated the MED metrics with ease aside from some pesky Culber interference and should retain value in the realm of Shuttles much longer than, say, a Voyage-centric option would.
 
 He's going to be used, the only question is how often? With the MED Skill bringing up the rear accounting for only 7-8% of Event seating, there are weekends where you won't see a single MED seat across any of the 3-Seat missions and only sprinkled in sparingly elsewhere. Yet with only a handful of Super Rares able to match him with a bonus, Bones often only needs one opportunity to be the best choice.
 

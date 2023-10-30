@@ -12,8 +12,6 @@ mega: false
 published: true
 ---
 
-The Adira twins made a splash upon their inclusion to the game in more ways than one. Youngin’s can ask their grandparents about Adiragate, but alongside that noise was a pair of pretty attractive voyagers. They’re both doing alright in that regard, EDF less so, but have a bundle of unanswered questions otherwise.
+The Adira twins made a splash upon their inclusion to the game in more ways than one. Youngin’s can ask their grandparents about Adiragate, but alongside that noise was a pair of pretty attractive Voyagers. The emphasis, however, years later, is now on the word WAS in the previous sentence.
 
-A “Lasting Impressions”-style trait set (how would they have reacted to each other we wonder?) is a fun target for forward-thinking collectors, but it simply hasn’t bore much fruit for weekend event bonuses or collections so far. With Discover megas of yore hiding a shockingly thin event history, it’s voyages or bust for this variant.
-
-Adira’s order of skills (and low anti-matter chances) is unfortunate for voyage efficacy, but will flip flop for event seating, when they inevitably grab a mega or two down the line. Until then it’s a waiting game as we hope for the Great Material Continuum to provide Adira’s traits with relevance.
+Having fallen far out of Voyage viability, EDF Adira has to parlay a lackluster Trait list into enduring value in terms of Collections and Event chances. They could find themselves with a quintet of the former if the stars align, and they have sizable Bases in the right two Skills to gain seating on your Faction Shuttles for variant or Trait bonus Events (and there’s always a chance of a Discovery Mega Event again).

@@ -12,7 +12,7 @@ mega: false
 published: true
 ---
 
-Sitting across my desk is a Wicked Realm Games employee giving me the pitch about a new Picard character. But she lacks the meme-able slogan attributed to her, her Stats are a paltry reflection of her commanding prowess and the employee swaggers in with the balls and authority trying to sell me on this garbage idea?
+Sitting across my desk is a Wicked Realm Games employee giving me the pitch about a new Picard character. But she lacks the meme-able slogan attributed to her, her Stats are a paltry reflection of her commanding prowess and the employee swaggers in with the audacity and authority trying to sell me on this garbage idea?
 
 Sheer...Fucking...Hubris
 

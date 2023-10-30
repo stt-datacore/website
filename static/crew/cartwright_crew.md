@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-It seems just about time for one of those off the wall collections and Gambler or Saboteur (of wooden shoe origin - thanks, Valeris) would make Admiral Arrestthosemen tangentially relevant for a period. Until that happens, relevant he is not and not worth the behold equity. If you’re a fan of Brock Peters, try out the much more elite Joseph Sisko crew instead.
+It seems just about time for the Saboteur (of wooden shoe origin - thanks, Valeris) Collection to hit, which would make Admiral Arrestthosemen tangentially relevant for a period. Until that happens, relevant he is not and not worth the Behold equity. If you’re a fan of Brock Peters, try out the much more elite Joseph Sisko crew instead.

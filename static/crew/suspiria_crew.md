@@ -16,4 +16,4 @@ Suspiria is the kind of crew who breaks the fourth wall to illustrate how minute
 
 Every corner of this card has rounded edges. By now she has nothing to offer in all game modes, and her Collection ceiling of five is almost entirely potential versus actual.
 
-Am I still salty about WRG’s lame ass, thoughtless, goose shit Skill set for a character that embodies intrigue and exploring the unknown? Pffft nah, man. Naahhh.
+Am I still salty about WRG’s lame ass, thoughtless, goose crap Skill set for a character that embodies intrigue and exploring the unknown? Pffft nah, man. Naahhh.
