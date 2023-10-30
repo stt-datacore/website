@@ -185,14 +185,29 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				}
 			}
 		}
-		if (item_data.item.type === 14) {
-			console.log(item_data);
-		}
-		
 		
 		const haveCount = this.haveCount(item_data.item.symbol);
 		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
 		const builds = item_data.builds;
+
+		if (item_data.item.kwipment) {
+			item_data.crew_levels = this.context.core.crew.filter(f => {
+				if (item_data.item.traits_requirement) {
+					if (item_data.item.traits_requirement_operator === "and") {
+						return item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+					}
+					else {
+						return item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+					}
+				}
+				return item_data.item.max_rarity_requirement === f.max_rarity;
+			}).map(crew => {
+				return {
+					crew: crew as PlayerCrew,
+					level: 100
+				}
+			})
+		}
 
 		return (
 				<div>
@@ -234,6 +249,20 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								}} as="h2">{item_data.item.name}</Header>
 							<div style={{marginLeft:"0.75em"}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
 							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
+							{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
+								<div
+									style={{
+										textAlign: "left",
+										//fontStyle: "italic",
+										fontSize: "1em",
+										marginTop: "2px",
+										marginBottom: "4px",
+										marginLeft: "0.75em"
+									}}
+									>
+									<div><b>Required Traits:</b></div>
+									<i>{item_data.item.traits_requirement?.map(t => appelate(t)).join(` ${item_data.item.traits_requirement_operator} `)}</i>
+								</div>}
 						</div>
 					
 					</div>
@@ -334,7 +363,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 											</div>
 										}
 										content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
-										subheader={`Level ${entry.level}`}
+										subheader={!!item_data.item.kwipment ? 'Post Immortalization' : `Level ${entry.level}`}
 									/>
 								</Grid.Column>
 							))}
