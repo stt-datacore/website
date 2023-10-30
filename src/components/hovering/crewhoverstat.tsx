@@ -45,8 +45,10 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
             key += "_player";
             def = 'player';
         }
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.props.inputItem as PlayerCrew)?.immortal) result = 'player';
 
-        return this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        return result;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
@@ -200,8 +202,10 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
             key += "_player";
             def = 'player';
         }
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.state.displayItem as PlayerCrew)?.immortal) result = 'player';
 
-        return this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        return result;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
