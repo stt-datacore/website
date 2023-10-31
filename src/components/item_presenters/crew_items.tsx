@@ -17,7 +17,15 @@ export interface CrewItemsViewProps {
     mobileSize?: number;
     quipment?: boolean;
 }
-
+export function qbitsToSlots(qbits: number | undefined) {
+    // 100/250/500/1300
+    qbits ??= 0;
+    if (qbits < 100) return 0;
+    else if (qbits < 250) return 1;
+    else if (qbits < 500) return 2;
+    else if (qbits < 1300) return 3;
+    return 4;
+}
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
@@ -26,7 +34,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
 
-    const maxqIdx = (!quip ? 0 : (crew ? ((crew.q_bits ?? 0) / 100) : 0)) - 1;
+    const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
     let maxBuffs: BuffStatTable | undefined;
 
