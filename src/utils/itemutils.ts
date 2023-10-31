@@ -244,3 +244,13 @@ export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 		return  ((col?.totalRewards ?? 0) > 0) ? col?.milestone.buffs?.map(b => b as BuffBase).concat(col?.milestone.rewards ?? []) as Reward[] : [];
 	}).flat();
 }
+
+export function formatDuration(time: number) {
+	if (time <= 48) {
+		return `${time} Hours`;
+	}
+	else{
+		return `${Math.floor(time / 24)} Days`;
+	}
+};
+
