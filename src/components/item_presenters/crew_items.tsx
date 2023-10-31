@@ -8,6 +8,7 @@ import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { navigate } from 'gatsby';
+import { qbitsToSlots } from '../../utils/crewutils';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -16,15 +17,6 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
-}
-export function qbitsToSlots(q_bits: number | undefined) {
-    // 100/250/500/1300
-    q_bits ??= 0;
-    if (q_bits < 100) return 0;
-    else if (q_bits < 250) return 1;
-    else if (q_bits < 500) return 2;
-    else if (q_bits < 1300) return 3;
-    return 4;
 }
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
