@@ -19,6 +19,9 @@ import { downloadData } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
+import { PlayerCrew } from '../model/player';
+import { appelate } from '../utils/misc';
+import { CrewMember } from '../model/crew';
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -42,6 +45,9 @@ type ProfileItemsProps = {
 
 	/** Do not run the worker */
 	noWorker?: boolean;
+
+	/** Put flavor in its own column. */
+	flavor?: boolean;
 };
 
 interface ItemSearchOpts {
@@ -233,6 +239,99 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
 	}
 
+	createFlavor(item: EquipmentItem | EquipmentCommon) {
+		let output = [] as JSX.Element[];
+
+		let flavor = item.flavor ?? "";
+		if (flavor.startsWith("Equippable by: ")) {
+			let crew = flavor.replace("Equippable by: ", "").split(", ")?.map(s => this.context.core.crew.find(c => c.symbol === s)).filter(s => !!s) as CrewMember[];
+			output.push(<div>
+				Equippable by: {crew.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
+			</div>)
+		}
+		const crew = this.context.player.playerData?.player.character.crew ?? [];
+
+		if (item.kwipment && (item.traits_requirement?.length || item.max_rarity_requirement)) {
+			let found: PlayerCrew[] | null = null;
+			
+			if (item.traits_requirement_operator === "and") {
+				found = crew.filter((crew) => {
+					return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+				});					
+			}
+			else {
+				found = crew.filter((crew) => {
+					if (!!item.max_rarity_requirement && item.max_rarity_requirement !== crew.max_rarity) return false;
+
+					if (item.traits_requirement?.length) {
+						if (item.traits_requirement_operator === 'and') {
+							return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+						}
+						else {
+							return (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+						}
+					}
+
+					return true;
+					
+				});					
+			}
+
+			if (found?.length) {				
+				flavor ??= "";
+				
+				if (flavor?.length) {
+					flavor += "\n";
+				}
+				if (found.length > 5) {
+					if (item.traits_requirement?.length) {
+						if (item.max_rarity_requirement) {
+							output.push(<div>
+								Equippable by <span style={{
+									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+								{CONFIG.RARITIES[item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew with the following traits: {item.traits_requirement?.map(r => <Link to={`/?search=trait:${r}`}>{appelate(r)}</Link>).reduce((p, n) => <>{p} {item.traits_requirement_operator} {n}</>)}
+							</div>)
+							flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+						}
+						else {
+							output.push(<>
+								Equippable by crew with the following traits:&nbsp;{item.traits_requirement?.map(r => <Link to={`/?search=trait:${r}`}>{appelate(r)}</Link>).reduce((p, n) => <>{p} {item.traits_requirement_operator} {n}</>)}
+							</>)
+							flavor += `Equippable by crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+						}
+					}
+					else if (item.max_rarity_requirement) {
+						output.push(<div>
+							Equippable by&nbsp;<span style={{
+								color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+								fontWeight: 'bold'
+							}}>
+							{CONFIG.RARITIES[item.max_rarity_requirement].name}
+							</span>
+							&nbsp;crew.
+						</div>)
+					flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew.`;
+					}
+					else {
+						output.push(<div>Equippable by&nbsp;{found.length} crew.</div>)
+						flavor += `Equippable by ${found.length} crew.`;
+					}
+				} else {
+					output.push(<div>
+						Equippable by:&nbsp;{found.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
+					</div>)
+		
+					flavor += 'Equippable by: ' + [...found.map(f => f.symbol)].join(', ');
+				}
+			}
+		}
+		return output;	
+	}
+
 	render() {
 		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let { data } = this.state;
@@ -245,11 +344,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				bReady = false;
 			}
 		}
-		const { hideOwnedInfo, hideSearch } = this.props;		
+		const { flavor, hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
-		let cit = data?.map(d => d.type);
-		cit = cit?.filter((i, idx) => cit?.indexOf(i) === idx);
-		const presentTypes = cit;
+		const presentTypes = [...new Set(data?.map(d => d.type) ?? Object.keys(CONFIG.REWARDS_ITEM_TYPE).map(k => Number.parseInt(k)))];
 
 		if (data?.length) {
 			
@@ -290,14 +387,17 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		const rewardFilterOpts = [] as DropdownItemProps[];
 		const rarities = [] as DropdownItemProps[];
-
-		Object.keys(presentTypes ?? CONFIG.REWARDS_ITEM_TYPE).forEach((rk) => {
-			if (rk === '1') return;
+		presentTypes.sort((a, b) => {
+			let atext = CONFIG.REWARDS_ITEM_TYPE[a];
+			let btext = CONFIG.REWARDS_ITEM_TYPE[b];
+			return atext.localeCompare(btext);
+		});
+		presentTypes.forEach((rk) => {
 			rewardFilterOpts.push({ 
-				key: Number.parseInt(rk),
-				value: Number.parseInt(rk),
+				key: rk,
+				value: rk,
 				text: CONFIG.REWARDS_ITEM_TYPE[rk]
-			});
+			});			
 		});
 
 		Object.keys(CONFIG.RARITIES).forEach((rk) => {
@@ -335,6 +435,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							placeholder={"Filter by item type"}
 							multiple
 							clearable
+							scrolling
 							options={rewardFilterOpts}
 							value={itemType}
 							onChange={(e, { value }) => this._handleItemType(value as number[] | undefined)}
@@ -395,6 +496,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Rarity
 						</Table.HeaderCell>
+						{!!flavor &&
+						<Table.HeaderCell
+							width={2}
+							sorted={column === 'flavor' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('flavor')}
+						>
+							Flavor
+						</Table.HeaderCell>}						
 						{!hideOwnedInfo &&
 						<Table.HeaderCell
 							width={1}
@@ -445,13 +554,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 											</span>
 										</a>
 									</div>
-									<div style={{ gridArea: 'description' }}>{item.flavor}</div>
+									<div style={{ gridArea: 'description' }}>{this.createFlavor(item)}</div>
 								</div>
 							</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
 							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 'N/A'}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
+							{!!flavor && <Table.Cell>{this.createFlavor(item)}</Table.Cell>}
 							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
 						</Table.Row>
 					))}
