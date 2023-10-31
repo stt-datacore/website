@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This imposter Pi-card is well rounded, but with old school power. A now-redundant skill set and weak bases are a problem for the typical avenues of daily use, but some new player gauntlet ability, usable arena accuracy, and Picard events with a dash of intriguing traits are enough to make him worth picking up for most players.
+This imposter Pi-card is well-rounded, but with old school power. A now-redundant Skill set and weak Bases are a problem for the typical avenues of daily use, but some new player Gauntlet ability, usable Accuracy on Ships, and Picard Events with a dash of intriguing Traits are enough to make him worth picking up for most players.
 
-Can you win any gauntlet matchups with him against the big boys? No you can't! Don't even try!
+Can you win any Gauntlet matchups with him against the big boys? No you can't! Don't even try!
