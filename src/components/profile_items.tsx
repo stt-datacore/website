@@ -249,33 +249,25 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				Equippable by: {crew.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
 			</div>)
 		}
-		const crew = this.context.player.playerData?.player.character.crew ?? [];
+		const crew = this.context.core.crew;
 
 		if (item.kwipment && (item.traits_requirement?.length || item.max_rarity_requirement)) {
-			let found: PlayerCrew[] | null = null;
+			let found: CrewMember[] | null = null;
 			
-			if (item.traits_requirement_operator === "and") {
-				found = crew.filter((crew) => {
-					return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
-				});					
-			}
-			else {
-				found = crew.filter((crew) => {
-					if (!!item.max_rarity_requirement && item.max_rarity_requirement !== crew.max_rarity) return false;
-
-					if (item.traits_requirement?.length) {
-						if (item.traits_requirement_operator === 'and') {
-							return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
-						}
-						else {
-							return (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
-						}
+			found = crew.filter((crew) => {
+				if (!!item.max_rarity_requirement && item.max_rarity_requirement !== crew.max_rarity) return false;
+				if (item.traits_requirement?.length) {
+					if (item.traits_requirement_operator === 'and') {
+						return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
 					}
+					else {
+						return (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+					}
+				}
 
-					return true;
-					
-				});					
-			}
+				return true;
+				
+			});					
 
 			if (found?.length) {				
 				flavor ??= "";

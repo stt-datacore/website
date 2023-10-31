@@ -284,6 +284,23 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								<div><b>Duration:</b></div>
 								<i>{formatDuration(item_data.item.duration)}</i>
 							</div>}
+							{!!item_data.item.max_rarity_requirement && 
+								<div style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "1em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: "0.75em"
+								}}>
+								Equippable by&nbsp;<span style={{
+									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+								{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew.
+							</div>}
 							{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
 								<div
 									style={{
