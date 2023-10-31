@@ -3,7 +3,7 @@ name: J'Vini
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 53
 in_portal: true
 date: 14/12/2022
