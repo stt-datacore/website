@@ -211,19 +211,19 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: text ?? '' };
 		this.tiny.setValue('searchOptions', searchOpts);
 
-		this.setState({ ...this.state, searchOpts });
+		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
 	private _handleItemType = (values: number[] | undefined) => {
 		const searchOpts = { ...(this.state.searchOpts ?? {}), itemType: values };
 		this.tiny.setValue('searchOptions', searchOpts);
-		this.setState({ ...this.state, searchOpts });
+		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
 	private _handleRarity = (values: number[] | undefined) => {
 		const searchOpts = { ...(this.state.searchOpts ?? {}), rarity: values };
 		this.tiny.setValue('searchOptions', searchOpts);		
-		this.setState({ ...this.state, searchOpts });
+		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
 
@@ -245,7 +245,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		let flavor = item.flavor ?? "";
 		if (flavor.startsWith("Equippable by: ")) {
 			let crew = flavor.replace("Equippable by: ", "").split(", ")?.map(s => this.context.core.crew.find(c => c.symbol === s)).filter(s => !!s) as CrewMember[];
-			output.push(<div>
+			if (crew?.length) output.push(<div>
 				Equippable by: {crew.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
 			</div>)
 		}
