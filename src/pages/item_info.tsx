@@ -21,7 +21,7 @@ import ProfileItems from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
-import { getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
+import { formatDuration, getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
 
 
@@ -106,10 +106,20 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
-						crew_levels.push({
-							crew: crew as PlayerCrew,
-							level: es.level
-						});
+						if (this.context.player.playerData) {
+							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+				
+							crew_levels.push({
+								crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+								level: es.level
+							});
+						}
+						else {
+							crew_levels.push({
+								crew: { ...crew as PlayerCrew },
+								level: es.level
+							});
+						}
 					}
 				});
 			});
@@ -192,19 +202,30 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		if (item_data.item.kwipment) {
 			item_data.crew_levels = this.context.core.crew.filter(f => {
+				let rr = item_data.item.max_rarity_requirement === f.max_rarity;
+
 				if (item_data.item.traits_requirement) {
 					if (item_data.item.traits_requirement_operator === "and") {
-						return item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+						return rr && item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 					else {
-						return item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+						return rr && item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 				}
-				return item_data.item.max_rarity_requirement === f.max_rarity;
+				return rr;
 			}).map(crew => {
-				return {
-					crew: crew as PlayerCrew,
-					level: 100
+				if (this.context.player.playerData) {
+					let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+					return {
+						crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+						level: 100
+					}
+				}
+				else {
+					return {
+						crew: crew as PlayerCrew,
+						level: 100
+					}
 				}
 			})
 		}
@@ -249,6 +270,20 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								}} as="h2">{item_data.item.name}</Header>
 							<div style={{marginLeft:"0.75em"}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
 							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
+							{!!item_data.item.duration && 
+							<div
+								style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "1em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: "0.75em"
+								}}
+								>
+								<div><b>Duration:</b></div>
+								<i>{formatDuration(item_data.item.duration)}</i>
+							</div>}
 							{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
 								<div
 									style={{

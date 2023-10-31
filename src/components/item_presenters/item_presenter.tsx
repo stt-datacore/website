@@ -13,7 +13,7 @@ import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
-import { getItemBonuses } from "../../utils/itemutils";
+import { formatDuration, getItemBonuses } from "../../utils/itemutils";
 
 export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string) {
 
@@ -254,6 +254,19 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     >
                        <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
                     </div>
+                    {!!item.duration && 
+                    <div
+                        style={{
+                            textAlign: "left",
+                            fontStyle: "italic",
+                            fontSize: "0.85em",
+                            marginTop: "2px",
+                            marginBottom: "4px",
+                        }}
+                        >
+                        <div><b>Duration:</b></div>
+                        <i>{formatDuration(item.duration)}</i>
+                    </div>}
                     {!!item.kwipment && !!item.traits_requirement?.length &&
                     <div
                         style={{
