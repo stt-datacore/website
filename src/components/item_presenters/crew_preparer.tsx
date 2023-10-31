@@ -186,10 +186,10 @@ export class CrewPreparer {
                 cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
-                        item = applyImmortalState(immortalMode, { ...item, ...cm }, undefined, buffConfig ?? maxBuffs);
+                        item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, undefined, buffConfig ?? maxBuffs);
                     }
                     else {
-                        item = applyImmortalState(immortalMode, { ...item, ...cm }, context.player.playerData, buffConfig ?? maxBuffs);
+                        item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, context.player.playerData, buffConfig ?? maxBuffs);
                     }
                     
                     if ((maxBuffs && Object.keys(maxBuffs)?.length) && ((!hasPlayer && buffMode != 'none') || (buffMode === 'max'))) {
