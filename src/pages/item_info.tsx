@@ -164,7 +164,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			);
 		}
 
-		// console.log(item_data);
+		console.log(item_data);
 
 		const { bonuses, bonusText } = getItemBonuses(item_data.item);
 
