@@ -96,7 +96,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 								</div>
 						}
 					}) ?? []}
-					placeholder="Click crew name to filter..."
+					//placeholder="Click crew name to filter..."
 					value={searchFilter.split(";").map(s => s.trim())}
 					onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
 
