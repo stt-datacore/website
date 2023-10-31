@@ -17,13 +17,13 @@ export interface CrewItemsViewProps {
     mobileSize?: number;
     quipment?: boolean;
 }
-export function qbitsToSlots(qbits: number | undefined) {
+export function qbitsToSlots(q_bits: number | undefined) {
     // 100/250/500/1300
-    qbits ??= 0;
-    if (qbits < 100) return 0;
-    else if (qbits < 250) return 1;
-    else if (qbits < 500) return 2;
-    else if (qbits < 1300) return 3;
+    q_bits ??= 0;
+    if (q_bits < 100) return 0;
+    else if (q_bits < 250) return 1;
+    else if (q_bits < 500) return 2;
+    else if (q_bits < 1300) return 3;
     return 4;
 }
 export const CrewItemsView = (props: CrewItemsViewProps) => {
