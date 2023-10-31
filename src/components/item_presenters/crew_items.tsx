@@ -8,6 +8,7 @@ import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { navigate } from 'gatsby';
+import { qbitsToSlots } from '../../utils/crewutils';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -17,7 +18,6 @@ export interface CrewItemsViewProps {
     mobileSize?: number;
     quipment?: boolean;
 }
-
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
@@ -26,7 +26,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
 
-    const maxqIdx = (!quip ? 0 : (crew ? ((crew.q_bits ?? 0) / 100) : 0)) - 1;
+    const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
     let maxBuffs: BuffStatTable | undefined;
 
