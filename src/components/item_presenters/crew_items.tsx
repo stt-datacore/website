@@ -61,33 +61,33 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     
     }
     else {
-        if (!crew.kwipment?.length || !context.core.items?.length) {
-            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-        } else {
-            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-    
-            for (let i = 0; i < 4; i++) {
-                let eq: number;
-                eq = crew.kwipment[i] as number;
-                equip[i] ??= {} as EquipmentItem;                
+        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
 
-                if (eq) {
-                    let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
-                    if (ef) {
-                        equip[i] = (JSON.parse(JSON.stringify(ef)));
-                    }
-                }
-                else {
-                    if (maxqIdx < i) {
-                        equip[i].name = "Quipment slot is locked.";
-                        // equip[i].imageUrl = "atlas/minus_round_icon.png";
-                    }
-                    else {
-                        equip[i].name = "Quipment slot is unequipped.";
-                    }
+        for (let i = 0; i < 4; i++) {
+            let eq: number | undefined = undefined;
+
+            if (crew.kwipment?.length) {
+                eq = crew.kwipment[i] as number;
+            }
+            
+            equip[i] ??= {} as EquipmentItem;                
+
+            if (eq) {
+                let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
+                if (ef) {
+                    equip[i] = (JSON.parse(JSON.stringify(ef)));
                 }
             }
-        }    
+            else {
+                if (maxqIdx < i) {
+                    equip[i].name = "Quipment slot is locked.";
+                    // equip[i].imageUrl = "atlas/minus_round_icon.png";
+                }
+                else {
+                    equip[i].name = "Quipment slot is unequipped.";
+                }
+            }
+        }
     }
 
     if (!quip && !!crew.equipment) {
