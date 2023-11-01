@@ -123,6 +123,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Filter crew-specific items
 		let fuelspecific = fuellist.filter(
 			item => isSpecificItem(item.name) && !needsHigherQuality(item.symbol, item.rarity)
+					&& item.type !== 14 && item.type !== 15 
 		);
 
 		// Filter generic items
