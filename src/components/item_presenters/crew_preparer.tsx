@@ -185,6 +185,7 @@ export class CrewPreparer {
                 let cm: CrewMember | undefined = undefined;
                 cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
+                    delete cm.kwipment;
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
                         item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, undefined, buffConfig ?? maxBuffs);
                     }
