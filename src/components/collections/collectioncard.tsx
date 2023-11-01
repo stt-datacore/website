@@ -35,7 +35,8 @@ export const CollectionCard = (props: CollectionCardProps) => {
     
     const { collection } = col;
 
-    const neededCost = (collection.neededCost ?? 0) - honorQ;
+    const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
+    const allStars = !col.neededStars;
 
     if (!collection?.totalRewards || !collection.milestone) return <></>;
     const rewards =
@@ -119,7 +120,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                         : "MAX"}
                 </i>
 
-                {crewhave >= crewneed && !!neededCost && (
+                {crewhave >= crewneed && (!!neededCost || !allStars) && (
                     <div style={{ marginTop: "0.5em" }}>
                         <i style={{ fontSize: "0.9em" }}>
                             Citation cost to next:
@@ -131,7 +132,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                         </i>
                         <div style={{ marginTop: "0.5em" }}>
                             <RewardsGrid kind={"need"} needs={makeCiteNeeds(col, undefined, ownedCites)} />
-                            <Progress
+                            {!!neededCost && <Progress
                                 value={(context.player.playerData?.player.honor ?? 0)}
                                 total={neededCost}
                                 label={
@@ -164,7 +165,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                                             )}
                                     </div>
                                 }
-                            />
+                            />}
                         </div>
                     </div>
                 )}
@@ -176,8 +177,9 @@ export const CollectionCard = (props: CollectionCardProps) => {
                             color: "lightgreen",
                         }}
                     >
-                        All crew required to reach the next milestone are already fully
-                        fused.
+                        {allStars && <>All crew required to reach the next milestone are already fully fused.</>}
+                        {!allStars && <>All remaining required fuses are covered by honorable citations you already own.</>}
+                        
                     </i>
                 )}
 
