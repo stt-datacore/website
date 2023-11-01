@@ -66,7 +66,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         for (let i = 0; i < 4; i++) {
             let eq: number | undefined = undefined;
 
-            if (crew.kwipment?.length) {
+            if (crew.kwipment_slots?.length) {
                 eq = crew.kwipment[i] as number;
             }
             
