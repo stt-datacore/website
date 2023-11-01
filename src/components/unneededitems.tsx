@@ -92,6 +92,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Calculate all replicator fodder
 		let fuellist = items.filter(
 			item => equipmentEquipped.has(item.symbol) &&
+					item.type !== 14 && item.type !== 15 &&
 					!equipmentNeeded.has(item.symbol)
 		).sort((a, b) => {
 			if (a.rarity == b.rarity)
@@ -128,6 +129,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let fuelgeneric = fuellist.filter(
 			item =>
 				item.quantity === 1 && item.rarity > 1 &&
+				item.type !== 14 && item.type !== 15 &&
 				!isSpecificItem(item.name) &&
 				!needsHigherQuality(item.symbol, item.rarity)
 		);
