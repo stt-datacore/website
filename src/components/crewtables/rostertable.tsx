@@ -115,7 +115,7 @@ export const RosterTable = (props: RosterTableProps) => {
 
 	return (
 		<RosterTableContext.Provider value={providerValue}>
-			<CrewConfigTableMaker />
+			<CrewConfigTableMaker tableType={props.rosterType} />
 			{props.rosterType === 'myCrew' && playerData && playerBuffs &&
 				<React.Fragment>
 					<RosterProspects prospects={prospects} setProspects={setProspects} />
@@ -182,7 +182,7 @@ interface IDataPrepared {
 	appliedFilters: string[];
 };
 
-const CrewConfigTableMaker = () => {
+const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips } = globalContext.player;
 	const tableContext = React.useContext(RosterTableContext);
@@ -398,8 +398,8 @@ const CrewConfigTableMaker = () => {
 					initOptions={initOptions}
 					rosterCrew={preparedCrew}
 					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig()}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells crew={crew} pageId={pageId} />}
+					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType)}
+					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
 					lockableCrew={lockableCrew}
 					loading={isPreparing}
 				/>

@@ -8,14 +8,15 @@ import { EquipmentItem } from "../../model/equipment";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
 import { GlobalContext } from "../../context/globalcontext";
-import { navigate } from "gatsby";
+import { Link, navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { formatDuration, getItemBonuses } from "../../utils/itemutils";
+import { printRequiredTraits } from "../profile_items";
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string) {
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string) {
 
     return (<div style={{
         display: "flex",
@@ -37,11 +38,11 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
                         alignContent: "center"
                     }}
                 >
-                    <div style={{width: "2em", marginRight: "0.5em"}}>
-                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                    <div style={{width: maxWidth ?? "2em", marginRight: "0.5em"}}>
+                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
                     </div>
-                    <h4 style={{ margin: "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-                    <h4 style={{ margin: "0.5em"}} >{atext}</h4>
+                    <h4 style={{ margin: margin ?? "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                    <h4 style={{ margin: margin ?? "0.5em"}} >{atext}</h4>
                 </div>)
         }))}
     </div>)
@@ -184,6 +185,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
         if (!item) return <></>;
         const { bonuses, bonusText } = getItemBonuses(item);
+		const ltMargin = 0;
 
         return (<div style={{ 
                         fontSize: "12pt", 
@@ -241,48 +243,70 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 size='large' 
                                 disabled />
                         </div>
-                        {!!bonusText.length && renderBonuses(bonuses)}
-                    </div>
-                    <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            marginBottom: "4px",
-                        }}
-                    >
-                       <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
+                        <div
+                            style={{
+                                textAlign: "left",
+                                fontStyle: "italic",
+                                fontSize: "0.85em",
+                                marginTop: "2px",
+                                marginBottom: "4px",
+                            }}
+                        >
+                        <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
+                        </div>
+
+                        {!!bonusText.length && renderBonuses(bonuses, "1em", "0.25em")}
                     </div>
                     {!!item.duration && 
-                    <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            marginBottom: "4px",
-                        }}
-                        >
-                        <div><b>Duration:</b></div>
-                        <i>{formatDuration(item.duration)}</i>
-                    </div>}
-                    {!!item.kwipment && !!item.traits_requirement?.length &&
-                    <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            marginBottom: "4px",
-                        }}
-                        >
-                        <div><b>Required Traits:</b></div>
-                        <i>{item.traits_requirement?.map(t => appelate(t)).join(` ${item.traits_requirement_operator} `)}</i>
-                    </div>}
-                    <div>
-                    {!!((item.item_sources?.length ?? 0) > 0) && (
-                            <div style={{fontSize: "8pt",marginRight: "1em"}}>
+							<div
+								style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "0.75em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}
+								>
+								<div><b>Duration:</b>&nbsp;
+								<i>{formatDuration(item.duration)}</i></div>
+							</div>}
+							{!!item.max_rarity_requirement && 
+								<div style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "0.75em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}>
+								Equippable by up to&nbsp;<span style={{
+									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+								{CONFIG.RARITIES[item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew.
+							</div>}
+							{!!item.kwipment && !!item.traits_requirement?.length &&
+								<div
+									style={{
+										textAlign: "left",
+										//fontStyle: "italic",
+										fontSize: "0.75em",
+										marginTop: "2px",
+										marginBottom: "4px",
+										marginLeft: ltMargin
+									}}
+									>
+									<div><b>Required Traits:</b>&nbsp;
+									<i>
+                                        {printRequiredTraits(item)}
+                                    </i></div>
+								</div>}             
+                            <div>
+                            {!!((item.item_sources?.length ?? 0) > 0) && (
+                            <div style={{fontSize: "8pt",marginRight: "1em", marginTop : "0.5em"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />

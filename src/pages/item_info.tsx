@@ -17,7 +17,7 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
-import ProfileItems from '../components/profile_items';
+import ProfileItems, { printRequiredTraits } from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -202,7 +202,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		if (item_data.item.kwipment) {
 			item_data.crew_levels = this.context.core.crew.filter(f => {
-				let rr = item_data.item.max_rarity_requirement === f.max_rarity;
+				let mrq = item_data.item.max_rarity_requirement ?? f.max_rarity;
+				let rr = mrq >= f.max_rarity;
 
 				if (item_data.item.traits_requirement) {
 					if (item_data.item.traits_requirement_operator === "and") {
@@ -229,6 +230,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				}
 			})
 		}
+
+		const ltMarginSmall = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.375em";
+		const ltMargin = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.75em";
+		const ltMarginBig = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "1em";
 
 		return (
 				<div>
@@ -265,11 +270,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							}}>
 							<Header style={{
 								margin: 0, 
-								marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "0.5em",
+								marginLeft: ltMarginSmall,
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
 								}} as="h2">{item_data.item.name}</Header>
-							<div style={{marginLeft:"0.75em"}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
-							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
+							{item_data?.item.flavor && <div style={{textAlign: 'left', marginLeft: ltMargin, fontStyle: "italic", width:"100%"}}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
+							<div style={{marginLeft:ltMargin}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
+							{!!haveCount && <div style={{margin: 0, marginLeft: ltMarginBig, color:"lightgreen"}}>OWNED ({haveCount})</div>}
 							{!!item_data.item.duration && 
 							<div
 								style={{
@@ -278,11 +284,11 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									fontSize: "1em",
 									marginTop: "2px",
 									marginBottom: "4px",
-									marginLeft: "0.75em"
+									marginLeft: ltMargin
 								}}
 								>
-								<div><b>Duration:</b></div>
-								<i>{formatDuration(item_data.item.duration)}</i>
+								<div><b>Duration:</b>&nbsp;
+								<i>{formatDuration(item_data.item.duration)}</i></div>
 							</div>}
 							{!!item_data.item.max_rarity_requirement && 
 								<div style={{
@@ -291,9 +297,9 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									fontSize: "1em",
 									marginTop: "2px",
 									marginBottom: "4px",
-									marginLeft: "0.75em"
+									marginLeft: ltMargin
 								}}>
-								Equippable by&nbsp;<span style={{
+								Equippable by up to&nbsp;<span style={{
 									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
 									fontWeight: 'bold'
 								}}>
@@ -309,17 +315,17 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 										fontSize: "1em",
 										marginTop: "2px",
 										marginBottom: "4px",
-										marginLeft: "0.75em"
+										marginLeft: ltMargin
 									}}
 									>
-									<div><b>Required Traits:</b></div>
-									<i>{item_data.item.traits_requirement?.map(t => appelate(t)).join(` ${item_data.item.traits_requirement_operator} `)}</i>
+									<div><b>Required Traits:</b>&nbsp;
+									<i>
+                                        {printRequiredTraits(item_data.item)}
+                                    </i></div>
 								</div>}
 						</div>
 					
 					</div>
-					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
-				<br />
 
 				{item_data.item.type === 8 && !!ship &&
 					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>

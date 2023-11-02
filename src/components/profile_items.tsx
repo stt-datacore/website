@@ -69,6 +69,25 @@ type ProfileItemsState = {
 	addNeeded?: boolean;	
 };
 
+export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
+
+	if (item.kwipment) {
+		if (item.traits_requirement?.length) {
+			let req = item.traits_requirement.map(t => t === 'doctor' ? 'physician' : t);
+			if (item.traits_requirement_operator === "and") {
+				return <Link to={`/?search=trait:${req.reduce((p, n) => p ? `${p},${n}` : n)}`}>
+					{req.map(t => appelate(t)).join(` ${item.traits_requirement_operator} `)}    
+				</Link>  
+			}
+			else {
+				return <>{req.map(t => <Link to={`/?search=trait:${t}`}>{appelate(t)}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
+			}
+		}		
+	}
+
+	return <></>
+};
+
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
 	{ key: '1', value: '25', text: '25' },
@@ -255,7 +274,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			let found: CrewMember[] | null = null;
 			
 			found = crew.filter((crew) => {
-				if (!!item.max_rarity_requirement && item.max_rarity_requirement !== crew.max_rarity) return false;
+				if (!!item.max_rarity_requirement && item.max_rarity_requirement < crew.max_rarity) return false;
 				if (item.traits_requirement?.length) {
 					if (item.traits_requirement_operator === 'and') {
 						return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
@@ -279,26 +298,26 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					if (item.traits_requirement?.length) {
 						if (item.max_rarity_requirement) {
 							output.push(<div>
-								Equippable by <span style={{
+								Equippable by up to <span style={{
 									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
 									fontWeight: 'bold'
 								}}>
 								{CONFIG.RARITIES[item.max_rarity_requirement].name}
 								</span>
-								&nbsp;crew with the following traits: {item.traits_requirement?.map(r => <Link to={`/?search=trait:${r}`}>{appelate(r)}</Link>).reduce((p, n) => <>{p} {item.traits_requirement_operator} {n}</>)}
+								&nbsp;crew with the following traits: {printRequiredTraits(item)}
 							</div>)
-							flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+							flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${printRequiredTraits(item)}`;
 						}
 						else {
 							output.push(<>
-								Equippable by crew with the following traits:&nbsp;{item.traits_requirement?.map(r => <Link to={`/?search=trait:${r}`}>{appelate(r)}</Link>).reduce((p, n) => <>{p} {item.traits_requirement_operator} {n}</>)}
+								Equippable by crew with the following traits:&nbsp;{printRequiredTraits(item)}
 							</>)
-							flavor += `Equippable by crew with the following traits: ${item.traits_requirement?.map(r => appelate(r)).join(" " + item.traits_requirement_operator + " ")}`;
+							flavor += `Equippable by crew with the following traits: ${printRequiredTraits(item)}`;
 						}
 					}
 					else if (item.max_rarity_requirement) {
 						output.push(<div>
-							Equippable by&nbsp;<span style={{
+							Equippable by up to&nbsp;<span style={{
 								color: CONFIG.RARITIES[item.max_rarity_requirement].color,
 								fontWeight: 'bold'
 							}}>
@@ -306,7 +325,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</span>
 							&nbsp;crew.
 						</div>)
-					flavor += `Equippable by ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew.`;
+					flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew.`;
 					}
 					else {
 						output.push(<div>Equippable by&nbsp;{found.length} crew.</div>)
