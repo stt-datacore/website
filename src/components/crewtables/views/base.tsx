@@ -6,11 +6,11 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../../components/cabexplanation';
-import { formatTierLabel, getSkillOrder, printPortalStatus, skillToRank } from '../../../utils/crewutils';
+import { formatTierLabel, getSkillOrder, printPortalStatus, qbitsToSlots, skillToRank } from '../../../utils/crewutils';
 import { navigate } from 'gatsby';
 import { TinyStore } from '../../../utils/tiny';
 
-export const getBaseTableConfig = () => {
+export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew') => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
@@ -27,18 +27,29 @@ export const getBaseTableConfig = () => {
 	});
 	tableConfig.push(
 		{ width: 1, column: 'in_portal', title: 'In Portal' },
-		{ width: 1, column: 'date_added', title: 'Release Date' },
 	);
+	if (tableType === 'allCrew') {
+		tableConfig.push(
+			{ width: 1, column: 'date_added', title: 'Release Date' },
+		);
+	
+	}
+	else {
+		tableConfig.push(
+			{ width: 1, column: 'q_bits', title: 'Q-Bits' },
+		);
+	}
 	return tableConfig;
 };
 
 type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
+	tableType: 'allCrew' | 'myCrew' | 'profileCrew'
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, pageId } = props;
+	const { crew, pageId, tableType } = props;
 	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
 	const tiny = TinyStore.getStore("index");
 	
@@ -77,7 +88,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, false)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{new Date(crew.date_added).toLocaleDateString()}
+				{tableType === 'allCrew' && new Date(crew.date_added).toLocaleDateString()}
+				{tableType !== 'allCrew' && <div title={crew.q_bits === undefined ? 'Frozen crew do not have q-bits' : qbitsToSlots(crew.q_bits) + " Slot(s) Open"}>{crew.q_bits ?? 'N/A'}</div>}
 			</Table.Cell>
 		</React.Fragment>
 	);

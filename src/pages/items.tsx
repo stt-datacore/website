@@ -19,7 +19,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 	const hasPlayer = !!context.player.playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
 
-	const coreItems = JSON.parse(JSON.stringify(context.core.items)) as EquipmentItem[];
+	const coreItems = JSON.parse(JSON.stringify(context.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
 	const crew = context.core.crew;
 
 	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
