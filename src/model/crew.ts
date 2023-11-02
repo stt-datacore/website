@@ -51,7 +51,8 @@ export interface CrewMember {
   markdownContent: string
   unique_polestar_combos?: string[][]
   constellation?: CrewConstellation
-  kwipment?: any[]
+  kwipment?: number[][];
+  kwipment_expiration?: number[];
   q_bits?: number
 
   /** Used internally, not part of incoming data */
