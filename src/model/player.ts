@@ -451,11 +451,11 @@ export interface Player {
      */
     equipment: number[][] | number[]
 
-    kwipment: number[][] | number[]
-    kwipment_expiration: number[] | number[][]
-    kwipment_slots?: EquipmentSlot[];
-
+    kwipment: number[][] | number[];
+    kwipment_expiration: number[][] | number[];
     q_bits: number
+
+    kwipment_slots?: EquipmentSlot[];
 
     icon: Icon
     portrait: Icon
