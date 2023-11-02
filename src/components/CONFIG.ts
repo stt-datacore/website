@@ -61,8 +61,8 @@ export default class CONFIG {
 		11: 'Buff',
 		12: 'Starbase component',
 		13: 'Voyage consumable',
-		14: 'Continuum Buff',
-		15: 'Continuum Container Component'
+		14: 'Continuum Quipment',
+		15: 'Continuum Quipment Component'
 	};
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
