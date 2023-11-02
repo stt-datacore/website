@@ -1525,7 +1525,8 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
 		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
 		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		else if (obstr === 'Collection') obstr = 'Collection Milestone Reward';
+		else if (obstr === 'Collection') obstr = 'Collection Milestone';
+		else if (obstr === 'Missions') obstr = 'Main Board Mission';
 	}
 	else {
 		if (obstr === 'BossBattle') obstr = 'Bridge';
@@ -1554,7 +1555,7 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained.toLowerCase();
 	
-	if (showNever && (ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
+	if (showNever && (ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
 		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;		
 	}
 
