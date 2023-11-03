@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-"I always knew this day would come." You may have had to walk the 6-pack plank when Picard debuted (You'll never make it...no one ever has), but now that he’s in the portal, is he still worth it?
+"I always knew this day would come." You may have had to walk the Tuesday Pack plank when Picard debuted (You'll never make it...no one ever has), but now that he’s in the Time Portal, is he still worth it?
 
-With a trio of commendations to his name (meritorious collections), you'll be hoisting Picard up the star counts to tap into all three of his offerings on voyages, shuttles, and collections. A DIP base almost two hundred points higher than any other Picard crew makes him a strong option for shuttles, bonus or not.
+With a trio of commendations to his name (Meritorious Collections), you'll be hoisting Picard up the star counts to tap into his offerings on Event Shuttles and Collections. A DIP Base almost two hundred points higher than any other Picard crew makes him a strong option for the aforementioned Shuttles.
 
-Picard events didn’t explode in the wake of his namesake show, but he still collects bonuses at the clip you’d expect from a real life icon and some of the same traits that sprinkle in anti-matter value on voyages have popped for weekend event bonuses too. Even as his somewhat poor skill set ages out of voyages, his event work should keep him a relevant name on any roster.
+Picard Events didn’t explode in the wake of his namesake show, but he still collects bonuses at the clip you’d expect from a real life icon and some of the same Traits that sprinkle in Anti-matter value on Voyages have popped for weekend Event bonuses too. Even though he has aged out of daily use, his Event work should keep him a relevant name on any roster.
