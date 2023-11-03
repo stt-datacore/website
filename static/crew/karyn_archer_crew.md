@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-Somewhere out there in the future is a DIP/SCI Super Rare that will earn resounding applause, but today is not that day. If there are any Karen jokes to be made, it’s probably because we want to return this one to the store, no questions asked.
-
-Outside of moonshot voyage potential if a new roster gathers all four stars quickly, Karyn is merely a single collection piece whose inclusion in a future Desperate collection might herald the end of the game.
+Jonathan Archer’s descendant is little more than a DIP Base for Trait-based bonus Events, and with only four Traits, half of which are viable in that regard, she won’t find many opportunities to get a reprieve from Cryostasis. Super Rare Behold Insurance™ is what this Karen is.

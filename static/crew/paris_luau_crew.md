@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Imagine that Episode 10 reward Quinn and former campaign crew Determined Paris had a love child and he came out wearing a really cool shirt, sipping on a pineapple.
+Imagine that Episode 10 Rare Reward Quinn and former Campaign crew Determined Paris had a love child and he came out wearing a really cool shirt, sipping on a pineapple.
 
-Luau’s trajectory was always self-evident and the power that earned him his own quarters on debut isn’t quite enough to stand out in the worst voyage skill set in the game by a mile. Having had his skill set, skill order, and several anti-matter traits cannibalized by one mega and giveaway crew after another, Paris may not be a card you want to chase from star one if you weren’t playing for his four copy giveaway.
+Luau’s trajectory was always self-evident and the power that earned him his own quarters on debut isn’t quite enough to stand out in the worst Voyage Skill set in the game by a mile. Having had his Skill set, Skill order, and several Anti-matter Traits cannibalized by one Mega Event Recurring and Giveaway crew after another, Paris may not be a card you want to chase from star one if you weren’t playing for his four copy giveaway.
 
-That’s not to say he’s dead in the water, but if mulling a behold or citation investment, you should already be mentally pivoting to his event and collection values. Paris is a typically reliable event name, but his traits have offered only token help on the weekends and in the collection tab. If I were a betting man, I would say that Casual will hit both a mega and stat-booster before too long, but his ceiling is somewhat capped compared to other more versatile characters.
+That’s not to say he’s dead in the water, but if mulling a Legendary Behold or Citation investment, you should already be mentally pivoting to his Event and Collection values. Paris is a typically reliable Event name, but his Traits have offered only token help on the weekends and in the Collection tab. Paris has found himself a surprise Vanity Collection via Convergence Day, but that still only lifts his Collection ceiling to four.

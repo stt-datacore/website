@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-I chose not to fight.' 'I will not kill.' Thus, a SEC proficiency was born.
+I chose not to fight.' 'I will not kill.' Thus, a SEC Proficiency was born.
 
-Kev has a big boy base, but little else. With the top SCI ranks stuffed full of household names like Dax, Spock, Janeway, Kira, and Picard, you'd be trading in oodles of utility for a base in Uxbridge that's stronger by just a percent or two.
+Kev has a big boy Base, but little else. You can count on one hand the number of 3-Skill Legendary crew who have ever debuted with worse Voyage numbers than the aged Douwd and while his Skill set is underrepresented overall, he shouldn’t be the one flying that flag on your roster.
 
-You can count on one hand the number of 3-skill legendary crew who have ever debuted with worse voyage numbers than the aged Douwd and while his skill set is underrepresented overall, he shouldn’t be the one flying that flag on your roster.
-
-A good-for-super-rare arena attack boost and eclectic trait mash-up rounds out his thin portfolio. Surely Kevin's strong SCI base will give you chances to use this fan favorite, just don't treat this Allen Wrench like do-it-all duct tape.
+A good-for-Super-Rare Attack Boost on Ships and eclectic Trait mash-up rounds out his thin portfolio. Surely Kevin's strong SCI Base will give you chances to use this fan favorite, just don't treat this Allen Wrench like do-it-all duct tape.
