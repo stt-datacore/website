@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-TPC's headline has always been a gorgeous skill set. Unfortunately he’s lost all semblance of competitive power and will flounder in any attempts to use him as a daily option. Still owner of a SEC base that will play in events, regard Chakotay as an event/collection piece only whose value could perk up in spurts if the WRG wheel of traits cooperates.
+TPC's headline has always been a gorgeous Skill set. Unfortunately he’s lost all semblance of competitive power and will flounder in any attempts to use him as a daily option. Still owner of a SEC Base that will play in Events, regard Chakotay as an Event/Collection piece only whose value could perk up in spurts if the WRG Wheel of Traits™ cooperates.
