@@ -550,6 +550,12 @@ function renderDefaultExplanation(): JSX.Element {
 			</p>
 
 			<p>
+				Search for all crew that match a whole or partial skill order:
+			</p>
+			<p>
+				<code>skill_order:CMD or skill_order:CMD/SCI or skill_order:CMD/SCI/SEC</code>
+			</p>
+			<p>
 				Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
 			</p>
 			<p>
