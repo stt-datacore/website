@@ -62,6 +62,9 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
     searchFilter: string;
     setSearchFilter: (value?: string) => void;
 
+    tierFilter: number;
+    setTierFilter: (value: number) => void;
+
     rarityFilter: number[];
     setRarityFilter: (value: number[]) => void;
 

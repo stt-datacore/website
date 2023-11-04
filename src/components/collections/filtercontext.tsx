@@ -18,6 +18,7 @@ const DefaultData = {
     short: false,
     matchMode: 'normal',    
     byCost: false,
+    tierFilter: 1,
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
     setRarityFilter: (value) => null,
@@ -28,7 +29,8 @@ const DefaultData = {
     setShort: (value) => false,
     setCostMode: (value) => false,
     setMatchMode: (value) => false,
-    setByCost: (value) => false
+    setByCost: (value) => false,
+    setTierFilter: (value) => 1
 } as CollectionFilterContextProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
@@ -50,6 +52,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 		rewardFilter: []
 	} as MapFilterOptions;
 
+    const [tierFilter, setTierFilter] = useStateWithStorage(pageId + 'collectionstool/tierFilter', 1);
     const [ownedFilter, setOwnedFilter] = useStateWithStorage(pageId + 'collectionstool/ownedFilter', '');
     const [fuseFilter, setFuseFilter] = useStateWithStorage(pageId + 'collectionstool/fuseFilter', '');
     const [rarityFilter, setRarityFilter] = useStateWithStorage(pageId + 'collectionstool/rarityFilter', [] as number[]);
@@ -75,6 +78,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         costMode,
         matchMode,
         byCost,
+        tierFilter,
 
         setMapFilter,
         setSearchFilter,
@@ -82,6 +86,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         setFuseFilter,
         setOwnedFilter,
         setByCost,
+        setTierFilter,
 
         checkCommonFilter,
         checkRewardFilter,

@@ -71,6 +71,11 @@ const ItemsPage = (props: ItemsPageProps) => {
 				</Step>}
 			</Step.Group>}
 			
+
+			{/* We want both of these to load, even if they are not displayed, 
+				because there's work that that must be done every time they are loaded.
+				Re-rendering the page for switching views would cause work to run unnecessarily. */}
+
 			<ProfileItems 
 				pageName={"core"}
 				noRender={!allActive}
