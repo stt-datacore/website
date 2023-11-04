@@ -11,7 +11,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { CollectionGroup, CollectionMap, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
 import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
-import { BuffBase, CompletionState, ImmortalReward, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
+import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { crewCopy, navToCrewPage, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
@@ -81,7 +81,6 @@ const CollectionsTool = () => {
 		collection.id = ac.id; // Use allCollections ids instead of ids in player data
 		collection.crew = ac.crew;
 		collection.simpleDescription = collection.description ? simplerDescription(collection.description) : '';
-
 		if (collection.milestone.goal != 'n/a' && collection.progress != 'n/a') {
 			collection.progressPct = collection.milestone.goal > 0 ? collection.progress / collection.milestone.goal : 1;
 			collection.neededPct = 1 - collection.progressPct;
@@ -318,15 +317,66 @@ const ProgressTable = (props: ProgressTableProps) => {
 	}
 };
 
+function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): PlayerCollection {
+	let result = JSON.parse(JSON.stringify(col)) as PlayerCollection;
+	
 
-export interface CrewViewsProps {
+	let mergedRewards = {} as { [key: number]: Reward };
+	let mergedBuffs = {} as { [key: number]: MilestoneBuff };
+	let mergedCount = 0;
+
+	result.milestones?.forEach((m, idx) => {
+		if (idx >= startTier && idx <= endTier) {
+			mergedCount = m.goal;
+
+			m.rewards.forEach((reward) => {
+				if (!(reward.id in mergedRewards)) {
+					mergedRewards[reward.id] = JSON.parse(JSON.stringify(reward));
+				}
+				else {
+					mergedRewards[reward.id].quantity += reward.quantity;
+				}
+			});
+
+			m.buffs.forEach((buff) => {
+				if (!(buff.id in mergedBuffs)) {
+					mergedBuffs[buff.id] = JSON.parse(JSON.stringify(buff));
+				}	
+				else {
+					mergedBuffs[buff.id].quantity ??= 0;
+					(mergedBuffs[buff.id].quantity as number) += buff.quantity ?? 0;
+				}
+			})
+		}
+	});
+
+	result.milestone = { 
+		... result.milestone,
+		goal: mergedCount,
+		buffs: Object.values(mergedBuffs),
+		rewards: Object.values(mergedRewards)
+	};
+	
+	if (result.milestone.goal != 'n/a' && result.progress != 'n/a') {
+		result.progressPct = result.milestone.goal > 0 ? result.progress / result.milestone.goal : 1;
+		result.neededPct = 1 - result.progressPct;
+		result.needed = result.milestone.goal > 0 ? Math.max(result.milestone.goal - result.progress, 0) : 0;
+	}
+
+	result.totalRewards = (result.milestone.buffs?.length ?? 0) + (result.milestone.rewards?.length ?? 0);
+
+	return result;
+}
+
+
+export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
 	filterCrewByCollection: (collectionId: number) => void;
 };
 
-const CollectionsViews = (props: CrewViewsProps) => {
+const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const context = React.useContext(GlobalContext);
 	const colContext = React.useContext(CollectionFilterContext);
@@ -339,9 +389,39 @@ const CollectionsViews = (props: CrewViewsProps) => {
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
-	const { playerCollections, collectionCrew } = props;
-	const { byCost, matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { playerCollections: tempCol, collectionCrew } = props;
+	const { tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
+	const playerCollections = [ ...tempCol ];
+	const tierOpts = [] as DropdownItemProps[];
+
+	if (mapFilter.collectionsFilter?.length === 1) {
+		let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
+
+		if (idx >= 0) {
+			let n = playerCollections[idx].claimable_milestone_index ?? -1;
+			
+			if (n !== -1 && n != ((playerCollections[idx].milestones?.length ?? 0) - 1)) {
+				let l = (!!playerCollections[idx].milestones ? playerCollections[idx].milestones?.length ?? 0 : 0);
+				let mi = playerCollections[idx].milestones ?? [];
+				let crew = 0;
+				for (let i = n; i < l; i++) {
+					crew = mi[i].goal;
+					tierOpts.push({
+						key: i,
+						value: i,
+						text: `${i + 1} (${crew} Crew)`
+					});
+				}
+	
+				if (tierFilter > 1 && mapFilter.collectionsFilter?.length === 1) {
+					playerCollections[idx] = mergeTiers(playerCollections[idx], playerCollections[idx].claimable_milestone_index ?? 0, tierFilter);
+				}
+			}
+		}
+	
+	}
+
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
 	const tableConfig: ITableConfigRow[] = [
@@ -530,7 +610,7 @@ const CollectionsViews = (props: CrewViewsProps) => {
 
 	React.useEffect(() => {
 		setWorkerRunning(true);
-	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode]);	
+	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
 
 	React.useEffect(() => {
 		window.setTimeout(() => {
@@ -559,7 +639,13 @@ const CollectionsViews = (props: CrewViewsProps) => {
 
 			{tabPanes[tabIndex ?? 0].showFilters && 
 			<React.Fragment>
-				<div style={{ margin: '1em 0' }}>
+				<div style={{ 
+						margin: '1em 0',
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						gap: "1em"
+						}}>
 					<Form.Field
 						placeholder='Filter by collections'
 						control={Dropdown}
@@ -572,6 +658,17 @@ const CollectionsViews = (props: CrewViewsProps) => {
 						onChange={(e, { value }) => setMapFilter({ ...mapFilter ?? {}, collectionsFilter: value })}
 						closeOnChange
 					/>
+					{mapFilter.collectionsFilter?.length === 1 && !!tierOpts.length &&
+					<Form.Field
+						placeholder='Tiers'
+						control={Dropdown}
+						clearable
+ 						selection
+						options={tierOpts}
+						value={tierFilter}
+						onChange={(e, { value }) => setTierFilter(value as number)}
+						closeOnChange
+					/>}
 				</div>
 				<div style={{ margin: '1em 0' }}>
 					<Form>
