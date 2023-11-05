@@ -3,8 +3,8 @@ name: Bartender Quark
 rarity: 1
 series: ds9
 memory_alpha:
-bigbook_tier: 3
-events: 36
+bigbook_tier: 4
+events: 37
 in_portal: true
 date: 01/01/2016
 obtained: Launch

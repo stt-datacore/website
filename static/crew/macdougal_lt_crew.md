@@ -14,4 +14,4 @@ published: true
 
 Of all the names in the long line of Rent-a-Chiefs, this is certainly one of them. Frankly, MacDougal escaped the drawing board with more usability than she might have earned by defeating Megamind Wesley.
 
-A more than competent voyager, new rosters should be scrambling to grab an ENG primary option with great power like this. And as an Ardra-lite arena component, MacDougal frees you up from chasing other accuracy options, at least until the endgame. With some reasonable, if capped, collection value, feel free to finish up her card and pop some TNG season 1 into the VCR. You’ll absolutely regret it in the best way.
+A more than competent Voyager, new rosters should be scrambling to grab an ENG Primary option with great power like this. And with an “Ardra-lite” ability on Ships, MacDougal frees you up from chasing other Accuracy options, at least until the endgame. With some reasonable, if capped, Collection value, feel free to finish up her card and pop some TNG season 1 into the VCR. You’ll absolutely regret it in the best way.

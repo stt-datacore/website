@@ -3,7 +3,7 @@ name: Lwaxana Troi
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 11
 in_portal: true
 date: 09/06/2016
