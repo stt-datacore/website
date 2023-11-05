@@ -343,8 +343,8 @@ function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): 
 					mergedBuffs[buff.id] = JSON.parse(JSON.stringify(buff));
 				}	
 				else {
-					mergedBuffs[buff.id].quantity ??= 0;
-					(mergedBuffs[buff.id].quantity as number) += buff.quantity ?? 0;
+					mergedBuffs[buff.id].quantity ??= 1;
+					(mergedBuffs[buff.id].quantity as number) += buff.quantity ?? 1;
 				}
 			})
 		}
