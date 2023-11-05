@@ -21,7 +21,11 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	const coreItems = JSON.parse(JSON.stringify(context.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
 	const crew = context.core.crew;
-
+	if (hasPlayer) {
+		coreItems.forEach((item) => {
+			item.quantity = context.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
+		});
+	}
 	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
 	const crewLevels: { [key: string]: Set<string>; } = {};
 	crew.forEach(cr => {
@@ -110,6 +114,11 @@ const ItemsPage = (props: ItemsPageProps) => {
 						field: 'duration',
 						text: 'Duration',
 						format: (value: number) => formatDuration(value)
+					},
+					{
+						field: 'quantity',
+						text: 'Owned',
+						format: (value: number) => value ? (value.toLocaleString()) : "Not Owned"
 					}
 				]}	
 				/>
