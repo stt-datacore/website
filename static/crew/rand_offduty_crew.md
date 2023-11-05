@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Perhaps the most fitting crew to debut in the not-romantic, but scoundrel mega, Rand is mostly around to eat up your crew slots. Her ENG kicker won’t save a flagging voyage score that hits on only the three most common anti-matter traits and while her bases might be okay to thaw, she simply won’t get many bonuses due to a lack of eventable traits (thus far).
+Perhaps the most fitting crew to debut in the not-Romantic, but Scoundrel Mega Event, Rand is mostly around to eat up your Crew Slots. 
 
-Without name brand value or much potential collection value, feel free to avoid this Janice in beholds until she shows more tangible value.
+Without name brand value or much potential Collection value, feel free to avoid this Janice in Beholds until she shows more tangible value.

@@ -3,8 +3,8 @@ name: Captain Lucero
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
-events: 36
+bigbook_tier: 5
+events: 37
 in_portal: true
 date: 15/01/2020
 obtained: Event

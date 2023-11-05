@@ -3,7 +3,7 @@ name: Commander Kang
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 events: 12
 in_portal: true
 date: 09/06/2016

@@ -3,7 +3,7 @@ name: Major Kira
 rarity: 2
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 28
 in_portal: true
 date: 01/01/2016
