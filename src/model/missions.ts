@@ -1,6 +1,7 @@
-import { Icon } from "semantic-ui-react"
+
 import { Ship } from "./ship"
 import { PotentialReward } from "./player"
+import { Icon } from "./game-elements"
 
 export interface Mission {
   id: number
