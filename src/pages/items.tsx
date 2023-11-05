@@ -5,7 +5,7 @@ import { Step } from 'semantic-ui-react';
 import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
-import { binaryLocate } from '../utils/itemutils';
+import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import ProfileItems from '../components/profile_items';
 
@@ -24,7 +24,6 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
 	const crewLevels: { [key: string]: Set<string>; } = {};
-	
 	crew.forEach(cr => {
 		cr.equipment_slots.forEach(es => {
 			let item = binaryLocate(es.symbol, coreItems);
@@ -55,18 +54,26 @@ const ItemsPage = (props: ItemsPageProps) => {
 		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
 			{hasPlayer &&
-			<Step.Group>
-				<Step active={allActive} onClick={() => setActiveTabIndex(0)}>
+			<Step.Group fluid>
+				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
 						<Step.Title>All Items</Step.Title>
 						<Step.Description>Overview of all items in the game.</Step.Description>
 					</Step.Content>
 				</Step>
 
-				{hasPlayer && <Step active={!allActive} onClick={() => setActiveTabIndex(1)}>
+				{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
 					<Step.Content>
 						<Step.Title>Owned Items</Step.Title>
 						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
+					</Step.Content>
+					
+				</Step>}
+
+				{hasPlayer && <Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
+					<Step.Content>
+						<Step.Title>Quipment Helper</Step.Title>
+						<Step.Description>See quipment that match crew.</Step.Description>
 					</Step.Content>
 				</Step>}
 			</Step.Group>}
@@ -78,7 +85,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 			<ProfileItems 
 				pageName={"core"}
-				noRender={!allActive}
+				noRender={activeTabIndex !== 0}
 				data={coreItems}				
 				hideOwnedInfo={true}				
 				noWorker={true}
@@ -86,7 +93,26 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 			<ProfileItems
 				pageName={"roster"}
-				noRender={allActive} />
+				noRender={activeTabIndex !== 1} />
+
+			<ProfileItems
+				pageName={"roster"}
+				types={[14]}
+				buffs={true}
+				crewMode={true}
+				noWorker={true}
+				noRender={activeTabIndex !== 2}
+				data={coreItems}				
+				hideOwnedInfo={true}				
+				flavor={false}			
+				customFields={[
+					{
+						field: 'duration',
+						text: 'Duration',
+						format: (value: number) => formatDuration(value)
+					}
+				]}	
+				/>
 
 			</React.Fragment>
 		</DataPageLayout>
