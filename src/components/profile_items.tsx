@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps, SemanticWIDTHS } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 
 import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 
-import { binaryLocate, exportItems, exportItemsAlt, mergeItems } from '../utils/itemutils';
+import { binaryLocate, exportItems, exportItemsAlt, getItemBonuses, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
 import CONFIG from '../components/CONFIG';
@@ -22,6 +22,14 @@ import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
 import { PlayerCrew } from '../model/player';
 import { appelate } from '../utils/misc';
 import { CrewMember } from '../model/crew';
+import { renderBonuses } from './item_presenters/item_presenter';
+
+export interface CustomFieldDef {
+	field: string;
+	text: string;
+	format?: (value: any) => string;
+	width?: SemanticWIDTHS;
+}
 
 type ProfileItemsProps = {
 	/** List of equipment items */
@@ -48,6 +56,15 @@ type ProfileItemsProps = {
 
 	/** Put flavor in its own column. */
 	flavor?: boolean;
+
+	/** Put buffs in its own column. */
+	buffs?: boolean;
+
+	crewMode?: boolean;
+
+	types?: number[];
+
+	customFields?: CustomFieldDef[];
 };
 
 interface ItemSearchOpts {
@@ -67,6 +84,8 @@ type ProfileItemsState = {
 	
 	/** Add needed but unowned items to list */
 	addNeeded?: boolean;	
+	crewSelection: string;
+	crewType: 'all' | 'owned';
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -106,6 +125,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.tiny = TinyStore.getStore((props.pageName ? props.pageName + "_": "") + 'profile_items');
 
 		this.state = {
+			crewType: this.tiny.getValue<'all' | 'owned'>('crewType') ?? 'all',
+			crewSelection: '',
 			column: null,
 			direction: null,
 			searchOpts: this.tiny.getValue('searchOptions'),
@@ -115,6 +136,35 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
 		};
 	}
+
+	private setCrewType = (value: 'all' | 'owned') => {
+		this.tiny.setValue('crewType', value);
+		this.setState({ ... this.state, crewType: value });
+	}
+	private makeCrewChoices = () => {
+		const crewChoices = [] as DropdownItemProps[];
+		const { crew } = this.context.core;
+		const { playerData } = this.context.player;
+		const { crewType } = this.state;
+
+		if (this.props?.crewMode && crew?.length) {
+			[ ...crew ].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
+
+				if (playerData && crewType === 'owned') {
+					if (!playerData.player.character.crew.some(d => d.symbol === c.symbol)) return false;
+				}
+
+				crewChoices.push(
+				{
+					key: c.symbol,
+					value: c.symbol,
+					image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
+					text: c.name
+				});
+			});
+		}		
+		return crewChoices;
+	};
 
 	private runWorker() {
 		const worker = new UnifiedWorker();
@@ -130,7 +180,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 			if (addNeeded) {
 				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-				me.setState({ ... this.state, data, column: 'quantity', direction: 'ascending', pagination_page: 1 });
+				me.setState({ 
+					... this.state, 
+					data, 
+					column: 'quantity', 
+					direction: 'ascending', 
+					pagination_page: 1
+				});
 			}
 			else {
 				me.setState({ ... this.state, data });	
@@ -170,19 +226,19 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	initData() {
 		const { playerData } = this.context.player;
-		
+
 		if (playerData) {
 			if (playerData.calculatedDemands && this.state.data?.length && this.state.data?.length > 0) return;
 		}
 
-		const { items } = this.context.core;		
-		if (!items) return;
+		const { items, crew } = this.context.core;		
+		if (!items || !crew) return;
 		
 		if (this.state.data?.length && this.lastData === this.state.data) {
 			return;
 		}
 		else {
-			this.lastData = this.state.data;
+			this.lastData = this.state.data;			
 		}
 
 		if (!this.props.noWorker) { 
@@ -208,7 +264,38 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			direction: clickedColumn === column ? direction : (clickedColumn === 'quantity' ? 'ascending' : null)
 		};
 
+		if (clickedColumn === 'buffs') {
+			if (clickedColumn === column) {
+				sortConfig.direction = sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
+			}
+			else {
+				sortConfig.direction = direction ?? 'ascending';
+			}
+
+			const factor = sortConfig.direction === 'ascending' ? 1 : -1;
+
+			data.sort((a, b) => {
+				let abonus = a.bonuses ?? {};
+				let bbonus = b.bonuses ?? {};
+
+				let askills = Object.values(abonus).reduce((p, n) => p + n, 0);
+				let bskills = Object.values(bbonus).reduce((p, n) => p + n, 0);
+								
+				return (askills - bskills) * factor;
+			});
+
+			this.setState({
+				column: sortConfig.field,
+				direction: sortConfig.direction,
+				pagination_page: 1,
+				data
+			});
+
+			return;
+		}
+
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
+
 		this.setState({
 			column: sorted.field,
 			direction: sorted.direction,
@@ -256,6 +343,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		this.tiny.setValue('addNeeded', value ?? false);
 		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
+	}
+
+	renderBuffs(item: EquipmentItem | EquipmentCommon) {
+		const { bonusText, bonuses } = getItemBonuses(item as EquipmentItem);
+		return renderBonuses(bonuses, "1em", "0.25em");
 	}
 
 	createFlavor(item: EquipmentItem | EquipmentCommon) {
@@ -344,12 +436,16 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	render() {
-		const { addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
-		let { data } = this.state;
+		const { crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
+		let data = [ ...this.state.data ?? [] ];
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
+		const { types, crewMode, buffs, customFields } = this.props;
+
 		const { rarity, itemType } = this.state.searchOpts ?? {};
 		const { playerData } = this.context.player;
+	
 		let bReady: boolean = !!data?.length;
+	
 		if (playerData) {
 			if (!playerData.calculatedDemands && !this.props.noWorker) {
 				bReady = false;
@@ -357,16 +453,28 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}
 		const { flavor, hideOwnedInfo, hideSearch } = this.props;		
 		let totalPages = 0;
-		const presentTypes = [...new Set(data?.map(d => d.type) ?? Object.keys(CONFIG.REWARDS_ITEM_TYPE).map(k => Number.parseInt(k)))];
+		const presentTypes = [...new Set(data?.filter((d) => !types?.length || types.includes(d.type)).map(d => d.type) ?? Object.keys(CONFIG.REWARDS_ITEM_TYPE).map(k => Number.parseInt(k)))];
+		const crewTypes = [{
+			key: 'all',
+			value: 'all',
+			text: 'All Crew'
+		},
+		{
+			key: 'owned',
+			value: 'owned',
+			text: 'Owned Crew'
+		}];
 
-		if (data?.length) {
+		if (bReady) {
 			
-			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length) {
+			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
 				
 				data = data.filter(f => {
 					let textPass = true;
 					let rarePass = true;
 					let itemPass = true;
+
+					if (!!types?.length && !types.includes(f.type)) return false;
 
 					if (filterText && filterText !== '') {
 						textPass = f.name?.toLowerCase().includes(filterText) || 
@@ -383,12 +491,36 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						itemPass = itemType?.some(t => f.type == t);
 					}
 
+					if (!!crewSelection?.length && typeof crewSelection === 'string') {
+						let selCrew = this.context.core.crew.find(crew => crew.symbol === crewSelection);
+						if (selCrew) {
+							if (f.type === 14) {								
+								if (!!f.max_rarity_requirement && f.max_rarity_requirement < selCrew.max_rarity) return false;
+								if (f.traits_requirement?.length) {
+									if (f.traits_requirement_operator === 'and') {
+										return (f.traits_requirement?.every((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)));
+									}
+									else {
+										return (f.traits_requirement?.some((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)));
+									}
+								}									
+							}
+							else {
+								return false;
+							}
+						}
+					}
+					
 					return textPass && rarePass && itemPass;
 				});
 			}
-			if (rarity?.length) {
+			// if (rarity?.length) {
 
-			}
+			// }
+
+			// if (crewMode) {
+				
+			// }
 
 			totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
@@ -424,7 +556,29 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
 				{!hideSearch && <div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginLeft: "0.25em"}}>
-					<Input		
+					
+					{!!crewMode &&
+						<>
+						<div style={{marginRight: "0.75em"}}>
+						<Dropdown search selection clearable
+							placeholder={"Search for a crew member..."}
+							labeled
+							options={this.makeCrewChoices()}
+							value={crewSelection}						
+							onChange={(e, { value }) => this.setState({ ...this.state, crewSelection: value as string }) }
+							/>
+							</div>
+						<div style={{marginLeft: "0.5em", marginRight: "0.5em"}}>
+							<Dropdown 
+								placeholder={"Filter by owned status"}
+								options={crewTypes}
+								value={crewType}
+								onChange={(e, { value }) => this.setCrewType(value as 'all' | 'owned')}
+							/>
+						</div>
+						</>
+						}
+					<Input								
 						style={{width:"22em"}}
 						label={"Search Items"}
 						value={filterText}
@@ -463,6 +617,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						/>
 					</div>
 				</div>}
+						
 				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
 					<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{marginLeft:"0.5em", cursor: "pointer"}} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 				</div>}
@@ -507,6 +662,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Rarity
 						</Table.HeaderCell>
+						{!!buffs && 
+						<Table.HeaderCell
+							width={2}
+							sorted={column === 'buffs' ? direction ?? undefined : undefined}
+							onClick={() => this._handleSort('buffs')}
+						>
+							Item Buffs
+						</Table.HeaderCell>}						
 						{!!flavor &&
 						<Table.HeaderCell
 							width={2}
@@ -522,7 +685,18 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={() => this._handleSort('factionOnly')}
 						>
 							Faction Only
-						</Table.HeaderCell>}						
+						</Table.HeaderCell>}		
+						{!!customFields?.length && 
+							customFields.map((field) => (
+								<Table.HeaderCell
+								key={'custom_' + field.field + "_header"}
+								width={field.width ?? 1}
+								sorted={column === field.field ? direction ?? undefined : undefined}
+								onClick={() => this._handleSort(field.field)}
+							>
+								{field.text}
+							</Table.HeaderCell>
+						))}				
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -572,8 +746,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 'N/A'}</Table.Cell>}
 							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
+							{!!buffs && <Table.Cell>{this.renderBuffs(item)}</Table.Cell>}
 							{!!flavor && <Table.Cell>{this.createFlavor(item)}</Table.Cell>}
 							{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
+							{!!customFields?.length && 
+							customFields.map((field) => (
+								<Table.Cell key={'custom_' + field.field + "_value"}>
+								{field.format ? field.format(item[field.field]) : item[field.field]}
+							</Table.Cell>
+							))}
 						</Table.Row>
 					))}
 				</Table.Body>
