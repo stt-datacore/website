@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-Ghost ****er Bev (GFC) has arrived and meme-adjacent though she may be, she's managed to avoid the in-game point-and-laugh that names like Grebnedlog or Linus received. One of the most legendary scientists in the known universe gettin’ freaky with a candle...who'da thunk?
+Ghost ****er Bev (GFC), meme-adjacent though she may be, has managed to avoid the in-game point-and-laugh that names like Grebnedlog or Linus received. One of the most legendary scientists in the known universe gettin’ freaky with a candle...who'da thunk?
 
-Her heady SCI base should find some non-bonus Faction event work and though Crusher herself hadn't seen an event bonus in the two years prior to Caldos' debut weekend, there's still some thin bonus potential here between main cast status and a lean trait set.
+Her heady SCI Base should find plenty of Faction Event work and though Crusher herself is a less-than-frequent Event name, when her name is called, or her Traits are tapped, she’ll ride a Shuttle with the best. 
 
-That same trait set will hit frequently for voyage anti-matter, though against plenty of competition, to help boost above average power. Think 2020's giveaway Homesteader Janeway with unreliable event bonuses, but stronger numbers and a hell of a personal log.
+Her limited Trait list is also about to lock her out of a 100% chance in Crew Retrieval, so if you really want her, grab copies now before the next Time Portal Update.

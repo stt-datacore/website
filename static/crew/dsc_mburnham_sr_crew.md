@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-As with most voyage/base super rares, Mike has started to get stale after being left out on the table overnight. Still a competent voyager and shuttler, you’re going to need all four stars to unlock those attributes, while the best long term value breadcrumbs, events and collections, are certainly his weak points. 
-
-If you’re a new player able to acquire all four copies in short order, he remains a fine stepping stone card. If not, then he also makes an excellent bridge crew photo filler. Don't believe me? Stack him up next to Humbled Archer or Nella Daren, and see the comedic possibilities come to life.
+Among the crew that you say “who is that?” when he pops up on a Behold, not only because he’s a one-off character but because he is crouching, BurnDad has a few esoteric Traits to chase pie-in-the-sky Collections and Event bonuses, and a SEC Base that would fill Shuttle seats if those Events come to pass. A hypothetical Collection ceiling of four is his best attribute, so feel free to use him as Behold Insurance™ and Fuse him at your leisure.

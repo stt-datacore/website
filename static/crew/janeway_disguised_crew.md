@@ -14,6 +14,6 @@ published: true
 
 With a strikingly similar release to fellow time-traveling variant Polaric Janeway, the crew that WRG undoubtedly modeled this one after, Disguised Janeway and her blinding beige should perform similarly for you.
 
-Competent voyage metrics, even in a crowded skill set, include a half dozen anti-matter traits and power that should hold up for a few years on most rosters. As one of a billion variants with SCI, Disguised should also have plenty of weekend piloting opportunities thanks to Janeway’s stellar Faction event rate and smattering of traits that will see her pop up in mega events from time to time.
+Once she’s finished Voyaging for you (and she may already have), Janeway will need to pivot to Event and Collections for value. As one of a billion variants with SCI, Disguised should also have plenty of weekend piloting opportunities thanks to Janeway’s stellar Faction Event rate and smattering of Traits that will see her pop up in Mega Events from time to time.
 
-Ticking most of her collection boxes up front, this is a card you’ll want to immortalize sooner than later, although steady event work should continue providing avenues of use for years to come.
+Ticking most of her Collection boxes up front, this is a card you’ll want to Immortalize sooner than later, although steady Event work should continue providing avenues of use for years to come.

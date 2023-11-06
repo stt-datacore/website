@@ -3,7 +3,7 @@ name: Julius Eaton
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 events: 22
 in_portal: true
 date: 16/03/2022
@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Even Jules’ art has him wondering, “What in the world did WRG print me for?” Without gauntlet or arena ability and housing a flacid voyage score not nearly strong enough to bolster his redundant skill set, Mr. Kay Eaton might be a straight-to-DVD release for established rosters.
+Even Jules’ art has him wondering, “What in the world did WRG print me for?” Without Gauntlet or Ship Ability and housing a flacid Voyage score not nearly strong enough to bolster his redundant Skill set, Mr. Kay Eaton might be a straight-to-DVD release for established rosters.
 
-His highlight reel consists of debuting as the top CMD and SCI bases for Bashir variants. He’s going to need those event weekends to pick up the pace, though, as averaging a lone Faction event per year won’t move too many needles. Unless he’s a harbinger for a Far Beyond The Stars collection with a very juicy carrot at the end of the rainbow, this is an easy crew to pass on.
+His highlight reel consists of debuting as the top CMD and SCI Bases for Bashir variants. He’s going to need those Event weekends to pick up the pace, though, as averaging a lone Faction event per year won’t move too many needles. Since WRG used the Writer Collection as a de facto “Far Beyond the Stars” Collection, if you don’t need him to complete the former, maybe it’s a pass.

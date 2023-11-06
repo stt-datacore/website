@@ -14,6 +14,6 @@ published: true
 
 A CMD/DIP/SUCK giveaway who’s boring as sin, but with the power to inspire guilt if you skip that last star. Stop me if you’ve heard this number before.
 
-A trait and skill set clone of the equally mustard Christopher Pike, at least this version is souped up in the daily use department. The similarities, however, also mean that this crew won’t be 100% retrievable. So while his long term outlook may be unbuttered Matzo, if you want to enjoy his power in the short term, consider him an elevated behold priority.
+A Trait and Skill set clone of the equally mustard Christopher Pike, at least this version is souped up in the daily use department. The similarities, however, also mean that this crew can’t be isolated to a 100% chance in Crew Retrieval. So while his long term outlook may be unbuttered Matzo, if you want to enjoy his power in the short term, consider him an elevated Legendary Behold priority.
 
-There’s very little to speak of in regards to interesting nooks and crannies - check his stat ranks against the field and your own roster when making decisions regarding him. And keep an eye on Strange New Worlds and how much WRG fawns over Pike’s show on a scale of one to Discovery.
+Only a trio of viable Traits limits his ceiling for Collections and associated bonus Events, but Pike is a Captain and gets those variant Events to go with it.

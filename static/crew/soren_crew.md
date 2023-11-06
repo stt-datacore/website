@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Not just missing some would-be useful traits like Maverick or Hero, but also any semblance of usability too, Soren is merely a short bundle of traits waiting for WRG to favor them in the form of collections or megas. As their arena ability suggests, they offer nothing that can’t be found attached to more capable crew, leaving them as a trait dart throw in dead-end beholds.
+Not just missing some would-be useful Traits like Maverick or Hero, but also any semblance of usability too, Soren is merely a short bundle of Traits waiting for WRG to favor them in the form of Collections or Events. As their Ship Ability suggests, they offer nothing that can’t be found attached to more capable crew, leaving them as a Trait dart throw in dead-end Legendary Beholds.
