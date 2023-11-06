@@ -12,10 +12,8 @@ mega: false
 published: true
 ---
 
-Following in the footsteps of Gaffe of the Year finalist EDF Adira's came the safe choice from WRG; an upgraded version in the form of a giveaway. Point for point, Adira Tal is an upgrade on their predecessor - Pri/sec/tri bases, voyage score, voyage skill set, anti-matter traits, the list goes on. Luckily it's not an either/or situation and the two compliment each other, but this redux version shines brightly on their own.
+Did you ever hear the Tragedy of Darth Plagueis the Wise… I mean of Adira Towel? Long-time players may regale you with the tale of the EDF Adira/Adira Tal art bait and switch, but we won’t spend all our word count on that here.
 
-A nice meaty voyage ENG secondary affords Adira a competitive profile atop the voyage DIP/ENG ranks; a pair that has a wide variance from roster to roster and has long been a troublesome stack for many players. With substantial overall voyage power to boot, this is a viable citation candidate whose common DIP primary shouldn’t give you much pause in spending honor or behold capital.
+Adira Tal has aged themselves out of daily use on Voyages, but still remains a very viable Event/Collection card that many elderly players have Fully Fused, so be sure to consider your own roster before investing a Legendary Behold choice on them.
 
-We’re still waiting on the trait bus to stop at the collection or event stations, but there’s a handful of viable traits here that we reckon have underperformed to date and should help supplement the lull that Discovery’s fast and furious megas left in their wake.
-
-Imagine the disappointment Formal Dress Wes will feel when you replace his 481 DIP score on Prodigy event shuttles with Adira's big base. And he even got all dressed up for his reprieve from cryo...
+A quartet of current Collections plus another Trait in contention to make it a full five, Adira also pitches in on the weekend due to their strong DIP and ENG Bases for Faction Shuttles, plus main cast billing on Discovery and the aforementioned Traits. Not a bad choice in Legendary Beholds, but no longer an instant selection.

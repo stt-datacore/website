@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Much like her engineering, whatever value Tilly could or should have is purely theoretical. Her traits are as barren as Regula I and Discovery megas have left her high and dry in the events department. Averaging less than an event per year outside of them, this is a crew that may sit in cryo for years between uses. Until either a legendary or Discovery series collection comes along (which would lift all boats anyways), this is my pick for worst legendary crew in the game.
+Much like her engineering, whatever value Tilly could or should have is purely theoretical. Her Traits are as barren as Regula I and the slowing of Discovery Mega Events has left her high and dry in the Events department. Averaging less than an Event per year outside of them, this is a crew that may sit in Cryostasis for years between uses. This is my pick for the worst Legendary crew in the game.

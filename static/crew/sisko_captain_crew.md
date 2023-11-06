@@ -3,7 +3,7 @@ name: Commanding Officer Sisko
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 30
 in_portal:
 date: 11/09/2018

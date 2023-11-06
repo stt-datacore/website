@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Senator Vreenak is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his handful of traits which already see him as a great collection piece, Founder is a worthwhile event option as well. He should be headed straight to cryostasis after being equipped, but is a fine low-end behold value amidst the sea of “who is this guy?” legendary cards in the game.
+Senator Vreenak is hovering over this guy's shoulder, but C.O.P. Founder is as Picard as all the rest. Because of that fact and his handful of Traits which already see him as a great Collection piece, Founder is a worthwhile Event option as well. A septet of Collections (we had to look up that word) makes him among the best Legendary Collection crew in the game, so if you like global Stat Boosts, focus some Crew Retrievals on him.

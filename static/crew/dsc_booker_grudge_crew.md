@@ -3,7 +3,7 @@ name: Booker and Grudge
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 31
 in_portal: true
 date: 26/11/2020
