@@ -15,7 +15,7 @@ import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
-import { downloadData } from '../utils/crewutils';
+import { downloadData, rankToSkill, skillToRank } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
@@ -64,13 +64,14 @@ type ProfileItemsProps = {
 
 	types?: number[];
 
+
 	customFields?: CustomFieldDef[];
 };
 
 interface ItemSearchOpts {
 	filterText?: string;
 	itemType?: number[];
-	rarity?: number[];
+	rarity?: number[];	
 }
 
 type ProfileItemsState = {
@@ -86,6 +87,8 @@ type ProfileItemsState = {
 	addNeeded?: boolean;	
 	crewSelection: string;
 	crewType: 'all' | 'owned';
+	traits?: string[];
+	skills?: string[];
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -320,6 +323,20 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
+	private _handleTraits = (values: string[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: !!values?.length ? "trait:" + values?.join(",") : '' };
+		this.tiny.setValue('searchOptions', searchOpts);
+
+		this.setState({ ...this.state, searchOpts, traits: values, skills: [], pagination_page: 1 });
+	}
+
+	private _handleSkills = (values: string[] | undefined) => {
+		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: !!values?.length ? "skill:" + values?.join(",") : '' };
+		this.tiny.setValue('searchOptions', searchOpts);
+
+		this.setState({ ...this.state, searchOpts, skills: values, traits: [], pagination_page: 1 });
+	}
+
 	private _handleItemType = (values: number[] | undefined) => {
 		const searchOpts = { ...(this.state.searchOpts ?? {}), itemType: values };
 		this.tiny.setValue('searchOptions', searchOpts);
@@ -436,8 +453,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	render() {
-		const { crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
+		const { skills, traits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let data = [ ...this.state.data ?? [] ];
+		
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
 		const { types, crewMode, buffs, customFields } = this.props;
 
@@ -446,13 +464,34 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	
 		let bReady: boolean = !!data?.length;
 	
+		const skillmap = ['CMD','SCI','SEC','DIP','ENG','MED'].map(r => {
+			return {
+				key: r.toLowerCase(),
+				value: r.toLowerCase(),
+				text: appelate(rankToSkill(r) ?? '')
+			}
+		})
+
 		if (playerData) {
 			if (!playerData.calculatedDemands && !this.props.noWorker) {
 				bReady = false;
 			}
 		}
+
 		const { flavor, hideOwnedInfo, hideSearch } = this.props;		
+
 		let totalPages = 0;
+		let traitFilterOpts = [] as DropdownItemProps[];
+		if (buffs) {
+			traitFilterOpts = [ ...new Set(data.map(d => d.traits_requirement ?? []).flat()) ]?.map(trait => {
+				return {
+					key: trait,
+					value: trait,
+					text: appelate(trait)
+				}
+			});
+		}
+
 		const presentTypes = [...new Set(data?.filter((d) => !types?.length || types.includes(d.type)).map(d => d.type) ?? Object.keys(CONFIG.REWARDS_ITEM_TYPE).map(k => Number.parseInt(k)))];
 		const crewTypes = [{
 			key: 'all',
@@ -465,7 +504,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			text: 'Owned Crew'
 		}];
 
-		if (bReady) {
+		if (bReady) {		
 			
 			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
 				
@@ -477,11 +516,31 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					if (!!types?.length && !types.includes(f.type)) return false;
 
 					if (filterText && filterText !== '') {
-						textPass = f.name?.toLowerCase().includes(filterText) || 
-						f.short_name?.toLowerCase().includes(filterText) ||
-						f.flavor?.toLowerCase().includes(filterText) ||
-						CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
-						CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);
+						if (filterText.includes(":")) {
+							let sp = filterText.split(":");
+							if (sp?.length === 2) {
+								if (sp[0] === 'trait') {
+									sp = sp[1].split(",");
+									if (sp?.length) {
+										if (!f.traits_requirement?.some(g => sp.some(s => s === g))) return false;
+									}
+								}
+								else if (sp[0] === 'skill' && f.bonuses) {
+									let bmap = getItemBonuses(f as EquipmentItem);									
+									if (bmap?.bonuses) {
+										sp = sp[1].split(",");
+										if (!Object.keys(bmap?.bonuses).some(sk => sp.some(b => b.toLowerCase() === skillToRank(sk)?.toLowerCase()))) return false;
+									}									
+								}
+							}
+						}
+						else {
+							textPass = f.name?.toLowerCase().includes(filterText) || 
+							f.short_name?.toLowerCase().includes(filterText) ||
+							f.flavor?.toLowerCase().includes(filterText) ||
+							CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+							CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);	
+						}
 					}
 
 					if (!!rarity?.length) {
@@ -529,12 +588,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}		
 
 		const rewardFilterOpts = [] as DropdownItemProps[];
+		
 		const rarities = [] as DropdownItemProps[];
 		presentTypes.sort((a, b) => {
 			let atext = CONFIG.REWARDS_ITEM_TYPE[a];
 			let btext = CONFIG.REWARDS_ITEM_TYPE[b];
 			return atext.localeCompare(btext);
 		});
+		
 		presentTypes.forEach((rk) => {
 			rewardFilterOpts.push({ 
 				key: rk,
@@ -595,7 +656,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							} 
 						} 
 					/>
-					<div style={{marginLeft: "0.5em"}}>
+					{!buffs && <div style={{marginLeft: "0.5em"}}>
 						<Dropdown 
 							placeholder={"Filter by item type"}
 							multiple
@@ -605,8 +666,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							value={itemType}
 							onChange={(e, { value }) => this._handleItemType(value as number[] | undefined)}
 						/>
-					</div>
-					<div style={{marginLeft: "0.5em"}}>
+					</div>}					
+					{!buffs && <div style={{marginLeft: "0.5em"}}>
 						<Dropdown 
 							placeholder={"Filter by rarity"}
 							multiple
@@ -615,7 +676,29 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							value={rarity}
 							onChange={(e, { value }) => this._handleRarity(value as number[] | undefined)}
 						/>
-					</div>
+					</div>}
+					{buffs && <div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by trait"}
+							multiple
+							clearable
+							scrolling
+							options={traitFilterOpts}
+							value={traits}
+							onChange={(e, { value }) => this._handleTraits(value as string[] | undefined)}
+						/>
+					</div>}
+					{buffs && <div style={{marginLeft: "0.5em"}}>
+						<Dropdown 
+							placeholder={"Filter by skill"}
+							multiple
+							clearable
+							scrolling
+							options={skillmap}
+							value={skills}
+							onChange={(e, { value }) => this._handleSkills(value as string[] | undefined)}
+						/>
+					</div>}
 				</div>}
 						
 				{!hideOwnedInfo && <div style={{display:'flex', flexDirection:'row', justifyItems: 'flex-end', alignItems: 'center'}}>
@@ -648,13 +731,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						>
 							Needed
 						</Table.HeaderCell>}						
-						<Table.HeaderCell
+						{!types?.length && <Table.HeaderCell
 							width={1}
 							sorted={column === 'type' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('type')}
 						>
 							Item type
-						</Table.HeaderCell>
+						</Table.HeaderCell>}
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'rarity' ? direction ?? undefined : undefined}
@@ -744,7 +827,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</Table.Cell>
 							{!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
 							{!hideOwnedInfo && <Table.Cell>{item.needed ?? 'N/A'}</Table.Cell>}
-							<Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>
+							{!types?.length && <Table.Cell>{CONFIG.REWARDS_ITEM_TYPE[item.type]}</Table.Cell>}
 							<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 							{!!buffs && <Table.Cell>{this.renderBuffs(item)}</Table.Cell>}
 							{!!flavor && <Table.Cell>{this.createFlavor(item)}</Table.Cell>}
