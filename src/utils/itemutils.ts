@@ -162,6 +162,38 @@ export interface ItemBonusInfo {
     bonuses: { [key: string]: Skill };
 }
 
+export function combineItemBonuses(a: { [key: string]: Skill }, b: { [key: string]: Skill }) {
+	let result = { ...a, ...b };
+	let keys = Object.keys(result);
+	for (let key of keys) {
+		result[key] = { core: 0, range_min: 0, range_max: 0 };
+
+		if (key in a) {
+			result[key].core += a[key].core;
+			result[key].range_max += a[key].range_min;
+			result[key].range_max += a[key].range_min;
+		}
+		if (key in b) {
+			result[key].core += b[key].core;
+			result[key].range_max += b[key].range_min;
+			result[key].range_max += b[key].range_min;
+		}
+	}
+	return result;
+}
+
+export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
+	if (bonuses.length === 1) return bonuses[0];
+	let c = bonuses.length;
+	let result = {} as { [key: string]: Skill };
+
+	for (let i = 0; i < c; i++) {
+		result = combineItemBonuses(result, bonuses[i]);
+	}
+
+	return result;
+}
+
 export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };

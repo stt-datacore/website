@@ -13,8 +13,20 @@ import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
-import { formatDuration, getItemBonuses } from "../../utils/itemutils";
+import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
 import { printRequiredTraits } from "../profile_items";
+
+
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) {
+    if (!kwipment || kwipment.every(k => !k)) return <></>;
+    let quip = items.filter(f => kwipment.some(q => q.toString() === f.kwipment_id?.toString()));
+    let bonuses = [] as ItemBonusInfo[];
+    for (let q of quip) {
+        bonuses.push(getItemBonuses(q));
+    }
+    let combined = combineBonuses(bonuses.map(b => b.bonuses));
+    return renderBonuses(combined);
+}
 
 export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string) {
 

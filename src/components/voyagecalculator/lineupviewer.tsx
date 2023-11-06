@@ -11,6 +11,7 @@ import { CrewHoverStat } from '../hovering/crewhoverstat';
 import ItemDisplay from '../itemdisplay';
 import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
+import { renderBonuses, renderKwipmentBonus } from '../item_presenters/item_presenter';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -204,7 +205,7 @@ type ViewProps = {
 const TableView = (props: ViewProps) => {
 	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
-
+	const globalContext = React.useContext(GlobalContext);
 	const compact = layout === 'table-compact';
 
 	return (
@@ -291,13 +292,23 @@ const TableView = (props: ViewProps) => {
 									{bestRank && <CrewFinder crew={crew} bestRank={bestRank} />}
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-									{crew.traits.includes(trait.toLowerCase()) &&
-										<Popup content={`${allTraits.trait_names[trait]} +25 AM`} mouseEnterDelay={POPUP_DELAY} trigger={
-											<span style={{ cursor: 'help' }}>
-												<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-											</span>
-										} />
-									}
+									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
+										{(crew.kwipment as number[][])?.some(k => k.some(p => !!p)) && 
+										<>
+										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
+												<span style={{ cursor: 'help' }}>
+													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+												</span>
+											} />										
+										</>}
+										{crew.traits.includes(trait.toLowerCase()) &&
+											<Popup content={`${allTraits.trait_names[trait]} +25 AM`} mouseEnterDelay={POPUP_DELAY} trigger={
+												<span style={{ cursor: 'help' }}>
+													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+												</span>
+											} />
+										}
+									</div>
 								</Table.Cell>
 							</Table.Row>
 						);
@@ -557,12 +568,23 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 						</Popup.Content>
 					</Popup>
 				</div>
+				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
+				{(crew.kwipment as number[][])?.some(k => k.some(p => !!p)) && 
+				<div>
+				<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => q[1]), context.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
+						<span style={{ cursor: 'help' }}>
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+						</span>
+					} />										
+				</div>}
 				{crew.traits.includes(trait.toLowerCase()) &&
 					<React.Fragment>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 						<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{allTraits.trait_names[trait]}</span>
 					</React.Fragment>
 				}
+
+				</div>
 				{showSkills &&
 					<div>{renderSkills()}</div>
 				}
