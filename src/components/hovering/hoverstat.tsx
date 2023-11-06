@@ -489,7 +489,9 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             if (target.children.length !== 0 || !(target instanceof HTMLImageElement)) {                
                 return;
             }
-            if (target.src.includes("star_reward")) return;
+            if (target.src.includes("star_reward")) return;            
+            if (target.src.includes("antimatter")) return;
+            if (target.src.includes("Continuum")) return;
             this.activate(target);
         }
     }
