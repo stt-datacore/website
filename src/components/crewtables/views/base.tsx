@@ -89,7 +89,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{tableType === 'allCrew' && new Date(crew.date_added).toLocaleDateString()}
-				{tableType !== 'allCrew' && <div title={crew.q_bits === undefined ? 'Frozen crew do not have q-bits' : qbitsToSlots(crew.q_bits) + " Slot(s) Open"}>{crew.q_bits ?? 'N/A'}</div>}
+				{tableType !== 'allCrew' && <div title={crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbitsToSlots(crew.q_bits) + " Slot(s) Open"}>{crew.immortal !== -1 ? 'N/A' : crew.q_bits}</div>}
 			</Table.Cell>
 		</React.Fragment>
 	);
