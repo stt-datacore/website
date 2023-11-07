@@ -11,7 +11,7 @@ import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat'
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
-import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus } from '../utils/crewutils';
+import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus, getCrewQuipment } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
 
@@ -21,6 +21,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
 import GauntletSettingsPopup, { GauntletSettings, defaultSettings } from '../components/gauntlet/settings';
+import { getItemBonuses } from '../utils/itemutils';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -728,6 +729,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		if (buffConfig && Object.keys(buffConfig).length) {
 			availBuffs.push('player');
+			availBuffs.push('quipment');
 		}
 		if (maxBuffs && Object.keys(maxBuffs).length) {
 			availBuffs.push('max');
@@ -789,6 +791,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
 						if (buffConfig && buffMode === 'player') {
 							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (buffConfig && buffMode === 'quipment') {
+							if (crew.kwipment?.length) {
+								let cq = getCrewQuipment(crew, this.context.core.items);
+								let bn = cq?.map(q => getItemBonuses(q)) ?? undefined;
+								applyCrewBuffs(crew, buffConfig, undefined, bn);
+							}
+							else {
+								applyCrewBuffs(crew, buffConfig);
+							}
 						}
 						else if (maxBuffs && buffMode === 'max') {
 							applyCrewBuffs(crew, maxBuffs);
@@ -875,6 +887,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 						if (buffMode === 'player' && buffConfig) {
 							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (buffConfig && buffMode === 'quipment') {
+							if (crew.kwipment?.length) {
+								let cq = getCrewQuipment(crew, this.context.core.items);
+								let bn = cq?.map(q => getItemBonuses(q)) ?? undefined;
+								applyCrewBuffs(crew, buffConfig, undefined, bn);
+							}
+							else {
+								applyCrewBuffs(crew, buffConfig);
+							}
 						}
 						else if (buffMode === 'max' && maxBuffs) {
 							applyCrewBuffs(crew, maxBuffs);
@@ -1761,6 +1783,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				key: 'player',
 				value: 'player',
 				text: BuffNames['player']
+			})
+			availBuffs.push({
+				key: 'quipment',
+				value: 'quipment',
+				text: BuffNames['quipment']
 			})
 
 		}
