@@ -166,7 +166,7 @@ export function combineItemBonuses(a: { [key: string]: Skill }, b: { [key: strin
 	let result = { ...a, ...b };
 	let keys = Object.keys(result);
 	for (let key of keys) {
-		result[key] = { core: 0, range_min: 0, range_max: 0 };
+		result[key] = { core: 0, range_min: 0, range_max: 0, skill: key };
 
 		if (key in a) {
 			result[key].core += a[key].core;
@@ -203,7 +203,7 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
             let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
             if (bonus) {
                 bonusText.push(`+${value} ${bonus.symbol}`);	
-                bonuses[bonus.skill] ??= {} as Skill;
+                bonuses[bonus.skill] ??= { core: 0, range_min: 0, range_max: 0 } as Skill;
                 bonuses[bonus.skill][bonus.stat] = value;				
                 bonuses[bonus.skill].skill = bonus.skill;
             } else {
