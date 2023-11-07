@@ -3,7 +3,7 @@ name: Altan Inigo Soong
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 23
 in_portal: true
 date: 24/09/2020

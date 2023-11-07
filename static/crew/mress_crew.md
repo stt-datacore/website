@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-A reasonable TAS offering at the time of her debut, M’Ress still has a smidge of daily use in the tank despite an awful trait set. As of this writing, global boosts don’t favor her skill set, but there are still viable voyage and base numbers in play if boosts level out.
-
-Prior to the Animated collection, we would have said things are exceptionally dire for M’Ress’ collection outlook, but that offering out of left field has bumped her up to average-ish in that area. With the pace of TAS cards accelerating, M’Ress may be one of your better options to help reach a theoretical twenty-five crew milestone for that group.
+M’Ress has slinked slowly out of daily use, but it doesn’t mean she can’t purr her way into your Crew Quarters. The rather niche nature of the Writer Collection means there are quite a few objectively poor crew you’ll need to Immortalize to finish it, and M’Ress isn’t one of them with a trio of Collections.

@@ -12,8 +12,8 @@ mega: false
 published: true
 ---
 
-We’ve been banging the February Romantic mega/campaign drum for so long that the calf skin is ripped. One more campaign will make no difference in the here and now. But twenty two years ago, one campaign could have stopped this endless wave of overpowered Picards before it started.
+We’ve been banging the February Romantic Mega Event/Campaign drum for so long that the calf skin is ripped. One more Campaign will make no difference in the here and now. But twenty two years ago, one Campaign could have stopped this endless wave of overpowered Picards before it started.
 
-Smitten still has competitive bases for his variants’ events and should (continue to) see the occasional weekend bonus from his traits which have done more for him in the collections tab so far. He’s merely average there as of this writing, but should see all of his “viable” traits materialize before too long.
+Smitten still has competitive Bases for his variants’ Events and should (continue to) see the occasional weekend bonus from his Traits which have done more for him in the Collections tab so far. He’s merely average there as of this writing, but should see all of his “viable” Traits materialize before too long.
 
-Providing some nice peripheral perks for a 2-skiller as well, Smitten offers (trigger-locked) shipboard damage and a gauntlet pair which, while not impressive for veteran players, is available at one star and not something you want to try to roll against when he catches crit.
+Providing some nice peripheral perks for a 2-Skiller as well, Smitten offers (Trigger-locked) Shipboard Instant Damage and a gauntlet pair which, while not impressive for veteran players, is available at one star and not something you want to try to roll against when he catches Crit.

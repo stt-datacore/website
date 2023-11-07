@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-There was a time when a big base meant nothing for Archer variants - he was the forgotten captain. DBWRG has since rectified that error and Bakula has accumulated multiple event bonuses for five years running. With splashes of mega relevance for this fairly trait-y crew, Carcher (more of a driving joke. I guess you had to watch ENT) will have opportunities aplenty to put his impressive base metrics to work.
+Can you tell me how to get… how to get to Carpenter Street?
 
-Somewhat taking a back seat (haha more car puns) is Archer’s strong collection profile. He’s a high floor, high ceiling option whose overall usability should endure thanks to his strong SEC base debut, even if his voyage shelf life is a bit more modest.
+Detroit Archer is now decrepit as that city on Voyages, but still enjoys a strong Reese’s Peanut Butter Cup duo of Events and Collections due to a strong Trait list. A quartet of Collections, room for three more in his Trait list, and the Events that come along with them, plus a renewed interest from WRG in both Enterprise and Archer himself for bonuses, gives him a lot of value even though there’s little daily use left.
