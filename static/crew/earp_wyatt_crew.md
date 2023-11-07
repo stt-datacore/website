@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-If you pull the string on his back, he’ll tell you to “Reach for the skyyyy”, but Wyatt Earp the card doesn’t quite reach to infinity and beyond. CMD/DIP/SEC voyagers get graded on a curve, so although we’re happy with his current raw power and handful of fairly exclusive anti-matter seats, he won’t age as well as any other skill set in his position would. Competent as of this writing, but perhaps not a recommended investment from the ground up.
+Another member of the “Wyatts Three”, if you pull the string on his back, he’ll tell you to “Reach for the skyyyy”. It’s too bad Wyatt Earp the card doesn’t quite reach to infinity and beyond. 
 
-Luckily he has other cooperating attributes. Four of his five traits are viable for collections and events, the latter of which have lain dormant thus far, but could see a mega’s worth of weekend relevance at any time. Thanks to his exclusive spot in the Wild West collection, he’s an overall worthwhile collection piece who hasn’t peaked yet. There’s value to be had here for this one-off character, but he may struggle to find sustained relevance.
+Little else but a small but hardy set of Traits, Earp enjoys a Vanity entry and a ceiling of four Stat-boosting Collections, and the Events that may go along with. CMD/DIP/SEC stinks everywhere but Faction Event seating, so enjoy it here.
