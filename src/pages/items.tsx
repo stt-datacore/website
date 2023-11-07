@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step } from 'semantic-ui-react';
+import { DropdownItemProps, Step } from 'semantic-ui-react';
 
 
 import { EquipmentItem } from '../model/equipment';
@@ -7,7 +7,7 @@ import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
-import ProfileItems from '../components/profile_items';
+import ProfileItems, { CustomFieldDef } from '../components/profile_items';
 
 export interface ItemsPageProps {}
 
@@ -18,6 +18,12 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	const hasPlayer = !!context.player.playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
+
+	React.useEffect(() => {
+		if (!hasPlayer && activeTabIndex === 1) {
+			setActiveTabIndex(0);
+		}
+	}, [context]);
 
 	const coreItems = JSON.parse(JSON.stringify(context.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
 	const crew = context.core.crew;
@@ -52,12 +58,27 @@ const ItemsPage = (props: ItemsPageProps) => {
 			}
 		}
 	}
+	const quipCust = [] as CustomFieldDef[];
 
+	quipCust.push({
+			field: 'duration',
+			text: 'Duration',
+			format: (value: number) => formatDuration(value)
+		});
+
+	if (hasPlayer) {
+		quipCust.push({
+			field: 'quantity',
+			text: 'Owned',
+			format: (value: number) => value ? (value.toLocaleString()) : "Not Owned"
+		});
+	}
+	
 	return (
 
 		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
-			{hasPlayer &&
+			
 			<Step.Group fluid>
 				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
@@ -74,13 +95,13 @@ const ItemsPage = (props: ItemsPageProps) => {
 					
 				</Step>}
 
-				{hasPlayer && <Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
+				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
 					<Step.Content>
 						<Step.Title>Quipment Helper</Step.Title>
 						<Step.Description>See quipment that match crew.</Step.Description>
 					</Step.Content>
-				</Step>}
-			</Step.Group>}
+				</Step>
+			</Step.Group>
 			
 
 			{/* We want both of these to load, even if they are not displayed, 
@@ -95,9 +116,9 @@ const ItemsPage = (props: ItemsPageProps) => {
 				noWorker={true}
 				flavor={true} />
 
-			<ProfileItems
+			{hasPlayer && <ProfileItems
 				pageName={"roster"}
-				noRender={activeTabIndex !== 1} />
+				noRender={activeTabIndex !== 1 || !hasPlayer} />}
 
 			<ProfileItems
 				pageName={"roster"}
@@ -109,18 +130,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 				data={coreItems}				
 				hideOwnedInfo={true}				
 				flavor={false}			
-				customFields={[
-					{
-						field: 'duration',
-						text: 'Duration',
-						format: (value: number) => formatDuration(value)
-					},
-					{
-						field: 'quantity',
-						text: 'Owned',
-						format: (value: number) => value ? (value.toLocaleString()) : "Not Owned"
-					}
-				]}	
+				customFields={quipCust}	
 				/>
 
 			</React.Fragment>

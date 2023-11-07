@@ -97,12 +97,12 @@ export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
 		if (item.traits_requirement?.length) {
 			let req = item.traits_requirement.map(t => t === 'doctor' ? 'physician' : t);
 			if (item.traits_requirement_operator === "and") {
-				return <Link to={`/?search=trait:${req.reduce((p, n) => p ? `${p},${n}` : n)}`}>
+				return <Link to={`/?search=trait:${req.reduce((p, n) => p ? `${p},${n}` : n)}&filter=Whole%20word`}>
 					{req.map(t => appelate(t)).join(` ${item.traits_requirement_operator} `)}    
 				</Link>  
 			}
 			else {
-				return <>{req.map(t => <Link to={`/?search=trait:${t}`}>{appelate(t)}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
+				return <>{req.map(t => <Link to={`/?search=trait:${t}&filter=Whole%20word`}>{appelate(t)}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
 			}
 		}		
 	}
@@ -111,10 +111,10 @@ export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
 };
 
 const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
+	{ key: '0', value: 10, text: '10' },
+	{ key: '1', value: 25, text: '25' },
+	{ key: '2', value: 50, text: '50' },
+	{ key: '3', value: 100, text: '100' }
 ];
 
 class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
@@ -497,13 +497,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			key: 'all',
 			value: 'all',
 			text: 'All Crew'
-		},
-		{
-			key: 'owned',
-			value: 'owned',
-			text: 'Owned Crew'
 		}];
-
+		if (!!playerData) {
+			crewTypes.push({
+				key: 'owned',
+				value: 'owned',
+				text: 'Owned Crew'
+			});
+		}
 		if (bReady) {		
 			
 			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
