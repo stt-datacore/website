@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Stranded Quark is several years old now, but he still looks like a crew we’d be happy to see released today. He continually punches above his weight class on voyages due to a fortuitous skill set and handful of rare anti-matter traits while his event tally and number of viable collection traits all promise enduring value.
+Stranded Quark is carrying in his backpack all the Legendary Citations that players have dolloped on him since 2019, but he’ll no longer be able to carry your Voyage roster due to his advancing age. Despite a brilliant Skill set and order, he’s been squeezed out of your top 12 list, but it’s not all bad news for this Ferengi.
 
-Newer players should squeeze a little bit of gauntlet use out of his trio of 45% sets and by the time you manage to fuse him up, he should have another dozen events and a few more collections under his thermal blanket-wrapped belt.
+A sizable DIP Base gives him the ability to pitch in whenever his name is called on the weekend, and variant Events plus plenty of fun Trait bonuses makes him a solid choice to Fuse via Crew Retrieval. A trio of Collections and a ceiling of six makes him a strong long-term investment.

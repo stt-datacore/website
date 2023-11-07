@@ -12,8 +12,8 @@ mega: true
 published: true
 ---
 
-How many top ten voyage Picards is too many? Maybe that owl from the Tootsie Pops commercial can tell us.
+It’s always important to view a former Mega Recurring Legendary through the lens of your current roster, not what the other players in your Fleet are saying. That being said, 2024 Picard should still be Voyaging for a lot of players into the actual year 2024 in Star Trek: Timelines, given his excellent debut power which has helped him stave off Power Creep™.
 
-From just about every angle, 2024 Picard is a crew worth acquiring. Voyages are the crown jewel; his skill set is rarer than you think and his skill order consists of him and one other name in the top 300 ranks by raw score. Throw in his half dozen anti-matter traits and you’re looking at a name you’ll be using long after the year 2024.
+A strong Skill set highlighted by a generous SCI Base and Tertiary SEC helps him to avoid the CMD/DIP/SUCK trap, and a solid sextet of Anti-matter Traits give him plenty of seating opportunities. Picard Events are pretty clockwork and his ancillary Traits will pitch in when his name isn’t called as a variant. 
 
-Picard’s event clip has been extremely consistent, if not robust, and his handful of traits threaten to supplement that tally at any moment. With a top ten base on debut, Picard will have no issue commanding seats on the weekend or even day to day. Front-loaded collection value and a usable shipboard attack boost have him checking boxes in just about every corner possible except gauntlet. If you haven’t uncovered the subtext by now: cite his last star.
+Four Collections may be about all he gets until WRG scrapes the bottom of the barrel, but that’s a decent amount for this Picard.
