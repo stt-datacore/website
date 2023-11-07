@@ -293,9 +293,9 @@ const TableView = (props: ViewProps) => {
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
-										{(crew.kwipment as number[][])?.some(k => k.some(p => !!p)) && 
+										{(crew.kwipment as number[][])?.some(k => typeof k === 'number' ? !!k : k?.some(p => !!p)) && 
 										<>
-										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
+										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
 												<span style={{ cursor: 'help' }}>
 													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 												</span>
@@ -569,9 +569,9 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					</Popup>
 				</div>
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
-				{(crew.kwipment as number[][])?.some(k => k.some(p => !!p)) && 
+				{(crew.kwipment as number[][])?.some(k => typeof k === 'number' ? !!k : k?.some(p => !!p)) && 
 				<div>
-				<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => q[1]), context.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
+				<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), context.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
 						<span style={{ cursor: 'help' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 						</span>
