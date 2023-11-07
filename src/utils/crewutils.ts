@@ -8,6 +8,7 @@ import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { navigate } from 'gatsby';
 import { ItemBonusInfo } from './itemutils';
+import { EquipmentItem } from '../model/equipment';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -744,6 +745,29 @@ export function qbitsToSlots(q_bits: number | undefined) {
     else if (q_bits < 500) return 2;
     else if (q_bits < 1300) return 3;
     return 4;
+}
+
+export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): EquipmentItem[] {
+
+	if (crew.kwipment) {
+		let quips = [] as number[];
+		crew.kwipment.map(q => {
+			if (typeof q === 'number') {
+				quips.push(q);
+			}
+			else {
+				quips.push(q[1]);
+			}
+		});
+		if (quips?.length) {
+			let found = items.filter(item => quips.some(q => q.toString() === item?.kwipment_id?.toString()));
+			if (found?.length) {
+				return found;
+			}
+		}
+	}
+	
+	return [];
 }
 
 // export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
