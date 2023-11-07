@@ -19,7 +19,7 @@ import { printRequiredTraits } from "../profile_items";
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) {
     if (!kwipment || kwipment.every(k => !k)) return <></>;
-    let quip = items.filter(f => kwipment.some(q => q.toString() === f.kwipment_id?.toString()));
+    let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
     let bonuses = [] as ItemBonusInfo[];
     for (let q of quip) {
         bonuses.push(getItemBonuses(q));
