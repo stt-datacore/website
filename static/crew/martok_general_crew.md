@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-There's some intermittent event usage here, but you're taking Martok because he's a one stop collection shop. Veteran players will gobble him up at the behold screen as a cure for their collection ills as his trait list is all thriller, no filler. Unfortunately, the only other attribute of note is his trio of big bonus event features - all having come in different events. His bases may be too poor to considering thawing if he’s not a featured name.
+There's some intermittent Event usage here, but you're taking Martok because he's a one stop Collection shop. Veteran players will gobble him up at the Super Rare Behold screen as a cure for their Collection ills as his Trait list is all thriller, no filler. Unfortunately, the only other attribute of note is his trio of big bonus Event features - all having come in different Events. His Bases may be too poor to consider thawing if he’s not a featured name.

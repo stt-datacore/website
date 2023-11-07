@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Ishan drew the short end of the stick around the 2021/2022 turn as WRG favored several ENG/DIP releases which pipped him on voyages. While still perfectly usable there, you should at least have an easier time looking to replicate what he brings to that area of the game.
+Ishan drew the short end of the stick around the 2021/2022 turn as WRG favored several ENG/DIP releases which pipped him on Voyages. While still perfectly usable there if you aren’t in the late game, you should at least have an easier time looking to replicate what he brings to that area of the game.
 
-His traits have returned surprisingly modest dividends for collections and event bonuses, but still the potential is there to supplement a dependable Sisko event history and provide a tidy collection profile if things break right for him. He had a sharp tier tumble for a while, but should descend more gently in value from here on out.
+His Traits have returned surprisingly modest dividends for Collections and Event bonuses, but still the potential is there to supplement a dependable Sisko Event history and provide a tidy Collection profile if things break right for him. He had a sharp Tier tumble for a while, but should descend more gently in value from here on out.

@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-The plucky wayward of the Carbon Creek Vulcans, the Curly, if we’re following the Three Stooges comp, Mestral’s confidence would appear to be justified. Despite several additions to his previously barren skill set in the year prior to his release, Mestral sits on the top of the pack where voyages are concerned. Every one of his traits tick the anti-matter box and his overall power is superlative on debut. An investment in this card for voyages alone wouldn’t be unwise.
+The plucky wayward of the Carbon Creek Vulcans, the Curly, if we’re following the Three Stooges comp, Mestral’s confidence would appear to be justified. A plus Skill set with multiple Anti-matter Trait matches available, his power is still such that if you came across him Fully Fused at the time of this writing, he would Voyage on occasion. However, he may not be a ground-up project for Voyages alone.
 
-His heady trait list of course affords him value elsewhere. A great collection profile has a higher ceiling than most while his event tally reads like a main cast card and should see at least a mega’s worth of events yearly. Don’t fret not having the safety blanket of a main cast name brand to fall back on - Mestral is worth his weight in frozen TV dinners.
+His heady Trait list of course affords him value elsewhere. A great Collection profile has a higher ceiling than most while his Event tally reads like a main cast card and should see at least a Mega Event’s worth of Events yearly. Don’t fret not having the safety blanket of a main cast name brand to fall back on - Mestral is worth his weight in frozen TV dinners.
