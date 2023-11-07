@@ -1,70 +1,59 @@
 import { Icon } from "./game-elements"
-import { MasteryLevel, Quest, Stage } from "./missions"
-import { AcceptedMission } from "./player"
+import { PotentialReward } from "./player"
 
-export type ContinuumRoot = Root2[]
-
-export interface Root2 {
+export interface ContinuumRoot {
   action: string
-  character: Character
+  continuum_mission: ContinuumMission
 }
 
-export interface Character {
-  id: number
-  accepted_missions: ContinuumMission[]
-  continuum_progress: ContinuumProgress
+export interface ContinuumMission {
+  qbit_cost_by_slot: number[]
+  active: boolean
+  mission: MissionInfo
+  quest_ids: number[]
+  rewards: Rewards
+  end_time: number
+  chain_rewards: ChainRewards
+  quest_rewards: QuestRewards
+  character_xp: number
+  qbits_rewards: number
 }
 
-export interface ContinuumQuest extends Quest {
+export interface MissionInfo {
   id: number
-  symbol: string
-  name: string
+  title: string
   description: string
-  action: string
-  place: string
-  quest_type: string
-  traits_used: string[]
-  crew: any[]
-  stages: Stage[]
-  starting_challenge_id: number
-  challenges: any[]
-  locked: boolean
-  star_background: boolean
-  material_bundle: string
-  mastery_levels: MasteryLevel[]
-  timeline_icon: Icon
-  continuum: boolean
-  mission_id: number
+  portrait: Icon
 }
 
-export interface ContinuumMission extends AcceptedMission {
-    id: number
-    symbol: string
-    type: number
-    description: string
-    episode: number
-    episode_title: string
-    episode_portrait: Icon
-    marker: number[]
-    marker_icon: Icon
-    exclude_from_timeline: boolean
-    stars_earned: number
-    total_stars: number
-    character_xp_reward: number
-    loot_rewards: any[]
-    quests: ContinuumQuest[]
-    accepted: boolean
-    state: number
-    rewards_reset_cost: number
-    current_quest: ContinuumQuest
-    main_story: boolean
+export interface Rewards {
+  standard: MasteryLoot
+  elite: MasteryLoot
+  epic: MasteryLoot
 }
 
-export interface ContinuumProgress {
-  id: number
-  mission_id: number
-  state: string
-  claimed_chain_rewards: any[]
-  current_quest_id: number
-  reset_count: number
+export interface MasteryLoot {
+  all_loot_entries: AllLootEntry[]
+}
+
+export interface AllLootEntry {
+  type: number
+  icon: Icon
+  rarity: number
+  potential_rewards: PotentialReward[]
+  quantity: number
+}
+
+
+export interface ChainRewards {
+  standard: MasteryLoot[]
+  elite: MasteryLoot[]
+  epic: MasteryLoot[]
+}
+
+
+export interface QuestRewards {
+  standard: MasteryLoot[]
+  elite: MasteryLoot[]
+  epic: MasteryLoot[]
 }
