@@ -74,6 +74,8 @@ interface ItemSearchOpts {
 	rarity?: number[];	
 }
 
+export type CrewType = 'all' | 'owned' | 'quippable'
+
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
@@ -86,7 +88,7 @@ type ProfileItemsState = {
 	/** Add needed but unowned items to list */
 	addNeeded?: boolean;	
 	crewSelection: string;
-	crewType: 'all' | 'owned';
+	crewType: CrewType;
 	traits?: string[];
 	skills?: string[];
 };
@@ -128,7 +130,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.tiny = TinyStore.getStore((props.pageName ? props.pageName + "_": "") + 'profile_items');
 
 		this.state = {
-			crewType: this.tiny.getValue<'all' | 'owned'>('crewType') ?? 'all',
+			crewType: this.tiny.getValue<CrewType>('crewType') ?? 'quippable',
 			crewSelection: '',
 			column: null,
 			direction: null,
@@ -140,7 +142,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		};
 	}
 
-	private setCrewType = (value: 'all' | 'owned') => {
+	private setCrewType = (value: CrewType) => {
 		this.tiny.setValue('crewType', value);
 		this.setState({ ... this.state, crewType: value });
 	}
@@ -153,8 +155,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (this.props?.crewMode && crew?.length) {
 			[ ...crew ].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
 
-				if (playerData && crewType === 'owned') {
-					if (!playerData.player.character.crew.some(d => d.symbol === c.symbol)) return false;
+				if (playerData && ['owned', 'quippable'].includes(crewType)) {
+					let found = playerData.player.character.crew.find(d => d.symbol === c.symbol);
+					if (!found) return false;
+					if (crewType === 'quippable') {
+						if (found.q_bits < 100) return false;
+					}
 				}
 
 				crewChoices.push(
@@ -500,6 +506,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}];
 		if (!!playerData) {
 			crewTypes.push({
+				key: 'quippable',
+				value: 'quippable',
+				text: 'Quippable Crew'
+			});
+			crewTypes.push({
 				key: 'owned',
 				value: 'owned',
 				text: 'Owned Crew'
@@ -635,7 +646,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								placeholder={"Filter by owned status"}
 								options={crewTypes}
 								value={crewType}
-								onChange={(e, { value }) => this.setCrewType(value as 'all' | 'owned')}
+								onChange={(e, { value }) => this.setCrewType(value as CrewType)}
 							/>
 						</div>
 						</>
