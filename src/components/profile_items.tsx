@@ -656,7 +656,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						itemPass = itemType?.some(t => f.type == t);
 					}
 
-					if (!!crewSelection?.length && typeof crewSelection === 'string') {
+					if (!!crewMode && !!crewSelection?.length && typeof crewSelection === 'string') {
 						let selCrew = this.context.core.crew.find(crew => crew.symbol === crewSelection);
 						if (selCrew) {
 							if (f.type === 14) {								
@@ -722,7 +722,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 		
 		const crewChoices = this.makeCrewChoices();
-		const selCrew = (!!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(playerData.player.character.crew.find(c => c.symbol === crewSelection) as PlayerCrew) : undefined;
+		const selCrew = (!!crewMode && !!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(playerData.player.character.crew.find(c => c.symbol === crewSelection) as PlayerCrew) : undefined;
 
 		if (this.props.noRender) return <></>
 
