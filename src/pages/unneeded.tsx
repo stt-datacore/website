@@ -4,7 +4,7 @@ import UnneededItems from '../components/unneededitems';
 
 const UnneededItemsPage = () => {
 
-    return <DataPageLayout pageTitle='Fleet Boss Battles'>
+    return <DataPageLayout pageTitle='Unneeded Items'>
         <UnneededItems />
     </DataPageLayout>
 }
