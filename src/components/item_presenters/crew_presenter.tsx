@@ -353,7 +353,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
     hideStats?: boolean;
     showPortrait?: boolean;
     proficiencies?: boolean;
-    quipmentDefault?: boolean;
+    quipmentMode?: boolean;
 }
 
 export interface CrewPresenterState {
@@ -402,7 +402,7 @@ export class CrewPresenter extends React.Component<
     };
 
     protected get playerBuffMode(): PlayerBuffMode {
-        if (this.props.quipmentDefault) return 'quipment'
+        if (this.props.quipmentMode) return 'quipment'
         let key = "buffmode";
         let def = "max" as PlayerBuffMode;
         if (this.context.player.playerData) {
@@ -494,7 +494,7 @@ export class CrewPresenter extends React.Component<
     }
 
     componentDidMount(): void {
-        if (this.props.quipmentDefault && this.playerBuffMode !== 'quipment' && !!this.context.player.playerData) {
+        if (this.props.quipmentMode && this.playerBuffMode !== 'quipment' && !!this.context.player.playerData) {
             this.playerBuffMode = 'quipment';
         }
     }
@@ -521,7 +521,7 @@ export class CrewPresenter extends React.Component<
 
         var me = this;
 
-        const availstates = this.props.quipmentDefault ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
+        const availstates = this.props.quipmentMode ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
             this.context.player.playerData,
             this.context.maxBuffs,
             inputCrew as PlayerCrew
@@ -939,6 +939,7 @@ export class CrewPresenter extends React.Component<
                         }).map(([key, skill]) => {
 
                             return <CrewStat
+                                quipmentMode={this.props.quipmentMode}
                                 key={"crewpresent_skill_" + key}
                                 proficiencies={proficiencies}
                                 skill_name={key}

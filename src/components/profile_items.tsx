@@ -830,7 +830,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				alignItems: "center", 
 				gap: "1em",
 				flexDirection: "column"}}>
-				<CrewPresenter selfRender quipmentDefault hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
+				<CrewPresenter selfRender quipmentMode hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
 				<CrewItemsView itemSize={48} crew={selCrew} quipment />
 				</div>
 			}

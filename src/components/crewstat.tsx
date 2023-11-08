@@ -6,6 +6,7 @@ type CrewStatProps = {
 	scale?: number;
 	data?: Skill;
 	proficiencies?: boolean;
+	quipmentMode?: boolean;
 };
 
 class CrewStat extends PureComponent<CrewStatProps> {
@@ -16,15 +17,16 @@ class CrewStat extends PureComponent<CrewStatProps> {
 
 		const stats = this.props.data;
 		const scale = this.props.scale || 1;
-		const { proficiencies } = this.props;
+		const { proficiencies, quipmentMode } = this.props;
 
 		return (
+			<div>
 			<div
 				style={{
 					display: 'inline-grid',
 					width: 'max-content',
 					gridTemplateColumns: `${2.5 * scale}em auto`,
-					gridTemplateAreas: `'icon stats'`,
+					gridTemplateAreas: `'icon stats'\n'icon crits'`,
 					gridGap: `${0.2 * scale}em`,
 					paddingTop: `${0.2 * scale}em`,
 					paddingRight: `${0.4 * scale}em`
@@ -39,10 +41,19 @@ class CrewStat extends PureComponent<CrewStatProps> {
 						+({stats.range_min}-{stats.range_max})
 					</span>
 				</div>}
-				{proficiencies &&
+				{!!proficiencies &&
 				<div style={{ gridArea: 'stats' }}>
 					<span style={{ fontWeight: 'bolder', fontSize: `${1.5 * scale}em` }}>{stats.range_min}-{stats.range_max}</span>
-				</div>}
+				</div>}				
+				{!!quipmentMode &&
+				<div style={{ gridArea: 'crits', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
+					<span style={{ fontWeight: 'bolder', fontSize: `${scale}em` }}>
+						{stats.core + stats.range_min}-{stats.core + stats.range_max}
+					</span>
+				</div>}				
+				
+			</div>
 			</div>
 		);
 	}
