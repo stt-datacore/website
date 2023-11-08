@@ -144,7 +144,8 @@ export class CrewPreparer {
         dataIn: PlayerCrew | CrewMember | undefined,
         buffMode: PlayerBuffMode,
         immortalMode: PlayerImmortalMode,
-        context: IDefaultGlobal
+        context: IDefaultGlobal,
+        useInputQuip?: boolean
     ): [PlayerCrew | CrewMember | undefined, PlayerImmortalMode[] | undefined] {
 
         const { buffConfig, maxBuffs, playerData } = context.player;
@@ -158,8 +159,15 @@ export class CrewPreparer {
             let item: PlayerCrew;
 
             if (hasPlayer) {
-                item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
-                item = { ...dataIn, ...item };                
+                if (useInputQuip) {
+                    item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
+                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment };                    
+                }
+                else {
+                    item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
+                    item = { ...dataIn, ...item };                
+    
+                }
             }
             else {
                 item = dataIn as PlayerCrew;
@@ -185,7 +193,12 @@ export class CrewPreparer {
                 let cm: CrewMember | undefined = undefined;
                 cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
-                    delete cm.kwipment;
+                    cm = { ... cm};
+                    
+                    cm.kwipment = dataIn.kwipment;
+                    cm.kwipment_expiration = dataIn.kwipment_expiration;
+                    cm.q_bits = dataIn.q_bits;
+
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
                         item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, undefined, buffConfig ?? maxBuffs);
                     }

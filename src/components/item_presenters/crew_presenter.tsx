@@ -353,6 +353,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
     hideStats?: boolean;
     showPortrait?: boolean;
     proficiencies?: boolean;
+    quipmentDefault?: boolean;
 }
 
 export interface CrewPresenterState {
@@ -390,7 +391,7 @@ export class CrewPresenter extends React.Component<
             selectedPlugin: 0,
         };
 
-        this.tiny = TinyStore.getStore(props.storeName);
+        this.tiny = TinyStore.getStore(props.storeName);       
     }
 
     private setSelectedPlugin = (index: number) => {
@@ -491,6 +492,11 @@ export class CrewPresenter extends React.Component<
         }
     }
 
+    componentDidMount(): void {
+        if (this.props.quipmentDefault && this.playerBuffMode !== 'quipment' && !!this.context.player.playerData) {
+            this.playerBuffMode = 'quipment';
+        }
+    }
     render(): JSX.Element {
         const {
             proficiencies,
