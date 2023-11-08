@@ -292,7 +292,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			trial = { symbol: crew.symbol, kwipment: crew.kwipment.map((k: number | number[]) => typeof k === 'number' ? k : k[1]).filter(n => !!n) } as CrewKwipTrial;
 			let trials = [ ...this.state.trials ?? [] ];
 			trials.push(trial);
-			this.setState({ ... this.state, trials });
+			window.setTimeout(() => {
+				this.setState({ ... this.state, trials });
+			});			
 		}
 		if (trial) {
 			let slots = qbitsToSlots(crew?.q_bits ?? 0);
