@@ -8,7 +8,8 @@ import { EquipmentItem } from '../../model/equipment';
 import ItemDisplay from '../itemdisplay';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { navigate } from 'gatsby';
-import { qbitsToSlots } from '../../utils/crewutils';
+import { getCrewQuipment, qbitsToSlots } from '../../utils/crewutils';
+import { getItemBonuses } from '../../utils/itemutils';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -62,12 +63,29 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     }
     else {
         [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-
+        if (crew.kwipment?.length && !crew.kwipment_slots) {
+            if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
+                let quips = (crew.kwipment as number[]).map(q => context.core.items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
+                let buffs = quips.map(q => getItemBonuses(q));
+                crew.kwipment_slots = quips.map(q => {
+                    return {
+                        level: 100,
+                        symbol: q.symbol,
+                        imageUrl: q.imageUrl
+                    }
+                });
+            }
+        }
         for (let i = 0; i < 4; i++) {
             let eq: number | undefined = undefined;
 
             if (crew.kwipment_slots?.length) {
-                eq = crew.kwipment[i] as number;
+                if (typeof crew.kwipment[i] === 'number') {
+                    eq = crew.kwipment[i] as number;
+                }
+                else {
+                    eq = crew.kwipment[i][1] as number;
+                }
             }
             
             equip[i] ??= {} as EquipmentItem;                

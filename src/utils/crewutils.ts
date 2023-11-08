@@ -228,6 +228,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 		crew[skill] = { core: 0, min: 0, max: 0 };
 	}
 	let bs = {} as BaseSkills;
+	let askills = [] as string[];
 	// Apply buffs
 	for (let skill in crew.base_skills) {
 		let core = 0;
@@ -244,6 +245,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 				min += bonus.bonuses[skill].range_min ?? 0;
 				max += bonus.bonuses[skill].range_max ?? 0;
 			});
+			askills.push(skill);
 		}
 
 		if (nowrite !== true) {
@@ -259,6 +261,34 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 			range_max: max
 		};
 	}
+	// if (askills?.length && itemBonuses?.length) {
+	// 	let remainder = itemBonuses.filter(bonus => !askills.some(ask => Object.keys(bonus.bonuses).some(k => k === ask)));
+	// 	if (remainder?.length) {
+	// 		remainder.forEach((bonus) => {
+	// 			Object.keys(bonus.bonuses).forEach(skill => {
+
+	// 				bs[skill] ??= { core: 0, range_min: 0, range_max: 0, skill };
+
+	// 				bs[skill].core += bonus.bonuses[skill].core ?? 0;
+	// 				bs[skill].range_min += bonus.bonuses[skill].range_min ?? 0;
+	// 				bs[skill].range_max += bonus.bonuses[skill].range_max ?? 0;
+	// 				if (!nowrite) {
+	// 					crew[skill] ??= { core: 0, max: 0, min: 0, skill };
+
+	// 					crew[skill].core += bonus.bonuses[skill].core ?? 0;
+	// 					crew[skill].min += bonus.bonuses[skill].range_min ?? 0;
+	// 					crew[skill].max += bonus.bonuses[skill].range_max ?? 0;
+						
+	// 					crew.base_skills[skill] ??= { core: 0, range_max: 0, range_min: 0, skill };
+
+	// 					crew.base_skills[skill].core += bonus.bonuses[skill].core ?? 0;
+	// 					crew.base_skills[skill].range_min += bonus.bonuses[skill].range_min ?? 0;
+	// 					crew.base_skills[skill].range_max += bonus.bonuses[skill].range_max ?? 0;
+	// 				}
+	// 			});
+	// 		})
+	// 	}
+	// }
 	return bs;
 }
 
@@ -1237,6 +1267,7 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
 	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
 	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");
+
 	return sk;
 }
 

@@ -15,7 +15,7 @@ import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { calculateRosterDemands } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
-import { downloadData, rankToSkill, skillToRank } from '../utils/crewutils';
+import { downloadData, oneCrewCopy, qbitsToSlots, rankToSkill, skillToRank } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
@@ -23,6 +23,9 @@ import { PlayerCrew } from '../model/player';
 import { appelate } from '../utils/misc';
 import { CrewMember } from '../model/crew';
 import { renderBonuses } from './item_presenters/item_presenter';
+import { CrewPresenter } from './item_presenters/crew_presenter';
+import { CrewItemsView } from './item_presenters/crew_items';
+import { CrewPreparer } from './item_presenters/crew_preparer';
 
 export interface CustomFieldDef {
 	field: string;
@@ -76,6 +79,11 @@ interface ItemSearchOpts {
 
 export type CrewType = 'all' | 'owned' | 'quippable'
 
+interface CrewKwipTrial {
+	symbol: string;
+	kwipment: number[];
+}
+
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
@@ -91,6 +99,7 @@ type ProfileItemsState = {
 	crewType: CrewType;
 	traits?: string[];
 	skills?: string[];
+	trials?: CrewKwipTrial[];
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -131,7 +140,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		this.state = {
 			crewType: this.tiny.getValue<CrewType>('crewType') ?? 'quippable',
-			crewSelection: '',
+			crewSelection: this.tiny.getValue<string>('crewSelection') ?? '',
 			column: null,
 			direction: null,
 			searchOpts: this.tiny.getValue('searchOptions'),
@@ -140,6 +149,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			data: props.data,
 			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
 		};
+	}
+
+	private setCrewSelection = (value: string) => {
+		this.tiny.setValue('crewSelection', value);
+		this.setState({ ... this.state, crewSelection: value });
 	}
 
 	private setCrewType = (value: CrewType) => {
@@ -265,6 +279,65 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ pagination_page: activePage });
 	}
 
+	private makeTrialCrew = (crew: PlayerCrew) => {
+		crew = oneCrewCopy({ ... this.context.core.crew.find(f =>f.symbol === crew.symbol) as PlayerCrew, ...crew }) as PlayerCrew;
+		let trials = this.state.trials?.find(f => f.symbol === crew.symbol);
+		if (trials) {
+			let slots = qbitsToSlots(crew?.q_bits ?? 0);
+			crew.kwipment = trials.kwipment?.slice(0, slots) ?? [];
+			slots = 4 - crew.kwipment.length;
+			for (let i = 0; i < slots; i++) {
+				crew.kwipment.push(0);
+			}
+		}
+
+		return CrewPreparer.prepareCrewMember(crew, 'quipment', 'full', this.context, true)[0];
+	}
+
+	private maxTrial(crew: PlayerCrew) {
+		let trials = this.state.trials ?? [];
+		let currtrial = trials.find(t => t.symbol === crew.symbol) ?? { symbol: crew, kwipment: [] };
+		if (currtrial) {
+			return currtrial.kwipment.length >= qbitsToSlots(crew.q_bits ?? 0);
+		}
+		return false;
+	}
+
+	private getTrial(crew: string, item: number) {
+		let trials = this.state.trials ?? [];
+		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [] };
+		if (currtrial) {
+			currtrial = { ...currtrial };
+
+			if (currtrial.kwipment?.includes(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private setTrial(crew: string, item: number, state: boolean) {
+		let trials = this.state.trials ?? [];
+		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [] };
+		
+		if (currtrial) {
+			currtrial = { ...currtrial };
+
+			if (currtrial.kwipment?.includes(item) && state === false) {
+				currtrial.kwipment = currtrial.kwipment?.filter(f => f !== item) ?? [];
+			}
+			else if (!currtrial.kwipment?.includes(item) && state === true) {
+				currtrial.kwipment ??= [];
+				currtrial.kwipment.push(item);
+			}
+			trials = trials.filter(f => f.symbol !== crew);						
+			if (currtrial.kwipment.length) {
+				trials.push(currtrial);
+			}
+		}
+
+		this.setState({ ...this.state, trials });
+	}
 
 	private _handleSort(clickedColumn) {
 		const { column, direction } = this.state;
@@ -391,6 +464,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (item.kwipment && (item.traits_requirement?.length || item.max_rarity_requirement)) {
 			let found: CrewMember[] | null = null;
 			
+			let bonus = getItemBonuses(item as EquipmentItem);
+
 			found = crew.filter((crew) => {
 				if (!!item.max_rarity_requirement && item.max_rarity_requirement < crew.max_rarity) return false;
 				if (item.traits_requirement?.length) {
@@ -402,6 +477,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					}
 				}
 
+				if (!Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills)) return false;
 				return true;
 				
 			});					
@@ -572,12 +648,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								if (!!f.max_rarity_requirement && f.max_rarity_requirement < selCrew.max_rarity) return false;
 								if (f.traits_requirement?.length) {
 									if (f.traits_requirement_operator === 'and') {
-										return (f.traits_requirement?.every((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)));
+										if (!(f.traits_requirement?.every((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
 									}
 									else {
-										return (f.traits_requirement?.some((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)));
+										if (!(f.traits_requirement?.some((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
 									}
 								}									
+								let bonuses = getItemBonuses(f as EquipmentItem)?.bonuses;								
+								if (bonuses) return Object.keys(bonuses).every(skill => !!selCrew && skill in selCrew.base_skills);
+								return true;
 							}
 							else {
 								return false;
@@ -628,6 +707,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 		
 		const crewChoices = this.makeCrewChoices();
+		const selCrew = (!!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(playerData.player.character.crew.find(c => c.symbol === crewSelection) as PlayerCrew) : undefined;
 
 		if (this.props.noRender) return <></>
 
@@ -644,7 +724,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							labeled
 							options={crewChoices}
 							value={crewSelection}						
-							onChange={(e, { value }) => this.setState({ ...this.state, crewSelection: value as string }) }
+							onChange={(e, { value }) => this.setCrewSelection(value as string) }
 							/>
 							</div>
 						<div style={{marginLeft: "0.5em", marginRight: "0.5em"}}>
@@ -724,9 +804,25 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				</div>}
 			</div>
 			{(!data || !bReady) && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
+
+			{!!selCrew &&
+			<div 
+				className='ui segment'
+				style={{				
+				backgroundColor: "#333",
+				display:"flex", 
+				justifyContent:"stretch", 
+				alignItems: "center", 
+				gap: "1em",
+				flexDirection: "column"}}>
+				<CrewPresenter quipmentDefault hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
+				<CrewItemsView itemSize={48} crew={selCrew} quipment />
+				</div>
+			}
+
 			{bReady && !!(data?.length) && <Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
-					<Table.Row>
+					<Table.Row>						
 						<Table.HeaderCell
 							width={3}
 							sorted={column === 'name' ? direction ?? undefined : undefined}
@@ -808,12 +904,20 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									title={item.name + (!hideOwnedInfo ? (!item.quantity ? ' (Unowned)' : ` (${item.quantity})`) : "")}
 									style={{
 										display: 'grid',
-										gridTemplateColumns: '60px auto',
+										gridTemplateColumns: !!selCrew ? '87px auto' : '60px auto',
 										gridTemplateAreas: `'icon stats' 'icon description'`,
 										gridGap: '1px'
 									}}
 								>
-									<div style={{ gridArea: 'icon' }}>
+									<div style={{ gridArea: 'icon', display:'flex', gap:"0.5em", width: "87px", flexDirection:'row',alignItems:'center' }}>
+									{!!selCrew &&
+										<Checkbox 
+											disabled={this.maxTrial(selCrew as PlayerCrew) && !this.getTrial(selCrew.symbol, Number.parseInt(item.kwipment_id?.toString() ?? '0'))} 
+											checked={this.getTrial(selCrew.symbol, Number.parseInt(item.kwipment_id?.toString() ?? '0'))}
+											onChange={(e, { checked }) => this.setTrial(selCrew.symbol, Number.parseInt(item.kwipment_id?.toString() ?? '0'), checked || false)}  
+											/>
+									}
+
 									<ItemDisplay
 										targetGroup='profile_items'
 										style={{
