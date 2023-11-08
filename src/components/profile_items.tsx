@@ -156,10 +156,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			[ ...crew ].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
 
 				if (playerData && ['owned', 'quippable'].includes(crewType)) {
-					let found = playerData.player.character.crew.find(d => d.symbol === c.symbol);
-					if (!found) return false;
+
+					const found = playerData.player.character.crew.find(d => d.symbol === c.symbol);
+					
+					if (!found) return;
+
 					if (crewType === 'quippable') {
-						if (found.q_bits < 100) return false;
+						if (!found.q_bits || found.q_bits < 100) return;
 					}
 				}
 
@@ -623,8 +626,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				text: CONFIG.RARITIES[rk].name
 			});
 		});
+		
+		const crewChoices = this.makeCrewChoices();
 
 		if (this.props.noRender) return <></>
+
 		return (
 			<div style={{margin:0,padding:0}}>
 			<div className='ui segment' style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
@@ -636,7 +642,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						<Dropdown search selection clearable
 							placeholder={"Search for a crew member..."}
 							labeled
-							options={this.makeCrewChoices()}
+							options={crewChoices}
 							value={crewSelection}						
 							onChange={(e, { value }) => this.setState({ ...this.state, crewSelection: value as string }) }
 							/>
