@@ -207,12 +207,16 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				if (item_data.item.traits_requirement) {
 					if (item_data.item.traits_requirement_operator === "and") {
-						return rr && item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+						rr &&= item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 					else {
-						return rr && item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+						rr &&= item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 				}
+
+				let bonus = getItemBonuses(item_data.item);
+				rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
+
 				return rr;
 			}).map(crew => {
 				if (this.context.player.playerData) {
