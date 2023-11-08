@@ -153,7 +153,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private setCrewSelection = (value: string) => {
 		this.tiny.setValue('crewSelection', value);
-		this.setState({ ... this.state, crewSelection: value });
+		if (value === '') {
+			this.setState({ ... this.state, crewSelection: value, trials: [] });
+		}
+		else {
+			this.setState({ ... this.state, crewSelection: value });		
+		}
+		
 	}
 
 	private setCrewType = (value: CrewType) => {
@@ -281,10 +287,16 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private makeTrialCrew = (crew: PlayerCrew) => {
 		crew = oneCrewCopy({ ... this.context.core.crew.find(f =>f.symbol === crew.symbol) as PlayerCrew, ...crew }) as PlayerCrew;
-		let trials = this.state.trials?.find(f => f.symbol === crew.symbol);
-		if (trials) {
+		let trial = this.state.trials?.find(f => f.symbol === crew.symbol)
+		if (!trial) {
+			trial = { symbol: crew.symbol, kwipment: crew.kwipment.map((k: number | number[]) => typeof k === 'number' ? k : k[1]).filter(n => !!n) } as CrewKwipTrial;
+			let trials = [ ...this.state.trials ?? [] ];
+			trials.push(trial);
+			this.setState({ ... this.state, trials });
+		}
+		if (trial) {
 			let slots = qbitsToSlots(crew?.q_bits ?? 0);
-			crew.kwipment = trials.kwipment?.slice(0, slots) ?? [];
+			crew.kwipment = trial.kwipment?.slice(0, slots) ?? [];
 			slots = 4 - crew.kwipment.length;
 			for (let i = 0; i < slots; i++) {
 				crew.kwipment.push(0);
@@ -331,9 +343,10 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				currtrial.kwipment.push(item);
 			}
 			trials = trials.filter(f => f.symbol !== crew);						
-			if (currtrial.kwipment.length) {
-				trials.push(currtrial);
-			}
+			trials.push(currtrial);
+			// if (currtrial.kwipment.length) {
+			// 	trials.push(currtrial);
+			// }
 		}
 
 		this.setState({ ...this.state, trials });
@@ -815,7 +828,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				alignItems: "center", 
 				gap: "1em",
 				flexDirection: "column"}}>
-				<CrewPresenter quipmentDefault hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
+				<CrewPresenter selfRender quipmentDefault hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
 				<CrewItemsView itemSize={48} crew={selCrew} quipment />
 				</div>
 			}

@@ -402,6 +402,7 @@ export class CrewPresenter extends React.Component<
     };
 
     protected get playerBuffMode(): PlayerBuffMode {
+        if (this.props.quipmentDefault) return 'quipment'
         let key = "buffmode";
         let def = "max" as PlayerBuffMode;
         if (this.context.player.playerData) {
@@ -415,7 +416,7 @@ export class CrewPresenter extends React.Component<
         return result;
     }
 
-    protected set playerBuffMode(value: PlayerBuffMode) {
+    protected set playerBuffMode(value: PlayerBuffMode) {        
         let key = "buffmode";
         if (this.context.player.playerData) key += "_player";
         this.tiny.setValue<PlayerBuffMode>(key, value, true);
@@ -520,7 +521,7 @@ export class CrewPresenter extends React.Component<
 
         var me = this;
 
-        const availstates = getAvailableBuffStates(
+        const availstates = this.props.quipmentDefault ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
             this.context.player.playerData,
             this.context.maxBuffs,
             inputCrew as PlayerCrew
