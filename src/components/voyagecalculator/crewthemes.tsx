@@ -175,8 +175,12 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			let testCrew = props.rosterCrew.filter(f => f.ranks.voyTriplet?.name === trip);
 			if (!!testCrew?.length) {
 				testCrew = testCrew.sort((a, b) => (a.ranks.voyTriplet?.rank ?? 0) - (b.ranks.voyTriplet?.rank ?? 0));
-				if (!topCrew.includes(testCrew[0].symbol)) {
-					topCrew.push(testCrew[0].symbol);
+				for (let i = 0; i < testCrew.length; i++) {
+					if (testCrew[i].immortal === 0) continue;
+					if (!topCrew.includes(testCrew[i].symbol)) {
+						topCrew.push(testCrew[i].symbol);
+					}
+					break;
 				}
 			}
 		}
@@ -185,8 +189,12 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			let testCrew = props.rosterCrew.filter(f => rank in f.ranks);
 			if (!!testCrew?.length) {
 				testCrew = testCrew.sort((a, b) => (a.ranks[rank] ?? 0) - (b.ranks[rank] ?? 0));
-				if (!topCrew.includes(testCrew[0].symbol)) {
-					topCrew.push(testCrew[0].symbol);
+				for (let i = 0; i < testCrew.length; i++) {
+					if (testCrew[i].immortal === 0) continue;
+					if (!topCrew.includes(testCrew[i].symbol)) {
+						topCrew.push(testCrew[i].symbol);
+					}
+					break;
 				}
 			}
 		}
