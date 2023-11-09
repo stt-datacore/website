@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A fantasy crew in every sense of the word, this Timelines' Original has gone from ‘use’ to ‘freeze’ over the years. Following a flurry of early big bonus features, K’Ehleyr’s event rate has cooled and her bases rendered irrelevant. She's nothing resembling daily use crew, but a tantalizing mélange of collection flavors is worth the smattering of Terran Empire and KCA faction items needed to finish her.
+A fantasy crew in every sense of the word, this Timelines' Original has gone from ‘use’ to ‘freeze’ over the years. Following a flurry of early big bonus Features, K’Ehleyr’s Event rate has cooled and her Bases rendered irrelevant. She's nothing resembling daily use crew, but a tantalizing mélange of Collection flavors is worth the smattering of Terran Empire and KCA Faction Items needed to finish her.

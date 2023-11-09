@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Early 2021 strapped a rocket pack to The Duke to thrust him into a tie for the collection lead among super rares, including the massive Klingon and Costumed collections for which he'll be essential even years down the line. His ascent has since leveled off, but he remains at cruising altitude with other big collection names and has a little room to improve further down the line. 
+Sheriff Worf was an early top Collection name for Super Rares, but even though he’s no longer at the top of the list, he’s still a strong crew in that regard with a quartet, and two possible more inclusions.
 
-Worf is also a name of note, nipping on Jim Kirk's heels for the most event features in the history of the game. His variants have picked up a bonus in each of the game's six calendar years and the constable even has a big bonus feature himself, not to mention a comfortable lead for Worf's best CMD at the super rare level. In the two classic long term areas of value for purple crew, collections and event work, Worf is a no brainer.
+Worf is also a name of note, nipping on Jim Kirk's heels for the most Event bonuses in the history of the game. His variants have picked up a bonus in each of the game's seven calendar years and the constable even has a big bonus Feature himself, not to mention a comfortable lead for Worf's best CMD at the Super Rare level. In the two classic long term areas of value for Super Rare crew, Collections and Event work, Worf is a no-brainer.
