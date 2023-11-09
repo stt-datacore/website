@@ -27,6 +27,11 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
 
+	const excludeQuipped = () => {
+		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
+		updateExclusions([...excludedCrewIds, ...quipped]);
+	}
+
 	React.useEffect(() => {
 		let activeEvent = '';
 		events.forEach(gameEvent => {
@@ -85,7 +90,9 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								value={selectedEvent}
 								onChange={(e, { value }) => setSelectedEvent(value as string)}
 							/>
+							<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>	
 						</Form.Group>
+						
 					)}
 				</Message.Content>
 			</Message>
