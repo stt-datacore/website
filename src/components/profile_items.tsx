@@ -494,17 +494,18 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 			found = crew.filter((crew) => {
 				if (!!item.max_rarity_requirement && item.max_rarity_requirement < crew.max_rarity) return false;
+				let rr = true;
 				if (item.traits_requirement?.length) {
 					if (item.traits_requirement_operator === 'and') {
-						return (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+						rr &&= (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
 					}
 					else {
-						return (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+						rr &&= (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
 					}
 				}
 
-				if (!Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills)) return false;
-				return true;
+				rr &&= (Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills));
+				return rr;
 				
 			});					
 
