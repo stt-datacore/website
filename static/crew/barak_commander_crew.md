@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-With super rare CMD options being added at a snail’s pace, Barak’s base rank has held steady for, frankly, far too long. But you can do better with your beholds than a limited shuttle pilot…we believe in you. If/when more of Barak’s traits hit on collection and events, he could become a crew worth revisiting.
+Klingon Sarek, Barak is a CMD Base for Trait-based bonus Events and may hit a four-for-four Collection-to-Trait ratio in time, but isn’t much else. Grab him from Super Rare Beholds and enjoy the ride!
