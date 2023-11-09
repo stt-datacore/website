@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { CrewMember, EquipmentSlot } from "../../model/crew";
-import { PlayerCrew } from "../../model/player"
+import { PlayerCrew, PlayerData } from "../../model/player"
 import { GlobalContext } from '../../context/globalcontext';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { EquipmentItem } from '../../model/equipment';
@@ -19,6 +19,60 @@ export interface CrewItemsViewProps {
     mobileSize?: number;
     quipment?: boolean;
 }
+
+
+function expToDate(playerData: PlayerData, crew: PlayerCrew) {
+    if (playerData?.calc?.lastModified) {
+        let dnum = Math.floor(playerData.calc.lastModified.getTime() / 1000);
+        let result = (crew.kwipment_expiration.map((kw: number | number[], idx: number) => {
+            if (kw === 0) return undefined;
+            let n = 0;
+            if (typeof kw === 'number') {
+                n = (dnum+kw);
+            }
+            else {
+                n = (dnum+kw[1]);
+            }
+            let control = new Date(dnum * 1000);
+            let result = new Date(n * 1000);
+            return result;
+
+        })) as Date[];
+        return result;
+    }
+    return undefined;
+}
+
+function printShortDistance(d: Date) {
+    let now = new Date();
+    let n = d.getTime() - now.getTime();
+    let days = n / (24 * 60 * 60 * 1000);
+    let hours = days;
+
+    days = Math.floor(days);
+
+    hours = hours - days;
+    hours *= 24;
+
+    if (days) {
+        hours = Math.round(hours);
+        return `${days} d ${hours} h`;
+    }
+    else {
+        let min = (hours - Math.floor(hours)) * 60;
+        hours = Math.floor(hours);
+        min = Math.round(min);
+
+        if (hours >= 1) {
+            return `${hours} h ${min} m`;
+        }
+        else {
+            return `${min} m`;
+        }
+    }
+    
+}
+
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
 	const playerContext = context.player;
@@ -36,6 +90,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     let startlevel = Math.floor(crew.level / 10) * 4;
     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
     let equip = [] as EquipmentItem[];
+    let expirations: Date[] | undefined = undefined;
 
     if (!quip) {
         if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
@@ -62,6 +117,11 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     
     }
     else {
+
+        if (context.player.playerData) {
+            expirations = expToDate(context.player.playerData, crew);
+        }
+
         [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
         if (crew.kwipment?.length && !crew.kwipment_slots) {
             if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
@@ -137,6 +197,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         key={item.symbol + "_equip" + idx} 
                         mobileWidth={mobileWidth} 
                         crew={crew} 
+                        expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>&nbsp;</>) : undefined}
                         equipment={item} />
                 ))}
             </div>
@@ -147,6 +208,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
+    expiration?: string | JSX.Element;
+
     itemSize?: number;
     mobileSize?: number;
     style?: React.CSSProperties;
@@ -173,12 +236,15 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
             ...this.props.style
         }}>
+            <div style={{display:'flex', flexDirection:'column'}}>
+            {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}           
             <ItemDisplay
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
                 size={itemSize}
                 maxRarity={entry?.equipment?.rarity ?? 0}
                 rarity={entry?.equipment?.rarity ?? 0}                
-            />
+            />    
+            </div>
         </div>)
     }
 }
