@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Nondescript or inoffensive might characterize Kor's base and voyage prospects and while those descriptors are violently at odds with one of the self-proclaimed greatest warriors in Klingon history, they don't encompass the entire card.
+Nondescript or inoffensive might characterize Kor's Base and Voyage prospects and while those descriptors are violently at odds with one of the self-proclaimed greatest warriors in Klingon history, they don't encompass the entire card.
 
-Some fast activating arena crit rating is available at one star (thanks to a superfluously low attack boost) and more importantly, Kor claims a handful of collection spots with a few more in the hopper. Even if unremarkable outside of the collections tab, Kor will still be an obligatory immortalize on your road to fleshing out late-game stat boosters.
+Some fast-Activating Crit Rating is available at one star (thanks to a superfluously low Attack Boost) and more importantly, Kor claims a handful of Collection spots with a few more in the hopper. Even if unremarkable outside of the Collections tab, Kor will still be an obligatory Immortalize on your road to fleshing out late-game Stat Boosters.
