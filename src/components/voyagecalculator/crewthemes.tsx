@@ -168,6 +168,29 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			filter: (crew: IVoyageCrew) => boolean;
 		};
 
+		const topCrew = [] as string[];
+		let trips = [... new Set(globalContext.core.crew.map(c => c.ranks.voyTriplet?.name ?? ''))].filter(f => f != '');
+		let ranks = [... new Set(globalContext.core.crew.map(c => Object.keys(c.ranks).filter(key => key.startsWith("V_") || key.startsWith("B_"))).flat())];
+		for(let trip of trips) {
+			let testCrew = globalContext.core.crew.filter(f => f.ranks.voyTriplet?.name === trip);
+			if (!!testCrew.length) {
+				testCrew = testCrew.sort((a, b) => (a.ranks.voyTriplet?.rank ?? 0) - (b.ranks.voyTriplet?.rank ?? 0));
+				if (!topCrew.includes(testCrew[0].symbol)) {
+					topCrew.push(testCrew[0].symbol);
+				}
+			}
+		}
+
+		for(let rank of ranks) {
+			let testCrew = globalContext.core.crew.filter(f => rank in f.ranks);
+			if (!!testCrew.length) {
+				testCrew = testCrew.sort((a, b) => (a.ranks[rank] ?? 0) - (b.ranks[rank] ?? 0));
+				if (!topCrew.includes(testCrew[0].symbol)) {
+					topCrew.push(testCrew[0].symbol);
+				}
+			}
+		}
+
 		const customThemes = [
 			{
 				key: 'super rare',
@@ -175,6 +198,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Super Rare (4 Star) Crew',
 				keywords: ['rarity'],
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 4
+			},
+			{
+				key: 'consolation',
+				name: 'Consolation Prize',
+				description: 'Removes your best crew in each skill, pair or triplet from the roster.',
+				keywords: ['ranking'],
+				filter: (crew: IVoyageCrew) => !topCrew.includes(crew.symbol)
 			},
 			{
 				key: 'alien',
