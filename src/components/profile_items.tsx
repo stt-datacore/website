@@ -82,6 +82,7 @@ export type CrewType = 'all' | 'owned' | 'quippable'
 interface CrewKwipTrial {
 	symbol: string;
 	kwipment: number[];
+	kwipment_expiration: number[];
 }
 
 type ProfileItemsState = {
@@ -289,7 +290,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		crew = oneCrewCopy({ ... this.context.core.crew.find(f =>f.symbol === crew.symbol) as PlayerCrew, ...crew }) as PlayerCrew;
 		let trial = this.state.trials?.find(f => f.symbol === crew.symbol)
 		if (!trial) {
-			trial = { symbol: crew.symbol, kwipment: crew.kwipment.map((k: number | number[]) => typeof k === 'number' ? k : k[1]).filter(n => !!n) } as CrewKwipTrial;
+			trial = { 
+				symbol: crew.symbol, 
+				kwipment: crew.kwipment.map((k: number | number[]) => typeof k === 'number' ? k : k[1]).filter(n => !!n),
+				kwipment_expiration: crew.kwipment_expiration.map((k: number | number[]) => typeof k === 'number' ? k : k[1]).filter(n => !!n)
+			} as CrewKwipTrial;
+
 			let trials = [ ...this.state.trials ?? [] ];
 			trials.push(trial);
 			window.setTimeout(() => {
@@ -299,6 +305,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (trial) {
 			let slots = qbitsToSlots(crew?.q_bits ?? 0);
 			crew.kwipment = trial.kwipment?.slice(0, slots) ?? [];
+			crew.kwipment_expiration = trial.kwipment_expiration?.slice(0, slots) ?? [];
 			slots = 4 - crew.kwipment.length;
 			for (let i = 0; i < slots; i++) {
 				crew.kwipment.push(0);
@@ -319,7 +326,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private getTrial(crew: string, item: number) {
 		let trials = this.state.trials ?? [];
-		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [] };
+		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [], kwipment_expiration: [] };
 		if (currtrial) {
 			currtrial = { ...currtrial };
 
@@ -332,17 +339,21 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private setTrial(crew: string, item: number, state: boolean) {
 		let trials = this.state.trials ?? [];
-		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [] };
+		let currtrial = trials.find(t => t.symbol === crew) ?? { symbol: crew, kwipment: [], kwipment_expiration: [] };
 		
 		if (currtrial) {
 			currtrial = { ...currtrial };
 
 			if (currtrial.kwipment?.includes(item) && state === false) {
+				let n = currtrial.kwipment.indexOf(item);
 				currtrial.kwipment = currtrial.kwipment?.filter(f => f !== item) ?? [];
+				currtrial.kwipment_expiration = currtrial.kwipment_expiration.filter((f, idx) => idx !== n);
 			}
 			else if (!currtrial.kwipment?.includes(item) && state === true) {
 				currtrial.kwipment ??= [];
+				currtrial.kwipment_expiration ??= [];
 				currtrial.kwipment.push(item);
+				currtrial.kwipment_expiration.push(0);
 			}
 			trials = trials.filter(f => f.symbol !== crew);						
 			trials.push(currtrial);

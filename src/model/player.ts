@@ -453,6 +453,7 @@ export interface Player {
 
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];
+    //kwipment_expirations?: Date[];
     q_bits: number
 
     kwipment_slots?: EquipmentSlot[];
