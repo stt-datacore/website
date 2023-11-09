@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-This is where I’d put my good James Cromwell card…IF I HAD ONE! Shrek is a competent shuttle pilot for…*checks notes*...Yridian events, but Big Book regulars already know how fast the DIP ranks can shuffle and his power there isn’t so gargantuan as to escape the inevitable churn of power creep.
+This is where I’d put my good James Cromwell card…IF I HAD ONE! Shrek is a competent Shuttle pilot for…*checks notes*...Yridian Events, but Big Book regulars already know how fast the DIP ranks can shuffle and his power there isn’t so gargantuan as to escape the inevitable churn of Power Creep.
 
-That being his highlight, we’re therefore dismayed to see pedestrian voyage numbers from this widely-traveled merchant. Without gauntlet or arena use to bolster his daily value, Shrek may struggle to find much use on more complete rosters. At first I was worried he wouldn’t do well with an event bonus…and then I saw his base. Now I’m a believer.
+That being his highlight, we’re therefore dismayed to see pedestrian Voyage numbers from this widely-traveled merchant. Without Gauntlet or Ship use to bolster his daily value, Shrek may struggle to find much use on more complete rosters. At first I was worried he wouldn’t do well with an Event bonus…and then I saw his Base. Now I’m a believer.
