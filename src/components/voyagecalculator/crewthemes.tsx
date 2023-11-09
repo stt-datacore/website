@@ -169,11 +169,11 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		};
 
 		const topCrew = [] as string[];
-		let trips = [... new Set(globalContext.core.crew.map(c => c.ranks.voyTriplet?.name ?? ''))].filter(f => f != '');
-		let ranks = [... new Set(globalContext.core.crew.map(c => Object.keys(c.ranks).filter(key => key.startsWith("V_") || key.startsWith("B_"))).flat())];
+		let trips = [... new Set(props.rosterCrew.map(c => c.ranks.voyTriplet?.name ?? ''))].filter(f => f != '');
+		let ranks = [... new Set(props.rosterCrew.map(c => Object.keys(c.ranks).filter(key => key.startsWith("V_") || key.startsWith("B_"))).flat())];
 		for(let trip of trips) {
-			let testCrew = globalContext.core.crew.filter(f => f.ranks.voyTriplet?.name === trip);
-			if (!!testCrew.length) {
+			let testCrew = props.rosterCrew.filter(f => f.ranks.voyTriplet?.name === trip);
+			if (!!testCrew?.length) {
 				testCrew = testCrew.sort((a, b) => (a.ranks.voyTriplet?.rank ?? 0) - (b.ranks.voyTriplet?.rank ?? 0));
 				if (!topCrew.includes(testCrew[0].symbol)) {
 					topCrew.push(testCrew[0].symbol);
@@ -182,8 +182,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		}
 
 		for(let rank of ranks) {
-			let testCrew = globalContext.core.crew.filter(f => rank in f.ranks);
-			if (!!testCrew.length) {
+			let testCrew = props.rosterCrew.filter(f => rank in f.ranks);
+			if (!!testCrew?.length) {
 				testCrew = testCrew.sort((a, b) => (a.ranks[rank] ?? 0) - (b.ranks[rank] ?? 0));
 				if (!topCrew.includes(testCrew[0].symbol)) {
 					topCrew.push(testCrew[0].symbol);
