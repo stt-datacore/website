@@ -141,8 +141,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	render() {
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
-		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items) : undefined;
-		let itemCount = playerData?.player.character.items.length ?? 0;
+		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items)?.filter(i => i.type !== 14 && i.type !== 15) : undefined;
+		let itemCount = pitems?.length ?? 0;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
 		//	We should get this from playerData.player.character.item_limit, but it's not in preparedProfileData
@@ -158,7 +158,9 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Message.Header>Items approaching limit</Message.Header>
 						<p>
 							You have {itemCount} items in your inventory. At {itemLimit} the game starts randomly losing
-							items; go and replicate away some of the items suggested below.
+							items; go and replicate away some of the items suggested below.<br />
+							<br />
+							<i>(Note: Quipment, and quipment components do not count toward your limit)</i>
 						</p>
 					</Message>
 				)}
