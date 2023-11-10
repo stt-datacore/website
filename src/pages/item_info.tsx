@@ -5,7 +5,7 @@ import { Link, navigate } from 'gatsby';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
-import { Demand, PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, Demand, PlayerCrew, PlayerData } from '../model/player';
 import { IDemand } from '../utils/equipment';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
@@ -36,10 +36,10 @@ export interface EquipmentItemData {
 	builds: EquipmentItem[];
 }
 
-interface ItemInfoPageProps {};
+interface ItemInfoPageProps { };
 
 interface ItemInfoComponentProps {
-	setHeader: (value: string) => void;	
+	setHeader: (value: string) => void;
 	isReady?: boolean;
 };
 
@@ -51,7 +51,7 @@ interface ItemInfoComponentState {
 };
 
 const ItemInfoPage = () => {
-	
+
 	const isReady = true;
 	const [header, setHeader] = React.useState<string | undefined>('');
 
@@ -68,7 +68,7 @@ const ItemInfoPage = () => {
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
-	
+
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('item_info');
 
@@ -87,6 +87,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 	private setOwned = (owned: boolean) => {
 		this.tiny.setValue('owned', owned, true);
+		this.inited = false;
 		this.setState({ ...this.state, owned });
 	}
 
@@ -99,9 +100,9 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	componentDidMount() {
 		this.initData();
 	}
-	
+
 	private changeComponent(symbol: string) {
-		navigate("/item_info?symbol="+symbol, { replace: false });
+		navigate("/item_info?symbol=" + symbol, { replace: false });
 		this.inited = false;
 		this.initData(symbol);
 	}
@@ -113,10 +114,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (!symbol && urlParams.has('symbol')) {
 			item_symbol = urlParams.get('symbol') ?? undefined;
 		}
-		if (item_symbol){
-			let item = items?.find(entry => entry.symbol === item_symbol);
+		if (item_symbol) {
+			const item = items?.find(entry => entry.symbol === item_symbol);
 
-			let crew_levels = [] as { crew: PlayerCrew, level: number }[];
+			const crew_levels = [] as { crew: PlayerCrew, level: number }[];
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
@@ -135,7 +136,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						}
 
 						crew_levels.push({
-							crew: JSON.parse(JSON.stringify(crew)),
+							crew: { ...JSON.parse(JSON.stringify(crew)), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
 							level: es.level
 						});
 					}
@@ -143,7 +144,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			});
 
 			// Find other items' whose recipes use this one
-			let builds = [] as EquipmentItem[];
+			const builds = [] as EquipmentItem[];
 
 			items?.forEach(it => {
 				if (it.recipe && it.recipe.list && it.recipe.list.find(entry => entry.symbol === item_symbol)) {
@@ -155,22 +156,64 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
 				this.inited = true;
 			} else {
-				this.setState({ item_data: { item, crew_levels, builds } });
+
+
+				if (item.kwipment) {
+					const bonus = getItemBonuses(item);
+					const kwipment_levels = this.context.core.crew.filter(f => {
+						if (this.state.owned && this.context.player.playerData) {
+							if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
+						}
+						let mrq = item.max_rarity_requirement ?? f.max_rarity;
+						let rr = mrq >= f.max_rarity;
+
+						if (!!item.traits_requirement?.length) {
+							if (item.traits_requirement_operator === "and") {
+								rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+							}
+							else {
+								rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+							}
+						}
+
+						rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
+
+						return rr;
+					}).map(crew => {
+						if (this.context.player.playerData) {
+							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+							if (owned) {
+								return {
+									crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+									level: 100
+								}
+							}
+						}
+
+						return {
+							crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
+							level: 100
+						}
+					});
+					this.setState({ item_data: { item, crew_levels: kwipment_levels, builds } });
+				}
+				else {
+					this.setState({ item_data: { item, crew_levels, builds } });
+				}
 				this.props.setHeader(item.name);
 				this.inited = true;
-			}				
+			}
 		}
-
 	}
 
 	private makeCrewFlavors = (crew_levels: CrewLevel[]) => {
-		
+
 		let crews = {} as { [key: string]: number[] };
 		for (let cl of crew_levels) {
 			crews[cl.crew.symbol] ??= [];
 			crews[cl.crew.symbol].push(cl.level);
 		}
-		
+
 		let outCrew = Object.keys(crews).map((symbol) => {
 			let crew: IRosterCrew | undefined = undefined;
 			crew = crew_levels.find(f => f.crew.symbol === symbol)?.crew;
@@ -180,7 +223,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					crew.data = "Post-immortalization advancement";
 				}
 				else {
-					crew.data = crews[symbol].join(", ");				
+					crew.data = crews[symbol].join(", ");
 				}
 			}
 			return crew;
@@ -206,7 +249,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const { items } = this.context.core;
 
 		const crewTableCells = [
-			{ width: 2, column: 'data', title: 'Item Demand Levels'}
+			{ width: 2, column: 'data', title: 'Item Demand Levels' }
 		]
 
 		if (item_data === undefined || errorMessage !== undefined) {
@@ -249,96 +292,58 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				}
 			}
 		}
-		
+
 		const haveCount = this.haveCount(item_data.item.symbol);
 		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
 		const builds = item_data.builds;
-
-		if (item_data.item.kwipment) {
-			const bonus = getItemBonuses(item_data.item);
-			item_data.crew_levels = this.context.core.crew.filter(f => {
-				if (this.state.owned && this.context.player.playerData) {
-					if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
-				}
-				let mrq = item_data.item.max_rarity_requirement ?? f.max_rarity;
-				let rr = mrq >= f.max_rarity;
-
-				if (!!item_data.item.traits_requirement?.length) {
-					if (item_data.item.traits_requirement_operator === "and") {
-						rr &&= item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
-					}
-					else {
-						rr &&= item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
-					}
-				}
-				
-				rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
-
-				return rr;
-			}).map(crew => {				
-				if (this.context.player.playerData) {
-					let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-					if (owned) {
-						return {
-							crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
-							level: 100
-						}
-					}
-				}
-				
-				return {
-					crew: { ...crew } as PlayerCrew,
-					level: 100
-				}
-			});
-		}
 
 		const ltMarginSmall = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.375em";
 		const ltMargin = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.75em";
 		const ltMarginBig = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "1em";
 
 		return (
-				<div>
+			<div>
 
-					<CrewHoverStat targetGroup='item_info' />
-					<ShipHoverStat targetGroup='item_info_ships' />
-					<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
+				<CrewHoverStat targetGroup='item_info' />
+				<ShipHoverStat targetGroup='item_info_ships' />
+				<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
 
+				<div style={{
+					paddingTop: "2em",
+					marginBottom: "1em",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+				}}>
+					<ItemDisplay
+						targetGroup='item_info_items'
+						playerData={playerData}
+						allItems={items}
+						itemSymbol={item_data.item.symbol}
+						style={{
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
+						}}
+						src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`}
+						size={128}
+						rarity={item_data?.item.rarity ?? 0}
+						maxRarity={item_data?.item.rarity ?? 0}
+					/>
 					<div style={{
-						paddingTop:"2em",
-						marginBottom: "1em",
-						display:"flex",
-						alignItems:"center",
-						justifyContent:"center",
-						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "space-evenly",
+						alignItems: "left"
 					}}>
-						<ItemDisplay
-							targetGroup='item_info_items'
-							playerData={playerData}
-							allItems={items}
-							itemSymbol={item_data.item.symbol}
-							style={{
-								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
-							}}
-							src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`}
-							size={128}
-							rarity={item_data?.item.rarity ?? 0}
-							maxRarity={item_data?.item.rarity ?? 0}
-							/>
-						<div style={{display:"flex",
-							flexDirection: "column",
-							justifyContent: "space-evenly",
-							alignItems: "left"
-							}}>
-							<Header style={{
-								margin: 0, 
-								marginLeft: ltMarginSmall,
-								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
-								}} as="h2">{item_data.item.name}</Header>
-							{item_data?.item.flavor && <div style={{textAlign: 'left', marginLeft: ltMargin, fontStyle: "italic", width:"100%"}}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
-							<div style={{marginLeft:ltMargin}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
-							{!!haveCount && <div style={{margin: 0, marginLeft: ltMarginBig, color:"lightgreen"}}>OWNED ({haveCount})</div>}
-							{!!item_data.item.duration && 
+						<Header style={{
+							margin: 0,
+							marginLeft: ltMarginSmall,
+							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
+						}} as="h2">{item_data.item.name}</Header>
+						{item_data?.item.flavor && <div style={{ textAlign: 'left', marginLeft: ltMargin, fontStyle: "italic", width: "100%" }}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
+						<div style={{ marginLeft: ltMargin }}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
+						{!!haveCount && <div style={{ margin: 0, marginLeft: ltMarginBig, color: "lightgreen" }}>OWNED ({haveCount})</div>}
+						{!!item_data.item.duration &&
 							<div
 								style={{
 									textAlign: "left",
@@ -348,68 +353,68 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									marginBottom: "4px",
 									marginLeft: ltMargin
 								}}
-								>
+							>
 								<div><b>Duration:</b>&nbsp;
-								<i>{formatDuration(item_data.item.duration)}</i></div>
+									<i>{formatDuration(item_data.item.duration)}</i></div>
 							</div>}
-							{!!item_data.item.max_rarity_requirement && 
-								<div style={{
+						{!!item_data.item.max_rarity_requirement &&
+							<div style={{
+								textAlign: "left",
+								//fontStyle: "italic",
+								fontSize: "1em",
+								marginTop: "2px",
+								marginBottom: "4px",
+								marginLeft: ltMargin
+							}}>
+								Equippable by up to&nbsp;<span style={{
+									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+									{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew.
+							</div>}
+						{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
+							<div
+								style={{
 									textAlign: "left",
 									//fontStyle: "italic",
 									fontSize: "1em",
 									marginTop: "2px",
 									marginBottom: "4px",
 									marginLeft: ltMargin
-								}}>
-								Equippable by up to&nbsp;<span style={{
-									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
-									fontWeight: 'bold'
-								}}>
-								{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
-								</span>
-								&nbsp;crew.
-							</div>}
-							{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
-								<div
-									style={{
-										textAlign: "left",
-										//fontStyle: "italic",
-										fontSize: "1em",
-										marginTop: "2px",
-										marginBottom: "4px",
-										marginLeft: ltMargin
-									}}
-									>
-									<div><b>Required Traits:</b>&nbsp;
+								}}
+							>
+								<div><b>Required Traits:</b>&nbsp;
 									<i>
-                                        {printRequiredTraits(item_data.item)}
-                                    </i></div>
-								</div>}
-						</div>
-					
+										{printRequiredTraits(item_data.item)}
+									</i></div>
+							</div>}
 					</div>
 
+				</div>
+
 				{item_data.item.type === 8 && !!ship &&
-					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
 							<Link to={`/ship_info?ship=${ship.symbol}`}>
-								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
-								<ItemDisplay 
-									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-									size={128}
-									rarity={ship.rarity}
-									maxRarity={ship.rarity}
+								<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
+									<ItemDisplay
+										src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+										size={128}
+										rarity={ship.rarity}
+										maxRarity={ship.rarity}
 									/>
 									{ship.name}
 								</div>
 							</Link>
 						</ShipTarget>
-						
+
 					</div>}
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
-						<Header as="h3">Craft it for <img title={"Chronotons"} style={{width: "1.5em", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
+						<Header as="h3">Craft it for <img title={"Chronotons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
 						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
@@ -424,7 +429,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 														itemSymbol={entry.equipment.symbol}
 														allItems={this.context.core.items}
 														targetGroup='item_info_items'
-														style={{ marginRight: "0.5em"}}
+														style={{ marginRight: "0.5em" }}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 														size={48}
 														maxRarity={entry.equipment.rarity}
@@ -436,7 +441,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 											/>
 										}
 										header={
-											<a style={{cursor: "pointer"}} onClick={(e) => this.changeComponent(entry.symbol)}>
+											<a style={{ cursor: "pointer" }} onClick={(e) => this.changeComponent(entry.symbol)}>
 												{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
 											</a>
 										}
@@ -445,7 +450,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 										wide
 									/>
 								</Grid.Column>
-								})}
+							})}
 						</Grid>
 						<br />
 
@@ -463,19 +468,19 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.crew_levels.length > 0 && (
 					<div>
 						<Header as="h3">Equippable by this crew:</Header>
-						{!!this.context.player.playerData && 
-						<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-							<Checkbox id="item_info_owned_check_boolean" checked={this.state.owned} onChange={(e, { checked }) => this.setOwned(checked || false)} />
-							<label htmlFor="item_info_owned_check_boolean" style={{margin:"0.5em", cursor: "pointer"}}>Show only owned crew</label>
-						</div>}
+						{!!this.context.player.playerData &&
+							<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: "0.5em" }}>
+								<Checkbox id="item_info_owned_check_boolean" checked={this.state.owned} onChange={(e, { checked }) => this.setOwned(checked || false)} />
+								<label htmlFor="item_info_owned_check_boolean" style={{ margin: "0.5em", cursor: "pointer" }}>Show only owned crew</label>
+							</div>}
 						<CrewConfigTable
 							tableConfig={crewTableCells}
 							renderTableCells={this.renderTableCells}
-							crewFilters={[]} 
-							pageId='item_info' 
-							rosterCrew={this.makeCrewFlavors(item_data.crew_levels)} 
-							rosterType='allCrew' 
-							/>						
+							crewFilters={[]}
+							pageId='item_info'							
+							rosterCrew={this.makeCrewFlavors(item_data.crew_levels)}
+							rosterType='allCrew'
+						/>
 						<br />
 					</div>
 				)}
@@ -486,7 +491,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 					</div>
 				)}
-				</div>
+			</div>
 		);
 	}
 }
