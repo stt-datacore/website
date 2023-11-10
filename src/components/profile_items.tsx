@@ -171,7 +171,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const crewChoices = [] as DropdownItemProps[];
 		const { crew } = this.context.core;
 		const { playerData } = this.context.player;
-		const { crewType } = this.state;
+		const { crewType, skills, traits } = this.state;
 
 		if (this.props?.crewMode && crew?.length) {
 			[ ...crew ].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
@@ -185,6 +185,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					if (crewType === 'quippable') {
 						if (!found.q_bits || found.q_bits < 100) return;
 					}
+				}
+
+				if (skills?.length) {
+					if (!skills.some(skill => skill in c.base_skills)) return;
+				}
+
+				if (traits?.length) {
+					if (!traits.some(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait))) return;
 				}
 
 				crewChoices.push(
