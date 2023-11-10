@@ -187,8 +187,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					}
 				}
 
-				if (skills?.length) {
-					if (!skills.some(skill => skill in c.base_skills)) return;
+				if (skills?.length) {					
+					if (!skills.some(skill => (rankToSkill(skill?.toUpperCase()) ?? '') in c.base_skills)) return;
 				}
 
 				if (traits?.length) {
