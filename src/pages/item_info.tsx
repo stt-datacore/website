@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
+import { Header, Message, Icon, Rating, Image, Popup, Grid, Table, Checkbox, Label } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemSources from '../components/itemsources';
@@ -23,11 +23,16 @@ import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
 import { formatDuration, getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
+import { RosterTable } from '../components/crewtables/rostertable';
+import { IRosterCrew } from '../components/crewtables/model';
+import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
+import { TinyStore } from '../utils/tiny';
 
+export interface CrewLevel { crew: PlayerCrew, level: number };
 
 export interface EquipmentItemData {
 	item: EquipmentItem;
-	crew_levels: { crew: PlayerCrew, level: number }[];
+	crew_levels: CrewLevel[];
 	builds: EquipmentItem[];
 }
 
@@ -42,6 +47,7 @@ interface ItemInfoComponentState {
 	item_data?: EquipmentItemData;
 	errorMessage?: string;
 	items?: EquipmentItem[];
+	owned?: boolean;
 };
 
 const ItemInfoPage = () => {
@@ -64,6 +70,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	context!: React.ContextType<typeof GlobalContext>;
 	
 	private inited: boolean = false;
+	private readonly tiny = TinyStore.getStore('item_info');
 
 	constructor(props: ItemInfoComponentProps) {
 		super(props);
@@ -73,9 +80,16 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		});
 		this.state = {
 			errorMessage: undefined,
-			item_data: undefined
+			item_data: undefined,
+			owned: this.tiny.getValue<boolean>('owned') ?? false
 		};
 	}
+
+	private setOwned = (owned: boolean) => {
+		this.tiny.setValue('owned', owned, true);
+		this.setState({ ...this.state, owned });
+	}
+
 	componentDidUpdate() {
 		if (!this.inited) {
 			this.initData();
@@ -108,18 +122,22 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					if (es.symbol === item_symbol) {
 						if (this.context.player.playerData) {
 							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-				
-							crew_levels.push({
-								crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
-								level: es.level
-							});
+							if (owned) {
+								crew_levels.push({
+									crew: { ...JSON.parse(JSON.stringify(crew)), ...owned, rarity: owned?.rarity ?? 0 },
+									level: es.level
+								});
+								return;
+							}
+							else {
+								if (this.state.owned) return;
+							}
 						}
-						else {
-							crew_levels.push({
-								crew: { ...crew as PlayerCrew },
-								level: es.level
-							});
-						}
+
+						crew_levels.push({
+							crew: JSON.parse(JSON.stringify(crew)),
+							level: es.level
+						});
 					}
 				});
 			});
@@ -144,16 +162,52 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		}
 
 	}
-	
+
+	private makeCrewFlavors = (crew_levels: CrewLevel[]) => {
+		
+		let crews = {} as { [key: string]: number[] };
+		for (let cl of crew_levels) {
+			crews[cl.crew.symbol] ??= [];
+			crews[cl.crew.symbol].push(cl.level);
+		}
+		
+		let outCrew = Object.keys(crews).map((symbol) => {
+			let crew: IRosterCrew | undefined = undefined;
+			crew = crew_levels.find(f => f.crew.symbol === symbol)?.crew;
+			if (crew) {
+				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+				if (this.state.item_data?.item?.kwipment) {
+					crew.data = "Post-immortalization advancement";
+				}
+				else {
+					crew.data = crews[symbol].join(", ");				
+				}
+			}
+			return crew;
+		});
+
+		return (outCrew?.filter(c => !!c) ?? []) as IRosterCrew[];
+	}
+
 	private haveCount(symbol: string) {
 		const { playerData } = this.context.player;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
+	}
+
+	renderTableCells = (row: IRosterCrew): JSX.Element => {
+		return <Table.Cell>
+			{row.data}
+		</Table.Cell>
 	}
 
 	render() {
 		const { errorMessage, item_data } = this.state;
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
+
+		const crewTableCells = [
+			{ width: 2, column: 'data', title: 'Item Demand Levels'}
+		]
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
@@ -201,11 +255,15 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const builds = item_data.builds;
 
 		if (item_data.item.kwipment) {
+			const bonus = getItemBonuses(item_data.item);
 			item_data.crew_levels = this.context.core.crew.filter(f => {
+				if (this.state.owned && this.context.player.playerData) {
+					if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
+				}
 				let mrq = item_data.item.max_rarity_requirement ?? f.max_rarity;
 				let rr = mrq >= f.max_rarity;
 
-				if (item_data.item.traits_requirement) {
+				if (!!item_data.item.traits_requirement?.length) {
 					if (item_data.item.traits_requirement_operator === "and") {
 						rr &&= item_data.item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
@@ -213,26 +271,26 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						rr &&= item_data.item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 				}
-
-				let bonus = getItemBonuses(item_data.item);
+				
 				rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
 
 				return rr;
-			}).map(crew => {
+			}).map(crew => {				
 				if (this.context.player.playerData) {
 					let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-					return {
-						crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
-						level: 100
+					if (owned) {
+						return {
+							crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+							level: 100
+						}
 					}
 				}
-				else {
-					return {
-						crew: crew as PlayerCrew,
-						level: 100
-					}
+				
+				return {
+					crew: { ...crew } as PlayerCrew,
+					level: 100
 				}
-			})
+			});
 		}
 
 		const ltMarginSmall = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.375em";
@@ -405,31 +463,19 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.crew_levels.length > 0 && (
 					<div>
 						<Header as="h3">Equippable by this crew:</Header>
-						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3}  padded>
-							{item_data.crew_levels.map((entry, idx) => (
-								<Grid.Column key={idx}>
-									<Header
-										style={{ display: 'flex' }}
-										icon={
-											<div style={{marginRight:"0.5em"}}>
-											<ItemDisplay
-												targetGroup='item_info'
-												allCrew={this.context.core.crew}
-												playerData={this.context.player.playerData}						
-												itemSymbol={entry.crew.symbol}											
-												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
-												size={60}
-												maxRarity={entry.crew.max_rarity}
-												rarity={entry.crew.rarity ?? entry.crew.max_rarity ?? 0}
-											/>
-											</div>
-										}
-										content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
-										subheader={!!item_data.item.kwipment ? 'Post Immortalization' : `Level ${entry.level}`}
-									/>
-								</Grid.Column>
-							))}
-						</Grid>
+						{!!this.context.player.playerData && 
+						<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+							<Checkbox id="item_info_owned_check_boolean" checked={this.state.owned} onChange={(e, { checked }) => this.setOwned(checked || false)} />
+							<label htmlFor="item_info_owned_check_boolean" style={{margin:"0.5em", cursor: "pointer"}}>Show only owned crew</label>
+						</div>}
+						<CrewConfigTable
+							tableConfig={crewTableCells}
+							renderTableCells={this.renderTableCells}
+							crewFilters={[]} 
+							pageId='item_info' 
+							rosterCrew={this.makeCrewFlavors(item_data.crew_levels)} 
+							rosterType='allCrew' 
+							/>						
 						<br />
 					</div>
 				)}
@@ -438,30 +484,6 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					<div>
 						<Header as="h3">Is used to build these:</Header>
 						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
-						{/* <Grid columns={3} padded>
-							{item_data.builds.map((entry, idx) => (
-								<Grid.Column key={idx}>
-									<Header
-										style={{ display: 'flex', cursor: 'zoom-in' }}
-										icon={
-											<div style={{marginRight:"0.5em"}}>
-											<ItemDisplay
-												src={`${process.env.GATSBY_ASSETS_URL}${entry.imageUrl}`}
-												size={48}
-												maxRarity={entry.rarity}
-												rarity={entry.rarity}
-											/>
-											</div>
-										}
-										content={
-											<a onClick={(e) => this.changeComponent(entry.symbol)}>
-												{CONFIG.RARITIES[entry.rarity].name + ' ' + entry.name}
-											</a>
-										}
-									/>
-								</Grid.Column>
-							))}
-						</Grid> */}
 					</div>
 				)}
 				</div>

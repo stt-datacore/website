@@ -490,21 +490,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (item.kwipment && (item.traits_requirement?.length || item.max_rarity_requirement)) {
 			let found: CrewMember[] | null = null;
 			
-			let bonus = getItemBonuses(item as EquipmentItem);
+			const bonus = getItemBonuses(item as EquipmentItem);
 
-			found = crew.filter((crew) => {
-				if (!!item.max_rarity_requirement && item.max_rarity_requirement < crew.max_rarity) return false;
-				let rr = true;
-				if (item.traits_requirement?.length) {
-					if (item.traits_requirement_operator === 'and') {
-						rr &&= (item.traits_requirement?.every((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+			found = crew.filter((f) => {
+				let mrq = item.max_rarity_requirement ?? f.max_rarity;
+				let rr = mrq >= f.max_rarity;
+
+				if (item.traits_requirement) {
+					if (item.traits_requirement_operator === "and") {
+						rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 					else {
-						rr &&= (item.traits_requirement?.some((t) => crew.traits.includes(t) || crew.traits_hidden.includes(t)));
+						rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 				}
+				rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
 
-				rr &&= (Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills));
 				return rr;
 				
 			});					
