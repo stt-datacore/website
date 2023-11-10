@@ -598,7 +598,10 @@ export interface Player {
     medicine_skill?: ComputedBuff;
     /** Used for exports and internally. Not part of source data.  */
     engineering_skill?: ComputedBuff;
+
+    data: any;
   }
+
   export interface GauntletPairScore {
     score: number;
     pair: Skill[];
