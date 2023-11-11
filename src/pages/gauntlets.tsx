@@ -961,12 +961,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					avgidx[pgcrew.symbol] ??= 0;
 
 					if (pg.pair.some(p => rankToSkill(p) === fsk) && pc === 0) {
-						incidence[pgcrew.symbol] += 1.25;
-						avgidx[pgcrew.symbol] += (idx * 0.75);
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightPrimary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightPrimary);
 					}
 					else if (pg.pair.some(p =>  rankToSkill(p) === fsk) && pc === 1) {
-						incidence[pgcrew.symbol] += 1.1;
-						avgidx[pgcrew.symbol] += (idx * 0.9);
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightSecondary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightSecondary);
+					}
+					else if (pg.pair.some(p =>  rankToSkill(p) === fsk) && pc === 2) {
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightTertiary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightTertiary);
 					}
 					else {
 						incidence[pgcrew.symbol]++;

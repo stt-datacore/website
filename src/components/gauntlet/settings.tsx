@@ -10,6 +10,12 @@ export interface InternalSettings {
     crit65: number | string;
     minWeight: number | string;
     maxWeight: number | string;
+    linearSkillIncidenceWeightPrimary: number | string;
+    linearSkillIndexWeightPrimary: number | string;
+    linearSkillIncidenceWeightSecondary: number | string;
+    linearSkillIndexWeightSecondary: number | string;
+    linearSkillIncidenceWeightTertiary: number | string;
+    linearSkillIndexWeightTertiary: number | string;
 }
 
 export interface GauntletSettings extends InternalSettings {    
@@ -19,6 +25,12 @@ export interface GauntletSettings extends InternalSettings {
     crit65: number;
     minWeight: number;
     maxWeight: number;
+    linearSkillIncidenceWeightPrimary: number;
+    linearSkillIndexWeightPrimary: number;
+    linearSkillIncidenceWeightSecondary: number;
+    linearSkillIndexWeightSecondary: number;
+    linearSkillIncidenceWeightTertiary: number;
+    linearSkillIndexWeightTertiary: number;
 }
 
 export interface GauntletSettingsConfig {
@@ -45,7 +57,13 @@ export const defaultSettings = {
 	crit45,
 	crit65,
 	minWeight: 1,
-	maxWeight: 1
+	maxWeight: 1,
+    linearSkillIncidenceWeightPrimary: 1.25,
+    linearSkillIndexWeightPrimary: 0.75,
+    linearSkillIncidenceWeightSecondary: 1.1,
+    linearSkillIndexWeightSecondary: 0.9,
+    linearSkillIncidenceWeightTertiary: 1.05,
+    linearSkillIndexWeightTertiary: 0.95,
 } as GauntletSettings;
 
 const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsProps) => {
@@ -206,6 +224,63 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
                     onChange={(e, { value }) => setCurrent({ ... innerSettings, maxWeight: value })}>
                 </Input>                        
                 </div>
+                <div style={rowStyle}>
+                <div style={textStyle}>Primary Linear Skill Incidence Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIncidenceWeightPrimary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIncidenceWeightPrimary: value })}>
+                </Input>                        
+                </div>
+                <div style={rowStyle}>
+                <div style={textStyle}>Primary Linear Skill Index Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIndexWeightPrimary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIndexWeightPrimary: value })}>
+                </Input>                        
+                </div>
+
+                <div style={rowStyle}>
+                <div style={textStyle}>Secondary Linear Skill Incidence Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIncidenceWeightSecondary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIncidenceWeightSecondary: value })}>
+                </Input>                        
+                </div>
+                <div style={rowStyle}>
+                <div style={textStyle}>Secondary Linear Skill Index Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIndexWeightSecondary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIndexWeightSecondary: value })}>
+                </Input>                        
+                </div>
+
+                <div style={rowStyle}>
+                <div style={textStyle}>Tertiary Linear Skill Incidence Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIncidenceWeightTertiary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIncidenceWeightTertiary: value })}>
+                </Input>                        
+                </div>
+                <div style={rowStyle}>
+                <div style={textStyle}>Tertiary Linear Skill Index Weight:</div>
+                <Input
+                    style={inputStyle}
+                    placeholder="Value"
+                    value={innerSettings.linearSkillIndexWeightTertiary}
+                    onChange={(e, { value }) => setCurrent({ ... innerSettings, linearSkillIndexWeightTertiary: value })}>
+                </Input>                        
+                </div>
+
 
             </div>
     }
@@ -246,6 +321,12 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
             crit25: Number.parseFloat(innerSettings.crit25.toString()),
             crit45: Number.parseFloat(innerSettings.crit45.toString()),
             crit65: Number.parseFloat(innerSettings.crit65.toString()),
+            linearSkillIncidenceWeightPrimary: Number.parseFloat(innerSettings.linearSkillIncidenceWeightPrimary.toString()),
+            linearSkillIndexWeightPrimary: Number.parseFloat(innerSettings.linearSkillIndexWeightPrimary.toString()),
+            linearSkillIncidenceWeightSecondary: Number.parseFloat(innerSettings.linearSkillIncidenceWeightSecondary.toString()),
+            linearSkillIndexWeightSecondary: Number.parseFloat(innerSettings.linearSkillIndexWeightSecondary.toString()),
+            linearSkillIncidenceWeightTertiary: Number.parseFloat(innerSettings.linearSkillIncidenceWeightTertiary.toString()),
+            linearSkillIndexWeightTertiary: Number.parseFloat(innerSettings.linearSkillIndexWeightTertiary.toString()),
         });
         setModalIsOpen(false);
 	}
