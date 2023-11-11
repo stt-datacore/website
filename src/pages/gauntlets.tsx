@@ -951,19 +951,30 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		
 			const incidence = {} as { [key: string]: number };
 			const avgidx = {} as { [key: string]: number };
-	
+			const fsk = gauntlet.contest_data?.featured_skill;
+			let pc = 0;
 			for(let pg of pgs) {
 				let idx = 1;
 				
 				for (let pgcrew of pg.crew) {
 					incidence[pgcrew.symbol] ??= 0;				
-					incidence[pgcrew.symbol]++;
-
 					avgidx[pgcrew.symbol] ??= 0;
-					avgidx[pgcrew.symbol] += idx;
 
+					if (pg.pair.some(p => rankToSkill(p) === fsk) && pc === 0) {
+						incidence[pgcrew.symbol] += 1.25;
+						avgidx[pgcrew.symbol] += (idx * 0.75);
+					}
+					else if (pg.pair.some(p =>  rankToSkill(p) === fsk) && pc === 1) {
+						incidence[pgcrew.symbol] += 1.1;
+						avgidx[pgcrew.symbol] += (idx * 0.9);
+					}
+					else {
+						incidence[pgcrew.symbol]++;
+						avgidx[pgcrew.symbol] += idx;	
+					}
 					idx++;
 				}
+				pc++;
 			}
 			
 			Object.keys(avgidx).forEach(key => {
