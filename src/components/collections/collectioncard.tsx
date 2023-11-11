@@ -23,8 +23,6 @@ export const CollectionCard = (props: CollectionCardProps) => {
     const context = React.useContext(GlobalContext);
     const { style, ownedCites } = props;
 
-    const honorQ = ownedCites?.map(o => o.cost).reduce((p, n) => p + n, 0) ?? 0;
-    
     const {
         collection: col,
         mapFilter,
@@ -35,7 +33,18 @@ export const CollectionCard = (props: CollectionCardProps) => {
     
     const { collection } = col;
 
+    const honorQ = ownedCites?.map(o => {
+        
+        for (let i = 0; i < (col?.collection?.needed ?? 0); i++) {
+            if (col.collection.crew && o.rarity === col.crew?.find(f => f.symbol === ((col?.collection?.crew as string[])[i]))?.max_rarity) {
+                return o.cost;
+            }
+        }
+        
+        return 0;
+    }).reduce((p, n) => p + n, 0) ?? 0;
     const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
+
     const allStars = !col.neededStars;
 
     if (!collection?.totalRewards || !collection.milestone) return <></>;
