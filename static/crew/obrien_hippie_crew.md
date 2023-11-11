@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Miles looks like he’s about to ask if “You rang?”, but at least his numbers flatter him much more than his art. A plug-n-play daily option for voyages and shuttles, 420BlazeIt O’Brien also has the charm that makes elderly players swoon; quad collections and bases worth thawing for events. He’s not a particularly elite option in any one area, but top shelf in several and worth your behold capital.
+Miles looks like he’s about to ask if “You rang?”, but at least his numbers flatter him much more than his art. Still viable for Voyages and Shuttles, 420BlazeIt O’Brien also has the charm that makes elderly players swoon; quad Collections and Bases worth thawing for events. He’s not a particularly elite option in any one area, but top shelf in several and worth a Super Rare Behold choice.
