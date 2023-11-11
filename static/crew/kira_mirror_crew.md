@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-As her art might hint at, there's far more to this Kira than meets the eye. A jewel back in 2017, the Intendant's numbers no longer flatter her, but plus versatility (gauntlet, events, collections) help make her a nice chess piece to have, even if she needs more stars to tap that potential than the average legendary.
+As her art might hint at, there's far more to this Kira than meets the eye. A jewel back in 2017, the Intendant's numbers no longer flatter her, but plus versatility (Gauntlet, Events, Collections) help make her a nice chess piece to have, even if she needs more stars to tap that potential than the average Legendary.
 
-A handful of juicy traits pair with a rock solid Kira event history to produce a persuasive argument to make her one of the golds you immortalize for any of her handful of collections, even if we'd rather do that through beholds than citations. Players fresh out of the Academy might also appreciate a quartet of 45% crit gauntlets to help elevate otherwise middling proficiencies.
+A handful of juicy Traits pair with a rock solid Kira Event history to produce a persuasive argument to make her one of the Legendary crew you Immortalize for any of her handful of Collections, even if we'd rather do that through Beholds or Crew Retrieval than Citations. Players fresh out of the Academy might also appreciate a quartet of 45% Crit Gauntlets to help elevate otherwise middling Proficiencies.

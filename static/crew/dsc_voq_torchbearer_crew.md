@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Voq’s smattering of trait and Tyler events (whoa, spoilers) have helped him weather the post-Disco lull and gives his thawable base(s) the chance to stretch their legs out of cryo from time to time. If you’re new enough that your purples still remain in daily service, you’ll be happy to welcome aboard his triggerless ship damage and gauntlet potential which hinges almost entirely on his high number of big crit gauntlets rather than his mediocre proficiencies.
+Voq’s smattering of Trait and Tyler Events (whoa, spoilers) have helped him weather the post-Discovery Mega Event lull and gives his thawable Base(s) the chance to stretch their legs out of Cryostatsis from time to time. If you’re new enough that your Super Rares still remain in daily service, you’ll be happy to welcome aboard his Instant Damage on Ships and Gauntlet potential which hinges almost entirely on his high number of big Crit Gauntlets rather than his mediocre Proficiencies.
 
-With a sturdy voyage score and trio of collections, there are plenty of reasons for new players to be happy at seeing Voq in a behold and few reasons for long-time players too.
+With a still-sturdy Voyage score and quartet of Collections, there are plenty of reasons for new players to be happy at seeing Voq in a Behold and few reasons for long-time players too.
