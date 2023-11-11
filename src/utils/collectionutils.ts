@@ -71,7 +71,8 @@ export const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_ci
 
 export interface CiteInventory { 
     quantity: number, 
-    cost: number 
+    cost: number,
+    rarity: number;
 }
 
 export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew, combo?: string, inventory?: CiteInventory[]) => {
@@ -105,12 +106,12 @@ export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew
 
 export const getOwnedCites = (items: BuffBase[], sale?: boolean) => {
     const ownedCites = [
-        { quantity: 0, cost: 0 },
-        { quantity: 0, cost: 0 },
-        { quantity: 0, cost: 500 },
-        { quantity: 0, cost: 4500 },
-        { quantity: 0, cost: 18000 },
-        { quantity: 0, cost: !!sale ? 40000 : 50000 }                
+        { quantity: 0, cost: 0, rarity: 0 },
+        { quantity: 0, cost: 0, rarity: 1 },
+        { quantity: 0, cost: 500, rarity: 2 },
+        { quantity: 0, cost: 4500, rarity: 3 },
+        { quantity: 0, cost: 18000, rarity: 4 },
+        { quantity: 0, cost: !!sale ? 40000 : 50000, rarity: 5 }                
     ] as CiteInventory[];
 
     items.forEach((item) => {

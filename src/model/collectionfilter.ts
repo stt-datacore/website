@@ -37,6 +37,7 @@ export interface CollectionGroup {
 	uniqueCost?: number;
 	combos?: ColComboMap[];
     comboCost?: number[];
+	crew: PlayerCrew[];
 }
 
 
