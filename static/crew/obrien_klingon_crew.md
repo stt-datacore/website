@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Formerly worth using in most areas, time has worn down O’Brien’s sharp edges to a dull nub. His remaining value stems from traits which produce his lone bright spot; collection value. Above average there and with some room to grow, O’Brien is an obligatory pickup for late game players, if nothing else.
+Formerly worth using in most areas, time has worn down O’Brien’s sharp edges to a dull nub. His remaining value stems from Traits which produce his lone bright spot; Collection value. Above average there and with some room to grow, O’Brien is an obligatory pickup for late game players, if nothing else.
 
-Although his base ranks reside in the basement, his traits have underperformed for weekend bonuses relative to what one might expect. Don’t be surprised if he rips off a few consecutive megas at any point.
+Although his Base ranks reside in the basement, his Traits have underperformed for weekend bonuses relative to what one might expect. Don’t be surprised if he rips off a streak of Trait-based bonus Events.

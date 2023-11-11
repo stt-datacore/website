@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Rocket fueled by eight (!!!) previous megas, Tyler has accrued an unbelievable event tally. With a healthy number of viable traits, his collection and event opportunities should hold strong for some time. Beyond the clumps of Tyler/trait events, he’s also one of only a few crew to offer the Pilot/SEC node unlock, even if that’s the only thing you use him for before his trip to cryostasis.
+Rocket fueled by nearly two handfuls of previous Mega Events, Tyler has accrued an unbelievable Event tally. With a healthy number of viable Traits, his Collection and Event opportunities should hold strong for some time. Beyond the clumps of Tyler/Trait events, he’s also one of only a few crew to offer the Pilot/SEC Node unlock, even if that’s the only thing you use him for before his trip to Cryostasis.
