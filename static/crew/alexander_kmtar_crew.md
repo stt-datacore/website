@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Daily usage for this member of the Sloyan Rat Pack is tenuous and generally comes down to a fortuitous voyage trait match for early-to-midgame rosters who manage to fully fuse K’mtar before other more powerful options. Once his pre-cryo usefulness to you has evaporated, he falls into the classic trait-powered, sometimes usable event option mold whose collection value will compete with your other behold options.
+Value for this member of the Sloyan Rat Pack is down to the one-two punch of Collections and Events. The former finds him with a quarter of inclusions plus possibly one or two more, and the Events that go with them give him opportunities to pitch in on the occasional SCI or DIP seat on Shuttles. Not a bad Behold choice overall.

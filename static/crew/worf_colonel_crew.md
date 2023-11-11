@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Perhaps unintentionally, WRG has given us a tough choice - make a multi-day voyage trek to pick up Worf's Grandpa and drop a few purple cites, or take some mid-level or worse gold collection crew to five stars. Of course, those whose glass is half full might argue that now there's a better payoff for the nearly thirty voyage token investment.
+Perhaps unintentionally, WRG has given us a tough choice - make a multi-day Voyage trek to pick up Worf's Grandpa and drop a few Super Rare Citations, or take some mid-level or worse Legendary Collection crew to five stars. Of course, those whose glass is half full might argue that now there's a better payoff for the very large Voyage Token investment.
 
-No matter how you acquire this Worf (who is NOT a variant for events), his handful of collections and a fine base to pair with his eclectic trait set is a pretty worthwhile payoff for the cost of a few campaign citations as long as you don't mind passing up chrome dome Picard.
+No matter how you acquire this Worf (who is NOT a variant for Events), his handful of Collections and a fine Base to pair with his eclectic Trait set is a pretty worthwhile payoff for the cost of a few Citations as long as you don't mind passing up chrome dome Picard.
