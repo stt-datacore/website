@@ -951,19 +951,34 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		
 			const incidence = {} as { [key: string]: number };
 			const avgidx = {} as { [key: string]: number };
-	
+			const fsk = gauntlet.contest_data?.featured_skill;
+			let pc = 0;
 			for(let pg of pgs) {
 				let idx = 1;
 				
 				for (let pgcrew of pg.crew) {
 					incidence[pgcrew.symbol] ??= 0;				
-					incidence[pgcrew.symbol]++;
-
 					avgidx[pgcrew.symbol] ??= 0;
-					avgidx[pgcrew.symbol] += idx;
 
+					if (pg.pair.some(p => rankToSkill(p) === fsk) && pc === 0) {
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightPrimary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightPrimary);
+					}
+					else if (pg.pair.some(p =>  rankToSkill(p) === fsk) && pc === 1) {
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightSecondary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightSecondary);
+					}
+					else if (pg.pair.some(p =>  rankToSkill(p) === fsk) && pc === 2) {
+						incidence[pgcrew.symbol] += this.state.gauntletSettings.linearSkillIncidenceWeightTertiary;
+						avgidx[pgcrew.symbol] += (idx * this.state.gauntletSettings.linearSkillIndexWeightTertiary);
+					}
+					else {
+						incidence[pgcrew.symbol]++;
+						avgidx[pgcrew.symbol] += idx;	
+					}
 					idx++;
 				}
+				pc++;
 			}
 			
 			Object.keys(avgidx).forEach(key => {
