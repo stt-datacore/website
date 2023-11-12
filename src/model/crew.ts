@@ -6,6 +6,11 @@ export interface CrossFuseTarget {
   name?: string;
 }
 
+export interface MarkdownInfo {
+  author: string;
+  modified: Date;
+}
+
 /**
  * The is the crew roster model from crew.json
  * 
@@ -49,6 +54,7 @@ export interface CrewMember {
   date_added: Date
   obtained: string
   markdownContent: string
+  markdownInfo: MarkdownInfo;
   unique_polestar_combos?: string[][]
   constellation?: CrewConstellation
   kwipment: number[][] | number[];
