@@ -453,7 +453,7 @@ const CollectionOptimizer = {
                             let bcol = (b.names.map((b) =>
                                 playerCollections.find((f) => f.name === b)
                             ) ?? []) as PlayerCollection[];
-
+                            
                             if (acol && bcol) {
                                 return compareRewards(mapFilter, acol, bcol, short);
                             } else if (acol) {
@@ -493,8 +493,8 @@ const CollectionOptimizer = {
                                     )
                                 )
                                 ?.filter((c) => c) ?? []) as PlayerCollection[][];
-
-                            col?.sort((a, b) => {
+                            
+                            col?.sort((a, b) => {                                
                                 return compareRewards(mapFilter, a, b, short);
                             });
 
@@ -518,8 +518,7 @@ const CollectionOptimizer = {
                             let r = 0;
 
                             if (mapFilter?.rewardFilter) {
-                                r = compareRewards(mapFilter, [acol], [bcol], short);
-                                if (r) return r;
+                                //r = compareRewards(mapFilter, [acol], [bcol], short);                                
                                 r = compareRewards(
                                     mapFilter,
                                     [acol, ...(a?.maps?.map((d) => d.collection) ?? [])].filter(
@@ -531,7 +530,9 @@ const CollectionOptimizer = {
                                     short
                                 );
 
-                                if (r) return r;
+                                if (r) {
+                                    return r;
+                                }
                             }
                         }
 
@@ -646,7 +647,7 @@ const CollectionOptimizer = {
         
                     });	
                 }
-                else {
+                else if (!filterProps.mapFilter.rewardFilter?.length) {
                     colOptimized.sort((a, b) => {
                         let anum = 0;
                         let bnum = 0;
