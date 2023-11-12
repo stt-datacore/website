@@ -273,7 +273,7 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 
 export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 	return playerCollections.map((col) => {
-		return  ((col?.totalRewards ?? 0) > 0) ? col?.milestone.buffs?.map(b => b as BuffBase).concat(col?.milestone.rewards ?? []) as Reward[] : [];
+		return (col?.milestone.buffs?.map(b => b as BuffBase) ?? [] as Reward[]).concat(col?.milestone.rewards ?? [] as Reward[]) as Reward[];
 	}).flat();
 }
 

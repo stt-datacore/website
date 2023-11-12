@@ -1,6 +1,6 @@
 import { RewardsGridNeed } from "../model/crew";
 import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProps, ComboCostMap } from "../model/collectionfilter";
-import { BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem } from "../model/player";
+import { BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
 import { EquipmentItem } from "../model/equipment";
 
@@ -34,33 +34,31 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
 
     let ayes = 0;
     let byes = 0;
-    
-    let areward = getCollectionRewards(colGroup1);
-    let breward = getCollectionRewards(colGroup2);
 
-    for (let col1 of colGroup1) {
-        if (!col1) continue;
-        if (short) {
+    if (short) {
+        for (let col1 of colGroup1) {
+            if (!col1) continue;
             ayes += checkRewardFilter(col1, mapFilter.rewardFilter) ? 1 : 0;
         }
-        else {
-            
-            ayes += areward?.filter(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf))?.length ?? 0;
-        }
-    }
-
-    for (let col2 of colGroup2) {
-        if (!col2) continue;
-        if (short) {
+    
+        for (let col2 of colGroup2) {
+            if (!col2) continue;
             byes += checkRewardFilter(col2, mapFilter.rewardFilter) ? 1 : 0;
         }
-        else {
-            
-            byes += breward?.filter(r => mapFilter.rewardFilter?.some(rf => r.symbol === rf))?.length ?? 0;
-        }
+    }
+    else {
+        let afilter = getCollectionRewards(colGroup1)?.filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''));
+        let bfilter = getCollectionRewards(colGroup2)?.filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''));
+
+        ayes = afilter?.length ?? 0;
+        byes = bfilter?.length ?? 0;
     }
 
-    return byes - ayes;
+    let r = byes - ayes;
+    if (r) {
+        let n = "this";
+    }
+    return r;
 }
 
 
