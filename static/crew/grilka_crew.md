@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-If we were playing word association, the phrase 'tier 10' would be heard before her name was even uttered. But Grilka can at least claim enough collection value to make her certifiably better than some of the head-scratchingly terrible cards that exist. With half (2) of her traits having hit on event bonuses in the past and the massive Resourceful collection granting her another modicum of value, Grilka might just be a crew you take while telling yourself that it coulda been worse.
+If we were playing word association, the phrase 'Tier 10' would be heard before her name was even uttered. But Grilka can at least claim enough Collection value to make her certifiably better than some of the head-scratchingly terrible cards that exist. Notedly her Collection profile might get you a 100% Trait:Collection ratio, even if it would only be four.
