@@ -3,8 +3,8 @@ name: Brother Rom
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
-events: 19
+bigbook_tier: 5
+events: 20
 in_portal: true
 date: 28/10/2021
 obtained: Event
