@@ -4,7 +4,7 @@ rarity: 5
 series: tas
 memory_alpha:
 bigbook_tier: 5
-events: 54
+events: 53
 in_portal: true
 date: 08/09/2021
 obtained: Giveaway
