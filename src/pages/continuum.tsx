@@ -1,12 +1,7 @@
-
-
-
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
-import CiteOptimizer from '../components/citeoptimizer';
 import { ContinuumComponent } from '../components/continuum_helper';
 import { GlobalContext } from '../context/globalcontext';
-
 
 const ContinuumPage = () => {
 
