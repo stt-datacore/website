@@ -1,4 +1,5 @@
 import { Icon } from "./game-elements"
+import { Quest } from "./missions"
 import { PotentialReward } from "./player"
 
 export interface ContinuumRoot {
@@ -11,12 +12,14 @@ export interface ContinuumMission {
   active: boolean
   mission: MissionInfo
   quest_ids: number[]
+  quests?: Quest[];
   rewards: Rewards
   end_time: number
   chain_rewards: ChainRewards
   quest_rewards: QuestRewards
   character_xp: number
   qbits_rewards: number
+  discover_date: Date;
 }
 
 export interface MissionInfo {
