@@ -6,7 +6,7 @@ memory_alpha:
 bigbook_tier: 6
 events: 24
 in_portal:
-date: 15/11/2023
+date: 14/11/2023
 obtained: Event
 mega: false
 published: true

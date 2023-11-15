@@ -3,7 +3,7 @@ name: Amanda Cole
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 14
 in_portal:
 date: 09/05/2023
