@@ -49,9 +49,9 @@ export interface AllLootEntry {
 
 
 export interface ChainRewards {
-  standard: MasteryLoot[]
-  elite: MasteryLoot[]
-  epic: MasteryLoot[]
+  standard: AllLootEntry[]
+  elite: AllLootEntry[]
+  epic: AllLootEntry[]
 }
 
 
