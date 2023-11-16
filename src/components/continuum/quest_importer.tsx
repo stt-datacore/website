@@ -12,11 +12,12 @@ export interface QuestImporterProps {
 	questId?: number;
     setQuest: (value: Quest) => void;
     setError: (value: string) => void;
+	defaultCollapsed?: boolean;
 }
 
 export const QuestImportComponent = (props: QuestImporterProps) => {
 
-    const { questId, quest, setQuest, setError } = props;
+    const { defaultCollapsed, questId, quest, setQuest, setError } = props;
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
 
@@ -28,13 +29,19 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
             setError("No data");
             return;            
         }
+		if (json === '') {
+			setJsonString('');
+			return;	
+		}
         try {
             const quest = JSON.parse(json) as Quest;
             setQuest(quest);
+			setError('');
         }
         catch (e: any) {
             setError(e.toString());
         }
+		setJsonString(json);
 	}
 
 	function renderCopyPaste(): JSX.Element {
@@ -43,7 +50,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 		return (
 			<React.Fragment>
 				{hasPlayer && questId !== undefined && <Accordion
-				defaultActiveIndex={questId !== undefined && hasPlayer ? 0 : -1}
+				defaultActiveIndex={!defaultCollapsed && questId !== undefined && hasPlayer ? 0 : -1}
 				panels={[{
 					index: 0, 
 					key: 0,
@@ -70,6 +77,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 						<TextArea
 							placeholder='Paste continuum quest data, here'
 							id='__zzmm'							
+							value={''}
 							onChange={(e, { value }) => setJsonString(value as string)}
 							onPaste={(e: ClipboardEvent) => parseMission(e.clipboardData?.getData('text') as string)}
 						/>
