@@ -30,6 +30,8 @@ export interface RewardsGridProps {
 	kind?: 'reward' | 'need';
 	needs?: RewardsGridNeed[];
 	negative?: boolean;
+	targetGroup?: string;
+	crewTargetGroup?: string;
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
@@ -40,12 +42,12 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	// props.maxCols ??= 4;
 	// props.wrap ??= false;
 
-	const { kind, needs, wrap, maxCols } = props;
+	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup } = props;
 	const rewards = props.rewards ?? [];
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { items: tempItems, crew: allCrew } = context.core;
-
+	
 	const items = [] as EquipmentItem[];
 
 	if (kind === 'need' && needs?.length) {
@@ -146,7 +148,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 									}}>
 									<ItemDisplay
 										quantity={reward.quantity}
-										targetGroup={reward.type === 1 ? 'collectionsTarget' : 'collectionsTarget_item'}
+										targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
 										itemSymbol={reward.symbol}
 										allCrew={allCrew}
 										allItems={items}

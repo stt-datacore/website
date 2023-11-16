@@ -1,6 +1,6 @@
 
 import { Ship } from "./ship"
-import { PotentialReward } from "./player"
+import { BuffBase, PotentialReward, Reward } from "./player"
 import { Icon } from "./game-elements"
 
 export interface Mission {
@@ -73,7 +73,7 @@ export interface MasteryLevel {
   jackpots?: Jackpot[]
 }
 
-export interface MissionReward {
+export interface MissionReward extends BuffBase {
   type: number
   icon: Icon
   rarity?: number
