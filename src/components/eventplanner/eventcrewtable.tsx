@@ -34,6 +34,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
+	const [excludeQuipped, setExcludeQuipped] = useStateWithStorage('eventplanner/excludeQuipped', false);
 	const [showShared, setShowShared] = useStateWithStorage('eventplanner/showShared', true);
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
@@ -106,6 +107,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) rosterCrew = rosterCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 	if (!showFrozen) rosterCrew = rosterCrew.filter((c) => c.immortal <= 0);
+	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !c.kwipment?.some((kw: number | number[]) => typeof kw === 'number' ? !!kw : kw.some(id => !!id)));
 	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
 
 	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
@@ -214,6 +216,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 								label='Show frozen crew'
 								checked={showFrozen}
 								onChange={(e, { checked }) => setShowFrozen(checked)}
+							/>
+							<Form.Field
+								control={Checkbox}
+								label='Exclude quipped crew'
+								checked={excludeQuipped}
+								onChange={(e, { checked }) => setExcludeQuipped(checked)}
 							/>
 							{canBorrow && (
 								<Form.Field

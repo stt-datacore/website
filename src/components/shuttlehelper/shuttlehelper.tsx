@@ -30,6 +30,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	const [considerActive, setConsiderActive] = useStateWithStorage(props.helperId+'/considerActive', true);
 	const [considerVoyage, setConsiderVoyage] = useStateWithStorage(props.helperId+'/considerVoyage', false);
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage(props.helperId+'/considerFrozen', false);
+	const [excludeQuipped, setExcludeQuipped] = useStateWithStorage(props.helperId+'/excludeQuipped', false);
 	const [considerShared, setConsiderShared] = useStateWithStorage(props.helperId+'/considerShared', true);
 
 	const [loadState, setLoadState] = React.useState(0);
@@ -41,7 +42,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 
 	React.useEffect(() => {
 		setCrewScores(new CrewScores());
-	}, [props.crew, considerActive, considerVoyage, considerFrozen, considerShared]);
+	}, [props.crew, considerActive, considerVoyage, considerFrozen, considerShared, excludeQuipped]);
 
 	// Prune old shuttles from stored values, import open shuttles from player data
 	React.useEffect(() => {
@@ -87,6 +88,12 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 						label='Consider frozen crew'
 						checked={considerFrozen}
 						onChange={(e, { checked }) => setConsiderFrozen(checked)}
+					/>
+					<Form.Field
+						control={Checkbox}
+						label='Exclude quipped crew'
+						checked={excludeQuipped}
+						onChange={(e, { checked }) => setExcludeQuipped(checked)}
 					/>
 					{canBorrow && (
 						<Form.Field
@@ -238,6 +245,9 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 				continue;
 
 			if ((!canBorrow || !considerShared) && props.crew[i].shared)
+				continue;
+
+			if (excludeQuipped && props.crew[i].kwipment?.some((kw: number | number[]) => typeof kw === 'number' ? !!kw : kw.some(id => !!id)))
 				continue;
 
 			todo.forEach(seat => {
