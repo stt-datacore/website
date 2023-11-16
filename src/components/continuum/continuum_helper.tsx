@@ -14,6 +14,7 @@ import { QuestImportComponent } from "./quest_importer";
 import { RewardsGrid } from "../crewtables/rewards";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { NavMapItem, makeNavMap } from "../../utils/episodes";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -45,6 +46,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
     const [quest, setQuest] = React.useState<Quest | undefined>(undefined);
     const [isRemote, setIsRemote] = React.useState<boolean[] | undefined>(undefined);
+    const [tiers, setTiers] = React.useState<NavMapItem[][] | undefined>(undefined);
 
     const { continuum_missions } = context.core;
         
@@ -72,6 +74,20 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {            
             const mquest = mission.quests[questIndex];
+            let map = makeNavMap(mquest);
+
+            let tiers = {} as { [key: number]: NavMapItem[] };
+            
+            for (let item of map) {
+                tiers[item.tier] ??= [];
+                tiers[item.tier].push(item);
+            }
+            
+            setTiers(Object.values(tiers));
+
+            // console.log(tiers);
+
+
             // if (mquest?.mastery_levels?.length && !!mquest.challenges?.length && questIndex !== undefined) {
             //     let normal = mquest.mastery_levels[0];
             //     let elite = mquest.mastery_levels[1];
@@ -221,7 +237,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             key={"quest_" + idx + "_" + quest.id} active={questIndex === idx} 
                             onClick={() => setQuestIndex(idx)}>
                         <Step.Content>
-                            <Step.Title>{isRemote && isRemote[idx] ? <span style={{color:'lightgreen', fontWeight: 'bold'}}>{quest.name}</span> : quest.name}</Step.Title>
+                            <Step.Title>{(isRemote && isRemote[idx] === true) ? <span style={{color:'lightgreen', fontWeight: 'bold'}}>{quest.name}</span> : quest.name}</Step.Title>
                             <Step.Description style={{maxWidth: "10vw"}} >{quest.description}</Step.Description>
                         </Step.Content>
                     </Step>
@@ -259,18 +275,26 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
-                                <Table.Cell>
-                                    {!!quest.challenges?.length && (
-                                        <ChallengeNode
-                                            targetGroup="continuum_items"
-                                            crewTargetGroup="continuum_helper"
-                                            mastery={mastery}
-                                            style={{ width: "200px", textAlign: "center" }}
-                                            quest={quest}
-                                            index={0}
-                                        />
-                                    )}
-                                </Table.Cell>
+                                {!!tiers && tiers.map((tier, idx) => (
+                                    <Table.Cell key={"table_tier_" + idx}>
+                                        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                                            {tier.map((item) => (
+                                                <div key={'table_tier_item_' + item.id}>
+                                                    <ChallengeNode
+                                                        targetGroup="continuum_items"
+                                                        crewTargetGroup="continuum_helper"
+                                                        mastery={mastery}
+                                                        style={{ width: "200px", textAlign: "center" }}
+                                                        quest={quest}
+                                                        index={item.id}
+                                                        nokids
+                                                    />
+                                                </div>
+                                            ))}
+
+                                        </div>
+                                    </Table.Cell>
+                                ))}
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
