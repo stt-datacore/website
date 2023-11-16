@@ -111,6 +111,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         fetch(missionUrl)
             .then((response) => response.json())
             .then((result: ContinuumMission) => {
+                const rq = {} as { [key: number]: Quest };
                 const challenges = context.core.missionsfull
                     .filter((mission) =>
                         mission.quests.some((q) => result.quest_ids.includes(q.id))
@@ -119,13 +120,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         mission.quests.filter((q) => result.quest_ids.includes(q.id))
                     )
                     .flat()
-                    .map((q) => q.challenges ?? []);
+                    .map((q) => {
+                        rq[q.id] = q;
+                        return q.challenges ?? [];
+                    });
 
                 let selTraits = cleanTraitSelection(result?.quests ?? [], selectedTraits);
                 let remotes = [] as boolean[];
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
-                        result.quests[i].challenges = challenges[i];
+                        result.quests[i].challenges = rq[result.quests[i].id].challenges;
                         challenges[i].forEach(ch => ch.trait_bonuses = []);
                         remotes.push(false);
                     }
