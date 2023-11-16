@@ -54,7 +54,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         continuum_missions[continuum_missions.length - 1].discover_date
     );
 
-    const missionUrl = `structured/continuum/${continuum_missions.length}.json`;
+    const missionUrl = `${process.env.GATSBY_DATACORE_URL}structured/continuum/${continuum_missions.length}.json`;
     
     const getCurrentRewards = () => {
         let result = undefined as Reward[] | undefined;
