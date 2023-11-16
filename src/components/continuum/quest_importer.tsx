@@ -4,9 +4,6 @@ import { Header, Icon, Form, TextArea, Accordion, Button } from "semantic-ui-rea
 import { GlobalContext } from "../../context/globalcontext";
 import { Quest } from "../../model/missions";
 
-
-
-
 export interface QuestImporterProps {
     quest?: Quest;
 	questId?: number;
@@ -50,7 +47,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 		return (
 			<React.Fragment>
 				{hasPlayer && questId !== undefined && <Accordion
-				defaultActiveIndex={!defaultCollapsed && questId !== undefined && hasPlayer ? 0 : -1}
+				defaultActiveIndex={(!defaultCollapsed && questId !== undefined && hasPlayer) ? 0 : -1}
 				panels={[{
 					index: 0, 
 					key: 0,
