@@ -9,12 +9,14 @@ import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { TranslationSet } from '../model/traits';
+import { ContinuumMission } from '../model/continuum';
 
 export type ValidDemands =
 	'all_buffs' |
 	'battle_stations' |
 	'cadet' |
 	'collections' |
+	'continuum_missions' |
 	'crew' |
 	'dilemmas' |
 	'disputes' |
@@ -25,6 +27,7 @@ export type ValidDemands =
 	'keystones' |
 	'misc_stats' |
 	'missions' |
+	'missionsfull' |
 	'quests' |
 	'ship_schematics' |
 	'skill_bufs' |
@@ -48,9 +51,11 @@ export interface ICoreData {
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
 	missions: Mission[];
+	missionsfull: Mission[];
+	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
-	translation: TranslationSet;
+	translation: TranslationSet;	
 };
 
 export interface ICoreContext extends ICoreData {
@@ -75,6 +80,8 @@ const defaultData = {
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
 	missions: [] as Mission[],
+	missionsfull: [] as Mission[],
+	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	translation: {} as TranslationSet
@@ -124,6 +131,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'cadet',
 			'crew',
 			'collections',
+			'continuum_missions',
 			'dilemmas',
 			'disputes',
 			'episodes',
@@ -133,6 +141,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'keystones',
 			'misc_stats',
 			'missions',
+			'missionsfull',
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
