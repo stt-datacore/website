@@ -72,26 +72,26 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {            
             const mquest = mission.quests[questIndex];
-            if (mquest?.mastery_levels?.length && !!mquest.challenges?.length && questIndex !== undefined) {
-                let normal = mquest.mastery_levels[0];
-                let elite = mquest.mastery_levels[1];
-                let epic = mquest.mastery_levels[2];            
-                if (mquest.challenges) {
-                    mquest.challenges.forEach((ch) => {                         
-                        if (!!ch.critical?.reward?.length && normal.jackpots) {
-                            ch.critical.reward = [normal, elite, epic].map(ml => {
-                                let jp = ml.jackpots?.find(j => j.id === ch.id);
-                                if (jp) {
-                                    return jp.reward;
-                                }
-                                else {
-                                    return [];
-                                }
-                            })?.filter(f => !!f)?.flat();
-                        }
-                    });                
-                }
-            }
+            // if (mquest?.mastery_levels?.length && !!mquest.challenges?.length && questIndex !== undefined) {
+            //     let normal = mquest.mastery_levels[0];
+            //     let elite = mquest.mastery_levels[1];
+            //     let epic = mquest.mastery_levels[2];            
+            //     if (mquest.challenges) {
+            //         mquest.challenges.forEach((ch) => {                         
+            //             if (!!ch.critical?.reward?.length && normal.jackpots) {                            
+            //                 ch.critical.reward = [normal, elite, epic].map(ml => {
+            //                     let jp = ml.jackpots?.find(j => j.id === ch.id);
+            //                     if (jp) {
+            //                         return jp.reward;
+            //                     }
+            //                     else {
+            //                         return [];
+            //                     }
+            //                 })?.filter(f => !!f)?.flat();
+            //             }
+            //         });                
+            //     }
+            // }
     
             setQuest(mquest);
         }
@@ -201,7 +201,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         active={mastery === 1}
                         >
                         <Step.Content>
-                            <Step.Title>Normal</Step.Title>
+                            <Step.Title>Elite</Step.Title>
                             <Step.Description style={{maxWidth: "10vw"}} >Elite Difficulty</Step.Description>
                         </Step.Content>
                     </Step>
@@ -266,7 +266,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                             crewTargetGroup="continuum_helper"
                                             mastery={mastery}
                                             style={{ width: "200px", textAlign: "center" }}
-                                            challenges={quest.challenges}
+                                            quest={quest}
                                             index={0}
                                         />
                                     )}

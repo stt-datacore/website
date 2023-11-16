@@ -1,12 +1,12 @@
 import React from "react";
-import { MissionChallenge } from "../../model/missions";
+import { Jackpot, MissionChallenge, MissionReward, Quest } from "../../model/missions";
 import { Grid } from "semantic-ui-react";
 import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
 
 export interface ChallengeNodeProps {
-    challenges: MissionChallenge[];
+    quest: Quest;
     index: number;
     mastery: number;
     nokids?: boolean;
@@ -18,12 +18,20 @@ export interface ChallengeNodeProps {
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
 
-    const { mastery, style, challenges, index, nokids, targetGroup, crewTargetGroup } = props;
-
+    const { mastery, style, quest, index, nokids, targetGroup, crewTargetGroup } = props;
+    
+    const challenges = quest.challenges ?? [];
+    let reward = undefined as MissionReward | undefined;
+    let rc = false;
+    if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
+        rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[index].claimed;
+        reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === index)?.reward[0];
+    }
+    
     const challenge = challenges.find(f => f.id === index) as MissionChallenge;
     const children = challenges.filter((c) => challenge.children.includes(c.id));
-    const claimed = challenge?.critical?.claimed ?? false;
-    const rewards = challenge.critical?.reward[mastery];
+    const claimed = rc;
+    const rewards = reward;
 
     return (<div>
         <div style={{
@@ -51,7 +59,8 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                 }
                 <img style={{ height: "1.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />                
                 {!!rewards && 
-                <div style={{opacity: claimed ? 0.5 : 1}}>
+                <div>
+                    {claimed && <div style={{margin: '0.5em', fontStyle: 'italic'}}>(Reward Claimed)</div>}
                 <RewardsGrid                 
                 targetGroup={targetGroup}
                 crewTargetGroup={crewTargetGroup}
@@ -74,7 +83,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                             mastery={mastery} 
                             style={style} 
                             key={'challenge_' + challenge.id + "_child" + child.id}
-                            challenges={challenges}
+                            quest={quest}
                             index={child.id}
                         />
                     ))
