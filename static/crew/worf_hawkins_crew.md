@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-I know we’re all looking forward to pulling our Willies in a pack, but this Worf variant is a bit more of a luxury than his stat ranks may imply.
-
-Debuting in a month that saw a CMD/DIP/SEC mega recurring and CMD/DIP/SEC giveaway gold, Hawkins’ voyage seating opportunities are in worse shape than usual in practice. He’s not exactly a one trick pony - there are worthwhile base and collection metrics to bank on over time - just beware that he may be less well-rounded than his final score indicates.
+The Other Baseball Worf, Willie is sharply-dressed, has a new hat, and has everything you want from a crew of his Rarity. With enough debut Voyage power to still be more-than-viable on Voyages in the early to mid game, he’s got a boring Skill set, but enough juice (this is pre-steroid era of baseball, but we are borrowing the pun anyways) to make some runs for you. That same Skill set will give him seats on your Shuttles for Worf and Trait-based Events, of which there are sure to be a lot. He legs out a triple with his Collections and might steal home plate if one more Trait catches a piece of the strike zone.

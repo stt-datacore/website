@@ -3,7 +3,7 @@ name: Data Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 62
 in_portal: true
 date: 14/08/2019

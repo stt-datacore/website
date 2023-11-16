@@ -3,7 +3,7 @@ name: Captain Vasso L'Gaelia
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 5
 in_portal: true
 date: 12/10/2022
