@@ -3,6 +3,7 @@ import { MissionChallenge } from "../../model/missions";
 import { Grid } from "semantic-ui-react";
 import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
+import { appelate } from "../../utils/misc";
 
 export interface ChallengeNodeProps {
     challenges: MissionChallenge[];
@@ -21,7 +22,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
 
     const challenge = challenges.find(f => f.id === index) as MissionChallenge;
     const children = challenges.filter((c) => challenge.children.includes(c.id));
-
+    const claimed = challenge?.critical?.claimed ?? false;
     const rewards = challenge.critical?.reward[mastery];
 
     return (<div>
@@ -45,11 +46,17 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                     ...style ?? {}
                 }}>
                 <b>{challenge.name}</b>
+                {!!challenge?.trait_bonuses?.length &&
+                <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map(t => appelate(t.trait)).join(", ")}</i></>
+                }
                 <img style={{ height: "1.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />                
-                {!!rewards && <RewardsGrid 
-                                targetGroup={targetGroup}
-                                crewTargetGroup={crewTargetGroup}
-                                rewards={rewards ? [rewards as Reward] : []} />}
+                {!!rewards && 
+                <div style={{opacity: claimed ? 0.5 : 1}}>
+                <RewardsGrid                 
+                targetGroup={targetGroup}
+                crewTargetGroup={crewTargetGroup}
+                rewards={rewards ? [rewards as Reward] : []} />
+                </div>}
             </div>
             <div style={{
                 display: 'flex',
