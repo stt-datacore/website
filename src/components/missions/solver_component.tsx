@@ -4,36 +4,46 @@ import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import { GlobalContext } from "../../context/globalcontext";
 import { QuestSolverConfig, QuestSolverResult } from "../../model/worker";
-import { Quest } from "../../model/missions";
-
+import { MissionChallenge, Quest } from "../../model/missions";
 
 export interface QuestSolverProps {
-    quest: Quest;
-    paths: number[][];
-    setResults: (value: QuestSolverResult) => void;    
+    traits?: string[];
+    quest?: Quest;
+    challenges?: MissionChallenge[];
+    paths?: number[][];        
+    setResults: (value: QuestSolverResult) => void;
+    runCount?: number;
 }
 
 interface QuestSolverState {
-
+    runCount: number;
+    results?: QuestSolverResult;
 }
 
 export class QuestSolverComponent extends React.Component<QuestSolverProps, QuestSolverState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
+    private _irun = -1;
+
     constructor(props: QuestSolverProps) {
         super(props);
-        this.state = {
 
+        this.state = {
+            runCount: props.runCount ?? 0
         } as QuestSolverState;
     }
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { quest, setResults, paths } = this.props;
+		const { challenges, quest, setResults, paths, traits } = this.props;
 
-		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {
-            setResults(message.data.result);
+		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
+            if (setResults) {
+                setResults(message.data.result);
+            }
+
+            this.setState({ results: message.data.result });            
 		});
 
 		worker.postMessage({
@@ -41,13 +51,26 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 			config: { 
 				context: this.context,
 				quest,
-                paths
+                challenges,
+                paths,
+                traits
             } as QuestSolverConfig
 		});
 	}
 
     componentDidMount(): void {
-        this.runWorker();
+        this.initData();
+    }
+
+    componentDidUpdate(prevProps: Readonly<QuestSolverProps>, prevState: Readonly<QuestSolverState>, snapshot?: any): void {
+        this.initData();
+    }
+
+    private initData() {
+        if (this._irun !== this.state.runCount) {
+            this._irun = this.state.runCount;
+            this.runWorker();
+        }
     }
 
     render() {
