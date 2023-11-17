@@ -15,6 +15,7 @@ import { RewardsGrid } from "../crewtables/rewards";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { NavMapItem, PathInfo, getNode, makeNavMap } from "../../utils/episodes";
+import { MissionMapComponent } from "./mission_map";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -166,7 +167,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         result.quests[i].challenges = rq[result.quests[i].id].challenges;
-                        challenges[i].forEach(ch => ch.trait_bonuses = []);
+                        challenges[i].forEach(ch => {
+                            ch.trait_bonuses = [];
+                            ch.difficulty_by_mastery = [];
+                        });
                         remotes.push(false);
                     }
                 }
@@ -222,135 +226,19 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
-                <Step.Group fluid>
-                    <Step
-                        onClick={(e) => setMastery(0)}
-                        active={mastery === 0}
-                    >
-                        <Step.Content>
-                            <Step.Title>Standard</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Standard Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                    <Step
-                        onClick={(e) => setMastery(1)}
-                        active={mastery === 1}
-                    >
-                        <Step.Content>
-                            <Step.Title>Elite</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Elite Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                    <Step
-                        onClick={(e) => setMastery(2)}
-                        active={mastery === 2}
-                    >
-                        <Step.Content>
-                            <Step.Title>Epic</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Epic Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                </Step.Group>
-                <Step.Group fluid>
-                    {mission?.quests?.map((quest, idx) => (
-                        <Step
-                            key={"quest_" + idx + "_" + quest.id} active={questIndex === idx}
-                            onClick={() => setQuestIndex(idx)}>
-                            <Step.Content>
-                                <Step.Title>{(isRemote && isRemote[idx] === true) ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</Step.Title>
-                                <Step.Description style={{ maxWidth: "10vw" }} >{quest.description}</Step.Description>
-                            </Step.Content>
-                        </Step>
-                    ))}
-
-                </Step.Group>
-                {!!quest && typeof questIndex !== 'undefined' &&
-                    <div className={"ui segment"}>
-                        <Table style={{ margin: 0, padding: 0 }}>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div
-                                        style={{
-                                            width: "100%",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <h3>{isRemote && isRemote[questIndex] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
-                                        <div style={{ margin: "0.5em 0" }}>
-                                            {quest.traits_used
-                                                ?.map((t) => <i key={"trait_" + t}>{appelate(t)}</i>)
-                                                .reduce((p, n) =>
-                                                    p ? (
-                                                        <>
-                                                            {p}, {n}
-                                                        </>
-                                                    ) : (
-                                                        n
-                                                    )
-                                                )}
-                                        </div>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <Table>
-                                        <Table.Row>
-
-                                            {!!stages && stages.map((tier, idx) => (
-                                                <Table.Cell key={"table_tier_" + idx}>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                                        {tier.map((item) => (
-                                                            <div key={'table_tier_item_' + item.id}>
-                                                                <ChallengeNode
-                                                                    highlight={isHighlighted(item)}
-                                                                    onClick={clickNode}
-                                                                    targetGroup="continuum_items"
-                                                                    crewTargetGroup="continuum_helper"
-                                                                    mastery={mastery}
-                                                                    style={{ width: "200px", textAlign: "center" }}
-                                                                    quest={quest}
-                                                                    index={item.id}
-                                                                    nokids
-                                                                />
-                                                            </div>
-                                                        ))}
-
-                                                    </div>
-                                                </Table.Cell>
-                                            ))}
-                                        </Table.Row>
-                                    </Table>
-                                </Table.Cell>
-
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-
-                                    <div
-                                        style={{
-                                            width: "100%",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <hr style={{ width: "calc(100% - 10em)" }} />
-                                        <h3>Chain Rewards</h3>
-                                        <RewardsGrid
-                                            targetGroup="continuum_items"
-                                            crewTargetGroup="continuum_helper"
-                                            rewards={getCurrentRewards() ?? []} />
-                                    </div>
-
-                                </Table.Cell>
-                            </Table.Row>
-                        </Table>
-                    </div>}
-
-
+                
+                {mission && 
+                <MissionMapComponent
+                    autoTraits={true}
+                    pageId={'continuum'}
+                    mission={mission} 
+                    showChainRewards={true} 
+                    isRemote={isRemote}
+                    questIndex={questIndex}
+                    setQuestIndex={setQuestIndex}
+                    mastery={mastery}
+                    setMastery={setMastery}
+                    />}
             </div>
         </>
     );

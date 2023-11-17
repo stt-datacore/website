@@ -1,6 +1,6 @@
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
-import { ContinuumComponent } from '../components/continuum/continuum_helper';
+import { ContinuumComponent } from '../components/missions/continuum_helper';
 import { GlobalContext } from '../context/globalcontext';
 
 const ContinuumPage = () => {
