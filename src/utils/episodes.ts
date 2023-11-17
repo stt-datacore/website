@@ -24,9 +24,7 @@ export interface NavMapItem {
     children?: number[];
 }
 
-
 export function makeNavMap(quest: Quest): NavMapItem[] {
-
 
     function _internalMakeNavMap(quest: Quest, startId?: number, currentStage?: number, parent?: NavMapItem, currentData?: NavMapItem[]): NavMapItem[] {
         currentData ??= [];
@@ -98,40 +96,12 @@ export function makeNavMap(quest: Quest): NavMapItem[] {
     return fmap;
 }
 
-// class Iterator<T> extends Array<T> {
-
-//     private _iter: number = -1;
-
-//     constructor(items: T[]) {
-//         super();
-//         items.forEach((item) => this.push(item));
-//     }
-
-//     reset() {
-//         this._iter = -1;
-//     }
-
-//     next() {
-//         this._iter++;
-//     }
-
-//     current() {
-//         if (this._iter < 0 || this._iter > length) return undefined;
-//         return this[this._iter];
-//     }
-    
-//     nextCurrent() {
-//         this.next();
-//         return this.current();
-//     }
-// }
-
 export interface PathInfo {
     ids: number[];
     path: string;
 }
 
-export function getNode(item: NavMapItem, stack: NavMapItem[], parentStack?: NavMapItem[]): PathInfo[] {
+export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?: NavMapItem[]): PathInfo[] {
 
     parentStack ??= [];
     parentStack.push(item);
@@ -147,7 +117,7 @@ export function getNode(item: NavMapItem, stack: NavMapItem[], parentStack?: Nav
         for (let n of item.children) {
             let child = stack.find(s => s.id === n);
             if (child) {
-                let result = getNode(child, stack, [ ...parentStack ]);
+                let result = getNodePaths(child, stack, [ ...parentStack ]);
                 stacks = stacks.concat(result);
             }
             

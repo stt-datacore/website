@@ -1,20 +1,15 @@
 import React from "react";
-import { PlayerCrew, Reward } from "../../model/player";
-import { CrewMember } from "../../model/crew";
+import { Reward } from "../../model/player";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { Mission, MissionChallenge, MissionReward, Quest } from "../../model/missions";
-import { Notification } from "../page/notification";
-import CONFIG from "../CONFIG";
-import { appelate } from "../../utils/misc";
+import { Mission, Quest } from "../../model/missions";
 import { ChallengeNode, ChallengeNodeInfo } from "./challenge_node";
-import { SearchResults, Step, Table } from "semantic-ui-react";
+import { Step, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { QuestImportComponent } from "./quest_importer";
 import { RewardsGrid } from "../crewtables/rewards";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { NavMapItem, PathInfo, getNode, makeNavMap } from "../../utils/episodes";
+import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { TraitSelection, TraitSelectorComponent } from "./trait_selector";
 
 export interface MissionComponentProps {
@@ -28,7 +23,6 @@ export interface MissionComponentProps {
     pageId: string;
     autoTraits?: boolean;
 }
-
 
 function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
     return traits.filter((trait) => quests.some(q => q.id === trait.questId));
@@ -159,7 +153,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
             const mquest = mission.quests[questIndex];
             const navmap = makeNavMap(mquest);
-            const pathInfo = getNode(navmap[0], navmap);
+            const pathInfo = getNodePaths(navmap[0], navmap);
 
             let stages = {} as { [key: number]: NavMapItem[] };
 
