@@ -1,9 +1,9 @@
 import React from "react";
 import { Jackpot, MissionChallenge, MissionReward, Quest } from "../../model/missions";
-import { Grid } from "semantic-ui-react";
 import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
+import CONFIG from "../CONFIG";
 
 export interface ChallengeNodeInfo {
     quest: Quest;
@@ -12,18 +12,17 @@ export interface ChallengeNodeInfo {
 }
 
 export interface ChallengeNodeProps extends ChallengeNodeInfo {
-    nokids?: boolean;
     highlight?: boolean;
     style?: React.CSSProperties;
     targetGroup?: string;
-	crewTargetGroup?: string;
+    crewTargetGroup?: string;
     onClick?: (e: Event, data: ChallengeNodeInfo) => void;
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
 
-    const { mastery, style, quest, index, nokids, targetGroup, crewTargetGroup } = props;
-    
+    const { mastery, style, quest, index, targetGroup, crewTargetGroup } = props;
+
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
     let rc = false;
@@ -31,11 +30,14 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
         rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[index].claimed;
         reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === index)?.reward[0];
     }
-    
+
     const challenge = challenges.find(f => f.id === index) as MissionChallenge;
     const children = challenges.filter((c) => challenge.children.includes(c.id));
     const claimed = rc;
     const rewards = reward;
+
+    const difficulty = challenge.difficulty_by_mastery[mastery];
+    const crit = difficulty + (challenge.critical?.threshold ?? 0);
 
     const handleClick = (e: React.MouseEvent) => {
         if (props.onClick) {
@@ -52,7 +54,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            gap: "1em",            
+            gap: "1em",
             justifyContent: 'center'
         }}>
 
@@ -61,50 +63,33 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                 onClick={(e) => handleClick(e)}
                 style={{
                     display: 'flex',
-                    gap: "1em",
+                    gap: "0.25em",
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'left',
+                    justifyContent: 'flex-start',
                     lineHeight: "1.5em",
                     ...style ?? {}
                 }}>
                 <b>{challenge.name}</b>
-                {!!challenge?.trait_bonuses?.length &&
-                <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map(t => appelate(t.trait)).join(", ")}</i></>
-                }
-                <img style={{ height: "1.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />                
-                {!!rewards && 
-                <div>
-                    {claimed && <div style={{margin: '0.5em', fontStyle: 'italic'}}>(Reward Claimed)</div>}
-                <RewardsGrid                 
-                targetGroup={targetGroup}
-                crewTargetGroup={crewTargetGroup}
-                rewards={rewards ? [rewards as Reward] : []} />
-                </div>}
-            </div>
-            <div style={{
-                display: 'flex',
-                gap: "1em",
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'left'
-            }}>
 
-                {!nokids && !!children?.length &&
-                    children.map((child) => (
-                        <ChallengeNode 
+                <span style={{ fontSize: "0.9em" }}>
+                    {!!difficulty && <b>{difficulty}</b>}
+                    {!!crit && <span>&nbsp;(Crit: <b style={{color: CONFIG.RARITIES[5].color}}>{crit}</b>)</span>}
+                </span>
+
+                {!!challenge?.trait_bonuses?.length &&
+                    <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map(t => appelate(t.trait)).join(", ")}</i></>
+                }
+                <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                {!!rewards &&
+                    <div>
+                        {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic' }}>(Reward Claimed)</div>}
+                        <RewardsGrid
                             targetGroup={targetGroup}
                             crewTargetGroup={crewTargetGroup}
-                            mastery={mastery} 
-                            style={style} 
-                            key={'challenge_' + challenge.id + "_child" + child.id}
-                            quest={quest}
-                            index={child.id}
-                        />
-                    ))
-                }
+                            rewards={rewards ? [rewards as Reward] : []} />
+                    </div>}
             </div>
-
         </div>
     </div>)
 }
