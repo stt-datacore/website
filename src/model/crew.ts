@@ -72,6 +72,8 @@ export interface EquipmentSlot {
   imageUrl?: string;
 }
 
+export type PlayerSkill = 'command_skill' | 'diplomacy_skill' | 'medicine_skill' | 'engineering_skill' | 'science_skill' | 'security_skill';
+
 export enum BaseSkillFields {
   SecuritySkill = 'security_skill',
   CommandSkill = 'command_skill',
@@ -114,14 +116,14 @@ export interface Skill {
   core: number
   range_min: number
   range_max: number
-  skill?: string;
+  skill?: PlayerSkill | string;
 }
 
 export interface ComputedSkill {
   core: number;
   min: number;
   max: number;
-  skill?: string;
+  skill?: PlayerSkill | string;
 }
 
 export interface SkillsSummary {

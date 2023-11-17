@@ -1,5 +1,5 @@
 import { BossBattlesRoot } from "./boss";
-import { BaseSkills, CrewMember, Skill } from "./crew";
+import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
@@ -107,7 +107,7 @@ export interface Aggregates {
 }
 
 export interface AggregateSkill extends Skill {
-    skill: string;
+    skill: PlayerSkill | string;
 }
 
 export interface CalcConfig {
@@ -212,8 +212,10 @@ export interface CiteData {
 
 export interface QuestSolverConfig {
     context: IDefaultGlobal;
-    quest: Quest;
-    paths: number[][];
+    traits?: string[];
+    quest?: Quest;
+    challenges?: MissionChallenge[];
+    paths?: number[][];    
 }
 
 export interface IQuestCrew extends PlayerCrew {
@@ -222,5 +224,7 @@ export interface IQuestCrew extends PlayerCrew {
 }
 
 export interface QuestSolverResult {
+    status: boolean;
     crew: IQuestCrew[];
+    error?: string;
 }

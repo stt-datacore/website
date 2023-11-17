@@ -3,7 +3,7 @@ import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData } from '../model/player';
-import { BaseSkills, ComputedBuff, CrewMember, Skill } from '../model/crew';
+import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { navigate } from 'gatsby';
@@ -673,7 +673,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
   }
 
 
-export function rankToSkill(rank: string): string | undefined {
+export function rankToSkill(rank: string): PlayerSkill | undefined {
 	if (rank === "CMD") return "command_skill";
 	else if (rank === "SEC") return "security_skill";
 	else if (rank === "DIP") return "diplomacy_skill";
@@ -682,7 +682,7 @@ export function rankToSkill(rank: string): string | undefined {
 	else if (rank === "ENG") return "engineering_skill";
 }
 
-export function skillToRank(skill: string): string | undefined {
+export function skillToRank(skill: PlayerSkill | string): string | undefined {
 	if (!skill) return "";
 	if (skill.includes("command")) return "CMD";
 	else if (skill.includes("security")) return "SEC";
@@ -799,113 +799,6 @@ export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): Equip
 	
 	return [];
 }
-
-// export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
-// 	console.log("prepareProfileData enter...");
-// 	console.log("Caller: " + caller);
-
-// 	let numImmortals = new Set(playerData.player.character.c_stored_immortals);
-
-// 	playerData.player.character.stored_immortals.map(si => si.id).forEach(item => numImmortals.add(item));
-// 	playerData.player.character.crew.forEach(crew => {
-// 		if (crew.level === 100 && crew.equipment.length === 4) {
-// 			numImmortals.add(crew.archetype_id);
-// 		}
-// 	});
-
-// 	playerData.calc = {
-// 		numImmortals: numImmortals?.size ?? 0,
-// 		lastModified
-// 	};
-
-// 	let buffConfig = calculateBuffConfig(playerData.player);
-
-// 	// Merge with player crew
-// 	let ownedCrew = [] as PlayerCrew[];
-// 	let unOwnedCrew = [] as PlayerCrew[];
-
-// 	for (let oricrew of allcrew) {
-// 		// Create a copy of crew instead of directly modifying the source (allcrew)
-// 		let crew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
-// 		crew.rarity = crew.max_rarity;
-// 		crew.level = 100;
-// 		crew.have = false;
-// 		crew.equipment = [0, 1, 2, 3];
-// 		crew.favorite = false;
-
-// 		if (typeof crew.date_added === 'string') {
-// 			crew.date_added = new Date(crew.date_added);
-// 		}
-
-// 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
-// 			crew.immortal = CompletionState.Frozen;
-// 		} else {
-// 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-// 			crew.immortal = immortal ? immortal.quantity : CompletionState.NotComplete;
-// 		}
-// 		if (crew.immortal !== 0) {
-// 			crew.have = true;
-// 			applyCrewBuffs(crew, buffConfig);
-// 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-// 		}
-
-// 		let inroster = playerData.player.character.crew.filter(c => c.archetype_id === crew.archetype_id);
-// 		inroster.forEach(owned => {
-// 			crew.rarity = owned.rarity;
-// 			crew.base_skills = owned.base_skills;
-// 			crew.level = owned.level;
-// 			crew.have = true;
-// 			crew.favorite = owned.favorite;
-// 			crew.equipment = owned.equipment;
-// 			if (owned.action) crew.action.bonus_amount = owned.action.bonus_amount;
-// 			if (owned.ship_battle) crew.ship_battle = owned.ship_battle;
-// 			// Use skills directly from player data when possible
-// 			if (owned.skills) {
-// 				for (let skill in CONFIG.SKILLS) {
-// 					crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
-// 				}
-// 				for (let skill in owned.skills) {
-// 					crew[skill] = {
-// 						core: owned.skills[skill].core,
-// 						min: owned.skills[skill].range_min,
-// 						max: owned.skills[skill].range_max
-// 					} as ComputedBuff;
-// 				}
-// 			}
-// 			// Otherwise apply buffs to base_skills
-// 			else {
-// 				applyCrewBuffs(crew, buffConfig);
-// 			}
-
-// 			crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
-// 			ownedCrew.push(JSON.parse(JSON.stringify(crew)));
-// 		});
-
-// 		if (!crew.have) {
-// 			// Crew is not immortal or in the active roster
-// 			applyCrewBuffs(crew, buffConfig);
-// 			// Add a copy to the list
-// 			unOwnedCrew.push(JSON.parse(JSON.stringify(crew)));
-// 		}
-// 		// else {
-// 		// 	if (crew.immortal === CompletionState.Immortalized) {
-// 		// 		console.log(crew.name + ": Immortalized");
-// 		// 	}
-// 		// 	else if (crew.immortal === CompletionState.Frozen) {
-// 		// 		console.log(crew.name + ": Frozen");
-// 		// 	}
-// 		// 	else if (crew.immortal > 1) {
-// 		// 		console.log(crew.name + ": Frozen (" + crew.immortal + " copies)");
-// 		// 	}
-// 		// 	else {
-// 		// 		console.log(crew.name + ": In Progress (Level " + crew.level + "; " + crew.rarity + " / " + crew.max_rarity + " Stars; " + (crew.equipment?.length ?? 0) + " / 4 Equipment)");
-// 		// 	}
-// 		// }
-// 	}
-
-// 	playerData.player.character.crew = ownedCrew;
-// 	playerData.player.character.unOwnedCrew = unOwnedCrew;
-// }
 
 export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 	if (!crew.in_portal && crew.obtained === "WebStore") {
@@ -1169,70 +1062,7 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
  * @param buffs Your active buffs
  * @param allCrew All crew
  */
-export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
-	// let stash = TinyStore.getStore('staticStash', false, true);	
-	
-	// if (stash) {
-	// 	if (ownedCrew) {
-	// 		let variantTraits = getVariantTraits(crew);
-	// 		if (variantTraits && variantTraits.length >= 1) {
-	// 			let filteredOwnedCrew = ownedCrew.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
-	// 			let finalResult = [ ...filteredOwnedCrew ];
-	// 			let filteredAllCrew = allCrew?.filter(item => item.traits_hidden.some(trait => variantTraits.includes(trait)))
-
-	// 			// We're going to iterate, once, into the variants
-	// 			// because some of them are fusion crew, and we want to capture those, too,
-	// 			// because if they keep navigating to variants in the crew page, we'd
-	// 			// like to give them as far to go as possible without losing state data.
-	// 			// Since they can only navigate either back to crew tools or on to other variants from the
-	// 			// crew page, this covers all bases.
-
-	// 			for (let post of filteredOwnedCrew) {
-	// 				let traits2 = getVariantTraits(post);
-	// 				let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-	// 				let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-
-	// 				for (let varItem of ownedfiltered2 ?? []) {
-	// 					if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-	// 						finalResult.push(varItem);
-	// 					}
-	// 				}
-
-	// 				for (let varItem of allfiltered2 ?? []) {
-	// 					if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-	// 						finalResult.push(varItem);
-	// 					}
-	// 				}
-	// 			}
-
-	// 			if (filteredAllCrew) {
-	// 				for (let post of filteredAllCrew) {
-	// 					let traits2 = getVariantTraits(post);
-	// 					let ownedfiltered2 = ownedCrew.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-	// 					let allfiltered2 = allCrew?.filter(item => item.traits_hidden.some(trait => traits2.includes(trait)))
-
-	// 					for (let varItem of ownedfiltered2 ?? []) {
-	// 						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-	// 							finalResult.push(varItem);
-	// 						}
-	// 					}
-	// 					for (let varItem of allfiltered2 ?? []) {
-	// 						if (!finalResult.some(tItem => tItem.symbol === varItem.symbol)) {
-	// 							finalResult.push(varItem);
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-
-	// 			console.log(finalResult);
-	// 			stash.setValue('owned', finalResult);
-	// 		}
-	// 	}
-	// 	if (buffs) {
-	// 		stash.setValue('buffs', buffs);
-	// 	}
-	// }
-
+export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {	
 	navigate('/crew/' + crew.symbol);
 }
 
