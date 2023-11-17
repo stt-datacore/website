@@ -3,7 +3,28 @@ import { Ship } from "./ship"
 import { BuffBase, PotentialReward, Reward } from "./player"
 import { Icon } from "./game-elements"
 
-export interface Mission {
+export interface ProtoMission {
+  id: number
+  symbol: string
+  description?: string
+  episode: number
+  episode_title?: string
+  episode_portrait?: Icon
+  marker: number[]
+  marker_icon?: Icon
+  exclude_from_timeline?: boolean
+  total_stars: number
+  character_xp_reward?: number
+  loot_rewards?: any[]
+  quests?: Quest[]
+  type?: number
+  cadet?: boolean
+  name?: string
+  faction_id?: number
+}
+
+
+export interface Mission extends ProtoMission {
   id: number
   symbol: string
   description?: string

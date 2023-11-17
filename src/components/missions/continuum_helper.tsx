@@ -9,7 +9,7 @@ import { ChallengeNodeInfo } from "./challenge_node";
 import { useStateWithStorage } from "../../utils/storage";
 import { QuestImportComponent } from "./quest_importer";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
-import { MissionMapComponent } from "./mission_map";
+import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -19,10 +19,6 @@ export interface TraitSelection {
     trait: string;
     selected: boolean;
     questId: number;
-}
-
-function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
-    return traits.filter((trait) => quests.some(q => q.id === trait.questId));
 }
 
 export const ContinuumComponent = (props: ContinuumComponentProps) => {
@@ -38,12 +34,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [mastery, setMastery] = useStateWithStorage('continuum/mastery', 0);
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
     const [questIndex, setQuestIndex] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
+
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
-    const [quest, setQuest] = React.useState<Quest | undefined>(undefined);
-    const [isRemote, setIsRemote] = React.useState<boolean[] | undefined>(undefined);
-    const [stages, setStages] = React.useState<NavMapItem[][] | undefined>(undefined);
-    const [paths, setPaths] = React.useState<PathInfo[] | undefined>(undefined);
-    const [highlighted, setHighlighted] = useStateWithStorage<{ quest: number, challenge: number }[]>('continuum/selected', []);
+    const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
+
+    const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
+    const [remoteQuestFlags, setRemoteQuestFlags] = useStateWithStorage<boolean[] | undefined>('continuum/remoteQuestFlags', undefined);
+    const [clearFlag, setClearFlag] = React.useState(0);
+    
     const { continuum_missions } = context.core;
 
     let disc = new Date(
@@ -51,62 +49,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     );
 
     const missionUrl = `/structured/continuum/${continuum_missions.length}.json`;
-
-    const isHighlighted = (item: NavMapItem) => {
-        return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id);
-    }
-
-    const clickNode = (e: Event, data: ChallengeNodeInfo) => {
-        let newHighlights = highlighted.filter(h => h.quest !== quest?.id);
-
-        if (!data.quest.challenges) return;
-        let id = data.quest.challenges.find(i => i.id === data.index)?.id ?? -1;
-
-        if (highlighted?.some(h => h.quest === quest?.id && h.challenge === id)) {
-            setHighlighted(newHighlights);
-            return;
-        }
-
-        let map = stages?.map(st => st.find(sa => sa.id === id))?.filter(f => !!f) as NavMapItem[];
-        if (!map?.length) return;
-        let item = map[0];
-        let allHighlights = getHighlightNodesFromNode(item);
-        newHighlights = newHighlights.concat(allHighlights?.map(h => {
-            return {
-                quest: quest?.id ?? -1,
-                challenge: h?.id ?? -1
-            }
-        }));
-        setHighlighted(newHighlights);
-    }
-
-    const getHighlightNodesFromNode = (node: NavMapItem) => {
-        let involved = paths?.filter((path) => {
-            if (path.ids.includes(node.id)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }) ?? [];
-
-        return [...new Set(involved.map(i => i.ids)?.flat() ?? [])].map(id => quest?.challenges?.find(q => q.id === id))?.filter(q => !!q) ?? [];
-    }
-
-    const getCurrentRewards = () => {
-        let result = undefined as Reward[] | undefined;
-
-        if (mastery === 0) {
-            result = mission?.chain_rewards?.standard?.map(e => e.potential_rewards?.map(le => le as Reward))?.flat()
-        }
-        else if (mastery === 1) {
-            result = mission?.chain_rewards?.elite?.map(e => e.potential_rewards?.map(le => le as Reward))?.flat()
-        }
-        else if (mastery === 2) {
-            result = mission?.chain_rewards?.epic?.map(e => e.potential_rewards?.map(le => le as Reward))?.flat()
-        }
-        return result;
-    }
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
@@ -122,12 +64,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             }
 
             setQuest(mquest);
-            setStages(Object.values(stages));
-            setPaths(pathInfo);
         }
         else if (quest !== undefined) {
             setQuest(undefined);
-            setStages(undefined);
         }
     }, [questIndex]);
 
@@ -158,18 +97,31 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 let selTraits = cleanTraitSelection(result?.quests ?? [], selectedTraits);
                 let remotes = [] as boolean[];
+                let savedRemotes = false;
+
+                if (result.quests?.length && !!quest && !!remoteQuestFlags?.length && remoteQuestFlags.length === result.quests.length) {
+                    savedRemotes = true;
+                    remotes = remoteQuestFlags;    
+                }
+
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
-                        result.quests[i].challenges = rq[result.quests[i].id].challenges;
-                        challenges[i].forEach(ch => {
-                            ch.trait_bonuses = [];
-                            ch.difficulty_by_mastery = [];
-                        });
-                        remotes.push(false);
+                        if (savedRemotes && remotes[i] && quest?.id === result.quests[i].id) {
+                            result.quests[i] = quest;
+                        } 
+                        else {
+                            result.quests[i].challenges = rq[result.quests[i].id].challenges;
+                            remotes.push(false);
+    
+                            challenges[i].forEach(ch => {
+                                ch.trait_bonuses = [];
+                                ch.difficulty_by_mastery = [];
+                            });
+                        }
                     }
                 }
 
-                setIsRemote(remotes);
+                setRemoteQuestFlags(remotes);
                 setSelectedTraits(selTraits ?? []);
                 setMission(result);
                 setDiscoverDate(disc);
@@ -178,17 +130,24 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             .catch((e) => {
                 setErrorMsg(e?.toString() + " : " + missionUrl);
             });
-    }, []);
+    }, [clearFlag]);
+
+    const clearRemote = () => {
+        setRemoteQuestFlags([]);
+        setTimeout(() => {
+            setClearFlag(clearFlag+1);
+        });
+    }
 
     const setRemoteQuest = (quest: Quest) => {
-        if (mission?.quests?.length && isRemote?.length === mission?.quests?.length) {
+        if (mission?.quests?.length && remoteQuestFlags?.length === mission?.quests?.length) {
             for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i].id === quest.id) {
                     mission.quests[i] = quest;
-                    isRemote[i] = true;
+                    remoteQuestFlags[i] = true;
 
                     setMission({ ...mission });
-                    setIsRemote([...isRemote]);
+                    setRemoteQuestFlags([...remoteQuestFlags]);
 
                     return;
                 }
@@ -211,8 +170,15 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     warning={true}
                 />
 
-                {questIndex !== undefined && !!isRemote &&
-                    <QuestImportComponent defaultCollapsed={isRemote[questIndex]} setQuest={setRemoteQuest} quest={quest} questId={quest?.id} setError={setErrorMsg} />
+                {questIndex !== undefined && !!remoteQuestFlags &&
+                    <QuestImportComponent 
+                        defaultCollapsed={remoteQuestFlags[questIndex]} 
+                        setQuest={setRemoteQuest} 
+                        quest={quest} 
+                        questId={quest?.id} 
+                        setError={setErrorMsg} 
+                        clearQuest={clearRemote}
+                        />
                 }
                 Current Continuum Mission: {discoverDate?.toDateString()}
                 <br />
@@ -225,11 +191,15 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     pageId={'continuum'}
                     mission={mission} 
                     showChainRewards={true} 
-                    isRemote={isRemote}
+                    isRemote={remoteQuestFlags}
                     questIndex={questIndex}
                     setQuestIndex={setQuestIndex}
                     mastery={mastery}
                     setMastery={setMastery}
+                    selectedTraits={selectedTraits}
+                    setSelectedTraits={setSelectedTraits}
+                    highlighted={highlighted}
+                    setHighlighted={setHighlighted}
                     />}
             </div>
         </>
