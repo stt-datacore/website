@@ -54,7 +54,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         continuum_missions[continuum_missions.length - 1].discover_date
     );
 
-    const missionUrl = `structured/continuum/${continuum_missions.length}.json`;
+    const missionUrl = `${process.env.GATSBY_DATACORE_URL}structured/continuum/${continuum_missions.length}.json`;
     
     const getCurrentRewards = () => {
         let result = undefined as Reward[] | undefined;
@@ -275,6 +275,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
+                                <Table.Cell>
+                                    <Table>
+                                        <Table.Row>
+
                                 {!!tiers && tiers.map((tier, idx) => (
                                     <Table.Cell key={"table_tier_" + idx}>
                                         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
@@ -295,6 +299,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                         </div>
                                     </Table.Cell>
                                 ))}
+                                        </Table.Row>
+                                    </Table>
+                                </Table.Cell>
+
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>

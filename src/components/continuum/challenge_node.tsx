@@ -5,15 +5,19 @@ import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
 
-export interface ChallengeNodeProps {
+export interface ChallengeNodeInfo {
     quest: Quest;
     index: number;
     mastery: number;
+}
+
+export interface ChallengeNodeProps extends ChallengeNodeInfo {
     nokids?: boolean;
     highlight?: boolean;
     style?: React.CSSProperties;
     targetGroup?: string;
 	crewTargetGroup?: string;
+    onClick?: (e: Event, data: ChallengeNodeInfo) => void;
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
@@ -33,17 +37,28 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     const claimed = rc;
     const rewards = reward;
 
+    const handleClick = (e: React.MouseEvent) => {
+        if (props.onClick) {
+            props.onClick(e.nativeEvent, {
+                quest,
+                index,
+                mastery
+            });
+        }
+    }
+
     return (<div>
         <div style={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            gap: "1em",
+            gap: "1em",            
             justifyContent: 'center'
         }}>
 
             <div
-                className='ui segment button'
+                className={'ui segment button' + (!!props.highlight ? ' active' : '')}
+                onClick={(e) => handleClick(e)}
                 style={{
                     display: 'flex',
                     gap: "1em",
