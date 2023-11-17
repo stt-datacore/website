@@ -50,7 +50,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         continuum_missions[continuum_missions.length - 1].discover_date
     );
 
-    const missionUrl = `${process.env.GATSBY_DATACORE_URL}structured/continuum/${continuum_missions.length}.json`;
+    const missionUrl = `/structured/continuum/${continuum_missions.length}.json`;
 
     const isHighlighted = (item: NavMapItem) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id);
