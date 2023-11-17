@@ -12,19 +12,33 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { TraitSelection, TraitSelectorComponent } from "./trait_selector";
 
+export interface HighlightItem { 
+    quest: number, 
+    challenge: number, 
+    clicked?: boolean };
+
 export interface MissionComponentProps {
     mission: Mission | ContinuumMission;
+    
     questIndex?: number;
     setQuestIndex: (value?: number) => void;
+    
     mastery: number;
     setMastery: (value: number) => void;
+
+    highlighted: HighlightItem[];
+    setHighlighted: (value: HighlightItem[]) => void;
+
+    selectedTraits: TraitSelection[];
+    setSelectedTraits: (value: TraitSelection[]) => void;
+    
     isRemote?: boolean[];
     showChainRewards?: boolean;
     pageId: string;
     autoTraits?: boolean;
 }
 
-function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
+export function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
     return traits.filter((trait) => quests.some(q => q.id === trait.questId));
 }
 
@@ -40,15 +54,16 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         pageId, 
         mission, 
         showChainRewards,
-        autoTraits
+        autoTraits,
+        selectedTraits,
+        setSelectedTraits,
+        highlighted,
+        setHighlighted
     } = props;
 
     const [quest, setQuest] = React.useState<Quest | undefined>(undefined);
     const [stages, setStages] = React.useState<NavMapItem[][] | undefined>(undefined);
     const [paths, setPaths] = React.useState<PathInfo[] | undefined>(undefined);
-
-    const [selectedTraits, setSelectedTraits] = useStateWithStorage(pageId + '/selectedTraits', [] as TraitSelection[]);
-    const [highlighted, setHighlighted] = useStateWithStorage<{ quest: number, challenge: number, clicked?: boolean }[]>(pageId + '/selected', []);
 
     const isHighlighted = (item: NavMapItem) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id);

@@ -1,5 +1,5 @@
 import { Icon } from "./game-elements"
-import { Quest } from "./missions"
+import { Mission, ProtoMission, Quest } from "./missions"
 import { PotentialReward } from "./player"
 
 export interface ContinuumRoot {
@@ -7,7 +7,7 @@ export interface ContinuumRoot {
   continuum_mission: ContinuumMission
 }
 
-export interface ContinuumMission {
+export interface ContinuumMission extends ProtoMission {
   qbit_cost_by_slot: number[]
   active: boolean
   mission: MissionInfo

@@ -81,12 +81,19 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                 </span>
 
                 {!!challenge?.trait_bonuses?.length &&
-                    <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map(t => appelate(t.trait)).join(", ")}</i></>
+                    <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map((t, idx) => {
+                        if (idx) {
+                            return <><br/><i>{appelate(t.trait)} (+{t.bonuses.reduce((p, n) => p + n, 0)})</i></>
+                        }
+                        else {
+                            return <i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i>
+                        }
+                    })}</i></>
                 }
                 <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                 {!!rewards &&
                     <div>
-                        {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic' }}>(Reward Claimed)</div>}
+                        {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic', color: 'lightgreen' }}>(Claimed)</div>}
                         <RewardsGrid
                             targetGroup={targetGroup}
                             crewTargetGroup={crewTargetGroup}

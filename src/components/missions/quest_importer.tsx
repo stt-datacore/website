@@ -8,6 +8,7 @@ export interface QuestImporterProps {
 	questId?: number;
     setQuest: (value: Quest) => void;
     setError: (value: string) => void;
+	clearQuest: () => void;
 	defaultCollapsed?: boolean;
 }
 
@@ -92,13 +93,13 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 							icon='paste'
 							labelPosition='right'
 						/>
-						{/* {liveGauntlet && <Button
-							onClick={() => this.clearGauntlet()}
+						{<Button
+							onClick={() => props.clearQuest()}
 							style={{ marginTop: '1em' }}
-							content='Clear live gauntlet'
+							content='Clear all quests'
 							icon='delete'
 							labelPosition='right'
-						/>} */}
+						/>}
 						</div>
 						</Form></>
 					}
