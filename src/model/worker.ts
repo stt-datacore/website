@@ -5,6 +5,10 @@ import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
+import { GlobalContext, IDefaultGlobal } from "../context/globalcontext";
+import { ICoreData } from "../context/datacontext";
+import { Mission, MissionChallenge, ProtoMission, Quest } from "./missions";
+import { ContinuumMission } from "./continuum";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -204,4 +208,19 @@ export interface CiteData {
 	crewToCite: PlayerCrew[];
 	crewToTrain: PlayerCrew[];
     skillOrderRarities: SkillOrderRarity[];
+}
+
+export interface QuestSolverConfig {
+    context: IDefaultGlobal;
+    quest: Quest;
+    paths: number[][];
+}
+
+export interface IQuestCrew extends PlayerCrew {
+    challenges?: MissionChallenge[];
+    added_kwipment?: number[][];
+}
+
+export interface QuestSolverResult {
+    crew: IQuestCrew[];
 }
