@@ -60,39 +60,61 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id);
     }
 
+    const isTapped = (item: NavMapItem) => {
+        return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id && h.clicked);
+    }
+
     const clickNode = (e: Event, data: ChallengeNodeInfo) => {
+        e.stopPropagation();
         let ptrait = [] as TraitSelection[];
-        let newHighlights = highlighted.filter(h => h.quest !== quest?.id);
+        let newHighlights = highlighted.filter(h => h.quest !== quest?.id) ?? [];
+        let currSelection = highlighted.filter(h => h.quest === quest?.id && h.clicked) ?? [];
 
         if (!data.quest.challenges) return;
         let id = data.quest.challenges.find(i => i.id === data.index)?.id ?? -1;
-
-        if (!highlighted?.some(h => h.quest === quest?.id && h.challenge === id)) {
-
-            let map = stages?.map(st => st.find(sa => sa.id === id))?.filter(f => !!f) as NavMapItem[];
-            if (!map?.length) return;
-            let item = map[0];
-            let allHighlights = getHighlightNodesFromNode(item);        
-            
-            newHighlights = newHighlights.concat(allHighlights?.map(h => {
-                if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
-                    ptrait = ptrait.concat(h.trait_bonuses.map(t => {
-                        return {
-                            trait: t.trait,
-                            selected: true,
-                            questId: quest.id
-                        } as TraitSelection;
-                    }));
-                    ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
-                }
-                return {
-                    quest: quest?.id ?? -1,
-                    challenge: h?.id ?? -1,
-                    clicked: h?.id === data.index
-                }
-            }));
-            
+        
+        let selNode = highlighted?.find(h => h.quest === quest?.id && h.challenge === id);
+        
+        if (selNode && selNode.clicked) {
+            currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
         }
+        else {
+            currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
+
+            selNode = {
+                quest: data.quest.id,
+                challenge: data.index,
+                clicked: true
+            };
+
+            currSelection.push(selNode);
+        }
+
+        let map = currSelection.map((sel) => {
+            let found = stages?.map(st => st.find(sa => sa.id === sel.challenge))?.filter(f => !!f) as NavMapItem[];
+            if (found?.length) return found[0];
+            return undefined;
+        }).filter(f => !!f) as NavMapItem[];
+        
+        let allHighlights = getHighlightNodesFromNode(map);      
+        
+        newHighlights = newHighlights.concat(allHighlights?.map(h => {
+            if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
+                ptrait = ptrait.concat(h.trait_bonuses.map(t => {
+                    return {
+                        trait: t.trait,
+                        selected: true,
+                        questId: quest.id
+                    } as TraitSelection;
+                }));
+                ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
+            }
+            return {
+                quest: quest?.id ?? -1,
+                challenge: h?.id ?? -1,
+                clicked: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked)
+            }
+        }));
 
         setHighlighted(newHighlights);
 
@@ -102,9 +124,11 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         }
     }
 
-    const getHighlightNodesFromNode = (node: NavMapItem) => {
+    const getHighlightNodesFromNode = (nodes: NavMapItem[]) => {
+        if (!nodes?.length) return [];
+
         let involved = paths?.filter((path) => {
-            if (path.ids.includes(node.id)) {
+            if (nodes.every(n => path.ids.includes(n.id))) {
                 return true;
             }
             else {
@@ -222,19 +246,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                         }}
                                     >
                                         <h3>{isRemote && isRemote[questIndex] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
-                                        <div style={{ margin: "0.5em 0" }}>
-                                            {/* {quest.traits_used
-                                                ?.map((t) => <i key={"trait_" + t}>{appelate(t)}</i>)
-                                                .reduce((p, n) =>
-                                                    p ? (
-                                                        <>
-                                                            {p}, {n}
-                                                        </>
-                                                    ) : (
-                                                        n
-                                                    )
-                                                )} */}
-
+                                        <div style={{ margin: "0.5em 0" }}>                                    
                                             <TraitSelectorComponent
                                                 style={{
                                                     fontSize: "12pt",
@@ -253,13 +265,13 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                 <Table.Cell>
                                     <Table>
                                         <Table.Row>
-
                                             {!!stages && stages.map((tier, idx) => (
                                                 <Table.Cell key={pageId + "table_tier_" + idx}>
                                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                                         {tier.map((item) => (
                                                             <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                 <ChallengeNode
+                                                                    tapped={isTapped(item)}
                                                                     highlight={isHighlighted(item)}
                                                                     onClick={clickNode}
                                                                     targetGroup={pageId + "_items"}
@@ -271,7 +283,6 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                 />
                                                             </div>
                                                         ))}
-
                                                     </div>
                                                 </Table.Cell>
                                             ))}

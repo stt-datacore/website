@@ -4,6 +4,7 @@ import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
+import { Icon } from "semantic-ui-react";
 
 export interface ChallengeNodeInfo {
     quest: Quest;
@@ -13,6 +14,7 @@ export interface ChallengeNodeInfo {
 
 export interface ChallengeNodeProps extends ChallengeNodeInfo {
     highlight?: boolean;
+    tapped?: boolean;
     style?: React.CSSProperties;
     targetGroup?: string;
     crewTargetGroup?: string;
@@ -21,7 +23,7 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
 
-    const { mastery, style, quest, index, targetGroup, crewTargetGroup } = props;
+    const { tapped, mastery, style, quest, index, targetGroup, crewTargetGroup } = props;
 
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
@@ -57,7 +59,6 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
             gap: "1em",
             justifyContent: 'center'
         }}>
-
             <div
                 className={'ui segment button' + (!!props.highlight ? ' active' : '')}
                 onClick={(e) => handleClick(e)}
@@ -70,8 +71,10 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                     lineHeight: "1.5em",
                     ...style ?? {}
                 }}>
+                <span>
+                {tapped && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='star' color='green' size='small' /></span>}
                 <b>{challenge.name}</b>
-
+                </span>
                 <span style={{ fontSize: "0.9em" }}>
                     {!!difficulty && <b>{difficulty}</b>}
                     {!!crit && <span>&nbsp;(Crit: <b style={{color: CONFIG.RARITIES[5].color}}>{crit}</b>)</span>}
