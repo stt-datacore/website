@@ -1,6 +1,5 @@
 import React from "react";
-import { ContinuumMission } from "../../model/continuum";
-import { Header, Icon, Form, TextArea, Accordion, Button } from "semantic-ui-react";
+import { Header, Form, TextArea, Accordion, Button } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Quest } from "../../model/missions";
 
