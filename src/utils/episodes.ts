@@ -18,46 +18,47 @@ export function getEpisodeName(node: any) {
 export interface NavMapItem {
     id: number;
     challenge: MissionChallenge;
-    tier: number;
+    stage: number;
     parent?: number;    
     parents?: number[];
     children?: number[];
 }
 
 
+export function makeNavMap(quest: Quest): NavMapItem[] {
 
-function _internalMakeNavMap(quest: Quest, startId?: number, currentTier?: number, parent?: NavMapItem, currentData?: NavMapItem[]): NavMapItem[] {
-    currentData ??= [];
-    startId ??= 0;
-    currentTier ??= 0;
 
-    if (!quest.challenges?.length || quest.challenges.length - 1 < startId) return currentData;
-    let ch = quest.challenges?.find(f => f.id === startId);
-    if (!ch) return currentData;
+    function _internalMakeNavMap(quest: Quest, startId?: number, currentStage?: number, parent?: NavMapItem, currentData?: NavMapItem[]): NavMapItem[] {
+        currentData ??= [];
+        startId ??= 0;
+        currentStage ??= 0;
 
-    const item = {
-        id: ch.id,
-        tier: currentTier,
-        challenge: ch,
-        parent: parent?.id
-    } as NavMapItem;
+        if (!quest.challenges?.length || quest.challenges.length - 1 < startId) return currentData;
+        let ch = quest.challenges?.find(f => f.id === startId);
+        if (!ch) return currentData;
 
-    currentData.push(item);
+        const item = {
+            id: ch.id,
+            stage: currentStage,
+            challenge: ch,
+            parent: parent?.id
+        } as NavMapItem;
 
-    if (item.challenge.children?.length) {
-        for (let n of item.challenge.children) {
-            currentData = _internalMakeNavMap(quest, n, currentTier + 1, item, currentData);
-        }       
+        currentData.push(item);
+
+        if (item.challenge.children?.length) {
+            for (let n of item.challenge.children) {
+                currentData = _internalMakeNavMap(quest, n, currentStage + 1, item, currentData);
+            }       
+        }
+
+        return currentData;
     }
 
-    return currentData;
-}
-
-export function makeNavMap(quest: Quest): NavMapItem[] {
 
     let map = _internalMakeNavMap(quest);
     map.sort((a, b) => {
-        let r = a.tier - b.tier;
+        let r = a.stage - b.stage;
         if (r) return r;
         if (a.parent !== undefined && b.parent === undefined) return 1;
         else if (a.parent === undefined && b.parent !== undefined) return -1;
@@ -71,7 +72,7 @@ export function makeNavMap(quest: Quest): NavMapItem[] {
     let fmap = [] as NavMapItem[];
 
     for (let item of map) {
-        let found = fmap.find(t => t.id === item.id && t.tier === item.tier);
+        let found = fmap.find(t => t.id === item.id && t.stage === item.stage);
         if (found && item.parent !== undefined) {
             found.parents ??= [];
             if (item.parent !== found.parent && !found.parents.includes(item.parent)) {
@@ -95,4 +96,62 @@ export function makeNavMap(quest: Quest): NavMapItem[] {
     });
 
     return fmap;
+}
+
+// class Iterator<T> extends Array<T> {
+
+//     private _iter: number = -1;
+
+//     constructor(items: T[]) {
+//         super();
+//         items.forEach((item) => this.push(item));
+//     }
+
+//     reset() {
+//         this._iter = -1;
+//     }
+
+//     next() {
+//         this._iter++;
+//     }
+
+//     current() {
+//         if (this._iter < 0 || this._iter > length) return undefined;
+//         return this[this._iter];
+//     }
+    
+//     nextCurrent() {
+//         this.next();
+//         return this.current();
+//     }
+// }
+
+export interface PathInfo {
+    ids: number[];
+    path: string;
+}
+
+export function getNode(item: NavMapItem, stack: NavMapItem[], parentStack?: NavMapItem[]): PathInfo[] {
+
+    parentStack ??= [];
+    parentStack.push(item);
+    
+    if (!item.children?.length) {
+        return [{
+            ids: parentStack.map(p => p.id),
+            path: parentStack.map(p => p.id).join("_")
+        }]
+    }
+    else {
+        let stacks = [] as PathInfo[];
+        for (let n of item.children) {
+            let child = stack.find(s => s.id === n);
+            if (child) {
+                let result = getNode(child, stack, [ ...parentStack ]);
+                stacks = stacks.concat(result);
+            }
+            
+        }
+        return stacks;        
+    }    
 }
