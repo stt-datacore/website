@@ -1,10 +1,12 @@
 import React from "react";
 
-import '../typings/worker';
-import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+import '../../typings/worker';
+import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
+
 import { GlobalContext } from "../../context/globalcontext";
 import { QuestSolverConfig, QuestSolverResult } from "../../model/worker";
 import { MissionChallenge, Quest } from "../../model/missions";
+import { Button } from "semantic-ui-react";
 
 export interface QuestSolverProps {
     traits?: string[];
@@ -13,6 +15,7 @@ export interface QuestSolverProps {
     paths?: number[][];        
     setResults: (value: QuestSolverResult) => void;
     runCount?: number;
+    mastery: number;
 }
 
 interface QuestSolverState {
@@ -36,7 +39,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { challenges, quest, setResults, paths, traits } = this.props;
+		const { mastery, challenges, quest, setResults, paths, traits } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
             if (setResults) {
@@ -49,31 +52,41 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 		worker.postMessage({
 			worker: 'questSolver',
 			config: { 
-				context: this.context,
+				context: {
+                    core: {
+                        items: this.context.core.items
+                    },
+                    player: {
+                        playerData: this.context.player.playerData
+                    }
+                },
 				quest,
                 challenges,
                 paths,
-                traits
+                traits,
+                mastery
             } as QuestSolverConfig
 		});
 	}
 
-    componentDidMount(): void {
-        this.initData();
-    }
+    // componentDidMount(): void {
+    //     this.initData();
+    // }
 
-    componentDidUpdate(prevProps: Readonly<QuestSolverProps>, prevState: Readonly<QuestSolverState>, snapshot?: any): void {
-        this.initData();
-    }
+    // componentDidUpdate(prevProps: Readonly<QuestSolverProps>, prevState: Readonly<QuestSolverState>, snapshot?: any): void {
+    //     this.initData();
+    // }
 
-    private initData() {
-        if (this._irun !== this.state.runCount) {
-            this._irun = this.state.runCount;
-            this.runWorker();
-        }
-    }
+    // private initData() {
+    //     if (this._irun !== this.state.runCount) {
+    //         this._irun = this.state.runCount;
+    //         this.runWorker();
+    //     }
+    // }
 
     render() {
-        return <></>
+        return <div>
+            <Button color="blue" onClick={(e) => this.runWorker()}>Click to Find Crew</Button>
+        </div>
     }
 }
