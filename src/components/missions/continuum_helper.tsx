@@ -13,6 +13,7 @@ import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./missi
 import { QuestSolverComponent } from "./solver_component";
 import { QuestSolverResult } from "../../model/worker";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
+import { Checkbox } from "semantic-ui-react";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -45,6 +46,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [remoteQuestFlags, setRemoteQuestFlags] = useStateWithStorage<boolean[] | undefined>('continuum/remoteQuestFlags', undefined);
     const [clearFlag, setClearFlag] = React.useState(0);
     const [solverResults, setSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
+
+    const [idleOnly, setIdleOnly] = useStateWithStorage<boolean>('continuum/idleOnly', true);
+    const [considerFrozen, setConsiderFrozen] = useStateWithStorage<boolean>('continuum/considerFrozen', false);
 
     const { continuum_missions } = context.core;
 
@@ -208,16 +212,32 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 <div style={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    margin: "0.5em",
+                    margin: "1em",
+                    flexWrap: "wrap",
                     gap: "0.5em"
                 }}>
-                <QuestSolverComponent 
-                    quest={quest}
-                    setResults={setSolverResults}
-                    mastery={mastery} />
+                    
+                    <div>
+                    <QuestSolverComponent 
+                        quest={quest}
+                        setResults={setSolverResults}
+                        idleOnly={idleOnly}
+                        setIdleOnly={setIdleOnly}
+                        considerFrozen={considerFrozen}
+                        setConsiderFrozen={setConsiderFrozen}
+                        mastery={mastery} />
+                    </div>
+                    <div style={{display:'flex',flexDirection:'row', alignItems: 'center', margin: "0.5em"}}>
+                        <Checkbox checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)}/>
+                        <span>&nbsp;&nbsp;Only Idle Crew</span>
+                    </div>
+                    <div style={{display:'flex',flexDirection:'row', alignItems: 'center', margin: "0.5em"}}>
+                        <Checkbox checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)}/>
+                        <span>&nbsp;&nbsp;Consider Frozen Crew</span>
+                    </div>
 
                 </div>
 
