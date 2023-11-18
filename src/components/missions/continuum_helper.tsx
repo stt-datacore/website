@@ -10,6 +10,9 @@ import { useStateWithStorage } from "../../utils/storage";
 import { QuestImportComponent } from "./quest_importer";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
+import { QuestSolverComponent } from "./solver_component";
+import { QuestSolverResult } from "../../model/worker";
+import { CrewConfigTable } from "../crewtables/crewconfigtable";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -41,7 +44,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
     const [remoteQuestFlags, setRemoteQuestFlags] = useStateWithStorage<boolean[] | undefined>('continuum/remoteQuestFlags', undefined);
     const [clearFlag, setClearFlag] = React.useState(0);
-    
+    const [solverResults, setSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
+
     const { continuum_missions } = context.core;
 
     let disc = new Date(
@@ -201,6 +205,28 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     highlighted={highlighted}
                     setHighlighted={setHighlighted}
                     />}
+
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "0.5em",
+                    gap: "0.5em"
+                }}>
+                <QuestSolverComponent 
+                    quest={quest}
+                    setResults={setSolverResults}
+                    mastery={mastery} />
+
+                </div>
+
+                <CrewConfigTable 
+                    rosterCrew={solverResults?.crew ?? []}
+                    pageId={'continuum'}
+                    rosterType={'profileCrew'}
+                    crewFilters={[]}
+                />
             </div>
         </>
     );

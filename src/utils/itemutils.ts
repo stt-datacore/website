@@ -1,11 +1,11 @@
 import CONFIG from '../components/CONFIG';
 import { Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { ISymbol, SymbolName } from '../model/game-elements';
+import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
 import { AtlasIcon, BuffBase, PlayerCollection, PlayerEquipmentItem, Reward } from '../model/player';
 import { getIconPath } from './assets';
-import { simplejson2csv, ExportField, getImageName } from './misc';
+import { simplejson2csv, ExportField } from './misc';
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
