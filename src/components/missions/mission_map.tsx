@@ -242,8 +242,9 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
 
                 </Step.Group>
                 {!!quest && typeof questIndex !== 'undefined' &&
-                    <div className={"ui segment"}>
-                        <Table style={{ margin: 0, padding: 0 }}>
+                <div className={"ui segment"}>
+                    <Table style={{ margin: 0, padding: 0 }}>
+                        <Table.Body>
                             <Table.Row>
                                 <Table.Cell>
                                     <div
@@ -322,6 +323,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
 
                                     </Table.Cell>
                                 </Table.Row>}
+                            </Table.Body>
                         </Table>
                     </div>}
 

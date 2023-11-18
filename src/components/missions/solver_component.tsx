@@ -5,17 +5,24 @@ import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { GlobalContext } from "../../context/globalcontext";
 import { QuestSolverConfig, QuestSolverResult } from "../../model/worker";
-import { MissionChallenge, Quest } from "../../model/missions";
+import { MissionChallenge, MissionTraitBonus, Quest } from "../../model/missions";
 import { Button } from "semantic-ui-react";
 
+
+
+
 export interface QuestSolverProps {
-    traits?: string[];
+    traits?: MissionTraitBonus[];
     quest?: Quest;
     challenges?: MissionChallenge[];
     paths?: number[][];        
     setResults: (value: QuestSolverResult) => void;
     runCount?: number;
     mastery: number;
+    setIdleOnly: (value: boolean) => void;
+    idleOnly: boolean;
+    setConsiderFrozen: (value: boolean) => void;
+    considerFrozen: boolean;
 }
 
 interface QuestSolverState {
@@ -39,7 +46,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { mastery, challenges, quest, setResults, paths, traits } = this.props;
+		const { considerFrozen, idleOnly, mastery, challenges, quest, setResults, paths, traits } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
             if (setResults) {
@@ -64,7 +71,9 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                 challenges,
                 paths,
                 traits,
-                mastery
+                mastery,
+                considerFrozen,
+                idleOnly
             } as QuestSolverConfig
 		});
 	}
