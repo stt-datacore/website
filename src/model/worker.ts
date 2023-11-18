@@ -211,11 +211,19 @@ export interface CiteData {
 }
 
 export interface QuestSolverConfig {
-    context: IDefaultGlobal;
+    context: {
+        core: ICoreData,
+        player: {
+            playerData: PlayerData
+        }
+    };
     traits?: string[];
     quest?: Quest;
-    challenges?: MissionChallenge[];
+    challenges?: MissionChallenge[];    
     paths?: number[][];    
+    mastery: number;
+    idleOnly?: boolean;
+    considerFrozen?: boolean;
 }
 
 export interface IQuestCrew extends PlayerCrew {
