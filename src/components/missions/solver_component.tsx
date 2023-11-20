@@ -23,6 +23,10 @@ export interface QuestSolverProps {
     idleOnly: boolean;
     setConsiderFrozen: (value: boolean) => void;
     considerFrozen: boolean;
+    setQpOnly: (value: boolean) => void;
+    qpOnly: boolean;
+    setIgnoreQpConstraint: (value: boolean) => void;
+    ignoreQpConstraint: boolean;
 }
 
 interface QuestSolverState {
@@ -46,7 +50,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { considerFrozen, idleOnly, mastery, challenges, quest, setResults, paths, traits } = this.props;
+		const { qpOnly, ignoreQpConstraint, considerFrozen, idleOnly, mastery, challenges, quest, setResults, paths, traits } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
             if (setResults) {
@@ -73,7 +77,9 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                 traits,
                 mastery,
                 considerFrozen,
-                idleOnly
+                idleOnly,
+                qpOnly,
+                ignoreQpConstraint
             } as QuestSolverConfig
 		});
 	}
