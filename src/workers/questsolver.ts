@@ -1,9 +1,10 @@
 import { PlayerSkill } from "../model/crew";
+import { EquipmentItem } from "../model/equipment";
 import { MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew } from "../model/player";
 import { IQuestCrew, QuestSolverConfig, QuestSolverResult } from "../model/worker";
 
-import { getPossibleQuipment, getItemBonuses } from "../utils/itemutils";
+import { getPossibleQuipment, getItemBonuses, ItemBonusInfo } from "../utils/itemutils";
 import { applyCrewBuffs } from "./betatachyon";
 
 interface SkillCrit {
@@ -25,6 +26,8 @@ const QuestSolver = {
             return 4;
         }
         
+        const added = {} as { [key: string]: string[] };
+
         function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, traits?: MissionTraitBonus[]) {
 
             const useTraits = traits ?? challenge.trait_bonuses ?? [];
@@ -55,21 +58,30 @@ const QuestSolver = {
                     .map(c => c as IQuestCrew);
            
             let qpass = questcrew.filter((crew) => {
-                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);                
-                n -= (0.20 * (crew.challenges?.length ?? 0) * n);
+                const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
 
-                let slots = [] as string[];                
-                const nslots = !!config.ignoreQpConstraint ? 4 : qbitsToSlots(crew.q_bits);
+                crew.challenges ??= [];                
+
+                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);                
+                // n -= (0.20 * (crew.challenges?.length ?? 0) * n);
                 
                 crew.metasort ??= 0;
-                crew.added_kwipment ??= [];
-                crew.metasort += n;
-
+                crew.added_kwipment ??= [];                
+                added[crew.symbol] ??= [];
+                
+                const currslots = added[crew.symbol];
+                const slots = [] as string[];
+                const quips = {} as { [key: string]: ItemBonusInfo };
+                
                 while (n < challenge.difficulty_by_mastery[mastery]) {
                     if (!nslots) return false;
+                    if (1 + slots.length + currslots.length > nslots) return false;
+                    if (crew.symbol === 'nancy_hedford_crew') {
+                        console.log("nancy");
+                    }
 
                     let qps = getPossibleQuipment(crew, quipment)
-                        .filter((item) => !slots.includes(item.symbol))
+                        .filter((item) => !slots.includes(item.symbol) && !currslots?.includes(item.symbol))
                         .map((qp) => { 
                             return { item: qp, bonusInfo: getItemBonuses(qp) }
                         })
@@ -87,13 +99,10 @@ const QuestSolver = {
                                         
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + ((qps[0].bonusInfo.bonuses[challenge.skill].range_min + qps[0].bonusInfo.bonuses[challenge.skill].range_max) / 2);
-                        qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
+                        // qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
                         n += qpower;
 
-                        crew[challenge.skill].core += qps[0].bonusInfo.bonuses[challenge.skill].core;
-                        crew[challenge.skill].min += qps[0].bonusInfo.bonuses[challenge.skill].range_min;
-                        crew[challenge.skill].max += qps[0].bonusInfo.bonuses[challenge.skill].range_max;
-                        crew.metasort += n;
+                        quips[qps[0].item.symbol] = qps[0].bonusInfo;
                         slots.push(qps[0].item.symbol);
                     }
                     else {
@@ -101,28 +110,22 @@ const QuestSolver = {
                     }
                 }
 
-                if (slots?.length) {
-                    let newquips = slots.map((symbol, idx) => {
-                        let item = quipment.find(f => f.symbol === symbol);
-                        if (typeof item?.kwipment_id === 'string') {
-                            return Number.parseInt(item.kwipment_id);
-                        }
-                        else if (typeof item?.kwipment_id === 'number') {
-                            return item.kwipment_id;
-                        }
-                        else {
-                            return 0;
-                        }
-                    })
-                    .filter(s => !crew.added_kwipment?.some(d => d === s));
-                    
-                    if (newquips.length + crew.added_kwipment.length > nslots) return false;                    
-                    crew.added_kwipment = (crew.added_kwipment as number[]).concat(newquips);
-                }
-
-                crew.challenges ??= [];
                 if (!crew.challenges.includes(challenge.id)) crew.challenges.push(challenge.id);
 
+                crew.metasort += n;
+
+                if (slots.length) {
+                    Object.entries(quips).forEach(([symbol, qp]) => {
+                        
+                        crew[challenge.skill].core += qp.bonuses[challenge.skill].core;
+                        crew[challenge.skill].min += qp.bonuses[challenge.skill].range_min;
+                        crew[challenge.skill].max += qp.bonuses[challenge.skill].range_max;
+
+                    });
+
+                    added[crew.symbol] = added[crew.symbol].concat(slots);
+                }
+                
                 return true;
             });
 
@@ -188,7 +191,24 @@ const QuestSolver = {
             });
 
             crew = crew.filter((c, i) => crew.findIndex(c2 => c2.symbol === c.symbol) === i);
+
             crew.forEach((c) => {
+                const slots = added[c.symbol];
+                if (slots?.length) {
+                    c.added_kwipment = slots.map((symbol, idx) => {
+                        let item = config.context.core.items.find(f => f.symbol === symbol);
+                        if (typeof item?.kwipment_id === 'string') {
+                            return Number.parseInt(item.kwipment_id);
+                        }
+                        else if (typeof item?.kwipment_id === 'number') {
+                            return item.kwipment_id;
+                        }
+                        else {
+                            return 0;
+                        }
+                    });                    
+                }
+
                 Object.keys(c.skills).forEach((skill) => {
                     c.skills[skill].core = c[skill].core;
                     c.skills[skill].range_max = c[skill].max;
