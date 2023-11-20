@@ -1,11 +1,45 @@
-import { PlayerSkill } from "../model/crew";
+import CONFIG from "../components/CONFIG";
+import { ComputedBuff, CrewMember, PlayerSkill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew } from "../model/player";
 import { IQuestCrew, QuestSolverConfig, QuestSolverResult } from "../model/worker";
 
 import { getPossibleQuipment, getItemBonuses, ItemBonusInfo } from "../utils/itemutils";
+import { arrayIntersect } from "../utils/misc";
 import { applyCrewBuffs } from "./betatachyon";
+
+export function getSkillOrder<T extends CrewMember>(crew: T) {
+	const sk = [] as ComputedBuff[];
+
+	for (let skill of Object.keys(CONFIG.SKILLS)) {
+		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
+			sk.push({ ...crew.base_skills[skill], skill: skill });
+		}
+	}
+	
+	sk.sort((a, b) => b.core - a.core);                
+	const output = [] as string[];
+
+	if (sk.length > 0 && sk[0].skill) {
+		output.push(sk[0].skill);
+	}
+	if (sk.length > 1 && sk[1].skill) {
+		output.push(sk[1].skill);
+	}
+	if (sk.length > 2 && sk[2].skill) {
+		output.push(sk[2].skill);
+	}
+
+	return output;
+}
+
+export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {
+    if (!traits.length) return [];
+    
+    let intersect = arrayIntersect(crew.traits.concat(crew.traits_hidden), (traits as MissionTraitBonus[]).map(t => t.trait));
+    return traits.filter(f => intersect.includes(f.trait));
+}
 
 interface SkillCrit {
     skill: PlayerSkill | string;
@@ -38,7 +72,18 @@ const QuestSolver = {
             });
 
             let questcrew = [] as IQuestCrew[];
-            
+
+            let prefilter = roster.filter(c => {
+                let ski = getSkillOrder(c);
+                let b = (ski[0] === challenge.skill);
+                if (!b) {
+                    b = !!getTraits(c, useTraits)?.length;
+                }
+                return b;
+            });
+
+            if (prefilter.length >= 3) questcrew = prefilter;
+
             questcrew = roster.filter(c => 
                     (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
                     .sort((a, b) => {
@@ -62,8 +107,14 @@ const QuestSolver = {
 
                 crew.challenges ??= [];                
 
-                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);                
-                // n -= (0.20 * (crew.challenges?.length ?? 0) * n);
+                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);
+                let ttraits = getTraits(crew, useTraits);
+                n += ttraits
+                        .map((t => Object.values(t.bonuses)))
+                        .flat()
+                        .reduce((p, n) => p + n, 0);
+
+                n -= (0.20 * (crew.challenges?.length ?? 0) * n);
                 
                 crew.metasort ??= 0;
                 crew.added_kwipment ??= [];                
@@ -99,7 +150,7 @@ const QuestSolver = {
                                         
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + ((qps[0].bonusInfo.bonuses[challenge.skill].range_min + qps[0].bonusInfo.bonuses[challenge.skill].range_max) / 2);
-                        // qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
+                        qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
                         n += qpower;
 
                         quips[qps[0].item.symbol] = qps[0].bonusInfo;
@@ -176,23 +227,47 @@ const QuestSolver = {
                 let chcrew = solveChallenge(roster, ch, config.mastery);
                 if (chcrew?.length) crew = crew.concat(chcrew);
             }
-
+            
             crew = crew.sort((a, b) => {
                 let r = 0;
-                let ca = a.challenges?.length ?? 0;
-                let cb = b.challenges?.length ?? 0;
+                
+                let ca = 0;
+                let cb = 0;
+
+                ca = a.challenges?.length ?? 0;
+                cb = b.challenges?.length ?? 0;
                 r = cb - ca;
-                if (!r) {
-                    ca = a.added_kwipment?.length ?? 0;
-                    cb = b.added_kwipment?.length ?? 0;
-                    r = ca - cb;
-                }
+                if (r) return r;
+
+                ca = a.added_kwipment?.length ?? 0;
+                cb = b.added_kwipment?.length ?? 0;
+                r = ca - cb;
                 return r;
             });
 
             crew = crew.filter((c, i) => crew.findIndex(c2 => c2.symbol === c.symbol) === i);
 
-            crew.forEach((c) => {
+            let chfill = [] as IQuestCrew[];
+            let ach = {} as { [key: number]: boolean };
+            challenges.forEach((challenge) => {
+                ach[challenge.id] = false;
+                for (let c of crew) {
+                    if (c.challenges?.includes(challenge.id)) {
+                        if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
+                            chfill.push(c);
+                        }                 
+                        ach[challenge.id] = true;       
+                        break;
+                    }
+                }
+            });
+
+            let allchallenges = Object.values(ach).every(t => t);
+
+            crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
+
+            crew.forEach((c, idx) => {                
+                c.score = idx + 1;
                 const slots = added[c.symbol];
                 if (slots?.length) {
                     c.added_kwipment = slots.map((symbol, idx) => {
@@ -215,6 +290,9 @@ const QuestSolver = {
                     c.skills[skill].range_min = c[skill].min;
                 })
             });
+
+
+
             resolve({
                 status: true,
                 crew

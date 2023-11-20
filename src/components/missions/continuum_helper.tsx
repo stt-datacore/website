@@ -173,7 +173,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }
 
     const crewTableCells = [
-        // { width: 2, column: 'kwipment', title: 'Current Quipment' },
+        { width: 2, column: 'score', title: 'Rank' },
         { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
         { width: 2, column: 'metasort', title: 'Computed Skills' },
         { width: 2, column: 'challenges.length', title: 'Challenges' }
@@ -183,11 +183,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         let crew = row as IQuestCrew;
 		return (
             <React.Fragment>
-                {/* <Table.Cell>
+                <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
-			            <CrewItemsView crew={crew} quipment={true} />
+			            {row.score}
                     </div>
-		        </Table.Cell> */}
+		        </Table.Cell>
                 <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
     			        <CrewItemsView crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: [] }} quipment={true} />
