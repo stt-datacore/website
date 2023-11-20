@@ -5,10 +5,46 @@ import { PlayerCrew, PlayerData } from "../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
 import { BuffStatTable } from "../utils/voyageutils";
 
-interface CrewSkill {
+export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
+    const getMultiplier = (skill: string, stat: string) => {
+        return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
+    };
+
+    for (let skill in CONFIG.SKILLS) {
+        crew[skill] = { core: 0, min: 0, max: 0 };
+    }
+    let bs = {} as BaseSkills;
+    // Apply buffs
+    for (let skill in crew.base_skills) {
+        let core = 0;
+        let min = 0;
+        let max = 0;
+
+        core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+        min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+        max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+
+        if (nowrite !== true) {
+            crew[skill] = {
+                core: core,
+                min: min,
+                max: max
+            };	
+        }
+        bs[skill] = {
+            core: core,
+            range_min: min,
+            range_max: max
+        };
+    }
+    return bs;
+}
+
+export interface CrewSkill {
     crew: PlayerCrew | CrewMember;
     skills: ComputedBuff[];
 }
+
 const amSkillOrder = ["command_skill", "science_skill", "security_skill", "engineering_skill", "diplomacy_skill", "medicine_skill"];
 const amMap = [
     "Astrophysicist 	x 	x 		x 	x 	",
@@ -87,40 +123,7 @@ const BetaTachyon = {
         let { playerData } = config;
 
         return new Promise<CiteData>((resolve, reject) => {
-            function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
-                const getMultiplier = (skill: string, stat: string) => {
-                    return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
-                };
             
-                for (let skill in CONFIG.SKILLS) {
-                    crew[skill] = { core: 0, min: 0, max: 0 };
-                }
-                let bs = {} as BaseSkills;
-                // Apply buffs
-                for (let skill in crew.base_skills) {
-                    let core = 0;
-                    let min = 0;
-                    let max = 0;
-            
-                    core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
-                    min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
-                    max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
-            
-                    if (nowrite !== true) {
-                        crew[skill] = {
-                            core: core,
-                            min: min,
-                            max: max
-                        };	
-                    }
-                    bs[skill] = {
-                        core: core,
-                        range_min: min,
-                        range_max: max
-                    };
-                }
-                return bs;
-            }
             
             function isNever(crew: PlayerCrew | CrewMember) {
                 let ob = crew.obtained.toLowerCase();	

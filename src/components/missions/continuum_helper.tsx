@@ -1,9 +1,9 @@
 import React from "react";
 import { PlayerCrew, Reward } from "../../model/player";
-import { CrewMember } from "../../model/crew";
+import { CrewMember, Skill } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { Quest } from "../../model/missions";
+import { MissionChallenge, Quest } from "../../model/missions";
 import { Notification } from "../page/notification";
 import { ChallengeNodeInfo } from "./challenge_node";
 import { useStateWithStorage } from "../../utils/storage";
@@ -16,6 +16,8 @@ import { CrewConfigTable } from "../crewtables/crewconfigtable";
 import { Checkbox, Grid, Table } from "semantic-ui-react";
 import { IRosterCrew } from "../crewtables/model";
 import { CrewItemsView } from "../item_presenters/crew_items";
+import { Skills } from "../item_presenters/classic_presenter";
+import CrewStat from "../crewstat";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -29,6 +31,7 @@ export interface TraitSelection {
 
 export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const context = React.useContext(GlobalContext);
+    if (!context.player.playerData) return <></>
     const [mission, setMission] = React.useState<ContinuumMission | undefined>(
         undefined
     );
@@ -64,7 +67,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const crewTableCells = [
         { width: 2, column: 'kwipment', title: 'Current Quipment' },
-        { width: 2, column: 'added_kwipment', title: 'Suggested Quipment' }
+        { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
+        { width: 2, column: 'metasort', title: 'Computed Skills' }
     ]
 
     React.useEffect(() => {
@@ -186,6 +190,22 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     			        <CrewItemsView crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: [] }} quipment={true} />
                     </div>
 		        </Table.Cell>
+                <Table.Cell>
+                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
+                        {Object.entries(crew.skills).sort(([akey, askill], [bkey, bskill]) => {
+                            return (bskill as Skill).core - (askill as Skill).core;
+                            
+                        }).map(([key, skill]) => {                            
+                            return <CrewStat
+                                quipmentMode={true}
+                                key={"crewpresent_skill_" + key}
+                                skill_name={key}
+                                data={skill}
+                                scale={0.75}
+                            />
+                        })}
+                    </div>
+		        </Table.Cell>
             </React.Fragment>)
 	}
 
@@ -272,7 +292,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 <Table.Cell>
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
                                         <Checkbox checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
-                                        <span>&nbsp;&nbsp;Ignore Qbits</span>
+                                        <span>&nbsp;&nbsp;Assume Max QBits (Ignore Limit)</span>
                                     </div>
                                 </Table.Cell>
                             </Table.Row>
@@ -280,6 +300,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         </Table>
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
+                                challenges={(highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[]}
                                 quest={quest}
                                 setResults={setSolverResults}
                                 idleOnly={idleOnly}

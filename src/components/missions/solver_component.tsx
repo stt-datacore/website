@@ -63,6 +63,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 		worker.postMessage({
 			worker: 'questSolver',
 			config: { 
+                buffs: this.context.player.buffConfig,
 				context: {
                     core: {
                         items: this.context.core.items
