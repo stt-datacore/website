@@ -221,7 +221,7 @@ export interface QuestSolverConfig extends QuestFilterConfig {
 }
 
 export interface IQuestCrew extends PlayerCrew {
-    challenges?: string[];
+    challenges?: number[];
     added_kwipment?: number[][] | number[];
     metasort?: number;
 }

@@ -172,6 +172,23 @@ function iOS() {
 	return current;
   }
 
+  export function arrayIntersect<T>(arr1: T[], arr2: T[]): T[] {
+	let newarr = [] as T[];
+	for (let elem of arr2) {
+		if (!newarr.includes(elem)) {
+			newarr.push(elem);
+		}
+	}
+	for (let elem of arr1) {
+		if (!newarr.includes(elem)) {
+			newarr.push(elem);
+		}
+	}
+
+	return newarr.filter(a => arr1.includes(a) && arr2.includes(a));
+  }
+
+
   export function arrayUnion<T>(arr1: T[], arr2: T[]): T[] {
 	let newarr = [...arr1];
 	for (let elem of arr2) {
