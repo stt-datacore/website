@@ -11,9 +11,11 @@ import { QuestImportComponent } from "./quest_importer";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
-import { QuestSolverResult } from "../../model/worker";
+import { IQuestCrew, QuestSolverResult } from "../../model/worker";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { Checkbox } from "semantic-ui-react";
+import { Checkbox, Grid, Table } from "semantic-ui-react";
+import { IRosterCrew } from "../crewtables/model";
+import { CrewItemsView } from "../item_presenters/crew_items";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -49,6 +51,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [idleOnly, setIdleOnly] = useStateWithStorage<boolean>('continuum/idleOnly', true);
     const [considerFrozen, setConsiderFrozen] = useStateWithStorage<boolean>('continuum/considerFrozen', false);
+    const [qpOnly, setQpOnly] = useStateWithStorage<boolean>('continuum/qpOnly', false);
+    const [ignoreQpConstraint, setIgnoreQpConstraint] = useStateWithStorage<boolean>('continuum/ignoreQpConstraint', false);
 
     const { continuum_missions } = context.core;
 
@@ -57,6 +61,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     );
 
     const missionUrl = `/structured/continuum/${continuum_missions.length}.json`;
+
+    const crewTableCells = [
+        { width: 2, column: 'kwipment', title: 'Current Quipment' },
+        { width: 2, column: 'added_kwipment', title: 'Suggested Quipment' }
+    ]
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
@@ -109,18 +118,18 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 if (result.quests?.length && !!quest && !!remoteQuestFlags?.length && remoteQuestFlags.length === result.quests.length) {
                     savedRemotes = true;
-                    remotes = remoteQuestFlags;    
+                    remotes = remoteQuestFlags;
                 }
 
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         if (savedRemotes && remotes[i] && quest?.id === result.quests[i].id) {
                             result.quests[i] = quest;
-                        } 
+                        }
                         else {
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             remotes.push(false);
-    
+
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
                                 ch.difficulty_by_mastery = [];
@@ -143,7 +152,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const clearRemote = () => {
         setRemoteQuestFlags([]);
         setTimeout(() => {
-            setClearFlag(clearFlag+1);
+            setClearFlag(clearFlag + 1);
         });
     }
 
@@ -163,6 +172,23 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
     }
 
+	const renderTableCells = (row: IRosterCrew): JSX.Element => {
+        let crew = row as IQuestCrew;
+		return (
+            <React.Fragment>
+                <Table.Cell>
+                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
+			            <CrewItemsView crew={crew} quipment={true} />
+                    </div>
+		        </Table.Cell>
+                <Table.Cell>
+                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
+    			        <CrewItemsView crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: [] }} quipment={true} />
+                    </div>
+		        </Table.Cell>
+            </React.Fragment>)
+	}
+
     return (
         <>
             <div>
@@ -179,35 +205,35 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 {questIndex !== undefined && !!remoteQuestFlags &&
-                    <QuestImportComponent 
-                        defaultCollapsed={remoteQuestFlags[questIndex]} 
-                        setQuest={setRemoteQuest} 
-                        quest={quest} 
-                        questId={quest?.id} 
-                        setError={setErrorMsg} 
+                    <QuestImportComponent
+                        defaultCollapsed={remoteQuestFlags[questIndex]}
+                        setQuest={setRemoteQuest}
+                        quest={quest}
+                        questId={quest?.id}
+                        setError={setErrorMsg}
                         clearQuest={clearRemote}
-                        />
+                    />
                 }
                 Current Continuum Mission: {discoverDate?.toDateString()}
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
-                
-                {mission && 
-                <MissionMapComponent
-                    autoTraits={true}
-                    pageId={'continuum'}
-                    mission={mission} 
-                    showChainRewards={true} 
-                    isRemote={remoteQuestFlags}
-                    questIndex={questIndex}
-                    setQuestIndex={setQuestIndex}
-                    mastery={mastery}
-                    setMastery={setMastery}
-                    selectedTraits={selectedTraits}
-                    setSelectedTraits={setSelectedTraits}
-                    highlighted={highlighted}
-                    setHighlighted={setHighlighted}
+
+                {mission &&
+                    <MissionMapComponent
+                        autoTraits={true}
+                        pageId={'continuum'}
+                        mission={mission}
+                        showChainRewards={true}
+                        isRemote={remoteQuestFlags}
+                        questIndex={questIndex}
+                        setQuestIndex={setQuestIndex}
+                        mastery={mastery}
+                        setMastery={setMastery}
+                        selectedTraits={selectedTraits}
+                        setSelectedTraits={setSelectedTraits}
+                        highlighted={highlighted}
+                        setHighlighted={setHighlighted}
                     />}
 
                 <div style={{
@@ -219,29 +245,60 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     flexWrap: "wrap",
                     gap: "0.5em"
                 }}>
-                    
-                    <div>
-                    <QuestSolverComponent 
-                        quest={quest}
-                        setResults={setSolverResults}
-                        idleOnly={idleOnly}
-                        setIdleOnly={setIdleOnly}
-                        considerFrozen={considerFrozen}
-                        setConsiderFrozen={setConsiderFrozen}
-                        mastery={mastery} />
-                    </div>
-                    <div style={{display:'flex',flexDirection:'row', alignItems: 'center', margin: "0.5em"}}>
-                        <Checkbox checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)}/>
-                        <span>&nbsp;&nbsp;Only Idle Crew</span>
-                    </div>
-                    <div style={{display:'flex',flexDirection:'row', alignItems: 'center', margin: "0.5em"}}>
-                        <Checkbox checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)}/>
-                        <span>&nbsp;&nbsp;Consider Frozen Crew</span>
-                    </div>
 
+                    <div style={{ display: "inline-block" }}>
+                        <Table>
+                            <Table.Row>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)} />
+                                        <span>&nbsp;&nbsp;Only Idle Crew</span>
+                                    </div>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-start", margin: "0.5em" }}>
+                                        <Checkbox checked={qpOnly} onChange={(e, { checked }) => setQpOnly(!!checked)} />
+                                        <span>&nbsp;&nbsp;Quippable Only</span>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
+                            <Table.Row>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)} />
+                                        <span>&nbsp;&nbsp;Consider Frozen Crew</span>
+                                    </div>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
+                                        <Checkbox checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
+                                        <span>&nbsp;&nbsp;Ignore Qbits</span>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
+
+                        </Table>
+                        <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
+                            <QuestSolverComponent
+                                quest={quest}
+                                setResults={setSolverResults}
+                                idleOnly={idleOnly}
+                                setIdleOnly={setIdleOnly}
+                                considerFrozen={considerFrozen}
+                                setConsiderFrozen={setConsiderFrozen}
+                                qpOnly={qpOnly}
+                                setQpOnly={setQpOnly}
+                                ignoreQpConstraint={ignoreQpConstraint}
+                                setIgnoreQpConstraint={setIgnoreQpConstraint}
+                                mastery={mastery} />
+                        </div>
+
+                    </div>
                 </div>
 
-                <CrewConfigTable 
+                <CrewConfigTable
+                    tableConfig={crewTableCells}
+                    renderTableCells={renderTableCells}
                     rosterCrew={solverResults?.crew ?? []}
                     pageId={'continuum'}
                     rosterType={'profileCrew'}

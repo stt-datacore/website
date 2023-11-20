@@ -3,6 +3,18 @@ import { Ship } from "./ship"
 import { BuffBase, PotentialReward, Reward } from "./player"
 import { Icon } from "./game-elements"
 
+export interface QuestFilterConfig {
+  traits?: string[];
+  quest?: Quest;
+  challenges?: MissionChallenge[];    
+  paths?: number[][];    
+  mastery: number;
+  idleOnly?: boolean;
+  considerFrozen?: boolean;
+  qpOnly?: boolean;
+  ignoreQpConstraint?: boolean;
+}
+
 export interface ProtoMission {
   id: number
   symbol: string

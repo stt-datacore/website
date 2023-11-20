@@ -21,7 +21,7 @@ import ProfileItems, { printRequiredTraits } from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
-import { formatDuration, getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
+import { formatDuration, getItemBonuses, getQuipmentCrew, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
 import { RosterTable } from '../components/crewtables/rostertable';
 import { IRosterCrew } from '../components/crewtables/model';
@@ -159,27 +159,14 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 
 				if (item.kwipment) {
-					const bonus = getItemBonuses(item);
-					const kwipment_levels = this.context.core.crew.filter(f => {
-						if (this.state.owned && this.context.player.playerData) {
-							if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
-						}
-						let mrq = item.max_rarity_requirement ?? f.max_rarity;
-						let rr = mrq >= f.max_rarity;
-
-						if (!!item.traits_requirement?.length) {
-							if (item.traits_requirement_operator === "and") {
-								rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+					const kwipment_levels = getQuipmentCrew(item, this.context.core.crew)
+						.filter((f) => {
+							if (this.state.owned && this.context.player.playerData) {
+								if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
 							}
-							else {
-								rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
-							}
-						}
-
-						rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
-
-						return rr;
-					}).map(crew => {
+							return true;
+						})
+						.map(crew => {
 						if (this.context.player.playerData) {
 							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
 							if (owned) {

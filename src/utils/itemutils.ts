@@ -1,9 +1,9 @@
 import CONFIG from '../components/CONFIG';
-import { Skill } from '../model/crew';
+import { CrewMember, Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, PlayerCollection, PlayerEquipmentItem, Reward } from '../model/player';
+import { AtlasIcon, BuffBase, CompactCrew, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
@@ -218,6 +218,54 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
     };
 }
 
+export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: EquipmentItem[]): EquipmentItem[] {
+	return quipment.filter((item) => {
+		if (item.kwipment) {
+			const bonus = getItemBonuses(item);
+			
+			let mrq = item.max_rarity_requirement ?? crew.max_rarity;
+			let rr = mrq >= crew.max_rarity;
+
+			if (!!item.traits_requirement?.length) {
+				if (item.traits_requirement_operator === "and") {
+					rr &&= item.traits_requirement?.every(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+				}
+				else {
+					rr &&= item.traits_requirement?.some(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+				}
+			}
+
+			rr &&= Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills);
+			return rr;
+		}
+		return false;
+	});
+}
+
+export function getQuipmentCrew<T extends CrewMember>(item: EquipmentItem, crew: T[]): T[] {
+	if (item.kwipment) {
+		const bonus = getItemBonuses(item);
+		return crew.filter(f => {			
+			let mrq = item.max_rarity_requirement ?? f.max_rarity;
+			let rr = mrq >= f.max_rarity;
+
+			if (!!item.traits_requirement?.length) {
+				if (item.traits_requirement_operator === "and") {
+					rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+				}
+				else {
+					rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+				}
+			}
+
+			rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
+
+			return rr;
+		});
+	}
+
+	return [];
+}
 
 
 export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T | undefined {

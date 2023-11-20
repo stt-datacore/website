@@ -7,7 +7,7 @@ import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
 import { GlobalContext, IDefaultGlobal } from "../context/globalcontext";
 import { ICoreData } from "../context/datacontext";
-import { Mission, MissionChallenge, ProtoMission, Quest } from "./missions";
+import { Mission, MissionChallenge, ProtoMission, Quest, QuestFilterConfig } from "./missions";
 import { ContinuumMission } from "./continuum";
 
 export interface GameWorkerOptionsList {
@@ -210,25 +210,18 @@ export interface CiteData {
     skillOrderRarities: SkillOrderRarity[];
 }
 
-export interface QuestSolverConfig {
+export interface QuestSolverConfig extends QuestFilterConfig {
     context: {
         core: ICoreData,
         player: {
             playerData: PlayerData
         }
     };
-    traits?: string[];
-    quest?: Quest;
-    challenges?: MissionChallenge[];    
-    paths?: number[][];    
-    mastery: number;
-    idleOnly?: boolean;
-    considerFrozen?: boolean;
 }
 
 export interface IQuestCrew extends PlayerCrew {
     challenges?: MissionChallenge[];
-    added_kwipment?: number[][];
+    added_kwipment?: number[][] | number[];
 }
 
 export interface QuestSolverResult {
