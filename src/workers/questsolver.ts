@@ -55,17 +55,18 @@ const QuestSolver = {
                     .map(c => c as IQuestCrew);
            
             let qpass = questcrew.filter((crew) => {
-                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);
+                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);                
+                n -= (0.20 * (crew.challenges?.length ?? 0) * n);
+
                 let slots = [] as string[];                
-                const nslots = config.ignoreQpConstraint ? 4 : qbitsToSlots(crew.q_bits);
+                const nslots = !!config.ignoreQpConstraint ? 4 : qbitsToSlots(crew.q_bits);
                 
                 crew.metasort ??= 0;
+                crew.added_kwipment ??= [];
                 crew.metasort += n;
 
                 while (n < challenge.difficulty_by_mastery[mastery]) {
                     if (!nslots) return false;
-                    crew.added_kwipment ??= [];
-                    if (crew.added_kwipment.filter(f => f != 0).length >= nslots) return false;
 
                     let qps = getPossibleQuipment(crew, quipment)
                         .filter((item) => !slots.includes(item.symbol))
@@ -85,7 +86,10 @@ const QuestSolver = {
                         });
                                         
                     if (qps?.length) {
-                        n += qps[0].bonusInfo.bonuses[challenge.skill].core + ((qps[0].bonusInfo.bonuses[challenge.skill].range_min + qps[0].bonusInfo.bonuses[challenge.skill].range_max) / 2);                        
+                        let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + ((qps[0].bonusInfo.bonuses[challenge.skill].range_min + qps[0].bonusInfo.bonuses[challenge.skill].range_max) / 2);
+                        qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
+                        n += qpower;
+
                         crew[challenge.skill].core += qps[0].bonusInfo.bonuses[challenge.skill].core;
                         crew[challenge.skill].min += qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         crew[challenge.skill].max += qps[0].bonusInfo.bonuses[challenge.skill].range_max;
@@ -98,7 +102,7 @@ const QuestSolver = {
                 }
 
                 if (slots?.length) {
-                    crew.added_kwipment = slots.map((symbol, idx) => {
+                    let newquips = slots.map((symbol, idx) => {
                         let item = quipment.find(f => f.symbol === symbol);
                         if (typeof item?.kwipment_id === 'string') {
                             return Number.parseInt(item.kwipment_id);
@@ -109,7 +113,11 @@ const QuestSolver = {
                         else {
                             return 0;
                         }
-                    });
+                    })
+                    .filter(s => !crew.added_kwipment?.some(d => d === s));
+                    
+                    if (newquips.length + crew.added_kwipment.length > nslots) return false;                    
+                    crew.added_kwipment = (crew.added_kwipment as number[]).concat(newquips);
                 }
 
                 crew.challenges ??= [];

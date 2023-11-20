@@ -215,10 +215,31 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         {crew.challenges?.map((ch) => {
                             let challenge = quest?.challenges?.find(f => f.id === ch);
                             let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
+                            
                             if (!challenge) {
                                 return <></>    
                             }
-                            return <div><b>{challenge.name}</b>{ctraits?.length ? <i style={{color:"lightgreen", fontWeight: "bold"}}>&nbsp;({ctraits.map(t => appelate(t)).join(", ")})</i> : <></>}</div>
+                            
+                            return (
+                                <div style={{
+                                    display: 'grid', 
+                                    gridTemplateAreas: `'image text' 'image traits'`, 
+                                    gridTemplateColumns: '32px auto'}}>
+                                    <div style={{gridArea: 'image', display:'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                        <img style={{height:'16px'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                                    </div>
+                                    <div style={{gridArea: 'text'}}>
+                                    <b>{challenge.name}</b>
+                                    </div>
+                                    <div style={{gridArea: 'traits'}}>
+                                    {ctraits?.length ? 
+                                        <i style={{color:"lightgreen", fontWeight: "bold"}}>
+                                            ({ctraits.map(t => appelate(t)).join(", ")})
+                                        </i> 
+                                        : <></>}
+                                    </div>
+                                </div>
+                            )
                         }).reduce((p, n) => p ? <div>{p}<br/><br/>{n}</div> : n)}
                     </div>
                 </Table.Cell>
