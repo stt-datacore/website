@@ -18,6 +18,7 @@ import { IRosterCrew } from "../crewtables/model";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import { Skills } from "../item_presenters/classic_presenter";
 import CrewStat from "../crewstat";
+import { appelate, arrayIntersect, arrayUnion } from "../../utils/misc";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -65,11 +66,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const missionUrl = `/structured/continuum/${continuum_missions.length}.json`;
 
-    const crewTableCells = [
-        { width: 2, column: 'kwipment', title: 'Current Quipment' },
-        { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
-        { width: 2, column: 'metasort', title: 'Computed Skills' }
-    ]
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
@@ -169,22 +165,29 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                     setMission({ ...mission });
                     setRemoteQuestFlags([...remoteQuestFlags]);
-
+                    
                     return;
                 }
             }
         }
     }
 
-	const renderTableCells = (row: IRosterCrew): JSX.Element => {
+    const crewTableCells = [
+        // { width: 2, column: 'kwipment', title: 'Current Quipment' },
+        { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
+        { width: 2, column: 'metasort', title: 'Computed Skills' },
+        { width: 2, column: 'challenges.length', title: 'Challenges' }
+    ]
+
+    const renderTableCells = (row: IRosterCrew): JSX.Element => {
         let crew = row as IQuestCrew;
 		return (
             <React.Fragment>
-                <Table.Cell>
+                {/* <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
 			            <CrewItemsView crew={crew} quipment={true} />
                     </div>
-		        </Table.Cell>
+		        </Table.Cell> */}
                 <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
     			        <CrewItemsView crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: [] }} quipment={true} />
@@ -193,19 +196,32 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
                         {Object.entries(crew.skills).sort(([akey, askill], [bkey, bskill]) => {
-                            return (bskill as Skill).core - (askill as Skill).core;
-                            
+                            return (bskill as Skill).core - (askill as Skill).core;                            
                         }).map(([key, skill]) => {                            
-                            return <CrewStat
+                            return <>
+                                <CrewStat                                
                                 quipmentMode={true}
-                                key={"crewpresent_skill_" + key}
+                                key={"continuum_crew_" + key}
                                 skill_name={key}
                                 data={skill}
                                 scale={0.75}
-                            />
+                            />                          
+                            </>
                         })}
                     </div>
 		        </Table.Cell>
+                <Table.Cell>
+                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
+                        {crew.challenges?.map((ch) => {
+                            let challenge = quest?.challenges?.find(f => f.id === ch);
+                            let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
+                            if (!challenge) {
+                                return <></>    
+                            }
+                            return <div><b>{challenge.name}</b>{ctraits?.length ? <i style={{color:"lightgreen", fontWeight: "bold"}}>&nbsp;({ctraits.map(t => appelate(t)).join(", ")})</i> : <></>}</div>
+                        }).reduce((p, n) => p ? <div>{p}<br/><br/>{n}</div> : n)}
+                    </div>
+                </Table.Cell>
             </React.Fragment>)
 	}
 

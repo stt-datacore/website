@@ -113,7 +113,7 @@ const QuestSolver = {
                 }
 
                 crew.challenges ??= [];
-                if (!crew.challenges.includes(challenge.skill)) crew.challenges.push(challenge.skill);
+                if (!crew.challenges.includes(challenge.id)) crew.challenges.push(challenge.id);
 
                 return true;
             });
