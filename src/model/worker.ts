@@ -211,6 +211,7 @@ export interface CiteData {
 }
 
 export interface QuestSolverConfig extends QuestFilterConfig {
+    buffs: BuffStatTable;
     context: {
         core: ICoreData,
         player: {
@@ -220,8 +221,9 @@ export interface QuestSolverConfig extends QuestFilterConfig {
 }
 
 export interface IQuestCrew extends PlayerCrew {
-    challenges?: MissionChallenge[];
+    challenges?: string[];
     added_kwipment?: number[][] | number[];
+    metasort?: number;
 }
 
 export interface QuestSolverResult {
