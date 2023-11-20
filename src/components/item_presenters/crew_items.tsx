@@ -140,11 +140,13 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             let eq: number | undefined = undefined;
 
             if (crew.kwipment_slots?.length) {
-                if (typeof crew.kwipment[i] === 'number') {
-                    eq = crew.kwipment[i] as number;
-                }
-                else {
-                    eq = crew.kwipment[i][1] as number;
+                if (crew.kwipment.length > i) {
+                    if (typeof crew.kwipment[i] === 'number') {
+                        eq = crew.kwipment[i] as number;
+                    }
+                    else {
+                        eq = crew.kwipment[i][1] as number;
+                    }
                 }
             }
             
