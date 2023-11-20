@@ -29,6 +29,7 @@ export interface TraitSelection {
 
 export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const context = React.useContext(GlobalContext);
+    if (!context.player.playerData) return <></>
     const [mission, setMission] = React.useState<ContinuumMission | undefined>(
         undefined
     );
@@ -272,7 +273,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 <Table.Cell>
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
                                         <Checkbox checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
-                                        <span>&nbsp;&nbsp;Ignore Qbits</span>
+                                        <span>&nbsp;&nbsp;Assume Max QBits (Ignore Limit)</span>
                                     </div>
                                 </Table.Cell>
                             </Table.Row>
