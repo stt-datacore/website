@@ -4,7 +4,7 @@ rarity: 5
 series: original
 memory_alpha:
 bigbook_tier: 3
-events: 31
+events: 32
 in_portal: true
 date: 11/01/2023
 obtained: Mega

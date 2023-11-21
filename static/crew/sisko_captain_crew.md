@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-CO Sisko is not a tier one crew, but the copy you get from achievements will be your only one, so hang onto him if possible or you’ll be at the mercy of Customer Support to bail you out.
+CO Sisko is not a Tier 1 crew, but the copy you get from Achievements will be your only one, so hang onto him if possible or you’ll be at the mercy of Customer Support to bail you out.
 
-As a standalone crew, he's a handy collection piece who can be picked up and immortalized at will when you’re on the precipice of one of his stat-boosting milestones. Worthwhile bases can find work in that narrow window where Rares are manning your shuttles, but he doesn’t offer anything particularly outstanding in his rarity aside from his, well, rarity.
+As a standalone crew, he's a handy Collection piece who can be picked up and Immortalized at will when you’re on the precipice of one of his Stat-Boosting milestones. Worthwhile Bases can find work in that narrow window where Rares are manning your Shuttles, but he doesn’t offer anything particularly outstanding in his Rarity aside from his, well, rarity.
