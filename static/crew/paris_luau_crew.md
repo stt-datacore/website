@@ -4,7 +4,7 @@ rarity: 5
 series: voy
 memory_alpha:
 bigbook_tier: 6
-events: 31
+events: 32
 in_portal: true
 date: 05/01/2021
 obtained: Giveaway
