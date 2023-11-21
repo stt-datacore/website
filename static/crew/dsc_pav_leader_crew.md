@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-A strong voyage skill set with power to match is something we’d love to see on our higher rarity options, but may give Pav a bit of early game staying power in that area. For players with a longer term focus, it’s her top shelf evasion among Uncommon options and primo collection profile that piques our interest. With a build cost that’s light on faction items and cadet eligibility on Tuesday and Thursday, Pav gives you a Trillian reasons to immortalize her early on.
+A strong Voyage Skill set with power to match is something we’d love to see on our higher Rarity options, but may give Pav a bit of early game staying power in that area. For players with a longer term focus, it’s her top shelf Evasion among Uncommon options and primo Collection profile that piques our interest. With a build cost that’s light on Faction Items and Cadet Mission eligibility on Tuesday and Thursday, Pav gives you a Trillian reasons to Immortalize her early on.

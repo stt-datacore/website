@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-As the only Uncommon crew currently in both of her collections, Georgiou will have all eyes on her from the elderly crowd. But until you get there, feel free to plug her in four days a week for cadet missions or even some preliminary shuttle work until the fused event crew start rolling in.
+As the only Uncommon crew currently in two of her Collections, Georgiou will have all eyes on her from the elderly crowd. But until you get there, feel free to plug her in four days a week for Cadet Missions or even some preliminary Shuttle work until the Fused Event crew start rolling in.
 
-Without many viable traits for node unlocks on the galaxy map, she may not get quite as much work as her sterling base metrics imply, but remains a fine early game target to level thanks to the multiple exclusive stat boosts she’ll unlock for you.
+Without many viable Traits for Node unlocks on the Galaxy Map, she may not get quite as much work as her sterling Base metrics imply, but remains a fine early game target to level thanks to the multiple exclusive Stat Boosts she’ll unlock for you.

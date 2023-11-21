@@ -12,6 +12,6 @@ mega: false
 published: true
 ---
 
-Let us collectively shout Teen Titans STOP on the game’s first Rutherford offering. Debuting next to the recycling bin on voyages and with a primary base rank in the 70s (yeah…), this is clearly more of an affection pick to stuff a Tuesday pack in the wake of Lower Decks coming to Timelines.
+Let us collectively shout Teen Titans STOP on the game’s initial Rutherford offering. Debuting next to the recycling bin on Voyages and with a Primary Base rank which is as rank as the garbage can, this is clearly more of an affection pick.
 
-The one area of interest here is a competent trait lineup for collections. Rutherford claims four stat-boosting spots out of the box, although further growth in that area would be unforeseen. Sadly, those traits aren’t as beefy for a lacking event history that will need a sprinkling of variant weekend bonuses to provide much value in the future.
+The one area of interest here is a competent Trait lineup for Collections. Rutherford claims four Stat-Boosting spots out of the box, although further growth in that area would be unforeseen. Sadly, those Traits aren’t as beefy for a lacking Event history that will need a sprinkling of variant weekend bonuses to provide much value in the future.

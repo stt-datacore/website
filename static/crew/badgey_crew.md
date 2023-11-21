@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-Badgey’s value is largely driven by his collection profile, which is impressive considering his rather brief trait list. With his fingers in many pies including strong arena accuracy, Sunday cadet eligibility, plus skill set, and a few SCI node unlocks, this isn’t a bad crew to immortalize early on. Being one of only five Uncommon/Rare holograms should see him on the short list to help out with Boss Battles in the future.
+Badgey’s value is largely driven by his Collection profile, which is impressive considering his rather brief Trait list. With his fingers in many pies including strong Accuracy on ships, Sunday Cadet Mission eligibility, plus skill set, and a few SCI Node unlocks, this isn’t a bad crew to Immortalize early on. Being one of only five Uncommon/Rare Holograms should see him on the short list to help out with Boss Battles in the future.

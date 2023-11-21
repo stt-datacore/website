@@ -12,4 +12,4 @@ mega: false
 published: true
 ---
 
-I just wish Jonathan Frakes was my dad. And also for the rest of his traits to become collections. But mostly the Dad thing.
+I just wish Jonathan Frakes was my dad. And also for the rest of his Traits to become Collections. But mostly the Dad thing.

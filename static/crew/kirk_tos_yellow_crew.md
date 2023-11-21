@@ -3,7 +3,7 @@ name: Captain Kirk
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 33
 in_portal: true
 date: 01/01/2017

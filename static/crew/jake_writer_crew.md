@@ -12,6 +12,4 @@ mega: false
 published: true
 ---
 
-There's a DIP + Gambler/Smuggler node in episode 4 mission 1 that Jake and about fourty other crew can unlock for some primo rare polyalloy farming.
-
-That's...that's it.
+There's a DIP + Gambler/Smuggler Node in Episode 4, Mission 1 that Jake and about forty other crew can unlock for some primo Rare Polyalloy farming. Other than a slot in the rather small Writer Collection… That's...that's it.
