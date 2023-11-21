@@ -150,7 +150,7 @@ function iOS() {
   export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[][], index?: number): T[][] {
 	current ??= [];
 	index ??= 0;
-	maxResults ??= 1000;
+	maxResults ??= 5000;
 
 	let i = 0;
 	let c = current.length;
