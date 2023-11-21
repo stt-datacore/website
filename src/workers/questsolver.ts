@@ -191,7 +191,7 @@ const QuestSolver = {
 
         return new Promise<QuestSolverResult>((resolve, reject) => {            
             const { items } = config.context.core;
-			const { playerData } = config.context.player;
+			const { playerData, ephemeral } = config.context.player;
             const { considerFrozen, idleOnly } = config;
             if (!playerData?.player?.character?.crew?.length) {
                 resolve({
@@ -203,7 +203,8 @@ const QuestSolver = {
             }
             
             const roster = playerData.player.character.crew
-                    .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen) && (!f.active_status || !idleOnly))
+                    .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
+                    .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
                     .map((crew) => {
                         crew = JSON.parse(JSON.stringify(crew));                         
                         crew.date_added = new Date(crew.date_added); 

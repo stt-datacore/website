@@ -69,7 +69,8 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                         items: this.context.core.items
                     },
                     player: {
-                        playerData: this.context.player.playerData
+                        playerData: this.context.player.playerData,
+                        ephemeral: this.context.player.ephemeral
                     }
                 },
 				quest,
