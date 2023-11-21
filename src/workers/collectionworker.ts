@@ -10,6 +10,59 @@ import {
 import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
 
+function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
+    let cname = colOptimized.collection.name;
+    let mneeded = colOptimized.collection.needed ?? 0;
+    let tc = colOptimized.uniqueCrew;
+    let isect = [ ...new Set(tc.map(c => c.collections)?.flat())];
+
+    const pc = playerCollections.filter(col => !!col.needed && isect.includes(col.name));
+    const heads = {} as {[key: string]: string[] };
+    
+    for (let acol of pc) {
+        let nc = tc.filter(f => f.collections.includes(acol.name))?.map(c => c.symbol) ?? [];		
+        if (nc.length >= (acol.needed ?? 0)) {
+            heads[acol.name] = nc;
+        }
+    }
+
+    let protocombos = [] as string[];
+    const counts = {} as {[key:string]: number};
+    Object.values(heads).forEach((c) => {
+        for (let symbol of c) {
+            counts[symbol] ??= 0;
+            counts[symbol]++;
+        }
+    });
+
+    for (let uc of tc) {
+        let cols = Object.keys(heads).filter(f => {
+            if (cname === f) return false;
+            return heads[f].includes(uc.symbol);
+        }).sort((a, b) => a.localeCompare(b)).join(" / ");
+        if (cols.length) protocombos.push(cols);
+    }
+
+    let exact = [] as string[];
+    let less = [] as string[];
+
+    protocombos = [ ...new Set(protocombos)];
+    
+    less = protocombos.filter((col) => {
+        let cols = col.split(" / ");			
+        return cols.every(c => (playerCollections.find(f => f.name === c)?.needed ?? 0) < mneeded);			
+    });
+    
+    exact = protocombos.filter((col) => {
+        let cols = col.split(" / ");			
+        return cols.every(c => (playerCollections.find(f => f.name === c)?.needed ?? 0) === mneeded);			
+    });
+
+    less = [ ...new Set(less.map(l => l.split(" / ")).flat())];
+    let eOut = exact.map(e => e.split(" / "));
+    if (!less.length) return eOut;
+    return eOut.concat(makeAllCombos(less, Number.POSITIVE_INFINITY));
+}
 
 function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: string, searches?: string[]) {
     return crew.sort((a, b) => {
@@ -386,7 +439,8 @@ const CollectionOptimizer = {
 
                 const createCombos = (col: CollectionGroup): ColComboMap[] => {
                     const names = col.maps.map((c) => c.collection.name);
-                    let result = makeAllCombos(names);
+                    let result = makeOptimizedCombos(col, playerCollections);
+                    //let result = makeAllCombos(names);
 
                     const colNeeded = col.collection.needed ?? 0;
 
