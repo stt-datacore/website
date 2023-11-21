@@ -12,6 +12,8 @@ mega: false
 published: true
 ---
 
-Whether it’s Sir Mix-a-Lot or Meghan Trainor, many songs have already been penned about Scotty. As Paul Stubbs would put it, “One great base and the crowd rises. A brand new era in engineering.” Dethroning Ahdar Ru’afo’s near four year reign atop the ENG charts, Scotty does it with one skill tied behind his back.
+Whether it’s Sir Mix-a-Lot or Meghan Trainor, many songs have already been penned about Scotty. As Paul Stubbs would put it, “One great Base and the crowd rises. A brand new era in engineering.” Dethroning Ahdar Ru’afo’s near four year reign atop the ENG charts, Scotty does it with one Skill tied behind his back.
 
-There isn’t much to say about Scott that you can’t already tell by looking at him. A shuttle monster, Demo Man is deficient just about everywhere else. There’s certainly some value in his thematic arena ability, which is an easier to use version of Lt. Commander Mitchell’s (Big league company). Whether you want to pair him with various instant damage crew, some long lasting crit options, or eschew him in favor of the traditional KillyKillyKillyKilly setup is up to you.
+Obviously a Shuttle monster, we would be doing you a disservice if we didn’t mention him as one of the premier Fleet Boss Battles crew. With 16,000 Crit Bonus (yes, we counted every one to make sure it was there) and a +10 Attack Boost, Cycling often at 22s, he’ll allow you to slam again and again into the Doomsday Machine, coupled with Tactical MACO Mayweather, Chances Taken Kirk, or even solo as your first attacker when you still need three Hull Repair crew early on. 
+
+As we turn to his other attribute, Continuum Missions, Demo’s unequaled Base will allow him to Crit plenty of nodes in Normal and Elite difficulties without any Quipment and will allow you to save some ENG Q-bits for Gauntlet or Voyage crew.
