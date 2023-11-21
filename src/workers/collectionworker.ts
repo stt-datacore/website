@@ -7,8 +7,59 @@ import {
     ColComboMap,
     ComboCostMap,
 } from "../model/collectionfilter";
-import { CompletionState, PlayerCollection } from "../model/player";
+import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
+
+
+function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: string, searches?: string[]) {
+    return crew.sort((a, b) => {
+        let r = 0;
+
+        if (searches?.length) {
+            let ares = searches.includes(a.name);
+            let bres = searches.includes(b.name);
+            if (ares !== bres) {
+                if (ares) return -1;
+                return 1;
+            }
+        }
+        if (a.have !== b.have) {
+            if (!a.have) return 1;
+            else return -1;
+        }
+
+        if (a.favorite !== b.favorite) {
+            if (a.favorite) return -1;
+            else return 1;
+        }
+
+        let acount = a.pickerId ?? 1;
+        let bcount = b.pickerId ?? 1;
+
+        let asearch =
+            !searchFilter?.length ||
+            searches?.some((search) => a.name === search);
+        let bsearch =
+            !searchFilter?.length ||
+            searches?.some((search) => b.name === search);
+
+        if (asearch !== bsearch) {
+            if (asearch) r = -1;
+            else r = 1;
+        }
+
+        if (!r) r = a.max_rarity - b.max_rarity;
+        if (!r)
+            r =
+                ((b.highest_owned_rarity ?? b.rarity) / b.max_rarity) -
+                ((a.highest_owned_rarity ?? a.rarity) / a.max_rarity);
+        if (!r) r = b.level - a.level;
+        if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
+        if (!r) r = bcount - acount;
+        if (!r) r = a.name.localeCompare(b.name);
+        return r;
+    });
+}
 
 const CollectionOptimizer = {
     scanAll: (config: CollectionWorkerConfig) => {
@@ -113,54 +164,7 @@ const CollectionOptimizer = {
                         a.pickerId = acount;
                     });
 
-                    col.crew.sort((a, b) => {
-                        let r = 0;
-
-                        if (searches?.length) {
-                            let ares = searches.includes(a.name);
-                            let bres = searches.includes(b.name);
-                            if (ares !== bres) {
-                                if (ares) return -1;
-                                return 1;
-                            }
-                        }
-                        if (a.have !== b.have) {
-                            if (!a.have) return 1;
-                            else return -1;
-                        }
-
-                        if (a.favorite !== b.favorite) {
-                            if (a.favorite) return -1;
-                            else return 1;
-                        }
-
-                        let acount = a.pickerId ?? 1;
-                        let bcount = b.pickerId ?? 1;
-
-                        let asearch =
-                            !searchFilter?.length ||
-                            searches.some((search) => a.name === search);
-                        let bsearch =
-                            !searchFilter?.length ||
-                            searches.some((search) => b.name === search);
-
-                        if (asearch !== bsearch) {
-                            if (asearch) r = -1;
-                            else r = 1;
-                        }
-
-                        if (!r) r = a.max_rarity - b.max_rarity;
-                        if (!r)
-                            r =
-                                ((b.highest_owned_rarity ?? b.rarity) / b.max_rarity) -
-                                ((a.highest_owned_rarity ?? a.rarity) / a.max_rarity);
-                        if (!r) r = b.level - a.level;
-                        if (!r) r = (b.equipment?.length ?? 0) - (a.equipment?.length ?? 0);
-                        if (!r) r = bcount - acount;
-                        if (!r) r = a.name.localeCompare(b.name);
-                        return r;
-                    });
-
+                    col.crew = normalCollectionSort(col.crew, searchFilter, searches);
                     col.neededStars = neededStars(col.crew, col.collection.needed ?? 0);
                 });
 
@@ -259,7 +263,10 @@ const CollectionOptimizer = {
                             (cr, idx) =>
                                 crew.findIndex((cr2) => cr2.symbol === cr.symbol) === idx
                         );
-                        crew.sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        crew = normalCollectionSort(crew, searchFilter, searches);
+                        //crew.sort((a, b) => a.name.localeCompare(b.name));
+
                         if (!!crew?.length) {
                             linkScores[col.collection.name].push({
                                 collection: col2.collection,
@@ -307,14 +314,29 @@ const CollectionOptimizer = {
                         }
                         unique.sort((a, b) => {
                             let r = 0;
-                            let ca = innercounts[a.symbol];
-                            let cb = innercounts[b.symbol];
-                            r = cb - ca;
-                            if (!r) {
-                                r =
-                                    starCost([a], undefined, costMode === "sale") -
-                                    starCost([b], undefined, costMode === "sale");
+                            let ca = 0;
+                            let cb = 0;
+
+                            if (a.favorite != b.favorite) {
+                                if (a.favorite) return -1;
+                                else return 1;
                             }
+
+                            if (!r) {                                
+                                ca = starCost([a], undefined, costMode === "sale")
+                                cb = starCost([b], undefined, costMode === "sale");
+                            }
+
+                            r = ca - cb;
+
+                            if (!r) {
+                                ca = innercounts[a.symbol];
+                                cb = innercounts[b.symbol];
+                            }
+                            
+                            r = cb - ca;
+                            
+
                             return r;
                         });
                         return {
@@ -444,7 +466,7 @@ const CollectionOptimizer = {
                 };
 
                 for (let col of colOptimized) {
-                    col.combos = createCombos(col);
+                    col.combos = createCombos(col);                    
                     if (mapFilter?.rewardFilter?.length) {
                         col.combos?.sort((a, b) => {
                             let acol = (a.names.map((a) =>
