@@ -9,6 +9,7 @@ import { GlobalContext, IDefaultGlobal } from "../context/globalcontext";
 import { ICoreData } from "../context/datacontext";
 import { Mission, MissionChallenge, ProtoMission, Quest, QuestFilterConfig } from "./missions";
 import { ContinuumMission } from "./continuum";
+import { IEphemeralData } from "../context/playercontext";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -215,7 +216,8 @@ export interface QuestSolverConfig extends QuestFilterConfig {
     context: {
         core: ICoreData,
         player: {
-            playerData: PlayerData
+            playerData: PlayerData,
+            ephemeral?: IEphemeralData
         }
     };
 }
