@@ -163,7 +163,7 @@ function iOS() {
 	}
 	
 	current = newc;
-	if (current.length >= maxResults) return current;
+	if (Number.isFinite(maxResults) && current.length >= maxResults) return current;
 
 	if (index < source.length - 1) {
 		current = makeAllCombos(source, maxResults, current, index + 1);		

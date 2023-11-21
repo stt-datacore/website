@@ -9,7 +9,7 @@ import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { useStateWithStorage } from '../../utils/storage';
-import { appelate } from '../../utils/misc';
+import { appelate, makeAllCombos } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
 import { ColComboMap, CollectionGroup, CollectionMap, ComboCostMap, CollectionMatchMode } from '../../model/collectionfilter';
 import { findColGroupsCrew, getOptCols, getOptCrew, getOwnedCites, makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
