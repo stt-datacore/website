@@ -18,6 +18,7 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
+    printNA?: boolean;
 }
 
 
@@ -199,7 +200,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         key={item.symbol + "_equip" + idx} 
                         mobileWidth={mobileWidth} 
                         crew={crew} 
-                        expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>&nbsp;</>) : undefined}
+                        expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA ? "N/A" : " "}</>) : undefined}
                         equipment={item} />
                 ))}
             </div>

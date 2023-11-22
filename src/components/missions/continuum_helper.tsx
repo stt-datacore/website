@@ -3,7 +3,7 @@ import { PlayerCrew, Reward } from "../../model/player";
 import { CrewMember, Skill } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { MissionChallenge, Quest } from "../../model/missions";
+import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
 import { Notification } from "../page/notification";
 import { ChallengeNodeInfo } from "./challenge_node";
 import { useStateWithStorage } from "../../utils/storage";
@@ -37,24 +37,28 @@ export interface DiscoveredMissionInfo {
 
 export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
+    /* Global Data Check & Initialization */
+
     const context = React.useContext(GlobalContext);
+    if (!context.player.playerData) return <></>
+
     const { continuum_missions } = context.core;
 
     const mostRecentDate = new Date(
         continuum_missions[continuum_missions.length - 1].discover_date
     );
 
-    if (!context.player.playerData) return <></>
+    const missionUrl = `/structured/continuum/${continuum_missions[continuum_missions.length - 1].id}.json`;
 
-    const [discoverDate, setDiscoverDate] = React.useState<Date | undefined>(
-        undefined
-    );
+    /* Missions Data Initialization & Persistence */
 
     const [groupedMissions, internalSetGroupedMissions] = useStateWithStorage('continuum/discoveredMissions', [] as DiscoveredMissionInfo[], { rememberForever: true });
-
     const setGroupedMissions = (value: DiscoveredMissionInfo[]) => {
         value = value.filter(f => f.mission.discover_date.getTime() === mostRecentDate.getTime());
         internalSetGroupedMissions(value);
+    }
+    const getMissionData = () => {
+        return groupedMissions.find(f => f.mission.discover_date?.getTime() === mostRecentDate?.getTime()) ?? (groupedMissions.length ? groupedMissions[groupedMissions.length - 1] : undefined);
     }
 
     groupedMissions?.forEach(m => {
@@ -66,15 +70,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
     })
 
-    let mlookup = groupedMissions?.length ? groupedMissions[groupedMissions.length - 1] : undefined;
+    const mlookup = getMissionData();
     const startMission = mlookup?.mission;
 
     const [remoteQuestFlags, internalSetRemoteQuestFlags] = React.useState<boolean[] | undefined>(mlookup?.remoteQuests);
     const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>(startMission);
-
-    const getMissionData = () => {
-        return groupedMissions.find(f => f.mission.discover_date?.getTime() === mostRecentDate?.getTime()) ?? (groupedMissions.length ? groupedMissions[0] : undefined);
-    }
 
     const setRemoteQuestFlags = (value: boolean[]) => {
         let x = 0;
@@ -97,7 +97,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setMissionAndRemotes = (value?: ContinuumMission, remotes?: boolean[]) => {
         if (!value) {
             internalSetMission(undefined);
-            setDiscoverDate(undefined);
             setRemoteQuestFlags([]);
             return;
         }
@@ -133,10 +132,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         setGroupedMissions(ng);        
     }
 
-    const setContinuumMission = (value?: ContinuumMission) => {
-        setMissionAndRemotes(value);
-    }
-
     React.useEffect(() => {
         if (!groupedMissions.length) return;
 
@@ -145,32 +140,55 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         if (!fmission) {
             fmission = groupedMissions[groupedMissions.length - 1];
         }
-        if (fmission.mission.quests?.length && fmission.mission.quests.length !== fmission?.remoteQuests?.length) {
+        if (!!fmission.mission.quests?.length && fmission.mission.quests.length !== fmission?.remoteQuests?.length) {
             fmission.remoteQuests = fmission.mission.quests.map(q => false);
         }
-        setDiscoverDate(fmission.mission.discover_date);
         internalSetRemoteQuestFlags(fmission.remoteQuests);
         internalSetMission(fmission.mission);
     }, [groupedMissions]);
 
-    const [mastery, setMastery] = useStateWithStorage('continuum/mastery', 0);
+    /* Component State */
+
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
+    const [clearFlag, setClearFlag] = React.useState(0);
+
     const [questIndex, setQuestIndex] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
+    const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
 
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
-    const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
-    const [clearFlag, setClearFlag] = React.useState(0);
     const [solverResults, setSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
+    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true });
 
-    const [idleOnly, setIdleOnly] = useStateWithStorage<boolean>('continuum/idleOnly', true);
-    const [considerFrozen, setConsiderFrozen] = useStateWithStorage<boolean>('continuum/considerFrozen', false);
-    const [qpOnly, setQpOnly] = useStateWithStorage<boolean>('continuum/qpOnly', false);
-    const [ignoreQpConstraint, setIgnoreQpConstraint] = useStateWithStorage<boolean>('continuum/ignoreQpConstraint', false);
+    const setIdleOnly = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, idleOnly: value });
+    }
 
-    const missionUrl = `/structured/continuum/${continuum_missions[continuum_missions.length - 1].id}.json`;
-        
+    const setConsiderFrozen = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, considerFrozen: value });
+    }
+    
+    const setQpOnly = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, qpOnly: value });
+    }
+    
+    const setIncludeCurrentQp = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, includeCurrentQp: value });
+    }
+    
+    const setIgnoreQpConstraint = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, ignoreQpConstraint: value });
+    }
+
+    const setMastery = (value: number) => {
+        setMissionConfig({ ...missionConfig, mastery: value });
+    }
+
+    const { mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+    
+    /* Component Initialization & State Management */
+
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
             const mquest = mission.quests[questIndex];
@@ -227,7 +245,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         if (!remotes[i] || 
-                            (current?.mission.quests && result.quests[i].challenges?.length !== current.mission.quests[i].challenges?.length)) {
+                            (current?.mission.quests && rq[result.quests[i].id].challenges?.length !== current.mission.quests[i].challenges?.length)) {
                             
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             challenges[i].forEach(ch => {
@@ -258,6 +276,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             });
     }, [clearFlag]);
 
+    /* Remote */
+
     const clearRemote = () => {
         setRemoteQuestFlags([]);
         setTimeout(() => {
@@ -278,6 +298,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
     }
 
+    /* Crew Tables */
+
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
         { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
@@ -295,8 +317,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </div>
 		        </Table.Cell>
                 <Table.Cell>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
-    			        <CrewItemsView crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: [] }} quipment={true} />
+                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px"}}>
+    			        <CrewItemsView printNA crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
                     </div>
 		        </Table.Cell>
                 <Table.Cell>
@@ -352,6 +374,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             </React.Fragment>)
 	}
 
+    /* Render */
+
     return (
         <>
             <div>
@@ -377,7 +401,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         clearQuest={clearRemote}
                     />
                 }
-                Current Continuum Mission: {discoverDate?.toDateString()}
+                Current Continuum Mission: {mission?.discover_date?.toDateString()}
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
@@ -439,24 +463,30 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     </div>
                                 </Table.Cell>
                             </Table.Row>
-
+                            <Table.Row>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox checked={includeCurrentQp} onChange={(e, { checked }) => setIncludeCurrentQp(!!checked)} />
+                                        <span>&nbsp;&nbsp;Use Current Quipment on Crew</span>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
                         </Table>
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
-                                challenges={(highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[]}
-                                quest={quest}
                                 setResults={setSolverResults}
-                                idleOnly={idleOnly}
-                                setIdleOnly={setIdleOnly}
-                                considerFrozen={considerFrozen}
-                                setConsiderFrozen={setConsiderFrozen}
-                                qpOnly={qpOnly}
-                                setQpOnly={setQpOnly}
-                                ignoreQpConstraint={ignoreQpConstraint}
-                                setIgnoreQpConstraint={setIgnoreQpConstraint}
-                                mastery={mastery} />
+                                setConfig={setMissionConfig}
+                                config={{
+                                    challenges: (highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
+                                    idleOnly,
+                                    considerFrozen,
+                                    qpOnly,
+                                    ignoreQpConstraint,
+                                    mastery,
+                                    includeCurrentQp                       
+                                }}
+                                 />
                         </div>
-
                     </div>
                 </div>
 

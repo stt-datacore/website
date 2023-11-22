@@ -253,7 +253,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 				core: core,
 				min: min,
 				max: max
-			};	
+			};
 		}
 		bs[skill] = {
 			core: core,
@@ -261,34 +261,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 			range_max: max
 		};
 	}
-	// if (askills?.length && itemBonuses?.length) {
-	// 	let remainder = itemBonuses.filter(bonus => !askills.some(ask => Object.keys(bonus.bonuses).some(k => k === ask)));
-	// 	if (remainder?.length) {
-	// 		remainder.forEach((bonus) => {
-	// 			Object.keys(bonus.bonuses).forEach(skill => {
 
-	// 				bs[skill] ??= { core: 0, range_min: 0, range_max: 0, skill };
-
-	// 				bs[skill].core += bonus.bonuses[skill].core ?? 0;
-	// 				bs[skill].range_min += bonus.bonuses[skill].range_min ?? 0;
-	// 				bs[skill].range_max += bonus.bonuses[skill].range_max ?? 0;
-	// 				if (!nowrite) {
-	// 					crew[skill] ??= { core: 0, max: 0, min: 0, skill };
-
-	// 					crew[skill].core += bonus.bonuses[skill].core ?? 0;
-	// 					crew[skill].min += bonus.bonuses[skill].range_min ?? 0;
-	// 					crew[skill].max += bonus.bonuses[skill].range_max ?? 0;
-						
-	// 					crew.base_skills[skill] ??= { core: 0, range_max: 0, range_min: 0, skill };
-
-	// 					crew.base_skills[skill].core += bonus.bonuses[skill].core ?? 0;
-	// 					crew.base_skills[skill].range_min += bonus.bonuses[skill].range_min ?? 0;
-	// 					crew.base_skills[skill].range_max += bonus.bonuses[skill].range_max ?? 0;
-	// 				}
-	// 			});
-	// 		})
-	// 	}
-	// }
 	return bs;
 }
 
@@ -308,29 +281,29 @@ export function downloadData(dataUrl: string | URL, name: string): void {
 }
 
 export function download(filename, text) {
-    let extension = filename.split('.').pop();
-    let mimeType = '';
-    let isText = true;
-    if (extension === 'csv') {
-        mimeType = 'text/csv;charset=utf-8';
-    } else if (extension === 'xlsx') {
-        mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        isText = false;
-    } else if (extension === 'json') {
-        mimeType = 'text/json;charset=utf-8';
-    } else if (extension === 'html') {
-        mimeType = 'text/html;charset=utf-8';
-    }
+	let extension = filename.split('.').pop();
+	let mimeType = '';
+	let isText = true;
+	if (extension === 'csv') {
+		mimeType = 'text/csv;charset=utf-8';
+	} else if (extension === 'xlsx') {
+		mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+		isText = false;
+	} else if (extension === 'json') {
+		mimeType = 'text/json;charset=utf-8';
+	} else if (extension === 'html') {
+		mimeType = 'text/html;charset=utf-8';
+	}
 
-    if (isText) {
-        downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
-    } else {
-        var a = new FileReader();
-        a.onload = (e) => {
+	if (isText) {
+		downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
+	} else {
+		var a = new FileReader();
+		a.onload = (e) => {
 			if (e.target && e.target.result) downloadData(e.target.result as string, filename);
-        };
-        a.readAsDataURL(text);
-    }
+		};
+		a.readAsDataURL(text);
+	}
 }
 
 /**
@@ -355,19 +328,19 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 	templateCrew.equipment = [0, 1, 2, 3];
 	templateCrew.favorite = false;
 	templateCrew.action.cycle_time = templateCrew.action.cooldown + templateCrew.action.duration;
-	
+
 	let inroster = [] as PlayerCrew[];
 
-	let crew = templateCrew; 
+	let crew = templateCrew;
 
 	if (playerData?.player?.character) {
-		
+
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew = JSON.parse(JSON.stringify(templateCrew));
 			crew.immortal = CompletionState.Frozen;
-		} 
+		}
 		else {
-			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);			
+			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
 			if (immortal) {
 				crew = JSON.parse(JSON.stringify(templateCrew));
 				crew.immortal = immortal.quantity;
@@ -376,17 +349,17 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				crew.immortal = CompletionState.NotComplete;
 			}
 		}
-		
+
 		if (crew.immortal !== 0) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
 			crew.have = true;
 		}
 		if (crew.immortal > 0) {
- 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
- 			crew.highest_owned_level = crew.max_level ?? 100;
+			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
+			crew.highest_owned_level = crew.max_level ?? 100;
 			inroster.push(crew);
 			crew = templateCrew;
-		}		
+		}
 	}
 
 	inroster = inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
@@ -401,7 +374,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
 		let workitem: PlayerCrew = owned;
-		
+
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
 		if (rarity !== 6) {
 			crew.rarity = workitem.rarity;
@@ -416,17 +389,17 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 				if (workitem.kwipment?.length && workitem.kwipment[0] && typeof workitem.kwipment[0] !== 'number') {
 					let qp = workitem.kwipment as number[][];
 					let qe = workitem.kwipment_expiration as number[][];
-	
+
 					for (let nums of qp) {
 						crew.kwipment[nums[0]] = nums[1];
 					}
 					for (let nums of qe) {
 						crew.kwipment_expiration[nums[0]] = nums[1];
-					}				
+					}
 				}
 				else {
 					crew.kwipment = workitem.kwipment;
-					crew.kwipment_expiration = workitem.kwipment_expiration;					
+					crew.kwipment_expiration = workitem.kwipment_expiration;
 				}
 			}
 
@@ -441,7 +414,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		}
 
 		crew.have = true;
-		crew.favorite = workitem.favorite;			
+		crew.favorite = workitem.favorite;
 
 		// Use skills directly from player data when possible
 		if (rarity && rarity >= 1 && rarity <= 5) {
@@ -457,38 +430,38 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 					min: workitem.skill_data[rarity].base_skills[skill].range_min,
 					max: workitem.skill_data[rarity].base_skills[skill].range_max
 				} as ComputedBuff;
-			}				
+			}
 			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
 		else if (workitem.skills && rarity !== 6) {
 			for (let skill in CONFIG.SKILLS) {
 				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
 			}
-			
+
 			// Override computed buffs because of mismatch with game data
 			for (let skill in workitem.skills) {
 				crew[skill] = {
 					core: workitem.skills[skill].core,
 					min: workitem.skills[skill].range_min,
 					max: workitem.skills[skill].range_max
-				} as ComputedBuff;					
-			}			
-			crew.skills = workitem.skills;					
+				} as ComputedBuff;
+			}
+			crew.skills = workitem.skills;
 		}
 		// Otherwise apply buffs to base_skills
 		else if (buffConfig) {
-				applyCrewBuffs(crew, buffConfig);
+			applyCrewBuffs(crew, buffConfig);
 		}
 
 		if (rarity !== 6) {
 			if (crew.immortal <= 0 || crew.immortal === undefined) {
 				crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
-			}			
+			}
 		}
 		else {
 			let ismo = isImmortal(owned);
 			crew.immortal = ismo ? CompletionState.Immortalized : CompletionState.DisplayAsImmortalOwned;
-		}					
+		}
 
 		if (rarity && crew.equipment?.length !== 4) {
 			crew.equipment = [0, 1, 2, 3];
@@ -496,13 +469,13 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		outputcrew.push(oneCrewCopy(crew));
 	}
 
-	if (!crew.have) {		
+	if (!crew.have) {
 		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
 			if (rarity) {
 				crew.action.bonus_amount -= (crew.max_rarity - rarity);
 				rarity--;
 			}
-			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity]))});
+			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) });
 		}
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
@@ -513,16 +486,16 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 		}
 		outputcrew.push(crew);
 	}
-	
+
 	if (crew.immortal === undefined) {
 		crew.immortal = playerData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 	}
-	
+
 	outputcrew.forEach(f => {
 		f.highest_owned_rarity = maxowned;
 		f.highest_owned_level = maxlevel;
 	});
-	
+
 	return outputcrew;
 }
 
@@ -550,17 +523,17 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 
-	for (let oricrew of allcrew) {
-		for (let newcrew of prepareOne(oricrew, playerData, buffConfig)) {
-			if (newcrew.have) {
-				ownedCrew.push(newcrew);
+	for (let c of allcrew) {
+		for (let crew of prepareOne(c, playerData, buffConfig)) {
+			if (crew.have) {
+				ownedCrew.push(crew);
 			}
 			else {
-				unOwnedCrew.push(newcrew);
-			}			
+				unOwnedCrew.push(crew);
+			}
 		}
 	}
-	
+
 	playerData.stripped = false;
 	playerData.player.character.crew = ownedCrew;
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
@@ -632,25 +605,25 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 // }
 
 
-export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) {  
+export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) {
 	let skills = pairScore.pair.map(p => p.skill ?? "").sort();
 	crew.pairScores ??= [];
-	
+
 	for (let cp of crew.pairScores) {
-	  let skills2 = cp.pair.map(p => p.skill ?? "").sort();
-	  if (skills.join() === skills2.join()) {
-		cp.pair = [ ... pairScore.pair ];
-		cp.score = pairScore.score;
-		return;
-	  }
+		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
+		if (skills.join() === skills2.join()) {
+			cp.pair = [...pairScore.pair];
+			cp.score = pairScore.score;
+			return;
+		}
 	}
-	
-	crew.pairScores.push({ ... pairScore, pair: [ ... pairScore.pair ] });
-  }
-  
-  export function getCrewPairScore(crew: PlayerCrew, pair: string) {
-	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/","_");
-	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();	
+
+	crew.pairScores.push({ ...pairScore, pair: [...pairScore.pair] });
+}
+
+export function getCrewPairScore(crew: PlayerCrew, pair: string) {
+	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
+	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
 	for (let cp of crew.pairScores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -658,10 +631,10 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
 		}
 	}
 	return null;
-  }
+}
 
-  export function getPairScore(scores: GauntletPairScore[], pair: string) {
-	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/","_");
+export function getPairScore(scores: GauntletPairScore[], pair: string) {
+	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
 	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
 	for (let cp of scores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
@@ -670,7 +643,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
 		}
 	}
 	return null;
-  }
+}
 
 
 export function rankToSkill(rank: string): PlayerSkill | undefined {
@@ -696,7 +669,7 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 	let an = 0;
 	let bn = 0;
 	let choiceMult = multiplier ?? 1.33;
-	
+
 	for (let ai of a) {
 		an += (("skill" in ai && ai.skill === featuredSkill) ? choiceMult : 1) * (ai.range_max + ai.range_min);
 	}
@@ -719,22 +692,22 @@ export const emptySkill = {
 
 export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: number, minMult?: number, maxMult?: number): Skill[][] | undefined {
 	let multi = multiplier ?? 0;
-	
+
 	minMult ??= 1;
 	maxMult ??= 1;
-	
+
 	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
 
 	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
-		skills = getSkills(crew).map(skill =>  { return { ... crew.base_skills[skill], skill: skill } as Skill });
+		skills = getSkills(crew).map(skill => { return { ...crew.base_skills[skill], skill: skill } as Skill });
 	}
-	
+
 	if (skills && skills.length) {
 		for (let skillObj of skills) {
 			skillObj.core *= (1 + multi);
-		
+
 			if ("min" in skillObj && !skillObj.range_min) skillObj.range_min = skillObj["min"] as number;
 			if ("max" in skillObj && !skillObj.range_max) skillObj.range_max = skillObj["max"] as number;
 
@@ -752,8 +725,8 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 				skills.push(JSON.parse(JSON.stringify(emptySkill)));
 			}
 			pairs.push(skills);
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);	
+			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
+			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
 			return pairs;
 		}
 
@@ -768,13 +741,13 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 
 export function qbitsToSlots(q_bits: number | undefined) {
-    // 100/250/500/1300
-    q_bits ??= 0;
-    if (q_bits < 100) return 0;
-    else if (q_bits < 200) return 1;
-    else if (q_bits < 500) return 2;
-    else if (q_bits < 1300) return 3;
-    return 4;
+	// 100/250/500/1300
+	q_bits ??= 0;
+	if (q_bits < 100) return 0;
+	else if (q_bits < 200) return 1;
+	else if (q_bits < 500) return 2;
+	else if (q_bits < 1300) return 3;
+	return 4;
 }
 
 export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): EquipmentItem[] {
@@ -796,7 +769,7 @@ export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): Equip
 			}
 		}
 	}
-	
+
 	return [];
 }
 
@@ -840,20 +813,20 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	if (!actionIn) return "";
 	const action = actionIn;
 	if (!action || !action.ability) return "";
-	let bonusText: string; 
-	
+	let bonusText: string;
+
 	if (short) {
 		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[action.ability.type];
 	}
 	else {
 		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
 	}
-	
-	
+
+
 	if (action.ability.type === 0)
 		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]} boost to`);
 	const bonusVal = action.ability.type === 0
-		? action.bonus_amount+action.ability.amount
+		? action.bonus_amount + action.ability.amount
 		: action.ability.amount;
 	bonusText = bonusText?.replace('%VAL%', `${bonusVal}`);
 	return bonusText;
@@ -875,7 +848,7 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 		let phaseDescription = `After ${charge_time}s`;
 
 		if (cp.ability_amount && action?.ability) {
-			phaseDescription += ', '+CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+			phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
 		}
 
 		if (cp.bonus_amount) {
@@ -883,11 +856,11 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 		}
 
 		if (cp.duration) {
-			phaseDescription += `, +${cp.duration-action.duration}s duration`;
+			phaseDescription += `, +${cp.duration - action.duration}s duration`;
 		}
 
 		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown-action.cooldown}s cooldown`;
+			phaseDescription += `, +${cp.cooldown - action.cooldown}s cooldown`;
 		}
 
 		phases.push(phaseDescription);
@@ -897,8 +870,8 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 
 export function traitNumberToColor(num: number): string | null {
 	if (num > 6) return 'lightgreen';
-	
-	switch(num) {
+
+	switch (num) {
 		case 5:
 		case 6:
 			return "lightgreen";
@@ -948,8 +921,8 @@ export function gradeToColor(grade: string | number): string | null {
 		else if (grade >= 0.6) return 'orange';
 		else if (grade < 0.6) return 'tomato';
 	}
-	
-	switch(grade) {
+
+	switch (grade) {
 		case "A":
 		case "A-":
 		case "A+":
@@ -1010,9 +983,9 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 
 	return {
-		core: Math.round(base_skill.core*getMultiplier(skill, 'core')),
-		min: Math.round(base_skill.range_min*getMultiplier(skill, 'range_min')),
-		max: Math.round(base_skill.range_max*getMultiplier(skill, 'range_max'))
+		core: Math.round(base_skill.core * getMultiplier(skill, 'core')),
+		min: Math.round(base_skill.range_min * getMultiplier(skill, 'range_min')),
+		max: Math.round(base_skill.range_max * getMultiplier(skill, 'range_max'))
 	};
 }
 
@@ -1020,7 +993,7 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
 	return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
 }
 export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
-	
+
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
 	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
@@ -1035,7 +1008,7 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 		/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
 	];
 	const variantTraits = [] as string[];
-	
+
 	if ("length" in subject) {
 		subject.forEach(trait => {
 			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
@@ -1062,7 +1035,7 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
  * @param buffs Your active buffs
  * @param allCrew All crew
  */
-export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {	
+export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
 	navigate('/crew/' + crew.symbol);
 }
 
@@ -1129,9 +1102,9 @@ export interface CrewShipRankings {
 }
 
 export interface ActionRanking {
-    action: ShipAction;
-    rank?: number;
-    crew_symbols?: string[];
+	action: ShipAction;
+	rank?: number;
+	crew_symbols?: string[];
 }
 
 function compCharge(a: ChargePhase, b: ChargePhase) {
@@ -1151,7 +1124,7 @@ function compCharge(a: ChargePhase, b: ChargePhase) {
 		return a.charge_time - b.charge_time;
 	}
 
-	if (a.duration && b.duration){
+	if (a.duration && b.duration) {
 		r = b.duration - a.duration;
 		if (r) return r;
 	}
@@ -1184,87 +1157,87 @@ function compChargeArray(cp1: ChargePhase[] | undefined, cp2: ChargePhase[] | un
 }
 
 export const shipStatSortConfig: ObjectNumberSortConfig = {
-    props: [
-        {
-            props: "action/ability/condition",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/ability/amount",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/bonus_amount",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/initial_cooldown",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/duration",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/limit",
-            direction: 'descending',
-            nullDirection: 'ascending',
-        },
-        {
-            props: "action/penalty/amount",
-            direction: 'ascending',
-            nullDirection: 'ascending',
-        },
-        {
-            props: "ship_battle/crit_bonus",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "ship_battle/crit_chance",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "ship_battle/accuracy",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "ship_battle/evasion",
-            direction: 'descending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/ability/type",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/bonus_type",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/status",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/penalty/type",
-            direction: 'ascending',
-            nullDirection: 'descending',
-        },
-        {
-            props: "action/charge_phases",
+	props: [
+		{
+			props: "action/ability/condition",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/ability/amount",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/bonus_amount",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/initial_cooldown",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/duration",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/limit",
+			direction: 'descending',
+			nullDirection: 'ascending',
+		},
+		{
+			props: "action/penalty/amount",
+			direction: 'ascending',
+			nullDirection: 'ascending',
+		},
+		{
+			props: "ship_battle/crit_bonus",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "ship_battle/crit_chance",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "ship_battle/accuracy",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "ship_battle/evasion",
+			direction: 'descending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/ability/type",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/bonus_type",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/status",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/penalty/type",
+			direction: 'ascending',
+			nullDirection: 'descending',
+		},
+		{
+			props: "action/charge_phases",
 			customComp: compChargeArray
-        },
-    ]
+		},
+	]
 }
 
 export interface ShipSkillRanking {
@@ -1281,7 +1254,7 @@ export interface ShipSkillRanking {
  * @param abilities Optional specific abilities to return
  * @returns An array sorted by rank ascending.
  */
-export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }}, abilities?: number[] | number): ShipSkillRanking[] {
+export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] } }, abilities?: number[] | number): ShipSkillRanking[] {
 	let result = [] as ShipSkillRanking[];
 	let ableSet = [] as number[];
 
@@ -1342,7 +1315,7 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 	return result;
 }
 
-export interface ShipStatMap { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }}
+export interface ShipStatMap { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] } }
 
 /**
  * Sort the crew according to the preferences map and return the crew broken down into tiers such
@@ -1358,7 +1331,7 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	let types = sc.groupBy(actions, "action/ability/type", "no_ability");
 	// Create the tiers...
 
-	let tiers = {} as { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] }};
+	let tiers = {} as { [key: string]: { [key: string]: (PlayerCrew | CrewMember)[] } };
 	for (let key of Object.keys(types)) {
 		if (!(key in types) || types[key] === undefined) continue;
 		else {
@@ -1379,8 +1352,8 @@ export function getSkillOrder(crew: PlayerCrew | CrewMember) {
 			sk.push({ ...crew.base_skills[skill], skill: skill });
 		}
 	}
-	
-	sk.sort((a, b) => b.core - a.core);                
+
+	sk.sort((a, b) => b.core - a.core);
 	const output = [] as string[];
 
 	if (sk.length > 0 && sk[0].skill) {
@@ -1422,7 +1395,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 }
 
 export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
-	showNever ??= true;	
+	showNever ??= true;
 	long ??= false;
 	obtainedIfNo ??= false;
 
@@ -1439,9 +1412,9 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained.toLowerCase();
-	
+
 	if (showNever && (ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
-		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;		
+		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
 	}
 
 	return (withPortal ? "In Portal: " : "") + `${crew.in_portal ? "Yes" : "No"}${obstr}`;

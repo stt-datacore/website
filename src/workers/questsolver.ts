@@ -117,10 +117,23 @@ const QuestSolver = {
                 n -= (0.20 * (crew.challenges?.length ?? 0) * n);
                 
                 crew.metasort ??= 0;
-                crew.added_kwipment ??= [];                
-                added[crew.symbol] ??= [];
+                if (config.includeCurrentQp && (!crew.added_kwipment || !(crew.symbol in added))) {
+                    crew.added_kwipment = crew.kwipment.map((qp: number | number[]) => typeof qp === 'number' ? qp : qp[1]);
+                    crew.added_kwipment_expiration = crew.kwipment_expiration.map((qp: number | number[]) => typeof qp === 'number' ? qp : qp[1]);
+                    added[crew.symbol] = crew.added_kwipment.map(n => {
+                        if (!n) return "";
+                        let item = config.context.core.items.find(f => f.kwipment_id?.toString() === n.toString());
+                        if (item) return item.symbol;
+                        return "";
+                    });
+                }
+                else {
+                    crew.added_kwipment ??= [0, 0, 0, 0];
+                    crew.added_kwipment_expiration ??= [0, 0, 0, 0];
+                    added[crew.symbol] ??= ['', '', '', ''];
+                }
                 
-                const currslots = added[crew.symbol];
+                const currslots = added[crew.symbol].filter(a=> a != '');
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 
@@ -173,8 +186,13 @@ const QuestSolver = {
                         crew[challenge.skill].max += qp.bonuses[challenge.skill].range_max;
 
                     });
-
-                    added[crew.symbol] = added[crew.symbol].concat(slots);
+                    
+                    let j = 0;
+                    for (let i = 0; i < 4; i++) {
+                        if (added[crew.symbol][i] === '') {
+                            added[crew.symbol][i] = slots[j++];
+                        }
+                    }                    
                 }
                 
                 return true;
@@ -208,7 +226,16 @@ const QuestSolver = {
                     .map((crew) => {
                         crew = JSON.parse(JSON.stringify(crew));                         
                         crew.date_added = new Date(crew.date_added); 
-                        applyCrewBuffs(crew, config.buffs);
+                        if (!config.includeCurrentQp) {
+                            applyCrewBuffs(crew, config.buffs);
+                        }
+                        else {
+                            for(let skill of getSkillOrder(crew)) {
+                                crew[skill].core = crew.skills[skill].core;
+                                crew[skill].min = crew.skills[skill].range_max;
+                                crew[skill].max = crew.skills[skill].range_min;
+                            }
+                        }
                         return crew;
                     });
 
