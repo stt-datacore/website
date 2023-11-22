@@ -137,7 +137,7 @@ const QuestSolver = {
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 
-                while (n < challenge.difficulty_by_mastery[mastery]) {
+                while (n < (challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery])) {
                     if (!nslots) return false;
                     if (1 + slots.length + currslots.length > nslots) return false;
                     if (crew.symbol === 'nancy_hedford_crew') {
@@ -177,7 +177,9 @@ const QuestSolver = {
                 if (!crew.challenges.includes(challenge.id)) crew.challenges.push(challenge.id);
 
                 crew.metasort += n;
-
+                if (crew.symbol.includes("jvini")) {
+                    console.log("Break");
+                }
                 if (slots.length) {
                     Object.entries(quips).forEach(([symbol, qp]) => {
                         
@@ -224,6 +226,9 @@ const QuestSolver = {
                     .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
                     .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
                     .map((crew) => {
+                        if (crew.symbol.includes("jvini")) {
+                            console.log("Break");
+                        }
                         crew = JSON.parse(JSON.stringify(crew));                         
                         crew.date_added = new Date(crew.date_added); 
                         if (!config.includeCurrentQp) {
