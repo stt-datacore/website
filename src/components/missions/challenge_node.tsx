@@ -28,8 +28,10 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
     let rc = false;
+    const idx = quest.challenges?.findIndex(f => f.id === index) ?? 0;
+
     if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
-        rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[index].claimed;
+        rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].claimed;
         reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === index)?.reward[0];
     }
 

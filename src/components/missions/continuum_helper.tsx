@@ -226,14 +226,17 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
-                        if (!remotes[i]) {
+                        if (!remotes[i] || 
+                            (current?.mission.quests && result.quests[i].challenges?.length !== current.mission.quests[i].challenges?.length)) {
+                            
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
                                 ch.difficulty_by_mastery = [];
                             });
+                            remotes[i] = false;
                         }
-                        else if (current?.mission?.quests) {
+                        else if (remotes[i] && current?.mission?.quests) {
                             result.quests[i] = current.mission.quests[i];
                         }
                     }
