@@ -19,7 +19,7 @@ const FleetBossBattlesPage = () => {
 			playerPromptType='require'
 		>
 			<React.Fragment>
-				{playerData && <PlayerBossBattle dbid={`${dbid}`} />}
+				{!!playerData && <PlayerBossBattle dbid={`${dbid}`} />}
 				{/* {!playerData && <NonPlayerBossBattle />} */}
 			</React.Fragment>
 		</DataPageLayout>
