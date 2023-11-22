@@ -5,28 +5,16 @@ import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { GlobalContext } from "../../context/globalcontext";
 import { QuestSolverConfig, QuestSolverResult } from "../../model/worker";
-import { MissionChallenge, MissionTraitBonus, Quest } from "../../model/missions";
+import { MissionChallenge, MissionTraitBonus, Quest, QuestFilterConfig } from "../../model/missions";
 import { Button } from "semantic-ui-react";
 
 
 
 
 export interface QuestSolverProps {
-    traits?: MissionTraitBonus[];
-    quest?: Quest;
-    challenges?: MissionChallenge[];
-    paths?: number[][];        
-    setResults: (value: QuestSolverResult) => void;
-    runCount?: number;
-    mastery: number;
-    setIdleOnly: (value: boolean) => void;
-    idleOnly: boolean;
-    setConsiderFrozen: (value: boolean) => void;
-    considerFrozen: boolean;
-    setQpOnly: (value: boolean) => void;
-    qpOnly: boolean;
-    setIgnoreQpConstraint: (value: boolean) => void;
-    ignoreQpConstraint: boolean;
+    setResults: (value: QuestSolverResult) => void;    
+    config: QuestFilterConfig;
+    setConfig?: (value: QuestFilterConfig) => void;
 }
 
 interface QuestSolverState {
@@ -44,13 +32,13 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
         super(props);
 
         this.state = {
-            runCount: props.runCount ?? 0
         } as QuestSolverState;
     }
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { qpOnly, ignoreQpConstraint, considerFrozen, idleOnly, mastery, challenges, quest, setResults, paths, traits } = this.props;
+		const { includeCurrentQp, qpOnly, ignoreQpConstraint, considerFrozen, idleOnly, mastery, challenges, quest, paths, traits } = this.props.config;
+        const { setResults } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
             if (setResults) {
@@ -81,7 +69,8 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                 considerFrozen,
                 idleOnly,
                 qpOnly,
-                ignoreQpConstraint
+                ignoreQpConstraint,
+                includeCurrentQp
             } as QuestSolverConfig
 		});
 	}
