@@ -318,7 +318,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 		        </Table.Cell>
                 <Table.Cell>
                     <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px"}}>
-    			        <CrewItemsView printNA crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
+    			        <CrewItemsView printNA={includeCurrentQp ? <>N/A</> : <br />} crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
                     </div>
 		        </Table.Cell>
                 <Table.Cell>
