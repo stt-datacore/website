@@ -154,6 +154,7 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 
 	const [bossBattle, setBossBattle] = React.useState<BossBattle | undefined>(undefined);
 	const [spotter, setSpotter] = useStateWithStorage<Spotter | undefined>(`fbb/${bossBattleId}/spotter`, undefined);
+	const [spotterBattleId, setSpotterBattleId] = useStateWithStorage<number | undefined>(`fbb/spotterBattleId`, undefined);
 
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
@@ -179,7 +180,7 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 		} as BossBattle;
 		setBossBattle({...bossBattle});
 
-		if (!spotter) {
+		if (!spotter || ((!collaborationEnabled) && spotterBattleId !== bossBattleId)) {
 			setSpotter({
 				id: bossBattle.chain.id,
 				solves: [],
@@ -187,10 +188,11 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 				pendingCrew: [],
 				ignoredTraits: []
 			});
+			setSpotterBattleId(bossBattleId);
 		}
 	}, [ephemeral, bossBattleId]);
 
-	if (!bossBattle ||!spotter) return <></>;
+	if (!bossBattle || !spotter) return <></>;
 
 	if (!collaborationEnabled && bossBattle.chain.id !== spotter.id)
 		return <Message>Your fleet boss battle data may be outdated. Please import an updated version of your player data.</Message>;
