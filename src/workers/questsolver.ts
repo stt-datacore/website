@@ -101,7 +101,7 @@ const QuestSolver = {
 
                 crew.challenges ??= [];                
 
-                let n = crew[challenge.skill].core + ((crew[challenge.skill].max + crew[challenge.skill].min) / 2);
+                let n = crew[challenge.skill].core + crew[challenge.skill].min;
                 let ttraits = getTraits(crew, useTraits);
                 n += ttraits
                         .map((t => Object.values(t.bonuses)))
@@ -131,7 +131,7 @@ const QuestSolver = {
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 
-                while (n < (challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery])) {
+                while (n <= (challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery])) {
                     if (!nslots) return false;
                     if (1 + slots.length + currslots.length > nslots) return false;
                     if (crew.symbol === 'nancy_hedford_crew') {
@@ -156,7 +156,7 @@ const QuestSolver = {
                         });
                                         
                     if (qps?.length) {
-                        let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + ((qps[0].bonusInfo.bonuses[challenge.skill].range_min + qps[0].bonusInfo.bonuses[challenge.skill].range_max) / 2);
+                        let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
                         n += qpower;
 
