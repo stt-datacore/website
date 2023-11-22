@@ -31,7 +31,7 @@ export function makeNavMap(quest: Quest): NavMapItem[] {
         startId ??= 0;
         currentStage ??= 0;
 
-        if (!quest.challenges?.length || quest.challenges.length - 1 < startId) return currentData;
+        if (!quest.challenges?.length) return currentData;
         let ch = quest.challenges?.find(f => f.id === startId);
         if (!ch) return currentData;
 
@@ -93,6 +93,9 @@ export function makeNavMap(quest: Quest): NavMapItem[] {
         }
     });
 
+    fmap.sort((a, b) => {
+        return a.challenge.id - b.challenge.id;
+    })
     return fmap;
 }
 
