@@ -84,12 +84,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
 
                 {!!challenge?.trait_bonuses?.length &&
                     <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map((t, idx) => {
-                        if (idx) {
-                            return <><br/><i>{appelate(t.trait)} (+{t.bonuses.reduce((p, n) => p + n, 0)})</i></>
-                        }
-                        else {
-                            return <i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i>
-                        }
+                        return <><br/><i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i></>
                     })}</i></>
                 }
                 <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
