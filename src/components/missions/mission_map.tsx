@@ -151,7 +151,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
     const getContinuumChainRewards = () => {
         let result = undefined as Reward[] | undefined;
         if ("chain_rewards" in mission) {
-            if (mastery === 0) {
+            if (mastery === 0) {                
                 result = mission?.chain_rewards?.standard?.map(e => e.potential_rewards?.map(le => le as Reward))?.flat()
             }
             else if (mastery === 1) {
@@ -287,7 +287,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     targetGroup={pageId + "_items"}
                                                                     crewTargetGroup={pageId + "_helper"}
                                                                     mastery={mastery}
-                                                                    style={{ width: "200px", textAlign: "center" }}
+                                                                    style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
                                                                     quest={quest}
                                                                     index={item.id}
                                                                 />
