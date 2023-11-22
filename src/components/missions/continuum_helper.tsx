@@ -477,6 +477,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 setResults={setSolverResults}
                                 setConfig={setMissionConfig}
                                 config={{
+                                    quest,
                                     challenges: (highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
                                     idleOnly,
                                     considerFrozen,
