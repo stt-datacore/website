@@ -156,20 +156,18 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
 				this.inited = true;
 			} else {
-
-
 				if (item.kwipment) {
 					const kwipment_levels = getQuipmentCrew(item, this.context.core.crew)
 						.filter((f) => {
-							if (this.state.owned && this.context.player.playerData) {
+							if (this.state.owned === true && !!this.context.player.playerData) {
 								if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
 							}
 							return true;
 						})
 						.map(crew => {
-						if (this.context.player.playerData) {
+							if (this.context.player.playerData) {
 							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-							if (owned) {
+							if (owned) {								
 								return {
 									crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
 									level: 100
