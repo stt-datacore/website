@@ -1,6 +1,5 @@
 import CONFIG from "../components/CONFIG";
 import { ComputedBuff, CrewMember, PlayerSkill } from "../model/crew";
-import { EquipmentItem } from "../model/equipment";
 import { MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew } from "../model/player";
 import { IQuestCrew, QuestSolverConfig, QuestSolverResult } from "../model/worker";
@@ -39,11 +38,6 @@ export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBon
     
     let intersect = arrayIntersect(crew.traits.concat(crew.traits_hidden), (traits as MissionTraitBonus[]).map(t => t.trait));
     return traits.filter(f => intersect.includes(f.trait));
-}
-
-interface SkillCrit {
-    skill: PlayerSkill | string;
-    crit: number;    
 }
 
 const QuestSolver = {        
