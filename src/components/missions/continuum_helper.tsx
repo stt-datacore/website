@@ -344,7 +344,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                             return <></>
                                         }
                                         return (
-                                            <div style={{color:'lightgreen', fontWeight:'bold', fontStyle: 'italic', fontSize: "0.75em"}}>
+                                            <div style={{color:'lightgreen', textAlign:'center', fontWeight:'bold', fontStyle: 'italic', fontSize: "0.75em"}}>
                                             +&nbsp;{ctraits.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({ctraits.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
                                             </div>)
                                     })}
