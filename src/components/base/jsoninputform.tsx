@@ -1,9 +1,6 @@
 import React from 'react';
 import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, Dimmer, Loader, SemanticICONS } from 'semantic-ui-react';
-
-import { PlayerData } from '../../model/player';
 import { iOS, mobileCheck } from '../../utils/misc';
-
 
 export interface JsonImportConfig {    
     dataUrl: string;
