@@ -1162,11 +1162,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					let p = sp.split("/");
 					let p1 = rankToSkill(p[0]);
 					if (p.length === 1) {
-						return !p1 || (p1 in crew && crew[p1].max);
+						return !p1 || (p1 in crew && crew[p1]?.max);
 					}
 					let p2 = rankToSkill(p[1]);
 					if (!p1 || !p2) return true;
-					return (p1 in crew && crew[p1].max && p2 in crew && crew[p2].max);
+					return (p1 in crew && crew[p1]?.max && p2 in crew && crew[p2]?.max);
 				})) return false;
 			}
 			if (filter.ownedStatus) {

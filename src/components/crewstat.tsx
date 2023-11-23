@@ -7,6 +7,7 @@ type CrewStatProps = {
 	data?: Skill;
 	proficiencies?: boolean;
 	quipmentMode?: boolean;
+	style?: React.CSSProperties;
 };
 
 class CrewStat extends PureComponent<CrewStatProps> {
@@ -20,7 +21,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 		const { proficiencies, quipmentMode } = this.props;
 
 		return (
-			<div>
+			<div style={this.props.style}>
 			<div
 				style={{
 					display: 'inline-grid',
