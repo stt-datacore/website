@@ -155,6 +155,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 					color='blue'
 				/>
 				<input
+					accept='application/json'
 					type='file'
 					onChange={(e) => handleFileUpload(e)}
 					style={{ display: 'none' }}

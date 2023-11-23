@@ -142,7 +142,13 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
         const { targetGroup, children } = this.props;
 
         return (    
-            <div className={targetGroup} onTouchEnd={(e) => this.containerEnter(e)} onMouseOver={(e) => this.containerEnter(e)} onMouseOut={(e) => this.containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} 
+                 onDoubleClick={(e) => this.containerEnter(e)} 
+                 // onTouchEnd={(e) => this.containerEnter(e)} 
+                 onMouseOver={(e) => this.containerEnter(e)} 
+                 onMouseOut={(e) => this.containerLeave(e)} 
+                 style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+
                 {children}
             </div>)         
     }

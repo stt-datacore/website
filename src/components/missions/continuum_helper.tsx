@@ -19,6 +19,7 @@ import { CrewItemsView } from "../item_presenters/crew_items";
 import { Skills } from "../item_presenters/classic_presenter";
 import CrewStat from "../crewstat";
 import { appelate, arrayIntersect, arrayUnion } from "../../utils/misc";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -36,6 +37,8 @@ export interface DiscoveredMissionInfo {
 }
 
 export const ContinuumComponent = (props: ContinuumComponentProps) => {
+
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     /* Global Data Check & Initialization */
 
