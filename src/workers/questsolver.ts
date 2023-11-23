@@ -67,16 +67,16 @@ const QuestSolver = {
 
             let questcrew = [] as IQuestCrew[];
 
-            let prefilter = roster.filter(c => {
-                let ski = getSkillOrder(c);
-                let b = (ski[0] === challenge.skill);
-                if (!b) {
-                    b = !!getTraits(c, useTraits)?.length;
-                }
-                return b;
-            });
+            // let prefilter = roster.filter(c => {
+            //     let ski = getSkillOrder(c);
+            //     let b = (ski[0] === challenge.skill);
+            //     if (!b) {
+            //         b = !!getTraits(c, useTraits)?.length;
+            //     }
+            //     return b;
+            // });
 
-            if (prefilter.length >= 5) questcrew = prefilter;
+            // if (prefilter.length >= 5) questcrew = prefilter;
 
             questcrew = roster.filter(c => 
                     (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
@@ -98,7 +98,9 @@ const QuestSolver = {
            
             let qpass = questcrew.filter((crew) => {
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
-
+                if (crew.symbol.includes("valeo")) {
+                    console.log("pause");
+                }
                 crew.challenges ??= [];                
                 let n = crew[challenge.skill].core + crew[challenge.skill].min;
                 let ttraits = getTraits(crew, useTraits);
@@ -125,7 +127,7 @@ const QuestSolver = {
                     added[crew.symbol] ??= ['', '', '', ''];
                 }
                 
-                const currslots = added[crew.symbol].filter(a=> a != '');
+                const currslots = added[crew.symbol].filter(a=> !!a && a != '');
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 
@@ -256,6 +258,21 @@ const QuestSolver = {
             let crew = [] as IQuestCrew[];
 
             for (let ch of challenges) {
+                
+                roster.sort((a, b) => {
+                    let ask = ch.skill in a.skills;
+                    let bsk = ch.skill in a.skills;
+                    if (ask != bsk) {
+                        if (ask) return -1;
+                        else return 1;
+                    }
+                    
+                    let ac = ch.trait_bonuses?.filter(t => a.traits.concat(a.traits_hidden).includes(t.trait))?.length ?? 0;
+                    let bc = ch.trait_bonuses?.filter(t => a.traits.concat(a.traits_hidden).includes(t.trait))?.length ?? 0;
+
+                    return bc - ac;
+                });
+
                 let chcrew = solveChallenge(roster, ch, config.mastery);
                 if (chcrew?.length) crew = crew.concat(chcrew);
             }
@@ -283,6 +300,7 @@ const QuestSolver = {
             let ach = {} as { [key: number]: boolean };
             challenges.forEach((challenge) => {
                 ach[challenge.id] = false;
+
                 for (let c of crew) {
                     if (c.challenges?.some(ch => ch.challenge.id === challenge.id)) {
                         if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
@@ -323,7 +341,7 @@ const QuestSolver = {
                 });
 
                 c.challenges?.forEach((ch, idx) => {
-                    getSkillOrder(c).forEach((skill) => {
+                    Object.keys(c.skills).forEach((skill) => {
                         let core = c.skills[skill].core;
                         let max = c.skills[skill].range_max;
                         let min = c.skills[skill].range_min;
