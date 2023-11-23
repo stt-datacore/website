@@ -1,9 +1,6 @@
 import React from 'react';
 import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, Dimmer, Loader, SemanticICONS } from 'semantic-ui-react';
-
-import { PlayerData } from '../../model/player';
 import { iOS, mobileCheck } from '../../utils/misc';
-
 
 export interface JsonImportConfig {    
     dataUrl: string;
@@ -242,7 +239,12 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			// Handle Apple webarchive wrapping
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.
-				data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('}}') + 2);
+				if (data.includes("</pre>")) {
+					data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('</pre>'));
+				}
+				else {
+					data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('}') + 1);
+				}
 			}
 			setFullInput(data);
 		};
