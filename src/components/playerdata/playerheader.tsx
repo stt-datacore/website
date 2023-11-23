@@ -5,6 +5,7 @@ import { PlayerData } from '../../model/player';
 import { Notification } from '../../components/page/notification';
 
 import { PlayerInputForm } from './playerinputform';
+import { JsonInputForm } from '../base/jsoninputform';
 
 type PlayerHeaderProps = {
 	promptType: 'require' | 'recommend' | 'none';
@@ -84,13 +85,34 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 				/>
 			}
 			{(activePanel === 'input' || enforceInput) &&
-				<PlayerInputForm
+				<JsonInputForm
+					config={{
+						dataUrl: 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true',
+						dataName: 'player',
+						jsonHint: '{"action":"update","player":',
+						androidFileHint: 'player.json',
+						iOSFileHint: 'player?client_api'
+					}}
+					validateInput={validateInput}
 					setValidInput={receiveInput}
 					requestDismiss={!enforceInput ? () => { setActivePanel(undefined); } : undefined}
 				/>
 			}
 		</div>
 	);
+
+	function validateInput(testData: PlayerData): string | true {
+		if (testData.player && testData.player.display_name) {
+			if (testData.player.character && testData.player.character.crew && (testData.player.character.crew.length > 0)) {
+				return true;
+			} else {
+				return ('Failed to parse player data from the text you pasted. Make sure you are logged in with the correct account.');
+			}
+		}
+		else {
+			return ('Failed to parse player data from the text you pasted. Make sure the page is loaded correctly and you copied the entire contents!');
+		}
+	}
 
 	function dismissMessage(messageType: string): void {
 		setDismissed(prev => {

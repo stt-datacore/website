@@ -294,7 +294,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         });
     }
 
-    const setRemoteQuest = (quest: Quest) => {
+    const setRemoteQuest = (quest?: Quest) => {
+        if (!quest) {
+            if (mission) {
+                setMissionAndRemotes({ ...mission }, [])
+            };
+            return;
+        }
         if (mission?.quests?.length && remoteQuestFlags?.length === mission?.quests?.length) {
             for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i].id === quest.id) {
