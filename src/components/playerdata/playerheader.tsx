@@ -4,7 +4,6 @@ import { GlobalContext } from '../../context/globalcontext';
 import { PlayerData } from '../../model/player';
 import { Notification } from '../../components/page/notification';
 
-import { PlayerInputForm } from './playerinputform';
 import { JsonInputForm } from '../base/jsoninputform';
 
 type PlayerHeaderProps = {
