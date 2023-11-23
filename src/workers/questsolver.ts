@@ -226,10 +226,12 @@ const QuestSolver = {
                     .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
                     .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
                     .map((crew) => {
-                        if (crew.symbol.includes("jvini")) {
-                            console.log("Break");
-                        }
+
                         crew = JSON.parse(JSON.stringify(crew));                         
+                        let ac = ephemeral?.activeCrew?.find(c => c.symbol === crew.symbol);
+                        if (ac?.active_status) {
+                            crew.active_status = ac.active_status;
+                        }
                         crew.date_added = new Date(crew.date_added); 
                         if (!config.includeCurrentQp) {
                             applyCrewBuffs(crew, config.buffs);
