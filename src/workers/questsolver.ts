@@ -76,7 +76,7 @@ const QuestSolver = {
                 return b;
             });
 
-            if (prefilter.length >= 3) questcrew = prefilter;
+            if (prefilter.length >= 5) questcrew = prefilter;
 
             questcrew = roster.filter(c => 
                     (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
