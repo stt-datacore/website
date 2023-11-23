@@ -13,6 +13,7 @@ export interface QuestFilterConfig {
   qpOnly?: boolean;
   ignoreQpConstraint?: boolean;
   includeCurrentQp?: boolean;
+  showAllSkills?: boolean;
 }
 
 export interface ProtoMission {

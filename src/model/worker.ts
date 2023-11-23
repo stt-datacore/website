@@ -7,7 +7,7 @@ import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
 import { GlobalContext, IDefaultGlobal } from "../context/globalcontext";
 import { ICoreData } from "../context/datacontext";
-import { Mission, MissionChallenge, ProtoMission, Quest, QuestFilterConfig } from "./missions";
+import { Mission, MissionChallenge, MissionTraitBonus, ProtoMission, Quest, QuestFilterConfig } from "./missions";
 import { ContinuumMission } from "./continuum";
 import { IEphemeralData } from "../context/playercontext";
 
@@ -222,8 +222,15 @@ export interface QuestSolverConfig extends QuestFilterConfig {
     };
 }
 
+export interface CrewChallengeInfo {
+    challenge: MissionChallenge;
+    skills: BaseSkills;
+    trait_bonuses?: MissionTraitBonus[];
+    power_decrease?: number;
+}
+
 export interface IQuestCrew extends PlayerCrew {
-    challenges?: number[];
+    challenges?: CrewChallengeInfo[];
     added_kwipment?: number[][] | number[];
     added_kwipment_expiration?: number[][] | number[];
     metasort?: number;
@@ -233,4 +240,5 @@ export interface QuestSolverResult {
     status: boolean;
     crew: IQuestCrew[];
     error?: string;
+    fulfilled: boolean;
 }
