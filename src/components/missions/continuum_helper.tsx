@@ -3,7 +3,7 @@ import { PlayerCrew, Reward } from "../../model/player";
 import { CrewMember, Skill } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
+import { MissionChallenge, MissionTraitBonus, Quest, QuestFilterConfig } from "../../model/missions";
 import { Notification } from "../page/notification";
 import { ChallengeNodeInfo } from "./challenge_node";
 import { useStateWithStorage } from "../../utils/storage";
@@ -322,20 +322,35 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </div>
 		        </Table.Cell>
                 <Table.Cell>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
-                        {Object.entries(crew.skills).sort(([akey, askill], [bkey, bskill]) => {
-                            return (bskill as Skill).core - (askill as Skill).core;                            
-                        }).map(([key, skill]) => {                            
-                            return <>
-                                <CrewStat                                
-                                quipmentMode={true}
-                                key={"continuum_crew_" + key}
-                                skill_name={key}
-                                data={skill}
-                                scale={0.75}
-                            />                          
-                            </>
-                        })}
+                        <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "flex-start"}}>
+                            {Object.entries(crew.skills).sort(([akey, askill], [bkey, bskill]) => {
+                                return (bskill as Skill).core - (askill as Skill).core;                            
+                            }).map(([key, skill]) => {                            
+                                return (
+                                    <div style={{display:"flex", flexDirection:"column", justifyContent: "flex-start", alignItems: "center"}}>
+                                    <CrewStat                                
+                                        quipmentMode={true}
+                                        key={"continuum_crew_" + key}
+                                        skill_name={key}
+                                        data={skill}
+                                        scale={0.75}
+                                    />                          
+                                    {crew.challenges?.map((ch) => {
+                                        let challenge = quest?.challenges?.find(f => f.id === ch && f.skill === key);
+                                        let ctraits = (arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden))
+                                                        .map(ct => challenge?.trait_bonuses?.filter(f => f.trait === ct)))?.flat() as MissionTraitBonus[];
+                                        
+                                        if (!challenge || !ctraits?.length) {
+                                            return <></>
+                                        }
+                                        return (
+                                            <div style={{color:'lightgreen', fontWeight:'bold', fontStyle: 'italic', fontSize: "0.75em"}}>
+                                            +&nbsp;{ctraits.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({ctraits.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
+                                            </div>)
+                                    })}
+
+                                </div>)
+                            })}
                     </div>
 		        </Table.Cell>
                 <Table.Cell>
