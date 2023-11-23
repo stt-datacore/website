@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, Dimmer, Loader, SemanticICONS } from 'semantic-ui-react';
 
 import { PlayerData } from '../../model/player';
-import { mobileCheck } from '../../utils/misc';
+import { iOS, mobileCheck } from '../../utils/misc';
 
 export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
 
@@ -155,7 +155,7 @@ export const PlayerInputForm = (props: PlayerInputFormProps) => {
 					color='blue'
 				/>
 				<input
-					accept='application/json'
+					accept={iOS() ? undefined : '.json,application/json,text/json'}
 					type='file'
 					onChange={(e) => handleFileUpload(e)}
 					style={{ display: 'none' }}
