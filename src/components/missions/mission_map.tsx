@@ -11,6 +11,7 @@ import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { TraitSelection, TraitSelectorComponent } from "./trait_selector";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface HighlightItem { 
     quest: number, 
@@ -44,6 +45,7 @@ export function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
 
 export const MissionMapComponent = (props: MissionComponentProps) => {
     const context = React.useContext(GlobalContext);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const { 
         isRemote, 
@@ -206,7 +208,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                     >
                         <Step.Content>
                             <Step.Title>Standard</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Standard Difficulty</Step.Description>
+                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Standard Difficulty</Step.Description>
                         </Step.Content>
                     </Step>
                     <Step
@@ -215,7 +217,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                     >
                         <Step.Content>
                             <Step.Title>Elite</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Elite Difficulty</Step.Description>
+                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Elite Difficulty</Step.Description>
                         </Step.Content>
                     </Step>
                     <Step
@@ -224,7 +226,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                     >
                         <Step.Content>
                             <Step.Title>Epic</Step.Title>
-                            <Step.Description style={{ maxWidth: "10vw" }} >Epic Difficulty</Step.Description>
+                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Epic Difficulty</Step.Description>
                         </Step.Content>
                     </Step>
                 </Step.Group>
@@ -235,15 +237,16 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                             onClick={() => setQuestIndex(idx)}>
                             <Step.Content>
                                 <Step.Title>{(isRemote && isRemote[idx] === true) ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</Step.Title>
-                                <Step.Description style={{ maxWidth: "10vw" }} >{quest.description}</Step.Description>
+                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >{quest.description}</Step.Description>
                             </Step.Content>
                         </Step>
                     ))}
 
                 </Step.Group>
+
                 {!!quest && typeof questIndex !== 'undefined' &&
                 <div className={"ui segment"}>
-                    <Table style={{ margin: 0, padding: 0 }}>
+                    <Table style={{ margin: 0, padding: 0 }} striped>
                         <Table.Body>
                             <Table.Row>
                                 <Table.Cell>
@@ -260,7 +263,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                             <TraitSelectorComponent
                                                 style={{
                                                     fontSize: "12pt",
-                                                    fontStyle: "italic"
+                                                    fontStyle: "italic",
+                                                    flexDirection: isMobile ? 'column' : 'row'
                                                 }}
                                                 questId={quest.id}
                                                 traits={quest.traits_used ?? []}
@@ -274,6 +278,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                             <Table.Row>
                                 <Table.Cell>
                                     <Table>
+                                        {!isMobile &&
                                         <Table.Row>
                                             {!!stages && stages.map((tier, idx) => (
                                                 <Table.Cell key={pageId + "table_tier_" + idx}>
@@ -296,7 +301,32 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                     </div>
                                                 </Table.Cell>
                                             ))}
-                                        </Table.Row>
+                                        </Table.Row>}
+                                        {isMobile &&
+                                            !!stages && stages.map((tier, idx) => (
+                                                <Table.Row>
+                                                <Table.Cell key={pageId + "table_tier_" + idx}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {tier.map((item) => (
+                                                            <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
+                                                                <ChallengeNode
+                                                                    tapped={isTapped(item)}
+                                                                    highlight={isHighlighted(item)}
+                                                                    onClick={clickNode}
+                                                                    targetGroup={pageId + "_items"}
+                                                                    crewTargetGroup={pageId + "_helper"}
+                                                                    mastery={mastery}
+                                                                    style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
+                                                                    quest={quest}
+                                                                    index={item.id}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </Table.Cell>
+                                                </Table.Row>
+                                            ))
+                                        }                                    
                                     </Table>
                                 </Table.Cell>
 
