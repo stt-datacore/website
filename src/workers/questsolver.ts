@@ -229,8 +229,8 @@ const QuestSolver = {
                         else {
                             for(let skill of getSkillOrder(crew)) {
                                 crew[skill].core = crew.skills[skill].core;
-                                crew[skill].min = crew.skills[skill].range_max;
-                                crew[skill].max = crew.skills[skill].range_min;
+                                crew[skill].min = crew.skills[skill].range_min;
+                                crew[skill].max = crew.skills[skill].range_max;
                             }
                         }
                         return crew;
